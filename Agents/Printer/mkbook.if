@@ -2,17 +2,11 @@
 <title> Printer agent book maker</title>
 </head><body>
 <h1>`&agentName;' Book maker; </h1>
-
- Making book starting at <code language=perl> 
-my %form_parameters=%{$request->parameters()};
-my $name=$agent->name;
-my $form=make_form("/$name/mkbook.if",({name => 'URL',size => 50,value =>
-$form_parameters{URL}},{type => 'submit',value => 'makebook'}));
-return $form;
-</code>
-
-<br>
-<code language=perl>
+<if><test><get form name="URL"></test>
+<then>
+Making book starting at &FORM.URL;
+<p>
+Preview<code language=perl>
 
 my %form_parameters=%{$request->parameters()};
 my $url=$form_parameters{URL};
@@ -22,6 +16,14 @@ print "submitted book\n";
 return $result;
     
 </code>
+</then>
+<else>
+<form action="&url;" method=POST><!--  use history here -->
+<input type="URL" name="URL" size="40"><input type="SUBMIT" value="MakeBook">
+</form>
+</else>
+</if>
+<br>
  
 
 <hr>
@@ -29,6 +31,6 @@ return $result;
 <hr>
 <address><a href="http://sages.com/~wolff/wolff.html">Greg Wolff </a> <a href=mailto:wolff@sages.com>wolff@sages.com</a></address>
 <!-- hhmts start -->
-Last modified: Fri Jan 24 09:42:40 1997
+Last modified: Tue Jun  3 16:44:21 1997
 <!-- hhmts end -->
 </body> </html>

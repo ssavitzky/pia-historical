@@ -3,43 +3,14 @@
 </head>
 
 <body>
-<h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a>Documents printed by`<a href="home.if">&agentName;</a>'</h1>
-<code language=perl>
-my $dir=$agent->option('printer_root_directory');
-my @files=glob($dir . "preview*.*.gif");
+<h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a>Documents printed
+by`<a href="home.if">&agentName;</a>'</h1>
+ <set name=files><read directory file=&AGENT.printer_root_directory; match="preview\d+\.1\.gif"></set>
 
-my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;
-my $print=URI::URL->new("http://$machine/printer/print.if");
-
-my $preview=URI::URL->new("http://$machine/printer/cached_preview.if");
-
-my $list=IF::IT->new('ul');
-
-my $li=IF::IT->new('li');
-
-for(@files){
-	/$dir(preview\d*)\.(\d*)\.gif/;
-	$imgfile=$1 . "." . $2 . ".gif";
-	$psfile=$dir . $1 . ".ps";
-	if($2 eq "1"){
-		$li=IF::IT->new('li');
-		$list->push($li);
-		$print->query_form('spoolfile'  => $psfile);
-		my $b=IF::IT->new('a', 'href' => $print->as_string);
-		my $img=IF::IT->new('img', src => "http://$machine/printer/printer.gif" , height => 27);
-		$b->push($img);
-		$li->push($b);
-	}
-
-	my $spfile="http://$machine/printer/spool/" . $imgfile;
-	my $img=IF::IT->new('img', 'src' => $spfile, 'height' => '80');
-	$preview->query_form('imgfile'  => $imgfile);
-	my $b=IF::IT->new('a', 'href' => $preview->as_string);
-	$b->push($img);
-	$li->push($b);	
-}
-return $list;
-</code>
+<ul foreach list=&files;>
+  <li> <set name=file><subst match="\.1\." result=".*.">&li;</subst></set><set name=pictures><read directory file=&AGENT.printer_root_directory; match=&file;></set>
+       <repeat list=&pictures; entity=page> <a href="/spool/&page;"><img src="/spool/&page;" height=80></a></repeat>
+</ul>
 
 
 </body>

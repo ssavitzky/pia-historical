@@ -1,17 +1,59 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title> PIA printer agent preview</title>
+<title> WebPrinter preview</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1><a href="/agency/home.if"><img src="/logo/pia24"></a>`<a href="home.if">&agentName;</a>' on &piaHOST
+<h1><a href="/agency/home.if"></a>`<a href="home.if">&agentName;</a>' on &piaHOST
 </h1>
-You are Previewing
+<if><test><get form name="URL"></test>
+<then>
+Previewing &FORM.URL;
+<p>
+
 <code language=perl>
-  my $url= ${$request->parameters()}{URL};
-  my $element=IF::IT->new('a', href => $url , $url );
-  return $element;
+my %form_parameters=%{$request->parameters()};
+$agent->option('thumbsize',$form_parameters{thumbsize}) if exists $form_parameters{thumbsize};
+$agent->option('render_method',$form_parameters{render_method}) if exists $form_parameters{render_method};
+
 </code>
 
+<code language=perl>
+my $self=$agent;print $agent->name . ref($agent) . " is our name andtype\n";
+my %form_parameters=%{$request->parameters()};
+my $ask=$self->create_request('GET',$form_parameters{URL});
+my $element=$self->create_preview($ask);
+
+print "preview created \n";
+return $element;
+
+</code>
+ <form action="/&agentName;/print.if" method=post>
+<input name="URL" value="&FORM.URL;" type=hidden>
+<input name="spoolfile" value="&AGENT.ps_file_name;" type=hidden>
+<input type="SUBMIT" value="Print">
+</form>
+
+<form action="/&agentName;/preview.if" method=post>
+<input name="URL" value="&FORM.URL;" type=hidden>
+<input name="thumbsize" value="30" type=hidden>
+<input type="SUBMIT" value="SmallThumbnails">
+</form>
+<form action="/&agentName;/preview.if" method=post>
+<input name="URL" value="&FORM.URL;" type=hidden>
+<input name="render_method" value="normal" type=hidden>
+<input type="SUBMIT" value="NoImages">
+</form>
+
+
+</then>
+<else>
+<form action="&url;" method=POST>
+<set name="myurl"><get trans headers request name=referer></set>
+<input type="URL" name="URL" value=&myurl;><input type="SUBMIT" value="Preview">
+</form>
+</else>
+</if>
+<hr>
 <br>
 <table>
 <tr><TD><a href=toc.if>Table of contents</a>
@@ -21,56 +63,11 @@ You are Previewing
 </table>
 <br>
 
-<hr>
-<!parse any form params>
-<code language=perl>
-my %form_parameters=%{$request->parameters()};
-$agent->option('thumbsize',$form_parameters{thumbsize}) if exists $form_parameters{thumbsize};
-$agent->option('render_method',$form_parameters{render_method}) if exists $form_parameters{render_method};
 
-</code>
-
-<code language=perl>
-require("printer_agent.pl");
-
-my %form_parameters=%{$request->parameters()};
-my $ask=$agent->create_request('GET',$form_parameters{URL});
-my $element=$agent->create_preview($ask);
-
-print "preview created \n";
-return $element;
-
-</code>
-
-<code language=perl>
-my %form_parameters=%{$request->parameters()};
-my $name=$agent->name;
-my $form=make_form("/$name/print.if",({name => 'URL',size => 50,value =>
-$form_parameters{URL}},{name => 'spoolfile', type => 'hidden',
-        value => $agent->ps_file_name},{type => 'submit',value => 'Print'}));
-return $form;
-</code>
-<code language=perl>
-my %form_parameters=%{$request->parameters()};
-my $name=$agent->name;
-my @zform;
-
-push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
-push(@zform, {name => 'thumbsize',type => 'hidden',value => 30});
-push(@zform, {type => 'submit',value => 'SmallThumbnails'});
-
-push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
-push(@zform, {name => 'render_method',type => 'hidden',value => 'normal'});
-push(@zform, {type => 'submit',value => 'NoLinks/Images'});
-
-my $form=make_form("/$name/preview.if",@zform);
-
-return $form;
-</code>
 
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Jan 24 09:42:40 1997
+Last modified: Wed Jun  4 14:28:29 1997
 <!-- hhmts end -->
 </body></html>

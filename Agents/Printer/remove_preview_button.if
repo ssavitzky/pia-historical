@@ -1,20 +1,15 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title></title>
+<title>Page Controls</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>printer initialization for &agentName;</h1>
-causes preview button to be inserted (machine name hard coded TBD)
-<code language=perl>
-my $name=$agent->name;
-$agent->remove_translator('text/html');
-"removed translator";
-</code>
+<h1> &agentName;</h1>
+WebPrinter controls will not be added to proxied pages.
 
-
+<set agent hook name="_act_on"></set>
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Jan 24 09:42:38 1997
+Last modified: Tue Jun  3 20:48:10 1997
 <!-- hhmts end -->
 </body></html>

@@ -1,57 +1,27 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title></title>
+<title>Page Controls</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>printer initialization for &agentName;</h1>
-causes preview button to be inserted (machine name hard coded TBD)
-<code language=perl>
-my $name=$agent->name;
-$agent->translator('text/html',sub {
- my $request=shift;
-return unless ref($request);
-my $url=$request->base;
-if(ref($url)){
-$url=$url->as_string;
-}
-my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;
-my $preview=URI::URL->new("http://$machine/printer/preview.if");
-my $book=URI::URL->new("http://$machine/printer/mkbook.if");
-my $print=URI::URL->new("http://$machine/printer/print.if");
-$preview->query_form('URL'  => $url);
-$book->query_form('URL'  => $url);
-$print->query_form('URL'  => $url);
+<h1> &agentName; </h1>
+<agent-set-criterion name="response">
+<agent-set-criterion name="agent_response" value=0>
 
- my $form=IF::IT->new('a', href => $print->as_string);
-my $img=IF::IT->new('img', src => "http://$machine/printer/printer.gif",height
-=> 27);
-$form->push($img);
-my $string=$form->as_string;
-$form=IF::IT->new('a', href => $preview->as_string);
-$img=IF::IT->new('img', src => "http://$machine/printer/preview.gif",height
-=> 27);
-$form->push($img);
-$string.=$form->as_string;
-$form=IF::IT->new('a', href => $book->as_string);
-$img=IF::IT->new('img', src => "http://$machine/printer/bookmark.gif",height
-=> 27);
-$form->push($img);
-$string.=$form->as_string;
-$form=IF::IT->new('a', href => "http://$machine/printer/home.if");
-$img=IF::IT->new('img', src => "http://$machine/logo/pia27");
-$form->push($img);
-$string.=$form->as_string;
-$form=IF::IT->new('hr');
-$string.=$form->as_string;;
-    $request->add_control($string) if ref($request);
-});
-"installed preview button";
-</code>
-
+<set agent hook name="_act_on"><protect>
+<trans-control>
+<set entity name=myprinter>http://&piaHOST;:&piaPORT;/&agentName;</set>
+<a href="&myprinter;/printer.if"><img src="&myprinter;/printer.gif"></a>
+<a href="&myprinter;/preview.if"><img src="&myprinter;/preview.gif"></a>
+<a href="&myprinter;/mkbook.if"><img src="&myprinter;/bookmark.gif"></a>
+<a href="&myprinter;/home.if"><img src="/Logo/pia27"></a>
+<hr>
+</trans-control>
+</protect></set>
+WebPrinter controls will be added to all proxied pages.
 
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Jan 24 09:42:42 1997
+Last modified: Tue Jun  3 20:48:06 1997
 <!-- hhmts end -->
 </body></html>

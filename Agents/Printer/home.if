@@ -1,47 +1,68 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title> PIA printer agent home</title>
+<title> WebPrinter </title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1><img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/printer.gif" align=center>`&agentName;' on &piaHOST; </h1>
-Welcome to the <img src="http://&piaHOST;:&piaPORT;/logo/pia24"> printer.    To preview<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/preview.gif"> document, enter
- URL and click "Preview":<br>
 
-<code language=perl>
-my $url=$request->request->header(Referer);
-my $name=$agent->name;
-my $form=PIA::Utilities::make_form("/$name/preview.if",({name => 'URL',size =>
- 40, value => $url},{type => 'submit',value => 'Preview'}));
-return $form;
-</code>
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48 alt="R I C O H"></a>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
+<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
+<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
+	border=0 width=170 height=21></a>
+    <th>
+    <th align=left><font face=helvetica size=14pt>WebPrinter</font>
+<tr><th width=170>
+    <td><br>
+<if><agent-running name="&agentName;"><then>
+<TR><th>
+    <TD align=right height=32><td>
+        <a href="/&agentName;/preview.if">
+        <img src="/&agentName;/preview.gif"
+                   height=32 width=32 border=0 alt=""></a>
+    <a href="/&agentName;/preview.if">Print Preview</a><br>
+</then></if>
+<TR><th rowspan=3>
+        <img src="/&agentName;/printer.gif" width=144 height=99 border=0>
+    <TD align=right><td><!-- move td to after the icon to get the -->
+                        <!-- icons lined up to the left of the PIA -->
+        <a href="/&agentName;/mkbook.if">
+        <img src="/&agentName;/bookmark.gif"  height=32 width=32 border=0></a>
+    <a href="/&agentName;/mkbook.if">Create book</a><br>
 
- To create a book<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/bookmark.gif">
-, enter a starting  URL and click Makebook<code language=perl> 
-my %form_parameters=%{$request->parameters()};
-my $name=$agent->name;
-my $form=PIA::Utilities::make_form("/$name/mkbook.if",({name => 'URL',size => 50,value =>
-$form_parameters{URL}},{type => 'submit',value => 'Makebook'}));
-return $form;
-</code>
-<p>
+<TR><TD align=right><td>
+        <a href="/&agentName;/status.if">
+        <img src="/&agentName;/printer.gif"  height=32 width=32 border=0 alt="WebPrinter"></a>
+    <a href="/&agentName;/status.if">Status</a><a href="/&agentName;/options.if"> options</a><br>
 
-  <table>
 <TR>
- <TD>Printer Controls<TD><a href="/&agentName;/options.if"> options</a>
-    <TD><a href="/&agentName;/status.if"> status </a>
-    <TD><a href="/&agentName;/entries.if"> old jobs </a>
-<TR>
-    <TD> Page Controls: <TD> <a href="/&agentName;/add_preview_button.if"> add </a>  <TD> <a
-	href="/&agentName;/remove_preview_button.if">remove</a>
-</table>
+    <TD align=right><td>
+        <a href="/&agentName;/entries.if"><img src="/&agentName;/pages.gif"
+        height=32 width=32 border=0 ></a>
+        <a href="/&agentName;/entries.if">Previous Prints </a>
+       
+<tr><th>
+    <TD align=right><td>PageControls:
+        <a href="/&agentName;/add_preview_button.if">
+        Add</a>
+    <a href="/&agentName;/remove_preview_button.if">Remove</a><br>
 
-  For more information see <a
- href=http://internal/documents/pia/>  the PIA  manual</a>.
-<hr>
+
+</table>  
+
+
+  
 
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Jan 24 18:07:32 1997
+Last modified: Wed Jun  4 14:42:22 1997
 <!-- hhmts end -->
 </body></html>
