@@ -70,7 +70,7 @@ public class FileAccess {
       //check if-modified-since
       long mtime = myfile.lastModified();
       String zdate = request.header("If-Modified-Since");
-      if( zdate != null ){
+      if( zdate != null && !"".equals(zdate)) try {
 	Date mydate = new Date( zdate );
 	long time = mydate.getTime();
 	if ( time >= mtime ){
@@ -78,6 +78,8 @@ public class FileAccess {
 	  response.setStatus( HTTP.NOT_MODIFIED );
 	  response.startThread();
 	}
+      } catch (java.lang.IllegalArgumentException e) {
+	// Sometimes Netscape produces a date Java can't handle.
       }
 
       // Ok, should be an OK response by now...
