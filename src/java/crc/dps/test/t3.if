@@ -109,15 +109,25 @@ should be '': '<test null> not blanks </test>' null( not blanks )
 should be 'this did work': '<subst match=may result=did>this may work</subst>'
 should be 'this did nothing': '<subst match=may result=did>this did nothing</subst>'
 
-h2>Test problems with empty quotes inside quotes</h2>
+<h2>Test problems with expansion inside quoted sections</h2>
 <blockquote>
  should be 'xxyyzz': '<if>1<then>xx<protect>yy</protect>zz</then></if>'
  should be 'xxzz': '<if>1<then>xx<protect></protect>zz</then></if>'
  should be 'aabbcc': '<actor tag=xx>bb</actor>aa<xx></xx>cc'
  should be 'aabb': '<actor tag=xxx></actor>aaa<xxx></xxx>bbb'
- should be 'xxxyyyzzz': '<if>1<then>xxx<actor tag=bar empty>zzz</actor>yyy</then></if><bar>'
- should be 'xxxyyy..': '<if>1<then>xxx<actor tag=bar empty></actor>yyy</then></if><bar>..'
+ should be 'xxxyyy<i>zzz</i><i>zzz</i>': '<if>1<then>xxx<actor tag=baz empty
+	><i>zzz</i></actor>yyy<baz></then></if><br><baz>'
+ should be 'xxxyyyzzz': '<if>1<then>xxx<actor
+ tag=bug>zzz</actor>yyy<bug></then></if><br> <bug></bug>'
+ should be 'xxxyyyzzz' 'xxx<actor tag=bat empty>zzz</actor>yyy<bat>'
+ should be 'xxxyyy..': '<if>1<then>xxx<actor tag=bar empty
+	></actor>yyy</then></if><br><bar>..'
+ should be 'xxxyyy!!..!!': '<if>1<then>xxx<actor tag=bog empty
+	>!!</actor>yyy</then></if><br><bog>..<bog>'
+ should be 'xxxyyy': '<actor tag=zzz empty>xxx</actor><zzz>yyy'
 </blockquote>
+<baz><bug></bug>
+should be 6 <if>1<then><sum>1 <sum>2 3</sum></sum></if>
 
 <h2>Test arithmetic</h2>
 
