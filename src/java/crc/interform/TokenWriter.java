@@ -56,6 +56,34 @@ public class TokenWriter extends Tokens {
     return this;
   }
 
+  /** Append a token.  
+   *	The tokens are simply shipped to the output stream unless we're
+   *	blocked for some reason or the output stream is null.
+   */
+  public crc.ds.Stuff push(Object v) {
+    if (v == null) return this;
+    if (nItems() == 0 && out != null && !blocked) {
+      try {
+	out.write(v.toString());
+      } catch (IOException e) {
+	// === really not clear what to do if there's a problem writing ===
+      }
+    } else {
+      super.push(v);
+      if (out != null && !blocked) {
+	for (int i = 0; i < nItems(); ++i) {
+	  try {
+	    out.write(at(i).toString());
+	  } catch (IOException e) {
+	    // === really not clear what to do if there's a problem writing ===
+	  }
+	}
+	items.removeAllElements();
+      }
+    }
+    return this;
+  }
+
   /** Append some text.  */
   public SGML appendText(Text t) {
     if (t == null) return this;

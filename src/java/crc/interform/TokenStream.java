@@ -50,6 +50,26 @@ public class TokenStream extends Tokens {
     return this;
   }
 
+  /** Append a token.  
+   *	The tokens are simply shipped to the output stream unless we're
+   *	blocked for some reason or the output stream is null.
+   */
+  public crc.ds.Stuff push(Object v) {
+    if (v == null) return this;
+    if (nItems() == 0 && ostream != null && !blocked) {
+      ostream.print(v.toString());
+    } else {
+      super.push(v);
+      if (ostream != null && !blocked) {
+	for (int i = 0; i < nItems(); ++i) {
+	  ostream.print(at(i).toString());
+	}
+	items.removeAllElements();
+      }
+    }
+    return this;
+  }
+
   /** Append some text.  */
   public SGML appendText(Text t) {
     if (t == null) return this;
