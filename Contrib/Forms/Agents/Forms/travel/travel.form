@@ -1,0 +1,40 @@
+
+<center><h1>Travel Arrangement Request Form</h1></center>
+
+Your name: <form-variable name=name options=users> </form-variable>
+<br>
+
+Purpose:  <form-variable textarea=true rows=2 cols=70 name=purpose> </form-variable><br><hr>
+
+ <table align=center border=1>
+<caption>Itinerary</caption>
+<TR><TH> Departure date<TH>Time<TH>From<TH>To<TH>Arrival date<TH>Time<TH>RentalCar<TH>Hotel</TR>
+<TR><TD> <form-variable name=departdate1> </form-variable>
+ <TD><form-variable name=departtime1 size=4> </form-variable>
+ <TD><form-variable name=departfrom1>SJC/SFO </form-variable>
+ <TD><form-variable name=arriveto1> </form-variable>
+ <TD><form-variable name=arrivedate1> </form-variable>
+ <TD><form-variable name=arrivetime1 size=4> </form-variable>
+ <TD><form-variable name=rental1 options="- Yes No"> </form-variable>
+ <TD><form-variable name=hotel1> </form-variable>
+</TD></TR>
+
+ <repeat start=2 stop=5>
+<TR><TD> <form-variable name=departdate&li;> </form-variable>
+ <TD><form-variable name=departtime&li; size=4> </form-variable>
+ <TD><form-variable name=departfrom&li;> </form-variable>
+ <TD><form-variable name=arriveto&li;> </form-variable>
+ <TD><form-variable name=arrivedate&li;> </form-variable>
+ <TD><form-variable name=arrivetime&li; size=4> </form-variable>
+<TD><form-variable name=rental&li; options="- Yes No"> </form-variable>
+ <TD><form-variable name=hotel&li;> </form-variable>
+</TD></TR>
+</TD></TR>
+
+</repeat>
+
+</table>
+
+Special instructions: <form-variable name=instructions textarea=true rows=5 cols=60> </form-variable>
+<p>
+Related material (URLS): <references></references>

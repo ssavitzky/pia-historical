@@ -1,0 +1,23 @@
+
+<h1>Kiansho</h1>
+
+ Employee:<form-variable name=name options=users> </form-variable>
+
+Amount ($):  <form-variable name=cost> </form-variable><p>
+
+<h4>Subject:</h4> <br> <form-variable name=subject textarea=true rows=2 cols=60> </form-variable>
+<p>
+<h4>Explanation:</h4> <br> <form-variable name=explanation textarea=true rows=2
+cols=60> </form-variable>
+<br>
+<h4>Effect:</h4> <br><form-variable name=effect textarea=true rows=2
+cols=60> </form-variable>
+<br>
+<h4>Detail of Expenditure:</h4> <br> <form-variable name=expenditure textarea=true rows=2
+cols=60> </form-variable>
+<p>
+
+Recommended Vendors:  <form-variable name=vendor> </form-variable>
+<br>
+Related materials (URLS): <references></references>
+ 

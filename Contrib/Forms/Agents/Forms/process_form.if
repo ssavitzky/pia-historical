@@ -1,0 +1,169 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName;  processing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+ <set name=myformtype><get form name=formtype></set>
+<set entity name=title> Processing <get name=myformtype></set>
+<read interform file="heading.inc" process>
+ 
+<tagset-load name=Form-agent-actors>
+<!-- set dir to form name for compatibility with legacy -->
+ <set name=dir><get name=myformtype></set>
+
+<!-- format form data into dataobject -->
+ <if> <read info file="&myformtype;/process.inc" interform>
+ <then>
+ <set name=dataobject><read interform file="&myformtype;/process.inc" process></set>
+</then>
+ <else> <if><read info file="&myformtype;/&myformtype;.form" interform>
+        <then>
+        <!-- substitute new values for defaults in existing form -->
+        <!-- CAUTION sub order not guaranteed -->
+        <set name=myform><read interform file=&myformtype;/&myformtype;.form process></set>
+        <set name=vars><get name=myform findall="form-variable"></set>
+        <repeat list=&vars; entity=var>
+        <set name=varname><get name=var attr=name></set>
+        <if> <get form name=&varname;> <then>
+           <if> <test match=users exact><get name=var attr=options></test>
+		<then>
+                 <set name=auser><get form name=&varname;></set>
+                <set name=var insert=0 replace><full-name user=&auser;></set>
+                </then> <else>
+               <set name=var insert=0 replace><get form name=&varname;></set>
+               </else></if>
+        </then>
+        <else>
+        </else></if>
+        <!-- SET ENTITIES FOR  EXPANDED computation -->
+        <set name=&varname;><get index=var.Text></set>
+        </repeat>
+        <set name=exps><get name=myform findall="form-expression"></set>
+        <repeat list=&exps; entity=exp>
+        <!-- SET embedded ENTITIES FOR  EXPANDED computation -->
+         <if><get name=exp attr=livalue> <then>
+             <set name=li><get name=exp attr=livalue></set></then></if>
+        <set name=expval><expand><get index=exp.-1-></expand></set>
+        <!-- Values get expanded in place!! -->
+        <set index=exp insert=0 replace><get name=expval></set>
+        </repeat>
+        
+        <!-- SET computed ENTITIES -->
+        <repeat list=&vars; entity=var>
+        <if> <get name=var attr=computed> <then>
+          <set name=varname><get name=var attr=name></set>
+          <set name=var insert=0 replace><get name=&varname;></set>
+        </then>
+        </if>
+        </repeat>
+
+        <!-- SET ENTITIES FOR references -->
+        <set name=refs><get name=myform findall="references"></set>
+
+        <if> <get form name=references> <then>
+         <set name=refs insert=0 replace>
+         References:
+         <repeat list=&FORM.references; entity=yourl>
+         <a href=&yourl;>&yourl;</a>
+         </repeat>
+        </set></then></if>
+        <set name=dataobject><get name=myform></set>
+        </then>
+        <else>
+        <!-- default form processing -- create list of form data -->
+        <set name=dataobject><dl foreach list=&FORM.keys;>
+        <dt><get name=li></dt><dd><get form name=&li;></dd>
+        </dl></set>
+        </else>
+        </if>
+</else>
+</if>
+ <!--  generate the routeobject if does not exist -->
+ <!-- need to know name of user on form -->	
+  <set name=myuser><if> <get form name=name><then><get form name=name></then>
+  <else><get trans name=AuthenticatedUser></else></if></set>
+	
+<if> <get name=routeobject> <then></then>
+  <else>
+  <if><read info file="&myformtype;/route.inc" interform>
+      <then> <process-route><read process file="&myformtype;/route.inc"
+	     interform></process-route>
+ </then>
+  <else><!-- use default route -->
+
+  <set name=routeobject><route><routestep>
+            <routeid>1</routeid>
+            <routeuser>&myuser;</routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep>
+            <routestep>
+            <routeid>2</routeid>
+            <routeuser><manager user=&myuser;></routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep>
+            </route></set>
+  </else>
+  </if>
+ </else>
+ </if>
+
+
+   <!-- save the form and route -->
+    <set name=formurl>&dir;/&year;/&month;/&day;/&time;:&second;</set>
+	<!-- generate unique name if necessary -->
+	 <if> <read info file=&formurl;> <then>
+	 <set  name=unique><read info dir
+	 file=&dir;/&year;/&month;/&day;></set>
+	 <set name=unique><get name=unique size></set>
+        <set name=formurl>&dir;/&year;/&month;/&day;/&time;:&second;.&unique;</set>
+	</then></if>
+   <save-form file=&formurl; form=&myformtype;
+   route=&routeobject;>&dataobject;</save-form>
+   <!-- add .html to url -->
+    <set name=formurl>&formurl;.html</set>
+
+   <!-- figure out first user -->
+ <if> <get index=routeobject.dt-1.Text> <then>
+      <set name=firstuser><get index=routeobject.dt-1.Text></set></then></if>
+ <if> <get index=routeobject.routestep-1.routeuser.Text> <then>
+      <set name=firstuser><get index=routeobject.routestep-1.routeuser.Text></set></then></if>	
+	
+ <set name=myuser><get trans name=AuthenticatedUser></set>
+   <if> <test match=&myuser;><get name=firstuser></test>
+   <then>
+   <!-- add to this user's list but don't send mail -->
+   <write file=users/&myuser;.html append><a href="&formurl;"> &formurl; </a></write>
+   <!-- get signature -->
+   <set name=document><read file=&formurl;></set>
+   <set name=hash><hash><get name=document></hash></set>
+   Please verify and sign this form so it can be <a href=show_route.if?formurl=&formurl;>routed</a>:
+    <hr>
+   <get name=document>
+   <hr>
+   <form action="sign_form.if" method="post">
+   <input name="formurl" type=hidden value=&formurl;>
+   <input name="hash" type=hidden value=&hash;>
+   <a href="help_signature.html">Signature for</a>
+   <select name="user"> <option><get trans name=AuthenticatedUser></option>
+    <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
+    </select>
+   PassPhrase:<input type="password" name="password" size="25"> 
+   <input type="SUBMIT" value="SIGN">
+   </form>
+   </then>
+   <else>
+    Routing to &firstuser;
+   <a href="/~&agentName;/&formurl;"> Form</a> has been processed and routed.
+   <notify-user user=&firstuser; form=&formurl;>
+   </else>
+
+   </if>
+   
+<hr>
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

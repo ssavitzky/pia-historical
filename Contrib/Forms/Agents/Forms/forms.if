@@ -1,42 +1,93 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Forms</title>
-</head>
-
-<body bgcolor="#ffffff">
-
-<center><img src="forms.gif"><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="feedbackbutton.gif"></a><p></center>
-
-<center>
-<h2><a href="http://&piaHOST;:&piaPORT;/&agentName;/timecard/timecard.if">Time Card</a></h2><p>
-
-<center>
-<table border>
-<caption>Aquisition</caption>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/purchasereq/purchasereq.if">Purchase Request</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/kiansho/kiansho.if">Kiansho</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/check/check.if">Check Request</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/expense/expense.if">Expense Report</a><tr></table><p>
-
-<center>
-<table border>
-<caption>Technical</caption>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/invention/invention.if">Invention Disclosure</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/techreport/techreport.if">Technical Report</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/inspiration/inspiration.if">Inspiration</a><tr></table><p>
-
-<center>
-<table border>
-<caption>Travel/Time Off</caption>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/travel/travel.if">Travel Arrangement Request</a>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/vacation/vacation.if">Vacation Request</a><tr></table><p>
-
-<center>
-<table border>
-<caption>Misc</caption>
-<td><a href="http://&piaHOST;:&piaPORT;/&agentName;/bike/bike.if">Bike Locker</a><tr></table><p>
+<title>Forms home page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Form home page</set>
+<read interform file="heading.inc" process>
+<read process quiet interform file=tagset.inc>
+<tagset-load name=Form-agent-actors>
 
 <hr>
-Here are some <a href="http://&piaHOST;:&piaPORT;/&agentName;/form_creation.txt">instructions</a> for how to create your own forms.<br>
 
+ <set name=uid><get trans name=AuthenticatedUser></set>
+<form action="fill_out_form.if">
+Choose a form 
+<select name="formtype">
+ <option>timecard</option>
+ <repeat list=&AGENT.forms;>
+  <option>&li;</option>
+ </repeat>
+</select> to
+<input type="SUBMIT" value="Fill Out">:
+or select from the lists below.
+</form>
+
+<h2>Note</h2>
+Not all forms are currently in electronic format --  <a
+href="http://www.401k.com/">401k</a> contributions, insurance forms, etc. can
+be found in the front copier area at CRC (and in the IMC??)
+Also see the <a
+href="http://internal.crc.ricoh.com/genadmin/admin.html">General
+administration</a> pages.
+
+<h2>Payroll</h2>
+<dl>
+  <dt>   <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=timecard">Time card</a>
+  <dd>  Regular ("exempt") employees should report any exceptions to normal
+ working hours on the 15th (or previous workday) and the final workday of each
+ month.
+  <dt>  <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=vacation">Vacation</a>
+  <dd>  Employees request for vacation  should be  approved by their manager.
+</dl>
+
+<h2>Accounting</h2>
+<dl>
+  <dt>  <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=expense">Expense</a>
+  <dd> Expense forms should be used to report work related expenses.
+       Currently the signed form should be printed, receipts attached and then
+       given to the front office.
+  <dt>  <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=kiansho">Kiansho</a>
+  <dd> Kiansho's should be used to obtain approval for large purchases  (prior to filling out a purchase
+       request form.)
+
+  <dt>  <a
+	href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=purchasereq"> Purchase Request</a>
+  <dd> Form to request specific items be purchased.
+  <dt>  <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=check">Check</a>
+  <dd> Form to request a check made out to specified payee.
+</dl>
+
+<h2>Intellectual Property</h2>
+<dl>
+  <dt> <a
+       href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=invention">Invention disclosure</a>
+  <dd> Form to report an invention -- first step to a patent.
+  <dt> <a href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=techreport">TechReport</a>
+  <dd> Form to publish (internally and/or externally) a Technical report (any
+       type of media).
+  <dt> <a
+       href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=inspiration">Inspiration</a>
+  <dd> Form for noteworthy ideas -- similar witnessed to notebook entries.
+</dl>
+
+<h2> Travel requests</h2>
+<dl>
+  <dt> <a
+       href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=travel"> Travel</a>
+  <dd>  Form to request airline / rental car / hotel reservations.
+
+  <dt> <a
+       href="http://&piaHOST;:&piaPORT;/&agentName;/fill_out_form.if?formtype=bike">Bike locker</a>
+  <dd> Form to request a key for one of the bicycle lockers.
+</dl>
+
+<hr>
+Here are some <a href="http://&piaHOST;:&piaPORT;/&agentName;/form_creation.txt">instructions</a> for how to create new forms.<br>
+
+
+
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
 </body></html>
-

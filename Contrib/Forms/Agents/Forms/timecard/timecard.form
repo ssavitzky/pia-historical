@@ -1,0 +1,21 @@
+<h1>Time Card</h1>
+
+ <table>
+<TR><TH>Employee<TH>Month<TH>Payday<TH>Exception<TH>Dates</TR>
+<TR><TD rowspan=4> <form-variable name=employee options=users> </form-variable>
+    <TD rowspan=4> <form-variable name=paymonth options="01 02 03 04 05 06 07 08 09 10 11 12">&month; </form-variable>
+    <TD rowspan=4> <form-variable name=payday options="15 30">&day; </form-variable>
+
+<TD> Sick Days  <TD> <form-variable name=sick> </form-variable> </TR>
+<TR><TD> Personal Holidays  <TD> <form-variable name=holiday> </form-variable>
+</TR>
+<TR><TD> Vacation Days  <TD> <form-variable name=vacation> </form-variable>
+</TR>
+<TR><TD> Other Days  <TD> <form-variable name=other> </form-variable> </TR>
+</table>
+
+<p>
+Time cards for regular employees ("Exempt Personnel") are reported by
+exception. If you did not miss any workdays this pay period, leave the dates
+above blank and click on the Process button. Otherwise enter the dates missed
+in the appropriate boxes and then click Process.

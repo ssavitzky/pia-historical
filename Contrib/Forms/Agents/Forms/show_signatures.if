@@ -1,0 +1,103 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName;  Siged form</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title>  <get form name=formurl> Signatures</set>
+<read interform file="heading.inc" process>
+
+<tagset-load name=Form-agent-actors>
+
+<if> <get form name=formurl> <then>
+ <set name=sigs><read file=&FORM.formurl;.sig process></set>
+<read file=&FORM.formurl;>
+<hr>
+<if> <get name=sigs> <then>
+<h3> Signatures on <a href="&FORM.formurl;">&FORM.formurl; </a></h3>
+
+ <if> <get form name=verify> <then>
+       <set name=document><read file=&FORM.formurl;></set>
+	 <set name=hash><hash><get name=document></hash></set>
+  </then></if>
+
+ <table>
+<!-- for-every tag=signature object=&sigs; entity=sig -->
+<set  name=mysigs><get name=sigs findall=signature></set>
+ <if> <test match=signature exact><get name=mysigs attr=tag></test> <then>
+<!-- just do once -->
+ <set name=sig><get name=mysigs></set>
+<TR>
+  <TD>  Signed by: <b><full-name user=&sig.sigblock.signer.Text;></b></TD>
+ <if><get index=sig.signedfor> <then> <TD> for: <get index=sig.signedfor> </TD></then></if>
+  <TD>on:
+  <TD>&sig.sigblock.sigdate; </TD>
+ <!-- don't show signature &sig.sig; -->
+   <TD>
+       <if><sign user=&sig.sigblock.signer.Text; verify=&sig.sig.Text;>&sig.sigblock;</sign> <then>
+        <b>verified</b></then> <else>
+        <b> does NOT verify</b></else>
+       </if>
+  </TD>
+</TR>
+
+</then>
+ <else>
+<repeat list=&mysigs; entity=sig>
+<TR>
+  <TD>  Signed by:<b><full-name user=&sig.sigblock.signer.Text;></b>
+  <TD>on:
+  <TD>&sig.sigblock.sigdate; </TD>
+ <!-- don't show signature &sig.sig; -->
+   <TD>
+       <if><sign user=&sig.sigblock.signer.Text; verify=&sig.sig.Text;>&sig.sigblock;</sign> <then>
+        <b>verified</b></then> <else>
+        <b> does NOT verify</b></else>
+       </if>
+  </TD>
+</TR>
+</repeat>
+</else></if>
+
+</table>
+</then> <else>
+No signatures for &FORM.formurl;
+</else>
+</if>
+<br> Show <a href=show_route.if?formurl=&FORM.formurl;>route</a>.
+</then>
+</if>
+<hr>
+<if> <get form name=formurl> <then>
+<br>
+
+
+<form action="/&agentName;/print_form.if" method=post>
+You may <a href="sign_form.if?formurl=&FORM.formurl;"> Sign </a> or
+<input type="hidden" name="formurl" value="&FORM.formurl;">
+  <input type="SUBMIT" value="Print this Form">
+  on: <select name="printer">
+  <option>ps3
+  <option>ps4
+  <option>ps5
+  <option>ps6
+  <option>ps2
+  <option>ps1
+  <option>psfile
+  <option>other
+ </select>
+(Other printer: <input name="otherprinter" size="20">)
+</form>  
+</then> <else>
+<form action="&url;" method=post>
+ Specify a form: <input type="URL" name="formurl" size="40" value=&FORM.formurl;>
+
+<input type="SUBMIT" value="ShowSignatures">
+</form>
+	
+
+<hr>
+ </else></if>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

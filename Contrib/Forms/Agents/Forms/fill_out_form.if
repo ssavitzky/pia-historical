@@ -1,0 +1,70 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+ <set name=formtype><get form name=formtype></set>
+<title>&formtype; Form </title>
+ <base  href=http://&piaHOST;:&piaPORT;/&agentName;/&formtype;/&formtype;.if>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> Fill out &formtype; </set>
+<read interform file="heading.inc" process>
+ 
+<tagset-load name=Form-agent-actors>
+<if><read interform file=&formtype;/&formtype;.if  info>  <then>
+ <!-- fully specified form -->
+ <set name=myform><read interform file=&formtype;/&formtype;.if process></set>
+ <get name=myform findall=body>
+</then>
+ <else>
+ <!-- form template -->
+ <set name=myform><read interform file=&formtype;/&formtype;.form process></set>
+ <!-- substitute input fields in form -->
+ <set name=vars><get name=myform findall="form-variable"></set>
+  <repeat list=&vars; entity=var>
+  <set name=varname><get name=var attr=name></set>
+ <if> <get name=var attr=options> <then>
+<set name=var insert=0 replace><select name="&varname">
+ <if> <test match=users><get name=var attr=options></test> <then>
+ <set name=options><get trans name=AuthenticatedUser> <get agent name=users keys></set>
+ </then> <else><set name=options><get name=var attr=options></set></else></if>
+ <if><get index=var.Text> <then><option selected><get index=var.Text></option></then></if>
+ <repeat list=&options; entity=val> <option>&val;</option></repeat>
+    </select>
+    </set>
+    </then>
+    <else>
+    <if><get name=var attr=computed> <then></then> <else>
+     <if><get name=var attr=textarea> <then>
+     <set name=myrows><get name=var attr=rows></set>
+     <set name=mycols><get name=var attr=cols></set>
+     <set name=var insert=0 replace><textarea name="&varname;" rows=&myrows; cols=&mycols;>
+     <get index=var.Text>
+     </textarea>
+     </set></then> <else>
+     <if><get name=var attr=size> <then> <set name=mysize><get name=var attr=size></set><set name=var insert=0 replace><input
+    name="&varname;" value=&var.Text; size=&mysize;></set></then> <else>
+  <set name=var insert=0 replace><input name="&varname;" value=&var.Text;></set>
+</else></if>
+</else></if>
+</else></if>
+</else></if>
+  </repeat>
+  <set name=refs><get name=myform findall="references"></set>
+  <set name=refs insert=0 replace><input type="URL" name="references" size="40"></set>
+
+
+<form action="../process_form.if" method=post>
+ <input name="formtype"  type=hidden value=&formtype;> 
+ <get name=myform>
+<br>
+<input type="SUBMIT" value="Process">
+ </form>
+
+</else>
+</if>
+
+<hr>
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

@@ -1,0 +1,55 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Forms home page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Form home page</set>
+<read interform file="heading.inc" process>
+<read process quiet interform file=tagset.inc>
+<tagset-load name=Form-agent-actors>
+
+<hr>
+
+ <set name=uid><get trans name=AuthenticatedUser></set>
+
+<if> <get name=users agent key=&uid;> <then>
+
+<table>
+<TR><TD rowspan=4>
+ <show-pending user=&uid;>
+<repeat list=&AGENT.groups.keys; entity=mygrpo>
+         <if-in-group user=&uid; group=&mygrpo;>
+           <show-pending user=&mygrpo;>
+         </if-in-group>
+</repeat>
+<TD> <form action="fill_out_form.if">
+<input type="SUBMIT" value="Fill Out Form">:
+<select name="formtype">
+ <option>timecard</option>
+ <repeat list=&AGENT.forms;>
+  <option>&li;</option>
+ </repeat>
+</select>
+</form>
+ <a href="forms.if">Forms</a>
+<TR><TD>  <a href="status.if"> Status</a>
+<if-in-group group=FrontOffice><TR><TD>  <a href="reports.if"> Reports</a>
+</TD></TR></if-in-group>
+
+<TR><TD> <a href="admin.if">Admin</a>
+</table>
+</then> <else>
+Please  <a href="add_user.if">click here</a> to  register user information for <get name=uid>.
+
+</else></if>
+
+<set name=myuser><get name=users agent key=&uid;></set>
+ <if> <get index=myuser.userpublickey.Text> <then> </then>
+ <else>
+ You must <a href="register.if">REGISTER</a> with the forms system before you
+ can digitally sign forms.
+ </else></if>
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

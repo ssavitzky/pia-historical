@@ -1,0 +1,20 @@
+
+<h1>Check Request Form</h1>
+
+<set entity name=accountlist><read file="account_types.dat"></set>
+Please prepare a check in the amount of ($): <form-variable name=amount> </form-variable>
+<br>
+Payable to the order of:<form-variable name=payto> </form-variable> 
+<br>
+For: <form-variable name=for> </form-variable> 
+<br>
+Expense Type: <form-variable name=po options=&accountlist;> </form-variable>
+<br>
+Vendor's Invoice No.:<form-variable name=invoice> </form-variable>
+<br>
+Requested by: <form-variable name=name options=users> </form-variable>
+<br>
+Date Required: <form-variable name=date> </form-variable>
+<p>
+References (URLS if any):
+<references> </references>

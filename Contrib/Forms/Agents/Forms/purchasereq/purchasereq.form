@@ -1,0 +1,47 @@
+
+<center><h1>Purchase Requisition</h1></center>
+
+Requestor:<form-variable name=name options=users> </form-variable> 
+
+<br>
+<set entity name=accountlist><read file="account_types.dat"></set>
+Expense Type: <TD><form-variable name="expensetype" options=&accountlist;> </form-variable>
+ <br>
+Suggested Supplier:<form-variable name=supplier size=60> </form-variable>
+<br>
+
+Contact Information:<form-variable name=contact textarea rows=2 cols=60> </form-variable>
+
+<br>
+
+
+<table border=1 align=center>
+<caption>Items to be purchased:</caption>
+<TR><TH> Description<TH>Product Code<TH>Quantity<TH>Est. Cost/Unit</TR>
+
+
+
+<repeat start=1 stop=5 entity=num>
+<TR>
+ <TD width=40><form-variable name="description&num;"> </form-variable>
+ <TD><form-variable name="item&num;"> </form-variable>
+ <TD><form-variable name="qty&num;"> </form-variable>
+ <TD><form-variable name="amount&num;"> </form-variable>
+<form-protect livalue=&num;><protect> 
+  <set name=othertotals><sum digits=2><product><get name=amount&li;> <get
+  name=qty&li;> </product> <get name=othertotals></sum></set>
+ </protect> </form-protect>
+</TR>
+</repeat>
+<TR> <TH colspan=3 align=right> Estimated Total Cost ($) </TH>
+
+<TD>
+ <form-protect><protect> <set name=estcost><get name=othertotals></set>
+</protect> </form-protect>
+<form-variable name=estcost computed=true> </form-variable></TD>
+</table>
+
+<p>
+Special Instructions:<form-variable name=comments size=60> </form-variable>
+<p>
+Related Material: (e.g. URL of Kiansho, supplier, etc.)<references> </references>

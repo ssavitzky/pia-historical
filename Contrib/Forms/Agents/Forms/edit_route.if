@@ -1,0 +1,171 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; edit route</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> edit forms</set>
+<read interform file="heading.inc" process>
+
+<!-- should change from dl tags to route tags -->
+
+<tagset-load name=Form-agent-actors>
+<if-in-group group=admin>
+ <if> <get form name=form> <then>
+<set name=form><get form name=form></set>
+<set name=formfile><read file=&form;/&form;.form interform process></set>
+<set name=formvars><get name=formfile findall=form-variable></set>
+
+<set name=formvars><repeat list=&formvars; entity=x> <text><get name=x
+attr=name></text></repeat></set>
+
+<if> <get name=routefile form> <then>
+      <set name=routefile><get name=routefile form> </set>
+     </then> <else>
+     <set name=routefile>&usrDIR;/Agents/&agentName;/&form;/route.inc</set>
+     <set name=genericroute>true</set>
+</else></if>
+
+
+<if> <read info file=&routefile;>
+      <then> <set name=theroute><read
+	     file=&routefile; process></set>
+            <set name=route><get name=theroute findall=route></set>
+      </then>
+      <else><set name=route><route><routestep>
+            <routeid>1</routeid>
+            <routeuser>user</routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep>
+            <routestep>
+            <routeid>2</routeid>
+            <routeuser>manager</routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep>
+            </route></set>
+        </else></if>
+<form action="&url;" method=post process copy>
+ <process copy>
+ <file name=&routefile; dst=&routefile;.bak rename></file>
+ <!-- process route changes -->
+ <set name=newroute><route> </route></set>
+ <set name=steps><get name=route findall=routestep></set>
+<!-- process deletes -->
+ <repeat list=&steps; entity=step>
+ <set name=rid><get index=step.routeid.Text></set>
+ <if><get form name=delete&rid;><then></then> <else>
+ <set name="newroute" insert=-1><get name=step></set>
+ </else></if></repeat>
+
+ <set name=steps><get name=newroute findall=routestep></set>
+ <repeat list=&steps; entity=step>
+ <set name=rid><get index=step.routeid.Text></set>
+ <set index=step.routeuser insert=0 replace><get form name=user&rid;></set>
+ <set index=step.routewhen insert=0 replace><get form name=when&rid;></set>
+ <if><get form name=condvar&rid;> <then>
+  <set index=step.routecond insert=0 replace ><conditional>
+  <condvar><get form name=condvar&rid;></condvar>
+  <condtest><get form name=condtest&rid;></condtest>
+  <condval><get form name=condval&rid;></condval>
+  </conditional></set>
+ </then></if>
+	    
+ </repeat>	    
+
+ <if> <get form name=addsteps> <then>
+ <repeat start=1 stop=&FORM.addsteps;>
+ <set name="rid"><sum digits=0> &rid; 1 </sum></set>
+ <set index=newroute insert=-1>
+<routestep>
+            <routeid>&rid;</routeid>
+            <routeuser>user</routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep>
+</set>
+ </repeat>
+ </then></if>
+	  <set name=route><get name=newroute></set>   
+ <write file=&routefile;><get name=route>
+	  </write>
+	    Route &routefile; for &form; updated.
+</process>
+
+
+
+<h2>Route for &form; Form</h2>	    
+ <input name="form" value=&form; type=hidden>
+ <set name=steps><get name=route findall=routestep></set>
+ <table border=1>
+ <TR><TH>Step
+     <TH>Delete?
+     <TH>User or Group
+     <TH>When
+     <TH> <a href="conditions.html">Condition</a></TR>
+
+ <repeat list=&steps; entity=step>
+
+ <set name=rid><get index=step.routeid.Text></set>
+  <TR> <TD> &rid;
+       <TD><input type="checkbox" name="delete&rid;">
+       <TD>
+	    <select name="user&rid;">
+	     <option selected><get  index=step.routeuser.Text></option>
+            <if><get name=genericroute> <then>
+             <option>user</option>
+             <option>manager</option>
+            </then></if>
+            <option>printer</option>
+            <repeat list=&AGENT.groups.keys; entity=mygrp>
+            <option>&mygrp;</option></repeat>
+            <repeat list=&AGENT.users.keys; entity=mygrp>
+            <option>&mygrp;</option></repeat> 	    
+            </select>
+      <TD>
+      <select name="when&rid;">	    
+       <option><get  index=step.routewhen.Text></option>
+       <option>always</option>
+       <option>onlyif</option>	    
+        </select>
+      <TD>
+      <if> <test match="onlyif"><get  index=step.routewhen.Text></test><then>
+	<select name="condvar&rid;">
+       <if><get  index=step.routecond.conditional.condvar.Text> <then>
+       <option selected><get  index=step.routecond.conditional.condvar.Text></option></then></if>
+       <repeat list=&formvars; entity=var> <option>&var;</option></repeat>
+       </select>
+       is
+       <select name="condtest&rid;">
+         <if><get  index=step.routecond.conditional.condtest.Text> <then>
+           <option selected><get
+           index=step.routecond.conditional.condtest.Text></option></then></if>
+       <option>equalto</option>
+       <option>greaterthan</option>
+       <option>lessthan</option>
+       </select>
+       this value:
+       <if><get  index=step.routecond.conditional.condval.Text> <then>
+           <input name=condval&rid;
+           value=&step.routecond.conditional.condval.Text;></then> <else>
+           <input name=condval&rid;> </else></if>
+     </then>
+    </if>
+    <TD>
+    </TR>
+ </repeat>
+</table>
+Add <input type="INT" name="addsteps" size="2"> additional steps (enter # in
+box). <br>
+<input type="SUBMIT" value="Change Route">
+</form>	    
+</then>
+<else> Please <a href="edit_route.if"> specify form route to edit</a> </else>
+</if>
+</if-in-group>
+<hr>
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

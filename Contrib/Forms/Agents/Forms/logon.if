@@ -1,0 +1,17 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Logon Form</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Logon Form</set>
+<read interform file="heading.inc" process>
+<hr>
+ Currently you are registered as <get trans name=AuthenticatedUser> using
+ Basic authentication.  To login as a different user, please restart your
+ browser (it should ask for your user name and passwords when you reconnect to
+ the forms server.)
+
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

@@ -1,0 +1,13 @@
+
+<h1>Bike Locker Request</h1>
+   
+Date of locker use:
+<form-variable name=startdate> </form-variable>
+
+<br>
+Employee: <form-variable name=name options=users> </form-variable>
+<br>
+Use:
+<form-variable name=use options="Commute Exercise Other"> </form-variable>
+
+

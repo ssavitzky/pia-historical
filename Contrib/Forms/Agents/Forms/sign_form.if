@@ -1,0 +1,109 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; signing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+ <set name=myformurl><subst match="^\.\./" result=""><get form name=formurl></subst></set>
+<set entity name=title> Sign <get name=myformurl></set>
+<read interform file="heading.inc" process>
+ 
+<tagset-load name=Form-agent-actors>
+
+<!--  check for user registered in key database -->
+ 
+ <set name=user><if><get form name=user><then><get form name=user></then>
+ <else><get trans name=AuthenticatedUser></else></set>
+
+<if> <sign user=&user; exists></sign> <then>
+ 
+<if> <get form name=password> <then>
+<set name=formanchor><a href="&myformurl;">&myformurl;</a></set>
+<set name=tosign><sigblock>
+<signer><get form name=user></signer>
+<sigdoc><get  name=formanchor></sigdoc>
+<sighash><get form name=hash></sighash>
+<sigdate>&dateString;</sigdate>
+</sigblock></set>
+ <set name=signature><sign user=&FORM.user; password=&FORM.password;><get
+ name=tosign></sign></set>
+
+
+<if> <get name=signature> <then>
+
+	 Signature added to document.
+	 <notify-next-recipient form=&myformurl; user=&FORM.user;>
+
+<write append file=&myformurl;.sig>
+<signature>
+<get name=tosign>
+<sig><get name=signature></sig>
+<if><get name=toremove> <then> <if> <test match=&FORM.user;><get
+name=toremove></test> <then></then> <else><signedfor><get name=toremove></signedfor></else></if></then></if>
+</signature>
+</write>
+<hr>
+         <show-pending user=&FORM.user;>
+         <repeat list=&AGENT.groups.keys; entity=mygrpo>
+         <if-in-group user=&FORM.user; group=&mygrpo;>
+           <show-pending user=&mygrpo;>
+         </if-in-group>
+         </repeat>
+	</then>
+	 <else> Signature not valid -- please go  <a
+		href="&url;?formurl=&myformurl;"> back </a> and try
+		again.</else></if>
+	
+  </then>
+ <else>
+	 <if> <get name=myformurl> <then>
+	 <set name=document><read file=&myformurl;></set>
+	</then></if>
+	 <if> <get name=document>  <then>
+	 <set name=hash><hash><get name=document></hash></set>
+  <set name=sigfile><read file=&myformurl;.sig process></set>
+ <set name=sigdl><get name=sigfile findall=dl></set>
+  <if> <get name=sigdl> <then>
+   This document has been signed by: 
+ <table>
+ <if> <test exact match="dl"><get name=sigdl attr=tag></test>
+ <then><TR><TD><b> <get name=sigdl key=user> </b> <TD> on  <TD> <get name=sigdl key=date> </TR></then><else>
+ <repeat list=&sigdl; entity=sdl>
+ <TR><TD><b> <get name=sdl key=user> </b> <TD> on  <TD> <get name=sdl key=date> </TR>
+ </repeat>
+</else>
+</if>
+</table>
+  </then> <else>Please sign the following document:</else></if>
+	   <hr>
+	<get name=document>
+	<hr>
+	<form action="&url;" method="post">
+	<input name="formurl" type=hidden value=&myformurl;>
+	<input name="hash" type=hidden value=&hash;>
+	  <a href="help_signature.html">Signature for</a>
+    <select name="user"> <option><get trans name=AuthenticatedUser></option>
+    <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
+    </select>
+	 PassPhrase:<input type="password" name="password" size="25"> 
+	<input type="SUBMIT" value="SIGN">
+</form>
+	  </then> 
+ <else>NO form found -- please report this error ---</else>
+	</if>
+
+	</else>
+</if>
+</then>
+<else>
+<!--  user not registered -->
+<h2><get name=user> has not registered</h2>
+	 Please <a href="register.if?user=&user;">register</a> now and then
+	 return to this page (and reload it if necessary).
+</else>
+</if>
+<hr>
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

@@ -1,0 +1,30 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Route conditions</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+
+
+ Sometimes a user should be notified only when some form entry meets a
+ condition.  To specify this type of a route entry, choose
+ <code>onlyif</code> as the "when" for an entry then (after submitting) you
+ will be given a chance to enter a condition.  An example might be to route to
+ a user only if a variable named "var1" was greater than $1000  -- that
+ condition would be specified
+ <code>&lt;test positive&gt;&lt;difference&gt; &amp;var1; 1000 &lt;/difference&gt;&lt;test&gt;</code>
+
+<p>
+Otherwise specify "always" under when to always route to a user or "never" to
+effectively remove a user from a route.
+
+
+
+<p>
+
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+<!-- hhmts start -->
+Last modified: Sun Feb  8 14:00:26 1998
+<!-- hhmts end -->
+</body></html>

@@ -1,0 +1,28 @@
+
+<h1>Tech Report</h1>
+
+<b>Your name:</b> <form-variable name=name options=users> </form-variable>
+<br>
+<b>Confidential Status:</b>   <form-variable name=confidential
+options="Confidential Public"> </form-variable>
+<br>
+<b>Type:</b> <form-variable name=type
+options="TechReport JournalArticle ConferencePaper VideoTape Minutes">
+</form-variable>
+<p>
+        
+<b>Date:</b> <form-variable NAME="pubdate" TYPE="text" SIZE="8"> </form-variable><br>
+<b>Title:</b> <form-variable NAME="title" TYPE="text" SIZE="66"> </form-variable><BR>
+<B>Author:</B> <form-variable NAME="author" TYPE="text" SIZE="64"> </form-variable><BR>
+<B>Keywords:</B> <form-variable NAME="keywords" TYPE="text" SIZE="61"> </form-variable><BR>
+<B>Abstract:</B> <form-variable TEXTAREA=true NAME="abstract" ROWS="6"
+COLS="60"> </form-variable><p>
+<B>Conference:</B> <form-variable NAME="conference" TYPE="text" SIZE="60"> </form-variable><BR>
+<B>Publication:</B> <form-variable NAME="publication" TYPE="text" SIZE="60">
+</form-variable><BR>
+<B>URL:</B>  <references> </references> <br>
+<B>File Location:</B> <form-variable NAME="location" TYPE="text" SIZE="59"> </form-variable><BR>
+<B>Distribution:</B>  <form-variable TEXTAREA=true NAME="distribution"
+ROWS="3" COLS="55"> </form-variable><BR>
+<B>Notes:</B> <form-variable TEXTAREA=true NAME="notes" ROWS="2" COLS="61"> </form-variable><p>
+

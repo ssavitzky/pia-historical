@@ -1,0 +1,132 @@
+
+<center><h1>Expense Report</h1></center>
+
+Username: <form-variable name=name options=users> </form-variable> 
+
+<table border=1 align=center>
+ <caption>Personal Auto</caption>
+<TR><TH>Date<TH>Departure/Destination<TH>Miles<TH>Total</TR>
+<set name=autorate>0.28</set>
+<repeat list="1 2 3">
+<TR>
+ <TD><form-variable name=autodate&li;> </form-variable>
+  <TD><form-variable name=dd&li;> </form-variable>
+   <TD><form-variable name=miles&li;> 0 </form-variable>
+
+<TD><form-protect livalue=&li;><protect> <set name=atotal><product digits=2>
+ <get name=miles&li;><get name=autorate></product></set>
+  <set name=autototals><sum digits=2><get name=atotal> <get name=autototals></sum></set> <get name=atotal></protect> </form-protect></TD>
+</TR>
+</repeat>
+<TR>
+<TD colspan=3 align=right> Total:</TD>
+<TD> <form-protect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=autototals></sum></set> <get name=autototals></protect> </form-protect></TD>
+</TR>
+
+</table>
+
+<table border=1 align=center>
+ <caption> Hotel</caption>
+<TR><TH> Hotel<TH> Nightly Rate (incl. tax)<TH> Nights <TH> Total</TR>
+
+<repeat list="1 2 3">
+<TR>
+ <TD width=40><form-variable name="hotel&li;"> </form-variable></TD>
+ <TD><form-variable name="rate&li;"> </form-variable></TD>
+ <TD><form-variable name="nights&li;"> </form-variable></TD>
+ <TD><form-protect livalue=&li;><protect><set name=htotal><product digits=2>
+ <get name=rate&li;> <get name=nights&li;></product></set>
+  <set name=hoteltotals><sum digits=2><get name=htotal> <get name=hoteltotals></sum></set> <get name=htotal></protect> </form-protect>
+</TD>
+</TR>
+</repeat>
+<TR> <TD colspan=3 align=right> Total:</TD>
+ 
+<TD><form-protect><protect> <set name=grandtotals><sum digits=2><get
+ name=grandtotals> <get name=hoteltotals></sum></set> <get name=hoteltotals> </protect> </form-protect></TD>
+</TR>
+</table>
+
+ <table border=1 align=center>
+<caption>Per Diem</caption>
+ <TR><TH>Number of Days<TH>Destination<TH>Total</TR>
+
+<set name=perrate><dl>
+     <dt>US</dt><dd>34</dd>
+     <dt>Japan</dt><dd>60</dd>
+     <dt>Other</dt><dd>47</dd>
+     </dl></set>
+     
+<repeat list="1 2 3">
+<TR>
+ <TD><form-variable name="perdays&li;"> </form-variable></TD>
+ <TD><form-variable name="perdest&li;" options=&perrate.keys;> </form-variable></TD>
+     
+ <TD><form-protect livalue=&li;><protect><set name=pkey><get
+ name=perdest&li;></set> <set name=ptotal><product digits=2>
+ <get name=perdays&li;> <get name=perrate key=&pkey;></product></set>
+  <set name=perdiemtotals><sum digits=2><get name=ptotal> <get name=perdiemtotals></sum></set><get name=ptotal></protect> </form-protect> </TD>
+
+</TR>
+</repeat>
+
+<TR><TD colspan=2 align=right> Total:</TD>
+<TD> <form-protect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=perdiemtotals></sum></set>
+  <get name=perdiemtotals></protect> </form-protect></TD>
+</table>
+
+
+<table border=1 align=center>
+ <caption>Business Meals </caption>
+<TR><TH> Guests<TH> Purpose<TH> Cost</TR>
+
+<repeat list="1 2 3">
+<TR>
+ <TD width=40><form-variable name="guest&li;"> </form-variable>
+ <TD><form-variable name="purpose&li;"> </form-variable>
+ <TD><form-variable name="cost&li;"> </form-variable>
+<form-protect livalue=&li;><protect> 
+  <set name=mealstotals><sum digits=2><get name=cost&li;> <get name=mealstotals></sum></set>
+ </protect> </form-protect>
+
+</TR>
+</repeat>
+<TR> <TD colspan=2 align=right> Total:</TD>
+<TD> <form-protect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=mealstotals></sum></set>
+  <get name=mealstotals></protect> </form-protect></TD>
+</table>
+
+
+<set entity name=accountlist><read file="account_types.dat"></set>
+     <table border=1 align=center>
+ <caption>Other Expenses </caption>
+<TR><TH>  Description<TH> Type<TH> Amount</TR>
+
+<repeat start=1 stop=10>
+<TR>
+ <TD width=40><form-variable name="description&li;"> </form-variable>
+ <TD><form-variable name="account&li;" options=&accountlist;> </form-variable>
+ <TD><form-variable name="amount&li;"> </form-variable>
+<form-protect livalue=&li;><protect> 
+  <set name=othertotals><sum digits=2><get name=cost&li;> <get name=othertotals></sum></set>
+ </protect> </form-protect>
+
+</TR>
+</repeat>
+<TR> <TD colspan=2 align=right> Total: </TD>
+<TD> <form-protect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=othertotals></sum></set>
+  <get name=othertotals></protect> </form-protect></TD>
+</table>
+
+<p>
+
+ Total of expenses: <b><form-protect><protect> <get name=grandtotals>
+ </protect> </form-protect><b>
+
+<p>
+
+Related material (e.g. URLS of IMC copies of receipts): <references>
+</references>
+
+
+

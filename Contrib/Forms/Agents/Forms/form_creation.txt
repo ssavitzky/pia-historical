@@ -1,64 +1,48 @@
 New Form Creation Instructions: 
 
-(1) Create a new directory with the form name at the following location:
-    /home/dgillen/.pia/Agents/Forms     
-    Example:
-     cd /home/dgillen/.pia/Agents/Forms
-     mkdir timecard
+(Most of these instructions require the user to be a member of the admin group.)
+(1) Use <a href="create_form.if"> the create form page</a> to create a new
+    form directory and template.
+(2) <a href="edit_form.if">Edit</a> the newly created form, and the
+corresponding <a href="edit_route.if">route</a>.
+(3) Re-initialize the server to add the form to the list of forms.
 
-(2) Create two interform files in the new directory. The first uses only standard html
-commands to create a form with entry fields and their associated names (PIA commands,
-although not needed, can be used as well). The only important thing to know is that the name 
-associated with the entry field for the person filling out the form should ALWAYS be 
-the word "name" in lower case. The "action" of this file occurs on the second file, 
-whose purpose is to process the entered data. The process file must include the following 
-lines in this order:
-
-     -Set an entity named "dir" to the name of the directory that was just created.
-       Example:
-       <set entity name=dir>timecard</set>
-
-     -Set an entity named "dataobject" to an easily readable data-structure containing ALL 
-     of the form field data along with accompanying descriptions of each field.
-       Example:
-       <set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u>
-       <dt><b>Pay period number:</b><dd><u>&FORM.paydate;</u>
-       <dt><b>Exceptions:</b><dd><u>&FORM.exceptions;</u>
-       <dt><b>Dates:</b><dd><u>&FORM.dates;</u></dl></set>
-    
-     -Include the following lines exactly as they appear:
-       <set entity name=mlist><read file="mgr.dat" process></set>    
-       <set entity name=manager><get name="mlist.&FORM.name;"></set>
-
-      -Set an entity named "routeobject" to a data list containing the routing information.
-       It should model the following pattern: 
-      <dl><dt>1st person to sign <dd>2nd person to sign
-          <dt>2nd person to sign <dd>3rd person to sign 
-              ...
-          <dt>last person to sign <dd>NULL</dl>
-       The first person to sign is ALWAYS the original person to fill out the form,
-       namely "&FORM.name;". Other possible signers are other users, "&manager;",
-       "FrontOffice" , "Accounting" , "Auditor" , and "Purchasing".
-        Example:
-        <set entity name=routeobject><dl><dt>&FORM.name;<dd>FrontOffice
-        <dt>FrontOffice<dd>&manager;<dt>&manager;<dd>NULL</dl></set>
-    
-       -Include the following lines exactly as they appear:
-        <set entity name=timesec>&time;:&second;</set> 
-        <read interform file="write.inc" process>
+Forms can include any html tags (except the "form" tag).  They should also
+include some special tags -- "form-variable" indicates a value which should be
+filled out, while "form-protect" indicates a value which should be derived
+from other values (for example a sum), and "references" indicates a place to
+specify arbitrary URL's related to the filled out form.  See existing forms for examples.
 
 --------------------
 Misc. Info:
 
 The data that is both used and stored by the forms that you create is located 
-in the following directory: /home/dgillen/.pia/Forms/. Global data is stored directly
+in the following directory: ROOTDIR/Forms/ (where ROOTDIR is
+/pc-mac/admin/piaforms for the RSV system). Global data is stored directly
 in /Forms, while form-specific data is located in that forms' particular directory 
 within /Forms. Each form-specific directory for data contains a series of subdirectories 
 that are automatically created based on the date of the form submission. There is also 
 an html-based report within each subdirectory which contains links to all of the data 
 files within its child directories.
 
+The blank forms themselves are stored in
+ROOTDIR/Agents/Forms/FORMNAME/FORMNAME.form
+where FORMNAME is the name or type of the form.
+
 Here are descriptions of the global data files:
+
+users.dat
+	- user information (id, names, etc.)
+
+groups.dat
+	- groups list of users
+
+.keys.public
+.keys.private
+	- storage for public and private keys
+
+passwd
+	- copy of system passwords file
 
 account_types.dat
    -list of possible account types
@@ -72,26 +56,11 @@ kiansho.dat
 message.txt
    -message that is mailed by emailer to inform a user of pending requests
 
-mgr.dat
-   -corresponding manager for each username
-
-namelist.dat
-   -list of all usernames (employees)
 
 numlist2.dat
    -used by purchasereq to make code more consise
 
-paydate.dat
-   -list of possible paydates (used by the timecard form)
 
 purchasereq.dat
    -single digit which purhcasereq form uses to serialize requests
 
-usertodept.dat
-   -corresponding department number for each username
-
-usertoext.dat
-   -corresponding extension number for each username
-
-usertoname.dat
-   -corresponding full name for each username
