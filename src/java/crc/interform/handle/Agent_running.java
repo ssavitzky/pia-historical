@@ -44,7 +44,7 @@ public class Agent_running extends crc.interform.Handler {
   public boolean action(crc.dps.Context aContext, crc.dps.Output out,
 			String tag, crc.dps.active.ActiveAttrList atts,
 			crc.dom.NodeList content, String cstring) {
-    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    crc.dps.process.ActiveDoc env = getInterFormContext(aContext);
     if (env == null) return legacyError(aContext, tag, "PIA not running");
 
     String name = atts.getAttributeString("name");

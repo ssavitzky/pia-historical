@@ -43,7 +43,7 @@ public class Agent_criteria extends crc.interform.Handler {
 			crc.dom.NodeList content, String cstring) {
 
     String aname = atts.getAttributeString("agent");
-    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    crc.dps.process.ActiveDoc env = getInterFormContext(aContext);
     if (env == null) 
       return legacyError(aContext, tag, "PIA not running: no agent");
     crc.pia.Agent a = env.getAgent(aname);
