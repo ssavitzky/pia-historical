@@ -3,6 +3,8 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
 package crc.pia;
+import crc.pia.Pia;
+import java.io.*;
 import crc.ds.UnaryFunctor;
 
 public class Athread implements UnaryFunctor{
@@ -17,8 +19,10 @@ public class Athread implements UnaryFunctor{
    * @param o a transaction as an object.
    */
   public Object execute( Object o ){
+    ThreadPool tp = Pia.instance().threadPool();
+
     Transaction t = (Transaction) o;
-    zthread = new Thread( t );
+    zthread = new Thread(tp.group, t );
     zthread.start();
     return o;
   }
