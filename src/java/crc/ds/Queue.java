@@ -4,13 +4,12 @@
 package crc.ds;
 
 import java.util.Enumeration;
-import COM.objectspace.jgl.Array;
 
-public class Queue{
+public class Queue {
   /**
    * Attribute index - a collection of computational codes.
    */
-  protected Array queue;
+  protected List queue;
 
   /**
    * queue -- returns queue of elements
@@ -18,7 +17,7 @@ public class Queue{
    */  
   public Enumeration queue() {
     if(queue == null)
-      queue = new Array();
+      queue = new List();
     return queue.elements();
   } 
 
@@ -28,7 +27,7 @@ public class Queue{
    */  
   public Object shift() {
     if(queue!=null && queue.size() > 0)
-      return queue.popFront();
+      return queue.elements();
     else return null;
   } 
 
@@ -39,8 +38,8 @@ public class Queue{
   public int unshift( Object obj ) {
     if( obj != null ){
       if( queue == null )
-	queue = new Array();
-      queue.pushFront( obj );
+	queue = new List();
+      queue.unshift( obj );
     }  
     return queue.size();
   } 
@@ -52,8 +51,8 @@ public class Queue{
   public int push( Object obj) {
     if( obj != null ){
       if( queue == null )
-	queue = new Array();
-      queue.pushBack( obj );
+	queue = new List();
+      queue.push( obj );
     }  
     return queue.size();
   } 
@@ -64,7 +63,7 @@ public class Queue{
    */  
   public Object pop() {
    if(queue!= null && queue.size() > 0)
-      return queue.popBack();
+      return queue.pop();
     else return null;
   } 
 
@@ -77,7 +76,7 @@ public class Queue{
   }
 
   public Queue(){
-    queue = new Array();
+    queue = new List();
   }
 
 }
