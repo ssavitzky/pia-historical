@@ -37,16 +37,26 @@ public class Get_trans extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
+
     SGML result = null;
     Run env = Run.environment(ii);
     Transaction trans = env.transaction;
-
+    if (trans == null) {
+      ii.deleteIt();
+      return;
+    }
     if (it.hasAttr("request")) trans = trans.requestTran();
+    if (trans == null) {
+      ii.deleteIt();
+      return;
+    }
     if (it.hasAttr("feature")) {
       ii.replaceIt(Util.toSGML(trans.getFeature(name)));
     } else if (it.hasAttr("headers")) {
-      ii.replaceIt(trans.header(name));
+      if (name == null) 
+	ii.replaceIt(trans.headersAsString());
+      else
+	ii.replaceIt(trans.header(name));
     } else {
       ii.replaceIt(env.transaction.attr(name));
     }
