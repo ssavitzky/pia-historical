@@ -50,16 +50,8 @@ public class Foreach_ extends crc.interform.Handler {
 
     ii.pushInput(Element.endTagFor(it.tag()));
     ii.pushForeach(it.content(), entity, list);
-    ii.hoistParseFlags();
-    ii.stackToken(t);
-    ii.replaceIt(t);
-
-    /* === the old way involved faking a repeat.
-    itt.tag("repeat");
-    t.addItem(itt);
-    ii.pushInto(t);
+    ii.pushInput(t); 
     ii.deleteIt();
-    */
   }
 }
 
