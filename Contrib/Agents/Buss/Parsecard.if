@@ -1,0 +1,50 @@
+
+     <set name=salmonurl>http://salmon.crc.ricoh.com:8001</set>
+     <set name=username>&FORM.username;</set>
+     <set name=myyear>&FORM.year;</set>
+     <set name=mymonth>&FORM.month;</set>
+     <set name=myfn>&FORM.filenum;</set>
+     <set name=myimg>&FORM.image</set>
+
+     <set global name=cardimgusrname>&username;</set>
+     <set global name=cardimgyear>&myyear;</set>
+     <set global name=cardimgmonth>&mymonth;</set>
+     <set global name=cardimgfn>&myfn;</set>
+
+     <set name=myfileadd>&salmonurl;/&username;/&myyear;/&mymonth;/&myfn;/&myfn;.txt</set>
+     <os-command>/home/rithy/pia/Agents/Buss/recognize &myfileadd; &myimg; </os-command>
+
+
+<write trim line file="&usrDIR;/Buss/recog.html">
+<HTML><head>
+<META HTTP-EQUIV="REFRESH" CONTENT="10; URL=http://&piaHOST:&piaPORT/My/Buss/recog.html">
+</head>
+<body>
+<get agent name=cardimgusrname>
+<get agent name=cardimgyear>
+<get agent name=cardimgmonth>
+<get agent name=cardimgfn>
+   Recognizing...<br>
+  </body>
+</html>
+</write>
+
+     <read href="/My/Buss/recog.html" process>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

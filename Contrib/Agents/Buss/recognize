@@ -1,0 +1,158 @@
+#!/usr/bin/perl
+#
+require "ctime.pl";
+push (@INC,"/usr/local.mnt/lib/perl5.shared/site_perl");
+require URI::URL;
+require URI::Escape;
+require LWP::UserAgent;
+
+
+$salmonurl= $ARGV[0];
+$imagefn  = $ARGV[1];
+
+&dogetorg;
+&dogetinput;
+&doit;
+&dopost;
+
+$cardcompany="";
+$cardurl="";
+$cardemail="";
+$cardphone="";
+$cardphonearea="";
+$cardphoneexch="";
+@notrecog;
+@fileinfo;
+
+
+
+sub dogetorg {
+    $salmonurl=~/http:\/\/(.*)/;
+    my $fn=$1;
+    @fileinfo= split("/", $fn);
+}
+
+sub dogetinput {
+    my $ua = new LWP::UserAgent;
+    $ua->agent("AgentName/0.1");
+
+# Create a request
+    my $req = new HTTP::Request ('GET', $salmonurl);
+    $response = $ua->request($req);
+    if ($response->is_success) {
+	@lines = split("\n", $response->content);
+    } else {
+	print $response->error_as_HTML;
+    }
+}
+
+sub doit{
+
+    foreach $line (@lines){
+	$r1 = 0;
+	$r2 = 0;
+	$r3 = 0;
+	$r4 = 0;
+
+	if( $cardcompany eq "" ){
+	    $r1 = &fcompany($line);
+	}
+        if( $cardurl eq ""){
+	    $r2 = &fweb($line);
+	}
+	if( $cardemail eq ""){
+	    $r3 = &femail($line);
+	}
+	if( $cardphone eq ""){
+	    $r4 = &fphone($line);
+	}
+	if( $r1==0 && $r2==0 && $r3==0 && $r4==0 ){
+	    push(@notrecog, "$line\n");
+	}
+    }
+}
+
+sub fcompany {
+    $_ = pop(@_);
+    if( / inc/i || / ltd/i || / corporation/i) {
+	$cardcompany = $_;
+#	print "recognize company --> $_\n";
+	return 1;
+    }
+    return 0;
+}
+
+sub femail {
+    $_ = pop(@_);
+    if( /\251/i || /e-mail/i || /email/i ){
+	$cardemail = $_;
+#	print "recognize email --> $_\n";
+	return 1;
+    }
+    return 0;
+}
+
+sub fphone {
+    $_ = pop(@_);
+    if( /.*tel.*/i || /.*phone.*/i || /.*Te.$/ || /.*Te$/) {
+	/^\s*(\d+)\.(\d+)\.(\d+).*$/;
+	$cardphonearea=$1;
+	$cardphoneexch=$2;
+	$cardphone = $3;
+#        print "recognize phone --> $_\n";
+	return 1;
+    }
+    return 0;
+}
+
+
+sub fweb {
+    $_ = pop(@_);
+    if( /http/i || /htt.*com$/i ){
+        s/htt.*ll(.*)/http:\/\/$1/i;
+	$cardurl = $_;
+#	print "recognize http --> $_ and the dotll is $1\n";
+	return 1;
+    }
+    return 0;
+}
+
+
+sub dopost {
+    my $ua = new LWP::UserAgent;
+    $ua->agent("AgentName/0.1");
+
+    $cannotrecog =@notrecog;
+    %form = ( 'imgusrname' => $fileinfo[1],
+	      'imgyear' => $fileinfo[2],
+	      'imgmonth' => $fileinfo[3],
+	      'imgfn' => $fileinfo[4],
+	      'imagefn' => "$imagefn",
+	      'cannotrecog' => "@notrecog",
+	      'cardfname' => "",
+              'cardlname' => "",
+              'cardcompany' => "$cardcompany",
+	      'cardurl' => "$cardurl",
+              'cardemail' => "$cardemail",
+              'cardphonearea' => "$cardphonearea",
+              'cardphoneexch' => "$cardphoneexch",
+              'cardphone' => "$cardphone");
+
+    my $curl = URI::URL->new("http:");
+    $curl->query_form(%form);
+
+    # Create a request
+    my $req = new HTTP::Request POST => "http://lena.crc.ricoh.com:8888/Buss/Recog.if";
+    $req->content_type('application/x-www-form-urlencoded');
+    $req->content($curl->equery);
+
+    # Pass request to the user agent and get a response back
+    my $res = $ua->request($req);
+    if ($res->is_success) {
+	print "sucess\n";
+    } else {
+	print $res->error_as_HTML;
+    }
+}
+
+

@@ -1,0 +1,13 @@
+<set entity name=firstname><get form name=firstname></set>
+<set entity name=lastname><get form name=lastname></set>
+<if><test exact match=''>&firstname;</test>
+  <then>
+	Firstname<br>
+  </then>
+</if>
+
+<if><test exact match=''>&lastname;</test>
+  <then>
+	Lastname<br>
+  </then>
+</if>

@@ -1,0 +1,71 @@
+<set entity name=firstname>&FORM.firstname;</set>
+<set entity name=lastname>&FORM.lastname;</set>
+<set entity name=company>&FORM.company;</set>
+<set entity name=title>&FORM.title;</set>
+<set entity name=addr>&FORM.addr;</set>
+<set entity name=city>&FORM.city;</set>
+<set entity name=state>&FORM.state;</set>
+<set entity name=zip>&FORM.zip;</set>
+<set entity name=url>&FORM.url;</set>
+<set entity name=email>&FORM.email;</set>
+<set entity name=PhoneArea>&FORM.PhoneArea;</set>
+<set entity name=PhoneExch>&FORM.PhoneExch;</set>
+<set entity name=Phone>&FORM.Phone;</set>
+<set entity name=FaxArea>&FORM.FaxArea;</set>
+<set entity name=FaxExch>&FORM.FaxExch;</set>
+<set entity name=Fax>&FORM.Fax;</set>
+<set entity name=imagefn>&FORM.imagefn;</set>
+<set entity name=notrecog>&FORM.notrecog;</set>
+<set name=mysrc>http://salmon.crc.ricoh.com:8001/&imagefn;</set>
+<set name=server>http://salmon.crc.ricoh.com:8001/cgi-bin/page_viewer_72.cgi</set>
+
+<table cellspacing=0 cellpadding=0 border=2>
+<set agent name=visiturl>&url;</set>
+<tr><th><td><font size=3 face=times>Click on url to visit.  Click on image to see scan image.</a></font></td>
+<tr><th><td><href=&url;><read href="http://&piaHOST:&piaPORT/Buss/visit.if" process></a>
+
+
+<td><form method="GET" action="&server;">
+   <input type="hidden" name="username" value=&FORM.imgusrname;>
+   <input type="hidden" name="year" value=&FORM.imgyear;>
+   <input type="hidden" name="month" value=&FORM.imgmonth;>
+   <input type="hidden" name="filenum" value=&FORM.imgfn;>
+   <input type="hidden" name="pagenum" value=1>
+   <input type="image" border=1 src="&mysrc;" name="submit" alt="Bigimg">
+</form>
+</table>
+
+<hr>
+Can not recognize the following...<br>
+&notrecog;
+<hr>
+<form action="http://&piaHOST:&piaPORT/Buss/Buss.if" method=post>
+ <input type="SUBMIT" value="Add">  <INPUT TYPE="reset" value="Clear Page Data"><hr>
+
+ First name <input name="firstname" size=15 MAXLENGTH="15" value="&firstname;">
+ Last name <input name="lastname" size=20 MAXLENGTH="20" value="&lastname;"><br>
+
+ Company name <input type="text" name="company" size=35 MAXLENGTH="35" value="&company;">
+ Title <input type="text" name="title" size=20 MAXLENGTH="20" value="&title;">
+ Street Address <input type="text" name="addr" size=35 MAXLENGTH="35" value="&addr;"><br>
+
+ City <input type="text" name="city" size="22" MAXLENGTH="22" value="&city;">
+ State <input type="text" name="state" size="2" MAXLENGTH="2" value="&state;">
+ Zip  <input type="text" name="zip" size="9" MAXLENGTH="9" value="&zip;"><br>
+
+ Internet:
+ <input type="text" name="url" size="50" MAXLENGTH="100" value="&url;"><br>
+
+ E-Mail Address:
+ <input type="text" name="email" size="50" MAXLENGTH="100" value="&email;"><br>
+
+ Business Telephone (<input type="text" name="PhoneArea" size="3" MAXLENGTH="3" value="&PhoneArea;">)
+ <input type="text" name="PhoneExch" size="3" MAXLENGTH="3" value="&PhoneExch;">-<input type="text" name="Phone" size="4" MAXLENGTH="4" value="&Phone;">
+ Business Fax (<input type="text" name="FaxArea" size="3" MAXLENGTH="3" value="&FaxArea;">)
+ <input type="text" name="FaxExch" size="3" MAXLENGTH="3" value="&FaxExch;">-<input type="text" name="Fax" size="4" MAXLENGTH="4" value="&Fax;"><br>
+</form>
+
+
+
+
+

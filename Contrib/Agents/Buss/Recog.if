@@ -1,0 +1,55 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>recog</title>
+<link rev="made" href="mailto:rithy@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set name=cardfname>&FORM.cardfname;</set>
+<set name=cardlname>&FORM.cardlname;</set>
+<set name=cardcompany>&FORM.cardcompany;</set>
+<set name=cardurl>&FORM.cardurl;</set>
+<set name=cardemail>&FORM.cardemail;</set>
+<set name=cardphonearea>&FORM.cardphonearea;</set>
+<set name=cardphoneexch>&FORM.cardphoneexch;</set>
+<set name=cardphone>&FORM.cardphone;</set>
+<set name=notrecog>&FORM.cannotrecog;</set>
+<set name=imagefn>&FORM.imagefn;</set>
+
+<set name=imgusrname>&FORM.imgusrname;</set>
+<set name=imgyear>&FORM.imgyear;</set>
+<set name=imgmonth>&FORM.imgmonth;</set>
+<set name=imgfn>&FORM.imgfn;</set>
+
+
+<write trim line file="&usrDIR;/Buss/recog.html">
+<HTML> <HEAD>
+<!--META HTTP-EQUIV="REFRESH" CONTENT=20-->
+</head>
+   Recognizing...<br>
+   firstname = &cardfname;<br>
+   lastname = &cardlname;<br>
+   company = &cardcompany;<br>
+   url = &cardurl;<br>
+   email = &cardemail;<br>
+   phoneareacode = &cardphonearea;<br>
+   phoneexch= &cardphoneexch;<br>
+   phone = &cardphone;<br>
+   <!--set agent name=visiturl>&cardurl;</set-->
+   <!--read href="http://&piaHOST:&piaPORT/Buss/visit.if" process-->
+<set name=imgusrname>&FORM.imgusrname;</set>
+<set name=imgyear>&FORM.imgyear;</set>
+<set name=imgmonth>&FORM.imgmonth;</set>
+<set name=imgfn>&FORM.imgfn;</set>
+
+
+   <read.href method=post href="http://&piaHOST:&piaPORT/Buss/Fillcard.if" 
+      query="firstname=&cardfname;?lastname=&cardlname;?company=&cardcompany;?url=&cardurl;?email=&cardemail;?PhoneArea=&cardphonearea;?PhoneExch=&cardphoneexch;?Phone=&cardphone;?notrecog=&notrecog;?imagefn=&imagefn;?imgusrname=&imgusrname;?imgyear=&imgyear;?imgmonth=&imgmonth;?imgfn=&imgfn;" process>
+</html>
+</write>
+
+<hr>
+</body></html>
+
+
+
+
