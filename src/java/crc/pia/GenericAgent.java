@@ -33,12 +33,17 @@ import crc.sgml.AttrBase;
 import crc.sgml.AttrTable;
 import crc.sgml.Text;
 
-import gnu.regexp.RegExp;
-import gnu.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
 import java.util.Enumeration;
 import crc.interform.Run;
 import w3c.www.http.HTTP;
 
+/** The minimum concrete implementation of the Agent interface.  A
+ *	GenericAgent is used if no specialized class can be loaded for
+ *	an agent.
+ *
+ *	@see crc.pia.Agent */
 public class GenericAgent extends AttrBase implements Agent {
   
   private String filesep = System.getProperty("file.separator");
@@ -454,7 +459,8 @@ public class GenericAgent extends AttrBase implements Agent {
    * Respond to a direct request.
    * This is called from the agent's Agent::Machine
    */
-  public void respond(Transaction trans, Resolver res) throws PiaRuntimeException{
+  public void respond(Transaction trans, Resolver res)
+       throws PiaRuntimeException{
     URL zurl = trans.requestURL();
 
     String reply = respondToInterform( trans, zurl, res );
@@ -470,7 +476,8 @@ public class GenericAgent extends AttrBase implements Agent {
       response.startThread();
     }else{
       //interformErr( request, url );
-      throw new PiaRuntimeException(this, "respond", "No InterForm file found for "+trans.url());
+      throw new PiaRuntimeException(this, "respond",
+				    "No InterForm file found for "+trans.url());
     }
   }
 
@@ -532,10 +539,11 @@ public class GenericAgent extends AttrBase implements Agent {
   public boolean optionAsBoolean(String key){
     if( key == null ) return false;
     if( attributes.containsKey( key ) ){
-      Text v = (Text)attributes.get( key );
-      return "true".equalsIgnoreCase(v.toString()) ? true : false ;
-    }
-    else
+      String v = attributes.attrString( key );
+      if (v == null) return false;
+      if ("false".equalsIgnoreCase(v)) return false;
+      return true;
+    } else
       return false;
   }
 
@@ -714,9 +722,10 @@ public class GenericAgent extends AttrBase implements Agent {
   private void interformErr( Transaction req, URL url){
     String msg = "No InterForm file found for "+url.toExternalForm();
     Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
-    Transaction abort = new HTTPResponse(Pia.instance().thisMachine, req.fromMachine(), ct, false);
+    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
+					 req.fromMachine(), ct, false);
     abort.setStatus(HTTP.NOT_FOUND);
-    abort.setContentType( "text/plain" );
+    abort.setContentType( "text/html" );
     abort.setContentLength( msg.length() );
     abort.startThread();
   }
