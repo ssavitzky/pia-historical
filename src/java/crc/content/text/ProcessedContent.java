@@ -15,6 +15,8 @@ import crc.dps.active.*;
 import crc.dps.output.ToWriter;
 import crc.dps.process.ActiveDoc;
 
+import crc.util.NameUtils;
+
 import java.io.Reader;
 import java.io.FileReader;
 import java.io.Writer;
@@ -112,8 +114,9 @@ public class ProcessedContent extends  GenericContent {
 
     // === fileName and filePath are probably the wrong entities to define
     // inputFileName is the full pathname, and pathExtension goes past it.
-    p.define("fileName", file);
-    p.define("filePath", path);
+    p.define("filePath", file);
+    p.define("fileName", NameUtils.filenamePart(file));
+    p.define("pathExt", path);
   }
 
 
