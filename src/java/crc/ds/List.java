@@ -6,6 +6,18 @@ package crc.ds;
 import java.util.Vector;
 import java.util.Enumeration;
 
+/** List of objects.  Essentially the same as
+ *	<code>java.util.Vector</code> except that indexing with
+ *	out-of-range indices (using <code>at</code>) returns null
+ *	instead of causing an exception.  We can't simply extend
+ *	Vector, though, because almost all of Vector's operations are
+ *	final, including <code>toString</code>.<p>
+ *
+ *	List is intended to make life as easy as possible for people
+ *	porting programs from PERL; many PERL array operations are
+ *	supported, especially when the elements are Strings.
+ *
+ *	@see java.util.Vector */
 public class List implements Stuff {
 
   /************************************************************************
@@ -33,6 +45,11 @@ public class List implements Stuff {
 
   /** The number of indexed items. */
   public int nItems() {
+    return items == null? 0 : items.size();
+  }
+
+  /** The number of indexed items. */
+  public int size() {
     return items == null? 0 : items.size();
   }
 
