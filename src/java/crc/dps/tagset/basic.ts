@@ -157,9 +157,23 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     <doc> Indicates that the content of the element is unparsed (#CDATA).
     </doc>
   </define>
+  <define attribute=text optional>
+    <doc> Indicates that the content of the element is text (including entity
+	  expansions), but not markup.
+    </doc>
+  </define>
+  <define attribute=no-text optional>
+    <doc> Indicates that the content of the element consists entirely of
+	  markup (i.e. that all text in the content, if any, is enclosed in
+	  markup elements).  Whitespace is permitted in the content, and is
+	  marked as ignorable.  Non-whitespace text is wrapped in a comment.
+    </doc>
+  </define>
   <define attribute=empty optional>
     <doc> Indicates that the element being defined will never have any
-	  content. 
+	  content.  In XML an empty element may have an end tag or be
+	  terminated with ``<code>/&gt;</code>''; in HTML and generic SGML the
+	  end tag is simply omitted.
     </doc>
   </define>
 
@@ -212,6 +226,13 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  This is used, e.g., for the predefined character entities.
     </doc>
   </define>
+  <define attribute=parameter optional>
+    <doc> This specifies that the entity is a ``parameter entity,'' of the
+	  sort prefixed by ``<code>%</code>'' in DTD's.  Unlike ordinary
+	  entities, parameter entities are expanded <em>while defining a
+	  tagset</em> or DTD. 
+    </doc>
+  </define>
 
 </define>
 
@@ -219,9 +240,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <dt> Note:
   <dd> The <code>no-text</code> attribute specifies that the element, in this
        case <tag>define</tag>, does not contain text.  All whitespace in its
-       content is marked ignorable.  The <code>default-content=</code>
-       attribute specifies the tag to use to ``wrap'' any content which is not
-       one of the defined children.
+       content is marked ignorable. 
 </dl>
 
 <h4>Sub-elements of <tag>define</tag></h4>
@@ -452,7 +471,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <h4>Sub-elements of <tag>if</tag></h4>
 <ul>
-  <li> <define element=then parent="if else-if elsif" handler quoted>
+  <li> <define element=then parent="if else-if elif elsf" handler quoted>
          <doc> the <tag>then</tag> component is expanded if its parent's
 	       condition is <code>true</code>.
          </doc>
@@ -475,6 +494,12 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <li> <define element=elsf parent=if handler>
          <doc> This is a compact synonym for <tag>else-if</tag>, chosen because
 	       it is the same length as <tag>then</tag> and <tag>else</tag>.
+         </doc>
+       </define>
+  <li> <define element=elif parent=if handler=elsf>
+         <doc> This is a compact synonym for <tag>else-if</tag>, chosen because
+	       it is the same length as <tag>then</tag> and <tag>else</tag>.
+	       It is the keyword used for this purpose in Python, for example.
          </doc>
        </define>
 </ul>
@@ -528,8 +553,11 @@ example).
 <ul>
   <li> <define element=foreach parent=repeat handler>
          <doc> The contents of this sub-element are a list; at each iteration
-	       the specified element (default <code>&amp;li;</code>) is
-	       replaced by an item from the list.
+	       the specified entity (default <code>&amp;li;</code>) is
+	       replaced by an item from the list.  The list
+	       is contained in the entity
+	       <code>&amp;<em>name</em>-list;</code> and the current position
+	       in <code>&amp;<em>name</em>-index;</code>
          </doc>
          <define attribute=entity optional>
            <doc> If present, this specifies the name of the iteration variable
@@ -595,7 +623,7 @@ example).
          </doc>
        </define>
   <li> <define element=first parent=repeat handler>
-         <doc> The contents are expanded exactly once, before the first
+         <doc> The contents are expanded exactly once, during the first
 	       iteration. 
          </doc>
        </define>
@@ -650,6 +678,10 @@ example).
 	<p><tag>test</tag> is not, strictly speaking, a control-flow
 	operation, but it is used almost exclusively inside control-flow
 	operations for computing conditions.
+
+	<p>Because the expansion of a successful <tag>test</tag> is
+	``<code>1</code>'', <tag>test</tag> can be used for counting the
+	number of items in a list that satisfy some condition.  
   </doc>
   <define attribute=text optional>
     <doc> Performs the indicated test on the text portion of the content,
@@ -704,71 +736,233 @@ example).
 <blockquote><em>
   Document structure elements select Nodes or sets of Nodes from a parse tree,
   and perform structural modifications on trees.  Note that the tree being
-  operated on need not be the Input document; it might be a Namespace.
+  operated on need not be part of the document being processed; it might be a
+  Namespace or the value of an entity.  
 </em></blockquote>
 
 <h3>Select and its components</h3>
 <define element=select>
-  <doc>
+  <doc> Select, and optionally replace, a set of nodes.  Sub-elements in the
+	content are processed in order of occurrence.  At any time in this
+	sequence of operations, there is a <em>current set</em> of nodes that
+	have been selected.  This set is accessible as the value of the entity
+	<code>&amp;select:selected;</code>.
+
+	<p>Each stage in the selection process results in ``selecting'' some
+	set of nodes (possibly a subset of the current set, but also possibly
+	some or all of their children, siblings, etc.) and replacing the
+	current set of nodes with the set of selected nodes.  This is done by
+	simply expanding each sub-element and using its expansion as the next
+	current set.  If the current set ever becomes empty, the process
+	terminates. 
+
+	<p>The result of expanding a select is the current set of nodes
+	selected at the end of the expansion.
+
+	<p>The <tag>select</tag> operation is intended to have a superset of
+	the power of <a href="http://www.w3.org/TR/WD-xptr">XPointer</a>
+	expressions.
   </doc>
+  <define attribute=in optional>
+    <doc> Contains the name of an entity or namespace which serves as the
+	  starting point for the selection.
+    </doc>
+  </define>
+  <define attribute=from optional>
+    <doc> Contains a set of nodes which serves as the starting point for the
+	  selection.  Typically this will be the expansion of an entity.
+    </doc>
+  </define>
 </define>
 
-<h4>Sub-elements of <tag>select</tag></h4>
+<h4>Sub-elements of <tag>select</tag>: Starting Points</h4>
 <ul>
   <li> <define element=from parent=select handler>
-         <doc>
+         <doc> Contains a sequence of nodes which serves as the for the
+	       selection, or in other words from which the selection is made.
          </doc>
        </define>
+       
   <li> <define element=in parent=select handler>
-         <doc>
+         <doc> Contains the name of an entity or namespace which serves as the
+	       initial <em>current set</em> of nodes for the selection.
+         </doc>
+       </define>
+       
+  <li> <define element=id parent=select text handler>
+         <doc> Contains an identifier.  The element with the given
+	       <code>name</code> or <code>id</code> attribute (it is supposed
+	       to be unique) is selected.
+         </doc>
+         <define attribute=case optional>
+           <doc> Causes the name matching to be case-sensitive, even if the
+		 nodes are part of a namespace that is not case-sensitive.
+           </doc>
+         </define>
+         <define attribute=recursive optional>
+           <doc> Causes the matching to descend recursively into the children
+		 (content) of the current set. 
+           </doc>
+         </define>
+         <define attribute=all optional>
+           <doc> Causes all elements that match to be returned.  Even though
+		 identifiers are supposed to be unique, they may not be.
+           </doc>
+         </define>
+       </define>
+</ul>
+
+<h4>Sub-elements of <tag>select</tag>: Selection</h4>
+<ul>
+  <li> <code>text</code> can occur inside a <tag>select</tag> element.  Text
+       is split on whitespace and interpreted as follows:
+
+       <ul>
+	 <li> If the text is a number <em>N</em>, it selects the
+	      <em>N<sup>th</sup></em> child of each node in the current set.
+	      This is the same behavior as the <tag>child</tag> sub-element.
+
+	 <li> If the text starts with a pound sign (<code>#</code>), it is
+	      matched as a node type.
+
+	 <li> Otherwise, it is matched as a name.
+       </ul>
+
+  <li> <define element=name parent=select text handler>
+         <doc> Contains a name (identifier).  All nodes in the current set
+	       that have the given name are selected.  Attributes and entities
+	       are matched by name; elements are matched by their tagname.
+	       Text nodes are matched by their first identifier.  If the name
+	       starts with a pound sign (<code>#</code>) it represents a node
+	       type.  Node types can be either symbolic or numeric (according
+	       to the DOM). 
+         </doc>
+         <define attribute=case optional>
+           <doc> A false value (<code>no</code>, <code>false</code>,
+		 <code>0</code>, or <code>""</code>) causes matching to be
+		 case-insensitive; any other value (or unspecified) causes it
+		 to be case-sensitive.
+           </doc>
+         </define>
+       </define>
+  <li> <define element=key parent=select text handler>
+         <doc> Contains a ``key'' (string) which is matched against nodes in
+	       the current set.  Attributes and entities are matched by name;
+	       elements are matched by the text in their content.  Text nodes
+	       are ignored. 
+         </doc>
+         <define attribute=case optional>
+           <doc> Causes the name matching to be case-sensitive, even if the
+		 nodes are part of a namespace that is not case-sensitive.
+           </doc>
+         </define>
+       </define>
+  <li> <define element=match parent=select handler>
+         <doc> Contains a <em>regular expression</em> which is matched against
+	       nodes in the current set.  Attributes and entities are matched
+	       by name; elements are matched by the text in their content,
+	       text nodes are matched.
+         </doc>
+         <define attribute=case optional>
+         </define>
+       </define>
+  <li> <define element=eval parent=select empty handler>
+         <doc> Evaluates each selected node, i.e. replaces it by its value.
+	       (We use <code>eval</code> for this because <code>value</code>
+	       is already defined with a different syntax.)  Text and passive
+	       markup evaluate to themselves.
+
+       	       <p>We expect that <tag>dt</tag> nodes and the like will know
+       	       how to find their corresponding values.
+         </doc>
+       </define>
+  <li> <define element=content parent=select empty handler>
+         <doc> Replaces each selected node with its content.
          </doc>
        </define>
   <li> <define element=child parent=select handler>
-         <doc>
+         <doc> The content is a number; selects the <em>nth</em>
+	       child of each node in the current set.  If the number is
+	       negative, it counts backward from the last. 
          </doc>
+         <note author=steve> XPointer uses
+           <code>child(<em>n, tag, attr, value</em>)</code> <em>n</em> can be
+           <code>all</code>; <em>tag</em> can be <code>#<em>type</em></code>.
+           Xpointer also has <code>descendent</code>, <code>ancestor</code>,
+           <code>string</code>, and <code>span</code>.
+         </note>
        </define>
   <li> <define element=tag parent=select handler>
-         <doc>
+         <doc> The content is a tagname; selects each element in the current
+	       set with that tag.
          </doc>
+         <define attribute=case optional>
+         </define>
+         <define attribute=recursive optional>
+           <doc> Causes the matching to descend recursively into the children
+		 (content) of the current set.  Note that if a node (e.g. a
+		 list) is selected, its content will not be further examined.
+           </doc>
+         </define>
+         <define attribute=all optional>
+           <doc> Causes the matching to descend recursively into the children
+		 (content) of the current set.  Unlike <code>recursive</code>,
+		 content even of selected nodes will be further examined; this
+		 will result in selecting <em>all</em> elements with the
+		 matching tag.
+           </doc>
+         </define>
        </define>
   <li> <define element=attr parent=select handler>
-         <doc>
+         <doc> Contains an attribute name; selects the named attribute of each
+	       element in the current set.
          </doc>
-       </define>
-  <li> <define element=iref parent=select handler>
-         <doc>
-         </doc>
-       </define>
-  <li> <define element=name parent=select handler>
-         <doc>
-         </doc>
-       </define>
-  <li> <define element=key parent=select handler>
-         <doc>
-         </doc>
+         <define attribute=case optional>
+         </define>
        </define>
   <li> <define element=xptr parent=select handler>
-         <doc>
-         </doc>
-       </define>
-  <li> <define element=binding parent=select handler>
-         <doc>
+         <doc> Contains an XPointer expression and selects the corresponding
+	       nodes. See <a
+	       href="http://www.w3.org/TR/WD-xptr">www.w3.org/TR/WD-xptr</a>
          </doc>
        </define>
   <li> <define element=parent parent=select handler>
-         <doc>
+         <doc> Selects the parent of each node in the current set.
          </doc>
        </define>
   <li> <define element=next parent=select handler>
-         <doc>
+         <doc> Selects the next node after each node in the current set.
+	       Ignorable whitespace is skipped.
          </doc>
        </define>
   <li> <define element=prev parent=select handler>
-         <doc>
+         <doc>Selects the node previous to each node in the current set.
+	       Ignorable whitespace is skipped.
          </doc>
        </define>
+</ul>
+
+<h5>Wanted:</h5>
+<ul>
+  <li> A way of iterating through the current set and performing an arbitrary
+       computation on each node.  Basically a <tag>repeat</tag>;.
+
+  <li> A way of selecting on the basis of an arbitrary test.
+       <tag>repeat</tag> might do for that, too, but it's clumsy.
+       Possibly &lt;select-each&gt;
+
+  <li> A way of performing <em>multiple</em> selections, i.e. selecting
+       everything that matches A <em>or</em> B, or of selecting the first
+       three children of each node.  Possibly &lt;select-all&gt;
+
+</ul>
+
+<h4>Sub-elements of <tag>select</tag>: Replacement</h4>
+<ul>
   <li> <define element=replace parent=select handler>
-         <doc>
+         <doc> Contains a list of nodes.
+       	       === need to elaborate on how replacement works.  Will need
+		   attributes. ===
          </doc>
        </define>
 </ul>
@@ -1001,10 +1195,38 @@ example).
   metrics.
 </note>
 
-<h3>To-markup</h3>
-<define element=to-markup handler>
+<h3>Subst</h3>
+<define element=subst handler>
+  <doc> Performs a text substitution on the content (after first removing any
+	<tag>match</tag> and <tag>result</tag> elements). 
+  </doc>
+  <define attribute=match optional>
+    <doc> Contains the regular expression to match.
+    </doc>
+  </define>
+  <define attribute=result optional>
+    <doc> Contains the replacement text.
+    </doc>
+  </define>
+</define>
+
+<h4>Sub-elements of <tag>subst</tag></h4>
+<ul>
+  <li> <define element=match parent=subst handler>
+         <doc> Contains the regular expression to match against.
+         </doc>
+       </define>
+  <li> <define element=result parent=subst handler>
+         <doc> Contains the replacement text.
+         </doc>
+       </define>
+</ul>
+
+
+<h3>Parse</h3>
+<define element=parse handler>
   <doc> Strips passive markup (assumed to be decorative) from the text in the
-	content to convert it to a single string.  Character and other passive
+	content to convert it to a single string.  Character and other
 	entities are expanded.  Runs of consecutive whitespace characters are
 	converted to single spaces.
 
@@ -1015,7 +1237,7 @@ example).
   <define attribute=usenet optional>
     <doc> Markup is added according to the conventions of Usenet mail and news
 	  articles:  <code>_<i>italics</i>_</code>,
-	  <code>*<b>bold</b>*</code>, and so on, similar to the old
+	  <code>*<b>bold</b>*</code>, and so on, similar to the legacy
 	  <code>&lt;add-markup&gt;</code> tag.  Runs of multiple uppercase
 	  letters are lowercased and set monospaced, and values after an equal
 	  sign are italicized.  
