@@ -4,7 +4,7 @@
 package crc.ds;
 
 import java.util.Enumeration;
-import jgl.Array;
+import COM.objectspace.jgl.Array;
 
 public class Queue{
   /**
