@@ -11,13 +11,13 @@
 Newest Photos</a>
 <TD>
 <a href="http://&piaHOST;:&piaPORT;/&agentName;/catalog.if">
-<if><agent-running name="Logo"><then><imgsrc="/Logo/album.gif"  height=32 width=32 alt=album><br></then></if>
+<if><agent-running name="Logo"><then><img src="/Logo/album.gif"  height=32 width=32 alt=album><br></then></if>
 Album</a>
 <TD>
 <a href="http://&piaHOST;:&piaPORT;/&agentName;/slide_show.if">
-<if><agent-running name="Logo"><then><imgsrc="/Logo/slides.gif"  height=32 width=32 alt=slides><br></then></if>
+<if><agent-running name="Logo"><then><img src="/Logo/slides.gif"  height=32 width=32 alt=slides><br></then></if>
 Slideshows</a>
-<TR><TD><TD><if><agent-running name="Logo"><then><imgsrc="/Logo/camera.gif"  height=32 width=32 alt=camera><br></then></if>
+<TR><TD><TD><if><agent-running name="Logo"><then><img src="/Logo/camera.gif"  height=32 width=32 alt=camera><br></then></if>
 Digital Camera<br>
 Photo Album
 <TR><TD>
@@ -25,7 +25,7 @@ Photo Album
 <!-- should test for CD-R/RW -->
 <TD><a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
 <TD><a href="http://&piaHOST;:&piaPORT;/&agentName;/help.if">
-<if><agent-running name="Logo"><then><imgsrc="/Logo/help.gif"  height=32 width=32 alt=help><br></then></if>Help</a>
+<if><agent-running name="Logo"><then><img src="/Logo/help.gif"  height=32 width=32 alt=help><br></then></if>Help</a>
 </table>  
 <p>
 <hr>
