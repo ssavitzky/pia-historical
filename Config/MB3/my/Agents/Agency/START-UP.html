@@ -1,0 +1,68 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agency start up file</title>
+</head><body>
+<h1>MB3 Agency start up file</h1>
+
+Any links found in this file will be requested by the agency at start-up.
+Most useful for doing things like initializing agents and the like.  Note
+that the agency currently makes no attempt to save state across sessions.
+
+<h2>Start up agents</h2>
+<dl> 
+  <dt> <a name="MB3">MB3</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="MB3"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form>
+</dl>
+<h3>And Generic agents used by the MB3</h3>
+
+<dl>
+  <dt> DOFS agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="DOFS">
+       </form>
+  <dt> dofs/My
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="My">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="&usrDIR;">
+       </form>
+  <dt> dofs/PIA
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="PIA">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="&piaDIR;">
+       </form>
+       </dl>
+<dl>
+
+  <dt> <a name="Spy">Spy agent</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="Spy">
+       </form>
+  <dt> <a name="CIA">CIA agent</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="cia">
+       type: <input name="type" value="Spy">
+       </form>
+  <dt> <a name="History">History agent</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="History">
+       </form>
+       
+</dl>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+
+</body></html>
+
