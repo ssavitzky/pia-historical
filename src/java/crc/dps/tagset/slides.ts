@@ -163,7 +163,9 @@
 <define element=end><action><a name="&slide;">&content;</a></define>
 <define element=start>
 <action>
-  <table width='100%'><tr><td align=right><a href="#0">&content; &toNext;</a>
+  <table width='100%'><tr>
+    <td align=left><a href="#TOC">TOC</a>
+    <td align=right><a href="#0">&content; &toNext;</a>
 </define>
 
 <define element=h1>
