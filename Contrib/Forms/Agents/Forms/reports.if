@@ -7,6 +7,11 @@
 <read interform file="heading.inc" process>
 
 <tagset-load name=Form-agent-actors>
+
+<repeat list=&AGENT.groups.keys; entity=grp>
+<if-in-group group=&grp;><set name=allow>true</set></if-in-group>
+</repeat>
+<if><get name=allow><then>
  <if> <get name=form form> <then></then> <else>
 <h2>Common Reports</h2>
 <form action=&url; method=post>
@@ -190,12 +195,20 @@ condition(s). -->
 <input type="SUBMIT" value="Show Forms">
 </form>
 
+</then>
+<else>
+<h2> Not Authorized </h2>
+Sorry, you are not currently authorized to generate reports.
+For access please contact someone in the admin group:
+<get agent name=groups key=admin>
+</else>
+</if>
 <hr>
 
 <expand><get agent name=navbar></expand>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 13:16:00 1998
+Last modified: Tue Feb 17 13:46:01 1998
 <!-- hhmts end -->
 </body></html>
