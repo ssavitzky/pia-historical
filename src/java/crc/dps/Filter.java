@@ -167,8 +167,12 @@ public class Filter {
 	System.err.println(outputTree.getRoot());
       } 
       try {
+	Object oo = loadTagset
+	  ? ((TagsetProcessor)ii).getNewTagset()
+	  : outputTree.getRoot();
+
 	ObjectOutputStream destination = new ObjectOutputStream(outs);
-	destination.writeObject( outputTree.getRoot() );
+	destination.writeObject( oo );
 	destination.flush();
 	destination.close();
       } catch (java.io.IOException e) { 
