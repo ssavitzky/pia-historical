@@ -34,7 +34,7 @@ import crc.ds.Tabular;
 public class ParseTreeExternal extends ParseTreeEntity {
 
   /************************************************************************
-  ** The wrapped Object:
+  ** State:
   ************************************************************************/
 
   /** The Input being wrapped. */
@@ -54,15 +54,21 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public String getResourceName() { return resourceName; }
   public void setResourceName(String s) { resourceName = s; }
 
+  /** The content to send with the request packet. */
+  protected NodeList requestContent = null;
+
+  public NodeList getRequestContent() { return requestContent; }
+  public void setRequestContent(NodeList v) { requestContent = v; }
+
   // === The following should really be protected and have proper accessors...
 
   public boolean readable 	= true;
   public boolean writeable 	= false;
-  public String  tsname 	= null;
   public boolean append 	= false;
   public boolean createIfAbsent = true;
   public boolean doNotOverwrite = false;
   public String  method 	= "GET";
+
   public String  tagsetName	= null;
   public int	 readCount	= 0;
   public int	 writeCount	= 0;
@@ -142,6 +148,10 @@ public class ParseTreeExternal extends ParseTreeEntity {
   /** The context in which to read it.  Set up by the handler. */
   public  volatile Context context 	= null;
 
+  /************************************************************************
+  ** Access to Resource:
+  ************************************************************************/
+
   /** Locate the connected resource, returning its location in either
    *	resourceFile or resourceURL.  
    */
@@ -172,7 +182,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
       cxt.message(-2, e.getMessage(), 0, true);
       return null;
     }
-    Tagset      ts  = top.loadTagset(tsname);
+    Tagset      ts  = top.loadTagset(tagsetName);
     TopContext proc = null;
     Parser p  = ts.createParser();
     reader = new InputStreamReader(inStream);
@@ -199,12 +209,26 @@ public class ParseTreeExternal extends ParseTreeEntity {
   protected void writeValueToResource(Context cxt) {
     Output out = writeResource(cxt);
     Copy.copyNodes(getValue(), out);
+    closeOutput();
+  }
+
+  public void closeOutput() {
     try {
       writer.flush();
       writer.close();
       outStream.flush();
       outStream.close();
     } catch (IOException e) {}
+  }
+
+  public void closeInput() {
+    try {
+      reader.close();
+      inStream.close();
+    } catch (IOException e) {}
+    wrappedInput = null;
+    reader = null;
+    inStream = null;
   }
 
   /************************************************************************
@@ -236,13 +260,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
     Input in = getValueInput(context);
     Copy.copyNodes(in, out);
     value = out.getList();
-    try {
-      reader.close();
-      inStream.close();
-    } catch (IOException e) {}
-    wrappedInput = null;
-    reader = null;
-    inStream = null;
+    closeInput();
     return value;
   }
 

@@ -15,7 +15,9 @@ import java.io.*;
 /**
  * Handler for &lt;connect&gt;....&lt;/&gt;  <p>
  *
- * <p>
+ * <p> Essentially all of &lt;connect&gt;'s functionality is contained 
+ *	within external entities.  That suggests that the best implementation
+ *	is simply to create a suitable entity and return its value.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -30,20 +32,43 @@ public class connectHandler extends GenericHandler {
   /** Action for &lt;connect&gt; node. */
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
-    TopContext top  = cxt.getTopContext();
-    String src   = atts.getAttributeString("src");
-    String ename = atts.getAttributeString("entity");
-    String  tsname  = atts.getAttributeString("tagset");
+    TopContext  top = cxt.getTopContext();
+    String      src = atts.getAttributeString("src");
+    String    ename = atts.getAttributeString("entity");
+    String   tsname = atts.getAttributeString("tagset");
+    String   method = atts.getAttributeString("method");
+    String     mode = atts.getAttributeString("mode");
+    boolean  status = atts.hasTrueAttribute("status");
 
-    Tagset      ts  = top.loadTagset(tsname);	// correctly handles null
+    Tagset       ts = top.loadTagset(tsname);	// correctly handles null
     TopContext proc = null;
     InputStream stm = null;
 
     ParseTreeExternal ent = null;
-    if (ename != null) ent = new ParseTreeExternal(ename, src, null);
+    if (ename != null) {
+      ent = new ParseTreeExternal(ename, src, null);
+      // If the user gave a name, he is expecting it to be bound.
+      cxt.setEntityBinding(ename, ent, false);
+    } else {
+      ent = new ParseTreeExternal(in.getTagName(), src, null);
+      // not clear whether to bind the entity or not here.
+    }
 
-    // Actually do the work. 
-    unimplemented(in, cxt);	// <connect> ===
+    ent.setMode(mode);
+    ent.setMethod(method);
+    ent.setRequestContent(content);
+
+    ent.tagsetName = tsname;
+
+    // At this point, we have the entity.  All we really have to do is 
+    // return either its value or its status.
+
+    if (status) {
+      putList(out, Status.getStatusItem(ent, null));
+    } else {
+      Input xin = ent.getValueInput(cxt);
+      Copy.copyNodes(xin, out);
+    }
   }
 
   /** This does the parse-time dispatching. <p>
@@ -54,7 +79,7 @@ public class connectHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    if (dispatch(e, "")) 	 return connect_.handle(e);
+    // if (dispatch(e, "")) 	 return connect_.handle(e);
     return this;
   }
 
@@ -80,11 +105,23 @@ public class connectHandler extends GenericHandler {
   }
 }
 
-class connect_ extends connectHandler {
+/* === probably won't be needing these... 
+class connect_direct extends connectHandler {
   public void action(Input in, Context aContext, Output out,
   		     ActiveAttrList atts, NodeList content) {
     // do the work
   }
-  public connect_(ActiveElement e) { super(e); }
-  static Action handle(ActiveElement e) { return new connect_(e); }
+  public connect_direct(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new connect_direct(e); }
 }
+
+
+class connect_entity extends connectHandler {
+  public void action(Input in, Context aContext, Output out,
+  		     ActiveAttrList atts, NodeList content) {
+    // do the work
+  }
+  public connect_entity(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new connect_entity(e); }
+}
+... === */

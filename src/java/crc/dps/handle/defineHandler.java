@@ -246,13 +246,12 @@ class define_entity extends defineHandler {
       ext.setMode(mode);
       ext.setMethod(method);
 
-      // === punt on the write stuff for now. ===
-
       // === use tagset to set the handler. 
       Handler h = ts.getHandlerForType(NodeType.ENTITY);
       ext.setHandler(h);
       ext.setAction(h.getActionForNode(ext));
-      if (newContent != null) ext.setValue(new ParseNodeList(newContent));
+      if (newContent != null)
+	ext.setRequestContent(new ParseNodeList(newContent));
       ent = ext;
     } else {
       ent = ts.createActiveEntity(name, newContent);
