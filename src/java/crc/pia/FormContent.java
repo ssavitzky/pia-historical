@@ -240,14 +240,21 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, 0, buffer.length );
       else{
+	int hlen = headers.contentLength();
+	if( hlen == totalRead ) return -1;
+
 	len = body.read( buffer );
 	if( len != -1 )
-	  totalRead += len;
+	  incReadCount( len );
       }
       return len;
     }catch(IOException e){
       throw e;
     }
+  }
+
+  private synchronized void incReadCount( int c ){
+    totalRead += c;
   }
 
   /**
@@ -276,9 +283,12 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, offset, buffer.length );
       else{
+	int hlen = headers.contentLength();
+	if( hlen == totalRead ) return -1;
+
 	len = body.read( buffer, offset, length );
 	if( len != -1 )
-	  totalRead += len;
+	  incReadCount( len );
       }
       return len;
     }catch(IOException e){
