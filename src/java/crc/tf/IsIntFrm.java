@@ -19,6 +19,7 @@
    */
 package crc.pia;
 
+import java.net.URL;
 import crc.pia.ds.UnaryFunctor;
 
 public final class IsIntFrm implements UnaryFunctor{
@@ -29,7 +30,12 @@ public final class IsIntFrm implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      URL url = trans.getRequestURL();
+      String path = url.getFile();
+      if( path.endsWith(".if") )
+	return new Boolean( true );
+      else
+	return new Boolean( false );
     }
 }
 
