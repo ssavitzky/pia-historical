@@ -16,6 +16,25 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug</b> &amp;agents; is static, not dynamic<br>
+       ...so the header is wrong when agentRemove or agentInstall is used.
+       This is only a problem in Agency, so we can make AGENT:agents return
+       the up-to-date list.
+       (1999-02-02) <br>
+
+  <li> <b>Hole</b> Namespaces for tags <br>
+       Tags need namespaces.  The namespace defined by a tagset might not be
+       the same as its name; wellknown namespaces will include:
+       <dl>
+	 <dt> <code>dps:</code>
+	 <dd> all tags defined in the <code>basic</code>, <code>xxml</code>,
+	      and <code>xhtml</code> tagsets 
+	 <dt> <code>pia:</code>
+	 <dd> all tags defined in the <code>pia-xhtml</code> tagset.
+       </dl>
+       (1999-02-02) <br>
+
+
   <li> <b>Bug</b>Connect<br>
     When doing a "connect put" cannot specify src="/RHServer/persist.out"
     from an agent.  It throws an exception.  src="persist.out" does not
