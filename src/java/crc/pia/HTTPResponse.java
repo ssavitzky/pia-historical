@@ -26,7 +26,6 @@ import crc.pia.Content;
 import crc.pia.Transaction;
 
 import crc.tf.Registry;
-import w3c.www.http.HTTP;
 
 public class  HTTPResponse extends Transaction {
   public boolean DEBUG = false;  
@@ -132,8 +131,9 @@ public class  HTTPResponse extends Transaction {
     if ( machine!= null ){
       try{
 	machine.sendResponse(this, resolver);
-      }catch(IOException e){
-	errorResponse( e.getMessage() );
+      }catch(PiaRuntimeException e){
+	Pia.instance().debug(this, "User stop" );
+	//errorResponse( e.getMessage() );
       }
     }
     else{
@@ -147,7 +147,8 @@ public class  HTTPResponse extends Transaction {
    *
    *
    */
-  protected void errorResponse(String msg){
+  protected void errorResponse(int code, String msg){
+    int mycode = code;
     StringBufferInputStream foo = null;
     String masterMsg = "Agency is unable to process " + requestURL() + ": ";
 
@@ -156,15 +157,18 @@ public class  HTTPResponse extends Transaction {
       foo = new StringBufferInputStream( masterMsg );
     }
     else{
-      masterMsg += ".\n";
+      String standardMsg = standardReason( mycode );
+      if ( standardMsg == null )
+	masterMsg += ".\n";
+      else
+	masterMsg = standardMsg;
       foo = new StringBufferInputStream( masterMsg );
     }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine, toMachine(), ct, false);
     
-    response.setStatus( 404 );
-    response.setReason( "Not found" );
+    response.setStatus( mycode );
     response.setContentType( "text/plain" );
     response.setContentLength( masterMsg.length() );
     Pia.instance().debug(this, "The header : \n" + response.headersAsString() );
@@ -184,41 +188,6 @@ public class  HTTPResponse extends Transaction {
     
   }
   
- // code from jigsaw
-  /**
-   * Get the standard HTTP reason phrase for the given status code.
-   * @param status The given status code.
-   * @return A String giving the standard reason phrase, or
-   * <strong>null</strong> if the status doesn't match any knowned error.
-   */
-
-    public String standardReason(int status) {
-	int category = status / 100;
-	int catcode  = status % 100;
-	switch(category) {
-	  case 1:
-	      if ((catcode >= 0) && (catcode < HTTP.msg_100.length))
-		  return HTTP.msg_100[catcode];
-	      break;
-	  case 2:
-	      if ((catcode >= 0) && (catcode < HTTP.msg_200.length))
-		  return HTTP.msg_200[catcode];
-	      break;
-	  case 3:
-	      if ((catcode >= 0) && (catcode < HTTP.msg_300.length))
-		  return HTTP.msg_300[catcode];
-	      break;
-	  case 4:
-	      if ((catcode >= 0) && (catcode < HTTP.msg_400.length))
-		  return HTTP.msg_400[catcode];
-	      break;
-	  case 5:
-	      if ((catcode >= 0) && (catcode < HTTP.msg_500.length))
-		  return HTTP.msg_500[catcode];
-	      break;
-	}
-	return null;
-    }
 
   /**
    * Returns status code for this response.
@@ -424,7 +393,7 @@ public class  HTTPResponse extends Transaction {
    *  Create a content object from the fromMachine.
    * 
    */
-  protected void initializeContent(){
+  protected void initializeContent() throws PiaRuntimeException{
     InputStream in;
     String ztype = null;
 
@@ -437,6 +406,13 @@ public class  HTTPResponse extends Transaction {
       contentObj = cf.createContent( ztype, in );
       if( contentObj != null )
 	contentObj.setHeaders( headers() );
+      else{
+	Pia.instance().debug(this, "Unknown header type...");
+	String msg = "Unknown header type...\n";
+	throw new PiaRuntimeException (this
+				       , "initializeContent"
+				       , msg) ;
+      }
 
     }catch(IOException e){
       Pia.instance().debug( e.toString() );
@@ -770,10 +746,15 @@ public class  HTTPResponse extends Transaction {
       super.run();
     else{
       // make sure we have the header information
-      if(headersObj ==  null) initializeHeader();
+      try{
+	if(headersObj ==  null) initializeHeader();
 
-       // and the content
-      if(contentObj ==  null) initializeContent();
+	// and the content
+	if(contentObj ==  null) initializeContent();
+      }catch (PiaRuntimeException e){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();
+      }
 
       //This is actually call if constructor
       //HTTPResponse( Machine from, Machine to, Content ct )
