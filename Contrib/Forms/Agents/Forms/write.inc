@@ -2,7 +2,7 @@
    
 <write append file="&dir;/&year;/&month;/&timesec;.html">
    <body bgcolor="#ffffff">
-   <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><br>
+   <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><br>
    Please sign the following document.<p>
    <h2>&dir; form</h2><p>
    &dataobject;<p>
