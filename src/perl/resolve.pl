@@ -192,6 +192,7 @@ sub resolve {
 ###
 sub run {
     my($self,$agent,$request,$context)=@_;
+    local $resolver = $self;
     my $response=$agent->handle($request);
 
     my $type = ref($response);

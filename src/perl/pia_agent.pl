@@ -430,6 +430,7 @@ sub execute_interform{
 	    } else {
 		#evaluate string and return last expression value
 		$code_status=eval $code;
+		print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 		print "code status is $code_status\n" if  $main::debugging;
 	    }
 	    push(@new_elements,$code_status) if $code_status;

@@ -59,6 +59,17 @@ sub is_request{
     return $$self{_request_Boolean};
 }
 
+###### transaction->read_content($type)
+###
+###	Read the content from the from_machine's stream.
+###
+###	=== This needs work: ===
+###	 o  Must make sure it works with both requests and responses
+###	 o  Must make sure it works OK if repeated! (idempotent)
+###	 o  Must handle the case where the content is in a file.
+###	 o  Should be able to fetch only the <HEAD> of an html file
+###	 o  Must work if content_length was not provided.
+###
 sub read_content{
     my($self,$type)=@_;
     
@@ -77,13 +88,37 @@ sub read_content{
 	
 	    last unless defined $new_bytes;
 	}
-  #  print "number of bytes = $bytes_read \n";
+    print "number of bytes = $bytes_read \n" if $main::debugging;
     
     $self->content($content);
 
     return $self;
 }    
 
+###### response->title()
+###
+###	Return the title of an HTML page, if it has one.
+###	Returns the URL if the content-type is not HTML.
+###
+sub title {
+    my($self)=@_;
+    return unless $self->is_response();
+    return $self->{'_title'} if defined $self->{'_title'};
+
+    my $ttl  = $self->request->url();
+    my $type = $self->content_type();
+    return unless $type;
+    return $ttl unless $type =~ m:text/html:;
+
+    $self->read_content();	# === hopefully this is idempotent!
+				# === really ought to just read header.
+
+    my $page = $self->content();
+
+    if ($page =~ m:<title>(.*)</title>:ig) { $ttl = $1; }
+    $self->{'_title'} = $ttl;
+    return $ttl;
+}
 
 #utilityfunction to turn post content into hash
 
