@@ -1,0 +1,7 @@
+Connection: Keep-Alive
+Date: Wed, 12 Feb 1997 1:27:39 GMT
+Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg
+Host: napa.crc.ricoh.com:8888
+Referer: http://napa.crc.ricoh.com:8888/User/api/w3c.www.http.HttpMessage.html#_top_
+User-Agent: Mozilla/2.0 (X11; I; Linux 2.0.18 i586)
+

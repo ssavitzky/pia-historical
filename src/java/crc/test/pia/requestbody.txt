@@ -1,0 +1,1 @@
+dir=%2Frest1%2Frest%2Fdata%2Fappcases&param=foo.dat
