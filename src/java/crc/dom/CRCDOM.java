@@ -10,17 +10,42 @@
 package crc.dom;
 
 import java.io.*;
+import crc.ds.Table;
 
 
-
-public class CRCDOM implements DOM {
+public class CRCDOM extends DOM {
 
   /**
-   * give a CRCDOMFactory.  In the future will have
-   * parameter to indicate which factory is desired.
+   * give a CRCDOMFactory.  
    */
 
-  public DOMFactory getFactory(){ return instance().factory; }
+  public static DOMFactory getFactory()
+  {
+    Object df = instance().factoryTable.get(DOM.CRCFACTORY);
+    if ( df != null )
+      return (DOMFactory)df; 
+    else
+      return null;
+  }
+
+  /**
+   * Return desire factory.  If null, CRCFACTORY is returned.
+   */
+  public static DOMFactory getFactory(String whichFactory)
+  {
+    Object df;
+
+    if( whichFactory == null )
+      df = instance().factoryTable.get(DOM.CRCFACTORY);
+    else
+      df = instance().factoryTable.get( whichFactory );
+ 
+    if ( df != null )
+	return (DOMFactory)df; 
+    else
+      return null;
+  }
+
 
   /** Return the CRCDOM's only instance.  */
   public static CRCDOM instance() {
@@ -42,14 +67,17 @@ public class CRCDOM implements DOM {
     /* Create a CRCDOM instance */
 
     CRCDOM crcdom = new CRCDOM();
-    factory = new CRCDOMFactory();
+    crcdom.factoryTable.at( DOM.BASICFACTORY, new BasicDOMFactory() );
+    crcdom.factoryTable.at( DOM.CRCFACTORY, new CRCDOMFactory() );
   }
 
    /* reference to instance */
   private static CRCDOM    instance	= null;
 
-  /* reference to instance of dom factory */
-  private static CRCDOMFactory factory = null;
+  /**
+   * Associations of mime-types to content-type names
+   */
+  protected static Table factoryTable = new Table();
 }
 
 
