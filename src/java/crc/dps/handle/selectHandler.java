@@ -19,6 +19,7 @@ import crc.dps.output.ToNodeList;
 
 import crc.ds.Association;
 import crc.ds.List;
+import crc.ds.SortTree;
 
 import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
@@ -769,19 +770,23 @@ class replaceHandler extends select_subHandler {
       case NodeType.ELEMENT:
 	ActiveElement elt = (ActiveElement)item;
 	if (name != null) {
-	  elt.setAttributeValue(name, content);
+	    elt.setAttributeValue(name, content);
+	  
 	} else {
 	  for (Node child = a.getFirstChild(); child != null; 
-	       child = a.getFirstChild()) 
+	       child = a.getFirstChild()) {
 	    try { a.removeChild(child); } catch (Exception e) {}
+	  }
 	  Copy.appendNodes(content, a);
+	  // putList(out, selected);
 	  // === attributes in content should become attributes of a ===
+
 	}
 	break;
       }
     }
   }
-  replaceHandler() { super(true, true); }
+    replaceHandler() { super(true, true); }
 }
 
 /** &lt;remove&gt; remove every selected node.
@@ -801,6 +806,52 @@ class removeHandler extends select_subHandler {
   removeHandler() { super(true, false); syntaxCode = EMPTY; }
 }
 
+/** &lt;unique&gt; remove every duplicate text selected node.
+ * <p> === unreliable until new DOM implementation in place.
+ */
+class uniqueHandler extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    NodeList selected = getSelected(aContext);
+    List textAssoc = TextUtil.getTextList(selected, false);
+    Enumeration textAssocEnum = textAssoc.elements();
+
+    SortTree sorter = new SortTree();
+    Association a;
+    
+    while(textAssocEnum.hasMoreElements()) {
+      a = (Association)textAssocEnum.nextElement();
+      sorter.insert(a, false);
+    }
+
+    List tmpList = new List();
+    List resultList = new List();
+    sorter.ascendingValues(tmpList);
+    String prev;
+    String cur;
+    for(int i = 0; i < tmpList.nItems(); i++) {
+	if(i == 0) {
+	    resultList.push(tmpList.at(i));
+	}
+	else {
+	    cur = tmpList.at(i).toString();
+	    prev = tmpList.at(i - 1).toString();
+	    if(cur.equals(prev)) {
+		;
+	    }
+	    else {
+		resultList.push(tmpList.at(i));
+	    }
+	}  
+    }
+    ParseNodeList selList = ListUtil.toNodeList(resultList);
+    putList(out, selList);
+    
+    // putEnum(out, resultList.elements());
+  }
+  uniqueHandler() { super(true, false); syntaxCode = EMPTY; }
+}
+
 
 /** &lt;append&gt; Append nodes to selection or children of selection.
  * <p> === unreliable until new DOM implementation in place.
@@ -815,12 +866,13 @@ class appendHandler extends select_subHandler {
     Node item = null;
     for (item = items.getFirst(); item != null; item = items.getNext()) {
       if (children) Copy.appendNodes(content, item);	
-    }
-    if (!children) {
-	Node parent = item.getParentNode();
-	if (parent != null) Copy.appendNodes(content, parent);
-	putList(out, selected);
-	putList(out, content);
+
+      if (!children) {
+	  Node parent = item.getParentNode();
+	  if (parent != null) Copy.appendNodes(content, parent);
+	  putList(out, selected);
+	  putList(out, content);
+      }
     }
   }
   appendHandler() { super(true, true); }
