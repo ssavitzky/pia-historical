@@ -296,10 +296,10 @@ public class ByteStreamContent implements Content
 	  break;
 	data.append( buffer, 0, bytesRead );
       }
-      return data.getByteCopy();
     }catch(IOException e2){
+    }finally{
+      return data.getByteCopy();
     }
-    return null;
   }
 
 
@@ -319,10 +319,10 @@ public class ByteStreamContent implements Content
 	if(bytesRead == -1) break;
 	data.append( buffer, 0, bytesRead );
       }
-      return data.toString();
     }catch(IOException e2){
+    }finally{
+      return data.toString();
     }
-    return null;
   }
 
   public void closeStream(){
