@@ -153,14 +153,15 @@ sub retrieve_directory {
     unless ($base->epath =~ m|/$|) {
 	$base->epath($base->epath . "/");
     }
+    my $dpath = $base->epath;
     my $html = join("\n",
 		    "<HTML>\n<HEAD>",
-		    "<TITLE>DOFS Directory $base</TITLE>",
+		    "<TITLE>$dpath</TITLE>",
 		 #   "<BASE HREF=\"$base\">",
 		    "</HEAD>\n<BODY>",
 		    $head || "<H1>Directory listing of $base</H1>",
 		    "<h3>local path: $path</h3>",
-		    "<h3>DOFS path: $base</h3>",
+		    "<h3>DOFS path: $dpath</h3>",
 		    "<UL>", @urls, "</UL>",
 		    "</BODY>\n</HTML>\n");
 
