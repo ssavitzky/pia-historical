@@ -61,30 +61,6 @@ implements Handler {
     }
   }
 
-  /** It's unlikely that this will be called, but allow for the possibility. */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
-    Element e = in.getElement();
-    if (e == null) {
-      Node node = in.getNode();
-      if (content == null) {
-	out.putNode(node);
-      } else {
-	out.startNode(node);
-	Copy.copyNodes(content, out);
-	out.endNode();
-      }
-    } else {
-      ParseTreeElement element = new ParseTreeElement(e, atts);
-      if (content == null) out.putNode(element);
-      else {
-	out.startElement(e);
-	Copy.copyNodes(content, out);
-	out.endElement(element.isEmptyElement() || element.implicitEnd());
-      }
-    }
-  }
-
   public NodeList getValue(Node aNode, Context aContext) {
     return null;
   }
