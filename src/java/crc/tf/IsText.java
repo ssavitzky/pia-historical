@@ -17,7 +17,7 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
 import crc.pia.ds.UnaryFunctor;
 
@@ -29,7 +29,14 @@ public final class IsText implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      String s = trans.getContentType();
+      if( s ){
+	String ls = s.toLowerCase();
+	if( ls.startsWith("text") )
+	  return new Boolean( true );
+      }
+      return new Boolean( false );
+     
     }
 }
 

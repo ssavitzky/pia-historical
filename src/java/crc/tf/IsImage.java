@@ -17,7 +17,7 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
 import crc.pia.ds.UnaryFunctor;
 
@@ -29,7 +29,13 @@ public final class IsImage implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      String zimage = trans.getContentType();
+      if( zimage ){
+	String lzimage = zimage.toLowerCase();
+	if( lzimage.startsWith("image") )
+	  return new Boolean( true );
+      }
+      return new Boolean( false );
     }
 }
 
