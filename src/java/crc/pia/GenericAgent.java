@@ -351,8 +351,8 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    *  Returns a path to a directory that we can write data into.
    *  creates one if necessary, starts with the following directory in order:
-   *  piaUsrRoot/agentName/  --> example, ~/Joe/pia/myHistory/ ( ~/Joe/pia is piaUsrRoot ) 
-   *  piaUsrRoot/agentType/  --> example, ~/Joe/pia/History/   ( ~/Joe/pia is piaUsrRoot ) 
+   *  usrRoot/agentName/  --> example, ~/Joe/pia/myHistory/ ( ~/Joe/pia is usrRoot ) 
+   *  usrRoot/agentType/  --> example, ~/Joe/pia/History/   ( ~/Joe/pia is usrRoot ) 
    *  /tmp/myHistory/    
    * @return the first qualified directory out of the possible three above.
    * A directory is qualified if it can be writen into.
@@ -364,7 +364,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
     String name = name();
     String type = type();
-    String root = Pia.instance().piaUsrRoot();
+    String root = Pia.instance().usrRoot();
 
     String[] possibilities = { root + filesep + name() + filesep,
 			       root + filesep + type() + filesep,
@@ -392,8 +392,8 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    *  Returns a path to a directory that we can write InterForms into.
    *  Creates one if necessary, starting with the following directory in order:
-   *  piaUsrRoot/Agents/agentName/,
-   *  piaUsrRoot/Agents/agentType/,
+   *  usrRoot/Agents/agentName/,
+   *  usrRoot/Agents/agentType/,
    *  /tmp/Agents/agentName
    * @return the first qualified directory out of the possible three above.
    * A directory is qualified if it can be writen into.
@@ -405,7 +405,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
     String name = name();
     String type = type();
-    String root = Pia.instance().piaUsrRoot();
+    String root = Pia.instance().usrRoot();
     root += filesep + "Agents";
 
     String[] possibilities = { root + filesep + name() + filesep,
@@ -610,8 +610,10 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
-   * Set options with a hash table
-   *
+   * Set options with a hash table (typically a form).
+   *	Ignore the <code>agent</code> option, which comes from the fact
+   *	that most install forms use it in place of <code>name</code>.
+   *	The Agency will accept either.
    */
   public void parseOptions(Table hash){
     if (hash == null) return;
@@ -619,6 +621,8 @@ public class GenericAgent extends AttrBase implements Agent {
     while( e.hasMoreElements() ){
       Object keyObj = e.nextElement();
       String key = (String)keyObj;
+      // Ignore "agent", which is replaced by "name".
+      if (key.equalsIgnoreCase("agent")) continue;
       String value = (String)hash.get( keyObj );
       attr( key, value );
     }
@@ -714,9 +718,9 @@ public class GenericAgent extends AttrBase implements Agent {
    *   (if_root/myname, if_root/mytype/myname if_root/mytype, if_root),
    *  If the above is not defined, it will try:
    *    .../name, .../type/name, .../type
-   *    relative to each of (piaUsrAgentsStr, piaAgentsStr)
+   *    relative to each of (usrAgentsStr, piaAgentsStr)
    *
-   * and finally  (piaUsrAgentsStr, piaAgentsStr)
+   * and finally  (usrAgentsStr, piaAgentsStr)
    */
   public List interformSearchPath() {
     List path = dirAttribute("if_path");
@@ -760,8 +764,8 @@ public class GenericAgent extends AttrBase implements Agent {
       roots.at(i, root);
     }	
 
-    roots.push(Pia.instance().piaUsrAgents());
-    roots.push(Pia.instance().root() +
+    roots.push(Pia.instance().usrAgents());
+    roots.push(Pia.instance().piaRoot() +
 	       filesep + "src" + filesep + "Agents" + filesep);
     roots.push(Pia.instance().piaAgents());
 
@@ -927,8 +931,16 @@ public class GenericAgent extends AttrBase implements Agent {
       request.assert("interform");
     }
     if( request.test("interform") ){
-      InputStream in =  Run.interformFile(this, file, request, res);
-      sendStreamResponse(request, in);
+      try{
+	InputStream in =  Run.interformFile(this, file, request, res);
+	sendStreamResponse(request, in);
+      }catch(PiaRuntimeException ee ){
+	throw ee;
+      } catch (Exception e) {
+	throw new PiaRuntimeException(this, "respondToInterform",
+				      "Exception in InterForm: "
+				      + e.toString());
+      }
     } else if( file.endsWith(".cgi") ){
       try{
 	execCgi( request, file );

@@ -62,9 +62,9 @@ public class Pia {
   public static final String PIA_DOCURL = "crc.pia.docurl";
 
   /**
-   * Name of pia directory from which other directories derive
+   * Name of pia's top-level install directory.
    */
-  public static final String PIA_ROOT = "crc.pia.root";
+  public static final String PIA_ROOT = "crc.pia.piaroot";
 
   /**
    * Name of server port
@@ -77,9 +77,9 @@ public class Pia {
   public static final String PIA_HOST = "crc.pia.host";
 
   /**
-   * Name of user's agent directory
+   * Name of user's pia state directory (normally ~/.pia)
    */
-  public static final String PIA_USR_ROOT = "crc.pia.usrroot";
+  public static final String USR_ROOT = "crc.pia.usrroot";
 
   /**
    * Name of debugging flag
@@ -104,15 +104,6 @@ public class Pia {
 
 
   /************************************************************************
-  ** Protected fields used by Setup:
-  ************************************************************************/
-
-  protected String loggerClassName 	= "crc.pia.Logger";
-  protected String setupClassName 	= "crc.pia.Setup";
-  protected String agencyClassName 	= "crc.pia.agent.Agency";
-  protected String[] commandLine;
-
-  /************************************************************************
   ** Private fields:
   ************************************************************************/
 
@@ -123,15 +114,15 @@ public class Pia {
   private String  docurl               = null;
   private static Logger  logger        = null;
 
-  private String  rootStr    = null;
-  private File    rootDir    = null;
+  private String  piaRootStr    = null;
+  private File    piaRootDir    = null;
   
-  private String  piaUsrRootStr = null;
-  private File    piaUsrRootDir = null;
+  private String  usrRootStr	= null;
+  private File    usrRootDir 	= null;
   
   private String  url        = null;
   private String  host       = null;
-  private int     port       = 8001;
+  private int     port       = 8888;
   private int     reqTimeout = 50000;
 
   private static boolean verbose = false;
@@ -139,19 +130,43 @@ public class Pia {
   // always print to screen or file if debugToFile is on
   private static boolean debugToFile= false;
 
-  private Table proxies           = new Table();
+  private Table proxies          = new Table();
   private List  noProxies        = null;
 
   private String piaAgentsStr    = null;
   private File   piaAgentsDir    = null;
 
-  private String piaUsrAgentsStr = null;
-  private File  piaUsrAgentsDir = null;
+  private String usrAgentsStr 	= null;
+  private File   usrAgentsDir 	= null;
 
   // file separator
   private String filesep  = System.getProperty("file.separator");
   private String home     = System.getProperty("user.home");
   private String userName = System.getProperty("user.name");
+
+  /************************************************************************
+  ** Protected fields:
+  ************************************************************************/
+
+  /** The name of the class that will perform our setup. 
+   *	@see crc.pia.Setup
+   */
+  protected String setupClassName 	= "crc.pia.Setup";
+
+  /** The name of the class that will perform logging.
+   *	@see crc.pia.Logger
+   */
+  protected String loggerClassName 	= "crc.pia.Logger";
+
+  /** The name of the class that is our initial Agency.
+   *	@see crc.pia.agents.Agency
+   *	@see crc.pia.agents.Fallback -- used if the pia's files can't be found.
+   */
+  protected String agencyClassName 	= "crc.pia.agent.Agency";
+
+  /** The command-line options passed to Java on startup.
+   */
+  protected String[] commandLine;
 
   /**
    * Attribute index - accepter
@@ -232,32 +247,32 @@ public class Pia {
     return docurl;
   } 
 
-  /**
-   * @return the root directory path-- i.e /pia
-   */
-  public String root(){
-    return rootStr;
-  }  
-
  /**
    * @return a File object representing the root directory
    */
-  public File rootDir(){
-    return rootDir;
+  public File piaRootDir(){
+    return piaRootDir;
+  }  
+
+  /**
+   * @return the root directory path-- i.e /pia
+   */
+  public String piaRoot(){
+    return piaRootStr;
   }  
 
   /**
    * @return the user directory path -- i.e ~/pia
    */
-  public String piaUsrRoot(){
-    return piaUsrRootStr;
+  public String usrRoot(){
+    return usrRootStr;
   }  
 
   /**
    * @return a File object for the user directory path -- i.e ~/pia
    */
-  public File piaUsrRootDir(){
-    return piaUsrRootDir;
+  public File usrRootDir(){
+    return usrRootDir;
   }  
 
 
@@ -333,16 +348,16 @@ public class Pia {
   /**
    * @return the directory where user agents live
    */
-  public String piaUsrAgents(){
-    return piaUsrAgentsStr;
+  public String usrAgents(){
+    return usrAgentsStr;
   } 
 
 
   /**
    * @return the directory where user agents live
    */
-  public File piaUsrAgentsDir(){
-    return piaUsrAgentsDir;
+  public File usrAgentsDir(){
+    return usrAgentsDir;
   } 
 
   /**
@@ -513,10 +528,10 @@ public class Pia {
   public void verboseMessage() {
 	PrintStream o = System.out ;
 
-	o.println(rootStr         + " (parent of src, lib, Agents)");
+	o.println(piaRootStr   + " (parent of src, lib, Agents)");
 	o.println(piaAgentsStr + " (agent interforms)");
-	o.println(piaUsrRootStr   + " (user directory)");
-	o.println(piaUsrAgentsStr + " (user interforms)");
+	o.println(usrRootStr   + " (user directory)");
+	o.println(usrAgentsStr + " (user interforms)");
 	o.println(Integer.toString( requestTimeout() ) + " (request time out)\n");
 	o.println(url+"\n");
   }
@@ -594,15 +609,15 @@ public class Pia {
       thisHost = null;
     }
 
-    verbose         = properties.getBoolean(PIA_VERBOSE, true);
-    debug           = properties.getBoolean(PIA_DEBUG, false);
-    rootStr         = properties.getProperty(PIA_ROOT, null);
-    piaUsrRootStr   = properties.getProperty(PIA_USR_ROOT, null);
-    host            = properties.getProperty(PIA_HOST, thisHost);
-    port            = properties.getInteger(PIA_PORT, port);
-    reqTimeout      = properties.getInteger(PIA_REQTIMEOUT, 60000);
-    loggerClassName = properties.getProperty(PIA_LOGGER, loggerClassName);
-    docurl          = properties.getProperty(PIA_DOCURL, docurl);
+    verbose 		= properties.getBoolean(PIA_VERBOSE, true);
+    debug		= properties.getBoolean(PIA_DEBUG, false);
+    piaRootStr		= properties.getProperty(PIA_ROOT, null);
+    usrRootStr 		= properties.getProperty(USR_ROOT, null);
+    host 		= properties.getProperty(PIA_HOST, thisHost);
+    port 		= properties.getInteger(PIA_PORT, port);
+    reqTimeout 		= properties.getInteger(PIA_REQTIMEOUT, 60000);
+    loggerClassName 	= properties.getProperty(PIA_LOGGER, loggerClassName);
+    docurl 		= properties.getProperty(PIA_DOCURL, docurl);
 
     // i. e. agency.crc.pia.proxy_http=foobar 
     // get keys from properties
@@ -619,18 +634,18 @@ public class Pia {
 				 +"[host] undefined.");
     }
     
-    if( rootStr == null ){
+    if( piaRootStr == null ){
 	    File piafile = new File("Pia.java");
 	    if( piafile.exists() ){
 	      path = piafile.getAbsolutePath();
-	      rootStr = path.substring(0, path.indexOf("Pia.java")-1);
+	      piaRootStr = path.substring(0, path.indexOf("Pia.java")-1);
 	    }
 	    else{
 	      File piadir = new File(home, "pia");
 
 	      // check if we have a copy of the working directory
 	      if ( piadir.exists() && piadir.isDirectory() )
-		rootStr = piadir.getAbsolutePath();
+		piaRootStr = piadir.getAbsolutePath();
 	      else
 		throw new PiaInitException(this.getClass().getName()
 					   +"[initializeProperties]: "
@@ -638,36 +653,36 @@ public class Pia {
 	    }
     }
 
-    if ( rootStr.startsWith("~") ){
-      rootStr = home + rootStr.substring(1);
+    if ( piaRootStr.startsWith("~") ){
+      piaRootStr = home + piaRootStr.substring(1);
     }
     // Now the directories that depend on it:
-    rootDir = new File( rootStr );
+    piaRootDir = new File( piaRootStr );
     
     //  we are at /pia/Agents -- this is for interform
-    piaAgentsStr = rootStr + filesep + "Agents";
+    piaAgentsStr = piaRootStr + filesep + "Agents";
     piaAgentsDir = new File( piaAgentsStr );
 
-    if( piaUsrRootStr == null ){ 
+    if( usrRootStr == null ){ 
       if( home!=null && home != "" ){
 	// i.e. we have ~/bob and looking for ~/bob/pia
 	File dir = new File(home, ".pia");
 	if( dir.exists() ){
-	  piaUsrRootStr = dir.getAbsolutePath(); 
+	  usrRootStr = dir.getAbsolutePath(); 
 	}
 	dir = new File(home, "my");
 	if( dir.exists() ){
-	  piaUsrRootStr = dir.getAbsolutePath(); 
+	  usrRootStr = dir.getAbsolutePath(); 
 	}
       }
 	  
-      if( piaUsrRootStr == null ){
+      if( usrRootStr == null ){
 	// i.e. we have /pia/users and if bob is valid user's name
 	// we have /pia/users/bob
-	File usersDir = new File(rootStr,"users");
+	File usersDir = new File(piaRootStr,"users");
 	if( usersDir.exists() ){
 	  if( userName!=null && userName != "" )
-	    piaUsrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
+	    usrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
 	}
 	else throw new PiaInitException(this.getClass().getName()
 					+"[initializeProperties]: "
@@ -675,26 +690,26 @@ public class Pia {
       }
     }
 
-    if ( piaUsrRootStr.startsWith("~") ){
-      piaUsrRootStr = home + piaUsrRootStr.substring(1);
+    if ( usrRootStr.startsWith("~") ){
+      usrRootStr = home + usrRootStr.substring(1);
     }
-    piaUsrRootDir = new File( piaUsrRootStr );
+    usrRootDir = new File( usrRootStr );
 	
-    piaUsrAgentsStr = piaUsrRootStr + filesep + "Agents";
-    piaUsrAgentsDir = new File( piaUsrAgentsStr );
+    usrAgentsStr = usrRootStr + filesep + "Agents";
+    usrAgentsDir = new File( usrAgentsStr );
 
     /* Now set the properties that defaulted. */
 
     properties.setBoolean(PIA_VERBOSE, verbose);
     properties.setBoolean(PIA_DEBUG, debug);
-    properties.setProperty(PIA_ROOT, rootStr);
-    properties.setProperty(PIA_USR_ROOT, piaUsrRootStr);
+    properties.setProperty(PIA_ROOT, piaRootStr);
+    properties.setProperty(USR_ROOT, usrRootStr);
     properties.setProperty(PIA_HOST, host);
     properties.setInteger(PIA_PORT, port);
     properties.setInteger(PIA_REQTIMEOUT, reqTimeout);
     properties.setProperty(PIA_LOGGER, loggerClassName);
 
-	url = url();
+    url = url();
 	
   }
 

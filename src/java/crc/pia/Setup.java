@@ -45,7 +45,7 @@ class Setup extends Configuration {
   /** PIA option table: */
   protected String[] piaOptTable = {
     "-port",	"crc.pia.port",		"number",	"8888",
-    "-root",	"crc.pia.root",		"file",		null,
+    "-root",	"crc.pia.piaroot",	"file",		null,
     "-u",	"crc.pia.usrroot",	"file",		null,
     "-d",	"crc.pia.debug",	"bool",		null,
     "-v",	"crc.pia.verbose",	"bool",		null,
@@ -113,8 +113,6 @@ class Setup extends Configuration {
     /* Get the Piaproperties because it has getBoolean, etc. */
     Piaproperties props = pia.properties();
 
-
-    System.err.println("configuration: " + (results? "bad" : "ok"));
     return results;
   }
   

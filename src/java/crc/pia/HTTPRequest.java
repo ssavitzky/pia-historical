@@ -162,6 +162,7 @@ public class  HTTPRequest extends Transaction {
    * true if this transaction is a request and has parameters
    */
   public boolean hasQueryString(){
+
     Content c = contentObj();
     if( c!=null ){
       FormContent fc;
