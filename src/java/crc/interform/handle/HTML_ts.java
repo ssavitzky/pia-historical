@@ -25,7 +25,7 @@ public class HTML_ts extends Tagset {
   /** Determine whether the &lt;p&gt; tag is empty. */
   boolean emptyP = true;	// false
 
-  static String emptyTags = "hr br link img input"; // meta?
+  static String emptyTags = "hr br link base img input"; // meta?
 
   static String phraseTags = "cite code em kbd samp strong var b i u tt" +
   "a img br hr wbr nobr center blink small big font basefont table";
