@@ -3,7 +3,7 @@
 <title>Generic Index for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<set entity name=title>&agentName; agent <br>Index Page</set>
+<set entity name=title>Index Page</set>
 <read interform file="heading.inc" process>
 
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
@@ -12,11 +12,14 @@
     <else><set name=agentPath>&agentType;/&agentName;</set></else>
 </if>
 
-<table cellspacing=0 cellpadding=0>
-<tr><th width=170><td>
-  <table cellspacing=0 cellpadding=0>
-    <tr><th width=170><td><br>
-    <tr><th align=right><a href="home.if">&agentName;</a>: <td>Index Page
+<table cellspacing=0 cellpadding=0 border=0>
+<tr><th width=170>
+	<img src="/Agency/Icons/white170x1.gif" width=170 height=1>
+    <td>
+  <table cellspacing=0 cellpadding=0 align=center border=0>
+    <tr><th width=170>
+	<img src="/Agency/Icons/white170x1.gif"
+	                   width=170 height=1> <td><br>
     <tr><th align=right><td> <a href="home.if">Home Page</a>
     <tr><th>
 	<td><a href="options.if">Options</a>
@@ -32,20 +35,26 @@
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
            </repeat></then></if>
-    <tr><th align=right>Remove:<td>  
-           <form action="/Agency/remove_agent.if" method="POST">
-	
-           <input name="agent" value="&agentName;" type=hidden>
-           <input type="submit" value="Remove &agentName;">
-           </form>
+    <tr><th align=right>
+        <td><form action="/Agency/remove_agent.if" method="POST">
+              <input name="agent" value="&agentName;" type=hidden>
+              <input type="submit" value="Remove &agentName;">
+            </form>
   </table>
 </table>
 
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
-<a href="/&agentName;/home.if">&agentName;</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

@@ -7,22 +7,22 @@
 <table cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48 alt="R I C O H"></a>
+	border=0 width=170 height=48 alt="R I C O H"></a></th>
     <th width=170 nowrap>
-<tr height=2><td colspan=2 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=340></td></tr>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
+<tr height=2><td colspan=3 nowrap nobr
+    ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
+<!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21 align=top></a>
-    <th align=right width=170>
-    <th align=left nowrap nobr valign=center><font face=helvetica>
-        <a href="/"><img width=85 height=45 border=0 alt=PIA
-	    	         src="/Agency/Icons/pia45.gif"></a></font></th></tr>
-<tr><th><th valign=top align=right width=170><font face=helvetica>
+    <th valign=top align=right width=170><font size=5 face=helvetica>
 	    <if><test exact match='pia'><get env name="USER"></test>
 		<then></then>
 		<else><a href="/My/">&piaUSER;'s</a> </else></if></font></th>
-	<th align=left valign=top><font face=helvetica>
+	<th align=left valign=top><font size=5 face=helvetica>
 	<if><test exact match='pia'><get env name="USER"></test>
 	    <then>An Information Appliance</then>
 	    <else>Personal Information Agency</else>

@@ -4,13 +4,16 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>&agentName; agent <br>Index Page</set>
+<set entity name=title>Index Page</set>
 <read interform file="heading.inc" process>
-<table cellspacing=0 cellpadding=0>
-<tr><th width=170><td>
-    <table cellspacing=0 cellpadding=0>
-    <tr><th width=170><td><br>
-    <tr><th align=right><a href="home.if">&agentName;</a>:<td>Index Page
+
+<table cellspacing=0 cellpadding=0 border=0>
+<tr><th align=left nowrap width=170><img src="/Agency/Icons/white170x1.gif"
+	                   width=170 height=1></th>
+    <td>
+    <table cellspacing=0 cellpadding=0 border=0>
+    <tr><th align=left nowrap width=170><img src="/Agency/Icons/white170x1.gif"
+	                   width=170 height=1><td><br>
     <tr><th align=right><td> <a href="home.if">Home Page</a>
     <tr><th><td> <a href="options.if">Options</a> /
   	<a href="/Agency/checkpoint.if">checkpoint</a> /

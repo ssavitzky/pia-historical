@@ -5,7 +5,7 @@
 <base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>&agentName; agent <br>Home Page</set>
+<set entity name=title>Home Page</set>
 <read interform file="heading.inc" process>
 
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
@@ -20,7 +20,9 @@
     <read quiet interform file="insert.if" process>
   <td>
     <table cellspacing=0 cellpadding=0>
-    <tr><th width=170><td><br>
+    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+	                   width=170 height=1></th>
+        <td><br>
     <tr><th><td><a href="index.if">Index Page</a>
     <tr><th align=right><a href="home.if">&agentName;</a>:
 	<td> <strong>Home Page</strong>

@@ -9,13 +9,15 @@
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
 <tr height=2><td colspan=3  nowrap nobr
-    ><img src="/Agency/Icons/blackline425.gif" height=2 width=425></td></tr>
+    ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
+<!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a>
-    <th></th>
-    <th align=left><font face=helvetica><if><get entity name=title>
+    <th width=170 align=right valign=top><font size=5 face=helvetica><a
+	href="/&agentName;">&agentName;</a>: </font></th>
+    <th align=left><font size=5 face=helvetica><if><get entity name=title>
 	<then><get entity name=title></then>
-	<else>&agentName;/&fileName;</else></if></font></th></tr>
+	<else>&fileName;</else></if></font></th></tr>
 </table>
 <!-- $Id$ -->

@@ -5,7 +5,7 @@
 <base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>&agentName; home page for
+<set entity name=title>home page for
 <if><test exact  match='pia'><get env name="USER"></test>
     <then> this </then>
     <else> &piaUSER;'s</else></if><br>
@@ -13,15 +13,15 @@
     <then>Peripheral Interface </then>
     <else>Personal Information </else></if> Agency</set>
 <read interform file="heading.inc" process>
+<p>
 
-<table align=center cellspacing=0 cellpadding=0 border=0>
+<table cellspacing=0 cellpadding=0 align=center border=0>
 <tr><th width=170 valign=center>
-	<img src="Logo/A100.gif" height=100 width=111>
-<td>
-  <table cellspacing=0 BORDER=0>
-  <tr><td align=right width=170><br>
-  <tr>
-    <th>
+    <img src="Logo/A100.gif" height=100 width=111></th>
+<td valign=center>
+  <table cellspacing=0 cellpadding=0 align=center border=0>
+  <tr> <!-- need an image to fix the size -->
+    <td width="170"><img src="Icons/blank170x1.gif" width=170 height=1></td>
     <td valign=top> &year; &monthName; &day;, &time;:&second;<br>
 
   <tr>
@@ -48,7 +48,6 @@
     <td valign=top> <repeat list="&agentNames;" entity="foo">
       <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
    </repeat><br>
-
   </table>
 </table>
 
