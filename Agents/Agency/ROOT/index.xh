@@ -7,7 +7,8 @@
 <set name=ltitle><if><test exact match='pia'>&piaUSER;</test>
 		     <then> </then>
 		     <else><a href="/My/">&piaUSER;'s</a> </else></if></set>
-<header ltitle=&ltitle;><if><test exact match='pia'>&piaUSER;</test>
+<header show-date=yes ltitle=&ltitle;>
+  <if><test exact match='pia'>&piaUSER;</test>
 			    <then>An Information Appliance</then>
 	    		    <else>Personal Information Agency</else>
 			</if><br>
@@ -20,15 +21,10 @@
       <tr><th>
 	<if><read info interform file="/Agency/insert.if">
             <then><include src="/Agency/insert.if"></then>
-        </if><br></tr>
+        </if></tr>
     </table>
   <td valign=top>
     <table cellspacing=0 cellpadding=0 border=0 valign=top>
-    <tr>
-      <th valign=top align=right>
-    <tr>
-      <th valign=top align=right>
-      <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
     <tr><th valign=top align=right width=170>
 	    <a href="/Agency/home"><b>Agency:</b></a>&nbsp;
 	<td valign=top>
@@ -36,7 +32,8 @@
 	    <a href="/Agency/installers">install</a> / 
 	    <a href="/Agency/remove_agent">remove</a> agents.<br>
 	    <if><test exact match='pia'>&piaUSER;</test>
-	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
+	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br>
+	    </if>
     <tr><if><test exact match='pia'>&piaUSER;</test>
       <then>
 	<th valign=top align=right><b>Agent:</b>&nbsp;
@@ -55,20 +52,21 @@
 	    <a href="/PIA/Doc/">Doc</a>
 	    <a href="/PIA/src/">src</a>
       </if><br></tr>
-    <if><agent-running name=History><then>
-    <tr>
-	<th valign=top align=right><a href="/History"><b>History:</b></a>&nbsp;
-	<td valign=top> 
-	    [<a href="/My/History">All</a> | 
-	     <a href="/My/History/&year;/">&year;</a>/<a
-		href="/My/History/&year;/&month;/">&month;</a>/<a
-		href="/My/History/&year;/&month;/&day;.html">&day;</a>]
-	    <br></then>
+    <if><agent-running name=History>
+        <then>
+	    <tr><th valign=top align=right>
+		    <a href="/History"><b>History:</b></a>&nbsp;
+		<td valign=top> 
+		    [<a href="/My/History">All</a> | 
+		     <a href="/My/History/&year;/">&year;</a>/<a
+			href="/My/History/&year;/&month;/">&month;</a>/<a
+			href="/My/History/&year;/&month;/&day;.html">&day;</a>]
+		    <br></then>
+        <else><tr><td>&nbsp;<td></tr>
     </if>
-    <tr><th><br>
+    <tr><td>&nbsp;<td></tr>
   </table>
 </table>
-<p>
 <hr>
 <include src="/Agency/ROOT/welcome.inc">
 <hr>
