@@ -626,7 +626,7 @@ public abstract class Transaction extends AttrBase
   }
 
   /** Set an object by name. */
-  public synchronized void set(String name, Object value) {
+  public synchronized void put(String name, Object value) {
     features.assert(name, value);
     if (Character.isUpperCase(name.charAt(0))) 
       setHeader(name, value.toString());
