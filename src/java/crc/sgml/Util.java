@@ -32,8 +32,9 @@ public class Util {
     if (o instanceof StringBuffer) return new TextBuffer((StringBuffer)o);
     if (o instanceof Boolean) {
       // === should probably return Token.empty or Tokens.empty ===
-      //return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
-      return ((Boolean)o).booleanValue() ? (SGML)Token.empty : (SGML)Tokens.nil;
+      return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
+      // === but for some reason that doesn't work.
+      //return ((Boolean)o).booleanValue() ? (SGML)Token.empty : (SGML)Tokens.nil;
     }
     return new Text(o.toString());
   }
