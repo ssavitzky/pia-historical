@@ -60,7 +60,7 @@ public class Accepter extends Thread {
     String hostName = iaddr.getHostName();
     logMsg( "connection from : "+ hostName + " at: " + String.ValueOf( port ) );
     
-    Transaction ts = createRequestTransaction(iaddr, port, clientSocket);
+    Transaction ts = createRequestTransaction(hostName, port, clientSocket);
     Pia.resolver.push( ts );
    
   }
@@ -69,10 +69,10 @@ public class Accepter extends Thread {
   * Creates a transaction from the client's request (will be private).
   * @return a PIA transaction. 
   */ 
- public Transaction createRequestTransaction ( InetAddress iaddr, int port, Socket client) {
+ public Transaction createRequestTransaction ( String addr, int port, Socket client) {
     // Create a request transaction
 
-    Machine machine =  new Machine(iaddr, port, in);
+    Machine machine =  new Machine(addr, port, in);
     return new Transaction( machine );
  }
 
