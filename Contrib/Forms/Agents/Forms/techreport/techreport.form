@@ -1,28 +1,28 @@
 
 <h1>Tech Report</h1>
 
-<b>Your name:</b> <form-variable name=name options=users> </form-variable>
+<b>Your name:</b> <formvariable name=name options=users> </formvariable>
 <br>
-<b>Confidential Status:</b>   <form-variable name=confidential
-options="Confidential Public"> </form-variable>
+<b>Confidential Status:</b>   <formvariable name=confidential
+options="Confidential Public"> </formvariable>
 <br>
-<b>Type:</b> <form-variable name=type
+<b>Type:</b> <formvariable name=type
 options="TechReport JournalArticle ConferencePaper VideoTape Minutes">
-</form-variable>
+</formvariable>
 <p>
         
-<b>Date:</b> <form-variable NAME="pubdate" TYPE="text" SIZE="8"> </form-variable><br>
-<b>Title:</b> <form-variable NAME="title" TYPE="text" SIZE="66"> </form-variable><BR>
-<B>Author:</B> <form-variable NAME="author" TYPE="text" SIZE="64"> </form-variable><BR>
-<B>Keywords:</B> <form-variable NAME="keywords" TYPE="text" SIZE="61"> </form-variable><BR>
-<B>Abstract:</B> <form-variable TEXTAREA=true NAME="abstract" ROWS="6"
-COLS="60"> </form-variable><p>
-<B>Conference:</B> <form-variable NAME="conference" TYPE="text" SIZE="60"> </form-variable><BR>
-<B>Publication:</B> <form-variable NAME="publication" TYPE="text" SIZE="60">
-</form-variable><BR>
+<b>Date:</b> <formvariable NAME="pubdate" TYPE="text" SIZE="8"> </formvariable><br>
+<b>Title:</b> <formvariable NAME="title" TYPE="text" SIZE="66"> </formvariable><BR>
+<B>Author:</B> <formvariable NAME="author" TYPE="text" SIZE="64"> </formvariable><BR>
+<B>Keywords:</B> <formvariable NAME="keywords" TYPE="text" SIZE="61"> </formvariable><BR>
+<B>Abstract:</B> <formvariable TEXTAREA=true NAME="abstract" ROWS="6"
+COLS="60"> </formvariable><p>
+<B>Conference:</B> <formvariable NAME="conference" TYPE="text" SIZE="60"> </formvariable><BR>
+<B>Publication:</B> <formvariable NAME="publication" TYPE="text" SIZE="60">
+</formvariable><BR>
 <B>URL:</B>  <references> </references> <br>
-<B>File Location:</B> <form-variable NAME="location" TYPE="text" SIZE="59"> </form-variable><BR>
-<B>Distribution:</B>  <form-variable TEXTAREA=true NAME="distribution"
-ROWS="3" COLS="55"> </form-variable><BR>
-<B>Notes:</B> <form-variable TEXTAREA=true NAME="notes" ROWS="2" COLS="61"> </form-variable><p>
+<B>File Location:</B> <formvariable NAME="location" TYPE="text" SIZE="59"> </formvariable><BR>
+<B>Distribution:</B>  <formvariable TEXTAREA=true NAME="distribution"
+ROWS="3" COLS="55"> </formvariable><BR>
+<B>Notes:</B> <formvariable TEXTAREA=true NAME="notes" ROWS="2" COLS="61"> </formvariable><p>
 

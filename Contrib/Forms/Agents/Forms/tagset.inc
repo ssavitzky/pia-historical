@@ -366,9 +366,9 @@ of TAG in OBJECT, ENTITY will be bound to each instance">
  </then></if>
 </actor>
 
-<actor tag=form-protect quoted desc=" protect form processing instructions">
+<actor tag=formprotect quoted desc=" protect form processing instructions">
 <set local name=li><get element name=livalue></set>
-<form-expression livalue=&li;><dummy>&content;</dummy></form-expression>
+<formexpression livalue=&li;><dummy>&content;</dummy></formexpression>
 </actor>
 
 <actor tag=test-conditions empty desc="true if all CONDITIONS hold">

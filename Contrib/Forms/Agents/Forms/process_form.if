@@ -21,7 +21,7 @@
         <!-- substitute new values for defaults in existing form -->
         <!-- CAUTION sub order not guaranteed -->
         <set name=myform><read interform file=&myformtype;/&myformtype;.form process></set>
-        <set name=vars><get name=myform findall="form-variable"></set>
+        <set name=vars><get name=myform findall="formvariable"></set>
         <repeat list=&vars; entity=var>
         <set name=varname><get name=var attr=name></set>
         <if> <get form name=&varname;> <then>
@@ -38,7 +38,7 @@
         <!-- SET ENTITIES FOR  EXPANDED computation -->
         <set name=&varname;><get index=var.Text></set>
         </repeat>
-        <set name=exps><get name=myform findall="form-expression"></set>
+        <set name=exps><get name=myform findall="formexpression"></set>
         <repeat list=&exps; entity=exp>
         <!-- SET embedded ENTITIES FOR  EXPANDED computation -->
          <if><get name=exp attr=livalue> <then>

@@ -1,10 +1,10 @@
 
 <h1>Form Feedback</h1>
 
-Username:<form-variable name=name options=users> </form-variable>
+Username:<formvariable name=name options=users> </formvariable>
 
-Form: <form-variable name=name options=&AGENT.forms;> </form-variable>
+Form: <formvariable name=name options=&AGENT.forms;> </formvariable>
 
 <br>
 Feedback:<br>
-<form-variable textarea=true rows=20 cols=70> </form-variable><p>
+<formvariable textarea=true rows=20 cols=70> </formvariable><p>

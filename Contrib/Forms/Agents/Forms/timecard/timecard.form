@@ -2,16 +2,16 @@
 
  <table>
 <TR><TH>Employee<TH>Month<TH>Payday<TH>Exception<TH>Dates</TR>
-<TR><TD rowspan=4> <form-variable name=employee options=users> </form-variable>
-    <TD rowspan=4> <form-variable name=paymonth options="01 02 03 04 05 06 07 08 09 10 11 12">&month; </form-variable>
-    <TD rowspan=4> <form-variable name=payday options="15 30">&day; </form-variable>
+<TR><TD rowspan=4> <formvariable name=employee options=users> </formvariable>
+    <TD rowspan=4> <formvariable name=paymonth options="01 02 03 04 05 06 07 08 09 10 11 12">&month; </formvariable>
+    <TD rowspan=4> <formvariable name=payday options="15 30">&day; </formvariable>
 
-<TD> Sick Days  <TD> <form-variable name=sick> </form-variable> </TR>
-<TR><TD> Personal Holidays  <TD> <form-variable name=holiday> </form-variable>
+<TD> Sick Days  <TD> <formvariable name=sick> </formvariable> </TR>
+<TR><TD> Personal Holidays  <TD> <formvariable name=holiday> </formvariable>
 </TR>
-<TR><TD> Vacation Days  <TD> <form-variable name=vacation> </form-variable>
+<TR><TD> Vacation Days  <TD> <formvariable name=vacation> </formvariable>
 </TR>
-<TR><TD> Other Days  <TD> <form-variable name=other> </form-variable> </TR>
+<TR><TD> Other Days  <TD> <formvariable name=other> </formvariable> </TR>
 </table>
 
 <p>

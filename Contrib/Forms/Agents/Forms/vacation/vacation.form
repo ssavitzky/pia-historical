@@ -1,20 +1,20 @@
 
 <h1>Vacation Request Form</h1>
 
-Your name:<form-variable name=name options=users> </form-variable>
+Your name:<formvariable name=name options=users> </formvariable>
 <br>
-Accrued Vacation Hours (from last paystub): <form-variable name=accrued> </form-variable>
+Accrued Vacation Hours (from last paystub): <formvariable name=accrued> </formvariable>
 <br>
 Request Vacation from: 
- <form-variable name=startmonth options="January February March April May
- June July August September October November December"> </form-variable>
+ <formvariable name=startmonth options="January February March April May
+ June July August September October November December"> </formvariable>
 
- <form-variable name=startday options="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31"> </form-variable> 
+ <formvariable name=startday options="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31"> </formvariable> 
 to: 
- <form-variable name=endmonth options="January February March April May
- June July August September October November December"> </form-variable>
+ <formvariable name=endmonth options="January February March April May
+ June July August September October November December"> </formvariable>
 
- <form-variable name=endday options="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31"> </form-variable>
+ <formvariable name=endday options="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31"> </formvariable>
 
 
 <p>

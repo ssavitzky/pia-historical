@@ -2,12 +2,13 @@
 <html><head>
  <set name=formtype><get form name=formtype></set>
 <title>&formtype; Form </title>
- <base  href=http://&piaHOST;:&piaPORT;/&agentName;/&formtype;/&formtype;.if>
+ <!-- base
+ href=http://&piaHOST;:&piaPORT;/&agentName;/&formtype;/&formtype;.if -->
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <set entity name=title> Fill out &formtype; </set>
 <read interform file="heading.inc" process>
- 
+
 <tagset-load name=Form-agent-actors>
 <if><read interform file=&formtype;/&formtype;.if  info>  <then>
  <!-- fully specified form -->
@@ -18,16 +19,20 @@
  <!-- form template -->
  <set name=myform><read interform file=&formtype;/&formtype;.form process></set>
  <!-- substitute input fields in form -->
- <set name=vars><get name=myform findall="form-variable"></set>
+ <set name=vars><get name=myform findall="formvariable"></set>
   <repeat list=&vars; entity=var>
-  <set name=varname><get name=var attr=name></set>
+   <set name=varname><get name=var attr=name></set>
  <if> <get name=var attr=options> <then>
-<set name=var insert=0 replace><select name="&varname">
+<set name=var insert=0 replace><select name="&varname;">
+ <if><get index=var.Text> <then><option selected><get
+ index=var.Text></option></then>
+ <else><if><get name=var attr=default> <then><option><get name=var attr=default></option></then></if></else>
+</if>
  <if> <test match=users><get name=var attr=options></test> <then>
- <set name=options><get trans name=AuthenticatedUser> <get agent name=users keys></set>
+ <option><get trans name=AuthenticatedUser></option>
+ <set name=options><sort><get agent name=users keys></sort></set>
  </then> <else><set name=options><get name=var attr=options></set></else></if>
- <if><get index=var.Text> <then><option selected><get index=var.Text></option></then></if>
- <repeat list=&options; entity=val> <option>&val;</option></repeat>
+<repeat list=&options; entity=val> <option>&val;</option></repeat>
     </select>
     </set>
     </then>
@@ -52,7 +57,7 @@
   <set name=refs insert=0 replace><input type="URL" name="references" size="40"></set>
 
 
-<form action="../process_form.if" method=post>
+<form action="http://&piaHOST;:&piaPORT;/&agentName;/process_form.if" method=POST>
  <input name="formtype"  type=hidden value=&formtype;> 
  <get name=myform>
 <br>

@@ -13,7 +13,7 @@
  <if> <get form name=form> <then>
 <set name=form><get form name=form></set>
 <set name=formfile><read file=&form;/&form;.form interform process></set>
-<set name=formvars><get name=formfile findall=form-variable></set>
+<set name=formvars><get name=formfile findall=formvariable></set>
 
 <set name=formvars><repeat list=&formvars; entity=x> <text><get name=x
 attr=name></text></repeat></set>

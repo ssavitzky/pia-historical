@@ -1,16 +1,16 @@
 
 <center><h1>Purchase Requisition</h1></center>
 
-Requestor:<form-variable name=name options=users> </form-variable> 
+Requestor:<formvariable name=name options=users> </formvariable> 
 
 <br>
 <set entity name=accountlist><read file="account_types.dat"></set>
-Expense Type: <TD><form-variable name="expensetype" options=&accountlist;> </form-variable>
+Expense Type: <TD><formvariable name="expensetype" options=&accountlist;> </formvariable>
  <br>
-Suggested Supplier:<form-variable name=supplier size=60> </form-variable>
+Suggested Supplier:<formvariable name=supplier size=60> </formvariable>
 <br>
 
-Contact Information:<form-variable name=contact textarea rows=2 cols=60> </form-variable>
+Contact Information:<formvariable name=contact textarea rows=2 cols=60> </formvariable>
 
 <br>
 
@@ -23,25 +23,25 @@ Contact Information:<form-variable name=contact textarea rows=2 cols=60> </form-
 
 <repeat start=1 stop=5 entity=num>
 <TR>
- <TD><form-variable name="description&num;" size=45> </form-variable>
- <TD><form-variable name="item&num;"> </form-variable>
- <TD><form-variable name="qty&num;"> </form-variable>
- <TD><form-variable name="amount&num;"> </form-variable>
-<form-protect livalue=&num;><protect> 
+ <TD><formvariable name="description&num;" size=45> </formvariable>
+ <TD><formvariable name="item&num;"> </formvariable>
+ <TD><formvariable name="qty&num;"> </formvariable>
+ <TD><formvariable name="amount&num;"> </formvariable>
+<formprotect livalue=&num;><protect> 
   <set name=othertotals><sum digits=2><product><get name=amount&li;> <get
   name=qty&li;> </product> <get name=othertotals></sum></set>
- </protect> </form-protect>
+ </protect> </formprotect>
 </TR>
 </repeat>
 <TR> <TH colspan=3 align=right> Estimated Total Cost ($) </TH>
 
 <TD>
- <form-protect><protect> <set name=estcost><get name=othertotals></set>
-</protect> </form-protect>
-<form-variable name=estcost computed=true> </form-variable></TD>
+ <formprotect><protect> <set name=estcost><get name=othertotals></set>
+</protect> </formprotect>
+<formvariable name=estcost computed=true> </formvariable></TD>
 </table>
 
 <p>
-Special Instructions:<form-variable name=comments size=60> </form-variable>
+Special Instructions:<formvariable name=comments size=60> </formvariable>
 <p>
 Related Material: (e.g. URL of Kiansho, supplier, etc.)<references> </references>

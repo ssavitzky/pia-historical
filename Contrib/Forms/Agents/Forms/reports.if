@@ -79,12 +79,25 @@ Show Current <input type=submit name="form" value=timecard> forms.
 </repeat></set>
 
 
- <set name=forms><get name=lists findall=a></set>
-  <set name=myform><read interform file=&form;/&form;.form
-  process></set>
-<set name=vars><get name=myform findall="form-variable"></set>
-
 <set-previous-month mctr=mymonth yctr=myyear>
+
+
+ <set name=forms><dummy><get name=lists findall=a></dummy></set>
+<if><get form name=quicklist> <then>
+Found <get name=forms size> &form; forms filled out between &FORM.startmonth;,
+	  &FORM.startyear; and &mymonth;, &myyear;
+<ul>
+ <repeat list=&forms; entity=aform>
+ <set name=file><get name=aform attr=href></set>
+<li> <a href="show_signatures.if?formurl=&file;"><get index=aform.Text></a></li>
+
+</repeat>
+</ul>
+</then>
+<else>
+<set name=myform><read interform file=&form;/&form;.form
+  process></set>
+<set name=vars><get name=myform findall="formvariable"></set>
 
 <table border=1>
 <caption> Showing &form; forms filled out between &FORM.startmonth;,
@@ -109,7 +122,7 @@ Show Current <input type=submit name="form" value=timecard> forms.
 <set name=file><subst match="http://forms.crc.ricoh.com:8000/My/Forms/" result=""><get name=aform attr=href></subst></set>
  </then></if>
 <set name=myform><read file=&file;  process></set>
-<set name=vars><get name=myform findall="form-variable"></set>
+<set name=vars><get name=myform findall="formvariable"><get name=myform findall="form-variable"></set>
   <repeat list=&vars; entity=var>
  <set name=varname><get name=var attr=name></set>
  <set name=formvar&varname;>&var.Text;</set>
@@ -132,6 +145,7 @@ Show Current <input type=submit name="form" value=timecard> forms.
 </repeat>
  <caption>Note: old style forms will show up as having all blank entries.</caption>
 </table>
+</else></if>
 <hr>
  </process>
 Show
@@ -151,7 +165,8 @@ month:
 </select>
 year:
 <select name="startyear">
- <if> <get name=myyear> <then> <option selected>&myyear;</option></then></if>
+ <if> <get name=myyear> <then> <option selected>&myyear;</option></then><else>
+<option selected>&year;</option></else></if>
  <repeat start=&year; stop=1997 step=-1> <option>&li;</option></repeat>
 </select>
 <if><get name=nummonths form> <then><set name=nmonths><get name=nummonths
@@ -166,7 +181,7 @@ for <input type="INT" name="nummonths" size="2" value=&nmonths;> months
 
   <set name=myform><read interform file=&form;/&form;.form
   process></set>
-<set name=vars><get name=myform findall="form-variable"></set>
+<set name=vars><get name=myform findall="formvariable"></set>
  <if> <get name=vars> <then>
  in which
 
@@ -192,7 +207,8 @@ this value:
  </then></if>
 <!-- Add input type="INT" name="conditions" size="2" value=&nconditions;
 condition(s). -->
-<input type="SUBMIT" value="Show Forms">
+<input type="SUBMIT" value="Show Forms (+data)">
+<if><get form name=form><else><input type="SUBMIT" value="ListForms(quicker)" name=quicklist></else></if>
 </form>
 
 </then>
@@ -209,6 +225,6 @@ For access please contact someone in the admin group:
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 13:46:01 1998
+Last modified: Thu Feb 26 19:01:53 1998
 <!-- hhmts end -->
 </body></html>

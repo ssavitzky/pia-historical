@@ -5,25 +5,25 @@
 You may be interested in learning more about 
 <a href="http://internal/genadmin/policies/evaluation.html">who will be reading your description and how it will be evaluated.</a><p>
        
-Your Name: <form-variable name=name options=users> </form-variable>
+Your Name: <formvariable name=name options=users> </formvariable>
 
 
 Inventors:<br> 
 <repeat start=1 stop=5>
-<form-variable name=inventor&li; options=users> </form-variable>
+<formvariable name=inventor&li; options=users> </formvariable>
 </repeat>
 
 Group:
-<form-variable name=group options="CIP DA ES ICARUS MLP PIA"> </form-variable>
+<formvariable name=group options="CIP DA ES ICARUS MLP PIA"> </formvariable>
 
 Objective (What problem does it solve):<br>
-<form-variable textarea=true name=objective rows=3 cols=70></form-variable>
+<formvariable textarea=true name=objective rows=3 cols=70></formvariable>
 	<br>
 Descriptive Title:<br>
-<form-variable textarea=true name=title rows=2 cols=40></form-variable>
+<formvariable textarea=true name=title rows=2 cols=40></formvariable>
 	
 Detailed Description:<br>
-<form-variable textarea=true name=description rows=5 cols=70></form-variable>
+<formvariable textarea=true name=description rows=5 cols=70></formvariable>
 Related Materials (URLS): <references></references>
 
 <h1>II.  Disclosure:</h1>
@@ -36,42 +36,42 @@ commercial scale?  Has the invention been disclosed to others
 outside the company in printed publication, technical meeting or
 otherwise? 
  <TD>
-<form-variable name=disclosed options="NO YES"></form-variable>
+<formvariable name=disclosed options="NO YES"></formvariable>
 </TD></TD>
 <TH>
  If the answer to any of these questions is yes, or if 
 any of these events are scheduled in the future, please give dates 
 and other details.
  <TD>
-<form-variable textarea=true name=disclosures rows=3 cols=20> </form-variable>
+<formvariable textarea=true name=disclosures rows=3 cols=20> </formvariable>
 </TD>	</TR>
 
 	</table>
 
 Is there an application deadline?  If yes, what is the deadline and
 why (conference paper, publication, etc.):
- <form-variable name=deadline rows=3 cols=60> </form-variable>
+ <formvariable name=deadline rows=3 cols=60> </formvariable>
 <br>
 When did you first disclose this invention (internally or externally)?<br>
 Date:
- <form-variable name=disclosedate> </form-variable><hr>
+ <formvariable name=disclosedate> </formvariable><hr>
 
 <h1>III.  Conception and Development</h1>
-When did you first think of this invention?  <form-variable name=conceptiondate> </form-variable><p>
+When did you first think of this invention?  <formvariable name=conceptiondate> </formvariable><p>
 	
 What records to you have to substantiate this date?  <a href="http://internal/genadmin/policies/lab.html">Notebook</a> numbers and pages,letter, reports, etc. with dates.<br>
- <form-variable name=substantiation rows=3 cols=70> </form-variable>
+ <formvariable name=substantiation rows=3 cols=70> </formvariable>
 
 	
-Stage of Invention:  <form-variable name=stage options="ConceptOnly PreliminaryExperiments ReadyforTechTransfer"> </form-variable><p>
+Stage of Invention:  <formvariable name=stage options="ConceptOnly PreliminaryExperiments ReadyforTechTransfer"> </formvariable><p>
 
-First Actual Experimental Work (Date):  <form-variable name=experimentdate> </form-variable><p>
+First Actual Experimental Work (Date):  <formvariable name=experimentdate> </formvariable><p>
 Notebook# and Page documenting the above experimental work:<br>
- <form-variable name=labbook> </form-variable><p>
+ <formvariable name=labbook> </formvariable><p>
 Enter the names of the individuals that witnessed that notebook entry:<br>
- <form-variable name=witnesses> </form-variable><p>
-Is further experimental work now underway or planned?  <form-variable
-name=further options="? Yes No"></form-variable>
+ <formvariable name=witnesses> </formvariable><p>
+Is further experimental work now underway or planned?  <formvariable
+name=further options="? Yes No"></formvariable>
 <hr>
 
 <h1>IV.  Prior Art</h1>
