@@ -11,6 +11,9 @@ Interpretor with a statement like:
 <h2>Annotated Contents</h2>
 
 <dl>
+  <dt> <a href="Actors.pm">Actors.pm</a>
+  <dd> Definitions and handlers for the various Actors in the standard
+       tagset. 
   <dt> <a href="IA.pm">IA.pm</a>
   <dd> Interform Agents.  These operate similarly to PIA agents, except they
        operate on SGML syntactic elements instead of on HTTP transactions.
@@ -21,6 +24,15 @@ Interpretor with a statement like:
   <dd> Interform Tokens.  The replacement for HTML::Element.  Unlike the
        latter, it uses no ``parent'' links, so reference-counting works
        properly. 
+  <dt> <a href="Parser.pm">Parser.pm</a>
+  <dd> Actually just a scanner--it takes a file or string and produces a
+       stream of Tokens.
+  <dt> <a href="Run.pm">Run.pm</a>
+  <dd> Simplified interfaces for running the Interpretor.
+  <dt> <a href="Semantics.pm">Semantics.pm</a>
+  <dd> Utility routines for manipulating Tokens, used by Actors.
+  <dt> <a href="Tagset.pm">Tagset.pm</a>
+  <dd> A (usually named) collection of Actors.
 </dl>
 
 <hr>
