@@ -57,6 +57,7 @@ public class HTML_ts extends BasicTagset {
     defTags(tableRowTags, tableRowTags, NORMAL);
     defTags("tr", tableTags, NORMAL);
     defTags("p", phraseTags + " p " + notInParagraph, 0);
+    defTags(dataTags, "", NORMAL);
     if (! emptyP) defTags(notInParagraph, "p", 0);
 
     // defined actors to create data structures
