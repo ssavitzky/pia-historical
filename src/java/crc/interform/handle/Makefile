@@ -119,7 +119,7 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 ###	compatibility. 
 dps-check::
 	@echo 'TOTAL	' `ls -l $(ACTORS) | wc -l` handlers':' \
-		`grep 'action(' $(ACTORS) | wc -l` dps checked \
+		`grep 'action(' $(ACTORS) | wc -l` worked on \
 		`grep 'bogusL' $(ACTORS) | wc -l` superceded \
 		`grep 'buggyL' $(ACTORS) | wc -l` buggy
 	@for f in `ls $(ACTORS)`; do \
