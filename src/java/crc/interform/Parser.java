@@ -62,6 +62,14 @@ class Parser extends Input {
   ** Variables:
   ************************************************************************/
 
+  /** The interpretor.  This is used to obtain syntax information. */
+  Interp interp = null;
+
+  /** Tell the Input what interpretor it is working for. */
+  public void interp(Interp ii) {
+    interp = ii;
+  }
+
   /** The input stream.  It is possible to use an ordinary InputStream
    *	at this point; all buffering is done internally for efficiency. */
   InputStream in = null;

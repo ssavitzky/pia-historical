@@ -243,6 +243,7 @@ public class Actor extends Token {
   /** Initialize from a Token (typically an &lt;actor&gt; element)
    *	and/or a name and tag. */
   void initialize(Token it, String name, String tag) {
+    //System.err.println("<"+tag+" name="+name+"> defined");
     if (it != null) {
       copyAttrsFrom(it);
       copyContentFrom(it);

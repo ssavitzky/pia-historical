@@ -25,7 +25,7 @@ public abstract class Input implements Enumeration {
 
 
   /************************************************************************
-  ** Variables:
+  ** Operations:
   ************************************************************************/
 
   /** Return the next item in this frame and advances to the next. 
@@ -43,13 +43,6 @@ public abstract class Input implements Enumeration {
     return true;
   }
 
-  Input() {
-  }
-
-  Input(Input previous) {
-    prev = previous;
-  }
-
   /** Control interface: ignore tags, and optionally entities as well,
    *	up to the given string (which is given literally).  Most Input
    *	subclasses ignore this; only Parser really has to look.
@@ -65,6 +58,9 @@ public abstract class Input implements Enumeration {
   /** Ignore entities (pass them as part of the text) if true. */
   boolean ignoreEntities;
 
+  /** Tell the Input what interpretor it is working for. */
+  public void interp(Interp ii) {
+  }
 
   /************************************************************************
   ** Enumeration interface:
@@ -77,6 +73,17 @@ public abstract class Input implements Enumeration {
   public Object nextElement() {
     if (endInput()) throw new NoSuchElementException();
     return nextInput();
+  }
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  Input() {
+  }
+
+  Input(Input previous) {
+    prev = previous;
   }
 
 }

@@ -246,7 +246,6 @@ public class Tagset extends Token {
       String tag = e.nextElement().toString();
       Actor a = forTag(tag);
       if (a != null) {
-	System.err.println("Appending to "+tag);
 	a.implicitlyEnds(t);
       } else {
 	define(new Actor(tag, null, t));

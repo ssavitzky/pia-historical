@@ -15,6 +15,7 @@ FILES = \
 	Input.java \
 	Interp.java \
 	Parser.java \
+	Run.java \
 	SGML.java \
 	State.java \
 	Tagset.java \
@@ -43,6 +44,8 @@ Interp.class: Interp.java Actor.java Input.java Token.java Tokens.java \
 	SGML.java State.java
 
 Parser.class: Parser.java Input.java Token.java Tokens.java SGML.java
+
+Run.class: Run.java Interp.java
 
 State.class: ../ds/List.java ../ds/Table.java
 

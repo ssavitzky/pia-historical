@@ -12,6 +12,9 @@ import crc.interform.State;
 import crc.ds.List;
 import crc.ds.Table;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  *	The Interform Interpretor parses a string or file, evaluating any 
  *	Interform Actors it runs across in the process.  Evaluation is
@@ -44,6 +47,13 @@ public class Interp extends State {
   /** If true, convert tokens to strings before putting them on the
    *  output queue.  */
   boolean streaming;
+
+  /** Points to any operating environment that might be needed by Actors.
+   *	In particular, points to a Run object when the Interp is running
+   *	inside the PIA on behalf of an agent. 
+   *
+   *	@see Run. */
+  Object environment;
 
   /************************************************************************
   ** Debugging:
@@ -499,12 +509,12 @@ public class Interp extends State {
   ** Processing:
   ************************************************************************/
 
-  /** Run the interpretor until it completes.  Return the output as either
-   *	text or as a single token, depending on isStreaming.
+  /** Run the interpretor until it completes.  Return the output.
    */
-  public SGML run() {
+  public Tokens run() {
+    resolve(null);
     flush();
-    return isStreaming()? (SGML)output.toText() : (SGML)output.toToken();
+    return output;
   }
 
   /** Flush the interpretor's input queue, running it to completion.
@@ -512,9 +522,6 @@ public class Interp extends State {
   public void flush() {
     resolve(Token.endTagFor(null));
   }
-
-  /* Step: undefined; may not be needed.  If needed, could be done
-   *   with resolve(nextInput). */
 
 
   /************************************************************************
@@ -594,24 +601,108 @@ public class Interp extends State {
     output = new Tokens();
   }
 
+  /** Create an Interp with the given tagset and entity table.  If
+   *	<code>parse</parse> is true, set the output to a new Tokens
+   *	list, otherwise setPassing and assume that the caller will set
+   *	the output to something appropriate.  The intended usage is:
+   *	<code> new Interp(ts, et, parse).fromFile(fn).toStream(os)
+   *	</code> or something similar. */
   public Interp(Tagset tagset, Table entities, boolean parse) {
     super();
     this.tagset = tagset;
     this.entities = entities;
-    output = new Tokens();
-    if (parse) setParsing(); else setPassing();
+    if (parse) {
+      setParsing(); 
+      output = new Tokens();
+    } else setPassing();
   }
 
-  public Interp(Tagset tagset, Table entities, Input in, Tokens out) {
-    super();
-    this.tagset = tagset;
-    this.entities = entities;
+  /** Create an Interp with the given tagset <em>name</em>, entity
+   *  table, and parsing flag.  */
+  public Interp(String tagsetName, Table entities, boolean parse) {
+    this(Tagset.tagset(tagsetName), entities, parse);
+  }
+
+
+  /************************************************************************
+  ** Setting input and output:
+  ************************************************************************/
+
+  /** Take input from any input source, typically a Parser. */
+  public Interp from(Input p) {
+    pushInput(p);
+    p.interp(this);
+    return this;
+  }
+
+  /** Take input from an InputStream. */
+  public Interp fromStream(InputStream in) {
+    return from(new Parser(in, null));
+  }
+
+  /** Take input from a file. */
+  public Interp fromFile(String filename) {
+    InputStream in = null;
+    try {
+      if (filename != null) in = new java.io.FileInputStream(filename);
+      return fromStream(in);
+    } catch (Exception e) {
+      System.err.println("Cannot open input file " + filename);
+      return this;
+    }
+  }
+  
+  /** Take input from a string. */
+  public Interp fromString(String input) {
+    return fromStream(new java.io.StringBufferInputStream(input));
+  }
+  
+
+  /** Send output to a stream. */
+  public Interp toStream(OutputStream out) {
+    output = new TokenStream(out);
     setPassing();
-    output = (out != null)? out : new Tokens();
-    if (in != null) pushInput(in);
+    return this;
+  }
+  
+  /** Send output to a file. */
+  public Interp toFile(String filename) {
+    OutputStream out = null;
+    try {
+      if (filename != null) out = new java.io.FileOutputStream(filename);
+      return toStream(out);
+    } catch (Exception e) {
+      System.err.println("Cannot open input file " + filename);
+      return this;
+    }
+  }
+
+  /** Collect output in a Tokens list.  Use
+   *	<code>run().simplify()</code> or <code>run().toToken()</code>
+   *	as appropriate for simplifying the tree. */
+  public Interp toTokens() {
+    output = new Tokens();
+    return this;
+  }
+
+  /** Collect output in a Text. Use <code>run().toText()</code> to get
+   *	the resulting output as a Text; <code>run().toString()</code>
+   *	for a String. */
+  public Interp toText() {
+    output = new Tokens();
+    setStreaming();
+    return this;
   }
 
 }
+
+
+
+/************************************************************************
+*************************************************************************
+** Auxiliary Classes:
+*************************************************************************
+************************************************************************/
 
 
 /**

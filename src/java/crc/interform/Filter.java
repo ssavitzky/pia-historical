@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import crc.interform.Parser;
 import crc.interform.Input;
 import crc.interform.Interp;
-import crc.interform.Tagset;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -70,13 +69,11 @@ public class Filter {
     Parser p = new Parser(in, null);
     p.debug = debug;
 
-    Interp ii = new Interp(Tagset.tagset(tsname), new Table(), 
-			   p, new TokenStream(out));
-    ii.debug  = debug;
-    ii.setStreaming();
+    Interp ii = new Interp(tsname, new Table(), false);
+    ii.from(p).toStream(out);
 
-    ii.resolve(null);
-    ii.flush();
+    ii.debug  = debug;
+    ii.run();
 
   }
 
