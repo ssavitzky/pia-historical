@@ -94,7 +94,8 @@ to include in the book, then press the retrieve button below </h4>
  <else><set name=myurl><get name=refered></set> </else>
  </if>
   <if>
-  <test><get name="myurl"></test>
+  <test><get name="theurl"></test>
+  <then><set name=myurl><get name=theurl></set></then>
   <else>
   <set-lastlink>
   <set name="myurl"><get name="lastlink" attr=href></set>
