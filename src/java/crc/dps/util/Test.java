@@ -14,7 +14,7 @@ import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
-import crc.dps.NodeType;
+import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.output.*;
 
@@ -84,6 +84,31 @@ public class Test {
     default: 
       return true;
     }
+  }
+
+  /** Determine whether a Node has a true value in a given context. 
+   *	If it does, return that value, otherwise return <code>null</code>
+   */
+  public static NodeList getTrueValue(ActiveNode aNode, Context aContext) {
+    if (aNode == null) return null;
+    ParseNodeList v = new ParseNodeList(aNode);
+
+    int nodeType = aNode.getNodeType();
+    switch (nodeType) {
+    case NodeType.TEXT:
+      return trueValue(aNode)? v : null;  
+
+    case NodeType.COMMENT: 
+      return null;
+
+    case NodeType.ATTRIBUTE: 
+      crc.dom.Attribute attr = (crc.dom.Attribute)aNode;
+      if (! attr.getSpecified()) return v;
+      return orValues(attr.getValue())? attr.getValue() : null;
+    }
+
+    v = Expand.processNodes(v, aContext);
+    return (orValues(v))? v : null;
   }
 
   /** Determine whether <em>all</em> the items in a nodeList are true.
