@@ -87,30 +87,51 @@ code, you can check out <code>pia/src</code> instead of <code>pia</code>.
 You will need a subdirectory of your home directory called
 "<code>.pia</code>".  Outside of CRC, you should also have an environment
 variable <code>PIA_DIR</code> which contains a path to the top of the PIA
-source tree (...<code>/pia/src</code>).  The executable,
+directory tree, unless it's in <code>/usr/local</code> or
+<code>/usr/local/src</code>.  The executable,
 <code>.../pia/src/Agencies/perl_small/pia.pl</code>, assumes that PERL is in
 /usr/local/bin, so you may have to either edit <code>pia.pl</code>or make a
-symbolic link.  The PIA will look in your home directory,
-<code>/pia1</code>, and <code>/usr/local/src</code> for a directory called
-<code>pia</code>. 
-<p>
-
-<blockquote><em>
-  === This is a lie: it doesn't look in /usr/local or /usr/local/src yet. <p>
-  === PIA_DIR should be .../pia, not .../pia/src.<p>
-</em></blockquote>
+symbolic link.  The PIA will look in your home directory, <code>/pia1</code>,
+<code>/usr/local/</code>, and <code>/usr/local/src</code> for a directory
+called <code>pia</code>.  <p>
 
 You will probably find it convenient to make a symbolic link 
 called <code>pia</code> in <em>/usr/local/bin</em> or wherever you keep your
-personal binaries.<p>
+personal binaries.  Assuming <code>PIA_DIR</code> is /usr/local/src/pia, you
+can do this with:<p> 
+
+<pre>
+  ln -s /usr/local/src/pia/bin/pia /usr/local/bin/
+</pre>
+
+<blockquote><em>
+  === we <strong>have</strong> to do something about that!
+</em></blockquote>
 
 That's it.  Now see <a href="../User/">the User's Manual</a> to get
 started.<p> 
 
 <hr>
+<h2>Peripheral Agencies</h2>
+
+If an Agency is started by the special user <code>pia</code>, it configures
+itself as a ``Peripheral Interface Agency,'' on the assumption that it's being
+used to control some peripheral device such as a printer, and also that it
+might be being shared among more than one ``real'' user.<p>
+
+Naturally, when Ricoh WebWorts and PIA-based appliances become available, they
+will come already configured, with an <code>agency</code> agent customized for
+system administration.  Until that glorious time, however, you may find
+yourself called upon to configure one.<p>
+
+
+
+<!-- === -->
+
+<hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Sep  5 09:04:55 1996
+Last modified: Sat Nov 23 18:29:04 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

@@ -19,7 +19,9 @@ request, while a request is ``unsolicited.''<p>
 
 An Agency operates on behalf of either an individual user (a Personal
 Information Agency), a group of users (a Public Interaction Agency), or even a
-piece of hardware (a Peripheral Interface Agency).  <p>
+piece of hardware (a Peripheral Interface Agency).  PIA can also stand for
+``Platform for Intelligent Agents'' or ``Platform for Information
+Appliances.''<p> 
 
 Outside the Agency, requests and responses are transmitted using HTTP, a
 standard Internet protocol which is completely operating-system and
@@ -28,8 +30,18 @@ widespread, almost universal, use.  An Agency, then, provides a way of
 examining, modifying, and re-routing transactions among the various clients
 and servers.  It can, itself, operate as a client, server, cache, and proxy
 server at various times.  As such, it provides a new platform for
-computing.<p> 
+document-oriented computing.<p> 
 
+The Agency acts as a platform for computing using a collection of ``agents,''
+each of which is seen as a ``sub-directory'' of the Agency's URL.  Each agent,
+in turn, is simply a collection of documents.  Some of these documents, called
+<dfn>InterForms</dfn> (for ``interactive forms'' or ``interface forms'', are
+<em>active</em> documents.<p>
+
+<h2>What Does it Do?</h2>
+
+
+<h2>Details</h2>
 
 <h3>How Does it Work?</h3>
 
@@ -47,11 +59,18 @@ of them return <code>true</code>, the Agency will perform a default action,
 either generating an error transaction for an unsatisfied request or
 forwarding a response to its destination.<p>
 
+Except for a small number of built-in agents, everything that an agent does is
+done by ``running'' an InterForm document (for example,
+<code>act_on.if</code>,  <code>handle.if</code>, or <code>home.if</code>).  <p>
+
+
+<h3>How Can I Get One?</h3>
+
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Sep  5 16:27:00 1996
+Last modified: Sat Nov 23 10:17:34 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
