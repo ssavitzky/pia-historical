@@ -316,7 +316,7 @@ public class annotatedhtml extends html
     public annotatedhtml() {
 	super();
     }
-
+    /*
     public annotatedhtml(java.io.InputStream in, Transaction trans){
 	super(in, trans);
     }
@@ -324,6 +324,7 @@ public class annotatedhtml extends html
     public annotatedhtml(java.io.Reader in, Transaction trans){
 	super(in, trans);
     }
+    */
 
     public annotatedhtml(java.io.InputStream in){
 	super(in);
