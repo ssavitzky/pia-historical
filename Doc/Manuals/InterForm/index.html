@@ -21,7 +21,8 @@ an ``active'' document that is run through a special-purpose formatter.<p>
 
 Because the extra tags follow strict SGML syntax conventions, InterForms can
 be edited with any text editor, or any HTML editor that lets you use new or
-non-standard tags.<p>
+non-standard tags, or any SGML editor (at least when we create an extended
+DTD).<p> 
 
 We hope that authors will find InterForms to be as easy to use as
 word-processor macros or text-formatting style sheets.  Programmers will find
@@ -30,17 +31,118 @@ any modern object-based language.<p>
 
 <h2>InterForm Data Structures</h2>
 
+The key idea behind InterForms is <em>computing with documents</em>, so data
+in the InterForm system is simply a piece of a document.  Markup is explicitly
+included in this, and HTML ``data structures'' are used as much as
+possible.<p>
+
+In particular, HTML lists (&lt;ul&gt; and &lt;ol&gt;) are used as lists or
+arrays.  Definition Lists (&lt;dl&gt;) are used as ``associative arrays,''
+in which you can look up a ``term'' (&lt;dt&gt;) and get the corresponding
+data (&lt;dd&gt;).  Similarly, tables (&lt;table&gt;) can be used like
+database tables.   This makes it easy to take parts of documents and use them
+as data, something most existing systems are not very good at.<p>
+
+In general, all data in an InterForm is in the form of SGML
+``<dfn>elements</dfn>.''  An element is either a string of characters, or a
+compound object consisting of a <em>start tag</em> and <em>end tag</em>
+enclosing some <em>content</em> elements between them.  The element may also
+have some named <dfn>attributes</dfn>; attributes and their associated values
+appear in the element's start tag.<p>
+
+
+Entities (those things like <code>&amp;copy;</code> that a browser displays as
+special characters) are used like variables--they can be defined (and
+redefined) and later ``expanded'' (replaced by their definition).  As you
+might expect, a definition list can be used for this.  Entities can also be
+used as ``iteration variables''--you can repeat a piece of text for every item
+in a list, with the <code>&amp;li;</code> entity replaced by each list item in
+turn.<p>
+
+Finally, new, active ``elements'' can be defined, complete with their own
+start tag, end tag, attributes, and content.  Whenever such an element appears
+in a document, a corresponding piece of InterForm data called an
+``<dfn>actor</dfn>'' is expanded, with entities bound to the element's
+attributes and content.<p>
+
+It is also possible to define ``<dfn>passive</dfn>'' actors, which ``look
+for'' particular ``features'' in a document, usually special attributes or
+particular attribute values.<p>
+
+
 <h2>The InterForm Interpretor</h2>
+
+<h3>Overview</h3>
+
+At this point, astute readers with writing experience will recognize actors
+and entities as special kinds of ``macros'' and ``abbreviations,'' and would
+suspect that processing an InterForm file involves running it through a kind
+of formatting or typesetting engine.  Readers with programming experience
+might instead choose to regard them as ``functions'' and ``variables,'' and
+expect to find a kind of interpretor.  Both would be perfectly correct.<p>
+
+The InterForm Interpretor (II) operates almost exactly like any other SGML
+text-processing application.  It takes in a stream of characters from a file,
+an HTTP server, or an input device, and turns it into a stream of
+``<dfn>tokens</dfn>.''  Each token is either a string of ordinary characters,
+an entity name, or a piece of ``markup:'' a start tag, end tag, or SGML
+declaration.<p>
+
+Next, any entities in the input stream are ``expanded,'' which means that
+input starts coming from the entity instead of from the original input stream.
+At this point, any end tags are paired with their corresponding start tag.
+Any end tags that may have been omitted (hardly anyone codes ``&lt;/li&gt;,''
+the end tag for a list item, for example) are generated automatically. <p>
+
+Finally the resulting tokens are sent to an output stream, usually a user's
+Web browser.<p>
+
+<em>Actually, things are a little more complicated than that.  But only a
+little.</em> <p>
+
+The complication comes in because of actors.  At any point in the process some
+actor might ``recognize its cue'' and start doing things.  Actors are rather
+limited in what they can do.  They can:<p>
+
+<ul>
+  <li> tell the interpretor to divert incoming tokens to someplace where the
+       actor can look at them later
+  <li> tell the interpretor to stop expanding entities and recognizing actors
+  <li> define new entities, or redefine existing ones
+  <li> perform some operations on the current ``element''
+  <li> tell the interpretor to replace the current element, its contents,
+       or any of its attributes, with new data.
+</ul>
+
+<h3>Terminology</h3>
+
+Diverting incoming tokens is called ``<dfn>parsing</dfn>;''  the result
+is that the interpretor constructs a compound object consisting of the start
+tag and its content--in other words the entire element.<p>
+
+Replacing an element, attribute, or entity with new data is called
+``<dfn>expanding</dfn>'' it, because it usually (not always) gets bigger as a
+result.<p>
+
+Allowing an actor to perform processing on an element is called
+``<dfn>applying</dfn>'' the actor to the element.<p>
+
+Associating an entity or attribute name with a value is called
+``<dfn>binding</dfn>'' the name to the value.<p>
+
+Processing a stream of incoming tokens (parsing, expanding, and applying
+actors) is called ``<dfn>evaluating</dfn>'' it.<p>
+
 
 <h2>The InterForm Language</h2>
 
-<h2>The Standard Agents</h2>
+<h2>The Standard Actors</h2>
 
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Nov  4 17:07:18 1996
+Last modified: Wed Nov 13 09:29:42 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
