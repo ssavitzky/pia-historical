@@ -1,4 +1,6 @@
 #!/usr/bin/perl -i.bak
+# $Id$
+# Copyright 1997 Ricoh Silicon Valley
 #	fixup.pl handler_file...
 #
 # This program hacks Java actor-handler files to convert comments 

@@ -144,6 +144,9 @@ Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
 
 doc:: actor-doc
 
+clean::
+	rm -f $(TAGSET_DOCS)
+
 actor-doc:	$(TAGSET_DOCS)
 	cp $(TAGSET_DOCS) $(TSDOCDIR)
 

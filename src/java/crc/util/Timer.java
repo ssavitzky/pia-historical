@@ -1,5 +1,6 @@
-
-
+// Timer.java
+// $Id$
+// COPYRIGHT 1997 Ricoh Silicon Valley.
 
 package crc.util;
 import java.io.*;
