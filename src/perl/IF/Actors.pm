@@ -403,18 +403,18 @@ sub actor_attrs_handle {
 
 ###### PIA Information Actors:
 
-### <pia-agent-home->name</pia-agent-home>
+### <agent-home>name</pia-agent-home>
 ###	expands to the agent's home interForm name.
 ###	Makes a link if the "link" attribute is present.
 
 ###	This is incredibly kludgy, but it works!
 
-define_actor('pia-agent-home', 'active' => 1, 'parsed' => 1, 
-	     'content' => 'name', _handle => \&pia_agent_home_handle,
+define_actor('agent-home', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&agent_home_handle,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
 
-sub pia_agent_home_handle {
+sub agent_home_handle {
     my ($self, $it, $ii) = @_;
 
     my $name = $it->attr('name');
@@ -422,12 +422,38 @@ sub pia_agent_home_handle {
     my $link = $it->attr('link');
 
     my $a = IF::Run::resolver()->agent($name);
-    return unless ref $a;
+
+    if (!ref $a) {
+	$ii->delete_it;
+	return;
+    }
     my $type = $a->type;
     my $home = ($type ne $name)? "$type/$name" : "$name";
 
     $home = IF::IT->new('a', 'href'=>"/$home/home.if", $home) if $link;
     $ii->replace_it($home);
+}
+
+### <agent-running>name</agent-running>
+###	Tests whether an agent is running
+
+define_actor('agent-running', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&agent_running_handle,
+	     'dscr' => "Tests whether an agent is running (installed)" );
+
+sub agent_running_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    $name = $it->content_string unless defined $name;
+    my $link = $it->attr('link');
+
+    my $a = IF::Run::resolver()->agent($name);
+    if (ref $a) {
+	$ii->replace_it($name);
+    } else {
+	$ii->delete_it;
+    }
 }
 
 1;
