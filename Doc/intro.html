@@ -9,28 +9,114 @@
 <body><center><h1>Introducing the Platform for Information Applications</h1></center><p>This
 document introduces the Platform for Information Applications (PIA).The
 PIA defines a new generation of document-oriented infoware with
-its reliance on XML to specify processing. The PIA framework divides
-an application into a core processing engine (called an agency)
-and task specific modules (called agents) which consist primarily
-of simple XML web pages.</p><p>The PIA functions as a web server
-that makes requests, processes documents, and handles inquiries
-on behalf of its "owner." This owner can be an individual making
-use of a web browser or it can be a network device.</p><p>An individual
-user might view the PIA as an agency employing electronic assistants,
-known as <em>agents</em>. These agents work on behalf of the user
-who <em>owns</em> the agency.</p><p>To use these agents, users must
-configure their web browser's proxy setting to point to their PIA agency.
-Once this is done, all requests for web documents are forwarded
-through the agency allowing agents to monitor the user's activities
-and retain useful information. (For example, the <var><a
-    href = "/History/home.xh">History</a></var> agent maintains
-a searchable list of all documents ever visited by its owner.) </p><p>When
-the PIA acts on behalf of a device, such as a printer, it provides
-access to the functions of that device from any web browser. Agents
-can provide new features such as the ability to download, format,
-and print web pages directly. By presenting a web-based, easy-to-use
-interface, the agent can turn complicated, difficult to use computer
-peripherals into easy to use <dfn><dfn>Information Applications</dfn></dfn>.</p><p>The
+its reliance on XML to specify processing. Information designers (authors,
+webmasters, programmers, and others) use the PIA framework to build complete,
+information intensive applications, called <i><a
+href=http://www.sunworld.com/swol-01-1999/swol-01-regex.html#2>infoware</a></i> that can be used via any web browser.
+<p>
+For the information developer, the
+PIA provides a core software base on which they can build  these
+kinds of applications without having to learn a programming language.
+Developers benefit because they can much more easily create, deliver, and
+maintain infoware applications.
+<p>
+
+<table width='80%' cellspacing='0' border='0' align='center'>
+  <tr> <th bgcolor='white' colspan='3' valign='top' align='left'>
+	<table width='100%' cellspacing='0' border='0'>
+	  <tr>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th> 
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp;  </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+	  </tr><tr>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> App 1 </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> App 2 </th> 
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> App 3  </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> App 4 </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+	  </tr><tr>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th> 
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<td bgcolor='white'>&nbsp;</td>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+		<th bgcolor='lightgreen'> &nbsp; </th>
+		<td bgcolor='lightgreen'>&nbsp;</td>
+	  </tr>
+	</table> </th></tr>
+  <tr> 
+  </tr><tr>
+  </tr><tr> <th bgcolor='lightblue' colspan='3' valign='top' align='left'>Agency:
+  </th></tr><tr> <th bgcolor='lightblue'>&nbsp;
+       </th><td bgcolor='white'>
+<ul>
+  <li> The software base is stable
+  </li><li> ...and shared by all applications
+</li></ul>
+       </td><th bgcolor='lightblue'>&nbsp;
+  </th></tr><tr> <th bgcolor='lightblue' colspan='3' align='right'> Software &nbsp;
+</th></tr>
+<tr><td align=center colspan=2> Information designers build information applications on top of the platform.</tr>
+</table>
+
+
+<p>
+For the infoware user, the PIA just looks like a regular web server that
+provides them access to the information application -- the collection of
+active pages that form a web site.  Infoware provides users with the
+information and functions they require in the convenient and familiar form of
+web pages.  The PIA further benefits users by extending the 
+open standard of the web to include not only content and layout, but also the processing associated
+with documents.  This standard reduces costs and complexity of managing their
+documents, and ensures that multiple infoware applications in
+an office will work together.
+<p>
+
+
+The PIA design divides an application into a core processing engine, the
+softare base that we call an <strong>agency</strong>, 
+and task specific collections of
+active XML web pages that we call <strong>agents</strong>.
+The agents contain all the knowledge required for a particular document
+processing task, and they are supported by the agency. </p>
+
+The slides accompanying the open source announcement of the PIA give the best
+overview of the benefits of this technology and the goals of the PIA project. This
+<a href=http://www.risource.org/PIA/LinuxWorld1999/lw99.slides.html> 
+presentation</a> was given at the LinuxWorld Conference &amp; Expo, March 4, 1999.
+<p>
+
+<p>The
 full potential of the PIA will be realized as users and developers
 build useful, task oriented agents. The PIA provides a solid foundation
 that enables rapid development and customization of agents. The
@@ -41,11 +127,11 @@ covered in this document include:</p><ul><li><a href = "#Agency">Working
 with the PIA Agency</a></li>
 <li><a href = "#Agents">Working with Agents</a></li></ul><hr><h2><a
     name = "Agency">Working with PIA Agency</a></h2><p>The <dfn>PIA
-Agency</dfn> is a program that manages a collection of software <dfn>agents</dfn>.
+Agency</dfn> is a program that manages a collection of <dfn>agents</dfn>.
 Those agents operate on and communicate by means of messages called <em>transactions</em>.
 Transactions are of two types: <em>requests</em> and <em>responses</em>.
 A response is generated by an agent or external server in reply to
-some request, while a request is "unsolicited."</p><p>An agency
+some request</p><p>An agency
 can operate on behalf of an individual user, a group of users, or
 a peripheral device. Thus an agency can operate as:</p><ul><li>a <em>web
 server</em> handing back documents in response to requests from
@@ -53,17 +139,21 @@ a client such as a browser</li>
 <li>a <em>client</em> requesting documents from other servers</li>
 <li>a <em>proxy</em> passing requests and responses along to the
 appropriate servers and clients, and possibly operating on the documents
-in the process</li></ul><p>This versatility opens the door to many
-possible applications:</p><ul><li>Agents can "web-enable" a standard
-peripheral, such as a printer. Our web-printer can operate as a
-proxy, serving page previews in response to requests.</li>
-<li>Agents can provide the basis for a document-processing "thin
-server." The web cache is an example of a thin server. </li>
-<li>An agents can operate as your <em>personal</em> proxy, keeping
-track of your browsing history, performing filtering operations,
-and annotating documents. In addition, it can be a personal web server,
-making selected directories on your desktop machine available to
-others.</li></ul><p>Outside the agency, requests and responses are
+in the process</li></ul>
+<p>This versatility opens the door to many
+possible applications:</p><ul><li>Agents can provide standard Web processing
+applications, like workgroup applications that manage the processing of
+purchase approval, expense reports, and other forms.</li>
+<li>Agents can provide process information that comes from other sources.  For
+example, an agent could make it fast and easy for you to simultaneously
+download many sound files from a server.  The agent first retrieves a page
+from the web server and processes that page to include a check box next to
+every link.  The user checks off the files they want to download and when they
+submit the form the agent automatically retrieves the specified files without
+requiring any further action by the user. </li>
+<li>An agent can also operate as a <em>personal</em> proxy, which can keep
+track of all the documents you view on the web even if you use different
+machines to access those documents (e.g., desktop and laptop systems).  </li></ul><p>Outside the agency, requests and responses are
 transmitted using HTTP, a standard, widely used Internet protocol
 which is operating-system and programming-language independent. </p><p>An
 agency provides a means of examining, modifying and re-routing transactions
@@ -71,7 +161,10 @@ among the various clients and servers. At times it operates as a
 client, as a server, as a cache, and as a proxy server depending
 upon the task it undertakes. As such, it provides a new platform
 for document-oriented computing.</p><h3 id = "CEGCDJID"><a name = "How">How
-Agencies Work</a></h3><p>Each transaction processed by an agency
+Agencies Work</a></h3>
+<em>This section is optional reading for those who just want to use the agency.
+</em>
+<p>Each transaction processed by an agency
 has a set of named <dfn>features</dfn> with corresponding values (mostly
 boolean) which are computed as needed. Each agent has a set of <dfn>criteria</dfn> that
 are matched against a transaction's features. Agents that match
@@ -201,9 +294,5 @@ command-line options are:</p><dl compact = "compact"><dt> <code>-e</code>
 <dd> Debugging.  Information is output which may be of use for debugging
 the interpreter. </dd></dl><p>For example, a possible start up command
 is:</p><blockquote><code>process -t xxml home.xh</code></blockquote><p>The
-CGI version of the interform interpreter is: <code>interform.cgi</code> .
-Information is passed to the interpreter according to the <a
-    href = "http://hoohoo.ncsa.uiuc.edu/cgi/">Common Gateway Interface</a> specification.
-The <code>.cgi</code> extension allows some servers (when suitably
-configured) to recognize it as a CGI script even if placed in a user's
-document directory.</p><hr><b>Copyright © 1999 Ricoh Silicon Valley</b></body></html>
+
+<hr><b>Copyright © 1999 Ricoh Silicon Valley</b></body></html>
