@@ -50,11 +50,17 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
   }
 
   /** Note that this has to do a shallow copy */
-  public ParseTreeEntity(ParseTreeEntity e) {
-    super(e.getName());
+  public ParseTreeEntity(ParseTreeEntity e, boolean copyChildren) {
+    super(e, copyChildren);
     isParameterEntity = e.isParameterEntity;
     handler = e.handler;
     action = e.action;
+  }
+
+  /** Construct a character entity. */
+  public ParseTreeEntity(String name, char c) {
+    super(name, new ParseNodeList(new ParseTreeText(c)));
+    // === really needs additional flag ===
   }
 
   /** Construct a node with given data. */
@@ -120,20 +126,13 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreeEntity(this);
+    return new ParseTreeEntity(this, false);
   }
 
   /** Return a deep copy of this Token.  Attributes and children are copied.
    */
   public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Copy.appendNode(newChild, node);
-    }
-    return node;
+    return new ParseTreeEntity(this, true);
   }
 
   /** Return new node corresponding to this Token, made using the given 

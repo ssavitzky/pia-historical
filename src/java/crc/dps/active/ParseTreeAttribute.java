@@ -37,7 +37,7 @@ public class ParseTreeAttribute extends ParseTreeNamed
 
   public int getNodeType() { return NodeType.ATTRIBUTE; }
 
-  public NodeList getValue(){ return getChildren(); }
+  public NodeList getValue(){ return super.getValue(); }
 
   public void setValue(NodeList value){
     setIsAssigned( true );
@@ -64,8 +64,8 @@ public class ParseTreeAttribute extends ParseTreeNamed
     super();
   }
 
-  public ParseTreeAttribute(ParseTreeAttribute e) {
-    super(e.getName(), e.getValue());
+  public ParseTreeAttribute(ParseTreeAttribute e, boolean copyChildren) {
+    super(e, copyChildren);
   }
 
   /** Construct a node with given data. */
@@ -116,13 +116,13 @@ public class ParseTreeAttribute extends ParseTreeNamed
    *	need to do a deep copy.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreeAttribute(this);
+    return new ParseTreeAttribute(this, false);
   }
 
   /** Return a deep copy of this Token.  Attributes and children are copied.
    */
   public ActiveNode deepCopy() {
-    return new ParseTreeAttribute(this);
+    return new ParseTreeAttribute(this, true);
   }
 
   /** Return new node corresponding to this Token, made using the given 

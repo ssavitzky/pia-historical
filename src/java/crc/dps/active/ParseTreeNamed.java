@@ -28,14 +28,14 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
    *	Eventually we may want a way to distinguish values stored in
    *	the children from values stored in a separate nodelist.
    */
-  public NodeList getValue(){ return value; }
+  public NodeList getValue(){ return value/*getChildren()*/; }
 
   /** Set the node's value.  If the value is <code>null</code>, 
    *	the value is ``un-assigned''.  Hence it is possible to 
    *	distinguish a null value (no value) from an empty one.
    */
   public void setValue(NodeList newValue) {
-    if (value == null) {
+    if (newValue == null) {
       isAssigned = false;
       value = null;
       return;
@@ -43,6 +43,7 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
       isAssigned = true;
     }
     value = new ParseNodeList(newValue);
+    //setChildren(newValue);
   }
 
   public ParseTreeNamed() {
@@ -70,6 +71,7 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
   public ParseTreeNamed(ParseTreeNamed attr, boolean copyChildren){
     super(attr, copyChildren);
     setName( attr.getName() );
+    setValue( attr.getValue() );
   }
 
   /**
