@@ -6,7 +6,7 @@
 
 <read interform file="heading.inc" process>
 
-<form action="http://amazon:8888/Bughistory/buglog.if" method=post>
+<form action="http://pia.crc.ricoh.com:8888/Bughistory/buglog.if" method=post>
 Platform:<select name="machine">
 	<option>Sun
 	<option>Linux
