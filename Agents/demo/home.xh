@@ -21,6 +21,7 @@
     <tr><th><td> <a href=demo_text.xh>Text Examples</a>
     <tr><th><td> <a href=demo_num.xh>Numeric Examples</a>
     <tr><th><td> <a href=demo_if.xh>If and Sub-component Examples</a>
+    <tr><th><td> <a href=demo_logic.xh>Logical And/Or Examples</a>
     <tr><th><td> <a href=demo_subst.xh>Substitute Examples</a>
     <tr><th><td> <a href=demo_rep.xh>Repeat Examples</a>
     <tr><th><td> <a href=demo_getset.xh>Get and Set Variable Examples</a>
