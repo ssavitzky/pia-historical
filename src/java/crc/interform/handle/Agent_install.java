@@ -61,7 +61,7 @@ public class Agent_install extends crc.interform.Handler {
       ii.error(ia, "only works in the Agency agent");
     }
 
-    ii.replaceIt(form.at("agent").toString());
+    ii.replaceIt(name);
   }
 }
 
