@@ -96,7 +96,7 @@ done
 
 # The pia class library.
 PIA_CLASSES=${PIA_CLASSES-$PIA_DIR/lib/java/crc.zip}
-REGEXP_CLASSES=${REGEXP_CLASSES-/pia1/ext/java}
+REGEXP_CLASSES=${REGEXP_CLASSES-$PIA_DIR/lib/java/regexp.jar}
 
 # where zjigsaw lives, ya
 JIGSAW_HOME=${JIGSAW_HOME-$PIA_DIR/lib/java}
