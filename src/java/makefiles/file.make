@@ -19,10 +19,12 @@
 # doc:   to build the appropriate documentation files from the source
 #   	 Normally does nothing, since javadoc is called non-recursively
 #	 at the top level.  May be used for auxiliary documentation.
-# jdoc:	 to invoke javadoc in this directory.
+# jdoc:	 to invoke javadoc in this directory.  Does not make package index
+#	 or class hierarchy, since these are shared by all packages, but can
+#	 be used to quickly update the documentation for a changed package.
 
 # <steve@rsv.ricoh.com>
-#	The Sun originals require MAKEDIR and DESTDIR to be absolute.
+#	The Sun originals required MAKEDIR and DESTDIR to be absolute paths.
 #	This has serious problems when you're trying to use source control.
 
 CLASSDIR= $(TOPDIR)
@@ -56,7 +58,7 @@ doc::
 	@echo Documenting.
 
 jdoc::
-	javadoc -d $(DOCDIR) -classpath $(BUILDCLASSES) $(PACKAGE)
+	javadoc -d $(DOCDIR) -noindex -notree -classpath $(BUILDCLASSES) $(PACKAGE)
 
 clean::
 	@@rm -rf *~ *.class
