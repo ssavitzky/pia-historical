@@ -90,8 +90,16 @@ public class Calendar_day extends crc.interform.Handler {
   protected SGML addEntryToTable(SGML table, String day, SGML content){
     System.out.println("\n\nInside addEntryToTable\n");
     Index foobar = new Index("5");
+   try{
     SGML r = foobar.lookup(table);
-    return r;
+   return r;  
+     
+   }
+   catch(Exception e){
+     
+   }
+   return null;
+   
   }
 
 }
