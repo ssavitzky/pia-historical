@@ -9,3 +9,15 @@ FILES = \
 	AgentInstallException.java
 
 include $(TOPDIR)/makefiles/file.make
+
+### Dependencies:
+
+Agency.class: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
+	../Transaction.java ../Machine.java ../HTTPRequest.java
+
+AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \
+	 ../Pia.java ../Content.java  ../ByteStreamContent.java  \
+	../Transaction.java ../Machine.java ../HTTPResponse.java
+
+Dofs.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
+	../Transaction.java ../Machine.java ../HTTPRequest.java
