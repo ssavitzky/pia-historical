@@ -9,9 +9,14 @@ import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.Element;
 
+import crc.ds.Association;
+
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
+
+import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
 
 /**
  * Handler for <test>  <p>
@@ -41,8 +46,6 @@ public class testHandler extends GenericHandler {
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     // Default is simply to test for "truth"
-    // aContext.message(0, "Testing " + content + " " + Test.orValues(content), 
-    //		        0, true);
     returnBoolean(Test.orValues(content), out, atts);
   }
 
@@ -50,9 +53,15 @@ public class testHandler extends GenericHandler {
   public Action getActionForNode(Node n) {
     ActiveElement e = (ActiveElement)n;
 
-    // === Parse-time dispatching currently unimplemented ===
-    // === Should really test for active attributes before calling ===
-    return this;
+    if (dispatch(e, "zero")) 	 return new test_zero(e);
+    if (dispatch(e, "positive")) return new test_positive(e);
+    if (dispatch(e, "negative")) return new test_negative(e);
+    if (dispatch(e, "match")) 	 return new test_match(e);
+    if (dispatch(e, "null")) 	 return new test_null(e);
+
+    if (e.getAttributes() == null || e.getAttributes().getLength() == 0)
+      return this;
+    else return new testHandler(e);
   }
 
   /** This returns a boolean <code>value</code> according to the 
@@ -65,10 +74,11 @@ public class testHandler extends GenericHandler {
    */
   public static void returnBoolean(boolean value,
 				   Output out, ActiveAttrList atts) {
-    NodeList rv;
     if (atts == NO_ATTRS) {
       if (value) { out.putNode(new ParseTreeText("1")); }
+      return;
     }
+    NodeList rv;
     if (atts.hasTrueAttribute("not")) value = !value;
     if (value) {
       rv = atts.getAttributeValue("iftrue");
@@ -91,7 +101,7 @@ public class testHandler extends GenericHandler {
    *	may contain entities that have to be expanded.
    */
   public void returnBoolean(boolean value, Context c, Output out) {
-    NodeList rv;
+    c.debug("<test> returning " + value + " " + getClass().getName() + "\n");
     if (inverted) value = !value;
     if (value) {
       if (trueValue != null) 	{ Expand.expandNodes(c, trueValue, out); }
@@ -121,18 +131,19 @@ public class testHandler extends GenericHandler {
   }
 
   /** Construct a specialized action. */
-  public testHandler(boolean text, boolean invert,
+  public testHandler(boolean string, boolean text, boolean invert,
 		     NodeList iftrue, NodeList iffalse) {
-    textContent = text;
     inverted 	= invert;
     trueValue 	= iftrue;
     falseValue 	= iffalse;
 
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
+    stringContent = string;	//  	want content as string?
+    textContent = text;		//	want only text in content?
+
     expandContent = true;	// false	Expand content?
     passElement = false;	// true 	pass while expanding?
-    noCopyNeeded = false;	// true 	don't copy parse tree?
+    noCopyNeeded = true;	// false 	don't copy parse tree?
 
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
@@ -140,15 +151,21 @@ public class testHandler extends GenericHandler {
     elementSyntax = -1;			// -1: non-empty 1: empty 0: check
   }
 
-  public testHandler(ActiveAttrList atts) {
-    this(atts.hasTrueAttribute("text"),
-	 atts.hasTrueAttribute("not"),
-	 atts.getAttributeValue("iftrue"),
-	 atts.getAttributeValue("iffalse"));
+  public testHandler(ActiveElement e) {
+    this(false, e.hasTrueAttribute("text"),
+	 e.hasTrueAttribute("not"),
+	 e.getAttributeValue("iftrue"),
+	 e.getAttributeValue("iffalse"));
+  }
+  public testHandler(ActiveElement e, boolean text, boolean string) {
+    this(string, text,
+	 e.hasTrueAttribute("not"),
+	 e.getAttributeValue("iftrue"),
+	 e.getAttributeValue("iffalse"));
   }
 }
 
-/*
+/*	=== unimplemented stuff from legacy implementation ===
     boolean result = false;
     SGML test = Util.removeSpaces(it.content());
 
@@ -158,44 +175,93 @@ public class testHandler extends GenericHandler {
       test = test.contentText();
     } 
 
-    if (it.hasAttr("zero")) {
-      result = Util.numValue(test) == 0;
-    } else if (it.hasAttr("positive")) {
-      result = Util.numValue(test) > 0;
-    } else if (it.hasAttr("negative")) {
-      result = Util.numValue(test) < 0;
     } else if (it.hasAttr("markup")) {
       result = ! test.isText();
-    } else if (it.hasAttr("match")) {
-      String match = it.attrString("match");
-      if (match == null) match = "";
-      boolean exact = it.hasAttr("exact");
-      boolean csens = it.hasAttr("case");
-      if (exact) result = csens? match.equals(test.toString())
-		               : match.equalsIgnoreCase(test.toString());
-      else {
-	String str = test.toString();
-	if (! csens) {
-	  str = str.toLowerCase();
-	  match = match.toLowerCase();
-	}
-	try {
-	  RegExp re = new RegExp(match);
-          MatchInfo mi = re.match(str);
-	  result = (mi != null && mi.end() >= 0);
-	} catch (Exception e) {
-	  ii.error(ia, "Exception in regexp: "+e.toString());
-	}
-      }
-    } else {
-      result = ! test.isEmpty();
-    } 
-
-    if (it.hasAttr("not")) result = ! result;
-
-    if (result) {
-      ii.replaceIt(it.hasAttr("iftrue")? it.attr("iftrue") : new Text("1"));
-    } else {
-      ii.replaceIt(it.hasAttr("iffalse")? it.attr("iffalse") : null);
-    }
 */
+
+/* ***********************************************************************
+ * Subclasses:
+ *
+ *	These subclasses cannot be used as stand-alone handlers; they
+ *	really only work as <code>action</code> handlers because they
+ *	assume that <code>trueValue</code>, <code>falseValue</code>, etc. 
+ *	are set up properly. 
+ *
+ *	The correct thing is to have dispatching look at the tag as well
+ *	as the attributes of the element being dispatched on; this is
+ *	done by the <code>dispatch(<em>e, name</em>)</code> function 
+ *	in the most common case where <em>name</em> is either the name
+ *	of an attribute or a suffix of the element's tagname.
+ *
+ ************************************************************************/
+
+
+class test_zero extends testHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Association a = Association.associateNumeric(null, cstring);
+    returnBoolean(a.isNumeric() && a.doubleValue() == 0.0, aContext, out);
+  }
+  public test_zero(ActiveElement e) { super(e, true, true); }
+}
+
+class test_positive extends testHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Association a = Association.associateNumeric(null, cstring);
+    returnBoolean(a.doubleValue() > 0.0, aContext, out);
+  }
+  public test_positive(ActiveElement e) { super(e, true, true); }
+}
+
+class test_negative extends testHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Association a = Association.associateNumeric(null, cstring);
+    returnBoolean(a.doubleValue() < 0.0, aContext, out);
+  }
+  public test_negative(ActiveElement e) { super(e, true, true); }
+}
+
+class test_match extends testHandler {
+  boolean exactMatch = false;
+  boolean caseSens   = false;
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    String match = atts.getAttributeString("match");
+    if (match == null) match = "";
+    boolean result = false;
+    if (exactMatch) {
+      result = caseSens? match.equals(cstring)
+		       : match.equalsIgnoreCase(cstring);
+    } else {
+      if (! caseSens) {
+	cstring = cstring.toLowerCase();
+	match   = match.toLowerCase();
+      }
+      try {
+	RegExp re = new RegExp(match);
+	MatchInfo mi = re.match(cstring);
+	result = (mi != null && mi.end() >= 0);
+      } catch (Exception ex) {
+	// === ii.error(ia, "Exception in regexp: "+ex.toString());
+      }
+    }
+    returnBoolean(result, aContext, out);
+  }
+  public test_match(ActiveElement e) {
+    super(e);
+    stringContent = true;
+    exactMatch = e.hasTrueAttribute("exact");
+    caseSens   = e.hasTrueAttribute("case");
+  }
+}
+
+class test_null extends testHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    returnBoolean(content == null || content.getLength() == 0, aContext, out);
+  }
+  public test_null(ActiveElement e) { super(e); }
+}
+
