@@ -59,7 +59,7 @@ public class Table extends Hashtable implements Stuff, Tabular {
   public Stuff at(String a, Object v) {
     if (a == null || v == null) 
       System.err.println("Table: attempting to put a="+a+", v="+v);
-    put(a, v);
+    super.put(a, v);
     return this;
   }
 
@@ -104,7 +104,7 @@ public class Table extends Hashtable implements Stuff, Tabular {
   // in HashTable: public Enumeration keys();
 
   public Object get(String key) { return get((Object)key); }
-  public void put(String key, Object value) { at(key, value); }
+  public void put(String key, Object value) { super.put(key, value); }
   
   /************************************************************************
   ** Construction:
