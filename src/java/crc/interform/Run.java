@@ -6,7 +6,7 @@ package crc.interform;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -243,7 +243,7 @@ public class Run  extends Environment {
   public static InputStream interformString(Agent agent, String filename, 
 					    String page, Transaction trans,
 					    Resolver res) {
-    InputStream in = new StringBufferInputStream(page);
+    StringReader in = new StringReader(page);
     return new Run(agent, trans, res, filename).filterStream(in, "Standard");
   }
 

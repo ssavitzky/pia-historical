@@ -14,6 +14,8 @@ FILES = \
 	Filter.java \
 	Handler.java \
 	Input.java \
+	InterFormReader.java \
+	InterFormStream.java \
 	Interp.java \
 	Parser.java \
 	Run.java \
@@ -21,6 +23,7 @@ FILES = \
 	State.java \
 	Tagset.java \
 	TokenStream.java \
+	TokenWriter.java \
 	Util.java
 
 include $(TOPDIR)/makefiles/file.make
@@ -40,6 +43,10 @@ Filter.class: Filter.java Interp.java
 
 Handler.class: Handler.java Actor.java Interp.java \
 	../sgml/SGML.java ../ds/Table.java
+
+InterFormReader.class: Interp.java
+
+InterFormStream.class: Interp.java
 
 Interp.class: Interp.java Actor.java Input.java State.java \
 	../sgml/Element.java ../sgml/Entity.java \

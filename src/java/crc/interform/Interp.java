@@ -21,6 +21,10 @@ import crc.ds.List;
 import crc.ds.Table;
 import crc.ds.Index;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.FileReader;
+import java.io.Writer;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -644,8 +648,10 @@ public class Interp extends State {
 	  debug("appended to "+elementTag()+"\n");
 	  pushToken(it);
 	}
-	if (passing) { passToken(it); debug("passed\n"); }
-	if (once) return;
+	if (passing) {
+	  passToken(it); debug("passed\n");
+	  if (once) return;
+	}
       } else {
 	debug("deleted\n");
       }
@@ -834,7 +840,7 @@ public class Interp extends State {
   ** Setting input and output:
   ************************************************************************/
 
-  /** Take input from any input source, typically a Parser. */
+  /** Take input from any Input source, typically a Parser. */
   public Interp from(Input p) {
     pushInput(p);
     p.interp(this);
@@ -846,21 +852,26 @@ public class Interp extends State {
     return from(new Parser(in, null));
   }
 
+  /** Take input from a Reader. */
+  public Interp fromReader(Reader in) {
+    return from(new Parser(in, null));
+  }
+
   /** Take input from a file. */
   public Interp fromFile(String filename) {
-    InputStream in = null;
+    Reader in = null;
     try {
-      if (filename != null) in = new java.io.FileInputStream(filename);
-      return fromStream(in);
+      if (filename != null) in = new FileReader(filename);
+      return fromReader(in);
     } catch (Exception e) {
       System.err.println("Cannot open input file " + filename);
       return this;
     }
   }
   
-  /** Take input from a string. */
+  /** Take input from a String. */
   public Interp fromString(String input) {
-    return fromStream(new java.io.StringBufferInputStream(input));
+    return fromReader(new java.io.StringReader(input));
   }
   
 
@@ -871,12 +882,19 @@ public class Interp extends State {
     return this;
   }
   
+  /** Send output to a Writer. */
+  public Interp toWriter(Writer out) {
+    output = new TokenWriter(out);
+    setPassing();
+    return this;
+  }
+  
   /** Send output to a file. */
   public Interp toFile(String filename) {
-    OutputStream out = null;
+    Writer out = null;
     try {
-      if (filename != null) out = new java.io.FileOutputStream(filename);
-      return toStream(out);
+      if (filename != null) out = new java.io.FileWriter(filename);
+      return toWriter(out);
     } catch (Exception e) {
       System.err.println("Cannot open input file " + filename);
       return this;
@@ -887,6 +905,12 @@ public class Interp extends State {
    *	necessary using <code>run().simplify()</code>. */
   public Interp toTokens() {
     output = new Tokens();
+    return this;
+  }
+
+  /** Collect output in a given Tokens list (usually a subclass).  */
+  public Interp toTokens(Tokens t) {
+    output = t;
     return this;
   }
 

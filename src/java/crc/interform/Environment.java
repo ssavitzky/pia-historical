@@ -7,14 +7,16 @@ package crc.interform;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.StringReader;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.io.StringBufferInputStream;
 
 import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import crc.interform.Parser;
 import crc.interform.Input;
@@ -98,15 +100,29 @@ public class Environment {
     if (entities == null) {
       entities = new Table();
 
+      /*
       Date date = new Date();
       String yyyy = pad(date.getYear()+1900, 4);
       String mm	  = pad(date.getMonth()+1, 2);
       String dd   = pad(date.getDate(), 2);
       String hh	  = pad(date.getHours(), 2);
       String min  = pad(date.getMinutes(), 2);
-      int wday	  = /* date.getWeekday()) */ Util.getWeekday(date);
+      String sec  = pad(date.getSeconds(), 2);
+      int wday	  = Util.getWeekday(date); // date.getWeekday())
+      */
 
-      ent("second",	pad(date.getSeconds(), 2));
+      Calendar date = new GregorianCalendar();
+      String yyyy = pad(date.get(Calendar.YEAR), 4);
+      int    m	  = date.get(Calendar.MONTH);
+      String mm	  = pad(m+1, 2);
+      String dd   = pad(date.get(Calendar.DAY_OF_MONTH), 2);
+      String hh	  = pad(date.get(Calendar.HOUR_OF_DAY), 2);
+      String min  = pad(date.get(Calendar.MINUTE), 2);
+      String sec  = pad(date.get(Calendar.SECOND), 2);
+      int wday	  = (date.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
+      // We want Sunday = 0.  This handles any reasonable value of SUNDAY;
+
+      ent("second",	sec);
       ent("minute",	min);
       ent("hour",	hh);
       ent("day",	dd);
@@ -114,12 +130,12 @@ public class Environment {
       ent("year",	yyyy);
       ent("weekday",	pad(wday, 1));
       ent("dayName",	dayNames.at(wday));
-      ent("monthName",	monthNames.at(date.getMonth()));
-      //ent("yearday",	date.getYday);
+      ent("monthName",	monthNames.at(m));
+      ent("yearday",	pad(date.get(Calendar.DAY_OF_YEAR), 3));
       ent("date",	yyyy+mm+dd);
       ent("time",	hh+":"+min);
 
-      ent("dateString",	date.toLocaleString());
+      ent("dateString",	date.toString());
 
       if (filename != null) {
 	ent("filePath", filename);
@@ -166,9 +182,9 @@ public class Environment {
   ************************************************************************/
 
   /** Open an input file (usually <code>filename</code>). */
-  public FileInputStream open(String infile) {
+  public FileReader open(String infile) {
     try {
-      if (infile != null) return new FileInputStream(infile);
+      if (infile != null) return new FileReader(infile);
       else return null;
     } catch (Exception e) {
       System.err.println("Cannot open input file " + infile);
@@ -178,6 +194,15 @@ public class Environment {
 
   /** Run the interpretor on an InputStream, with output to a stream. */
   public void runStream(InputStream in, OutputStream out, String tsname) {
+    Parser p = new Parser(in, null);
+    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    ii.from(p).toStream(out);
+    use(ii);
+    ii.run();
+  }
+
+  /** Run the interpretor on a Reader, with output to a stream. */
+  public void runStream(Reader in, OutputStream out, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
     ii.from(p).toStream(out);
@@ -199,24 +224,36 @@ public class Environment {
     return ii.run().toString();
   }
 
+  /** Run the interpretor on a Reader to produce a String value. */
+  public String eval(Reader in, String tsname) {
+    Parser p = new Parser(in, null);
+    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    ii.from(p).toText();
+    use(ii);
+    return ii.run().toString();
+  }
+
   /** Run the interpretor on a file to produce a String value. */
   public String evalFile(String tsname) {
-    return evalStream(open(filename), tsname);
+    return eval(open(filename), tsname);
   }
 
   /** Filter an InputStream on an interform, i.e. produce an InputStream 
    *	that contains the results of evaluating the interform.
    */
-  public InputStream filterStream(InputStream in, String tsname) {
+  public InputStream filterStream(Reader in, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
-    ii.from(p).toText();
+    ii.from(p).toTokens();
     use(ii);
-
-    // === this is a kludge, to be fixed later. 
-
+    
+    InterFormStream out = new InterFormStream(ii);
+    return out;
+    /*
+    ii.toText();
     String interformOutput = ii.run().toString();
-    return new StringBufferInputStream( interformOutput );
+    return new java.io.StringBufferInputStream( interformOutput );
+    */
   }
 
   /** Filter a file, producing an InputStream. */
@@ -242,18 +279,27 @@ public class Environment {
     return ii.run();
   }
 
+  /** Parse a Reader, producing a parse tree. */
+  public Tokens parse(Reader in, String tsname) {
+    Parser p = new Parser(in, null);
+    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(),true);
+    ii.from(p).toTokens();
+    use(ii);
+    return ii.run();
+  }
+
   /** Parse a file, producing a parse tree. */
   public SGML parseFile(String tsname) {
-    return parseStream(open(filename), tsname);
+    return parse(open(filename), tsname);
   }
 
   /** Parse a String, producing a parse tree. */
   public SGML parseString(String input, String tsname) {
-    return parseStream(new java.io.StringBufferInputStream(input), tsname);
+    return parse(new StringReader(input), tsname);
   }
 
-  /** Run the interpretor on an InputStream, discarding the output. */
-  public void skipStream(InputStream in, String tsname) {
+  /** Run the interpretor on a reader, discarding the output. */
+  public void skip(Reader in, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
     ii.from(p).toNull();
@@ -264,7 +310,7 @@ public class Environment {
 
   /** Run the interpretor on a file, discarding the output. */
   public void skipFile(String tsname) {
-    skipStream(open(filename), tsname);
+    skip(open(filename), tsname);
   }
 
   /************************************************************************

@@ -12,7 +12,10 @@ import crc.sgml.Element;
 import crc.sgml.Entity;
 import crc.sgml.Tokens;
 
+import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.io.Reader;
+
 import java.io.IOException;
 import java.util.BitSet;
 
@@ -54,9 +57,9 @@ import java.util.BitSet;
  * <b>NOTE:</b> The Parser is currently unable to correctly handle SGML
  *	comments that contain the string "-->" internally.  <p>
  *
- * <b>NOTE:</b> We are NOT using a StreamTokenizer at this point.  The reason
- *	is that we need all characters to be significant and
- *	``ordinary'' outside of tags, so the StreamTokenizer would
+ * <b>NOTE:</b> We are <strong>not</strong> using a StreamTokenizer at this
+ *	point.  The reason is that we need all characters to be significant
+ *	and ``ordinary'' outside of tags, so the StreamTokenizer would
  *	simply add an extra layer of overhead for very little effect. <p>
  *
  *	@see http:/PIA/src/perl/IFParser.pm <p>
@@ -77,7 +80,7 @@ public class Parser extends Input {
 
   /** The input stream.  It is possible to use an ordinary InputStream
    *	at this point; all buffering is done internally for efficiency. */
-  InputStream in = null;
+  Reader in = null;
 
   /** Holds characters that have been ``eaten'' from the stream. */
   StringBuffer buf = new StringBuffer(256);
@@ -178,6 +181,12 @@ public class Parser extends Input {
   }
 
   public Parser(InputStream in, Input previous) {
+    super(previous);
+    this.in = new InputStreamReader(in);
+    if (isIdent == null) initializeTables();
+  }
+
+  public Parser(Reader in, Input previous) {
     super(previous);
     this.in = in;
     if (isIdent == null) initializeTables();

@@ -53,15 +53,10 @@ public class Util extends crc.sgml.Util {
 				//    ^^^^^^^^^^^^^^^^  sum is > 31 bits!
   }
 
-  /** Compute Julian day from a Date object. */
-  public static long julianDay(Date aDate) {
-    return julianDay(aDate.getYear()+1900, aDate.getMonth(), aDate.getDay());
-  }
-
   /** Compute day of the week (Sunday = 0) from a Julian day. */
-  public static int getWeekday(Date aDate) {
+  public static int getWeekday(long jday) {
     // === should be +1; indicates an arithmetic problem in julianDay ===
-    return (int)((julianDay(aDate) +1L) % 7L);
+    return (int)((jday +1L) % 7L);
   }
 
   /** Compute day of the month from a Julian day. */
