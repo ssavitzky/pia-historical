@@ -14,9 +14,6 @@ BINDIR=$(pwd)
 PIA_HOME=${BINDIR%/*}
 echo $PIA_HOME
 
-#property file name
-TEMP=$PIA_HOME/Config/pia.props
-
 #determine where the documentation is
 DOCURL=$PIA_HOME/Doc/Manuals/Api/JavaDoc
 
@@ -27,17 +24,20 @@ elif [ -n "$HTTP_PROXY" ] ; then
     HPROXLINE=crc.pia.proxy_http=$HTTP_PROXY
 fi
 
-if [ -d "$HOME/pia" ] ; then
-	echo "userroot exist at :"
-	echo $HOME/pia
-	USRROOT=crc.pia.usrroot=$HOME/pia
-elif [ -d "$PIA_HOME/users/whoami" ] ; then
-	echo "userroot exist at :"
-	echo $HOME/users/whoami
-	USRROOT=crc.pia.usrroot=$HOME/users/whoami
+USRPIA=.foobar
+if [ ! -d "$HOME/$USRPIA" ] ; then
+    mkdir $HOME/$USRPIA
+fi
+USRROOT=crc.pia.usrroot=$HOME/$USRPIA
+
+if [ ! -e "$HOME/$USRPIA/Config" ] ; then
+    mkdir $HOME/$USRPIA/Config
 fi
 
-cat > $TEMP << EOF
+#property file name
+PIAPROPFILE=$HOME/$USRPIA/Config/pia.props
+
+cat > $PIAPROPFILE << EOF
 $HPROXLINE
 crc.pia.no_proxy=$HOST
 crc.pia.docurl=$DOCURL
