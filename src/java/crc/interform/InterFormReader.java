@@ -3,8 +3,10 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
+
 import java.io.Reader;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
@@ -14,6 +16,11 @@ import crc.interform.Interp;
 
 /**
  * Read characters from an InterForm interpretor.
+ *	A StringWriter and its StringBuffer are kept around as the buffer;
+ *	the Interp's output is written directly into the buffer rather than
+ *	being converted to a String.
+ *
+ *	@see InterFormStream
  */
 public class InterFormReader extends Reader {
 
@@ -22,8 +29,9 @@ public class InterFormReader extends Reader {
   ************************************************************************/
 
   protected Interp interp;
-  protected String currentOutput;
-  protected int currentPosition;
+  protected StringBuffer currentOutput;
+  protected int 	 currentPosition;
+  protected StringWriter writer;
 
   /************************************************************************
   ** Operations:
@@ -33,13 +41,16 @@ public class InterFormReader extends Reader {
     if (interp == null) 
       throw new IOException("closed");
 
-    while (currentOutput == null || currentOutput.length() == 0) {
+    if (currentPosition >= currentOutput.length()) {
+      currentOutput.setLength(0);
+    }
+    while (currentOutput.length() == 0) {
       Tokens output = interp.step();
       if (output == null || output.nItems() == 0) {
 	interp = null;
 	return -1;
       }
-      currentOutput = output.toString();
+      output.writeOn(writer);
       currentPosition = 0;
       output.clear();
     }
@@ -48,7 +59,7 @@ public class InterFormReader extends Reader {
     for ( nRead = 0; nRead < len; ++nRead, ++off ) {
       cbuf[off] = currentOutput.charAt(currentPosition++);
       if (currentPosition >= currentOutput.length()) {
-	currentOutput = null;
+	currentOutput.setLength(0);
 	break;
       }
     }
@@ -66,11 +77,12 @@ public class InterFormReader extends Reader {
 
   public InterFormReader() {
     super();
+    writer = new StringWriter();
+    currentOutput = writer.getBuffer();
   }
 
   public InterFormReader(Interp ii) {
     this();
     interp = ii;
-    //ii.setStreaming();
   }
 }

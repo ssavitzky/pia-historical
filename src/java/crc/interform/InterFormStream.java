@@ -5,6 +5,7 @@
 package crc.interform;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
@@ -14,6 +15,11 @@ import crc.interform.Interp;
 
 /**
  * Read characters from an InterForm interpretor.
+ *	A StringWriter and its StringBuffer are kept around as the buffer;
+ *	the Interp's output is written directly into the buffer rather than
+ *	being converted to a String.
+ *
+ *	@see InterFormReader
  */
 public class InterFormStream extends InputStream {
 
@@ -22,8 +28,9 @@ public class InterFormStream extends InputStream {
   ************************************************************************/
 
   protected Interp interp;
-  protected String currentOutput;
-  protected int currentPosition;
+  protected StringBuffer currentOutput;
+  protected int 	 currentPosition;
+  protected StringWriter writer;
 
   /************************************************************************
   ** Operations:
@@ -33,16 +40,16 @@ public class InterFormStream extends InputStream {
     if (interp == null) 
       throw new IOException("closed");
 
-    if (currentOutput != null && currentPosition >= currentOutput.length()) {
-      currentOutput = null;
+    if (currentPosition >= currentOutput.length()) {
+      currentOutput.setLength(0);
     }
-    while (currentOutput == null || currentOutput.length() == 0) {
+    while (currentOutput.length() == 0) {
       Tokens output = interp.step();
       if (output == null || output.nItems() == 0) {
 	interp = null;
 	return -1;
       }
-      currentOutput = output.toString();
+      output.writeOn(writer);
       currentPosition = 0;
       output.clear();
     }
@@ -61,11 +68,12 @@ public class InterFormStream extends InputStream {
 
   public InterFormStream() {
     super();
+    writer = new StringWriter();
+    currentOutput = writer.getBuffer();
   }
 
   public InterFormStream(Interp ii) {
     this();
     interp = ii;
-    //ii.setStreaming();
   }
 }
