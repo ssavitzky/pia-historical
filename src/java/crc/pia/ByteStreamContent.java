@@ -93,7 +93,7 @@ public class ByteStreamContent implements Content
   }
 
   /**
-   * Read data into buffer.  
+   * Read data into buffer, stopping when the buffer is too full.  
    * This gets called from a transaction that points to this content.
    * When the transaction waits for itself to be resolved, it calls
    * this method.
@@ -116,6 +116,23 @@ public class ByteStreamContent implements Content
       return false;
     }
     
+  }
+
+  /**
+   * Read data into buffer, stopping only when the connection is closed.  
+   * This gets called when something needs to convert the content to a string.
+   * @return false if there is no more data to process
+   */
+  public boolean processAllInput(){
+    try{
+      if( body == null ) return false;
+
+      // Suck on the input.
+      while (pullContent() >= 0) {}
+      return true;
+    }catch(IOException e2){
+      return false;
+    }
   }
 
  /**
@@ -286,20 +303,8 @@ public class ByteStreamContent implements Content
    * @return a copy of this content's data as bytes.
    */
   public byte[] toBytes(){
-    byte[]buffer = new byte[1024];
-    int bytesRead;
-    HttpBuffer data = new HttpBuffer(); 
-    try{
-      while(true){
-	bytesRead = read( buffer, 0, 1024 );
-	if(bytesRead == -1)
-	  break;
-	data.append( buffer, 0, bytesRead );
-      }
-    }catch(IOException e2){
-    }finally{
-      return data.getByteCopy();
-    }
+    processAllInput();
+    return zbuf.getByteCopy();
   }
 
 
@@ -309,20 +314,8 @@ public class ByteStreamContent implements Content
    * @return this content's data as a string.
    */
   public String toString(){
-    byte[]buffer = new byte[1024];
-    int bytesRead;
-    HttpBuffer data = new HttpBuffer(); 
-    
-    try{
-      while(true){
-	bytesRead = read( buffer, 0, 1024 );
-	if(bytesRead == -1) break;
-	data.append( buffer, 0, bytesRead );
-      }
-    }catch(IOException e2){
-    }finally{
-      return data.toString();
-    }
+    processAllInput();
+    return zbuf.toString();
   }
 
   public void closeStream(){
