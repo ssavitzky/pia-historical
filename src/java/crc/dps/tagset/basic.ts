@@ -1534,6 +1534,11 @@ example).
 	  a URL).
     </doc>
   </define>
+  <define attribute=directory boolean optional>
+    <doc> If present, the <code>dst</code> attribute names a directory which
+	  is created (along with any missing parents) if it does not exist.
+    </doc>
+  </define>
 </define>
 
 <h3>Connect</h3>

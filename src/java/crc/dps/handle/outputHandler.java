@@ -11,6 +11,7 @@ import crc.dom.Element;
 
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.File;
 import java.io.OutputStreamWriter;
 
 import crc.dps.*;
@@ -20,8 +21,6 @@ import crc.dps.output.ToWriter;
 
 /**
  * Handler for &lt;output&gt;....&lt;/&gt;  <p>
- *
- *	
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -39,11 +38,19 @@ public class outputHandler extends GenericHandler {
     TopContext top  = cxt.getTopContext();
     String     url  = atts.getAttributeString("dst");
     boolean append  = atts.hasTrueAttribute("append");
+    boolean directory = atts.hasTrueAttribute("directory");
+
     OutputStream stm = null;
 
     // === at this point we should consider checking for file= and href=
     if (url == null) {
       reportError(in, cxt, "No DST document specified.");
+      return;
+    }
+
+    if (directory) {
+      File dir = top.locateSystemResource(url, true);
+      if (! dir.exists()) dir.mkdirs();
       return;
     }
 
