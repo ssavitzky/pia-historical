@@ -92,14 +92,10 @@
 		<ul>
 		<repeat><foreach entity=x>&selanchors;</foreach>
 			<if><test match=&attributes:link;>&x;</test><then>
-				<set entity name=sresult><text split>&x;</text></set>
-					<repeat><foreach entity=i>&sresult;</foreach>
-						<if><test match="http">&i;</test><then>
-							<li> &x;
-						</then>
-						</if>
-					</repeat>
-				</set>
+				<if><test match="http">&x;</test><then>
+					<li> &x;
+				</then>
+				</if>
 			</then>
 			</if>
 		</repeat>

@@ -1,10 +1,11 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0"><HTML>
 <html><head>
-<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <title>Prototype Home Page</title>
-<a name="Swifty Home"></a>
-<header>
 </head>
+
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<header>Home Page</header>
 
 <form action="/Swifty/edit_page" method="POST">
 

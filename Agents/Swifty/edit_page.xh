@@ -1,14 +1,12 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
-
 <html><head>
-<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <title>Home Page Editor</title>
-<a name="Swifty Edit"></a>
-<header>
 </head>
 
-<!-- Process form variables -->
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Edit Page</header>
 
+<!-- Process form variables -->
 <if><get name="FORM:submission"> <then>
 
 	<if>&FORM:fullname;<then>
