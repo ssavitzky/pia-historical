@@ -722,7 +722,10 @@ sub add_handler {
 
 sub define_agent {
     my ($self, $agent, $name, $active) = @_;
-    
+
+    ## Define an agent local to the current interpretor.
+    ##	  Exactly what to do with names and tags is unsettled so far.
+
     if ($active) {
 	$name = lc $name;
 	$agent->tag($name);
@@ -735,12 +738,29 @@ sub define_agent {
     $self->agents->{$name} = $agent;
 }
 
+sub parse_it {
+    my ($self) = @_;
+
+    $self->parsing(1);
+}
+
+sub quote_it {
+    my ($self) = @_;
+
+    $self->parsing(1);
+    $self->quoting(-1);
+}
+
+
 sub eval_perl {
     my ($self, $it) = @_;
 
     ## This bit of legacy crud evaluates the contents of $it as PERL code.
-    ##	  The local variables $agency and $request will already have
-    ##	  been set up by run_interform, below.
+    ##	  The local variables $agent and $request will already have been
+    ##	  set up by run_interform, below.
+
+    local $agent = IF::Run::agent();
+    local $request = IF::Run::request();
 
     print "II Error: missing token\n" unless defined $it;
     my $foo = $it->content;
@@ -754,7 +774,7 @@ sub eval_perl {
 	    $status = $code;	# this is an html element
 	} else {
 	    #evaluate string and return last expression value
-	    $status= $agent->run_code($code, $request);
+	    $status= IF::Run::agent()->run_code($code, $request);
 	    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	    print "code status is $status\n" if  $main::debugging;
 	}
@@ -762,152 +782,6 @@ sub eval_perl {
     }
 
     $self->token($result);    
-}
-
-#############################################################################
-###
-### Default Arguments:
-###
-###	These arrays contain default argument lists for constructing the
-###	most common kinds of interpretors and parsers.
-###
-
-@if_defaults = (
-	     'streaming' => 1,	# output is a string
-	     'passing' => 1,	# pass completed tags to the output.
-	     'syntax' => $IF::IA::syntax,
-	     'agents' => $IF::IA::agents,
-	     'active_agents' => $IF::IA::active_agents,
-	     'passive_agents' => $IF::IA::passive_agents,
-	     );
-
-@html_defaults = (
-	     'streaming' => 0,	# output is a tree
-	     'parsing' => 1,	# push completed tags onto their parent.
-	     'passing' => 0,
-	     'syntax' => $IF::IT::syntax,
-	     );
-
-
-#############################################################################
-###
-### Evaluators:
-###
-###	All take either a reference to an interpretor as their second
-###	argument, or a list of attribute=>value pairs that are used to
-###	construct one.  The default is to use @if_defaults, which 
-###	produces a string as the result.
-
-sub run_file {
-    my ($file, $interp) = @_;
-
-    ## Run the interpretor over a file. 
-    ##	  The result is a string.
-
-    print "\nrunning file $file\n" if $main::debugging;
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse_file($file);
-    return $interp->run;
-}
-
-
-sub run_string {
-    my ($input, $interp) = @_;
-
-    ## Run the interpretor over a string, such as a buffered file. 
-    ##	  The result is a string.
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse($input);
-    return $interp->run;
-}
-
-
-sub run_tree {
-    my ($input, $interp) = @_;
-
-    ## Run the interpretor over a parse tree.
-    ##	  The result is a string.
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->process_it($input);
-    return $interp->run;
-}
-
-
-sub run_stream {
-
-
-}
-
-sub parse_HTML_file {
-    my ($file, $interp) = @_;
-
-    ## Run the interpretor parser over a file in ``parser mode''.
-    ##	  The result is a parse tree.  No agents are used.
-
-    print "\nrunning file $file\n" if $main::debugging;
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@html_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse_file($file);
-    return $interp->run;
-
-}
-
-sub parse_HTML_string {
-
-    my ($input, $interp) = @_;
-
-    ## Run the interpretor parser over a string in ``parser mode''.
-    ##	  The result is a parse tree.  No agents are used.
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@html_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse($input);
-    return $interp->run;
-}
-
-
-#############################################################################
-###
-### Evaluating Interforms on behalf of PIA agents:
-###
-
-sub parse_interform_file {
-    local ($agent,$file,$request)=@_;
-
-    my $string = run_file($file);
-
-    if (!string || ref($string)) {
-	print "\nIF::II::run_file returned '$string'\n" if $main::debugging;
-	$main::debugging=0;	# look at the first post-mortem.
-    }
-    return $string;
 }
 
 1;

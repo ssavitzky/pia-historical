@@ -12,7 +12,8 @@ use HTML::FormatPS;
 use HTML::Element;
 use HTML::AsSubs;		# defines element constructor functions.
 				# very useful for interforms.
-use IF::II;
+
+use IF::Run;			# The new InterForm interpretor.
 
 sub new {
     my($class, $name, $type) = @_;
@@ -737,7 +738,7 @@ sub respond_to_interform {
 	}
 
 	if($request->is('interform')) {
-	    $string=IF::II::parse_interform_file($self, $file, $request);
+	    $string=IF::Run::interform_file($self, $file, $request);
 #	    $string=$self->parse_interform_file($file,$request);
 	} else {
 	    my $new_url= newlocal URI::URL $file;

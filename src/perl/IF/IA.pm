@@ -44,6 +44,9 @@ sub hook {
 ###	  1. those that match a particular tag.
 ###	  2. those that are activated based on features.
 ###
+### ===	Eventually matching will use a feature set, just like the PIA.
+###	However, it will still be useful to allow the use of generic code.
+###
 
 sub matches {
     my ($self, $it, $ii, $incomplete) = @_;
@@ -173,8 +176,7 @@ sub eval_perl_match {
     if (lc $it->attr('language') eq 'perl') {
 	## should really be in act_on...
 	$ii->add_handler($self);
-	$ii->parsing(1);
-	$ii->quoting(-1);
+	$ii->quote_it;
 	return 1;
     }
     return 0;
