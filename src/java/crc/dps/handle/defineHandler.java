@@ -119,6 +119,10 @@ public class defineHandler extends GenericHandler {
 
 /** Define an element.  Corresponds to &lt!ELEMENT ...&gt; */
 class define_element extends defineHandler {
+  /** cache for the legacy tagset in case we need it. */
+  protected static Tagset legacyTS = null; 
+
+  /** The actual action routine. */
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
     // Analyze the attributes: === could do this in one scan.
@@ -148,9 +152,18 @@ class define_element extends defineHandler {
       ts.defTag(tagname, notIn, parents, syntax, null, newContent);
     } else  {
       // Handler: load the class
-      GenericHandler h =
-	(GenericHandler) Loader.loadHandler(tagname, handlerClass,
-					    syntax, false);
+      GenericHandler h = null;
+      if (handlerClass.startsWith("legacy:")) {
+	handlerClass = handlerClass.substring("legacy:".length());
+	if (legacyTS == null)
+	  legacyTS = crc.dps.tagset.Loader.loadTagset("legacy");
+	try {
+	  h = (GenericHandler) legacyTS.getHandlerForTag(handlerClass);
+	}  catch (Exception ex) {}
+      } else {
+	h = (GenericHandler) Loader.loadHandler(tagname, handlerClass,
+						syntax, false);
+      }
       if (h == null) {
 	cxt.message(-1, (((parents == null)? "" : "  ") 
 			 + "Cannot load handler class " + handlerClass),

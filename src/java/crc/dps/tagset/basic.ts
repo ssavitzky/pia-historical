@@ -134,6 +134,10 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  appended.  If the value contains periods, it is assumed to be a
 	  complete Java class name and is used unmodified.
 
+	  <p>(If the handler name starts with <code>legacy:</code> the handler
+	  is obtained from the <code>legacy</code> tagset.  This is a
+	  temporary kludge.)
+
 	  <p><strong>Note</strong> that if the Node being defined is an
 	  <em>attribute</em>, things get a little complicated.  What we would
 	  really like to happen is that the parser selects a handler for the
