@@ -164,6 +164,15 @@ See also:
        -- <code>ParseTreeText</code> wasn't getting cloned correctly; a
 	  hangover from when it descended from BasicText.
 
+  <li> <b>Bug:</b> Parsing:  Lots of trouble with implicit end.<br>
+       &lt;tr&gt; ends the previous &lt;th&gt;, but neither the expected
+       &lt;/tr&gt; nor the &lt;tr&gt; show up.  An entity before an inserted
+       &lt;/td&gt; also causes havoc -- it turns into a comment! (probably bad
+       node type).  Missing &lt;/then&gt; also loses.
+       (1998-6-26) <br>
+       -- Not putting token back into <code>next</code> in
+	  <code>advanceParser</code>.
+
 </ul>
 <a name="end">End of list.</a>
 <hr>

@@ -523,6 +523,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
 	return n;
       } else {			// === checkStartTag -> -1 not supported
 	atLast = true;
+	next = n;		// put the start tag back for next time
 	return null;
       }
     } else if (nextEnd != null) {

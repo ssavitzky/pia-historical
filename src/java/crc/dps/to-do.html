@@ -17,11 +17,9 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Bug:</b> Parsing:  Lots of trouble with implicit end.<br>
-       &lt;tr&gt; ends the previous &lt;th&gt;, but neither the expected
-       &lt;/tr&gt; nor the &lt;tr&gt; show up.  An entity before an inserted
-       &lt;/td&gt; also causes havoc -- it turns into a comment! (probably bad
-       node type).  Missing &lt;/then&gt; also loses.
+  <li> <b>Bug:</b> appending to undefined entity fails. <br>
+       &lt;set name=foo&gt;&lt;get name=foo&gt;...&lt;/set&gt; leaves
+       <code>foo</code> undefined.  There must be an explanation...
        (1998-6-26) <br>
 
   <li> <b>Bug:</b> replaceChild when redefining entity or handler <br>
