@@ -86,7 +86,7 @@ sub agent_names{
 }
 
 ############################################################
- # compute features of a transaction for matching
+# compute features of a transaction for matching
 
 sub compute_features{
     my($self,$request)=@_;
@@ -128,18 +128,74 @@ sub feature_computers{
 				     
 }
 
-############################################################
-# real work gets done here
-# for each transaction compute features, get new requests from matching agents,
-# give appropriate agent( determined by path)request to handle
-# finally send a response if appropriate
+############################################################################
+###
+### resolve
+###
+###	This is the resolver's main loop.  It starts with one or more
+###	incoming transactions that have been pushed onto its stack, and
+###	loops until they're all taken care of.
+###
 
-sub run{
+sub resolve {
+    my($self)=@_;
+    my $count=0;
+    my $stack=$self->stack();
+    my @garbage;
+#temporary hack variable to determine if response has been sent
+#TBD link requests and responses then test requests for response...
+    my $sent_response=0;
+    
+#be careful stack may change in other threads while we are here
+#TBD  tracing of request, matches, responses
+
+    while(@$stack && $count<100){
+	$count+=1;
+
+	## Pop a request off the stack.
+
+	my $request=shift @$stack;
+	my $numb=@$stack;
+	my $u=$request->url;
+	print "handling request $count ($numb left): $u\n" if $main::debugging;
+
+	## Look for a match.  
+	##    Matching agents typically add new transactions.
+	##    In addition, one might be the target of the request.
+
+	my $handler = $self->match($request,$stack);
+	if (ref($handler)) {
+	    print "running agent handler.\n" if $main::debugging;
+	    my $status=$self->run($handler,$request);
+	} else {
+	    my $additions = $handler;
+	    print "$additions transactions added.  " if $main::debugging;
+	    if ($request->is_response()) {
+		send_response($request);
+		$sent_response = 1;
+	    } 
+	    if ($request->is_request() && ! $additions && ! $sent_response) {
+		## not found error if additions are 0;TBD
+		print "pushing error_response\n" if $main::debugging;
+		push(@$stack,$self->error_response($request));
+	    }
+	}
+	push(@garbage,$request);
+    }
+    # === should take out the garbage
+}
+
+
+###### RESOLVE->run($agent, $request, $context)
+###
+### 	Run $agent's handle method on the $request
+###
+sub run {
     my($self,$agent,$request,$context)=@_;
     my $response=$agent->handle($request);
-    my  $type =ref($response);
-    my $name=$agent->name;
-    
+
+    my $type = ref($response);
+    my $name = $agent->name;
     print "agent $name returnobject $type\n" if $main::debugging;
     
 #    push(@$context,$response) if ref($response);
@@ -148,79 +204,51 @@ sub run{
     
 }
 
-#which agents go with which requests/responses
-#be careful stackmaychange in other threads while we are here
-#TBD  tracing of request,matches,responses
-sub resolve{
-    my($self)=@_;
-    my $count=0;
-    my $stack=$self->stack();
-    my @garbage;
-#temporary hack variable to determine if response hasbeen sent
-#TBD link requests and responses then test requests for response...
-    my $sent_response=0;
-    
-
-    while(@$stack && $count<100){
-	$count+=1;
-	
-	my $request=shift @$stack;
-	my $numb=@$stack;
-	my $u=$request->url;
-	print "handling request $u  number $count, $numb left\n" if $main::debugging;
-	
-	print "looking for match\n" if $main::debugging;
-	my $handler=$self->match($request,$stack);
-	if(ref($handler)){
-	    print "running request\n" if $main::debugging;
-	    my $status=$self->run($handler,$request);
-	}else{
-	    my $additions = $handler;
-	    print "$additions added no agent found for request" if $main::debugging;
-	    if($request->is_response()){
-		print "sending response\n" if $main::debugging;
-		send_response($request);
-		$sent_response=1;
-		
-	    } 
-	    if($request->is_request() && ! $additions && ! $sent_response){
-		
-#not founderror if additions are 0;TBD
-		print "pushing error_response\n" if $main::debugging;
-		push(@$stack,$self->error_response($request)) unless $additions;
-	    }
-
-	}
-	push(@garbage,$request);
-	
-earn    }
-    #should take out the garbage
-}
-
-
-#return number of transactions added orthe agent to whomrequest isdirected
-#we'll changein future to make efficient and use context
-sub match{
+###### RESOLVE->match $transaction, $stack)
+###
+###	Match the current transaction against all the agents.
+###	All are allowed to modify the transaction and add new ones.
+##
+### === we'll change in future to make efficient and use context
+###
+sub match {
     my($self,$transaction,$stack)=@_;
+
+    ## Find an agent that matches the given transaction.
+    ##    Returns either the number of new transactions added,
+    ##    or a reference to an agent that wants to handle the request.
+
     my $additions=0;
 #these could be done at push time TBD
-    
+
+    ## Compute features of the transaction.
+
     my $features=$self->compute_features($transaction);
 
-#allow agents to make requests in response to this transaction
+    ## Loop through all the agents looking for matches.
+    ##    Every agent that matches is allowed to add new requests via its
+    ##    new_requests method, which can also modify the transaction.
+    print "matching:" if $main::debugging;
     foreach $agent ($self->agents()){
-	my @requests=$agent->new_requests($transaction) if $agent->matches($features);
-	push(@$stack,@requests);
-	my $new_requests=@requests;
-	$additions+=$new_requests;
-	print($agent->name,"added $new_requests \n") if $new_requests && $main::debugging;
+	if ($agent->matches($features)) {
+	    my @requests = $agent->new_requests($transaction);
+	    push(@$stack,@requests);
+	    my $new_requests = @requests;
+	    $additions += $new_requests;
+	    print($agent->name," added $new_requests\n") if $main::debugging;
+	}
     }
 
-    print "lookingfor agent\n" if $main::debugging;
+    ## Now look for an agent to which the request is directed,
+    ##    (as opposed to one merely interested) 
+    ##    === this should really be done using an agent! ===
+
+    print "looking for agent\n" if $main::debugging;
     
-    if(&FEATURES::is_agent_request($transaction)){
+    if (&FEATURES::is_agent_request($transaction)) {
 	my $url=$transaction->url;
-    return $additions unless $url;
+	return $additions unless $url;
+
 	my $path=$url->path;
 	$path =~ m:^/(\w+)/*:i;
 	my $name=$1;
@@ -236,26 +264,36 @@ sub match{
 }
 
 ############################################################################
-#utility function to send areply if nobody else those
+###
+### utility functions to send a normal or error response if no agent does.
+###
+
 sub send_response{
     my($reply)=@_;
     my $machine=$reply->to_machine();
 
-    my $status=$machine->send_response($reply) if ref($machine);
-    return $status;
+    if (ref($machine)) {
+	print "sending response.\n" if $main::debugging;
+	my $status=$machine->send_response($reply) if ref($machine);
+	return $status;
+    } else {
+	print "sending response to $machine\n" if $main::debugging;
+	return;
+    }
 }
+
 sub error_response{
     my($self,$argument)=@_;
     my $response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "not found");
- $response->content_type("text/plain");    
+    $response->content_type("text/plain");    
     my $url=$argument->url()->as_string();
     
     $response->content("could not find $url\n");
 
-    $response=TRANSACTION->new($response,$main::this_machine,$argument->from_machine());
-    
+    $response=TRANSACTION->new($response,
+			       $main::this_machine,
+			       $argument->from_machine());
     return $response;
-    
 }
 
 
