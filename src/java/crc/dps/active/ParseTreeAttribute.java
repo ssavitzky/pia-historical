@@ -127,6 +127,15 @@ public class ParseTreeAttribute extends BasicAttribute
     return startString() + contentString() + endString();
   }
 
+  protected void setNullValue(){
+    try{
+      // === This implementation for setNullValue seems wrong. ===
+      Text al = new ParseTreeText("AttributeList");
+      al.insertBefore(new ParseTreeText(), null);
+      value = al.getChildren();
+    }catch(Exception e){
+    }
+  }
   /************************************************************************
   ** Copying:
   ************************************************************************/
