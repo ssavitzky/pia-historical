@@ -169,14 +169,14 @@ public class Machine {
       out = new PrintStream( outputStream() );
     }catch(IOException e){
       String msg = "Connection to requester is lost...\n";
-      throw new PiaRuntimeException (this.getClass().getName()
+      throw new PiaRuntimeException (this
 				     , "sendResponse"
 				     , msg) ;
     }
 
 
     String message = reply.reason();
-    String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\n";
+    String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\r";
     // HTTP/1.0 200 OK
 
     String type = reply.contentType();
@@ -206,9 +206,12 @@ public class Machine {
     }
 
     // dump header
-    Pia.instance().debug(this, "Transmitting header...");
+    Pia.instance().debug(this, "Transmitting firstline and header...");
     out.print( outputString );
-    out.print( reply.headersAsString() );
+    Pia.instance().debug(this, outputString);
+    String headers = reply.headersAsString(); 
+    Pia.instance().debug(this, headers);
+    out.print( headers );
 
     if( content != null && isTextHtml  ){
       contentString = content.toString();
@@ -275,6 +278,7 @@ public class Machine {
     int zport = 80;
     String zhost;
 
+    Pia.instance().debug(this, "Getting data through proxy request");
     int p        = proxy.getPort();
     zport        = (p == -1) ? 80 : p;
     zhost        = proxy.getHost();
@@ -288,6 +292,10 @@ public class Machine {
 
       byte[] zdata = null;
       zdata = suckData( iStream );
+      if( DEBUG ){
+	Pia.instance().debug("The data got from server is :");
+	Pia.instance().debug(this, new String(zdata, 0, 0, zdata.length) );
+      }
       
       InputStream bi = new ByteArrayInputStream( zdata ); 
 
@@ -302,12 +310,12 @@ public class Machine {
 
     }catch(UnknownHostException ue){
       String msg = "Unknown proxy host\n";
-      throw new PiaRuntimeException (this.getClass().getName()
+      throw new PiaRuntimeException (this
 				     , "getReqThruProxy"
 				     , msg) ;
     }catch(IOException e){
       String msg = "Can not get data through proxy request\n";
-      throw new PiaRuntimeException (this.getClass().getName()
+      throw new PiaRuntimeException (this
 				     , "getReqThruProxy"
 				     , msg) ;
     }
@@ -341,7 +349,7 @@ public class Machine {
 	  if ( DEBUG ){
 	    Pia.instance().debug("Dumping data buffer's address");
 	    byte[] data = c.toBytes();
-	    System.out.print( data );
+	    System.out.print( new String(data,0,0,data.length) );
 	    System.out.println("\n");
 	  }
 
@@ -349,7 +357,7 @@ public class Machine {
 
 	}catch(IOException e){
 	  String msg = e.toString();
-	  throw new PiaRuntimeException (this.getClass().getName()
+	  throw new PiaRuntimeException (this
 					 , "getRequest"
 					 , msg) ;
 	}
@@ -436,6 +444,19 @@ public class Machine {
   public Machine(){
   }
 
+  /**
+   * for debugging only
+   */
+  private static void sleep(int howlong){
+    Thread t = Thread.currentThread();
+    
+    try{
+      t.sleep( howlong );
+    }catch(InterruptedException e){;}
+    
+  }
+
+
   private static void test1( String filename, boolean proxy ){
     System.out.println("This test make use of a server that returns a text/html page.");
     System.out.println("The server is in the test directory and it runs with default port =6666.");
@@ -446,15 +467,18 @@ public class Machine {
     try{
       InputStream in = new FileInputStream (filename);
       Machine machine1 = new Machine();
+      machine1.DEBUG = true;
       if( proxy )
 	machine1.DEBUGPROXY = true;
       machine1.setInputStream( in );
       
-      Transaction trans1 = new HTTPRequest( machine1 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPRequest( machine1, debug );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
@@ -462,6 +486,7 @@ public class Machine {
       //Resolver res = new Resolver();
       Resolver res = null;
       machine1.getRequest( trans1, res );
+      System.exit( 0 );
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -474,38 +499,34 @@ public class Machine {
       
       InputStream in = new FileInputStream (filename);
       Machine machine1 = new Machine();
+      machine1.DEBUG = true;
       machine1.setInputStream( in );
       
       Machine machine2 = new Machine();
+      machine2.DEBUG = true;
       machine2.setOutputStream( System.out );
       
-      Transaction trans1 = new HTTPResponse( machine1, machine2 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPResponse( machine1, machine2, debug );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
       
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
+
       trans1.addControl( "major" );
       trans1.addControl( "tom" );
       Resolver res = null;
       machine2.sendResponse( trans1, res );
-
+      System.exit( 0 );
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
   }
 
-  private static void test3(String zport){
- 
-    // Start the server up, listening on an optionally specified port
-    int port = 0;
-    try { port = Integer.parseInt( zport );  }
-    catch (NumberFormatException e) { port = 0; }
-
-    new Server(port);
-  }
 
   private static void printusage(){
     System.out.println("Needs to know what kind of test");

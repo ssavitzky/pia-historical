@@ -26,7 +26,7 @@ import crc.pia.agent.Agency;
 import crc.pia.Resolver;
 import crc.pia.Logger;
 import crc.pia.Transaction;
-
+import crc.pia.agent.AgentInstallException;
 
  /**
   * Pia stores all of the information relevant to the creation of an 
@@ -91,6 +91,7 @@ public class Pia{
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
+  private Properties    piaFileMapping = null;
   private Piaproperties properties   = null;
   private static Pia     instance    = null;
   private String  docurl      = null;
@@ -150,6 +151,14 @@ public class Pia{
    *  Attribute index - Agency
    */
   protected Agency agency;
+
+
+  /**
+   * @return file mapping for local file retrieval
+   */
+  public Properties piaFileMapping(){
+    return piaFileMapping;
+  }
 
   /**
    *
@@ -347,7 +356,7 @@ public class Pia{
     if( debug && logger != null && debugToFile )
 	logger.trace ( msg );
     else if( debug )
-      System.err.println( msg );
+      System.out.println( msg );
     
   }
 
@@ -360,7 +369,7 @@ public class Pia{
     if( debug && logger != null && debugToFile )
 	logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
     else if( debug )
-      System.err.println("[" +  o.getClass().getName() + "]-->" + msg );
+      System.out.println("[" +  o.getClass().getName() + "]-->" + msg );
   }
 
     
@@ -601,12 +610,7 @@ public class Pia{
 	
   }
 
-  private void createPiaAgency(){
-    try{
-      accepter     = new Accepter( port );
-    }catch(IOException e){
-      errSys( e, "Can not create Accepter" );
-    }
+  private void createPiaAgency() throws IOException{
     thisMachine  = new Machine( host, port, null );
     threadPool   = new ThreadPool();
 
@@ -615,9 +619,30 @@ public class Pia{
     
     agency       = new Agency("agency", null);
     resolver.registerAgent( agency );
+    
+    
+    debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
+    Hashtable ht = new Hashtable();
+    ht.put("agent", "popart");
+    ht.put("type", "dofs");
+    ht.put("root", "~/");
+    ht.put("all", "false");
+    try{
+      agency.install( ht );
+    }catch(AgentInstallException e){
+      debug(this, "Unable to install Dofs agent" );
+    }
 
-     if( verbose )
+    if( verbose )
       verbose();
+     
+
+    try{
+      accepter     = new Accepter( port );
+    }catch(IOException e){
+      errSys( e, "Can not create Accepter" );
+    }
+
   }
 
   public void initialize(Piaproperties cmdProps) throws PiaInitException{
@@ -667,30 +692,89 @@ public class Pia{
     if( instance == null ){
       instance = new Pia();
       try{
-	/*
-	if( DEBUG ){
-	  System.out.println("Please note that the DEBUG flag is on. and Pia is loaded from the following directory-->/home/rithy/pia.");
-
-	  piaprops = instance.loadProperties("/home/rithy/pia/config/pia.props");
-	}
-	else
-	*/
-	  piaprops = instance.loadProperties(null);
+	piaprops = instance.loadProperties(null);
+	instance.loadFileMapping(null);
 	instance.initialize(piaprops);
-	instance.createPiaAgency();
       }catch(Exception e){
 	  System.out.println( e.toString() );
-	//get properties from defaults
-	//instance.initialize(piaprops);
-	//createPiaAgency();
+      }finally{
+	try{
+	  instance.createPiaAgency();
+	}catch(IOException e2){
+	  System.out.println( e2.toString() );
+	}
       }
+
     }
 
 
     return instance;
   }
 
-  private static Piaproperties loadProperties(String cmdroot)throws FileNotFoundException, IOException{
+  private static Properties loadFileMapping( String where ){
+    String fileMapProp      = null;
+    Properties zFileMapping = new Properties();
+    File guess              = null;
+    File mapFile            = null;
+
+    String filesep  = System.getProperty("file.separator");
+
+    if ( where == null ){
+      where = filesep+"pia";
+      // Try to guess it, cause it is really required:
+      guess = new File (new File( where, "config" ),"filemap.props");
+    }else guess = new File( where );
+
+    fileMapProp = guess.getAbsolutePath();
+
+    try {
+      if ( fileMapProp != null ) {
+	System.out.println ("loading file mapping from: " + where) ;
+	
+	File mapfile = new File( fileMapProp ) ;
+	zFileMapping.load ( new FileInputStream( mapfile ) );
+
+	// convert everything to lowercase
+	Enumeration keys = zFileMapping.keys();
+	while( keys.hasMoreElements() ){
+	  String k = (String) keys.nextElement();
+	  String v = (String) zFileMapping.get( k );
+	  zFileMapping.remove( k );
+
+	  zFileMapping.put( k.toLowerCase(), v.toLowerCase() );
+	}
+
+      }
+    } catch (FileNotFoundException ex) {
+      zFileMapping.put("html", "text/html");
+      zFileMapping.put("gif", "image/gif");
+    } catch (IOException exp){
+      zFileMapping.put("html", "text/html");
+      zFileMapping.put("gif", "image/gif");
+    }
+
+    Enumeration e =  zFileMapping.propertyNames();
+    while( e.hasMoreElements() ){
+      try{
+	String keyEntry = (String) e.nextElement();
+	System.out.println("file mapping key :" + keyEntry);
+	String v   = zFileMapping.getProperty( keyEntry );
+	System.out.println("file mapping value :" + v);
+      }catch( NoSuchElementException ex ){
+      }
+    }
+
+   return zFileMapping;
+  }
+
+  private static void setDefaultProperties( Piaproperties piaprops ){
+    piaprops.put(PIA_PORT, "8888");
+    piaprops.put(PIA_DEBUG, "true");
+    piaprops.put(PIA_VERBOSE, "true");
+    piaprops.put(PIA_LOGGER, "crc.pia.Logger");
+  }
+  
+  private static Piaproperties loadProperties(String cmdroot)throws IOException{
     String cmdprop      = null;
     Piaproperties piaprops = null;
     File guess = null;
@@ -700,27 +784,30 @@ public class Pia{
     if (cmdroot == null){
       cmdroot = filesep+"pia";
       // Try to guess it, cause it is really required:
-      guess = new File (new File(cmdroot, "config"),"pia.props");
-    }else guess = new File( cmdroot );
-    
+      guess           = new File (new File(cmdroot, "config"),"pia.props");
+    }else 
+      guess = new File( cmdroot );
     
     cmdprop = guess.getAbsolutePath();
-    if ( cmdprop != null ) {
-      System.out.println ("loading properties from: " + cmdprop) ;
-      try {
+
+    try {
+      if ( cmdprop != null ) {
+	System.out.println ("loading properties from: " + cmdprop) ;
+	
 	piaprops = new Piaproperties(System.getProperties());
 	File propfile = new File(cmdprop) ;
 	piaprops.load (new FileInputStream(propfile)) ;
 	piaprops.put (PIA_PROP_PATH, propfile.getAbsolutePath()) ;
-      } catch (FileNotFoundException ex) {
-	throw ex;
-      } catch (IOException exp){
-	throw exp;
       }
-      System.setProperties (piaprops) ;
+    } catch (FileNotFoundException ex) {
+      setDefaultProperties( piaprops );
+    } catch (IOException exp){
+      throw exp;
     }
-    return piaprops;
-  }
+    System.setProperties (piaprops) ;
+
+  return piaprops;
+}
 
   public static void main(String[] args){
         Integer cmdport      = null ;
@@ -759,16 +846,22 @@ public class Pia{
 	}
 	
 	Piaproperties piaprops = null;
+	String where = null;
+	String whereFileMap = null;
 
 	// guessing /pia/config is where it is at
 
 	  try{
-	    String where;
+
 	    if( cmdprop == null )
 	      where = cmdroot;
-	    else
+	    else{
+	      File f = new File(cmdprop);
+	      whereFileMap = f.getParent()+ System.getProperty("file.separator") + "filemap.props";
 	      where = cmdprop;
+	    }
 	    piaprops = loadProperties( where );
+
 	  }catch(FileNotFoundException ex) {
 	    System.out.println ("Unable to load properties: "+cmdprop);
 	    System.out.println ("\t"+ex.getMessage()) ;
@@ -800,6 +893,7 @@ public class Pia{
 	    piaAgency.debug = true;
 	    piaAgency.debugToFile = false;
 	    piaAgency.initialize(piaprops);
+	    piaAgency.piaFileMapping = piaAgency.loadFileMapping( whereFileMap );
 	    piaAgency.createPiaAgency();
 	  }catch(Exception e){
 	    System.out.println ("===> Initialization failed, aborting !") ;
