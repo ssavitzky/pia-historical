@@ -917,7 +917,11 @@ public abstract class Transaction extends AttrBase
 
     if(!satisfied){
       Pia.debug(this, "Got no satisfaction...");
-      defaultHandle( resolver );
+      try{
+	defaultHandle( resolver );
+      }catch(Exception ee){
+	errorResponse(ee);
+      } 
     }
 
   }
