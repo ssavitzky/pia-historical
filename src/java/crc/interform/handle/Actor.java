@@ -8,6 +8,10 @@ import crc.interform.Interp;
 import crc.sgml.SGML;
 
 import crc.dps.Syntax;
+import crc.dps.Action;
+import crc.dps.active.ParseNodeList;
+import crc.dps.active.ParseTreeText;
+import crc.dps.active.ActiveNode;
 
 /** Handler class for &lt;actor&gt tag. 
  *  Note: 
@@ -45,6 +49,7 @@ public class Actor extends crc.interform.Handler {
 
     boolean quoted = atts.hasTrueAttribute("quoted");
     boolean empty = atts.hasTrueAttribute("empty");
+    boolean literal = atts.hasTrueAttribute("literal");
     String tagname = atts.getAttributeString("tag");
     String notIn = (atts.hasTrueAttribute("not-inside")
 			? atts.getAttributeString("not-inside")
@@ -54,10 +59,15 @@ public class Actor extends crc.interform.Handler {
 		     : null);
     // === literal, passed, name not handled ===
 
-    int syntax = empty? Syntax.EMPTY : quoted? Syntax.QUOTED : Syntax.NORMAL;
+    int syntax = (empty? Syntax.EMPTY
+		  : quoted? Syntax.QUOTED
+		  : literal? Syntax.LITERAL
+		  : Syntax.NORMAL);
 
-    top.getTagset().defTag(tagname, notIn, syntax, handle, content);
-    
+    if (content == null || content.getLength()==0)
+      content = new ParseNodeList(new ParseTreeText(""));
+    aContext.debug("Defining <" + tagname + "> " + content + "\n");
+    Action h = top.getTagset().defTag(tagname, notIn, syntax, handle, content);
     return true;
   }
 }
