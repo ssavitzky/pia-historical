@@ -24,10 +24,10 @@
 package crc.ds;
 
 import java.util.Hashtable;
-import java.lang.Boolean;
-
-//import Thing;
-//import UnaryFunctor;
+import java.util.Vector;
+import crc.pia.Transaction;
+import crc.pia.Agent;
+import crc.tf.UnknownNameException;
 
 public class Features{
   /**
@@ -41,9 +41,9 @@ public class Features{
    *    We do this here because the features are closely related, so
    *    we can get many assertions out of a small number of requests.  
    */
-  protected void initialize( Thing parent ){
+  protected void initialize( Object parent ){
     
-    featureTable.put( "NEVER", Boolean.FALSE );
+    featureTable.put( "NEVER", new Boolean( false ) );
     
     /*
     * NEVER is useful for creating things that never match.
@@ -58,13 +58,13 @@ public class Features{
   public Object assert(String feature, Object v){
     Object value;
 
-    if(v == null) {
-      value = Boolean.TRUE;
+    if(v==null){
+      value = new Boolean( true );
       featureTable.put( feature, value );
-    } else if( v instanceof String && v == "" ){
+    }else if( v instanceof String && v == "" ){
       value = new Boolean( false );
       featureTable.put( feature, value );
-    } else {
+    }else {
         featureTable.put( feature, v );
 	value = v;
     }
@@ -98,27 +98,31 @@ public class Features{
   }
 
   /**
-   * Test a named feature and return its value.
+   * Test a named feature and return a boolean.
    */
-  public boolean test(String feature, Thing parent){
-    Object value = featureTable.get( feature );
+  public boolean test(String feature, Object parent){
+    boolean result;
 
+    Object value = featureTable.get( feature );
+    
     if( value == null )
       value = compute(feature, parent);
 
-    return value != null && value != Boolean.FALSE;
+    if( value instanceof Boolean ){
+      Boolean v = (Boolean) value;
+      result = v.booleanValue();
+    }
+    else
+      result = (value != null) ? true : false;
+    return !!result;
   }
 
-  /**
-   * @return the value associated with a named feature. 
-   */
-
-  public Object feature( String feature ){
+  public Object feature( String featureName, Object parent ){
     Object val ;
 
-    val = featureTable.get( feature );
+    val = featureTable.get( featureName );
     if ( val == null )
-      return compute(feature, parent); 
+      return compute(featureName, parent); 
     return val;
     
   }
@@ -138,23 +142,20 @@ public class Features{
    * Compute and assert the value of the given feature.
    * Can be used to recompute features after changes
    */
-  public Object compute(String feature, Thing parent){
+  public Object compute(String feature, Object parent){
+  Object val;
+
     try{
-      Object val = parent.computeFeature( feature );
+      if( parent instanceof Transaction )
+	val = ((Transaction) parent).computeFeature( feature );
+      else
+	val = ((Agent) parent).computeFeature( feature );
       return setFeature( feature, val );
     }catch(UnknownNameException e){
-      assert(feature, "");
+      return assert(feature, "");
     }
   }
 
-  /**
-   *Register a subroutine that computes a feature. 
-   */
-  public void register(String feature, Object sub, Thing parent){
-
-    HashTable computers = parent.featureComputers( this, 1 );
-    computers.put( feature, sub );
-  }
 
   /**
    * Create a new FEATURES.  We pass the parent, even though 
@@ -162,9 +163,14 @@ public class Features{
    * are closely related and that we know are always needed.
    */
 
-  public Features( Thing parent ){
-    featureTable = new HashTable();
-    parent.features( this );
+  public Features( Object parent ){
+    featureTable = new Hashtable();
+
+    if( parent instanceof Transaction )
+      ((Transaction) parent).setFeatures( this );
+    else
+      ((Agent) parent).setFeatures( this );
+
     initialize( parent );
    }
 
@@ -184,16 +190,16 @@ public class Features{
    *
    *            x => [subr args...] (splice test(x) in as first arg.)
    */
-  public boolean matches ( Vector criteria ) throws badcriteria{
+  public boolean matches ( Vector criteria, Object parent ) throws NullPointerException{
     int i;
-    if( criteria == null ) throw badcriteria;
+    if( criteria == null ) throw new NullPointerException("bad criteria.");
 
     for( i = 0; i < criteria.size(); i++){
       Object o = criteria.elementAt( i );
 
       if( o instanceof String ){
 	String c = (String)o;
-	boolean feature = test( c );
+	boolean feature = test( c, parent );
 	
 	Object ov = criteria.elementAt( ++i );
 	if( ov instanceof Boolean ){

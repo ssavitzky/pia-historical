@@ -27,7 +27,7 @@ public class Queue{
    * If there is no element returns null.
    */  
   public Object shift() {
-    if(queue && queue.size() > 0)
+    if(queue!=null && queue.size() > 0)
       return queue.popFront();
     else return null;
   } 
@@ -37,8 +37,8 @@ public class Queue{
    * returns the number of elements
    */  
   public int unshift( Object obj ) {
-    if( obj ){
-      if( !queue )
+    if( obj != null ){
+      if( queue == null )
 	queue = new Array();
       queue.pushFront( obj );
     }  
@@ -50,8 +50,8 @@ public class Queue{
    * returns the number of elements
    */  
   public int push( Object obj) {
-    if( obj ){
-      if( !queue )
+    if( obj != null ){
+      if( queue == null )
 	queue = new Array();
       queue.pushBack( obj );
     }  
@@ -63,7 +63,7 @@ public class Queue{
    * returns the number of elements
    */  
   public Object pop() {
-   if(queue && queue.size() > 0)
+   if(queue!= null && queue.size() > 0)
       return queue.popBack();
     else return null;
   } 
@@ -81,3 +81,5 @@ public class Queue{
   }
 
 }
+
+
