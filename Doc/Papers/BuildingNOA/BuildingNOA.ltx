@@ -8,7 +8,6 @@
 \title{DRAFT -- DRAFT -- DRAFT -- \\Building Network Office Appliances using the PIA Framework}
 \author{\htmladdnormallink{ Gregory J.  Wolff}{http://rsv.ricoh.com/people/wolff/}
 \\ \htmladdnormallink{PIA Group}{\PIA}}
-\date{}
 \maketitle
 
 
@@ -461,13 +460,8 @@ In addition to
  implement the \Jclass{pia}{Agent}  interface.   These functions usually
  provide back-end support for features accessible through InterForms.  See
  section \ref{sub:hi} for more information on implementing new agent classes.
-Figure \ref{fig:agents} shows the agent class hierarchy.
+Figure \ref{fig:agents} shows part of the agent class hierarchy.
 
-\FIGs{agents}{The agent class hierarchy.  Instances of \Jcode{crc.pia.GenericAgent}{GenericAgent} respond
-to requests using InterForms.   New classes of agents normally extend this
-class.  For example the DMA agent might support OCR.  Classes which do not
-use InterForms, for example a Security agent, implement
-the \Jcode{crc.pia.Agents}{Agents} interface directly.}
 
 \subsubsection{InterForms}
 \label{sub:interforms}
@@ -738,8 +732,7 @@ See Figure \ref{fig:Usertests} for an example timeline.
 \subsubsection{PIA core implementation}
 The software developers should be
  responsible for supplying the core PIA functions on the target system.
-These include basic network transport along with the \Jcode{crc.pia.Agent}{Agent},
- \Jcode{crc.pia.Content}{Content}, \Jcode{crc.pia.Transaction}{Transaction}, \Jcode{crc.pia.Machine}{Machine}, and \Jcode{crc.pia.Resolver}{Resolver} interfaces and data structures.
+These include basic network transport along with the \Jcode{crc.pia.Agent}{Agent}, \Jcode{crc.pia.Content}{Content}, \Jcode{crc.pia.Transaction}{Transaction}, \Jcode{crc.pia.Machine}{Machine}, and \Jcode{crc.pia.Resolver}{Resolver} interfaces and data structures.
 
 The core functions may be supported either by porting the  above classes to
 the target system or by supplying a Java run time environment for the PIA
@@ -747,6 +740,21 @@ reference implementation.\footnote{Sun Microsystems has announced plans for
  system components for embedded devices such as NOA's.  These include Java
 OS, Embedded Java, and the Java chipset.  See
 \htmladdnormallink{http://java.sun.com/}{http://java.sun.com/}}
+
+
+
+In addition to the core functions, some
+NOA's may provide  additional processing capabilities.  For
+example, a ``Document Management Appliance'' (DMA) may provide OCR
+functions.  These functions should be added to the information agency by
+extending existing agents or implementing new ones.  Figure \ref{fig:agents}
+shows the agent class hierarchy.
+
+\FIGs{agents}{The agent class hierarchy.  Instances of \Jcode{crc.pia.GenericAgent}{GenericAgent} respond
+to requests using InterForms.   New classes of agents normally extend this
+class.  For example the DMA agent might support OCR.  Classes which do not
+use InterForms, for example a Security agent, implement
+the \Jcode{crc.pia.Agents}{Agents} interface directly.}
 
 In porting the PIA core, the software developers should also provide the
  hardware interface between the information agency and the hardware unit.
@@ -757,7 +765,8 @@ In porting the PIA core, the software developers should also provide the
  to an internal format.   Using an appropriately defined
  \Jclass{interform}{Tagset}, the reference implementation can be
  configured to generate the appropriately compiled InterForms for the target
- system.
+ system, and the \textsf{\textsl{GenericAgent}} class should be
+ appropriately modified.
 
  Please contact the PIA group for assistance in porting the core to your
  target hardware.  The PIA group will maintain the most current reference
