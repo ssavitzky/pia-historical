@@ -1,0 +1,50 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Forms home page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Form creation page</set>
+<read interform file="heading.inc" process>
+<read process quiet interform file=tagset.inc>
+<tagset-load name=Form-agent-actors>
+
+<hr>
+<if-in-group group=admin reporterrors=true>
+ <if><get form name=formtype> <then>
+ 
+ <set name=formtype><get form name=formtype></set>
+ <write interform file=&formtype;/&formtype;.form>
+<h2>&formtype; form</h2>
+This is a default template for forms.
+Variable to be filled out should be specified with formvariable tags as
+below:
+ <table>
+<TR><TH>Employee<TH>Simple Value to be entered<TH>List of values to choose</TH></TR>
+<TR><TD> <formvariable name=employee options=users> </formvariable>
+    <TD> <formvariable name=simplevalue> </formvariable>
+    <TD> <formvariable name=choicevalue options="choice1 choice2">
+         </formvariable>
+</TR>
+ </table>
+Sums and other combinations of variables can also be added, see other forms
+for examples.
+ </write>
+&formtype; has been created, please <a href="edit_form.if?form=&formtype;">
+edit</a> this form.  (To add to the list of forms currently requires
+re-initialization of the forms server, see the <a href="admin.if">admin</a>
+page. 
+</then> <else>
+<form action="&url;" method=post process copy>
+
+New Form name:<input name="formtype" size="20">
+<input type="SUBMIT" value="CreateForm">
+</form>
+</else></if>
+
+</if-in-group>
+
+
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>
