@@ -54,11 +54,25 @@ BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 
 all:: $(FILES:.java=.class)
 
-doc::
+doc:: holes.log lines.log
 	@echo Documenting.
 
 jdoc::
 	javadoc -d $(DOCDIR) -noindex -notree -classpath $(BUILDCLASSES) $(PACKAGE)
+
+###
+### Holes.log: a list of everything that's going to need attention.
+###	It comes out in a form that allows emacs to find each hole 
+###	using the M-x next-error (C-x `) command
+
+HOLE_REGEXP='[^=]===[^=]|unimplemented|eventually}'
+HOLE_FILES= Makefile *.java *htm? *.if *.tex *.p[lm] *.inc
+
+holes.log::
+	-egrep -i -n -s $(HOLE_REGEXP) $(HOLE_FILES) /dev/null | tee holes.log
+
+lines.log::
+	wc *.java /dev/null | grep -v /dev/null > lines.log
 
 clean::
 	@@rm -rf *~ *.class
