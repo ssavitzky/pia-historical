@@ -35,7 +35,8 @@
 
 <form method=GET action="&url;">
 <if><get form name=remove>
-    <then><set name=message><file remove file="checkpoint.dat"></set>
+    <then><set name=path><read info=p interform file="checkpoint.dat"></set>
+          <set name=message><file remove file="&path;"></set>
 	  <if>&message;<else><set name=message>checkpoint.dat removed</set>
 	  </if>
 	  <user-message>&message;</user-message>

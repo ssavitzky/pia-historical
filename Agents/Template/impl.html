@@ -50,6 +50,10 @@ following files:
 	 <dd> The name of the template's data file, normally
 	      <code>data.inc</code>.  Normally used only by the template for
 	      making templates, in order to avoid a name conflict.
+	 <dt> <code>&amp;tFormFile;</code> (optional)
+	 <dd> The name of the template's form file.  If missing, the Template
+	      agent's <code>form.if</code> is used along with
+	      <code>data.inc</code>. 
        </dl>
 
        By convention, the names of these template entities are capitalized
@@ -70,6 +74,8 @@ following files:
 	 <dt> <code>&amp;<em>name</em>-type;</code> 
 	 <dd> the type of the form input field.  (<code>textarea</code> and
 	      <code>select</code> are included; the right thing happens).
+	 <dt> <code>&amp;<em>name</em>-format;</code> (optional)
+	 <dd> if present, there will be special formatting for this entity.
 	 <dt> <code>&amp;<em>name</em>-label;</code>
 	 <dd> a corresponding label for the form.
 	 <dt> <code>&amp;<em>name</em>-doc;</code> 
@@ -83,7 +89,8 @@ following files:
 	      <code>&amp;<em>name</em>-type;</code> = <code>checkbox</code>).
        </dl>
 
-       In addition there are several control variables:
+       In addition there are several control variables; these are represented
+       in the data file as items with type=<code>data</code>:
        <dl>
 	 <dt><code>&amp;tFieldNames;</code> (required)
 	 <dd> The names of the substitutable values described above.
@@ -100,8 +107,38 @@ following files:
 	 <dd> form name suffix.
 	 <dt><code>&amp;tFormat;</code> 
 	 <dd> Form format.
+	 <dt><code>&amp;tFirstItems;</code> 
+	 <dd> the value is placed before the first normally-formatted data
+	      item. 
+	 <dt><code>&amp;tLastItems;</code> 
+	 <dd> the value is placed after the last normally-formatted data
+	      item. 
 	 <dt><code>&amp;;</code> 
 	 <dd> 
+       </dl>
+
+       The following types are defined:
+
+       <dl>
+	 <dt> <code>checkbox</code>
+	 <dd> 
+	 <dt> <code>textarea</code>
+	 <dd> 
+	 <dt> <code>select</code>
+	 <dd> 
+	 <dt> <code>alt-select</code>
+	 <dd> a <code>&lt;select&gt;</code> item with a
+	      <code>&lt;textarea&gt;</code> for an alternative value.
+	 <dt> <code>extend</code>
+	 <dd> a specially-formatted item used for adding a new data item to a
+	      form.  
+	 <dt> <code>hidden</code>
+	 <dd> 
+	 <dt> <code>submit</code>
+	 <dd> 
+	 <dt> <code>data</code>
+	 <dd> items with type=<code>data</code> are kept in the data file, but
+	      do not go into the form.  Effectively, they are constants.
        </dl>
 
   <dt> <code>form.if</code> (optional)
