@@ -83,24 +83,52 @@ public class Calendar_day extends crc.interform.Handler {
     }
 
     SGML content = Util.removeSpaces(it.content());
-    SGML result = addEntryToTable(tb, day, content);
-    ii.replaceIt( result );
+    addEntryToTable(tb, day, content);
+    ii.replaceIt( tb );
   }
 
-  protected SGML addEntryToTable(SGML table, String day, SGML content){
-    System.out.println("\n\nInside addEntryToTable\n");
-    Index foobar = new Index("5");
-   try{
-    SGML r = foobar.lookup(table);
-   return r;  
-     
-   }
-   catch(Exception e){
-     
-   }
-   return null;
-   
+  protected void addEntryToTable(SGML table, String day, SGML content){
+    //crc.pia.Pia.debug( true );
+    //System.out.println("\n\nInside addEntryToTable\n");
+
+    getDay( table, day, content );
   }
+
+  protected void getDay( SGML table, String day, SGML content ){
+    Index dayIndex = new Index( "tr-2-.td" );
+    Index cellIndex = null;
+    String aDay = null;
+    SGML aTD = null;
+    int len ;
+    SGML tmp;
+
+    try{
+      SGML r = dayIndex.lookup(table);
+      if ( r == null ) return;
+
+      len = r.content().nItems();
+      // we now have TDs, now look up b's Text
+
+      for( int i = 0; i < len; i++ ){
+	aTD  = r.content().itemAt( i );
+	cellIndex = new Index( "b.Text" );
+	tmp  = cellIndex.lookup( aTD );
+	if( tmp != null )
+	  aDay = tmp.toString();
+
+	//System.out.println("My day-->"+aDay);
+	//System.out.println("Given day-->"+day);
+
+	if ( aDay.equalsIgnoreCase( day ) )
+	  break;
+      }
+      aTD.append( "<br>" );
+      aTD.append( content );
+      //System.out.println("Here is the result-->"+aTD.toString());
+    }catch(Exception e){
+    }
+  }
+
 
 }
 
