@@ -129,7 +129,7 @@ public class Token implements SGML {
 
   /** Return the name of the entity to which this is a reference. */
   public String entityName() {
-    return (tag == "&")? content.itemAt(0).toString() : null;
+    return (tag == "&")? content.itemAt(1).toString() : null;
   }
 
 
@@ -294,6 +294,24 @@ public class Token implements SGML {
   public Token (String tag, String content) {
     this.tag = tag;
     append(new Text(content));
+  }
+
+  /** Make a Token with a special format, in which the first and last
+   *	content items are really the start and end ``tag'' respectively. */
+  public Token (String tag, String content, String end) {
+    this.tag = tag;
+    append(new Text(tag));
+    append(new Text(content));
+    if (end != null) append(new Text(end));
+    specialFormat = true;
+  }
+
+  public Token (String tag, StringBuffer content, String end) {
+    this.tag = tag;
+    append(new Text(tag));
+    append(new Text(content));
+    if (end != null) append(new Text(end));
+    specialFormat = true;
   }
 
   public static Token endTagFor(String tag) {
