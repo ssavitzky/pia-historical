@@ -32,12 +32,10 @@ public final class IsAgentRequest extends TFComputer {
     else
       lhost = "";
     
-    lport = Integer.toString( url.getPort() );
-    
     if( lhost.startsWith("agency") || lhost == "" )
       return True;
     
-    if( Pia.instance().port().equals( lport )
+    if( Pia.instance().portNumber() == url.getPort()
 	&& Pia.instance().host().startsWith( lhost ) ){
       return True;
     }

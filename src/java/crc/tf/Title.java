@@ -9,10 +9,10 @@ import java.net.URL;
 import crc.ds.UnaryFunctor;
 import crc.pia.Transaction;
 import crc.pia.Content;
-import crc.util.regexp.MatchInfo;
-import crc.util.regexp.RegExp;
 
-public final class Title implements UnaryFunctor{
+import crc.tf.TFComputer;
+
+public final class Title extends TFComputer {
   private String getPage(Transaction trans){
     Content c = trans.contentObj();
     if( c != null )
@@ -22,40 +22,29 @@ public final class Title implements UnaryFunctor{
   }
 
   /**
-   * Returns the documentation title of this transaction.
-   * @param o  Transaction 
-   * @return Object title string; if transaction is of type "text/html" returns the file portion of
-   * the transaction's url, get the title from the document page.
+   * Returns the title element of this transaction's content document.
+   *	Returns null if the transaction is not a response, and the
+   *	document's path if it is not text.
    */ 
-  public Object execute( Object o ){
-      Transaction trans = (Transaction)o;
+  public Object computeFeature(Transaction trans) {
 
       if(!trans.isResponse()) return "";
 
+      /* we will use the path as a fallback. */
+
       URL url = trans.requestURL();
       if( url == null ) return "";
+      String path = url.getFile();
+      if( path == null ) path = "";
 
       String type = trans.contentType();
       if( type == null ) return "";
 
       String ltype = type.toLowerCase();
-      RegExp re = null;
-      MatchInfo mi = null;
-      try{
-	re = new RegExp("text/html");
-	mi = re.match( ltype );
-      }catch(Exception e){;}
-
-      if( mi!=null ){
-	String path = url.getFile();
-	if( path == null ) 
-	  return "";
-	else
-	  return path;
-      }
+      if (! ltype.startsWith("text/html")) return path;
 
       String mypage = getPage( trans );
-      if( mypage == null ) return "";
+      if( mypage == null ) return path;
 
       String page = mypage.toLowerCase();
 

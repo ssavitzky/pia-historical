@@ -8,16 +8,16 @@ package crc.tf;
 import crc.ds.UnaryFunctor;
 import crc.pia.Transaction;
 
-public final class IsResponse implements UnaryFunctor{
+import crc.tf.TFComputer;
+
+public final class IsResponse extends TFComputer {
 
   /**
    * Is this a response transaction
-   * @param o Transaction 
    * @return true if this is a reponse transaction
    */
-    public Object execute( Object o ){
-      Transaction trans = (Transaction) o;
-      return new Boolean( trans.isResponse() );
+    public Object  computeFeature(Transaction trans) {
+      return trans.isResponse() ? True : False;
     }
 }
 

@@ -5,19 +5,18 @@
  
 package crc.tf;
 
-import crc.ds.UnaryFunctor;
 import crc.pia.Transaction;
+import crc.tf.TFComputer;
 
-public final class IsRequest implements UnaryFunctor{
+public final class IsRequest extends TFComputer {
 
   /**
    * Is this a request transaction
    * @param o Transaction 
    * @return true if this transaction is a request
    */
-    public Object execute( Object o ){
-      Transaction trans = (Transaction) o;
-      return new Boolean( trans.isRequest() );
+    public Object  computeFeature(Transaction trans) {
+      return trans.isRequest() ? True : False;
     }
 }
 

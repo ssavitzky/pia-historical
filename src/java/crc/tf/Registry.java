@@ -80,6 +80,7 @@ public class Registry {
     // Pairlist: name, classname.
     String[] names = {
       "agent",		"Agent",
+      "agent-type",	"AgentType",
       "agent-request",	"IsAgentRequest",
       "agent-response", "IsAgentResponse",
       "file-request",	"IsFileRequest",

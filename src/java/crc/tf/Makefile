@@ -8,6 +8,7 @@ TOPDIR=../../..
 FILES = \
 	 Title.java \
 	 Agent.java \
+	 AgentType.java \
          IsAgentRequest.java \
 	 IsAgentResponse.java \
 	 IsClientNetscape.java \
