@@ -602,14 +602,6 @@ public abstract class Transaction extends AttrBase
     return null;
   }
 
-  /** Retrieve an attribute by name.  Returns null if no such
-   *	attribute exists. */
-  public synchronized Object get(String name) {
-    Object o = getFeature(name);
-    if (o != null) return o;
-    else return header(name);
-  }
-
   /** Enumerate the defined attributes. */
   public java.util.Enumeration attrs() {
     return null;		// === unimplemented
@@ -622,6 +614,28 @@ public abstract class Transaction extends AttrBase
       setHeader(name, value.toString());
   }
   
+  /************************************************************************
+  ** Tabular Interface:
+  ************************************************************************/
+
+  /** Retrieve an object by name.  */
+  public synchronized Object get(String name) {
+    Object o = getFeature(name);
+    if (o != null) return o;
+    else return header(name);
+  }
+
+  /** Set an object by name. */
+  public synchronized void set(String name, Object value) {
+    features.assert(name, value);
+    if (Character.isUpperCase(name.charAt(0))) 
+      setHeader(name, value.toString());
+  }
+
+  public synchronized Enumeration keys() {
+    return null;		// === keys unimplemented
+  }
+
   /************************************************************************
   ** Content:
   ************************************************************************/

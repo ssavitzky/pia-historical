@@ -19,9 +19,6 @@ import java.util.Enumeration;
  * @see crc.ds.Stuff
  */
 public interface Tabular {
-  /** The number of items. */
-  int size();
-
   /** Access an individual item by name. */
   Object get(String key);
 
