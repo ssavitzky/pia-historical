@@ -82,7 +82,7 @@ if ($logfile ne '') {
 if ($PIA_DIR ne "") {		# the user has already set it
     # nothing to do.
 } elsif (-f "./pia.pl") {	# We're in the working directory
-    $PIA_DIR = "../../..";
+    $PIA_DIR = "../..";
 } elsif (-d $ENV{'PIA_DIR'}) {	# There's a PIA_DIR environment variable
     $PIA_DIR = $ENV{'PIA_DIR'};
 } elsif (-d "$HOME/pia") {	# We have a home copy of the working directory
