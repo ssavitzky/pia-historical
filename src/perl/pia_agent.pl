@@ -1,4 +1,6 @@
-#superclass for agents
+###### Class PIA_AGENT -- superclass for PIA agents
+###	$Id$
+###
 
 package PIA_AGENT;
 use HTML::Parse;
@@ -51,19 +53,22 @@ sub version{
 }
 
 ############################################################################
-#agents maintain a list of features and code that computes Boolean features
-# resolve uses mask on features to determine which agents get which transactions
-# agent can add new requests to stack or modified this request
- # another function gets called to actually handle a request
+###
+### Matching Requests:
+###
+### agents maintain a list of features and code that computes Boolean
+### features.  resolve uses mask on features to determine which agents get
+### which transactions. agent can add new requests to stack or modify
+### this request, another function gets called to actually handle a request
 
 sub  new_requests{
     my($self,$request)=@_;
     #subclasses should override
     return ();
-    
 }
 
-# agents should not assume every transaction they get matches their desired feature set
+# agents should not assume every transaction they get matches their
+# desired feature set
 
 #feature is string naming a feature
 #value is 0,1 (exact match--for don't care remove corresponding feature)
@@ -75,7 +80,6 @@ sub match_criterion{
     
     $$criterion{$feature}=$value if defined $value;
     return $criterion;
-    
 }
 
 sub criterion_computation{
@@ -83,7 +87,6 @@ sub criterion_computation{
     my $computation=$$self{computation};
     $$computation{$feature}=$code if defined $code;
     return $computation;
-    
 }
 
 #this should be in resolve
@@ -101,18 +104,23 @@ sub matches{
 }
 
 ############################################################################
-
-#sub classes or instances should override this or install methods using handler
- # by default assumes request is for an interform
+###
+### Handle requests:
+###
 
 sub handle{
     my($self,$request)=@_;
+
+    ## Handle a request directed at an agent.  The default is to use an
+    ## interform; subclasses or instances should override this or install
+    ## methods if different behavior is required.
 
     my $response;
     my $file=$self->find_interform($request->url);
     print "$name parsing $file\n" if  $main::debugging;
     if(! defined $file){
-	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "nointerform");
+	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
+				      "nointerform");
 	$response->content("no file found");
 	
     } else {
@@ -126,46 +134,97 @@ sub handle{
     }
     $response->request($request);
     
-    $response=TRANSACTION->new($response,$main::this_machine,$request->from_machine());
-    
+    $response=TRANSACTION->new($response,
+			       $main::this_machine,
+			       $request->from_machine());
     return $response;
-    
 }
 
-sub find_interform{
-    my($self,$url)=@_;
+sub find_interform {
+    my($self,$url) = @_;
+
+    ## Find an interform, using a simple search path and a crude kind
+    ## of inheritance.  Allow for the fact that the user may be trying
+    ## to override the interform by putting it in $USR_ROOT/$name/.
+
+    ## The search path used is:
+    ##		option(root)/name : option(root)
+    ##		USR_ROOT/name : PIA_ROOT/name : USR_ROOT : PIA_ROOT
+
+    ## === We should really compute the path once and cache it. ===
+
     return unless $url;
-    my $path=$url->path();
-    my $name=$self->name;
-    $path=~m:$name/(.*)$:;
-    my $form=$1 || "home.if";
-    my $root=$self->option(root);
-    my $file="$root$form";
+    my $path = ref($url) ? $url->path() : $url;
+    my $name = $self->name;
+    $path =~ m:$name/(.*)$:;	# Find interform name in URL
+    my $form = $1 || "home.if";	# ... default to home.if
+
+    my $home = $main::PIA_ROOT;
+    if ($home !~ m:/$:) { $home .= "/"; }
+
+    my $root = $self->option(root);
+
+    ## Ensure that the root directory ends in a slash, and does *not*
+    ## contain the agent's name (i.e. it's really the root and not the
+    ## agent's home directory).
+    if ($root !~ m:/$:) { $root .= "/"; }
+    if ($root =~ m:/$name/$:) { $root =~ s:/$name/$:/:; } 
+    my $file = "$root$name/$form";
+
+    print "find_interform: home = $home; root = $root\n" if $main::debugging;
+
+    ## First see whether the init file has overridden the root.
+    if ($root ne $home) {
+	return $file if -e $file;
+	## check for inheritance along that path, too.  This also
+	## handles (though not very well) the case where the user has
+	## renamed the agent in question.
+	$file="$root$form";
+	return $file if -e $file;
+    }
+
+    ## Then see whether the user has overridden the form.
+    $root = $main::USR_ROOT;
+    $file = "$root/$name/$form";
     return $file if -e $file;
-    #check if we an inherit form
-    $root =~ m:^(.*/)[^/]*/$:;
-    my $new_root=$1;
-    $file="$new_root$form";
-    print "inheriting $file\n" if $main::debugging;
+
+    ## Then check the original in the PIA's home (source) tree
+    $file = "$home/$name/$form";
     return $file if -e $file;
-    return;
-    #found no file
+
+    ## ... and if that doesn't work, try inheritance.
+
+    $file = "$root/$form";
+    return $file if -e $file;
+
+    $file = "$home/$form";
+    return $file if -e $file;
+
+    return;			#found no file
 }
 
 ############################################################################
-#utility functions for changing, viewing options
-sub options{
+###
+### utility functions for changing, viewing options:
+###
+
+sub options {
+    ## Return the names, but not the values, of the options.
+
     my $self=shift;
     return keys(%{$$self{options}});
     
 }
 
-sub options_as_html{
+sub options_as_html {
+    ## Return a series of form input fields for the options.
+
     my($self)=@_;
     my $string;
     foreach $key ($self->options){
 	my $values=$self->option($key);
 	$string.="<input name=$key size=50 value=$values >";
+	## === size should be parameter; value should be quoted. ===
     }
     return $string;
     
@@ -183,18 +242,21 @@ sub options_form{
     my($self,$url, $label)=@_;
     $label ="change_options" unless defined $label;
     my $string;
-    my $element=HTML::Element->new( 'form',method => "POST",action => $url);
+    my $element=HTML::Element->new( 'form', method => "POST", action => $url);
+    $element->push_content("\n"); # === I think this is helpful. ===
+
     my %attributes,$particle;
     foreach $key ($self->options){
 	my $values=$self->option($key);
 	$particle=HTML::Element->new(input);
-	$particle->attr('name',$key);
-	$particle->attr(value,$values);
-	$particle->attr(size,length($values));
+	  $particle->attr('name',$key);
+	  $particle->attr(value,$values);
+	  $particle->attr(size,length($values));
 	$element->push_content("$key :");
 	$element->push_content($particle);
 	$particle=HTML::Element->new(br);
 	$element->push_content($particle);
+	$element->push_content("\n"); # === I think this is helpful. ===
     }
     $particle=HTML::Element->new(input);
 	$particle->attr(type,submit);
@@ -224,7 +286,11 @@ sub option{
 }
 
 
-#utility functions;
+############################################################################
+###
+### Utility functions for responding to requests:
+###
+
 #merges html
 sub integrate_responses{
     my($response)=shift; 
@@ -313,13 +379,15 @@ sub create_request{
 
 ############################################################################
 ############################################################################
-# interform processing
-# interforms  must execute in context of agent therefore we cannot create
-# a new class for interforms
-
+###
+### interform processing:
+###
+###	interforms  must execute in context of agent therefore we
+###	cannot create a new class for interforms
+###
 
 #this is  a callback for html traverse
-#TBD change formulti-threads
+#TBD change for multi-threads
 local $current_self;
 local $current_request;
 
@@ -330,7 +398,7 @@ sub execute_interform{
     return 1 unless $start; #only do it once
     return 1 unless  lc($element->tag) eq "code";
 
-    #getcode
+    ## At this point we have a code element.  Branch on language attribute.
     my $code_status;
     my $language=lc($element->attr('language'));
 #obvious branching on language TBD
@@ -378,8 +446,6 @@ sub run_interform{
     my $status=$html->traverse(\&execute_interform,1);
     
     return $status;
-    
-        
 }
 
 sub parse_interform_string{
