@@ -73,27 +73,32 @@ public class AgentMachine extends Machine {
   }
 
   /**
-   * send response using a predefined callback
+   * send response using a predefined callback.
+   * at this point, callback could set actors for parsed content.
+   * If callback is not defined, notify the agent using updateContent.
+   * Generally the agent should write the content to an output stream to
+   * ensure any processing side effects.
    */
    public void sendResponse (Transaction reply, Resolver resolver) {
-     // I really don't know what to do here
-     /*
+     if( reply == null ) return;
+     Content c = reply.contentObj();
+     if( c == null )  return;
+
      TernFunc cb = callback();
-     cb.execute(agent, reply, resolver);
-     */
+     if(cb != null){
+       // anything to be done with result?
+       // any reason for arguments other than c?
+       cb.execute(c, reply,  agent);
+     }else{
+       // let agent handle content
+        agent.updateContent(c,"RESOLVED", this);
+     }
+     // debugging and logging
      Transaction req = reply.requestTran();
      if ( req != null )
        Pia.debug(this, "AgentMachine -- output from sendResponse with request url" + req.requestURL().toExternalForm());
-     if( reply != null ){
-       Content c = reply.contentObj();
-       if( c != null ){
-	 String cs = c.toString();
-	 Pia.debug(this, null, cs);
-       }
-     }
-     
    }
-  
+	 
   /**
    * Handle a direct request to an agent.
    * Normally done by running an InterForm, but the agent can 
