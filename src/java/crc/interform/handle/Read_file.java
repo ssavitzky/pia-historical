@@ -15,6 +15,7 @@ import crc.sgml.Tokens;
 import crc.sgml.Text;
 
 import java.util.Date;
+import java.text.DateFormat;
 
 import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
@@ -111,7 +112,11 @@ public class Read_file extends crc.interform.Handler {
       else if (what.startsWith("x")) content = x? "x" : "";
       else if (what.startsWith("p")) content = file.getAbsolutePath();
       else if (what.startsWith("m")) {
-	content = new Date(file.lastModified()).toLocaleString();
+	DateFormat formatter =
+	  DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+					 DateFormat.MEDIUM);
+
+	content = formatter.format(new Date(file.lastModified()));
       } else if (what.startsWith("s")) {
 	content = String.valueOf(file.length());
       } else {
@@ -181,7 +186,7 @@ public class Read_file extends crc.interform.Handler {
     } else {
       try {
 	byte [] bytes = crc.util.Utilities.readFrom(name);
-	result = new Text(new String(bytes, 0));
+	result = new Text(new String(bytes));
       } catch (Exception e) {
 	result = null;
       }    
