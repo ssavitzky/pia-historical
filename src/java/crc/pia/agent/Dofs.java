@@ -2,10 +2,9 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
-/**
- * This is the class for the ``agency'' agent; i.e. the one that
- * handles requests directed at agents.  It slso owns the resolver,
- * which may not be a good idea.
+/** 
+ * This is the class for the ``DOFS'' agent, which handles requests
+ *	for local files.
  */
 
 package crc.pia.agent;
@@ -34,8 +33,6 @@ import crc.pia.Agent;
 import crc.pia.Pia;
 import crc.pia.Transaction;
 import crc.pia.Machine;
-import crc.pia.HTTPRequest;
-import crc.pia.HTTPResponse;
 import crc.pia.Content;
 import crc.pia.ByteStreamContent;
 import crc.pia.FileAccess;
@@ -51,16 +48,17 @@ import w3c.www.http.HTTP;
 public class Dofs extends GenericAgent {
   /**
    * Respond to a DOFS request. 
-   * Figure out whether it's for a file or an in erform, and whether it's
-   * to a sub-agent or to /dofs/ itself.
+   * 	Figure out whether it's for a file or an interform, and whether it's
+   * 	to a sub-agent or to /DOFS/ itself.
    */
-  public void respond(Transaction request, Resolver res) throws PiaRuntimeException{
+  public void respond(Transaction request, Resolver res)
+       throws PiaRuntimeException{
     Transaction reply = null;
     String replyString = null;
     Pia.debug(this, "Inside Dofs respond...");
 
     if( !request.isRequest() ) return;
-    Pia.debug(this, "After tesing is request...");
+    Pia.debug(this, "After testing is request...");
 
     URL url = request.requestURL();
     if( url == null )
@@ -78,20 +76,10 @@ public class Dofs extends GenericAgent {
     /*
      * Examine the path to see what we have:
      *	 myname/path   -- this is a real file request.
-     *	 myname        -- home page InterForm === should really be index.html
+     *	 myname        -- redirect to myname/index.html if it exists.
      *	 mytype/myname -- Interforms for myname
      *	 mytype/path   -- Interforms for DOFS
      */
-
-    /* === need to use redirection below, but not yet ===
-    try {
-      if (isRedirection( request, url )) return;
-    }catch(FileNotFoundException e1){
-      return;
-    }catch(MalformedURLException e2){
-      return;
-    }
-    */
 
     if (!myname.equals(mytype)
 	&& (path.equals("/"+myname) || path.startsWith("/"+myname+"/"))) {
@@ -102,27 +90,13 @@ public class Dofs extends GenericAgent {
 	return;
       }
       try {
-	retrieveFile( url, request );
+	FileAccess.retrieveFile(path, request, this);
       }catch(PiaRuntimeException e){
 	throw e;
       }
     } else {
-      String s = "/"+mytype+"/"+myname;
-      if (false && !myname.equals(mytype)) {
- 	if (path.equals(s)) {
- 	  Pia.debug(this, ".../TYPE/NAME");
- 	  path = "/"+myname;
- 	} else if (path.startsWith(s+"/")) {
- 	  Pia.debug(this, ".../TYPE/NAME/...");
- 	  path = "/"+myname+ path.substring(s.length());
- 	} else {
- 	  throw new PiaRuntimeException(this, "respond",
- 					"Malformed DOFS path "+path);
- 	}
- 	respondToInterform(request, path, res);
-      } else {
-	respondToInterform(request, url, res);
-      }
+      if (!respondToInterform(request, res))
+	  respondNotFound(request, url);
     }
   }
     
@@ -177,16 +151,6 @@ public class Dofs extends GenericAgent {
    * local interforms, and similar annotations belong in the
    * interform directory that corresponds to the DOFS agent.
    */
-
-  /**
-   * Retrieve the file at url in order to satisfy request.
-   */
-  protected void retrieveFile ( URL url, Transaction request ) {
-    String filename = urlToFilename( url );
-
-    FileAccess.retrieveFile(filename, request, this);
-  }
-
 
   /**
    * @return the file name corresponding to this url

@@ -134,8 +134,8 @@ public class GenericAgent extends AttrBase implements Agent {
     if( t != null && !n.equalsIgnoreCase( t ) ) 
       type( t );
 
-    option("name", n);
-    option("type", type());
+    attr("name", n);
+    attr("type", type());
 
     if( DEBUG ) {
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode." +
@@ -150,7 +150,7 @@ public class GenericAgent extends AttrBase implements Agent {
        * agents are initialized in the correct order and that no requests
        * are made on partially-initialized agents.
        */
-      String fn = findInterform("initialize.if", true);
+      String fn = findInterform("initialize.if");
       Run.interformSkipFile(this, fn, makeRequest(machine(), "GET", url, null),
 			    Pia.instance().resolver());
     }
@@ -286,7 +286,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( fileTable.containsKey( key ) )
       res = (List)fileTable.get(key);
     if( res == null ){
-      v = optionAsString( key );
+      v = attrString( key );
       if ( v!=null && v.startsWith("~/") ){
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
@@ -326,7 +326,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( dirTable.containsKey( key ) )
       res = (List)dirTable.get(key);
     if( res== null ){
-      v = optionAsString( key );
+      v = attrString( key );
       if ( v!=null && v.startsWith("~"+filesep) ) {
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
@@ -559,17 +559,14 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /**
    * Respond to a direct request.
-   * This is called from the agent's Agent::Machine
+   * 	This is called from the agent's AgentMachine
    */
   public void respond(Transaction trans, Resolver res)
        throws PiaRuntimeException{
-    URL zurl = trans.requestURL();
 
     crc.pia.Pia.debug(this, "Running interform...");
-    if (! respondToInterform( trans, zurl, res ) ){
-      respondNotFound( trans, zurl );
-      //throw new PiaRuntimeException(this, "respond",
-      //			    "No InterForm file found for "+trans.url());
+    if (! respondToInterform( trans, res ) ){
+      respondNotFound( trans, trans.requestURL() );
     }
   }
 
@@ -611,70 +608,24 @@ public class GenericAgent extends AttrBase implements Agent {
     }
   }
 
-  // === option, optionAsXXX are now unnecessary.
-
-  /**
-   * Options are strings stored in attributes.  Options may have
-   * corresponding features derived from them, which we compute on demand.
-   */
-  public void option(String key, String value) throws NullPointerException {
-    if( key == null || value == null )
-      throw new NullPointerException("Key or value can not be null.");
-
-    attr( key, value );
-  }
-
-  /**
-   * Return an option's value 
-   *
-   */
-  public String optionAsString(String key){
-    if( key == null ) return null;
-    return attrString(key);
-  }
-
-
-  /**
-   * @return an option's value as boolean 
-   * @return false if key not found or null
-   */
-  public boolean optionAsBoolean(String key){
-    if( key == null ) return false;
-    return attrTrue(key);
-  }
-
-
   /**
    * Set options with a hash table
    *
    */
   public void parseOptions(Table hash){
-    Enumeration e = null;
-    if( hash != null )
-      e = hash.keys();
-      while( e.hasMoreElements() ){
-	Object keyObj = e.nextElement();
-	String key = (String)keyObj;
-	String value = (String)hash.get( keyObj );
-	option( key, value );
-      }
+    if (hash == null) return;
+    Enumeration e = hash.keys();
+    while( e.hasMoreElements() ){
+      Object keyObj = e.nextElement();
+      String key = (String)keyObj;
+      String value = (String)hash.get( keyObj );
+      attr( key, value );
+    }
   }
 
   /************************************************************************
   ** Finding and Executing InterForms:
   ************************************************************************/
-
-  /**
-   * Find an interform, using a simple search path and a crude kind
-   * of inheritance.  Allow for the fact that the user may be trying
-   * to override the interform by putting it in piaUsrAgentsStr/name/.
-   */
-  public String findInterform( URL url, boolean noDefault ){
-    if( url == null ) return null;
-
-    String path = url.getFile();
-    return findInterform(url.getFile(), noDefault);
-  }
 
   /**
    * Send redirection to client
@@ -707,13 +658,6 @@ public class GenericAgent extends AttrBase implements Agent {
     response.setContentLength( msg.length() );
     response.startThread();
     return true;
-  }
-
-  /**
-   * Test whether an InterForm request is a redirection.
-   */
-  protected boolean isRedirection( Transaction req, URL url ) {
-    return isRedirection(req, url.getFile());
   }
 
   /**
@@ -754,7 +698,7 @@ public class GenericAgent extends AttrBase implements Agent {
       return false;
 
     // check for existence
-    String wholePath = findInterform( path, false );
+    String wholePath = findInterform( path );
     if( wholePath == null ){
       respondNotFound(req, path);
     } else {
@@ -853,13 +797,18 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Find a filename relative to this Agent.
    */
-  public String findInterform( String path, boolean noDefault ){
+  public String findInterform(String path){
+    if ( path == null ) return null;
+    return findInterform(path, name(), type(), interformSearchPath());
+  }
+
+  /**
+   * Find a filename relative to an arbitrary agent.
+   */
+  public String findInterform(String path, String myname, String mytype,
+			      List if_path){
     if ( path == null ) return null;
     Pia.debug(this, "  path on entry -->"+ path);
-    // === path, name, and typed were all getting lowercased.  Wrong!
-
-    String myname = name();
-    String mytype = type();
 
     boolean hadName = false;	// these might be useful someday.
     boolean hadType = false;
@@ -878,8 +827,6 @@ public class GenericAgent extends AttrBase implements Agent {
     
     if( path.startsWith("/") )	path = path.substring(1);
     Pia.debug(this, "Looking for -->"+ path);
-
-    List if_path = interformSearchPath();
 
     File f;
     Enumeration e = if_path.elements();
@@ -938,49 +885,40 @@ public class GenericAgent extends AttrBase implements Agent {
 
 
   /**
+   * Respond to a request directed at one of an agent's interforms.
+   *
+   * @return false if the file cannot be found.  This allows the caller
+   *	to check for an InterForm first, then do something different with
+   *	other requests.
+   */
+  public boolean respondToInterform(Transaction request, Resolver res){
+
+    URL url = request.requestURL();
+    if (url == null) return false;
+
+    return respondToInterform(request, url.getFile(), res);
+  }
+
+  /**
    * Respond to a request directed at one of an agent's interforms, 
-   * with a modified path.
+   * with a (possibly-modified) path.
    *
    * @return false if the file cannot be found.
    */
   public boolean respondToInterform(Transaction request, String path,
 				    Resolver res){
-    URL url = request.requestURL();
-    try {
-      url = new URL(url, path);
-    } catch(MalformedURLException e) {
-      String msg = "malformed URL redirecting to "+path;
-      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
-    }
-    return respondToInterform(request, url, res);
-  }
 
-  /**
-   * Respond to a request directed at one of an agent's interforms.
-   * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.
-   *
-   * @return false if the file cannot be found.
-   */
-  public boolean respondToInterform(Transaction request, URL url, Resolver res){
+    // If the request needs to be redirected, do so now.
+    if (isRedirection( request, path )) return true;
 
-    if (url == null) url = request.requestURL();
-
-    if( url != null )
-      Pia.debug(this, "respondToInterform: url is -->" +
-		url.getFile());
-    
-    if (isRedirection( request, url )) return true;
-
-    String interformOutput = null;
-    String file = findInterform( url, false );
+    // Find the file.  If not found, return false.
+    String file = findInterform( path );
+    if( file == null ) return false;
+      
     if( file != null )
       Pia.debug(this, "The path of interform is -->"+file);
-      
-    if( file == null ) {    //send error response
-      respondNotFound(request, url);
-      return true;
-    } 
+
+    String interformOutput = null;
       
     if( file.endsWith(".if") ){
       // If find_interform substituted .../home.if for .../ 
@@ -1023,17 +961,6 @@ public class GenericAgent extends AttrBase implements Agent {
     else
       this.type( name );
   }
-
-  /**
-   * Compute a feature associated with this agent.
-   * @param featureName a feature name.
-   */
- public Object computeFeature( String featureName ) throws UnknownNameException{
-    if( featureName == null )
-      throw new UnknownNameException("bad feature name.");
-    else
-      return null;
- }
 
 }
 
