@@ -46,7 +46,7 @@ public class Set_agent extends crc.interform.Handler {
     if (a == null) {
       ii.error(ia, "agent " + aname + " not running");
     } else if (it.hasAttr("hook")) {
-      ii.error(ia, "hook unimplemented"); // === a.option("name", value);
+      a.attr("name", value);	// security unimplemented! ===
     } else {
       a.option("name", value.toString());
     }
