@@ -165,8 +165,8 @@ public class Transaction extends Thing{
    *   @returns the full request URI. 
    *
    */    
-  public String getRequestURL(){
-      url = contentObj.getRequestURL();
+  public URL getRequestURL(){
+      URL url = contentObj.getRequestURL();
       return url;
   }
 
