@@ -1,0 +1,448 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Slides for LinuxWorld</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Slides for LinuxWorld 1999, Session 74</h1>
+
+<hide>
+<p> Note: you are viewing the plain form of a document that was designed to be
+    viewed as a <a href="lw99.slides.html">slide presentation</a>.
+<include src=config.inc>
+<!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
+<!-- See mail.conferences:102 -->
+</hide>
+
+<p> Note: The <a href="lw99.slides.html">processed form</a> of this
+    presentation looks best in Netscape with a screen size of 800x600, and all
+    toolbars turned off.  Set the variable width font to 24-pt Times and the
+    fixed-width font to 18-pt Courier.  It was designed to be presented using
+    a laptop computer and projection CRT.
+
+<p> For casual viewing or printing, use the <a href="lw99.html">plain HTML
+    form</a>.
+
+<hr>
+
+<slide><!-- Slide 0 doesn't have a title -->
+<p>&nbsp;
+<p>&nbsp;
+<div align=center valign=center>
+<font size='+2'> <strong>The PIA</strong></font><br>
+<font size='+2'
+  ><strong>An Open-Source Web-Based Document Processing System</strong></font>
+
+<p> Stephen Savitzky<br>
+    <code>&lt;steve@rsv.ricoh.com&gt;</code>
+<p> Chief Software Scientist<br>
+    Ricoh Silicon Valley<br>
+</div>
+
+=== RSV logo === PIA logo ===
+</slide>
+
+
+<slide><h2>Overview</h2>
+<p>&nbsp;
+<ol>
+  <li> Introduction: <em>``The Network is the Computer''</em>
+  <li> Documents and the Web
+  <li> Information Applications
+  <li> Document Processing
+  <li> Architecture and Implementation
+  <li> Open Source
+</ol>
+
+</slide>
+
+<hr><set name=subCaption>Introduction</set>
+<slide><h2>Where's the CPU?</h2>
+<div align=center>
+  <img src="Images/cpu-is-missing.gif">
+</div>
+</slide>
+
+<br>
+<slide><h2>We're working on it!</h2>
+<div align=center>
+  <strong>We are developing tools for <em>computing with web
+  documents.</em></strong> 
+<br>
+  <img src="Images/cpu-is-pia.gif">
+</div>
+
+</slide>
+
+<slide><h2>What is our system?</h2>
+<div align=center>
+  <strong>A Document-Processing Engine for the Web</strong>
+</div>
+<ul>
+  <li> The Web is made of documents
+  <li> ``<em>In the future, the only API's that matter will be the API's of web
+       sites</em>'' <br>
+       -- Tim O'Reilly
+  <li> What we have is a general-purpose document processor
+  <li> designed <em>specifically</em> for web applications.
+</ul>
+<div align=center>
+   ``<strong>Like a spreadsheet for documents</strong>''
+</div>
+</slide>
+
+
+<hr><set name=subCaption>Documents and the Web</set>
+<slide><h2>Documents and the Web</h2>
+<table>
+  <tr>	<th colspan=3 align=center>
+         The Web has <em>totally transformed</em> the way we think about
+         information:
+  <tr> <td colspan=2>&nbsp;
+  <tr> <th> &nbsp; <th> Old <th> New
+  <tr>	<th> Documents
+	<td> files
+	<td> web pages
+  <tr>	<th> 
+	<td> proprietary formats
+	<td> standardized markup
+  <tr>	<th> the Internet
+	<td> telnet +ftp
+	<td> The Web
+  <tr>	<th> &nbsp;
+	<td> downloading programs
+	<td> finding information
+  <tr>	<th> User interfaces
+	<td> GUI widgets
+	<td> forms / links
+  <tr>	<th> Killer applications
+	<td> Monolithic programs
+	<td> Web sites / Infoware
+</table>
+</slide>
+
+
+<hr><set name=subCaption>Information Applications</set>
+<slide><h2>Infoware, not software</h2>
+
+<p><em>``<strong>A killer application is</strong> no longer a desktop
+productivity application or even a back-office enterprise software system, but
+an entirely new breed, something you might call an `information application'
+or perhaps even `<strong>infoware.</strong>'</em>
+
+<p><em> ``Traditional software embeds small amounts of information in a lot of
+software; <strong>infoware embeds small amounts of software in a lot of
+information.</strong> The `actions' in an infoware product are generally
+fairly simple: make a choice, buy or sell, enter a small amount of data and
+get back a customized result -- the primary interaction with the user is
+managed largely via the Web page (which may have been <strong>created by a
+writer, editor, or designer</strong> rather than by a programmer, with a
+relatively small amount of programming support.)''  </em>
+
+<div align=right>-- Tim O'Reilly, of O'Reilly and Associates.</div>
+</slide>
+
+
+
+<slide><h2>Aspects of Infoware</h2>
+<ul>
+  <li> <strong>Information is Everything</strong>
+       <ul>
+	 <li> more important than <em>either</em> interface or
+	      processing
+       </ul>
+       
+  <li> <strong>Knowledge is informal:</strong>
+       <ul>
+	 <li> mostly <strong>documents</strong>, not databases
+	 <li> hierarchical, not tabular
+	 <li> Even databases are transformed into documents for transmission
+       </ul>
+
+  <li> <strong>Information changes:</strong>
+       <ul>
+	 <li> Need to keep it available nevertheless
+	 <li> No proprietary formats
+	 <li> No secret algorithms
+       </ul>
+
+  <li> <strong>Processing is pervasive:</strong>
+       <ul>
+	 <li> <em>The user must be able to do processing, too!</em>
+	 <li> With current tools, user must cut-and-paste from browser.
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>Document-Oriented Computing</h2>
+<p><strong>Infoware needs...</strong>
+<ul>
+  <li> A whole new way of looking at computation
+       <ul>
+	 <li> <em>documents</em> get passed between nodes
+	 <li> documents are first-class values<br>
+	      (variables contain documents)
+	 <li> content and behavior are separate
+       </ul>
+  <li> A new <em>location</em> for computation
+       <ul>
+	 <li> not just clients and servers
+	 <li> peers and proxies as well
+	 <li> personal and workgroup processing
+       </ul>
+</ul>
+<p> We call it <em>Document-Oriented Computing</em>
+</slide>
+
+
+
+<slide><h2>Example: Browsing History</h2>
+<ul>
+  <li> Consider this: (<a href="/History">live</a>)<br>
+           
+       <a href='Images/history-index.html'>/~History</a> /
+       <a href='Images/1999.html'>1999</a> /
+       <a href='Images/01.html'>01</a> /
+       <a href='Images/29.html'>29</a>
+
+  <li> ... which points to this (and more)<br>
+14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
+14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
+15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
+15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
+15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
+...
+  <li> (This is why I designed the system in the first place...)
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> The document processor is <em>between the browser and the web</em>
+  <li> It can look at
+       <ul>
+	 <li> requests
+	 <li> responses
+	 <li> documents
+	 <li> local files
+       </ul>
+  <li> ``Agent'' (History, in this case)
+       <ul>
+	 <li> looks like a top-level directory
+	      (<a href="/History">/History/</a>)
+	 <li> does processing on behalf of <em>one user</em> (me)
+	 <li> keeps persistent state.
+       </ul>
+  <li> Documents are the only interfaces.
+</ul>
+
+<p> <strong>Next, let's look at documents.</strong>
+
+</slide>
+
+
+<hr><set name=subCaption>Document Processing</set>
+<slide><h2>What Are Documents?</h2>
+
+<ul>
+  <li> A document is <em>a tree-structured text</em>
+  <li> Document = content (text) + structure (markup tags)
+  <li> Documents may have
+       <ul>
+	 <li> multiple versions (revisions / translations / variants / ...)
+	 <li> multiple presentations (styles / views)
+	 <li> multiple representations (file / parse tree / ...)
+	 <li> multiple uses (source code / manual / online help / ...)
+       </ul>
+</ul>
+
+<strong>Documents are not Objects:</strong>
+<ul>
+  <li> Documents <em>separate</em> content (data) from processing (methods)
+       
+  <li> Therefore, documents...
+       <ul>
+	 <li> are <em>portable</em>
+	 <li> can be processed in many ways<br>
+	      [formatted, indexed, translated, ...]
+	 <li> are <em>robust</em> (unlike serialized Java objects)
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>Why Process Them?</h2>
+<ul>
+  <li> The ``traditional'' operations
+       <ul>
+	 <li> Creating / editing
+	 <li> Viewing
+	 <li> Printing (typesetting)
+	 <li> Indexing
+	 <li> Searching
+       </ul>
+  <li> But wait! There's more!
+       <ul>
+	 <li> Reformatting (applying styles)
+	 <li> Managing collections (e.g. web sites)
+	 <li> Translating / converting /compiling
+	 <li> Extracting information
+	 <li> Filtering
+	 <li> Form handling
+	 <li> Workflow / groupware
+       </ul>
+</ul>
+  <strong>We can do it all</strong>
+</slide>
+
+<slide><h2>A Simple Example</h2>
+<ul>
+  <li> Input: <a href="lw99.html">a document</a>
+       <pre>
+       &lt;set name=DOC:hh&gt;380&lt;/set&gt;&lt;!-- set height --&gt;
+       &lt;slide&gt; &lt;h2&gt;Document Processing&lt;/h2&gt;
+          &lt;ul&gt;
+             &lt;li&gt; Input: a document
+          &lt;/ul&gt;
+       &lt;/slide&gt;
+       </pre>
+  <li> ... processing using a ``<a href="Images/slides.ts">tagset</a>''
+       <ul>
+	 <li> Describes the structure of the document
+	 <li> Describes what to do with each tag
+       </ul>
+  <li> <code>process -tagset slides lw99.html &gt; lw99.slides.html</code>
+  <li> Output: another document (this slide). 
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On</h2>
+<ul>
+  <li> A document's format is specified by a <br>
+       Document Type Definition (DTD)
+  <li> ... which is <em>another document!</em>
+  <li> ... which we can represent in XML.
+  <li> ... and <em>process</em>
+       <p>
+  <li> A ``<em>tagset</em>'' is a document that combines <br>
+       a DTD with formatting commands. 
+  <li> ... also represented in XML.
+  <li> ... extended with standard programming constructs (XXML)
+  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> ... embedded in it, as XML (e.g., <code>&lt;slide&gt;</code> and
+       <code>&lt;set&gt;</code>) 
+  <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
+</ul>
+</slide>
+
+
+<slide><h2>Example: Web Server</h2>
+<ul>
+  <li> Active documents can be used on a web server.
+  <li> The <em>server</em> does the processing
+       <ul>
+	 <li> browser gets plain HTML
+       </ul>
+  <li> We call a collection of active documents an ``Agent''
+       <p>
+
+  <li> <a href="/">Home page of this server</a>
+  <li> <a href="/Admin">Server Administration Agent's home page</a>
+  <li> <a href="/Admin/installers">Agent installer form</a>
+
+</ul>
+
+<slide><h2>Example: Documentation</h2>
+<ul>
+  <li> Input: <a href="Images/slides.ts">a document tagset specification</a>
+<pre>
+  &lt;tagset name=slides parent=HTML include=xxml recursive&gt; ...
+  &lt;define element=slide parent=body&gt; &lt;action&gt; ...
+  &lt;define entity=topBg&gt;&lt;value&gt;lightblue&lt;/define&gt;...
+</pre>
+  <li> ... processing using a different tagset
+  <li> <code>process -tagset tsdoc slides.ts &gt; slides.html</code>
+  <li> Output: <a href="Images/slides.html">documentation</a>.
+  <li> Same document can be viewed many ways:
+       see <a href="Images/View.html">this form</a>
+       (<a href="/View">live</a>)
+       (<a href="/Admin/installers#View">install</a>)
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On?</h2>
+<!-- === need better example than slide formatting -- does not show differences
+with regular SGML -- at least make clear agent interface for viewing slides -->
+<ul>
+  <li> Documents contain only content and markup (structure)
+  <li> Behavior is associated with tags by a tagset
+  <li> The same document can be processed in different ways with different
+       tagsets.<br>
+       -- think of them as similar to styles
+       <p>
+  <li> One way to look at it:
+       <ul>
+	 <li> we're abusing a text formatter
+	 <li> ... to make a programming language
+       </ul>
+</ul>
+</slide>
+
+
+<hr><set name=subCaption>Branch point</set><set name=label>branch</set>
+<slide><h2>Where do we go from here?</h2>
+
+<ul>
+  <li> <a href="architecture.slides.html#0">Architecture</a>
+  <li> <a href="who-what.slides.html#0">Users and Uses</a>
+  <li> <a href="open-source.slides.html#0">Open Source</a>
+  <li> <a href="oss-bkgnd.slides.html#0">Open Source Background Info</a>
+  <li> <a href="appendices.slides.html#0">Appendices</a>
+       <p>
+  <li> Our web site:
+       <a href="http://pia.rsv.ricoh.com/">http://pia.rsv.ricoh.com/</a>
+</ul>
+
+</slide>
+
+
+<hr><set name=subCaption>Conclusion</set>
+<slide><h2>Conclusion</h2>
+<div align=center>
+<p>&nbsp;
+<p>&nbsp;
+
+  An Open-Source Web-Based Document Processing System <br>
+  <em>for Infoware</em>
+
+<p>
+<p>
+<p>
+If ``The network is the computer''<br>
+ <strong>shouldn't it have a standard CPU?</strong>
+     
+
+</slide>
+
+
+<hr>
+<set name=label>TOC</set>
+<slide><!-- toc not working: tagset doesn't seem to be properly recursive. -->
+<h2>Table of Contents:</h2>
+<ol>
+  &slidelist;
+</ol>
+</slide>
+
+<b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

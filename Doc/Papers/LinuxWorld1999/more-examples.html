@@ -1,0 +1,160 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>More Examples</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>More Examples</h1>
+<include src=config.inc>
+
+<slide><h2>A Simple Example</h2>
+<ul>
+  <li> Input: <a href="lw99.html">a document</a>
+       <pre>
+       &lt;set name=DOC:hh&gt;380&lt;/set&gt;&lt;!-- set height --&gt;
+       &lt;slide&gt; &lt;h2&gt;Document Processing&lt;/h2&gt;
+          &lt;ul&gt;
+             &lt;li&gt; Input: a document
+          &lt;/ul&gt;
+       &lt;/slide&gt;
+       </pre>
+  <li> ... processing using a ``<a href="Images/slides.ts">tagset</a>''
+       <ul>
+	 <li> Describes the structure of the document
+	 <li> Describes what to do with each tag
+       </ul>
+  <li> <code>process -tagset slides lw99.html &gt; lw99.slides.html</code>
+  <li> Output: another document (this slide). 
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On</h2>
+<ul>
+  <li> A document's format is specified by a <br>
+       Document Type Definition (DTD)
+  <li> ... which is <em>another document!</em>
+  <li> ... which we can represent in XML.
+  <li> ... and <em>process</em>
+       <p>
+  <li> A ``<em>tagset</em>'' is a document that combines <br>
+       a DTD with formatting commands. 
+  <li> ... also represented in XML.
+  <li> ... extended with standard programming constructs (XXML)
+  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> ... embedded in it, as XML (e.g., <code>&lt;slide&gt;</code> and
+       <code>&lt;set&gt;</code>) 
+  <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
+</ul>
+</slide>
+
+
+<slide><h2>Example: Web Server</h2>
+<ul>
+  <li> Active documents can be used on a web server.
+  <li> The <em>server</em> does the processing
+       <ul>
+	 <li> browser gets plain HTML
+       </ul>
+  <li> We call a collection of active documents an ``Agent''
+       <p>
+
+  <li> <a href="/">Home page of this server</a>
+  <li> <a href="/Admin">Server Administration Agent's home page</a>
+  <li> <a href="/Admin/installers">Agent installer form</a>
+
+</ul>
+
+<slide><h2>Example: Documentation</h2>
+<ul>
+  <li> Input: <a href="Images/slides.ts">a document tagset specification</a>
+<pre>
+  &lt;tagset name=slides parent=HTML include=xxml recursive&gt; ...
+  &lt;define element=slide parent=body&gt; &lt;action&gt; ...
+  &lt;define entity=topBg&gt;&lt;value&gt;lightblue&lt;/define&gt;...
+</pre>
+  <li> ... processing using a different tagset
+  <li> <code>process -tagset tsdoc slides.ts &gt; slides.html</code>
+  <li> Output: <a href="Images/slides.html">documentation</a>.
+  <li> Same document can be viewed many ways:
+       see <a href="Images/View.html">this form</a>
+       (<a href="/View">live</a>)
+       (<a href="/Admin/installers#View">install</a>)
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On?</h2>
+<!-- === need better example than slide formatting -- does not show differences
+with regular SGML -- at least make clear agent interface for viewing slides -->
+<ul>
+  <li> Documents contain only content and markup (structure)
+  <li> Behavior is associated with tags by a tagset
+  <li> The same document can be processed in different ways with different
+       tagsets.<br>
+       -- think of them as similar to styles
+       <p>
+  <li> One way to look at it:
+       <ul>
+	 <li> we're abusing a text formatter
+	 <li> ... to make a programming language
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>Example: Browsing History</h2>
+<ul>
+  <li> Consider this: (<a href="/History">live</a>)<br>
+           
+       <a href='Images/history-index.html'>/~History</a> /
+       <a href='Images/1999.html'>1999</a> /
+       <a href='Images/01.html'>01</a> /
+       <a href='Images/29.html'>29</a>
+
+  <li> ... which points to this (and more)<br>
+14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
+14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
+15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
+15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
+15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
+...
+  <li> (This is why I designed the system in the first place...)
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> The document processor is <em>between the browser and the web</em>
+  <li> It can look at
+       <ul>
+	 <li> requests
+	 <li> responses
+	 <li> documents
+	 <li> local files
+       </ul>
+  <li> ``Agent'' (History, in this case)
+       <ul>
+	 <li> looks like a top-level directory
+	      (<a href="/History">/History/</a>)
+	 <li> does processing on behalf of <em>one user</em> (me)
+	 <li> keeps persistent state.
+       </ul>
+  <li> Documents are the only interfaces.
+</ul>
+
+<p> <strong>Next, let's look at documents.</strong>
+
+</slide>
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
