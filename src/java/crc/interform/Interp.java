@@ -940,9 +940,12 @@ public class Interp extends State {
 
   /** Send output to a stream. */
   public Interp toStream(OutputStream out) {
-    //output = new TokenStream(out);
+    if (true) { // TokenStream is old, but it works.
+    output = new TokenStream(out);
+    } else { // === The following, using writer, is broken ===
     output = null;
     writer = new java.io.OutputStreamWriter(out);
+    }
     setPassing();
     return this;
   }
