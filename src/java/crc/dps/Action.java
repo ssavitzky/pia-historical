@@ -76,24 +76,6 @@ public interface Action {
    */
   public void action(Input in, Context aContext, Output out);
 
-  /** Performs the action associated with the current ActiveElement, after
-   *	``pre-processing'' its components.  <p>
-   *
-   *	This is normally invoked from the ``three-argument'' 
-   *	<code>action</code> method, but may eventually be called directly
-   *	from a Processor.
-   *
-   * @param the Input, with the current node being the one to be processed.
-   * @param aContext the context in which to look up entity bindings
-   * @param out the Output to which to send results
-   * @param tag the element's tagname
-   * @param atts the (processed) attribute list.
-   * @param content the (possibly-processed) content.
-   * @param cstring the (possibly-processed) content as a string. 
-   */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring);
-
   /** Returns the value associated with the given Node in the given context.
    *	The node need not be the current one, but it must be the one to which
    *	this Action applies.
