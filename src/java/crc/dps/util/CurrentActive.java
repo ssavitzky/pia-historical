@@ -20,7 +20,7 @@ import crc.dps.aux.Copy;
  *	where all instances of Node are known to implement ActiveNode. <p>
  *
  * ===	For best results, ActiveNode should have alternatives to
- *	getFirstChild, etc. that return ActiveNode.  Easiest if we
+ *	getFirstActive, etc. that return ActiveNode.  Easiest if we
  *	completely replace (shadow) AbstractNode with our own parent.
  *
  *	A sufficient selection of protected navigation functions is provided
@@ -142,7 +142,7 @@ public class CurrentActive implements Cursor {
 
   /** This will have to be overridden if the tree is being built on the fly. */
   protected boolean atLast() {
-    return active.getNextSibling() == null;
+    return active.getNextActive() == null;
   }
 
   /** This will have to be overridden if the tree is being built on the fly. */
@@ -175,17 +175,17 @@ public class CurrentActive implements Cursor {
 
   public Node getNode(int level) {
     if (level > depth || level < 0) return null;
-    Node n = active;
+    ActiveNode n = active;
     int d = depth;
-    for ( ; n != null ; n = n.getParentNode(), d--) if (d == level) return n;
+    for ( ; n != null ; n = n.getActiveParent(), d--) if (d == level) return n;
     return null;
   }
 
   public boolean insideElement(String tag, boolean ignoreCase) {
-    Node n = active;
+    ActiveNode n = active;
     int d = depth;
     String tn = null;
-    for ( ; n != null && d >= 0 ; n = n.getParentNode(), d--) {
+    for ( ; n != null && d >= 0 ; n = n.getActiveParent(), d--) {
       if (n instanceof Element) {
 	tn = ((Element)n).getTagName();
 	if (ignoreCase && tag.equalsIgnoreCase(tn)) return true;
@@ -205,7 +205,7 @@ public class CurrentActive implements Cursor {
    */
   public Node toParent() {
     if (atTop()) return null;
-    Node p = active.getParentNode();
+    ActiveNode p = active.getActiveParent();
     if (p == null) return null;
     setNode(p);
     depth--;
@@ -215,7 +215,7 @@ public class CurrentActive implements Cursor {
 
   public Element toParentElement() {
     if (atTop()) return null;
-    Node p = active.getParentNode();
+    ActiveNode p = active.getActiveParent();
     if (p == null) return null;
     setNode(p);
     depth--;
@@ -234,7 +234,7 @@ public class CurrentActive implements Cursor {
    *	Must be overridden if the tree is being built on the fly.
    */
   protected Node toFirstChild() {
-    Node n = active.getFirstChild();
+    Node n = active.getFirstActive();
     if (n == null) return null;
     descend();
     setNode(n);
@@ -250,7 +250,7 @@ public class CurrentActive implements Cursor {
    *	available from this source. 
    */
   public Node toNextNode() {
-    Node n = active.getNextSibling(); // toNextNode bogus at this point ===
+    Node n = active.getNextActive(); // toNextNode bogus at this point ===
     if (n == null) return null;
     setNode(n);
     atFirst = false;
@@ -265,7 +265,7 @@ public class CurrentActive implements Cursor {
    *	available at this level. 
    */
   protected Node toNextSibling() {
-    Node n = active.getNextSibling();
+    Node n = active.getNextActive();
     if (n == null) return null;
     setNode(n);
     atFirst = false;
@@ -319,9 +319,9 @@ public class CurrentActive implements Cursor {
       appendNode(n.deepCopy(), active);
       /* === this will fail for attributes and entities with values:
       startNode(aNode);
-      for (Node n = aNode.getFirstChild();
+      for (Node n = aNode.getFirstActive();
 	   n != null;
-	   n = aNode.getNextSibling()) 
+	   n = aNode.getNextActive()) 
 	putNode(n);
       endNode();
       */
