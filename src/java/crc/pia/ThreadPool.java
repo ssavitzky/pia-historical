@@ -4,24 +4,9 @@
 
 package crc.pia;
 import crc.ds.UnaryFunctor;
-
-public Athread extend UnaryFunctor{
-  static final int C_IDLE = 0;	// Zombie
-  static final int C_BUSY = 1;	// Is in busy list
-  
-  protected int status;
-  protected Thread zthread;
-
-  Object execute( Object o ){
-    Transaction t = (Transaction) o;
-    zthread = new Thread( t );
-    zthread.start();
-    return o;
-  }
-  Athread(){
-    status = C_IDLE;
-  }
-}
+import crc.pia.Athread;
+import java.util.Vector;
+import crc.pia.Piaproperties;
 
 
 public class ThreadPool{
@@ -34,7 +19,7 @@ public class ThreadPool{
 
   Vector freeList = null;
 
-  Properties props;
+  Piaproperties props;
 
   public static final int MAXTHREADCOUNT = 50;
 
@@ -48,12 +33,12 @@ public class ThreadPool{
     
     for(int i = 0; i < freeList.size(); i ++){
       one = (Athread)freeList.elementAt( i );
-      if( one.status == C_IDLE )
+      if( one.status == one.C_IDLE )
 	break;
     }
 
-    if( one ){
-      one.status = C_BUSY;
+    if( one!= null ){
+      one.status = one.C_BUSY;
       return one;
     }
     else
@@ -61,22 +46,20 @@ public class ThreadPool{
   }
 
   public synchronized void notifyDone(Athread e){
-    e.status = C_IDLE;
+    e.status = e.C_IDLE;
   }
 
 
   protected synchronized void addThread( ){
     Athread oneThread = new Athread();
-    count++;
 
     freeList.addElement( oneThread );
   } 
 
-  ThreadPool{
+  ThreadPool(){
     //get pool properities from Pia
-    this.props = Pia.getProperties();
-    String zmaxThreads = props.getProperty(MAXTHREADS, MAXTHREADCOUNT);
-    maxThreads = Integer.getInteger( zmaxThreads );
+    this.props = Pia.instance().properties();
+    int maxThreads = props.getInteger(MAXTHREADS, MAXTHREADCOUNT);
    
     freeList = new Vector();
 
