@@ -36,41 +36,75 @@ import java.util.Enumeration;
 /** Handler class for &lt;submit-forms&gt tag */
 public class Submit_forms extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "agent", Util.getString(it, "name", null));
-    if (ii.missing(ia, "name or agent attribute", name)) return;
+    String name = Util.getString(it, "agent", null);
     
     Run env = Run.environment(ii);
-    crc.pia.Agent a = env.getAgent(name);
-    
+    crc.pia.Agent a = (name == null)? env.agent : env.getAgent(name);
+
+    // === timedSubmission unimplemented ===
+
     if ( it.tag().equalsIgnoreCase("form") ){
       String url = it.attrString("action");
       String method = it.attrString("method");
-      a.createRequest(method, url, it.contentString());
-    } 
-    else
+      a.createRequest(method, url, trimQuery(formToQuery(it)));
+    } else if (it.hasAttr("href")) {
+      String url = it.attrString("href");
+      a.createRequest("GET", url, null);
+    } else {
       handleContent(a, it);
+    }
   }
 
   public void handleContent(Agent a, SGML it) {
     if ( it.tag().equalsIgnoreCase("form") ){
       String url = it.attrString("action");
       String method = it.attrString("method");
-      a.createRequest(method, url, it.contentString());
-    }else
-      { 
-	Tokens content = it.content();
-	if (content != null){
-	  Enumeration tokens = content.elements();
-	  while( tokens.hasMoreElements() ){
-	    try{
-	      SGML e = (SGML)tokens.nextElement();
-	      handleContent(a, e);
-	    }catch(Exception excep){}
-	  }
+      a.createRequest(method, url, formToQuery(it));
+    } else { 
+      Tokens content = it.content();
+      if (content != null){
+	Enumeration tokens = content.elements();
+	while( tokens.hasMoreElements() ){
+	  try{
+	    SGML e = (SGML)tokens.nextElement();
+	    handleContent(a, e);
+	  }catch(Exception excep){}
 	}
       }
+    }
   }
 
+  public String formToQuery(SGML it) {
+    String query = "";
+
+    if ("input".equalsIgnoreCase(it.tag())) {
+      // generate query string for input
+      query = it.attrString(name);
+      query += "=";
+      query += java.net.URLEncoder.encode(it.attrString("value"));
+      query += "&";		// in case there's a next one.
+    } else if ("select".equalsIgnoreCase(it.tag())) {
+      // === select unimplemented
+    } else if ("textarea".equalsIgnoreCase(it.tag())) {
+      // === textarea unimplemented
+    } else {
+      Tokens content = it.content();
+      if (content == null) return query;
+      Enumeration tokens = content.elements();
+      while (tokens.hasMoreElements()) {
+	try {
+	  query += formToQuery((SGML)tokens.nextElement());
+	} catch (Exception e) {}
+      }
+    }
+    return query;
+  }
+
+  public String trimQuery(String query) {
+    if (query.endsWith("&")) 
+      query = query.substring(0, query.length()-2);
+    return query;
+  }
 }
 
 /* ====================================================================
