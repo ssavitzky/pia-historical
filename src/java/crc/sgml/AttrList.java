@@ -18,7 +18,7 @@ import crc.ds.Table;
  *	constant (<code>Token.empty</code>) is provided for the
  *	purpose.  Retrieval by name uses a Table for speed. <p>
  *
- *	@see Tokens.  */
+ *	@see crc.sgml.Tokens  */
 public class AttrList extends Tokens {
 
   /** An empty token, used as the value for an attribute with no value */
