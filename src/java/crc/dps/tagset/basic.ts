@@ -1041,7 +1041,7 @@ example).
 </define>
 
 <h3>Protect</h3>
-<define element=protect handler>
+<define element=protect handler quoted>
   <doc> The content is not expanded (unless the <code>result</code> attribute
 	is present), but passed to the output as-is. 
   </doc>
