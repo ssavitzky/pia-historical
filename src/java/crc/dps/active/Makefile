@@ -28,6 +28,7 @@ NODE_CLASSES = \
 	ParseTreeDecl.java \
 	ParseTreeElement.java \
 	ParseTreeEntity.java \
+	ParseTreeGeneric.java \
 	ParseTreePI.java \
 	ParseTreeText.java
 
