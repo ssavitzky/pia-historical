@@ -466,6 +466,44 @@ See also:
        (1998-06-18) <br>
        -- uses <code>Tabular</code> interface.
 
+  <li> 1998-11-03 <b>Hole:</b> Legacy Handlers <br>
+       <code>cd <a href="../interform/handle">../interform/handle</a>;
+       make dps-check </code> for report.
+       (1998-06-15) <br>
+       -- officially abandoned.
+
+  <li> 1998-11-03 <b>Wish:</b> <code>ParseTreeIterator</code> <br>
+       We will want a ParseTreeIterator that implements both Input and
+       Output (and of course TreeIterator).  The main use would be
+       constructing an node and then processing it.
+       <br>
+       -- Officially delayed until it reappears in the new DOM.
+
+  <li>1998-11-17 <b>Hole</b> &lt;submit-forms&gt; <br>
+       It turns out submit_forms was not defined as a legacy handler.  A new
+       tag has been put into the <code>pia-xhtml</code> tagset (in
+       <code>./tagset/pia-xhtml.ts</code>), and a 
+       handler class created in <code>crc.dps.handle</code>.
+       (1998-11-09) <br>
+
+  <li> 1998-11-17 <b>Hole</b> findInterform with suffixes, forWriting <br>
+       Needed for <code>locateSystemResource</code>
+       (1998-11-17) <br>
+
+  <li> 1998-11-19 <b>Bug</b> Setting AGENT:xxx to null gives null pointer exc. <br>
+       <pre>java.lang.NullPointerException
+          at java.util.Hashtable.put(Hashtable.java)
+          at crc.ds.Table.put(Table.java:107)
+          at crc.pia.GenericAgent.put(GenericAgent.java:901)</pre>
+       (1998-11-17) <br>
+
+  <li> 1998-11-23 <b>Bug:</b> tsdoc fails when loaded from
+       <code>.tso</code>. <br> 
+       Attribute lists are missing.  Possibly due to entities being hooked up
+       with the wrong namespace, except I can't see a mechanism for that.
+       (1998-10-8) <br>
+       -- Turned out to be a bug in serializing ArrayNodeList.  GAAK!
+
 </ol>
 <a name="end">End of list.</a>
 <hr>

@@ -12,6 +12,8 @@ import crc.dom.BasicNamedNode;
 import crc.dom.Entity;
 
 import crc.dps.*;
+import crc.dps.input.FromParseNodes;
+import crc.dps.output.ToNodeList;
 import crc.dps.util.Copy;
 
 /**
@@ -39,6 +41,17 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
   public void setIsParameterEntity(boolean value) { isParameterEntity = value; }
   public boolean getIsParameterEntity() { return isParameterEntity; }
 
+  public Input getValueInput(Context cxt) {
+    return new FromParseNodes(getValue());
+  }
+
+  public Output getValueOutput(Context cxt) {
+    // === changes when value becomes children ===
+    ToNodeList out = new ToNodeList();
+    setValue(out.getList());
+    return out;
+  }
+
   /************************************************************************
   ** Construction:
   ************************************************************************/
@@ -52,8 +65,6 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
   public ParseTreeEntity(ParseTreeEntity e, boolean copyChildren) {
     super(e, copyChildren);
     isParameterEntity = e.isParameterEntity;
-    handler = e.handler;
-    action = e.action;
   }
 
   /** Construct a node with given name. */

@@ -5,6 +5,8 @@
 package crc.dps.active;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
@@ -51,25 +53,56 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public String getResourceName() { return resourceName; }
   public void setResourceName(String s) { resourceName = s; }
 
-  /** The context in which to read it. */
-  protected Context context = null;
-
   // === The following should really be protected and have proper accessors...
 
-  public  boolean readable = true;
-  public  boolean writeable = false;
-  public  String  tsname = null;
-  public  boolean append = false;
-  public  boolean createIfAbsent = true;
-  public  boolean  doNotOverwrite = true;
+  public boolean readable 	= true;
+  public boolean writeable 	= false;
+  public String  tsname 	= null;
+  public boolean append 	= false;
+  public boolean createIfAbsent = true;
+  public boolean doNotOverwrite = true;
+  public String  method 	= null;
+  public String  tagsetName	= null;
 
-  protected Input openResource() {
-    TopContext top  = context.getTopContext();
+  // === Connection state.  These should be set up by the handler. 
+
+  public volatile Tagset  tagset	= null; 
+  public volatile boolean located 	= false;
+  public volatile boolean local   	= false;
+  public volatile File    resourceFile	= null;
+  public volatile URL     resourceURL	= null;
+  public volatile URLConnection resourceConnection	= null;
+
+  /** The context in which to read it.  Set up by the handler. */
+  public  volatile Context context 	= null;
+
+  /** Locate the connected resource, returning its location in either
+   *	resourceFile or resourceURL.  
+   */
+  protected void locateResource(Context cxt) {
+    TopContext top  = cxt.getTopContext();
+    String url = resourceName;
+    if (url == null) return;
+    if (url.indexOf(":") < 0 || url.startsWith("file:") ||
+	url.indexOf("/") >= 0 && url.indexOf(":") > url.indexOf("/")) {
+      resourceFile = top.locateSystemResource(url, writeable);
+      local = true;
+    } else {
+      resourceURL = top.locateRemoteResource(url, writeable);
+      // === Should really make a URLConnection at this point.
+      local = false;
+    }
+    located = true;
+  }
+
+  protected Input openResource(Context cxt) {
+    // === getting status on input requires a URLConnection ===
+    TopContext top  = cxt.getTopContext();
     InputStream stm = null;
     try {
       stm = top.readExternalResource(resourceName);
     } catch (IOException e) {
-      context.message(-2, e.getMessage(), 0, true);
+      cxt.message(-2, e.getMessage(), 0, true);
       return null;
     }
     Tagset      ts  = top.loadTagset(tsname);
@@ -81,17 +114,18 @@ public class ParseTreeExternal extends ParseTreeEntity {
   }
 
   protected void writeResource(Context cxt) {
+    // === requires a URLConnection ===
 				// === writeResource
   }
 
-  protected void writeValueToResource() {
-    TopContext top  = context.getTopContext();
+  protected void writeValueToResource(Context cxt) {
+    TopContext top  = cxt.getTopContext();
     OutputStream stm = null;
     try {
       stm = top.writeExternalResource(resourceName, append, createIfAbsent,
 				      doNotOverwrite);
     } catch (IOException e) {
-      context.message(-2, e.getMessage(), 0, true);
+      cxt.message(-2, e.getMessage(), 0, true);
       return;
     }
     OutputStreamWriter w = new OutputStreamWriter(stm);
@@ -100,7 +134,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
       w.close();
       stm.close();
     } catch (IOException e) {
-      context.message(-2, e.getMessage(), 0, true);
+      cxt.message(-2, e.getMessage(), 0, true);
       return;
     }
   }
@@ -111,12 +145,17 @@ public class ParseTreeExternal extends ParseTreeEntity {
 
   /** Get the node's value as an Input. 
    */
-  public Input getValueInput() { 
+  public Input getValueInput(Context cxt) { 
+    context = cxt;
     if (value != null) return new FromParseNodes(getValue());
     if (resourceName != null && wrappedInput == null) {
-      return openResource();
+      return openResource(cxt);
     }
     return getWrappedInput();
+  }
+
+  public Output getValueOutput(Context cxt) {
+    return null; // === getValueOutput
   }
 
   /** Get the node's value. 
@@ -126,7 +165,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public NodeList getValue() {
     if (value != null || wrappedInput == null) return value;
     ToNodeList out = new ToNodeList();
-    Input in = getValueInput();
+    Input in = getValueInput(context);
     Copy.copyNodes(in, out);
     value = out.getList();
     wrappedInput = null;
@@ -141,7 +180,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
    */
   public void setValue(NodeList newValue) {
     super.setValue(newValue);
-    if (resourceName != null) writeValueToResource();
+    if (resourceName != null) writeValueToResource(context);
   }
 
   /************************************************************************
@@ -170,7 +209,11 @@ public class ParseTreeExternal extends ParseTreeEntity {
     setWrappedInput(in);
   }
 
-  /** Construct a node with given resource name. */
+  /** Construct a node with given resource name.
+   *	Note that a context will be needed when we get around to actually
+   *	expanding the node, but it is <em>not</em> necessarily needed
+   *	when we define it.  It may, for example, be in a tagset.
+   */
   public ParseTreeExternal(String name, String rname, Context cxt) {
     super(name);
     resourceName = rname;

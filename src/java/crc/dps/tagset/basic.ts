@@ -224,6 +224,12 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  <code>write</code>, or <code>append</code>. 
     </doc>
   </define>
+  <define attribute=method optional>
+    <doc> This specifies the HTTP request method to make when requesting an
+	  external entity from a remote server.  Note that the PUT and POST
+	  requests use the specified <tag>value</tag> as their content.
+    </doc>
+  </define>
   <define attribute=write-mode optional>
     <doc> This specifies handling of writes if the specified file does or does
 	  not exist.  Values are <code>create</code> or <code>rewrite</code>;
@@ -231,19 +237,24 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  if it does exist.
     </doc>
   </define>
-  <define attribute=NDATA optional>
+  <define attribute=NDATA optional><!-- unimplemented -->
     <doc> This specifies that the entity contains non-parsed data; the value
 	  specifies the name of the data's <em>notation</em>.
     </doc>
   </define>
-  <define attribute=retain optional>
+  <define attribute=tagset optional>
+    <doc> The tagset with which to process the entity.  The default is the
+	  current tagset. 
+    </doc>
+  </define>
+  <define attribute=retain optional><!-- unimplemented -->
     <doc> This specifies that the a reference to the entity should be replaced
 	  by its value when conversion to a string is desired, but otherwise
 	  should be retained in the tree and passed through to the output.
 	  This is used, e.g., for the predefined character entities.
     </doc>
   </define>
-  <define attribute=parameter optional>
+  <define attribute=parameter optional><!-- unimplemented -->
     <doc> This specifies that the entity is a ``parameter entity,'' of the
 	  sort prefixed by ``<code>%</code>'' in DTD's.  Unlike ordinary
 	  entities, parameter entities are expanded <em>while defining a
@@ -1452,7 +1463,8 @@ open-ended; tagset authors are free to define new ones as needed.
 <define element=connect handler >
   <doc> Perform an HTTP request to connect to a remote or local resource.  The
 	content of the element becomes the data content of a <code>PUT</code>
-	(write) or <code>POST</code> (append) request.  
+	(write) or <code>POST</code> (append) request.  The result is the
+	document returned from the request.
 
 	<p>If a <tag>URL</tag> and/or <tag>headers</tag> element appear before
 	any nonblank content, they are used for the connection.
@@ -1515,19 +1527,25 @@ open-ended; tagset authors are free to define new ones as needed.
 	</pre>
 	A partial list of attributes includes: <code>exists, path, host-name,
 	last-modified, content-type, ...</code> In addition, files may have
-	<code>readable, writeable, is-directory</code> and directories have
+	<code>readable, writeable, directory</code> and directories have
 	<code>files</code>. 
   </doc>
   <define attribute=src optional>
-    <doc> The URL of the resource being queried.  If the resource is remote,
-	  a <code>HEAD</code> request is sent.  If local, the filesystem is
-	  queried. 
+    <doc> The URL of the resource being queried.  If the resource is local,
+	  the filesystem is queried.  If remote, only information that can be
+	  obtained from the URL is returned -- getting more information
+	  requires a connection.
     </doc>
   </define>
   <define attribute=entity optional>
     <doc> Specifies the name of an entity that has been either defined as an
 	  external entity, or created as a connection handle by a
 	  <tag>connect</tag> or <tag>include</tag> tag.
+    </doc>
+  </define>
+  <define attribute=item optional>
+    <doc> If present, only the value of the specified name in the status
+	  namespace is returned. 
     </doc>
   </define>
 </define>

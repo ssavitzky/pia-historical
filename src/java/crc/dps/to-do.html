@@ -17,6 +17,71 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Note</b> Tagset in external entity. <br>
+       Note that an external entity can go up its parent chain to find its
+       tagset.  If not given a context explicitly, it can make its own
+       TopProcessor when needed.  Note that external entities do want a
+       tagset; it's basically the notation.
+       (1998-11-19) <br>
+
+  <li> <b>Note</b> Tagset should be able to create a Processor. <br>
+       They can already create their parser.  There are times when you want a
+       different processor type, but in most cases the right thing will happen.
+       (1998-11-19) <br>
+
+  <li> <b>Impr</b> Resource interface. <br>
+       Everything having to do with external resources (entities, connections,
+       and status) would be much simpler if we had a Resource interface.
+       Something like URLConnection only more versatile.
+       (1998-11-18) <br>
+
+  <li> <b>Bug</b> Assigning attributes to an entity should make namespace.<br>
+       Assigning an actual AttributeList works, but using &lt;set&gt;
+       doesn't.  Probably best to fix this in <code>setValue</code>.
+       (1998-11-18) <br>
+
+  <li> <b>Bug</b> HTML attribute names not case-insensitive. <br>
+       (1998-11-17) <br>
+
+  <li> <b>Note</b> External Entities. <br>
+       <code>crc.dps.active.ParseTreeExternal</code> is supposed to correspond
+       to an external entity.  &lt;define entity=<em>foo</em>
+       system=<em>url</em>&amp;... should define one.  See
+       <code>basic.ts</code> for the relevant attributes: <code>mode</code>,
+       and <code>write-mode</code>.
+       (1998-11-09) <br>
+
+  <li> <b>Hole</b> &lt;connect&gt; and &lt;status&gt;<br>
+       It seems pretty clear at this point that &lt;connect&gt; needs to use an
+       external entity as a ``file handle''.  The &lt;status&gt; tag can then
+       return the status of the connection, or of an external entity defined
+       using &lt;define entity=<em>name</em> external=<em>url</em>&gt;.
+       (1998-11-09) <br>
+
+  <li> <b>Bug</b> Boolean attributes should eval. to name <br>
+       ...following the ancient SGML tradition.  Best done by fixing what the
+       parser does when no = is present. 
+       (1998-11-02)<br>
+       -- see BasicParser.java line 214.  Unfortunately it breaks some things
+	  (like handlers); this needs to be fixed.  The problem is that some
+	  handlers need to distinguish between an entity which is present but
+	  has no value, and one which is present with a non-default value.
+       
+  <li> <b>Hole</b> &lt;put&gt; operation <br>
+       <code>&lt;put&gt;&lt;name&gt;...&lt;value&gt;...</code> -- this can
+       work with the existing bindings of &lt;name&gt; and &lt;value&gt;
+       (1998-11-02)<br>
+
+  <li> <b>Impr</b> Pipelined &lt;select&gt; <br>
+       Should be possible to stream selection through a series of
+       processors.  Bind &amp;item; to current item; evaluate
+       &amp;selection; lazily as needed.  
+       (1998-10-21) <br>
+
+  <li> <b>Impr</b> shorthand for booleans in select. <br>
+       equivalent to test but with current item in content.
+       (1998-10-21) <br>
+ 
   <li> <b>Bug</b> If/elsf/else handlers do not work correctly.  
 	elsf clause always returns true.  See demo_if.xh. (1998-10-19)<br>
 
@@ -107,11 +172,6 @@ Results: &lt;pre&gt;cat                                                         
 
   <li> <b>Bug:</b> not propagating verbosity from pia to dps <br>
        (1998-10-9) <br>
-
-  <li> <b>Bug:</b> tsdoc fails when loaded from <code>.tso</code>. <br>
-       Attribute lists are missing.  Possibly due to entities being hooked up
-       with the wrong namespace, except I can't see a mechanism for that.
-       (1998-10-8) <br>
 
   <li> <b>Bug:</b> literal element not properly terminated. <br>
        (1998-10-2) <br>
@@ -284,13 +344,6 @@ Results: &lt;pre&gt;cat                                                         
        ...are still unimplemented. 
        (1998-06-18) <br>
 
-  <li> <b>Impr:</b> ISO 8601 date representation (dashes) <br>
-       See <a href="http://www.ft.uni-erlangen.de/~mskuhn/iso-time.html">this
-       summary</a>.  The main things needing fixing are the entity table
-       initialization, and dates as presented by the History agent's hook.
-       (1998-06-18) <br>
-       -- Should add timezone and UTC time/date as well.
-
   <li> <b>Impr:</b> Caching for subProcess stack <br>
        ContextStack should have a <code>free</code> link to a free
        sub-processor, to be used instead of allocating one.
@@ -309,12 +362,6 @@ Results: &lt;pre&gt;cat                                                         
        -- It should do so if the input file ends in ``<code>.xho</code>'' or
           ``<code>.xxo</code>''.
        
-  <li> <b>Hole:</b> Legacy Handlers <br>
-       <code>cd <a href="../interform/handle">../interform/handle</a>;
-       make dps-check </code> for report.
-       (1998-06-15) <br>
-       -- now largely abandoned.
-
   <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
 
@@ -331,12 +378,6 @@ Results: &lt;pre&gt;cat                                                         
        faster, since most don't and it's known at parse time.
        The other possibility is lazy evaluation -- don't even look at them
        until they're needed when converting an attribute's value to a string.
-       <br>
-
-  <li> <b>Wish:</b> <code>ParseTreeIterator</code> <br>
-       We will want a ParseTreeIterator that implements both Input and
-       Output (and of course TreeIterator).  The main use would be
-       constructing an node and then processing it.
        <br>
 
 </ol>

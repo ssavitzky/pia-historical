@@ -136,7 +136,7 @@ public class ContextStack  implements Context {
     } else {
       if (entities == null && (local || nameContext == null))
 	entities = new BasicEntityTable();
-      getEntities().setValue(name, value);
+      getEntities().setValue(name, value, this.getTopContext().getTagset());
     } 
   }
 

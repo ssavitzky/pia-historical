@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.Enumeration;
 
 import crc.dps.Namespace;
+import crc.dps.Tagset;
 
 
 /**
@@ -203,7 +204,7 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
   }
 
 
-  public void setValue(String name, NodeList value) {
+  public void setValue(String name, NodeList value, Tagset ts) {
     setAttributeValue(name, value);
   }
   

@@ -8,6 +8,7 @@ import crc.dom.NodeList;
 import crc.dom.Entity;
 
 import crc.dps.Input;
+import crc.dps.Output;
 import crc.dps.Context;
 
 /**
@@ -30,9 +31,11 @@ public interface ActiveEntity extends Entity, ActiveNode {
   public NodeList getValue();
   public void setValue(NodeList value);
 
-  /** Get the node's value as an Input.
-   */
-  public Input getValueInput();
+  /** Get the node's value as an Input. */
+  public Input getValueInput(Context cxt);
+
+  /** Get an Output that writes into the node's value. */
+  public Output getValueOutput(Context cxt);
 
   public boolean getIsAssigned();
   public void setIsAssigned(boolean value);

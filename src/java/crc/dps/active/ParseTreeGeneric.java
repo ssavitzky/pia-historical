@@ -115,6 +115,10 @@ public class ParseTreeGeneric extends ParseTreeElement  {
     return new ParseTreeGeneric(this, false);
   }
 
+  public ActiveNode deepCopy() {
+    return new ParseTreeGeneric(this, true);
+  }
+
 }
 
 

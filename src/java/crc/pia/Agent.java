@@ -144,11 +144,19 @@ public interface Agent extends Tabular {
    */
 
   public String agentIfDir();
+
   /**
    * Find an interform, using a simple search path which allows for user
    *	overrides of standard InterForms, and a crude kind of inheritance.  
    */
   public String findInterform( String path );
+
+  /**
+   * Find an interform, using an optional suffix search list and adjusting
+   *	the directory search path according to whether writing is required.
+   */
+  public String findInterform( String path, String suffixSearch[], 
+			       boolean forWriting );
 
   /**
    * Respond to a request directed at one of an agent's interforms.

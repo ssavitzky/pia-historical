@@ -103,15 +103,15 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
     return old;
   }
 
-  public void setValue(String name, NodeList value) {
+  public void setValue(String name, NodeList value, Tagset ts) {
     ActiveNode binding = getBinding(name);
     if (binding == null) {
-      addBinding(name, new ParseTreeEntity(name, value));
+      addBinding(name, ts.createActiveEntity(name, value));
     } else if (binding instanceof ParseTreeNamed) {
       ((ParseTreeNamed)binding).setValue(value);
     } else {
       // === we're out of luck.
-      setBinding(name, new ParseTreeEntity(name, value));
+      setBinding(name, ts.createActiveEntity(name, value));
     }
   }
 

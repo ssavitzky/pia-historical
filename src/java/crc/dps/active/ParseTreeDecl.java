@@ -126,6 +126,10 @@ public class ParseTreeDecl extends ParseTreeNamed implements ActiveDeclaration {
     return new ParseTreeDecl(this, false);
   }
 
+  public ActiveNode deepCopy() {
+    return new ParseTreeDecl(this, true);
+  }
+
   /** Return new node corresponding to this Token, made using the given 
    *	DOMFactory.  Children <em>are not</em> copied.
    */

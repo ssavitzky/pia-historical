@@ -99,6 +99,10 @@ public interface Tagset  {
    */
   public ActiveEntity getEntityBinding(String name);
 
+  /** Bind an Entity.
+   */
+  public void setEntityBinding(String name, ActiveEntity ent);
+
 
   /************************************************************************
   ** Lookup Operations:

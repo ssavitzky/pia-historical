@@ -49,12 +49,12 @@ public class BasicEntityTable extends BasicNamespace implements EntityTable {
 
   /** Set the value for a given name.
    */
-  public void setValue(String name, NodeList value) {
+  public void setValue(String name, NodeList value, Tagset ts) {
     ActiveEntity binding = getEntityBinding(name);
     if (binding != null) {
       binding.setValue(value);
     } else {
-      newBinding(name, value);
+      newBinding(name, value, ts);
     } 
   }
 
@@ -65,8 +65,8 @@ public class BasicEntityTable extends BasicNamespace implements EntityTable {
   }
 
   /** Construct a new local binding. */
-  protected void newBinding(String name, NodeList value) {
-    addBinding(name, new ParseTreeEntity(name, value));
+  protected void newBinding(String name, NodeList value, Tagset ts) {
+    addBinding(name, ts.createActiveEntity(name, value));
   }
 
 

@@ -54,7 +54,7 @@ public class EntityInput extends ParseTreeEntity {
 
   /** Get the node's value as an Input. 
    */
-  public Input getValueInput() { 
+  public Input getValueInput(Context cxt) { 
     if (value != null) return new FromParseNodes(getValue());
     return getWrappedInput();
   }

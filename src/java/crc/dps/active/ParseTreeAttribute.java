@@ -66,6 +66,7 @@ public class ParseTreeAttribute extends ParseTreeNamed
 
   public ParseTreeAttribute(ParseTreeAttribute e, boolean copyChildren) {
     super(e, copyChildren);
+    specified = e.specified;
   }
 
   /** Construct a node with given data. */

@@ -307,14 +307,17 @@ public class Loader {
    */
   protected static Tagset loadTagsetFile(String name, TopContext cxt) {
     boolean boot = false;
+    boolean tso = false;
     Tagset ts = null;
     File theFile;
+    FileInputStream stm = null;
 
     if (name.endsWith(".ts")
 	|| name.endsWith(".tss")
 	|| name.endsWith(".tso")) {
       // We know the extension already.
       theFile = locateFile(name, cxt);
+      if (name.endsWith(".tso")) tso = true;
     } else {
       File tsFile  = locateFile(name + ".ts", cxt);
       File tsoFile = locateFile(name + ".tso", cxt);
@@ -324,7 +327,8 @@ public class Loader {
 	  && tsFile != null && tsFile.exists()
 	  && tsoFile.lastModified() > tsFile.lastModified()) {
 	try {
-	  ts = (Tagset)crc.util.Utilities.readObjectFrom(name+".tso");
+	  stm = new FileInputStream(tsoFile);
+	  ts = (Tagset)crc.util.Utilities.readObjectFrom(stm);
 	  if (verbosity > 0 && ts != null) {
 	    log.println("Tagset loaded from file " + name + ".tso");
 	  }
@@ -346,6 +350,20 @@ public class Loader {
       }
     }
     if (theFile == null) return null;
+
+    if (tso) {
+      try {
+	stm = new FileInputStream(theFile);
+	ts = (Tagset)crc.util.Utilities.readObjectFrom(stm);
+	if (verbosity > 0 && ts != null) {
+	  log.println("Tagset loaded from file " + name );
+	}
+      } catch (Exception ex) {
+	ex.printStackTrace(log);
+	ts = null;
+      }
+      return ts;
+    }
 
     FileInputStream s = null;
     try {

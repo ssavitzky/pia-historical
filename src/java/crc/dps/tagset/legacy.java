@@ -19,6 +19,9 @@ import java.util.Enumeration;
  */
 public class legacy extends HTML_ts {
 
+  /** Call this to force the tagset to be loaded at link time. */
+  public static void preload() {}
+
   static String emptyActors = "actor-attrs actor-dscr actor-doc actor-syntax"
   + " get tagset-exists tagset-load tagset-include element actor-names"
   + " calendar"

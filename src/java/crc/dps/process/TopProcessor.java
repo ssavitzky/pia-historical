@@ -60,8 +60,13 @@ public class TopProcessor extends BasicProcessor implements TopContext
   /** Obtain the current Tagset. */
   public Tagset getTagset() 		 { return tagset; }
 
-  /** Set the current Tagset. */
-  public void setTagset(Tagset bindings) { tagset = bindings; }
+  /** Set the current Tagset.
+   *	If the entity table has not been initialized yet, do so. 
+   */
+  public void setTagset(Tagset bindings) {
+    tagset = bindings;
+    if (entities == null && bindings != null) initializeEntities();
+  }
 
   /** Return the current ProcessorInput, if there is one. */
   public ProcessorInput getProcessorInput() {
@@ -69,6 +74,8 @@ public class TopProcessor extends BasicProcessor implements TopContext
       ? (ProcessorInput)getInput()
       : null;
   }
+
+  public TopContext getTopContext() { return this; }
 
   /************************************************************************
   ** Input and Output
@@ -320,6 +327,7 @@ public class TopProcessor extends BasicProcessor implements TopContext
 
   /** Make an entity-table entry for a lookup table. */
   public void define(String n, Tabular v) {
+    if (entities == null) entities = (new BasicEntityTable());
     getLocalNamespace().setBinding(n, new NamespaceWrap(n, v));
   }
 
@@ -403,13 +411,13 @@ public class TopProcessor extends BasicProcessor implements TopContext
   ************************************************************************/
 
   public TopProcessor() {
-    initializeEntities();
     top = this;
   }
 
-  public TopProcessor(boolean defaultEntities) {
-    if (defaultEntities) initializeEntities();
+  public TopProcessor(Tagset ts, boolean defaultEntities) {
+    tagset = ts;
     top = this;
+    if (defaultEntities) initializeEntities();
   }
 
   public TopProcessor(Input in, Output out) {
@@ -429,9 +437,8 @@ public class TopProcessor extends BasicProcessor implements TopContext
   }
 
   public TopProcessor(Input in, Context prev, Output out, Tagset ts) {
-    super(in, prev, out, null);
-    tagset = ts;
-    top = this;
+    this(in, prev, out, (EntityTable)null);
+    setTagset(ts);
   }
 
 }

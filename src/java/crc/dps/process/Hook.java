@@ -112,29 +112,12 @@ public class Hook extends ActiveDoc {
   ************************************************************************/
 
   Hook() {
-    super(false);
-    initializeEntities();
+    super();
   }
 
-  Hook(boolean defaultEntities) {
-    super(false);
-    if (defaultEntities) initializeEntities();
+  public Hook(Agent a, Transaction req, Transaction resp, Resolver res) {
+    super(a, req, resp, res);
   }
-
-  public Hook(Input in, Output out) {
-    super(in, null, out, (Tagset) null); // casting prevents ambiguity
-    initializeEntities();
-  }
-
-  public Hook(Input in, Output out, EntityTable ents) {
-    super(in, null, out, ents);
-  }
-
-  public Hook(Input in, Context prev, Output out,
-			   EntityTable ents) {
-    super(in, prev, out, ents);
-  }
-
 
 }
 

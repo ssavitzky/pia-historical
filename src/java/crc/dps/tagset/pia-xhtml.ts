@@ -10,8 +10,8 @@
 
 Note that we only need these inside the PIA.
 
-<h3>Submit</h3>
-<define element=submit handler >
+<h3>Submit-Forms</h3>
+<define element=submit-forms handler=submit >
   <doc> Submit each form in the content to its target.  Results, if any,
 	are discarded.
   </doc>
@@ -89,8 +89,12 @@ Note that we only need these inside the PIA.
 	contain links to any of several different pages.
   <doc>
   <define attribute=page>
-    <doc> the base name of the current page, matched against the URL (href
+    <doc> The base name of the current page, matched against the URL (href
 	  attribute).
+    </doc>
+  </define>
+  <define attribute=href>
+    <doc> The URL of the page.
     </doc>
   </define>
   <action><if><test match="&attributes:page;">&attributes:href; </test>
@@ -164,7 +168,7 @@ Note that we only need these inside the PIA.
   </action>
 </define>
 
-<define element=sub-head>
+<define element=sub-head quoted>
   <doc> A secondary table located immediately under the header.
 	Content should consist of additional table rows.
   </doc>
@@ -175,7 +179,7 @@ Note that we only need these inside the PIA.
   </define>
   <action>
 <table cellspacing=0 cellpadding=0 border=0>
-<tr><th align=center valign=center nowrap width=170><include src=insert>
+<tr><th align=center valign=center nowrap width=170><br><include src=insert>
     <td>
     <table cellspacing=0 cellpadding=0 border=0>
     <tr><th align=left nowrap width=170>&blank-170x1;<td><br>
@@ -186,7 +190,8 @@ Note that we only need these inside the PIA.
     	     <xa href="help" page="&attributes:page;">Help</xa>
 	     <xa href="options" page="&attributes:page;">Options</xa>
     </tr>
-    <get name=content>
+    <set name=page>&attributes:page;</set>
+    <expand><get name=content></expand>
   </table>
 </table>
   </action>

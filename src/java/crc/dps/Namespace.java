@@ -63,7 +63,7 @@ public interface Namespace {
   /** Associate a new value with a name.  Construct a new binding of the
    *	appropriate type if necessary.
    */
-  public void setValue(String name, NodeList value);
+  public void setValue(String name, NodeList value, Tagset ts);
 
   /************************************************************************
   ** Information Operations:

@@ -156,7 +156,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     } else {
       if (entities == null) 
 	entities = new BasicEntityTable();
-      getEntities().setValue(name, value);
+      getEntities().setValue(name, value, this);
     } 
   }
 
@@ -169,6 +169,15 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       if (binding != null) return binding;
     }
     return (context == null)? null : context.getEntityBinding(name);
+  }
+
+  /** Bind an entity.
+   */
+  public void setEntityBinding(String name, ActiveEntity ent) {
+    if (entities == null) {
+      entities = new BasicEntityTable();
+    }
+    entities.setBinding(name, ent);
   }
 
 
@@ -608,6 +617,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   public void message(int level, String text, int indent, boolean endline) {
     if (verbosity < level) return;
+    if (log == null) log = System.err;
     String s = "";
     for (int i = 0; i < indent; ++i) s += " ";
     s += text;
@@ -615,11 +625,14 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   }
 
   public final void debug(String message) {
-    if (verbosity >= 2) log.print(message);
+    if (verbosity < 2) return;
+    if (log == null) log = System.err;
+    log.print(message);
   }
 
   public final void debug(String message, int indent) {
     if (verbosity < 2) return;
+    if (log == null) log = System.err;
     String s = "";
     for (int i = 0; i < indent; ++i) s += " ";
     s += message;

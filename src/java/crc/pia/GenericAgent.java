@@ -898,24 +898,29 @@ public class GenericAgent implements Agent, Registered, Serializable {
   public synchronized void put(String name, Object value) {
     if (name == null) return;
     name = name.toLowerCase();
-    attributes.put(name, value);
+    if (value != null) 
+      attributes.put(name, value);
+    else
+      attributes.remove(name);
+
     if (name.equals("act-on") || name.equals("_act_on")) {
       actOnHook = value;
-      Pia.debug(this, "Setting ActOn hook", ":="+value.toString());
+      Pia.debug(this, "Setting ActOn hook", ":="+value);
     } else if (name.equals("handle") || name.equals("_handle")) {
       handleHook = value;
-      Pia.debug(this, "Setting handle hook", ":="+value.toString());
+      Pia.debug(this, "Setting handle hook", ":="+value);
     } else if (name.equals("criteria")) {
-	criteria = new Criteria(value.toString()); // === could be smarter ===
+      if (value == null) criteria = null;
+      else criteria = new Criteria(value.toString());
     } else if (name.equals("authentication")
 	       || name.equals("_authentication")) {
-      if (authPolicy != null) {
+      if (authPolicy != null || value == null) {
 	//should only allow more stringent authentication
 	Pia.debug(this, "attempt to change authPolicy ignored");
+	if (value == null) return;
       }
       authPolicy = new Authenticator( "Basic", value.toString());
-      Pia.debug(this, "Setting  authentication passwordfile:="
-		+value.toString());
+      Pia.debug(this, "Setting  authentication passwordfile:=" +value);
     }
   }
 
@@ -1121,12 +1126,70 @@ public class GenericAgent implements Agent, Registered, Serializable {
     return path;
   }
 
+  /** 
+   * Return a suitable path list for a writable InterForm.
+   */
+  public List writeSearchPath() {
+    // === bogus for now. ===
+    List path = new List();
+
+    /* Tails: type/name, name, type 
+     *	 Check type/name first because it's the most specific.  That way,
+     *	 sub-agents don't interfere with top-level agents with the same name.
+     */
+
+    String myname = name();
+    String mytype = type();
+
+    List tails = new List();
+
+    if (!myname.equals(mytype)) tails.push(mytype + filesep + myname + filesep);
+    tails.push(myname + filesep);
+    if (!myname.equals(mytype)) tails.push(mytype + filesep);
+
+    List roots = new List();
+    roots.push(Pia.instance().usrAgents());
+    /* Make sure all the roots end in filesep */
+
+    for (int i = 0; i < roots.nItems(); ++i) {
+      String root = (String)roots.at(i);
+      if ( !root.endsWith(filesep) ) { roots.at(i, root + filesep); }
+    }	
+
+    /* Now combine the roots and tails
+     *	Do all the roots for each tail so that , for example, 
+     *	usr/name/x will override pia/type/x
+     */
+
+    for (int i = 0; i < tails.nItems(); ++i) 
+      for (int j = 0; j < roots.nItems(); ++j) {
+	String dirname = roots.at(j).toString() + tails.at(i).toString();
+	File dir = new File(dirname);
+	// allow non-existant dir: if (dir.isDirectory()) path.push(dirname);
+      }
+
+    return path;
+  }
+
   /**
    * Find a filename relative to this Agent.
    */
   public String findInterform(String path){
     if ( path == null ) return null;
-    return findInterform(path, name(), type(), interformSearchPath());
+    return findInterform(path, name(), type(), interformSearchPath(), null);
+  }
+
+  /**
+   * Find a filename relative to this Agent.
+   */
+  public String findInterform(String path, String suffixPath[],
+			      boolean forWriting){
+    if ( path == null ) return null;
+    List if_path = forWriting? writeSearchPath(): interformSearchPath();
+    String found =  findInterform(path, name(), type(), if_path, suffixPath);
+    if (found != null || !forWriting) return found;
+    // Didn't find anything, but it may be ok to create it.
+    return null;		// === for now ===
   }
 
   /**
@@ -1135,7 +1198,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    *	i.e. the path must follow the conventions for a URL.
    */
   public String findInterform(String path, String myname, String mytype,
-			      List if_path){
+			      List if_path, String suffixPath[]){
     if ( path == null ) return null;
     Pia.debug(this, "  path on entry -->"+ path);
 
@@ -1175,7 +1238,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
       if_path.push(agentDirectory());
     }
     
-    String suffixPath[] = wasData? dataSearch : codeSearch;
+    if (suffixPath == null) suffixPath = wasData? dataSearch : codeSearch;
     
     return findFile(path, if_path, suffixPath);
   }

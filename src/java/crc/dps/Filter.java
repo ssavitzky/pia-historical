@@ -99,14 +99,29 @@ public class Filter {
     /* Start by getting a Tagset. */
 
     crc.dps.tagset.Loader.setVerbosity(verbosity);
+    if (tsname.equals("tagset")) loadTagset = true;
+    if (tsname.equals("BOOT")) loadTagset = true;
+
+    if (false&&loadTagset) {
+      // === Crock!
+      Tagset ts = crc.dps.tagset.Loader.loadTagset(infile);
+      if (debug) dumpTagset(ts);
+      try {
+	ObjectOutputStream destination = new ObjectOutputStream(outs);
+	destination.writeObject( ts );
+	destination.flush();
+	destination.close();
+      } catch (java.io.IOException e) { 
+	e.printStackTrace(System.err);
+      }
+      System.exit(0);
+    }
+
     Tagset ts = crc.dps.tagset.Loader.getTagset(tsname);
     if (ts == null) {
       System.err.println("Unable to load Tagset " + tsname);
       System.exit(-1);
     }
-
-    if (tsname.equals("tagset")) loadTagset = true;
-    if (tsname.equals("BOOT")) loadTagset = true;
 
     if (verbose && loadTagset) {
       System.err.println("We appear to be defining a tagset. ");
@@ -139,7 +154,9 @@ public class Filter {
      
     ToParseTree outputTree = null;
     Output output = null;
-    if (parsing) {
+    if (loadTagset) {
+      output = new crc.dps.output.DiscardOutput();
+    } else if (parsing) {
       outputTree = new crc.dps.output.ToParseTree();
       // === root should be an ActiveDocument ===
       outputTree.setRoot(new crc.dps.active.ParseTreeElement("Document", null));
@@ -163,13 +180,13 @@ public class Filter {
     if (parsing) { 
       if (debug) {
 	System.err.println("\n\n========= parse tree: ==========\n");
-	System.err.println(outputTree.getRoot());
+	if (outputTree != null) System.err.println(outputTree.getRoot());
       } 
       try {
 	Object oo = loadTagset
 	  ? ((TagsetProcessor)ii).getNewTagset()
 	  : outputTree.getRoot();
-
+	if (loadTagset && debug) dumpTagset((Tagset)oo);
 	ObjectOutputStream destination = new ObjectOutputStream(outs);
 	destination.writeObject( oo );
 	destination.flush();
@@ -199,7 +216,7 @@ public class Filter {
 	    || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
 	else if (gh instanceof LegacyHandler) name += "L";
       }
-      System.err.print(" " + name);
+      System.err.print(" " + name + " " + ((gh != null)? gh.toString() : ""));
     }
     System.err.print("\n");
   }

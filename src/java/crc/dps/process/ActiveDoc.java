@@ -20,6 +20,7 @@ import crc.dps.*;
 import crc.dps.util.*;
 import crc.dom.NodeList;
 import crc.dps.active.ParseNodeList;
+import crc.dps.handle.Loader;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -92,6 +93,13 @@ public class ActiveDoc extends TopProcessor {
   /************************************************************************
   ** Setup:
   ************************************************************************/
+
+  static {
+    // Preload known handler classes.
+    Loader.defHandle("submit", new crc.dps.handle.submitHandler());
+
+    crc.dps.tagset.legacy.preload();
+  }
 
   /** Initialize the various entities.  
    *	Done in four separate methods (counting super), for easy customization.
@@ -215,7 +223,7 @@ public class ActiveDoc extends TopProcessor {
     }
     if (path.startsWith("/")) {
       // Path starting with "/" is relative to document root
-      path = agent.findInterform(path);
+      path = agent.findInterform(path, resourceSearch, forWriting);
       return (path == null)? null : new File(path);
     } else if (path.indexOf(":") >= 0) {
       // URL: fail.
@@ -224,10 +232,16 @@ public class ActiveDoc extends TopProcessor {
       // Path not starting with "/" is relative to documentBase.
       if (path.startsWith("./")) path = path.substring(2);
       if (documentBase != null) path = documentBase + path;
-      path = agent.findInterform(path);
+      path = agent.findInterform(path, resourceSearch, forWriting);
       return (path == null)? null : new File(path);
     }
   }
+
+  /** Search string that allows locateSystemResource to find .inc files. */
+  protected String resourceSearch[] = {
+    "xh", "xx", "inc", 
+    "html", "xml", "htm", "txt", 
+  };
 
   /** Determine whether a resource name is special. 
    *	In our case, paths starting with <code>pia:</code> require
@@ -265,7 +279,7 @@ public class ActiveDoc extends TopProcessor {
    */
   public TopContext subDocument(Input in, Context cxt, Output out, Tagset ts) {
     if (ts == null) ts = tagset;
-    return new ActiveDoc(in, cxt, out, ts);
+    return new ActiveDoc(in, cxt, out, ts, agent, request, response, resolver);
   }
 
   /************************************************************************
@@ -273,41 +287,26 @@ public class ActiveDoc extends TopProcessor {
   ************************************************************************/
 
   public ActiveDoc() {
-    super(false);
-    initializeEntities();
+    super();
   }
 
   public ActiveDoc(Agent a, Transaction req, Transaction resp, Resolver res) {
-    super(false);
+    super();
     agent = a;
     request = req;
     response = resp;
     resolver = res;
-    initializeEntities();
   }
 
-  public ActiveDoc(boolean defaultEntities) {
-    super(false);
-    if (defaultEntities) initializeEntities();
+  public ActiveDoc(Input in, Context cxt, Output out, Tagset ts,
+		   Agent a, Transaction req, Transaction resp, Resolver res) {
+    super(in, cxt, out, (EntityTable)null);
+    agent = a;
+    request = req;
+    response = resp;
+    resolver = res;
+    setTagset(ts);
   }
-
-  public ActiveDoc(Input in, Output out) {
-    super(in, out);
-    initializeEntities();
-  }
-
-  public ActiveDoc(Input in, Output out, EntityTable ents) {
-    super(in, null, out, ents);
-  }
-
-  public ActiveDoc(Input in, Context prev, Output out, EntityTable ents) {
-    super(in, prev, out, ents);
-  }
-
-  public ActiveDoc(Input in, Context prev, Output out, Tagset ts) {
-    super(in, prev, out, ts);
-  }
-
 
 }
 

@@ -17,12 +17,12 @@ documented in <a href="tagset.html">tagset.html</a>.
 	an &lt;html&gt; element with appropriate head and body content. 
   </doc>
   <action><html><head>
-    <title>&lt;tagset <repeat list="&attributes;"> &li; </repeat>&gt;</title>
+    <title>&lt;tagset &attributes:name;&gt;</title>
     </head><body>
       <h1>&lt;tagset <repeat list="&attributes;"> &li; </repeat>&gt;</h1>
 	<blockquote>
-	  <hide> This documentation generated from &DPS:inputFile; using
-	  &DPS:tagsetName; </hide>
+	  <em> This documentation generated the <code>tsdoc</code> tagset.
+	  </em>
 	</blockquote>
       <if>&content;<then>&content;</if>
     </body></html>

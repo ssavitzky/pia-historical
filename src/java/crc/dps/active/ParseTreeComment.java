@@ -114,6 +114,11 @@ public class ParseTreeComment extends ParseTreeNode implements ActiveComment {
     return new ParseTreeComment(this, false);
   }
 
+  /** Return a deep copy of this Token.  Attributes and children are copied.
+   */
+  public ActiveNode deepCopy() {
+    return new ParseTreeComment(this, true);
+  }
  
   /** Return new node corresponding to this Token, made using the given 
    *	DOMFactory.  Children <em>are not</em> copied.
