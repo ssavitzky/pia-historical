@@ -39,6 +39,7 @@ public class ToNodeList extends ActiveOutput implements Output {
   ************************************************************************/
 
   public ParseNodeList getList() { return list; }
+  public void clearList() { list = new ParseNodeList(); }
 
   public void putNode(Node aNode) {
     if (depth == 0) {

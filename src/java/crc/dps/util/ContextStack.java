@@ -49,33 +49,71 @@ public class ContextStack  implements Context {
   ** State:
   ************************************************************************/
 
-  protected Context stack = null;
-  protected int depth = 0;
-  protected EntityTable entities;
-  protected Input input;
-  protected Output output;
-  protected int verbosity = 0;
-  protected TopContext top = null;
-  protected PrintStream log = System.err;
+  protected Context 	stack = null;
+  protected int 	depth = 0;
+  protected EntityTable entities = null;
+  protected Input 	input;
+  protected Output 	output;
+  protected int 	verbosity = 0;
+  protected TopContext 	top = null;
+  protected PrintStream	log = System.err;
 
+  protected Context   	nameContext = null;
 
  /************************************************************************
-  ** Accessors:
-  ************************************************************************/
+ ** Accessors:
+ ************************************************************************/
 
-  public EntityTable getEntities() { return entities; }
+  /** getEntities returns the most-local Entity namespace. */
+  public EntityTable getEntities() 	{ 
+    return (entities == null && nameContext != null) 
+      ? nameContext.getEntities() 
+      : entities;
+  }
   public void setEntities(EntityTable bindings) { entities = bindings; }
 
-  public Input getInput() { return input; }
-  public void  setInput(Input in) { input = in; }
+  public Input getInput() 		{ return input; }
+  public void  setInput(Input in) 	{ input = in; }
 
-  public Output getOutput() { return output; }
-  public void  setOutput(Output out) { output = out; }
+  public Output getOutput() 		{ return output; }
+  public void  setOutput(Output out) 	{ output = out; }
 
-  public int getDepth() { return depth; }
-  public Context getPreviousContext() { return stack; }
-  public TopContext getTopContext() { return top; }
+  public int getDepth() 		{ return depth; }
+  public Context getPreviousContext() 	{ return stack; }
+  public TopContext getTopContext() 	{ return top; }
+  public Context getNameContext() 	{ return nameContext; }
+  public Processor getProcessor() {
+    return (stack == null)? null : stack.getProcessor();
+  }
 
+  /************************************************************************
+  ** Namespaces:
+  ************************************************************************/
+
+  /** Return a namespace with a given name.  If the name is null, 
+   *	returns the most-locally namespace.
+   */
+  public Namespace getNamespace(String name) {
+    if (entities != null) {
+      if (name == null || name.equals(entities.getName())) {
+	return entities;
+      } else if (entities.containsNamespaces()) {
+	ActiveNode ns = entities.getBinding(name);
+	if (ns != null && ns.asNamespace() != null)
+	  return ns.asNamespace();
+      }
+    }
+    if (nameContext != null) {
+      return nameContext.getNamespace(name);
+    } else {
+      return null;
+    }
+  }
+
+  /** Return the locally-defined namespace, if any. */
+  public Namespace getLocalNamespace() {
+    return entities;
+  }
 
   /************************************************************************
   ** Bindings:
@@ -85,24 +123,31 @@ public class ContextStack  implements Context {
    * @return <code>null</code> if the entity is undefined.
    */
   public NodeList getEntityValue(String name, boolean local) {
-    EntityTable ents = getEntities();
-    //debug("Looking up " + name + (local? " locally" : " globally")
-    //  + (ents == null? " NO TABLE" : "") + "\n");
-    return (ents == null)? null : ents.getEntityValue(name, local);
+    ActiveEntity binding = getEntityBinding(name, local);
+    return (binding != null)? binding.getValue() :  null;
   }
 
   /** Set the value of an entity. 
    */
   public void setEntityValue(String name, NodeList value, boolean local) {
-    EntityTable ents = getEntities();
-    EntityTable context = (stack == null)? null : stack.getEntities();
-    if (ents == null || (local && ents == context)) {
-      // Either there is no entity table, or we need a local one.
-      // In either case,  make a new one.
-      ents = new BasicEntityTable(ents);
-      setEntities(ents);
-    }
-    ents.setEntityValue(name, value, local);
+    ActiveEntity binding = getEntityBinding(name, local);
+    if (binding != null) {
+      binding.setValue(value);
+    } else {
+      if (entities == null && (local || nameContext == null))
+	entities = new BasicEntityTable();
+      getEntities().setValue(name, value);
+    } 
+  }
+
+  /** Get the binding (Entity node) of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public ActiveEntity getEntityBinding(String name, boolean local) {
+    ActiveEntity ent = (entities == null)
+      ? null : entities.getEntityBinding(name);
+    return (local || ent != null || nameContext == null)
+      ? ent : nameContext.getEntityBinding(name, local);
   }
 
 
@@ -113,8 +158,8 @@ public class ContextStack  implements Context {
 
   public int 	getVerbosity() 		{ return verbosity; }
   public void 	setVerbosity(int value) { verbosity = value; }
-  public PrintStream getLog() 		{ return log; }
-  public void 	setLog(PrintStream stream) { log = stream; }
+  public PrintStream getLog() 		 { return log; }
+  public void setLog(PrintStream stream) { log = stream; }
 
   public void message(int level, String text, int indent, boolean endline) {
     if (verbosity < level) return;
@@ -147,8 +192,6 @@ public class ContextStack  implements Context {
   protected void copy(ContextStack old) {
     input 	= old.input;
     output 	= old.output;
-    entities 	= old.entities;
-    stack 	= old.stack;
     verbosity 	= old.verbosity;
     top 	= old.top;
     log 	= old.log;
@@ -159,6 +202,8 @@ public class ContextStack  implements Context {
   public ContextStack(ContextStack prev) {
     copy(prev);
     stack = prev;
+    nameContext = (prev.entities == null)? prev.nameContext : prev;
+    entities = null;
   }
 
   public ContextStack(Input in, Context prev, Output out, EntityTable ents) {
@@ -167,6 +212,21 @@ public class ContextStack  implements Context {
     output   	= out;
     entities 	= ents;
     top	     	= prev.getTopContext();
+    nameContext = ((prev.getLocalNamespace() == null)?
+		   prev.getNameContext() : prev);
+    verbosity 	= prev.getVerbosity();
+    log	      	= prev.getLog();
+    depth    	= prev.getDepth() + 1;
+  }
+
+  public ContextStack(Input in, Context prev, Output out) {
+    stack    	= prev;
+    input    	= in;
+    output   	= out;
+    entities 	= null;
+    top	     	= prev.getTopContext();
+    nameContext = ((prev.getLocalNamespace() == null)?
+		   prev.getNameContext() : prev);
     verbosity 	= prev.getVerbosity();
     log	      	= prev.getLog();
     depth    	= prev.getDepth() + 1;

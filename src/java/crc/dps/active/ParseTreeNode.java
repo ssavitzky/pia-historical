@@ -205,6 +205,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
   public ActiveAttribute asAttribute() 	{ return null; }
   public ActiveEntity 	 asEntity() 	{ return null; }
   public ActiveDocument  asDocument() 	{ return null; }
+  public Namespace	 asNamespace()  { return null; }
 
   ////////////////////////////////////////////////////////////////////////
   // Copying:

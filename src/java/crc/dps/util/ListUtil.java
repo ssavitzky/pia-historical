@@ -82,7 +82,7 @@ public class ListUtil {
 
   /** Return the first ``word'' (blank- or markup-separated non-blank text) in
    *	a Node or its content. */
-  static String getFirstWord(Node n) {
+  public static String getFirstWord(Node n) {
     if (n.hasChildren()) {
       Enumeration e = getTextItems(n.getChildren());
       return e.hasMoreElements()? e.nextElement().toString() : null;

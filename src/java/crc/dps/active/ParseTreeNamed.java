@@ -7,6 +7,7 @@ package crc.dps.active;
 import java.io.*;
 import crc.dom.*;
 import crc.dps.Handler;
+import crc.dps.Namespace;
 
 /** 
  * Abstract base class for nodes with names and values. 
@@ -16,6 +17,7 @@ import crc.dps.Handler;
 public abstract class ParseTreeNamed extends ParseTreeNode  {
 
   protected NodeList value = null;
+  protected Namespace names = null;
 
   protected boolean isAssigned = false;
   public void setIsAssigned(boolean value) { isAssigned = value; }
@@ -30,19 +32,27 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
    */
   public NodeList getValue(){ return value/*getChildren()*/; }
 
+  /** Get the associated namespace, if any. */
+  public Namespace asNamespace() { return names; }
+
   /** Set the node's value.  If the value is <code>null</code>, 
    *	the value is ``un-assigned''.  Hence it is possible to 
    *	distinguish a null value (no value) from an empty one.
+   *
+   * === WARNING! This will change substantially when the DOM is updated!
    */
   public void setValue(NodeList newValue) {
     if (newValue == null) {
       isAssigned = false;
       value = null;
+      names = null;
       return;
     } else {
       isAssigned = true;
+      value = newValue;
+      if (newValue instanceof Namespace) names = (Namespace)newValue;
+      else value = new ParseNodeList(newValue);
     }
-    value = new ParseNodeList(newValue);
     //setChildren(newValue);
   }
 

@@ -31,7 +31,6 @@ import crc.dps.handle.LegacyHandler;
 
 /**
  * Filter an input stream or file with the DPS.
- *	=== Should really descend from TopProcessor
  */
 public class Filter {
   static String infile = null;
@@ -129,10 +128,10 @@ public class Filter {
 
     if (debug && (ii.getEntities() != null)) {
       System.err.println("Entities defined: ");
-      java.util.Enumeration names = ii.getEntities().allEntityNames();
+      java.util.Enumeration names = ii.getEntities().getNames();
       while (names.hasMoreElements()) {
 	String name = names.nextElement().toString();
-	crc.dom.NodeList v = ii.getEntities().getEntityValue(name, false);
+	crc.dom.NodeList v = ii.getEntities().getValue(name);
 	System.err.println(" " + name + "=" + v);
       }
       System.err.print("\n");

@@ -162,10 +162,16 @@ Nested: should be 'a x y b x y c x y ': '<repeat
      list="a b c">&li; <repeat list="x y">&li; </repeat></repeat>'<br>
 value of entity at end: '&li;'
 
+'xyz': '<repeat><foreach entity=x>x y z</foreach>&x;</repeat>'
+'axby': '<repeat><foreach>a b</foreach><foreach entity=x>x y z</foreach>&li;&x;</repeat>'
+
+'2345678': '<repeat><for><start>2</start><stop>8</stop></for>&n;</repeat>'
+'2468': '<repeat><for start=2 stop=8 step=2></for>&n; </repeat>' === doesn't see XML /
+
 <h2>Test Select</h2>
 
-<select><from>xx <em>yy</em></from><name>em</name></select>
-<select><from>xx <em>yy</em></from><child>2</child></select>
+em: <select><from>xx <em>yy</em></from><name>em</name></select>
+em: <select><from><i>xx <em>yy</em></i></from><child>2</child></select>
 
 
 <h2>Parsed entities</h2>

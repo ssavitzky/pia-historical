@@ -18,10 +18,11 @@ import crc.dps.Tagset;
 import crc.dps.Handler;
 import crc.dps.Parser;
 import crc.dps.Context;
+import crc.dps.EntityTable;
+import crc.dps.Namespace;
 
 import crc.dps.active.*;
 import crc.dps.aux.*;
-
 import crc.dps.handle.*;
 
 import crc.util.NameUtils;
@@ -72,6 +73,8 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   protected Handler defaultEntityHandler;
 
+  protected EntityTable entities = null;
+
   protected Table handlersByTag 	= new Table();
   protected Table handlersByAttr 	= new Table();
   protected List  handlerNames 		= new List();
@@ -114,6 +117,52 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       setHandlerForTag(tag, h);
     }
   }
+
+  /************************************************************************
+  ** Entity Bindings:
+  ************************************************************************/
+
+  /** Return a namespace with a given name.  Returns the entity table 
+   *	associated with the tagset (possibly in the context chain) having 
+   *	the given name.
+   */
+  public Namespace getNamespace(String name) {
+    if (name == null || name.equals(getName())) return entities;
+    else if (name != null && context != null) return context.getNamespace(name);
+    else return null;
+  }
+
+  public EntityTable getEntities() { return entities; }
+  public void setEntities(EntityTable bindings) { entities = bindings; }
+
+  /** Get the value of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public NodeList getEntityValue(String name) {
+    ActiveEntity binding = getEntityBinding(name);
+    return (binding != null)? binding.getValue() :  null;
+  }
+
+  /** Set the value of an entity. 
+   */
+  public void setEntityValue(String name, NodeList value) {
+    ActiveEntity binding = getEntityBinding(name);
+    if (binding != null) {
+      binding.setValue(value);
+    } else {
+      if (entities == null) 
+	entities = new BasicEntityTable();
+      getEntities().setValue(name, value);
+    } 
+  }
+
+  /** Get the binding (Entity node) of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public ActiveEntity getEntityBinding(String name) {
+    return (entities == null) ? null : entities.getEntityBinding(name);
+  }
+
 
   /************************************************************************
   ** Adding a Handler:

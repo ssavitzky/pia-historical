@@ -14,6 +14,8 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
 
+import java.util.Enumeration;
+
 /**
  * An abstract base class for a Node Handler. <p>
  *
@@ -249,8 +251,24 @@ implements Handler {
   ************************************************************************/
 
   /** Convenience function: return a NodeList. */
-  protected void putList(Output out, crc.dom.NodeList nl) {
+  protected void putList(Output out, NodeList nl) {
     if (nl != null) Copy.copyNodes(nl, out);
+  }
+
+  /** Convenience function: return a NodeList with optional separator. */
+  protected void putList(Output out, NodeList nl, String sep) {
+    if (nl == null) return;
+    if (sep == null || "".equals(sep)) {
+      Copy.copyNodes(nl, out);
+    } else {
+      long len = nl.getLength();
+      for (long i = 0; i < len; i++) {
+	try { out.putNode(nl.item(i)); } catch (Exception e) {}
+	if (i < (len-1)) {
+	  out.putNode(new ParseTreeText(sep));
+	}
+      }
+    }
   }
 
   /** Convenience function: return an enumeration. */

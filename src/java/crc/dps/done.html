@@ -380,6 +380,37 @@ See also:
        otherwise there is no way to tell whether an entity has a value.
        (1998-08-25)<br>
 
+  <li> 1998-08-27 <b>Bug:</b> Parser.getNextSibling must parse children. <br>
+       If current node has unparsed children, the parser must consume them in
+       order to get over to the next sibling. 
+       (1998-08-27)<br>
+       -- Required adding sawChildren flag to CursorStack.
+
+  <li> 1998-09-02 <b>Hole:</b> Sorting unimplemented. <br>
+       (1998-08-12)<br>
+       -- implemented by Pam
+       
+  <li> 1998-09-03 <b>Hole:</b> Need a Namespace interface <br>
+       This will greatly simplify Index.  Also should have a method
+       <code>Context.getNamespace</code>.  It would look at not only the
+       entities in each context, but the name of the EntityTable nodes.
+       (1998-08-12)<br>
+       -- Some testing needs to be done.
+
+  <li> 1998-09-03 <b>Bug:</b> Numeric repeat has problems <br>
+       Doesn't use &amp;n; for iteration var; not recognized if
+       <code>stop</code> is only attribute present.
+       (1998-09-03)<br>
+
+  <li> 1998-09-03 <b>Bug: </b> Test as condition in if is always true. <br>
+       (1998-09-03) <br>
+       -- This was introduced when rewriting &lt;if&gt; to use the
+	  three-argument <code>action</code> method. 
+
+  <li> 1998-09-04 <b>Hole:</b> &lt;select&gt; unimplemented. <br>
+       Needs to implement everything in XPointer spec, at least.
+       (1998-08-12)<br>
+
 </ol>
 <a name="end">End of list.</a>
 <hr>

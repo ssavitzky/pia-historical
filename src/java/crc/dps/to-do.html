@@ -17,6 +17,18 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Hole:</b> Some &lt;select&gt; subs unimplemented. <br>
+       Needs to implement everything in XPointer spec, at least.
+       (1998-09-08)<br>
+
+  <li> <b>Bug:</b> XML empty flag not recognized <br>
+       At least on &lt;for&gt; elements.
+       (1998-09-04) <br>
+
+  <li> <b>Hole:</b> Entity definitions. <br>
+       &lt;define entity&gt; unimplemented.
+       (1998-09-03) <br>
+
   <li> <b>Hole:</b> PIA datatype transition. <br>
        During the transition Agent and Transaction need to be able to
        return both SGML and DOM data as needed.  Fortunately most of the
@@ -29,13 +41,13 @@ See also:
   <li> <b>Bug:</b> Entities need work.  Tagset, passive entities. <br>
        Passive entities (character entities) and some normal entities have to
        be defined in the DTD.  Passive entities untested. 
-       (1998-08-13)<br>
+       (1998-08-13) <br>
 
   <li> <b>Hole:</b> Parser work needed. <br>
        Literals, CDATA sections, parent, content models, declaration and PI
        parsing, optionally splitting text into tokens, optional case-munging.
-       <code>retainTree</code> unimplemented.
-       (1998-08-13)
+       <code>retainTree</code> implemented (08-27) but untested.
+       (1998-08-13) <br>
 
   <li> <b>Hole:</b> Attribute definitions. <br>
        Attribute types, implied/fixed/etc., default values, handlers.
@@ -48,17 +60,11 @@ See also:
        Processor in a separate thread.
        (1998-08-13)<br>
 
-  <li> <b>Hole:</b> Need a Namespace interface <br>
-       This will greatly simplify Index.  Also should have a method
-       <code>Context.getNamespace</code>.  It would look at not only the
-       entities in each context, but the name of the EntityTable nodes.
-       (1998-08-12)<br>
-       -- The interface exists, but is not used yet.
-
   <li> <b>Hole:</b> Text Substitution<p>
-       Needs to be done using either &lt;select&gt; or its own &lt;select&gt;
+       Needs to be done using either &lt;select&gt; or its own &lt;subst&gt;
        element with appropriate sub-elements.
        (1998-08-12)<br>
+       -- (1998/08/26) handler written but no sub-elements yet.
 
   <li> <b>Bug:</b> Tagsets don't hack resource names correctly. <br>
        Need to decide between Class and ClassLoader conventions.  ClassLoader
@@ -70,14 +76,7 @@ See also:
        <code>ClassLoader.getSystemResource</code> should do the right thing.
        (1998-08-12)<br>
 
-  <li> <b>Hole:</b> Sorting unimplemented. <br>
-       (1998-08-12)<br>
-
   <li> <b>Hole:</b> <code>isChildOf</code> unused in parser. <br>
-       (1998-08-12)<br>
-
-  <li> <b>Hole:</b> &lt;select&gt; unimplemented. <br>
-       Needs to implement everything in XPointer spec, at least.
        (1998-08-12)<br>
 
   <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>

@@ -6,6 +6,9 @@ package crc.dps.active;
 
 import crc.dom.*;
 import java.io.*;
+import java.util.Enumeration;
+
+import crc.dps.Namespace;
 
 
 /**
@@ -13,7 +16,7 @@ import java.io.*;
  *
  */
 public class ParseTreeAttrs extends crc.dom.AbstractNamedList
-	implements ActiveAttrList 
+	implements ActiveAttrList, Namespace
 {
 
   public ParseTreeAttrs(){
@@ -181,6 +184,40 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
     setItem( aname, attr );
   }
 
+  /************************************************************************
+  ** Namespace Operations:
+  ************************************************************************/
+
+  public String getName() { return "#attributes"; }
+
+  public ActiveNode getBinding(String name) {
+    return (ActiveNode)getAttribute(name);
+  }
+
+  public NodeList getValue(String name) {
+    return getAttributeValue(name);
+  }
+
+  public ActiveNode setBinding(String name, ActiveNode binding) {
+    return (ActiveNode)setAttribute(name, (Attribute)binding);
+  }
+
+
+  public void setValue(String name, NodeList value) {
+    setAttributeValue(name, value);
+  }
+  
+  public NodeEnumerator getBindings() {
+    return null; // === getBindings
+  }
+
+  public Enumeration getNames() {
+    return null; // === getNames
+  }
+
+  public boolean isCaseSensitive() { return true; }
+  public String cannonizeName(String name) { return name; }
+  public boolean containsNamespaces() { return false; }
 }
 
 

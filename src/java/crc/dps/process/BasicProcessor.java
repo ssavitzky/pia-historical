@@ -32,6 +32,11 @@ import crc.dps.output.ToNodeList;
 
 public class BasicProcessor extends ContextStack implements Processor {
 
+ /************************************************************************
+  ** Accessors:
+  ************************************************************************/
+
+  public Processor getProcessor() { return this; }
 
   /************************************************************************
   ** Processing:
@@ -236,7 +241,7 @@ public class BasicProcessor extends ContextStack implements Processor {
   }
 
   public BasicProcessor(Input in, Context prev, Output out) {
-    this(in, prev, out, prev.getEntities());
+    super(in, prev, out);
   }
 
   /** Return a new BasicProcessor copied from an old one. */

@@ -45,7 +45,7 @@ public class ifHandler extends GenericHandler {
 
   public void action(Input in, Context aContext, Output out) {
     boolean trueCondition = false;
-    ParseNodeList content = Expand.getContent(in, aContext);
+    ParseNodeList content = Expand.getProcessedContent(in, aContext);
     NodeEnumerator enum = content.getEnumerator();
 
     for (Node child = enum.getFirst(); child != null; child = enum.getNext()) {

@@ -27,7 +27,6 @@ import crc.dps.aux.*;
  * @see crc.dps.Processor
  * @see crc.dps.Tagset
  * @see crc.dps.BasicTagset
- * @see crc.dps.Token
  * @see crc.dps.Input 
  * @see crc.dom.Node */
 
@@ -83,20 +82,30 @@ public class GenericHandler extends BasicHandler {
   ************************************************************************/
 
   /** We're assuming that this is an <em>active</em> node, so call
-   *	the three-input <code>action</code> routine to do the work.
+   *	the three-argument <code>action</code> routine to do the work.
    */
   public int actionCode(Input in, Processor p) {
     action(in, p, p.getOutput());
     return Action.COMPLETED;
   }
 
-  /** This routine does the setup for the ``5-argument'' action routine. 
-   *
-   *	It obtains the expanded attribute list and content, and will rarely
-   *	have to be overridden.  At some point it may be copied into an
-   *	implementation of Processor.
+  /** The default action for active elements is to obtain the expanded
+   *	attribute list and content, then call the ``5-argument'' action
+   *	method. 
    */
   public void action(Input in, Context aContext, Output out) {
+    defaultAction(in, aContext, out);
+  }
+
+  /** This routine does the setup for the ``5-argument'' action routine. 
+   *
+   * <p> It is provided as a separate method in case the normal three-argument
+   *	 action routine is overridden, and we need the normal functionality in
+   *	 a subclass.  <code>selectHandler</code> is a good example.
+   *
+   * @see crc.dps.handle.selectHandler
+   */
+  protected final void defaultAction(Input in, Context aContext, Output out) {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
     if (atts == null) atts = NO_ATTRS;
     ParseNodeList content = null;
@@ -117,7 +126,7 @@ public class GenericHandler extends BasicHandler {
   /** This routine does the work; it should be overridden in specialized
    *	subclasses.  The generic action is to expand the handler's children.
    *
-   *	<p>Note that the element we construct (in order to bind &amp;ELEMENT;)
+   *	<p>Note that the element we construct (in order to bind &amp;element;)
    *	is empty, and the expanded content is kept in a separate NodeList.
    *	This means that unexpanded nodes don't have to be reparented in the
    *	usual case.
@@ -135,6 +144,7 @@ public class GenericHandler extends BasicHandler {
 			ActiveAttrList atts, NodeList content) {
     //aContext.debug("in action for " + in.getNode());
     ActiveElement e = in.getActive().asElement();
+    ActiveElement element = e.editedCopy(atts, null);
 
     // === We shouldn't ever have to copy the children here.
     // === Instead, make a special EntityTable that can construct the element
@@ -143,20 +153,24 @@ public class GenericHandler extends BasicHandler {
     // === Supporting pseudo-Elements requires special hackery in the
     // === ParseListIterator, with a potential nodelist at each level.
 
-    ActiveElement element = e.editedCopy(atts, null);
-    if (hasChildren()) {
-      // Create a suitable sub-context:
-      //    === not clear if entities should still be lowercase.  For now...
+    if (hasChildren()) {	
+      // Children exists, so this is a defined action (macro). 
+
       //aContext.debug("expanding <" + tag + "> " + getChildren() + "\n");
-      EntityTable ents = new BasicEntityTable(aContext.getEntities());
-      ents.setEntityValue("content", content, true);
-      ents.setEntityValue("element", new ParseNodeList(element), true);
-      ents.setEntityValue("attributes", atts, true);
+
+      // Create a suitable sub-context for the expansion:
+      //    === not clear if entities should still be lowercase.  For now...
+
+      BasicEntityTable ents = new BasicEntityTable(e.getTagName());
+      ents.setValue("content", content);
+      ents.setValue("element", new ParseNodeList(element));
+      ents.setValue("attributes", atts); // === should be a bound namespace
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
       Processor p = aContext.subProcess(def, out, ents);
       // ... Expand the definition in the sub-context
       p.processChildren();
+
     } else if (content == null) {
       // No content: just put the new element. 
       out.putNode(element);

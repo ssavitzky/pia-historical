@@ -501,6 +501,11 @@ public abstract class AbstractParser extends CursorStack implements Parser
       check = checkStartTag(n);
       if (check == 0) {
 	setNode(n);
+	if (retainTree && depth > 0) {
+	  Node parent = getNode(depth-1);
+	  if (parent != null) Copy.appendNode(n, parent);
+	} 
+	atLast = false;
 	return n;
       } else {			// === checkStartTag -> -1 not supported
 	atLast = true;
@@ -534,11 +539,19 @@ public abstract class AbstractParser extends CursorStack implements Parser
   public Node toNextSibling() {
     // If the current node has a next sibling, just go there.
     Node nn = getNode().getNextSibling();
-    if (nn != null) {		// There's a real sibling.  Go there.
+    if (nn != null) {		// There's a sibling already.  Go there.
       setNode(nn);
       return nn;
-    } else {
-      return advanceParser();	// No parent, just go.
+    } else {			// No sibling in the tree: get one
+      // Check for, and consume, any unparsed children.
+      if (hasUnparsedChildren() && !sawChildren) {
+	Node c = toFirstChild();
+	if (c != null) {
+	  for (; c != null; c = toNextSibling()) {}
+	  toParent();
+	}
+      }
+      return advanceParser();
     }
   }
 
@@ -547,8 +560,9 @@ public abstract class AbstractParser extends CursorStack implements Parser
     if (node.hasChildren()) {
       setNode(node.getFirstChild());
       return node;
-    } else 
+    } else {
       return advanceParser();
+    }
   }
 
   public Node toNextNode() {
@@ -563,7 +577,13 @@ public abstract class AbstractParser extends CursorStack implements Parser
   }
   
   public boolean atLast() {
-    return false;		// ===
+    return atLast;
+  }
+
+  /** Test whether the current node has children that have not been parsed. */
+  protected boolean hasUnparsedChildren() {
+    return !node.hasChildren()
+      && element != null && !active.asElement().isEmptyElement();
   }
 
   public boolean hasChildren() {
@@ -572,10 +592,10 @@ public abstract class AbstractParser extends CursorStack implements Parser
   }
 
   public Node getTree() {
-    return null;
+    return retainTree? getNode() : null;
   }
 
   public void retainTree() {
-
+    retainTree = true;
   }
 }

@@ -8,6 +8,7 @@ import crc.dps.Active;
 import crc.dps.Action;
 import crc.dps.Handler;
 import crc.dps.Syntax;
+import crc.dps.Namespace;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
@@ -81,6 +82,9 @@ public interface ActiveNode extends Active, Node {
   /** Return the node typed as an ActiveDocument, or <code>null</code> if it
    *	is not a Document. */
   public ActiveDocument asDocument();
+
+  /** Return the node or its content typed as a Namespace. */
+  public Namespace asNamespace();
 
   /************************************************************************
   ** Copying:

@@ -53,7 +53,7 @@ public class ToString extends CursorStack implements Output {
     if (aNode.getNodeType() == NodeType.ENTITY && expandEntities) {
       ActiveEntity e = (ActiveEntity)aNode;
       // === Should really check value in the entity itself as well ===
-      NodeList value = entityTable.getEntityValue(e.getName(), false);
+      NodeList value = entityTable.getValue(e.getName());
       if (value != null) write(value.toString());
       else write(aNode.toString());
     } else {

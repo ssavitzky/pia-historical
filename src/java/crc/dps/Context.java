@@ -7,6 +7,8 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Element;
 
+import crc.dps.active.ActiveEntity;
+
 import java.io.PrintStream;
 
 /**
@@ -61,12 +63,6 @@ public interface Context {
   ** State accessors:
   ***********************************************************************/
 
-  /** Obtain the current Entity bindings. */
-  public EntityTable getEntities();
-
-  /** Set the current Entity bindings. */
-  public void setEntities(EntityTable bindings);
-
   /** Obtain the current input. */
   public Input getInput();
 
@@ -74,8 +70,29 @@ public interface Context {
   public Output getOutput();
 
   /************************************************************************
-  ** Bindings:
+  ** Namespaces:
   ************************************************************************/
+
+  /** Return a namespace with a given name.  If the name is null, 
+   *	returns the most-locally namespace.
+   */
+  public Namespace getNamespace(String name);
+
+  /** Return the locally-defined namespace, if any. */
+  public Namespace getLocalNamespace();
+
+  /** Return the next context defining a local namespace. */
+  public Context getNameContext();
+
+  /************************************************************************
+  ** Entity Bindings:
+  ************************************************************************/
+
+  /** Obtain the current Entity bindings. */
+  public EntityTable getEntities();
+
+  /** Set the current Entity bindings. */
+  public void setEntities(EntityTable bindings);
 
   /** Get the value of an entity, given its name. 
    * @return <code>null</code> if the entity is undefined.
@@ -86,6 +103,10 @@ public interface Context {
    */
   public void setEntityValue(String name, NodeList value, boolean local);
 
+  /** Get the binding (Entity node) of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public ActiveEntity getEntityBinding(String name, boolean local);
 
   /************************************************************************
   ** Context Stack:
@@ -99,6 +120,9 @@ public interface Context {
 
   /** Return the current top context. */
   public TopContext getTopContext();
+
+  /** Return the innermost Processor on the context stack. */
+  public Processor getProcessor();
 
   /************************************************************************
   ** Sub-processing:

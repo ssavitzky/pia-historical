@@ -8,6 +8,7 @@ TOPDIR=../../..
 FILES = $(CLASSES) $(UTILITIES)
 
 CLASSES = \
+	BasicNamespace.java \
 	BasicEntityTable.java \
 	ContextStack.java \
 	CurrentActive.java \
@@ -28,3 +29,8 @@ UTILITIES = \
 include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies
+
+BasicEntityTable.class: BasicNamespace.java \
+	../Namespace.java ../EntityTable.java
+
+BasicNamespace.class: ../Namespace.java ../EntityTable.java

@@ -68,6 +68,38 @@ public interface Tagset  {
   /** Get the tagset's name. */
   public String getName();
 
+
+  /************************************************************************
+  ** Entity Bindings:
+  ************************************************************************/
+
+  /** Return a namespace with a given name.  Returns the entity table 
+   *	associated with the tagset (possibly in the context chain) having 
+   *	the given name.
+   */
+  public Namespace getNamespace(String name);
+
+  /** Obtain the current Entity bindings. */
+  public EntityTable getEntities();
+
+  /** Set the current Entity bindings. */
+  public void setEntities(EntityTable bindings);
+
+  /** Get the value of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public NodeList getEntityValue(String name);
+
+  /** Set the value of an entity. 
+   */
+  public void setEntityValue(String name, NodeList value);
+
+  /** Get the binding (Entity node) of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public ActiveEntity getEntityBinding(String name);
+
+
   /************************************************************************
   ** Lookup Operations:
   ************************************************************************/

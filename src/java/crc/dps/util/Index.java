@@ -17,6 +17,7 @@ import crc.dom.NodeEnumerator;
 import crc.dps.NodeType;
 import crc.dps.Context;
 import crc.dps.EntityTable;
+import crc.dps.Namespace;
 import crc.dps.active.*;
 import crc.dps.output.*;
 
@@ -42,18 +43,17 @@ public class Index {
   public static NodeList getIndexValue(Context c, String index) {
     int i = index.indexOf(':');
     if (i == index.length() -1) {
-      return getValue(c, index.substring(0, i+1), null);
+      return getValue(c, index.substring(0, i), null);
     } else if (i >= 0) {
-      return getValue(c, index.substring(0, i+1), index.substring(i+1));
+      return getValue(c, index.substring(0, i), index.substring(i+1));
     } else {
-      EntityTable ents = c.getEntities();
-      return ents.getEntityValue(index, false);
+      return c.getEntityValue(index, false);
     }
   }
 
   public static void setIndexValue(Context c, String index, NodeList value) {
-    EntityTable ents = c.getEntities();
-    ents.setEntityValue(index, value, false);
+    // === wrong. 
+    c.setEntityValue(index, value, false);
   }
 
   /** Get a value using a name and namespace. 
@@ -64,36 +64,27 @@ public class Index {
    *	the entire namespace is returned.
    */
   public static NodeList getValue(Context c, String space, String name) {
-    EntityTable ents = c.getEntities();
-    NodeList nl = ents.getEntityValue(space, false);
+    Namespace ns = c.getNamespace(space);
 
-    // If there's nothing there or we want the whole space, return it.
-    if (nl == null || name == null) return nl;
+    // If there's nothing there, return null.
+    if (ns == null) return null;
 
-    // There are three possibilities at this point: 
- 
-    //	1. the value of the entity _is_ the namespace, e.g. an AttributeList
-    if (nl instanceof ActiveAttrList) {
-      return ((ActiveAttrList)nl).getAttributeValue(name);
-    }
+    // If we wanted the whole space, return its list of bindings.
+    if (name == null) return new ParseNodeList(ns.getBindings());
 
-    //  2. the value of the entity _contains_ a namespace.
-    NodeEnumerator ne = nl.getEnumerator();
-    for (Node n = ne.getFirst(); n != null; n = ne.getNext()) {
-      if (n instanceof EntityTable) {
-	return ((EntityTable)n).getEntityValue(name, false);
-      }
-    }
-
-    //  3. we're out of luck.
-    return null;
+    return ns.getValue(name);
   }
 
   public static void setValue(Context c, String space, String name,
 			      NodeList value) {
-    EntityTable ents = c.getEntities();
-    NodeList nl = ents.getEntityValue(space, false);
-    //ents.setEntityValue(index, value, false);
+    Namespace ns = c.getNamespace(space);
+
+    // If there's nothing there, make a namespace and populate it.
+    if (ns == null) {
+      System.err.println("Creating new namespace currently unimplemented");
+    } else {
+      ns.setValue(name, value);
+    }
   }
 
   /************************************************************************

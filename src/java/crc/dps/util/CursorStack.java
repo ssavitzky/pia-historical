@@ -48,9 +48,10 @@ public class CursorStack implements Cursor {
    */ 
   protected ActiveNode active;
 
-  protected boolean retainTree = false;
-  protected boolean atFirst = false;
-  protected boolean atLast = false;
+  protected boolean retainTree 	 = false;
+  protected boolean atFirst	 = false;
+  protected boolean atLast	 = false;
+  protected boolean sawChildren  = false;
 
   protected CursorStack stack = null;
 
@@ -82,6 +83,7 @@ public class CursorStack implements Cursor {
 
   public CursorStack(CursorStack old, boolean bumpOldDepth) {
     copy(old);
+    old.sawChildren = true;
     if (bumpOldDepth) old.depth++;
   }
     
@@ -119,6 +121,7 @@ public class CursorStack implements Cursor {
   protected boolean popInPlace() {
     if (stack == null) return false;
     copy(stack);
+    sawChildren = true;
     return true;
   }
 
@@ -130,6 +133,7 @@ public class CursorStack implements Cursor {
   protected void pushInPlace() { 
     stack = new CursorStack(depth, node, action, element, tagName, active, 
 			    retainTree, atFirst, atLast, stack);
+    sawChildren = false;
     depth++;
   }
 
@@ -281,6 +285,7 @@ public class CursorStack implements Cursor {
     popInPlace();
     atFirst = false;
     atLast = false;
+    sawChildren = true;
     return node;
   }
 
@@ -289,6 +294,7 @@ public class CursorStack implements Cursor {
     popInPlace();
     atFirst = false;
     atLast = false;
+    sawChildren = true;
     return element;
   }
 

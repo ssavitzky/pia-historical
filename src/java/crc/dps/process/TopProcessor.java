@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.io.PrintStream;
 
 import crc.dps.*;
+import crc.dps.active.*;
 import crc.dps.aux.*;
 import crc.dom.NodeList;
 import crc.ds.List;
@@ -66,6 +67,49 @@ public class TopProcessor extends BasicProcessor implements TopContext
   /** Registers an Output object for the Processor.  
    */
   public void setOutput(Output anOutput) { output = anOutput; }
+
+  /************************************************************************
+  ** Namespaces:
+  ************************************************************************/
+
+  /** Get the binding (Entity node) of an entity, given its name. 
+   *
+   * <p> Search the tagset if there is no binding in the current EntityTable.
+   *	 Bindings in the tagset are considered local.
+   *
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public ActiveEntity getEntityBinding(String name, boolean local) {
+    ActiveEntity ent = (entities == null)
+      ? null : entities.getEntityBinding(name);
+    if (ent == null && tagset != null) ent = tagset.getEntityBinding(name);
+    return (local || ent != null || nameContext == null)
+      ? ent : nameContext.getEntityBinding(name, local);
+  }
+
+  /** Return a namespace with a given name.  If the name is null, 
+   *	returns the most-locally namespace.  The tagset is also considered 
+   *	a namespace.
+   */
+  public Namespace getNamespace(String name) {
+    if (entities != null) {
+      if (name == null || name.equals(entities.getName())) {
+	return entities;
+      } else if (entities.containsNamespaces()) {
+	ActiveNode ns = entities.getBinding(name);
+	if (ns != null && ns.asNamespace() != null)
+	  return ns.asNamespace();
+      }
+    }
+    if (tagset != null && tagset.getNamespace(name) != null)
+      return tagset.getNamespace(name);
+    if (nameContext != null) {
+      return nameContext.getNamespace(name);
+    } else {
+      return null;
+    }
+  }
+
 
   /************************************************************************
   ** Message Reporting:

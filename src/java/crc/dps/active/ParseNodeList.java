@@ -7,6 +7,7 @@ package crc.dps.active;
 import crc.dom.ArrayNodeList;
 import crc.dom.NodeList;
 import crc.dom.Node;
+import crc.dom.NodeEnumerator;
 
 import java.util.Enumeration;
 
@@ -57,6 +58,12 @@ implements ActiveNodeList, java.io.Serializable {
       Object o = elements.nextElement();
       if (o instanceof ActiveNode) append((ActiveNode) o);
       else append(new ParseTreeText(o.toString()));
+    }
+  }
+
+  public ParseNodeList(NodeEnumerator elements) {
+    for (Node n = elements.getFirst(); n != null; n = elements.getNext()) {
+      if (n instanceof ActiveNode) append((ActiveNode) n);
     }
   }
 }
