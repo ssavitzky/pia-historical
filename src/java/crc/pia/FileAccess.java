@@ -45,6 +45,9 @@ import crc.util.Utilities;
 import java.util.Properties;
 import w3c.www.http.HTTP;
 
+/** File-handling utilities.  
+ *	All methods in this class are static. 
+ */
 public class FileAccess {
 
   /** If this flag is true, fix &lt;BASE&gt; tags in HTML files.  Expensive. */
@@ -52,6 +55,7 @@ public class FileAccess {
   public static boolean FIX_BASE = false;
 
   private static String filesep = System.getProperty("file.separator");
+
   /************************************************************************
   ** File handling:
   **	These utilities are static, and really belong in their own class.
@@ -137,9 +141,13 @@ public class FileAccess {
 	f = new File(myfile, zfile);
 	filepath = f.getPath();
 
-	if (zfile.toLowerCase().startsWith("header") 
+	if (zfile.toLowerCase().equals("header.html") 
 	    && ! ignoreFile(zfile, filepath)) {
 	  head = suckBody(filepath);
+	  if (!all) continue;
+	} else if (zfile.toLowerCase().equals("header")
+		   && ! ignoreFile(zfile, filepath)) {
+	  head = "<pre>"+suckBody(filepath)+"</pre>";
 	  if (!all) continue;
 	}
 
@@ -361,6 +369,7 @@ public class FileAccess {
 
   /**
    * Suck in the body part of an HTML file, as a string.
+   *	If there is no &lt;body&gt; tag the entire file is returned.
    */
   protected static String suckBody( String filename ){
     StringBuffer data = new StringBuffer();
@@ -431,8 +440,8 @@ public class FileAccess {
     reply.setStatus( code );
     reply.setReason( reason );
     reply.setHeader( "Version", agent.version() );
-    Content c = new crc.content.text.StringContent(
-						   "Your file has been written.");
+    Content c =
+      new crc.content.text.StringContent("Your file has been written.");
     reply.setContentType( "text/plain" );
     reply.setContentObj( c );
     reply.startThread();
