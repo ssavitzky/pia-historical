@@ -66,8 +66,10 @@ public class Set_agent extends Set {
       doComplexSet(index,new SecureAttrs(a, ii),  value ,ia, it, ii);
     } else {
       // do the simple set
-      if( name != null )
-	a.attr(name, value);	// security unimplemented! ===  
+      String key = Util.getString(it,"name",null); //could use index.shift
+      
+      if( key != null )
+	a.attr(key, value);	// security unimplemented! ===  
     }
     doFinish(it,value,ii);
 
