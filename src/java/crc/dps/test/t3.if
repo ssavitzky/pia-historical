@@ -4,23 +4,77 @@
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body>
 <h1>InterForm test file t3.if</h1>
+<foo date="&date;"></foo>
+&date;
+<h2>Test &lt;if&gt; operation</h2>
 
 <if>test
     <then>if true is working</then>
-    <else>if true is FAILING</else>
+    <else>if true is FAILING.</else>
+</if>
+<if>test<then>if true is working</then><else>if true is FAILING.</else></if>
+`<test>test</test>' should be `1'
+<if>&date;
+    <then>if date is working</then>
+    <else>if date is FAILING: &date;</else>
+</if>
+<if><br>
+    <then>if element is working</then>
+    <else>if element is FAILING</else>
 </if>
 <if>
     <then>if false is FAILING</then>
     <else>if false is working</else>
 </if>
+<if><!--  -->
+    <then>if comment is FAILING</then>
+    <else>if comment is working</else>
+</if>
+<if>&undefined;
+    <then>if undefined is FAILING</then>
+    <else>if undefined is working</else>
+</if>
+<if><then>if empty is FAILING</then>
+    <else>if empty is working</else>
+</if>
 
-<h2>Test &lt;test&gt; operation</h2>
+<if>test
+    <then>if true <if>test<then>true is working TT</then>
+	                  <else>true is FAILING TF</else></if></then>
+    <else>if true <if>test<then>true is FAILING FT</then>
+	                  <else>true is FAILING FF</else></if></else>
+</if>
+<if>test
+    <then>if true <if>    <then>false is FAILING TT</then>
+	                  <else>false is working TF</else></if></then>
+    <else>if true <if>    <then>false is FAILING FT</then>
+	                  <else>false is FAILING FF</else></if></else>
+</if>
+<if>    
+    <then>if false <if>test<then>true is FAILING TT</then>
+	                   <else>true is FAILING TF</else></if></then>
+    <else>if false <if>test<then>true is working FT</then>
+	                   <else>true is FAILING FF</else></if></else>
+</if>
+<if>
+    <then>if false <if>    <then>false is FAILING TT</then>
+	                   <else>false is FAILING TF</else></if></then>
+    <else>if false <if>    <then>false is FAILING FT</then>
+	                   <else>false is working FF</else></if></else>
+</if>
+
+
+<h2>Test &lt;test&gt;</h2>
 
 should be '': '<test></test>' (completely empty)
 should be '': '<test> </test>' (space)
 should be '1': '<test> not blanks </test>' ( not blanks )
 should be '': '<test text> </test>' text( )
+should be '': '<test text> <br> </test>' text( <br> )
+should be '': '<test text> <em> </em> </test>' text( <em> </em> )
 should be '1': '<test text> not blanks </test>' text( not blanks )
+should be '1': '<test text> <em>nb</em> </test>' text( <em>nb</em> )
+
 should be '1': '<test zero> 0 </test>' zero( 0 )
 should be '1': '<test zero> xxx </test>' zero( xxx )
 should be '': '<test zero> 100 </test>' zero( 100 )
@@ -31,6 +85,7 @@ should be '': '<test positive> -100 </test>' positive( -100 )
 should be '': '<test negative> 0 </test>' negative( 0 )
 should be '': '<test negative> 100 </test>' negative( 100 )
 should be '1': '<test negative> -100 </test>' negative( -100 )
+
 should be '': '<test match="foo"> test match something  </test>' match
 should be '1': '<test match="foo"> test match foo something  </test>' match
 should be '': '<test exact match="foo"> test match foo something  </test>'
@@ -39,7 +94,11 @@ should be '1': '<test match=foo>this FOO stuff</test>'
 should be '': '<test case match=foo>this FOO stuff</test>'
 should be '1': '<test case match=FOO>this FOO stuff</test>'
 
-<h2>Subst</h2>
+should be '1': '<test null></test>' null(completely empty)
+should be '': '<test null> </test>' null(space)
+should be '': '<test null> not blanks </test>' null( not blanks )
+
+<h2>Test &lt;subst&gt;</h2>
 
 should be 'this did work': '<subst match=may result=did>this may work</subst>'
 should be 'this did nothing': '<subst match=may result=did>this did nothing</subst>'
