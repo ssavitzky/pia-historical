@@ -403,6 +403,7 @@ sub get_variable_value{
 print "getting variable $variable !\n" if $main::debugging;
     my @keys=$self->parse_variable_name($variable);
     my $space=shift @keys;
+    return unless $self->entities;
      return unless exists $self->entities->{$space};
 
     my @hashes;

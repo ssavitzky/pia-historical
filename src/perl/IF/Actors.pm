@@ -240,6 +240,10 @@ sub timed_submission {
     ##  return true if $it has timing attributes and now is not the time,
     ##	otherwise return false (means that form will be run now)
 
+    if($it->attr('cancel')){
+	$agent->cron_remove($it->attr('cancel'));
+	return 1;
+    }
     my $timed = 0;
     my %attrs;
     my ($a, $v);
@@ -989,6 +993,8 @@ sub file_lookup {
     if ($it->attr('interform')) {
 	$file = IF::Run::agent()->find_interform($file);
 	$base = '';
+				# file should be properly quantified
+	return $file;
     }
     if ($file =~ /^~/) {
 	$file =~ s/^~//;
