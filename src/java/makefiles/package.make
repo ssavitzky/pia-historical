@@ -49,6 +49,14 @@ doc::
 		 doc); fi ; \
 	done
 
+# Recursive javadoc -- indexes are bogus, but it's faster
+jdoc::
+	@@for p in $(PACKAGES); do if test -d $$p; then \
+		echo 'jdoc ' $(PACKAGE).$$p; \
+		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
+		 jdoc); fi ; \
+	done
+
 clean::
 	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'cleaning ' $(PACKAGE).$$p; \
