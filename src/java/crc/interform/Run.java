@@ -150,7 +150,7 @@ public class Run  extends Environment {
         ent("urlQuery",  (SGML)new Text(transaction.queryString()));
         ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
        } else {
-            ent("urlQuery",  (SGML)Token.empty);
+            ent("urlQuery",  "");
        }
 
       if (transaction.test("agent-request") ||
