@@ -109,7 +109,9 @@ public class FileAccess {
       MatchInfo mi = null;
       boolean noTrailingSlash = false;
 
-      boolean all = agent.attrTrue("all");
+      boolean all = false;
+      if(agent.get("all") != null)
+	all = true;
 
       // Ensure that the base URL is "/" terminated
       URL myurl = request.requestURL();
