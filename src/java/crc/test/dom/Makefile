@@ -35,6 +35,7 @@ CASEFILES = \
 	TestChildNodeList1.case \
 	TestArrayNodeList1.case \
 	TestBasicElement1.case \
+	TestBasicElement2.case \
 	TestDOM1.case \
 	TestOtherElement1.case
 
