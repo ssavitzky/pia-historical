@@ -17,15 +17,22 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Impr</b> piaUSER, etc should become PIA:user, etc. <br>
+       (1998-10-11) <br>
+
+  <li> <b>Impr</b> the convertToString methods are unused. <br>
+       We should either use them, or drop them.
+       (1998-10-11) <br>
+
+  <li> <b>Bug:</b> NamespaceWrap doesn't return NodeList for bindings <br>
+       (1998-10-11) <br>
+
   <li> <b>Bug:</b> subst has trouble with matches that get to the end. <br>
        This is a generic problem with the regexp stuff.
        (1998-10-9) <br>
 
   <li> <b>Bug:</b> not propagating verbosity from pia to dps <br>
        (1998-10-9) <br>
-
-  <li> <b>Bug:</b> &amp;attributes:foo; doesn't work as namelist. <br>
-       (1998-10-8) <br>
 
   <li> <b>Bug:</b> tsdoc fails when loaded from <code>.tso</code>. <br>
        Attribute lists are missing.  Possibly due to entities being hooked up

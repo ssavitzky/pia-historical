@@ -446,6 +446,11 @@ See also:
   <li> 1998-10-09 <b>Bug:</b> Agency-xhtml not loaded.<br>
        (1998-10-8) <br>
 
+  <li> 1998-10-11 <b>Bug:</b> &amp;attributes:foo; doesn't work as namelist.<br>
+       (1998-10-8) <br>
+       -- was using <code>instanceof</code> instead of testing
+	  <code>asNamelist() != null</code>.  Entities test their value for
+	  being a namelist. 
 </ol>
 <a name="end">End of list.</a>
 <hr>
