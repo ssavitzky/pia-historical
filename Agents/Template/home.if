@@ -6,9 +6,16 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>Home Page</set>
-<read interform file="heading.inc" process>
-
-<read interform file="subhead.inc" process>
+<if><get agent name=heading>
+    <else><set agent name=heading><read interform
+				        file=heading.inc parse></set>
+</if>
+<expand><get agent name=heading></expand>
+<if><get agent name=subhead>
+    <else><set agent name=subhead><read interform
+				        file=subhead.inc parse></set>
+</if>
+<expand><get agent name=subhead></expand>
 <hr>
 
 <!-- See whether there's an "about" file for this agent. -->

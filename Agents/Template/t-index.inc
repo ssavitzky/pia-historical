@@ -5,7 +5,11 @@
   <set name=base><get element name=type></set>
   <a href="form.if?tName=&li;&amp;tBase=&base;">&li;</a>
   <a href="form.if?tName=&li;&amp;tBase=&base;&amp;details=y">[details]</a>
+  <if><read info=path file="&path;/&li;/subforms.inc"><then><br>
+	<read process file="&path;/&li;/subforms.inc"></if>
 </actor>
+
+<!-- If a subdirectory has an subforms.inc, include it on the next line. -->
 
 <h3>System Templates</h3>
 
@@ -13,7 +17,7 @@
 in: <code>&path;</code>
 <set entity name=dir><read directory file="&path"></set>
 <ul foreach list="&dir;">
-   <if><read info file="&path;/&li;/template.inc"><then>
+   <if><read info=path file="&path;/&li;/template.inc"><then>
    <li><template-link type=system name="&li;"></if>
 </ul>
 
@@ -23,7 +27,7 @@ in: <code>&path;</code>
 in: <code>&path;</code>
 <set entity name=dir><read directory file="&path"></set>
 <ul foreach list="&dir;">
-   <if><read info file="&path;/&li;/template.inc"><then>
+   <if><read info=path file="&path;/&li;/template.inc"><then>
    <li><template-link type=user name="&li;"></if>
 </ul>
 

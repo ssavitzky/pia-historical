@@ -380,7 +380,7 @@
 		<t-hidden name="&li;">
 	  <else><if><test match=data><get name="&li;-type"></test>
 		    <get name="&li;-format">
-	  <then></then>
+	  <then></then><!-- === cluster stuff broken === -->
 	  <else><if><get name="&li;-cluster"><then>
 		<t-field name="&li;"> <t-break name="&li;">
 		<expand><get name="&li;-doc"></expand></td>
