@@ -241,7 +241,7 @@ public class Util extends crc.sgml.Util {
    *	characters.  Util.javaName can be used to convert an SGML
    *	identifier (e.g. a tag) to a class name.
    *	@return an instance of the newly-loaded class.
-   *	@see Util.javaName */
+   *	@see Util#javaName */
   public static Handler loadHandler(String h, String prefix) {
     if (h.indexOf(".") < 0) h = prefix + h;
     try {
@@ -268,7 +268,7 @@ public class Util extends crc.sgml.Util {
   /** Load a named class.  The prefix is prepended only if the handle
    *	name contains no "." characters.  Util.javaName can be used to
    *	convert an SGML identifier (e.g. a tag) to a class name.
-   *	@see Util.javaName */
+   *	@see Util#javaName */
   public static Class loadClass(String h, String prefix) {
     if (h.indexOf(".") < 0) h = prefix + h;
     try {
