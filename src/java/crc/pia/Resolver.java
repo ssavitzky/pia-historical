@@ -273,7 +273,7 @@ public class Resolver extends Thread {
   public void run(){
     Transaction tran;
     String urlString;
-    long delay = 1000;
+    long delay = 100;
 
     count = 0;
 
