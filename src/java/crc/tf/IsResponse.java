@@ -1,4 +1,4 @@
-// IsRespon.java
+// IsResponse.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
@@ -21,7 +21,7 @@ package crc.tf;
 
 import crc.ds.UnaryFunctor;
 
-public final class IsReques implements UnaryFunctor{
+public final class IsResponse implements UnaryFunctor{
 
   /**
    * 
@@ -29,7 +29,11 @@ public final class IsReques implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      return new Boolean( trans.isRequest() );
+      return new Boolean( trans.isResponse() );
     }
 }
+
+
+
+
 
