@@ -810,7 +810,7 @@ public class Pia{
 
     try {
       if ( fileMapProp != null ) {
-	System.out.println ("loading file mapping from: " + where) ;
+	verbose ("loading file mapping from: " + where) ;
 	
 	File mapfile = new File( fileMapProp ) ;
 	zFileMapping.load ( new FileInputStream( mapfile ) );
@@ -834,16 +834,7 @@ public class Pia{
       zFileMapping.put("gif", "image/gif");
     }
 
-    Enumeration e =  zFileMapping.propertyNames();
-    while( e.hasMoreElements() ){
-      try{
-	String keyEntry = (String) e.nextElement();
-	System.out.println("file mapping key :" + keyEntry);
-	String v   = zFileMapping.getProperty( keyEntry );
-	System.out.println("file mapping value :" + v);
-      }catch( NoSuchElementException ex ){
-      }
-    }
+    reportProps(zFileMapping, "File (MIME type) mapping");
 
    return zFileMapping;
   }
@@ -888,9 +879,24 @@ public class Pia{
     }
     System.setProperties (piaprops) ;
 
+    reportProps(piaprops, "System Properties:");
   return piaprops;
 }
 
+  static void reportProps(Properties p, String msg) {
+    if (verbose) {
+      if (msg != null) verbose(msg);
+      Enumeration e =  p.propertyNames();
+      while( e.hasMoreElements() ){
+	try{
+	  String k = (String) e.nextElement();
+	  String v = p.getProperty( k );
+	  verbose("    " + k + "="+ v);
+	}catch( NoSuchElementException ex ){
+	}
+      }
+    }
+  }
 
   public static void main(String[] args){
         Integer cmdport      = null ;
