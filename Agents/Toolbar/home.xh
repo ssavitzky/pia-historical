@@ -20,7 +20,7 @@
            </repeat>
 </sub-head>
 <hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType">&agentName;</test>
     <then><a href="/&agentType;">/&agentType;</a>
           <a href="/&agentType;/">/</a></then></if>
@@ -36,9 +36,9 @@
         Good.  That means we can use the history controls. </then>
   <else>Most &agentType; agents make links to the history agent's data, and
 	are not nearly as useful without it.
-        See the <a href="/Agency/installers#History">installation page</a>
+        See the <a href="/Admin/installers#History">installation page</a>
         or <br>
-        <form method=POST action="/Agency/install_agent">
+        <form method=POST action="/Admin/install-agent">
 		<input name="agent" value="History" size=30>
 		<input type="submit" value="Install History Now">
         </form>

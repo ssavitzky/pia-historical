@@ -22,7 +22,7 @@
 		    		      &agentType; Agents</a>
 </sub-head>
 <hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType">&agentName;</test>
     <then><a href="/&agentType;">/&agentType;</a>
           <a href="/&agentType;/">/</a></then></if>
