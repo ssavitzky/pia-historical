@@ -525,7 +525,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   ************************************************************************/
 
   protected int verbosity = 0;
-  protected PrintStream log = null;
+  protected static PrintStream log = null;
 
   public int 	getVerbosity() 		{ return verbosity; }
   public void 	setVerbosity(int value) { verbosity = value; }
