@@ -122,15 +122,17 @@ public class BasicElement extends AbstractNode implements Element {
 
 
   /**
-   * printChildren depth first.
-   * This should be call at the root node.
+   * return start tag + content string + end tag
+   * 
    */ 
   public String toString(){
-    return getTagName();
+    return startString() + "\n" + contentString() + "\n" + endString();
   }
 
+
   /**
-   *
+   * printChildren depth first.
+   * This should be call at the root node.
    */
   public void printChildren(String indent){
     AbstractNode child = null;
@@ -147,19 +149,61 @@ public class BasicElement extends AbstractNode implements Element {
     Report.debug(indent + "</" + toString()+ ">");
   }
 
+
+  /**
+   * Return a string of the form "<" <code>getTagName()</code> ">".
+   *
+   */
+  public String startString(){
+    return "<" + getTagName() + printAttributes() + ">";;
+  }
+
+  /** Return the String equivalent of all children concatenated
+   *  in string form.
+   */
+  public String contentString(){
+    StringBuffer sb = new StringBuffer();
+    long len = 0;
+
+    ChildNodeList cl = (ChildNodeList)getChildren();
+    if( cl == null || (len = cl.getLength()) == 0 ) return new String( sb );
+
+    try{
+      Node a = null;
+      for(int i = 0;  i < len; i++){ 
+	a = cl.item( i );
+	sb.append( a.toString() );
+	sb.append("\n");
+      }
+    }catch(Exception ee){
+    }
+    return new String( sb );
+  }
+
+
+
+
+  /** Return a string of the form "</" <code>getTagName()</code> ">".
+   *	
+   */
+  public String endString(){
+    return "</" + getTagName() + ">";
+  }
+
   protected String printAttributes(){
     StringBuffer sb = new StringBuffer();
+    long len = 0;
 
     AttributeList l = getAttributes();
-    long len = l.getLength();
-    if( l == null || len==0 ) return new String( sb );
+    if( l == null || (len = l.getLength())==0 ) return new String( sb );
 
     try{
       Node a = null;
       for(int i = 0;  i < len; i++){ 
 	a = l.item( i );
-	if( a instanceof AbstractNode )
-	  sb.append(" "+a.toString());
+	if( a instanceof AbstractNode ){
+	  sb.append(" " + ((Attribute)a).getName() + "=" +a.toString());
+	}
       }
     }catch(Exception ee){
     }
