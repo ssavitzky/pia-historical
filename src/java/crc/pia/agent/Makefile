@@ -6,6 +6,7 @@ FILES = \
 	Agency.java \
 	AgentMachine.java \
 	Dofs.java \
+	Logo.java \
 	AgentInstallException.java
 
 include $(TOPDIR)/makefiles/file.make
@@ -20,5 +21,7 @@ AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \
 	../Transaction.java ../Machine.java ../HTTPResponse.java
 
 Dofs.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
-	../Transaction.java ../Machine.java ../HTTPRequest.java \
-	../HTTPResponse.java
+	../Transaction.java ../Machine.java 
+
+Logo.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
+	../Transaction.java ../Machine.java ../HTTPResponse.java
