@@ -152,11 +152,11 @@ filePath: "&filePath;" should be "./t3.if"
 
 <h2>Test loops</h2>
 
-Simple: <repeat list="a b c">&li </repeat><br>
+Simple: <repeat list="a b c">&li; </repeat><br>
 &amp;li; outside repeat: &li;<br>
 Empty: <repeat list="">&li; </repeat><br>
-Nested: <repeat list="a b c">&li <repeat list="x y">&li; </repeat></repeat><br>
-value of entity at end: '&li'
+Nested: <repeat list="a b c">&li; <repeat list="x y">&li; </repeat></repeat><br>
+value of entity at end: '&li;'
 
 Foreach: <em foreach list="a b c">&li; </em><br>
 Foreach: <ol foreach list="a b c"><li>&li; </ol><br>
