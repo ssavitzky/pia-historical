@@ -880,7 +880,7 @@ public class GenericAgent extends AttrBase implements Agent {
    * Send error message for not found interform file
    */
   public void respondNotFound( Transaction req, String path){
-    String msg = "File <code>" + path + "<code> not found. "
+    String msg = "File <code>" + path + "</code> not found. "
       + "See this agent's <a href=\"/" + name() + "/\">index page</a> "
       + "for a more information.";
     sendErrorResponse(req, HTTP.NOT_FOUND, msg);
