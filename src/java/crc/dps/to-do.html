@@ -16,6 +16,13 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug</b>Connect<br>
+    When doing a "connect put" cannot specify src="/RHServer/persist.out"
+    from an agent.  It throws an exception.  src="persist.out" does not
+    throw an exception, but it does fail to write output to file.  The same
+    code run using process works fine.  "connect entity" requires 
+    "/RHServer/persist.out" when running from an agent.
+    (1999-01-26)
   <li> <b>Bug</b> Recursive tags <br>
        Need <code>recursive</code> attribute to &lt;define element&gt; to
        allow the action to contain the new tag itself.  On second thought it
