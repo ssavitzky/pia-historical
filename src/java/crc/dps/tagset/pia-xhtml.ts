@@ -11,13 +11,10 @@
 Note that we only need these inside the PIA.
 
 <h3>Submit</h3>
-<define element=submit handler=legacy:submit-forms ><!-- never worked -->
-  <doc>
+<define element=submit handler >
+  <doc> Submit each form in the content to its target.  Results, if any,
+	are discarded.
   </doc>
-  <define attribute= optional>
-    <doc> 
-    </doc>
-  </define>
 </undefine>
 
 <h3>Form and its components</h3>
