@@ -8,6 +8,7 @@ TOPDIR=../../..
 FILES = $(CLASSES) $(UTILITIES)
 
 CLASSES = \
+	BasicEntityTable.java \
 	ContextStack.java \
 	CurrentActive.java \
 	CurrentNode.java \
