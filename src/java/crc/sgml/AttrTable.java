@@ -104,6 +104,14 @@ public class AttrTable extends Table implements Attrs {
     append(l);
   }
 
+  public AttrTable(AttrTable t) {
+    append(t);
+  }
+
+  public AttrTable(Table t) {
+    append(t);
+  }
+
   public AttrTable(Enumeration e) {
     this();
     append(e);
@@ -130,6 +138,11 @@ public class AttrTable extends Table implements Attrs {
       String k = e.nextElement().toString();
       put(k, t.attr(k));	// can use put because t is an AttrTable
     }
+  }
+
+  /** Append an AttrTable */
+  public void append(AttrTable t) {
+    append((Attrs)t);
   }
 
   /** Append a table */
