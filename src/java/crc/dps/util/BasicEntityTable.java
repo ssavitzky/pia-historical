@@ -77,7 +77,7 @@ public class BasicEntityTable extends ParseTreeGeneric implements EntityTable {
     ActiveEntity binding = getBinding(name, local);
     if (binding != null) {
       binding.setValue(value);
-    } else if (local || context == null) {
+    } else {
       newBinding(name, value);
     } 
   }
@@ -132,6 +132,7 @@ public class BasicEntityTable extends ParseTreeGeneric implements EntityTable {
   /** Returns an Enumeration of the entity names defined in this table and
    *	its context, in order of definition (most recent last). */
   public Enumeration allEntityNames() { 
+    if (context == null) return entityNames();
     if (contextEntityNames == null) {
       contextEntityNames = new List(context.allEntityNames());
     }
