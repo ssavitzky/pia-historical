@@ -2,27 +2,33 @@
 <html><head>
 <title>Checkpoint the PIA</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
-</head><body>
-<h1>Checkpoint the PIA</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header show-date=yes>Checkpoint the PIA</header>
+<sub-head page=checkpoint />
+<hr>
+<p> <b>Note:</b> The directory in which checkpoint files has changed!  It used
+    to be <code>&usrDIR;/Agents/Agency/</code>, which was incorrect.  It is
+    now <code>&usrDIR;/Agency/</code> .
 
 <form method=GET action="&url;">
-<if><get form name=agent>
-    <then><set entity name=agent><get form name=agent></set>
-	  <agent-save file="&agent;.dat" interform name="&agent;">
+<if><get name=FORM:agent>
+    <then><set name=agent><get name=FORM:agent></set>
+	  <agent-save file="&agent;.dat" agent="&agent;">
 	  <user-message>Checkpointed &agent; in &agent;.dat</user-message>
 	  Checkpointed:
     </then><else>
 	   <input type=submit value="Checkpoint Agent">
     </else>
 </if>
-  <set entity name=agent><get form name=agent></set>
+  <set name=agent><get name=FORM:agent></set>
   <input size=50 name=agent value="&agent;">
 </form>
 
 <form method=GET action="&url;">
-<if><get form name=all>
-    <then><set entity name=agent><get form name=agent></set>
-	  <agent-save interform file="checkpoint.dat" list="&agentNames;">
+<if><get name=FORM:all>
+    <then><code><agent-save file="checkpoint.dat" list="&agentNames;"/></code>
+	  written.<br>
+	  <set name=agentNames><select sep=' '>&agentNames;</select></set>
 	  <user-message>Saved &agentNames; in checkpoint.dat</user-message>
 	  Saved &agentNames; in <code>checkpoint.dat</code>
     </then>
@@ -58,7 +64,5 @@ that its data structures will have changed enough to render your checkpoint
 file unreadable.  <strong>Checkpointing should not be used as the
 mechanism for making data persistent.</strong><p>
 
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+<footer cvsid='$Id$'>
 </body></html>

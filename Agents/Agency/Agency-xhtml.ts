@@ -10,12 +10,12 @@
 
 <h2>Legacy operations</h2>
 
-<note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
-   following definitions.  This is expedient (i.e. a temporary hack), but all
-   such definitions will eventually be replaced.
+<note author=steve> Note the use of <code>handler=crc.pia.agent.xxx</code> in
+   the following definitions.  This puts agent-specific handlers where they
+   belong, in the <code>crc.pia.agent</code> package.
 </note>
 
-<define element=agent-home empty handler=legacy:agent-home>
+<define element=agent-home empty handler=crc.pia.agent.agentHome>
    <doc> Determine the home directory of an agent.  Prefixes the agent's name
 	 with its type, if necessary, to produce a complete path.
    </doc>
@@ -30,27 +30,34 @@
    </define>
 </define>
 
-<define element=agent-running empty handler=legacy:agent-running>
-   <doc> Determine whether a given agent is currently running (installed in
-	 the PIA).
-   </doc>
-   <define attribute=name required>
-      <doc> specifies the name of the agent being queried.
+<define element=agent-restore empty handler=crc.pia.agent.agentRestore>
+   <define attribute=file required>
+      <doc> specifies the name of the file to be restored from.
       </doc>
-      <note author=steve> Should almost certainly be changed to "agent".
-      </note>
    </define>
 </define>
 
-<!-- doesn't work no legacy handle -->
-<define element=agent-restore handler=legacy:agent-restore>
+<define element=agent-save empty handler=crc.pia.agent.agentSave>
+   <define attribute=file required>
+      <doc> specifies the name of the file to be saved into.
+      </doc>
+   </define>
+   <define attribute=agent optional>
+      <doc> specifies the name of the agent to be saved.  Defaults to the
+	    name of the current agent.
+      </doc>
+   </define>
+   <define attribute=list optional>
+      <doc> specifies a list of  names of agents to be saved.
+      </doc>
+   </define>
+   <define attribute=append optional>
+      <doc> specifies that the agent is to be appended to an existing file.
+      </doc>
+   </define>
 </define>
 
-<!-- doesn't work: no legacy handle -->
-<define element=agent-save handler=legacy:agent-save>
-</define>
-
-<define element=agent-install handler=legacy:agent-install>
+<define element=agent-install handler=crc.pia.agent.agentInstall>
 </define>
 
 <h2>Page Components</h2>

@@ -2,10 +2,11 @@
 <html><head>
 <title>Restore Agency State</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
-<h1>Restore Agency State</h1>
-
-<if><read.file interform file="checkpoint.dat" info>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header show-date=yes>Restore Agency State</header>
+<sub-head page=restore />
+<hr>
+<if><status src="checkpoint.dat" item=exists>
 <then> CONFIRM:
 <else>
   Checkpoint file <code>~/.pia/Agents/Agency/checkpoint.dat</code>
@@ -17,7 +18,7 @@
   <if><get form name=all>
       <then>
 	<user-message>Restoring from checkpoint.dat</user-message>
-	<agent-restore interform file=checkpoint.dat>
+	<agent-restore file=checkpoint.dat>
 	restored from <code>checkpoint.dat</code>.
       </then>
       </then><else>
@@ -28,7 +29,5 @@
     <input type=hidden name=all value=true>
   </form>
 
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+<footer cvsid='$Id$'>
 </body></html>
