@@ -135,6 +135,7 @@ including:
   <li> treating entire directory trees as compound documents, 
   <li> splitting a single file into multiple sub-documents
   <li> mapping URL's to filenames  in ways not supported by the underlying OS
+  <li> keeping track of versions
   <li> ``mounting'' a CGI program or remote server as a directory.
 </ul>
 
