@@ -18,6 +18,7 @@ INTERFACES = \
 	Element.java \
 	NamedNodeList.java \
 	Node.java \
+	NodeList.java \
 	PI.java \
 	Text.java \
 	CDATASection.java \
@@ -36,7 +37,6 @@ OTHER_CLASSES = \
 ENUMERATORS = \
 	LinkedNodeListEnumerator.java \
 	NodeEnumerator.java \
-	NodeList.java \
 	ArrayNodeListEnumerator.java \
 	ChildNodeListEnumerator.java 
 
