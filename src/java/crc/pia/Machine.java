@@ -179,7 +179,7 @@ public class Machine {
    * this response they are added.
    */
   public void sendResponse (Transaction reply, Resolver resolver) throws IOException {
-    PrintStream out = null;
+    OutputStream out = null;
     StringBuffer ctrlStrings = null;
     Content content = null;
     Content plainContent = null;
@@ -189,100 +189,127 @@ public class Machine {
     String contentString = null;
 
     try{
-      out = new PrintStream( outputStream() );
-    }catch(IOException e){
-      String msg = "Connection to requester is lost...\n";
+      out = outputStream();
+
+      String message = reply.reason();
+      String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\r";
+      // HTTP/1.0 200 OK
+
+      String type = reply.contentType();
+      if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
+      
+	isTextHtml = true;
+
+	Pia.instance().debug(this, "Sucking controls...");
+	Object[] c = reply.controls();
+	if( c != null ){
+	  ctrlStrings = new StringBuffer();
+	  for( int i = 0; i < c.length; i++ ){
+	    Object o = c[i];
+	    if( o instanceof String )
+	      ctrlStrings.append( (String)o + " " );
+	  }
+	}
+	
+      }
+      
+      plainContent = content = reply.contentObj();
+      
+      if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
+	if( reply.contentLength() != -1 )
+	  // changing length
+	  reply.setContentLength( reply.contentLength() + ctrlStrings.length() );
+      }
+      
+      // dump header
+      Pia.instance().debug(this, "Transmitting firstline and header...");
+     
+      shipOutput( out, outputString, false );
+
+      Pia.instance().debug(this, outputString);
+      String headers = reply.headersAsString(); 
+      Pia.instance().debug(this, headers);
+
+      shipOutput( out, headers, false );
+      
+      if( content != null && isTextHtml  ){
+	contentString = content.toString();
+	try{
+	  re = new RegExp("<body[^>]*>");
+	  mi = re.match( contentString.toLowerCase() );
+	}catch(Exception e){
+	}
+      }
+      
+      if( ctrlStrings != null && mi != null ){
+	String ms = mi.matchString();
+	StringBuffer buf = new StringBuffer( ms );
+	buf.append( ctrlStrings );
+	contentString   = re.substitute(contentString, new String( buf ), true);
+      } else if (ctrlStrings!= null){
+	shipOutput( out, new String( ctrlStrings ), true );
+      }
+      
+      if( ctrlStrings != null ){
+	Pia.instance().debug(this, "Transmitting control strings...");
+	shipOutput( out, contentString, true );
+      }
+      else if( contentString != null && isTextHtml ){
+	Pia.instance().debug(this, "Transmitting text/html content...");
+	Pia.instance().debug(this, contentString );
+	shipOutput( out, contentString, true );
+      }else if( plainContent != null ){
+	Pia.instance().debug(this, "Transmitting images content...");
+	sendImageContent( out, plainContent );
+      }
+      
+      
+      Pia.instance().debug(this, "Flushing...");
+      out.flush();
+      closeConnection();
+      
+    }catch(PiaRuntimeException e){
+      Pia.instance().debug(this, "Client close connection...");
+      String msg = "Client close connection...\n";
+      closeConnection();
       throw new PiaRuntimeException (this
 				     , "sendResponse"
 				     , msg) ;
-    }
-
-
-    String message = reply.reason();
-    String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\r";
-    // HTTP/1.0 200 OK
-
-    String type = reply.contentType();
-    if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
-      
-      isTextHtml = true;
-
-      Pia.instance().debug(this, "Sucking controls...");
-      Object[] c = reply.controls();
-      if( c != null ){
-	ctrlStrings = new StringBuffer();
-	for( int i = 0; i < c.length; i++ ){
-	  Object o = c[i];
-	  if( o instanceof String )
-	    ctrlStrings.append( (String)o + " " );
-	}
-      }
 
     }
+    
+    
 
-    plainContent = content = reply.contentObj();
-
-    if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
-      if( reply.contentLength() != -1 )
-	// changing length
-	reply.setContentLength( reply.contentLength() + ctrlStrings.length() );
-    }
-
-    // dump header
-    Pia.instance().debug(this, "Transmitting firstline and header...");
-    out.print( outputString );
-    Pia.instance().debug(this, outputString);
-    String headers = reply.headersAsString(); 
-    Pia.instance().debug(this, headers);
-    out.print( headers );
-
-    if( content != null && isTextHtml  ){
-      contentString = content.toString();
-      try{
-	re = new RegExp("<body[^>]*>");
-	mi = re.match( contentString.toLowerCase() );
-      }catch(Exception e){
-      }
-    }
-
-    if( ctrlStrings != null && mi != null ){
-      String ms = mi.matchString();
-      StringBuffer buf = new StringBuffer( ms );
-      buf.append( ctrlStrings );
-      contentString   = re.substitute(contentString, new String( buf ), true);
-    } else if (ctrlStrings!= null){
-      out.println( ctrlStrings );
-    }
-
-    if( ctrlStrings != null ){
-      Pia.instance().debug(this, "Transmitting control strings...");
-      out.println( contentString );
-    }
-    else if( contentString != null && isTextHtml ){
-      Pia.instance().debug(this, "Transmitting text/html content...");
-      System.out.println( contentString );
-      out.println( contentString );
-    }else if( plainContent != null ){
-      Pia.instance().debug(this, "Transmitting images content...");
-      /*
-      byte[] zbytes = plainContent.toBytes();
-
-      if( zbytes != null )
-	Pia.instance().debug(this, "Number of bytes transmitting..." + Integer.toString( zbytes.length ));
-
-      if( zbytes!= null )
-	out.write( zbytes, 0, zbytes.length );
-	*/
-      sendImageContent( out, plainContent );
-    }
-
-
-    Pia.instance().debug(this, "Flushing...");
-    out.flush();
-    closeConnection();
   }
 
-  private void sendImageContent(OutputStream out, Content c){
+  private void shipOutput(OutputStream out, String s, boolean withnewline)throws PiaRuntimeException{
+    byte[] bytestring = null;
+
+      bytestring = getBytes( s );
+      try{
+	if( bytestring != null )
+	  out.write( bytestring, 0, bytestring.length  );
+	if( withnewline )
+	  out.write( '\n' );
+      }catch(IOException e){
+	String msg = "Can not write...\n";
+	throw new PiaRuntimeException (this
+				       , "shipOutput"
+				       , msg) ;
+      }
+  }
+
+  private byte[] getBytes(String s){
+    int len = s.length();
+    byte[] data = null;
+    if( len > 0 ){
+      data = new byte[ len ];
+      s.getBytes(0, len, data, 0 );
+    }
+    return data;
+  }
+
+  private void sendImageContent(OutputStream out, Content c)throws PiaRuntimeException{
      byte[]buffer = new byte[1024];
     int bytesRead;
     
@@ -293,7 +320,12 @@ public class Machine {
 	out.write( buffer, 0, bytesRead );
 	Pia.instance().debug(this, "the write length is---->"+Integer.toString(bytesRead));
       }
-    }catch(Exception e){}
+    }catch(IOException e){
+      String msg = "Can not write...\n";
+      throw new PiaRuntimeException (this
+				     , "sendImageContent"
+				     , msg) ;
+    }
 }
 
 
@@ -320,14 +352,14 @@ public class Machine {
   /**
    * Get request through a proxy by opening the proxy socket
    */
-  protected void getReqThruProxy(URL proxy, Transaction request, Resolver resolver) throws PiaRuntimeException {
+  protected void getReqThruSock(URL url, Transaction request, Resolver resolver) throws PiaRuntimeException {
     int zport = 80;
     String zhost;
 
     Pia.instance().debug(this, "Getting data through proxy request");
-    int p        = proxy.getPort();
+    int p        = url.getPort();
     zport        = (p == -1) ? 80 : p;
-    zhost        = proxy.getHost();
+    zhost        = url.getHost();
     try{
 
       socket = new Socket(zhost, zport);
@@ -342,12 +374,12 @@ public class Machine {
     }catch(UnknownHostException ue){
       String msg = "Unknown proxy host\n";
       throw new PiaRuntimeException (this
-				     , "getReqThruProxy"
+				     , "getReqThruSock"
 				     , msg) ;
     }catch(IOException e){
       String msg = "Can not get data through proxy request\n";
       throw new PiaRuntimeException (this
-				     , "getReqThruProxy"
+				     , "getReqThruSock"
 				     , msg) ;
     }
   }
@@ -368,23 +400,11 @@ public class Machine {
     proxy = proxy( request.protocol() );
     try{
       if( proxy != null )
-	getReqThruProxy( proxy, request, resolver);
-      else{
-	if( url != null ){
-	  inputStream = url.openStream();
-	  
-	  Content c = new ByteStreamContent( inputStream );
-	  if ( DEBUG ){
-	    Pia.instance().debug("Dumping data buffer's address");
-	    byte[] data = c.toBytes();
-	    System.out.print( new String(data,0,0,data.length) );
-	    System.out.println("\n");
-	  }
-	  
-	  new HTTPResponse( request, c );
-	}
-      }  
-    }catch(IOException e){
+	getReqThruSock( proxy, request, resolver);
+      else
+	if( url != null )
+	  getReqThruSock( url, request, resolver );
+    }catch(PiaRuntimeException e){
       String msg = e.toString();
       throw new PiaRuntimeException (this
 				     , "getRequest"
