@@ -9,7 +9,8 @@
 
 package crc.pia.agent;
 import crc.pia.Machine;
-import crc.pia.Agent; 
+import crc.pia.Agent;
+import crc.ds.TernFunc; 
 
 class AgntMach extends Machine {
   /**
@@ -20,7 +21,7 @@ class AgntMach extends Machine {
   /**
    * Callback functor
    */
-  protected  xxx callback; 
+  protected  TernFunc callback; 
 
   public AgntMach( Agent agent ){
     setAgent( agent );
@@ -44,14 +45,14 @@ class AgntMach extends Machine {
   /**
    * set callback functor
    */
-  public void setCallback( xxx callback ){
+  public void setCallback( TernFunc callback ){
     if( callback ) this.callback = callback;
   }
 
   /**
    * @return callback
    */
-  public xxx getCallback(){
+  public TernFunc getCallback(){
       return callback;
   }
 
@@ -59,7 +60,7 @@ class AgntMach extends Machine {
    * send response using a predefined callback
    */
    public void sendResponse (Transaction reply, Resolver resolver) {
-     xxx cb = getCallback();
+     TernFunc cb = getCallback();
      cb.execute(agent, reply, resolver);
    }
   
@@ -75,7 +76,9 @@ class AgntMach extends Machine {
     if( agnt )
       response = agnt.respond(request, resolver);
     return response;
+  }
 }
+
 
 
 
