@@ -92,7 +92,7 @@ public class Report {
    * Display a message to the user if the "verbose" flag is set.
    */
   public static void verbose(String msg) {
-    if (debug) debug(msg);
+    if (debug) Report.debug(msg);
     else if (verbose) System.err.println(msg);
   }
 
@@ -279,7 +279,7 @@ public class Report {
   private static Logger logger 		= null;
 
   private static boolean verbose = false;
-  private static boolean debug   = false;  
+  private static boolean debug   = true;  
 
   // always print to screen or file if debugToFile is on
   private static boolean debugToFile= false;
