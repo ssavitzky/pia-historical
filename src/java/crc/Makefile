@@ -47,6 +47,7 @@ PACKAGENAMES= $(PIAPACKAGENAMES) $(SUNPACKAGENAMES)
 # mail, mime
 
 include $(TOPDIR)/makefiles/package.make
+include $(TOPDIR)/makefiles/file.make
 
 
 
