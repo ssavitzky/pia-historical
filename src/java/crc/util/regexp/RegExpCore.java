@@ -44,7 +44,7 @@ class RegExpCore {
 	RegExpParser parser;
 	RegExpNFA nfa;
 	
-	RegExp.pattern = pattern;
+	this.pattern = pattern;
 	parser = new RegExpParser();
 	tree = parser.parse(pattern);
 	nfa = new RegExpNFA(tree);

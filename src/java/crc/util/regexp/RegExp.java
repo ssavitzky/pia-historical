@@ -1,7 +1,7 @@
 /*
  * RegExp.java
  *
- * Copyright (C) 1997 Shugo Maeda
+ * Copyright (C) 1997 MAEDA Shugo
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

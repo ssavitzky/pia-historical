@@ -62,15 +62,15 @@ class RegExpParser {
     
     static {
 	escapeTable = new Hashtable();
-	escapeTable.put("0", "\\0");
-	escapeTable.put("b", "\\b");
-	escapeTable.put("t", "\\t");
-	escapeTable.put("r", "\\r");
-	escapeTable.put("n", "\\n");
+	escapeTable.put("0", "\0");
+	escapeTable.put("b", "\b");
+	escapeTable.put("t", "\t");
+	escapeTable.put("r", "\r");
+	escapeTable.put("n", "\n");
 	escapeTable.put("d", "[0-9]");
 	escapeTable.put("D", "[^0-9]");
-	escapeTable.put("s", "[ \\t\\r\\n]");
-	escapeTable.put("S", "[^ \\t\\r\\n]");
+	escapeTable.put("s", "[ \t\r\n]");
+	escapeTable.put("S", "[^ \t\r\n]");
 	escapeTable.put("w", "[0-9A-Z_a-z]");
 	escapeTable.put("W", "[^0-9A-Z_a-z]");
     }
