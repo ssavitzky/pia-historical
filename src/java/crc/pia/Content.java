@@ -72,13 +72,12 @@ public interface Content
   * usually this will come from a machine
   */
   public void source(InputStream stream);
-  /*
- {
 
-      //fix me, should this be 
-      machine.sLength( content_length );
-  }
+ /** set a source stream for this object
+  * usually this will come from a machine
   */
+  public InputStream source();
+
 
  /**  get the next chunk of data as bytes
   *  @return number of bytes read -1 means EOF
