@@ -30,10 +30,10 @@
 <if><get name="docbody">
  <else><set name="docbody"><get agent name="book&bkctr;root"></set> </else></if>
 
-<if><get name=noprintroot form>
- <then><set name=docbody><body>
-</body></then> 
- <else> </else></if>
+<if><get name=printroot form>
+ <then></then> 
+ <else><set name=docbody><body>
+</body></set> </else></if>
 
 <set name="linktoc"><dl> </dl></set>
 
