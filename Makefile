@@ -106,11 +106,9 @@ crfixbat::
 
 pia_bin.toc:: 
 	cd ..; find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
-	    | grep -v Contrib/Forms \
+	    | grep -v CVS \
 	    | grep -v pia_src.tgz | grep -v pia.toc \
-	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
+	    | grep -v src > pia/pia_bin.toc 
 
 pia_bin.tar:	rm_bin_tar prep_rel crfixbat cp_build_noa pia_bin.toc
 	cd ..; $(TAR) cfT pia/pia_bin pia/pia_bin.toc ;  /bin/gzip -S .tgz pia/pia_bin
