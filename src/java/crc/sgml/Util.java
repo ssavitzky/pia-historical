@@ -58,8 +58,10 @@ public class Util {
    *	from this process.  SGML comments and declarations count as
    *	whitespace. */
   public static final Tokens removeSpaces(SGML it) {
-    Tokens from = it.content();
     Tokens list = new Tokens();
+    if (it == null) return list;
+
+    Tokens from = it.content();
 
     for (int i = 0; i < from.nItems(); ++i) {
       SGML s = from.itemAt(i);
