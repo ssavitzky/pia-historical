@@ -1,0 +1,127 @@
+<set  name="filename" >&FORM.filename;</set>
+<set  name="firstname" >&FORM.firstname;</set>
+<set  name="lastname" >&FORM.lastname;</set>
+<set  name="company" >&FORM.company;</set>
+<set  name="title" >&FORM.title;</set>
+<set  name="addr" >&FORM.addr;</set>
+<set  name="city" >&FORM.city;</set>
+<set  name="state" >&FORM.state;</set>
+<set  name="zip" >&FORM.zip;</set>
+<set  name="url" >&FORM.url;</set>
+<set  name="email" >&FORM.email;</set>
+<set  name="phonearea" >&FORM.PhoneArea;</set>
+<set  name="phoneexch" >&FORM.PhoneExch;</set>
+<set  name="phone" >&FORM.Phone;</set>
+<set  name="faxarea" >&FORM.FaxArea;</set>
+<set  name="faxexch" >&FORM.FaxExch;</set>
+<set  name="fax" >&FORM.Fax;</set>
+<set name=path>&usrDIR;/Buss</set>
+<set entity name=upFile>&path;/&filename;.html</set>
+<set name=fc><read file=&upFile; process></set>
+
+<write trim line file="&upFile;">
+<set name=mylastname><get index="fc.lastname"></set>
+<if><test not exact match="&lastname;">&mylastname;</test>
+     <then>Can not change last name.</then>
+<else>
+<dl>
+     <set name=myfirstname><get index="fc.firstname"></set>
+     <dt>firstname</dt><dd>
+     <if><test not exact match="&firstname;">&myfirstname;</test>
+       <then>&firstname;</then><else>&myfirstname;</else>
+     </if>
+
+     <dt>lastname</dt><dd>
+     &mylastname;
+
+     <set name=mycompany><get index="fc.company"></set>
+     <dt>company</dt><dd>
+     <if><test not exact match="&company;">&mycompany;</test>
+       <then>&company;</then><else>&company;</else>
+     </if>
+
+     <set name=mytitle><get index="fc.title"></set>
+     <dt>title</dt><dd>
+     <if><test not exact match="&title;">&mytitle;</test>
+        <then>&title;</then><else>&mytitle;</else>
+     </if>
+
+     <set name=myaddr><get index="fc.addr"></set>
+     <dt>addr</dt><dd>
+     <if><test not exact match="&addr;">&myaddr;</test>
+        <then>&addr;</then><else>&myaddr;</else>
+     </if>
+
+     <set name=mycity><get index="fc.city"></set>
+     <dt>city</dt><dd>
+     <if><test not exact match="&city;">&mycity;</test>
+     <then>&city;</then><else>&mycity;</else>
+     </if>
+
+
+     <set name=mystate><get index="fc.state"></set>
+     <dt>state</dt><dd>
+     <if><test not exact match="&state;">&mystate;</test>
+     <then>&state;</then><else>&mystate;</else>
+     </if>
+
+     <set name=myzip><get index="fc.zip"></set>
+     <dt>zip</dt><dd>
+     <if><test not exact match="&zip;">&myzip;</test>
+     <then>&zip;</then><else>&myzip;</else>
+     </if>
+
+     <set name=myurl><get index="fc.url"></set>
+     <dt>url</dt><dd>
+     <if><test not exact match="&url;">&myurl;</test>
+     <then>&url;</then><else>&myurl;</else>
+     </if>
+
+
+     <set name=myemail><get index="fc.email"></set>
+     <dt>email</dt><dd>
+     <if><test not exact match="&email;">&myemail;</test>
+     <then>&email;</then><else>&myemail;</else>
+     </if>
+
+     <set name=myphonearea><get index="fc.PhoneArea"></set>
+     <dt>PhoneArea</dt><dd>
+     <if><test not exact match="&phonearea;">&myphonearea;</test>
+     <then>&phonearea;</then><else>&myphonearea;</else>
+     </if>
+
+     <set name=myphonexch><get index="fc.PhoneExch"></set>
+     <dt>PhoneExch</dt><dd>
+     <if><test not exact match="&phoneexch;">&myphoneexch;</test>
+     <then>&phoneexch;</then><else>&myphoneexch;</else>
+     </if>
+
+
+     <set name=myphone><get index="fc.Phone"></set>
+     <dt>Phone</dt><dd>
+     <if><test not exact match="&phone;">&myphone;</test>
+     <then>&phone;</then><else>&myphone;</else>
+     </if>
+
+
+     <set name=myfaxarea><get index="fc.FaxArea"></set>
+     <dt>FaxArea</dt><dd>
+     <if><test not exact match="&faxarea;">&myfaxarea;</test>
+     <then>&faxarea;</then><else>&myfaxarea;</else>
+     </if>
+
+     <set name=myfaxexch><get index="fc.FaxExch"></set>
+     <dt>FaxExch</dt><dd>
+     <if><test not exact match="&faxexch;">&myfaxexch;</test>
+     <then>&faxexch;</then><else>&myfaxexch;</else>
+     </if>
+
+     <set name=myfax><get index="fc.Fax"></set>
+     <dt>Fax</dt><dd>
+     <if><test not exact match="&fax;">&myfax;</test>
+     <then>&fax;</then><else>&myfax;</else>
+     </if>
+</dl>
+</else>
+</if>
+</write>

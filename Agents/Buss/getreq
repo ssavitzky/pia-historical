@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+#
+require "ctime.pl";
+push (@INC,"/usr/local.mnt/lib/perl5.shared/site_perl");
+#use URI::URL;
+#use URI::Escape;
+require LWP::UserAgent;
+
+$salmonurl= $ARGV[0];
+$outfile= $ARGV[1];
+$url = "\/Agency\/Buss\/Parsecard.if";
+
+
+#$salmonurl = "http://salmon.crc.ricoh.com:8001/cgi-bin/top10_listing_viewer.cgi?username=rithy&?";
+$salmonbase = "http://salmon.crc.ricoh.com:8001/";
+
+$ua = new LWP::UserAgent;
+$ua->agent("AgentName/0.1");
+
+# Create a request
+my $req = new HTTP::Request ('GET', $salmonurl);
+$response = $ua->request($req);
+if ($response->is_success) {
+    @lines = split("\n", $response->content);
+    &addline;
+} else {
+    print $response->error_as_HTML;
+}
+
+sub addline {
+open(ZZZ, "> $outfile");
+
+    foreach $line (@lines){
+
+	if( $line=~ m/\s*<A\s*HREF="\/(.*)/i ) {
+          print ZZZ "<a href=\"$salmonbase$1\n";
+        }
+
+        elsif($line=~ m/\s*<img\s*src="\/(.*)"/i){
+	    print ZZZ "<img src=\"$salmonbase$1\"></a>\n";  
+	    $myimage="$1";
+        }
+
+	elsif($line=~ m/.*\?(.*)" target.*Staple this document<\/a><BR>$/i){
+	    print ZZZ $line;
+	    print ZZZ "<a href=\"$url?$1&image=$myimage\">Add to business card</a><BR>\n";
+        } else{
+	    print ZZZ "$line\n";
+	}
+    }
+close ZZZ;
+}
+
+

@@ -1,0 +1,33 @@
+<set name=filename>&FORM.filename;</set>
+
+<set name=path>&usrDIR;/Buss</set>
+<set entity name=delFile>&path;/&filename;.html</set>
+
+
+<foreach list="a b c d e f g h i j k l m n o p q r s t u v x y z">
+     <if><test match="^&li">&filename;</test>
+     <then>
+          <set name=dir>&li;</set>
+     </then>
+</foreach>
+
+
+<set entity name=indexfn>&path;/&dir;/index.html</set>
+<set name=indexct><read file="&indexfn;" process></set>
+<set name=as><get index="indexct" findAll=a></set>
+
+<write trim line file="&indexfn;">
+    <repeat list=&as; entity=one>
+        <set name=fname><get name=one attr=filename></set>
+        <if><test not exact match="&dir;/&fname;">&filename;</test>
+	    <then>
+	         &one;<br>
+	    </then>
+	</if>
+    </repeat>
+</write>
+
+
+<os-command>rm "&delFile;" </os-command>
+
+Your card has been deleted.

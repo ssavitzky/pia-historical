@@ -1,0 +1,28 @@
+<set name=dir>&FORM.dir;</set>
+<set name=filename>&FORM.filename;</set>
+
+<set entity name=contentFile>&dir;/&filename;.txt</set>
+<set entity name=peopleFile>&dir;/p_&filename;.html</set>
+<set entity name=cardFile>&dir;/c_&filename;.html</set>
+<set entity name=visitFile>&dir;/&filename;.html</set>
+<set entity name=indexfn>&dir;/index.html</set>
+<set entity name=newindexfn>&dir;/n_index.html</set>
+<set name=fulldir>&usrDIR;/Mail/</set>
+<set name=indexct><read file="&usrDIR;/Mail/&indexfn;" process></set>
+
+<set name=dls><get index="indexct" findAll=dl></set>
+
+<write trim line file="&fulldir/&indexfn;">
+    <repeat list=&dls; entity=one>
+        <set name=item><get index="one.dt.a-1-1"></set>
+        <if><test not exact match=&filename;><get name=item attr=key></test>
+	    <then>
+	         &one;
+	    </then>
+	</if>
+    </repeat>
+</write>
+
+<set name=fulldir>&usrDIR;/Mail/</set>
+<os-command>rm "&fulldir;&contentFile;" "&fulldir;&peopleFile;" "&fulldir;&cardFile;" "&fulldir;&visitFile;" </os-command>
+

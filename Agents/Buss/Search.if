@@ -1,0 +1,47 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>search result</title>
+<link rev="made" href="mailto:rithy@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+
+<set name=firstname>&FORM.firstname;</set>
+<set name=lastname>&FORM.lastname;</set>
+
+<foreach list="a b c d e f g h i j k l m n o p q r s t u v x y z">
+<if>
+   <test match="^&li;">&lastname;</test>
+   <then>
+	<set name=filename>&li;/index.html</set>
+   </then>
+</if>
+</foreach>
+
+<set name=found>notfound</set>
+
+<set name=allas><read file="&usrDIR;/Buss/&filename;" process></set>
+<set name=bar><get name="allas" findAll=a></set>
+<repeat list=&bar; entity=in>
+   <set name=one>&in;</set>
+   <set name=myref><get name=one attr=href></set>
+   <set name=myfname><get name=one attr=fname></set>
+   <set name=mylname><get name=one attr=lname></set>
+   <set name=mydir><get name=one attr=dir></set>
+   <set name=myfilename><get name=one attr=filename></set>
+   
+   <if><test exact match="&firstname;&lastname;">&myfname;&mylname;</test>
+      <then>
+         <set name=found>found</set>
+	 <set agent name=cardfile>&mydir;/&myfilename;</set>
+	 <read.href href="/Agency/Buss/Getcardpost.if" process>
+      </then>
+   </if>
+</repeat>
+
+<if><test exact match="notfound">&found;</test>
+<then>
+    <code>not found</code>
+</then>
+</if>
+<hr>
+</body></html>

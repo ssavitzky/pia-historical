@@ -1,0 +1,80 @@
+<set name=ds><dl></dl></set>
+<set name=myurl><get agent name=visiturl></set>
+<set name=links><read.href href=&myurl; process></set>
+
+<set name=zhead><get name="links" findAll=head></set>
+<set name=myheadtitle><get index="zhead.title.text"></set>
+
+<set name=ztitle><get name="links" findAll=title></set>
+<set name=mytitle><get index="ztitle.text"></set>
+
+<if><test>&mytitle;</test>
+<then></then>
+<else>
+     <if><test>&myheadtitle;</test>
+          <then><set name=mytitle>&myheadtitle;</set></then>
+	  <else><set name=mytitle>no title</set></else>
+     </if>
+</else>
+</if>
+
+<set name=as><get name="links" findAll="a" ></set>
+<set name=allas><get name=as findAll=img></set>
+
+
+<foreach list=&allas; entity=link>
+     <set name=width><get name=link attr=width></set>
+     <set name=src><get name=link attr=src></set>
+  <if><test exact match=''>&width;</test><then></then>
+  <else>
+     <set name=finditem><get name=ds key=&width;></set>
+     <if><test exact match=''>&finditem;</test>
+          <then>
+	       <set name=ds insert=-1><dt>&width;<dd>&src;</set>
+	  </then>
+	  <else>
+	       <if><test exact match=&src;>&finditem;</test><then></then>
+	            <else><set name=ds insert=-1><dt><sum digits=0>&width; 1</sum><dd>&src;</set></else> 
+	       </if>
+	  </else>
+     </if>
+  </else>
+</foreach>
+
+<set name=mytable><table></table></set>
+<set name="mytable" attr="border">2</set>
+<set index="mytable.tr-1-1"><td colspan=3><font size=3 face=times><a href=&myurl;>&myurl;</a></font></td></set>
+<set index="mytable.tr-2-2"></set>
+
+
+<set name=mks><sort numeric reverse><get index="ds.keys"></sort></set>
+
+<if><test>&mks;</test>
+<then>
+   <font></font>
+   <set name=mykeys><get index="ds.keys-1-1" ></set>
+   <repeat list=&mykeys; entity=link>
+     <set name=myimg><get name=ds key=&link;></set>
+     <if><test match="http://">&myimg;</test><then>
+          <set index="mytable.tr-2-2" insert=-1><td><img border=1 align=left WIDTH=60 HEIGHT=20 src=&myimg;></td></set>
+     </then>
+     <else>
+          <if><test match="^/">&myimg;</test>
+	     <then>
+               <set index="mytable.tr-2-2" insert=-1><td><img border=1 align=left WIDTH=60 HEIGHT=20 src=&myurl;&myimg;></td></set>
+	     </then>
+	     <else>
+               <set index="mytable.tr-2-2" insert=-1><td><img border=1 align=left WIDTH=60 HEIGHT=20 src=&myurl;/&myimg;></td></set>
+	     </else>
+        </else>
+     </repeat>
+</then>
+<else>
+       <set index="mytable.tr-2-2" insert=-1><td><font size=2 face=times>&mytitle;</font></td></set>
+</else>
+</if>
+
+&mytable;
+
+
+
