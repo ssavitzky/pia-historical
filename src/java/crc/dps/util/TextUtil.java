@@ -6,13 +6,15 @@ package crc.dps.aux;
 
 import crc.dom.Node;
 import crc.dom.Element;
+import crc.dom.Text;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 import crc.dom.Entity;
-
+ 
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.output.*;
@@ -83,19 +85,26 @@ public class TextUtil {
   }
 
   /** Return an Association between a node and its text content. */
-  public static Association getTextAssociation(ActiveNode n) {
-    return Association.associate(n, getTextString(n));
+  public static Association getTextAssociation(ActiveNode n, boolean caseSens) {
+
+    String str = getTextString(n);
+    String str1 = str; 
+    
+    if(caseSens) {
+      str1 = str.toLowerCase();
+    }
+    return Association.associate(n, str1);
   }
 
   /** Return a list of text Associations.  Splits text nodes containing
    *	whitespace, but associates non-text markup with its concatenated text
    *	content.  Most useful for sorting nodes lexically.
    */
-  public static List getTextList(NodeList nl) {
+  public static List getTextList(NodeList nl, boolean caseSens) {
     List l = new List();
     Enumeration items = ListUtil.getListItems(nl);
     while (items.hasMoreElements()) {
-      Association a = getTextAssociation((ActiveNode)items.nextElement());
+      Association a = getTextAssociation((ActiveNode)items.nextElement(), caseSens);
       if (a != null) l.push(a);
     }
     return l;
@@ -105,6 +114,132 @@ public class TextUtil {
   /************************************************************************
   ** Trimming and padding:
   ************************************************************************/
+
+  /** Trim the blank spaces from a String. */
+  public static final String trimLeading(String s) {
+    s += '.';
+    s = s.trim();
+    return s.substring(0, s.length()-1);
+  }
+
+  /** Trim the trailing blanks from a String. */
+  public static final String trimTrailing(String s) {
+    s = "." + s;
+    s = s.trim();
+    return s.substring(1);
+  }
+
+  /** Trim the text to the specified width with the specified
+    * alignment. The default is left, meaning that characters are
+    * trimmed from the right. If no width is specified, leading and
+    * trailing whitespace are trimmed. Return an enumeration of nodes
+    * with whitespace removed.
+    */
+  public static Enumeration trimListItems(NodeList nl) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List results = new List();
+    String rStr;
+
+    boolean seenFirstTextNode = false;
+    int lastTextIndex = -1;
+
+    // Get last text item
+    Node firstTextNode = null;
+    Node lastTextNode = null;
+    
+    // Get first and last text nodes in list
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if(n.getNodeType() == NodeType.TEXT) {
+	if(seenFirstTextNode == false) {
+	  firstTextNode = n;
+	  seenFirstTextNode = true;
+	}
+	else {
+	  // Only a first text node, this won't get set
+	  lastTextNode = n;
+	}
+      }
+    }
+    
+    if(lastTextNode == null)
+      lastTextNode = firstTextNode;
+
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if(n.getNodeType() == NodeType.TEXT) {
+	Text tNode = (Text)n;
+	if(n == firstTextNode) {
+	  String s = tNode.toString();
+	  rStr = trimLeading(s);
+	  tNode.setData(rStr);
+	  results.push(tNode);
+	  seenFirstTextNode = true;
+	}
+	else if(n == lastTextNode) {
+	  String s = tNode.toString();
+	  rStr = trimTrailing(s);
+	  tNode.setData(rStr);
+	  results.push(tNode);
+	}
+	else {
+	  // Push all other text nodes
+	  results.push(tNode);
+	}
+      }
+      else {
+	// push other node type unchanged
+	results.push(n);
+      }
+    }
+    return results.elements();
+  }
+
+
+  /** Pad the text to the specified width with the specified
+    * alignment. The default is left, meaning that spaces are
+    * added to the right.
+    */
+  public static Enumeration padListItems(NodeList nl, boolean align, boolean left,
+					  boolean right, int width) {
+
+    List results = new List();
+
+    NodeEnumerator enum = nl.getEnumerator();    
+    int strLen = 0;
+
+    // Extract string length from each node and push node onto
+    // results list.
+    for(Node n = enum.getFirst(); n != null; n= enum.getNext()) {
+      String nStr = getTextString((ActiveNode)n);
+      strLen += nStr.length();
+      results.push(n);
+    }
+    
+    if(strLen < width) {
+      // Pad amount specified
+      int padLen = (width - strLen);
+      // Create a node full of spaces
+      ParseTreeText pNode = pad(padLen);
+      if(right) {
+	results.push(pNode);
+      }
+      else {
+	int lastIndex = results.nItems();
+	results.insertAt(pNode, lastIndex);
+      }
+    }
+    return results.elements();
+  }
+
+  public static final ParseTreeText pad(int width) {
+    
+    String nodeStr = "";
+    for(int i = 0; i < width; i++) {
+      nodeStr += " ";
+    }
+    ParseTreeText ptt = new ParseTreeText(nodeStr);
+    return ptt;
+  }
+  
 
   /************************************************************************
   ** Inserting and deleting markup:
@@ -224,6 +359,31 @@ public class TextUtil {
    */
   public static final void addMarkup(String s, Output out) {
     out.putNode(new ParseTreeText(addMarkup(s)));
+  }
+
+
+  /************************************************************************
+  ** Debugging
+  ************************************************************************/
+
+  // Print contents of a NodeList
+  static public void printNodeList(NodeList nl) {
+    NodeEnumerator enum = nl.getEnumerator();
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      System.err.println(n.toString());
+    }
+  }
+
+
+  // Print contents of a List
+  static public void printList(List list) {
+    
+    long len = list.size();
+    for (int i = 0; i < len; i++) {
+      Association assoc = (Association)list.at(i);
+      Node value = (Node)assoc.value();
+      System.err.println(value.toString());
+    }
   }
 
 }
