@@ -124,18 +124,16 @@ public class BasicAttribute extends AbstractNode implements Attribute {
    */
   public String toString(){
     if( value == null) return "";
-
-    long len = value.getLength();
     StringBuffer sb = new StringBuffer();
+    
+    long len = (value == null)? 0 : value.getLength();
     Node n = null;
 
     for( long i = 0; i < len; i++ ){
       try{
 	n = value.item( i );
-	if(n != null)
-	  sb.append( " " + n );
-	else
-	  sb.append("");
+	if(n != null) sb.append( n.toString() );
+	if (i < len - 1) sb.append( " " );
       }catch(NoSuchNodeException e){
       }
     }

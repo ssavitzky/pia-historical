@@ -34,7 +34,7 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
     if( l.getLength() == 0 ) return null;
     cursor = 0;
     //Report.debug(this, "before first element");
-    return (Node)l.firstElement();
+    return (Node)l.elements.firstElement();
     
   }
 
@@ -47,7 +47,7 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
   {
     if( cursor == l.size() - 1 ) return null;
     cursor++;
-    return (Node)l.elementAt( cursor );
+    return (Node)l.elements.elementAt( cursor );
   }
 
   /**
@@ -59,7 +59,7 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
   {
     if( cursor == 0 ) return null;
     cursor--;
-    return (Node)l.elementAt( cursor );
+    return (Node)l.elements.elementAt( cursor );
   }
 
   /**
@@ -69,10 +69,10 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
    */
   public Node getLast()
   { 
-    if( l.isEmpty() )
+    if( l.elements.isEmpty() )
       return null;
-    cursor = l.size() - 1;
-    return (Node)l.lastElement();
+    cursor = l.elements.size() - 1;
+    return (Node)l.elements.lastElement();
   }
 
   /**
@@ -83,9 +83,9 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
    */
   public Node getCurrent()
   {
-    if( l.isEmpty() ) 
+    if( l.elements.isEmpty() ) 
       return null;
-    return (Node)l.elementAt( cursor ); 
+    return (Node)l.elements.elementAt( cursor ); 
   }
 
   /**
@@ -96,7 +96,7 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
    */
   public boolean atStart()
   {
-    if( l.isEmpty() ) return true;
+    if( l.elements.isEmpty() ) return true;
     return cursor == 0;
   }
 
@@ -108,7 +108,7 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
    */ 
   public boolean atEnd()
   {
-    if ( l.isEmpty() ) return true;
+    if ( l.elements.isEmpty() ) return true;
     return cursor == l.size() - 1;
   }
 

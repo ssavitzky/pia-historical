@@ -105,6 +105,18 @@ public class ChildNodeList implements NodeList{
    */
   protected AbstractNode getParent(){ return parent; }
 
+  /** 
+   * @return string corresponding to content
+   */
+  public String toString() {
+    Node n = parent.getFirstChild();
+    if (n == null) return "";
+
+    String result = "";
+    for (; n != null; n = n.getNextSibling()) result += n.toString();
+    return result;
+  }
+
   /**
    * This ChildNodeList is expanded through parent's
    * first node.

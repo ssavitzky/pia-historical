@@ -7,7 +7,7 @@ package crc.dom;
  * Represents a collection of Attribute objects, indexed by attribute name. 
  */
 
-public interface AttributeList {
+public interface AttributeList extends NodeList {
 
   /**
    * Retrieve an Attribute instance from the list by its name. If it's not present,

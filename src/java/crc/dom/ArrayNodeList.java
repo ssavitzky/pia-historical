@@ -14,9 +14,17 @@ import java.util.Vector;
  * in this collection bears no relation to each other.
  */
 
-public class ArrayNodeList extends Vector implements EditableNodeList {
+public class ArrayNodeList implements EditableNodeList {
+
+  /** The actual elements.  Should be protected, but the enumerator needs it. */
+  Vector elements = new Vector();
+  protected long size() { return elements.size(); }
 
   public ArrayNodeList(){
+  }
+
+  public ArrayNodeList(Node aNode){
+    if (aNode != null) elements.addElement(aNode);
   }
 
   /**
@@ -43,12 +51,12 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
   public Node replace(long index,Node replacedNode) 
        throws NoSuchNodeException
   {
-    if( index >= size() || index < 0){
+    if( index >= elements.size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
-    Node old = (Node)elementAt( (int)index );
-    setElementAt(replacedNode, (int)index);
+    Node old = (Node)elements.elementAt( (int)index );
+    elements.setElementAt(replacedNode, (int)index);
     return old;
   }
 
@@ -67,16 +75,16 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
        throws NoSuchNodeException
   {
     if( index == 0 ){
-      insertElementAt( newNode, 0 );
+      elements.insertElementAt( newNode, 0 );
       return;
     }
     if( index == size() ){
-      addElement( newNode );
+      elements.addElement( newNode );
       return;
     }
 
     if( index >= 0 && index <= size() )
-      insertElementAt( newNode, (int)index );
+      elements.insertElementAt( newNode, (int)index );
     
   }
 
@@ -97,8 +105,8 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
       throw new NoSuchNodeException(err);
     }
 
-    Node n = (Node)elementAt( (int)index );
-    removeElementAt( (int)index );
+    Node n = (Node)elements.elementAt( (int)index );
+    elements.removeElementAt( (int)index );
     return n;
   }
 
@@ -125,7 +133,7 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
       throw new NoSuchNodeException(err);
     }
 
-    return  (Node)elementAt( (int)index );
+    return  (Node)elements.elementAt( (int)index );
   }
 
 
@@ -143,9 +151,27 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
 
     Node n = null;
     for(n=e.getFirst(); n != null; n=e.getNext())
-      addElement( n );
+      elements.addElement( n );
   }
 
+  /** Append a new Token.
+   */
+  public void append(Node newChild) { elements.addElement(newChild); }
+
+  /** 
+   * @return string corresponding to content
+   */
+  public String toString() {
+    String result = "";
+    long length = getLength();
+    for (long i = 0; i < length; ++i) try {
+      Node attr = item(i);
+      result += attr.toString();
+      if (i < length - 1) result += " ";
+    }catch(NoSuchNodeException e){
+    }
+    return result;
+  }
 }
 
 

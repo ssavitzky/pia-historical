@@ -84,19 +84,15 @@ public class AttrList extends AbstractNamedList implements AttributeList {
    */
   protected void initialize(AttributeList l){
     if( l == null ) return;
-    long i = 0;
-    Attribute attr = null;
 
-    try{
-      attr = (Attribute)l.item( i );
+    for (long i = 0; i < l.getLength(); ++i) try {
+      Attribute attr = (Attribute)l.item( i );
       while( attr != null ){
 	if( attr instanceof AbstractNode )
 	  setItem( attr.getName(), ((AbstractNode)attr).clone() );
 	else
 	  // If it is a foreign attribute, do nothing but refers to it
 	  setItem( attr.getName(), attr );
-
-	attr = (Attribute)l.item( ++i );  
       }
     }catch(NoSuchNodeException e){
     }
@@ -110,9 +106,26 @@ public class AttrList extends AbstractNamedList implements AttributeList {
   /**
    * @return node enumerator
    */
-  NodeEnumerator getEnumerator(){
+  public NodeEnumerator getEnumerator(){
     return getListEnumerator();
   }
+
+  /** 
+   * @return string corresponding to content
+   */
+  public String toString() {
+    String result = "";
+    long length = getLength();
+    for (long i = 0; i < length; ++i) try {
+      Attribute attr = (Attribute)item(i);
+      result += attr.getName();
+      if (attr.getSpecified()) result += "=\"" + attr.toString() + "\"";
+      if (i < length - 1) result += " ";
+    }catch(NoSuchNodeException e){
+    }
+    return result;
+  }
+
 }
 
 
