@@ -18,8 +18,12 @@ UTILITIES = \
 	Copy.java \
 	Create.java \
 	Expand.java \
+	Index.java \
 	Log.java \
-	Test.java
+	Test.java \
+	ListUtil.java \
+	MathUtil.java \
+	TextUtil.java
 
 include $(TOPDIR)/makefiles/file.make
 
