@@ -47,7 +47,7 @@ sending mail to pia@crc.ricoh.com.  Our website, http://pia.crc.ricoh.com/
 may soon be available on RWAN.
 
 
-III.A Quick Start -- Running from the CD
+IIIA. Quick Start -- Running from the CD
 ---------------------------------------
 A Personal Information Agency can be run directly from this CD (if you
 are using Windows or another OS which understands the Joliet file
@@ -57,21 +57,27 @@ system so that long file names can be used).
 	   If "autoplay" is enabled, then the agency should start
 	   automatically when the CD is inserted.
 	   Otherwise, you can start the agency by running
-	   pia\bin\pia.bat
+	   	   pia\bin\pia.bat
 	   The directory C:\PIAUSERS will be created to store local
            data.  (To change the location of this directory or other 
  	   options, see the installation manual in pia\Doc\Manuals\INSTALL.)
+	   (NOTE if this batch file fails, try enlarging the size of
+	    the environment memory.  Select pia.bat and use
+	    the Properties->Memory dialog to set InitialEnvironment)
 
 	Unix 
 	    	cd pia
 		./bin/pia
+	   The directory ~/.pia will be created to store local data.
+
 
 Once the agency is running, point your web browser at:
 	http://localhost:8888/
 ("localhost" can be replaced by the name or IP address of your computer.)
+Stop the agency by hitting Ctrl_c in the shell window.
 
 
-III.B Installing onto HD
+IIIB. Installing onto HD
 ------------------------
 If you cannot run from the CD, install the distribution onto your
 local drive.  The binary distribution is included on this CD as:
