@@ -12,6 +12,7 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
+import crc.sgml.AttrTabular;
 
 
 /** Handler class for &lt;agent-set-options&gt tag 
@@ -36,8 +37,8 @@ public class Agent_set_options extends crc.interform.Handler {
 
     Run env = Run.environment(ii);
     crc.pia.Agent a = env.getAgent(name);
-
-    a.addAttrs(Util.getPairs(it, ii, true));
+    AttrTabular at = new AttrTabular(a);
+    at.addAttrs(Util.getPairs(it, ii, true));
 
     ii.deleteIt();
   }
