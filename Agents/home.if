@@ -11,9 +11,10 @@
 <tr><th width=340><td><br>
 <tr><th><td> <a href="index.if">Index Page</a>
 <tr><th align=right><a href="home.if">&agentName;</a>: <td> Home Page
+<tr><th><td> <a href="/&agentName;/initialize.if">[re-initialize]</a>
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+	     <a href="/My/Agents/&agentName;/">(Customized)</a>
 <tr><th align=right><td>  
        <form action="/Agency/remove_agent.if" method="POST">
 	Remove agent:<br>

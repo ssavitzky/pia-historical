@@ -56,7 +56,7 @@
 This is the home page for the ``<strong>&agentName;</strong>'' agent.  It is
 used for controlling the other agents running on this PIA.  An agent name
 without a final slash leads to the agent's <em>home page</em>.  With the slash
-you get a generic index page.
+you get a generic <em>index</em> page.
 <hr>
 
 <h3>Useful Interforms:</h3>
@@ -87,8 +87,7 @@ you get a generic index page.
 <hr>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-    <b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
-</table>
+<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>

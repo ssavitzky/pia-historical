@@ -2,12 +2,25 @@
 <html><head>
 <title>The History agent home page</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
-</head><body bgcolor="#ffffff">
-<h1>The History agent</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>&agentName; agent <br>Home Page</set>
+<read interform file="heading.inc" process>
+<table cellspacing=0 cellpadding=0>
+<tr><th width=340><td><br>
+<tr><th><td> <a href="index.if">Index Page</a>
+<tr><th align=right><a href="home.if">&agentName;</a>: <td> Home Page
+<tr><th><td> <a href="/My/History">/My/History</a> /
+		<a href="/My/History/&year;">&year;</a> /
+		<a href="/My/History/&year;/&month;">&month;</a> /
+		<a href="/My/History/&year/&month;/&day;.html">&day;</a>
+<tr><th><td> <a href="/&agentName;/initialize.if">[re-initialize]</a>
+<tr><th><td> <a href="options.if">Options</a>
+<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+	     <a href="/My/Agents/&agentName;/">(Customized)</a>
+</table>
 
 <if><agent-running name=History>
-  <then><code>&agentName;</code> installed.
-        <a href="/&agentName;/initialize.if">[re-initialize]</a></then>
   <else>see the <a href="/Agency/installers.if#History">installation page</a>
         or <br>
         <form method=POST action="/Agency/install_agent.if">
@@ -21,7 +34,16 @@
 <hr>
 <a href="/Agency">PIA</a> | <a href="/">agents</a> | <a href="/cia">CIA</a> |
 <a href="/fbi">FBI</a> | <a href="/History">History</a> |
-<a href="/My/History/">/My/History</a> <p>
+<a href="/My/History/">/My/History</a>
+		<a href="/My/History/&year;">&year;</a> /
+		<a href="/My/History/&year;/&month;">&month;</a> /
+		<a href="/My/History/&year/&month;/&day;.html">&day;</a>
+<hr>
+
+The <code>&agentName;</code> agent puts information into the history database,
+which is located in <a href="/My/history">/My/history</a>.  The <a
+href="/cia/">cia</a> and <a href="/fbi/">fbi</a> agents put a small control
+bar at the top of each page that refers to the history database.<p>
 
 <ul>
   <li>History Agent: <a href="/History">/History</a>
@@ -29,6 +51,17 @@
   <li>Page info: <a href="/My/History/.last.html">/My/History/.last.html</a>
   <li>Last link: <a  href="/My/History/.last.link">/My/History/.last.link</a>
 </ul>
+
+The ``last link'' file is particularly useful; the following Emacs code lets
+you define a key that inserts a link to the last page you visited:
+
+<blockquote><pre><!-- listing doesn't work for some reason -->
+(global-set-key "\C-Cy"   'generic-insert-last-link)
+(defun generic-insert-last-link ()
+  "Insert a link to the last page visited into the buffer"
+  (interactive)
+  (insert-file-contents "~/.pia/History/.last.link") )
+</pre></blockquote>
 
 <h3>Directory Format</h3>
 
@@ -71,23 +104,6 @@ provided for fixing old History directories.<p>
 <pre><protect-result markup><get agent name="_act_on"></protect-result>
 </pre>
 
-<hr>
-
-The <code>&agentName;</code> agent puts information into the history database,
-which is located in <a href="/My/history">/My/history</a>.  The <a
-href="/cia/">cia</a> and <a href="/fbi/">fbi</a> agents put a small control
-bar at the top of each page that refers to the history database.<p>
-
-The ``last link'' file is particularly useful; the following Emacs code lets
-you define a key that inserts a link to the last page you visited:
-
-<blockquote><pre><!-- listing doesn't work for some reason -->
-(global-set-key "\C-Cy"   'generic-insert-last-link)
-(defun generic-insert-last-link ()
-  "Insert a link to the last page visited into the buffer"
-  (interactive)
-  (insert-file-contents "~/.pia/History/.last.link") )
-</pre></blockquote>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
