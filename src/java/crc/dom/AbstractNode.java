@@ -61,7 +61,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    *  refChild is not a child of the Node that insertBefore is being invoked on, a
    *  NotMyChildException is thrown. 
    */
-  public void insertBefore(Node newChild, Node refChild)
+  public synchronized void insertBefore(Node newChild, Node refChild)
        throws NotMyChildException 
   {
     AbstractNode nc = null;
@@ -82,7 +82,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    *of the node that the replaceChild method is being invoked on, a NotMyChildException is
    *thrown. 
    */
-  public Node replaceChild(Node oldChild, Node newChild)
+  public synchronized Node replaceChild(Node oldChild, Node newChild)
        throws NotMyChildException
   {
 
@@ -103,7 +103,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    *returns it. If oldChild was not a child of the given node, a NotMyChildException is
    *thrown. 
    */
-  public Node removeChild(Node oldChild)
+  public synchronized Node removeChild(Node oldChild)
        throws NotMyChildException
   {
     if( oldChild == null ) return null;
@@ -134,7 +134,32 @@ public abstract class AbstractNode implements Node, Cloneable {
    * toString
    */
   public String toString(){
+    return startString() + contentString() + endString();
+  }
+
+  /** Return SGML/XML comment left bracket; that is "<!--".
+   *  Subclasses are suppose to override this function
+   *  to return appropriate start tag.
+   */
+  public String startString(){
+    return "<!--";
+  }
+  
+  /** Return the String equivalent of this node type.
+   *  Subclasses are suppose to override this function
+   *  to return appropriate content string.
+   */
+  public String contentString(){
     return Integer.toString( getNodeType() );
+  }
+
+  /** Return SGML/XML comment right bracket; that is "-->".
+   *  Subclasses are suppose to override this function
+   *  to return appropriate end tag.
+   *	
+   */
+  public String endString(){
+    return "-->";
   }
 
 
@@ -168,6 +193,9 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected synchronized void setNext(AbstractNode rightSibling){ this.rightSibling = rightSibling; }
   protected synchronized void setHead(AbstractNode head){ this.head = head; }
   protected synchronized void setTail(AbstractNode tail){ this.tail = tail; }
+  protected void incChildCount(){ childCount++; }
+  protected void decChildCount(){ childCount--; }
+  
   
 
   protected synchronized AbstractNode getPrevious(){ return leftSibling; }
@@ -175,8 +203,12 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected synchronized AbstractNode getParent(){ return parent; }
   protected synchronized AbstractNode getHead(){ return head; }
   protected synchronized AbstractNode getTail(){ return tail; }
+  protected synchronized int getChildCount(){ return childCount; }
 
 
+  /*******************************************************************
+   * Implementing insert, remove, and replace child node.
+   */
   protected void insertBefore(AbstractNode newChild, AbstractNode refChild)
        throws NotMyChildException
   {
@@ -186,8 +218,10 @@ public abstract class AbstractNode implements Node, Cloneable {
 
     newChild.setParent( this );
 
-    if( refChild == null ) 
+    if( refChild == null ){ 
       insertAtEnd( newChild );
+      incChildCount();
+    }
     else if( refChild.getParentNode() != this ){
       String err = ("The reference child is not mine.");
       throw new NotMyChildException(err);
@@ -233,6 +267,7 @@ public abstract class AbstractNode implements Node, Cloneable {
     //Report.debug(this, "doInsertAtStart");
     if( newChild == null || getHead() == null ) return;
 
+    incChildCount();
     newChild.setPrevious( null );
     newChild.setNext( head );
 
@@ -253,6 +288,7 @@ public abstract class AbstractNode implements Node, Cloneable {
       return;
     }
     
+    incChildCount();
     AbstractNode temp = refChild.getPrevious();
     
     newChild.setPrevious( temp );
@@ -295,6 +331,8 @@ public abstract class AbstractNode implements Node, Cloneable {
     p.setPrevious( null );
     p.setNext( null );
     p.setParent( null );
+
+    decChildCount();
     return p;
   }
 
@@ -338,6 +376,7 @@ public abstract class AbstractNode implements Node, Cloneable {
     oldChild.setPrevious (null );
     oldChild.setNext ( null );
     oldChild.setParent( null );
+
     //Report.debug("Leaving replaceChild.");
     return oldChild;
   }
@@ -401,6 +440,11 @@ public abstract class AbstractNode implements Node, Cloneable {
    * Reference to last child
    */
   protected AbstractNode tail;
+
+  /**
+   * How many children do I have
+   */
+  protected int childCount = 0;
 }
 
 
