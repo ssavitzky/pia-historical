@@ -35,7 +35,7 @@
 <hr>
 
 <!-- See whether there's an "about" file for this agent. -->
-<read interform file="about.inc" process>
+<read interform file="about.inc" quiet process>
 <p>
 
 <hr>
