@@ -1,0 +1,163 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Implementation Notes</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Implementation Notes</h1>
+
+<h2>Prototype Document Representation</h2>
+
+There are basically two ways to represent the prototype documents, i.e. the
+things that actually get expanded:
+
+<ol>
+  <li> As elements inside an InterForm file that performs the entire
+       expansion, possibly using a few special actors (e.g. &lt;prototype
+       dst=<em>file</em>&gt;).  This is simple and can perform arbitrary
+       computations on the expanded code.
+  <li> As a directory full of prototype files, each of which simply has
+       entities expanded (possibly with a different set of delimiter
+       characters than ``<code>&amp;</code>'' and ``<code>;</code>'').
+       This method is attractive because it can be faster than parsing,
+       there is no need to worry about quoting things that look like markup,
+       and each prototype file can be edited using an appropriate Emacs mode.
+</ol>
+
+Since both methods have advantages, we will permit them both.  This will
+permit the use of prototype directories that ``look like'' the intended result
+directory, while still allowing the use of the more general method for complex
+situations or for multiple small configuration files
+(e.g. ``<code>.inc</code>'' files) that are easier to construct that way.<p>
+
+
+<h2>Template Structure</h2>
+
+A typical template consists of a directory containing one or more of the
+following files: 
+
+<dl>
+  <dt> <code>template.inc</code> (required)
+  <dd> name-value pairs that control the Template agent, in the form of a
+       series of &lt;set&gt; elements.  It contains definitions for the
+       following entities:
+
+       <dl>
+	 <dt> <code>&amp;tName;</code>
+	 <dd> The template's name.
+	 <dt> <code>&amp;tTitle;</code> (optional)
+	 <dd> The template form's title.
+	 <dt> <code>&amp;tDataFile;</code> (optional)
+	 <dd> The name of the template's data file, normally
+	      <code>data.inc</code>.  Normally used only by the template for
+	      making templates, in order to avoid a name conflict.
+       </dl>
+
+       By convention, the names of these template entities are capitalized
+       words with a ``<code>t</code>'' prefix.  Hyphens and periods have to be
+       avoided to prevent conflict with indexing.<p>
+
+  <dt> <code>data.inc</code> (required)
+  <dd> entities, labels, and default values for <code>form.inc</code>; a new
+       <code>data.inc</code> file is constructed in the Agent's data directory
+       to contain the values the user has supplied.  By convention the names
+       of these substitutable entities are capitalized words with a
+       ``<code>d</code>'' prefix.<p>
+
+       Each substitutable value has several corresponding entities:
+       <dl>
+	 <dt> <code>&amp;<em>name</em>;</code> 
+	 <dd> the variable itself, with corresponding value.
+	 <dt> <code>&amp;<em>name</em>-type;</code> 
+	 <dd> the type of the form input field.  (<code>textarea</code> and
+	      <code>select</code> are included; the right thing happens).
+	 <dt> <code>&amp;<em>name</em>-label;</code>
+	 <dd> a corresponding label for the form.
+	 <dt> <code>&amp;<em>name</em>-doc;</code> 
+	 <dd> a documentation string.
+	 <dt> <code>&amp;<em>name</em>-values;</code> 
+	 <dd> list of permissible values for a selection list
+	      (<code>&amp;<em>name</em>-type;</code> = <code>select</code>).
+	 <dt> <code>&amp;<em>name</em>-d;</code> 
+	 <dd> a ``defined'' flag for variables present in the data with
+	      an empty value. (mainly for 
+	      <code>&amp;<em>name</em>-type;</code> = <code>checkbox</code>).
+       </dl>
+
+       In addition there are several control variables:
+       <dl>
+	 <dt><code>&amp;tFieldNames;</code> (required)
+	 <dd> The names of the substitutable values described above.
+	 <dt><code>&amp;tFormURL;</code> (required)
+	 <dd> The URL to which this form is to be submitted.
+	 <dt><code>&amp;tName;</code> 
+	 <dd> The name of the template that generated the file.
+	 <dt><code>&amp;tTitle;</code> 
+	 <dd> The template's title
+	 <dt><code>&amp;tPath;</code> 
+	 <dd> The pathname of the template's directory. (Relative to the
+	      Agency's root).
+	 <dt><code>&amp;tSuffix;</code> 
+	 <dd> form name suffix.
+	 <dt><code>&amp;tFormat;</code> 
+	 <dd> Form format.
+	 <dt><code>&amp;;</code> 
+	 <dd> 
+       </dl>
+
+  <dt> <code>form.if</code> (optional)
+  <dd> the basic template form, including the processing.  It is used as the
+       template's ``home page'' if present, but normally the Template agent's
+       standard version is used.
+       
+  <dt> <code>form.inc</code> (optional)
+  <dd> the ``guts'' of the template form (more common).  Special extended
+       versions of the usual form tags (e.g. &lt;t-input ...&gt;) are used to
+       keep track of data.  The resulting query is later used to perform the
+       substitution.<p>
+
+       If omitted, a form in a standard format is constructed from the
+       information in <code>data.inc</code>
+
+       <blockquote><em>
+         In order to make this work right given the brokenness of
+         &lt;dl&gt;'s, this needs to construct a new list of name-value pairs
+         on the fly.  They should be entities and a name list, rather than n-v
+         pairs.  Another possibility is to keep everything in
+         <code>form.inc</code>.  That works very well for &lt;copy subst&gt;,
+         too, since it works reliably with a query string.
+       </em></blockquote>
+
+  <dt> <code>proto/</code>
+  <dd> a directory of prototype files.  The ``entities'' substituted in it are
+       normally enclosed in <code>|</code>...<code>|</code> characters.
+
+  <dt> <code>xpnd.inc</code> (optional)
+  <dd> the InterForm code that actually performs the expansion.  It expects to
+       get its data from the submitted form.  Normally this is only needed if
+       the template has to place files in multiple directories, rename files,
+       or construct files ``the hard way'' rather than by copying prototypes.
+       It can set the following entities: 
+
+       <dl>
+	 <dt> <code>&amp;subst-files;</code>
+	 <dd> a list of files to copy with substitution, in the usual way.
+	 <dt> <code>&amp;copy-files;</code>
+	 <dd> a list of files to copy without substitution.
+       </dl>
+
+</dl>
+
+Sometimes auxiliary forms will be needed; in this case a suffix can be
+appended to <code>form.inc</code>, <code>data.inc</code>, and
+<code>proto.inc</code>.  It is also possible for a template to refer to other
+templates (with some additional information in a query string) in order to
+build components such as headings, sub-agents, and so on.<p> 
+
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

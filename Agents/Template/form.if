@@ -1,0 +1,112 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html>
+
+<!-- read the actors we need to lay out and process the form -->
+<read process quiet interform file="form-actors.inc">
+
+<!-- The first thing we have to do is suck in the template data from a
+  -- combination of the FORM (if any) and data.inc.  This is a little tricky;
+  -- we need tName, tSuffix, and tDir in order to get data.inc.
+
+  -- By convention, entity names with a "t" prefix are template-wide;
+  -- a "d" prefix indicates entities defined in the data.inc file.
+  -- A hyphen after the prefix indicates names used internally to this form.
+-->
+
+<set name=tName></set>         <!-- if we don't know the template's name... -->
+<set name=tForm>Selection</set><!-- ...we obviously will want to select one. -->
+<set entity name=title>&tName; &tForm;</set>
+
+<if><get form name=tName>
+    <then>
+	<set name=tName><get form name=tName></set>
+	<set name=tSuffix><get form name=tSuffix></set>
+	<set name=tForm><get form name=tForm></set>
+	<if>&tForm;&tSuffix;
+	    <then>
+	    <else><set name=tForm></set>
+	</if>
+	<if><get form name=tDir>
+	    <then><set name=tDir><get form name=tDir></set>
+	    <else><set name=tDir>tName</set>
+	</if>
+
+	<!-- template-wide constants are in template.inc -->
+	<set name=tTemplateFilePath>&tDir;/template.inc</set>
+	<set name=foo><read process quiet file="&tTemplateFilePath;"> </set>
+
+	<!-- now the destination directory and destination form data -->
+	<if><get form name=dDirPath>
+	    <then><set name=dDirPath><get form name=dDirPath></set>
+		  <set name=d-data-path>&dDirPath;/data&tSuffix;.inc</set>
+		  <set name=d-data-present><read info=p file=d-data-path></set>
+	    <else><set name=dDirPath></set>
+		  <set name=d-data-path></set>
+		  <set name=d-data-present></set>
+	</if>
+
+	<!-- Now the form-specific data -->
+	<set name=tFormFile>&tDir;/form&tSuffix;.inc</set>
+	<set name=t-data-file>&tDir;/data&tSuffix;.inc</set>
+	<if><get name=tTitle>
+	    <then><set entity name=title>for &tTitle;</set>
+	    <else><set entity name=title>for &tName; &tForm;</set>
+	</if>
+
+	<!-- if a data file is present in the dest. directory, use it. -->
+	<set name=data-file><if>&d-data-present;
+				<then>&d-data-path;</then>
+				<else>&t-data-file;</else></if></set>
+
+    <else>
+	<set name=tFormFile></set>
+	<set name=t-data-file></set>
+	<set name=tTemplateFilePath></set>
+</if>
+
+<!-- ============================================================= -->
+<head>
+<title>&agentName; &title;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<read interform file="heading.inc" process>
+<read interform file="subhead.inc" process>
+<hr>
+
+<if><get name="data-file"><then><read process quiet file="&data-file;"></if>
+
+<if><get name=tFormat>
+    <then> <expand>&tFormat;</expand>
+
+<else><if>&tFormFile;
+    <then><read quiet process file="&tFormFile;">
+<else>
+    <h2>Select a Template</h2>
+    <read interform process file=t-index.inc>
+</if></if>
+
+<if><get name="debug"><then>
+
+<h4>form</h4>
+ &FORM;
+<h4>Data File</h4>
+<pre><protect-result markup><t-data-file></protect-result></pre>
+</if>
+<hr><!-- ============================================================= -->
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
