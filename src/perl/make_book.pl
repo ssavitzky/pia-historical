@@ -10,9 +10,12 @@ sub make_book{
     $book_depth=20 unless $book_depth;
     $self->option('book_depth',$book_depth);
     local @book_new_links;
+    my $hints={};
+    $$hints{max_pages}=$self->option('max_pages');
+    $$hints{cache_only}=$self->option('cache_only');
+
     $book_base=URI::URL->new($url);
-    local $book = BOOK->new($book_base,$book_depth);
-    
+    local $book = BOOK->new($book_base,$book_depth,$hints);
     $self->current_book($book);
     
     my $element=IF::IT->new('a', href => "showbook.if");

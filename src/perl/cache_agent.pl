@@ -117,6 +117,8 @@ sub handle_response{
 	for (keys(%{$form})) {print HEADER $_ . "=" . $$form{$_} . "\n";}
 	close HEADER;
     }
+
+    $request->header('Cache-Location',$directory);
     return;  # we don't satisfy responses, just cache them.
 }
 
@@ -146,6 +148,7 @@ sub handle_request{
     close HEADER;
     $response->header('Version',$self->version());
     return unless    open(CONTENT,"<$directory/.content");
+    $response->header('Cache-Location',$directory);
     my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
 	$atime,$mtime,$ctime,$blksize,$blocks)
 	= stat CONTENT;

@@ -23,10 +23,10 @@ sub initialize{
     $$self{_max_depth}=$depth;
     $$self{_depth}={};
     $$self{_hints}=$hints;
-    
+    my $max_pages=$$hints{max_pages};
     $max_pages=20 unless $max_pages;
     $$self{_max_pages}=$max_pages;
-    
+    print "max pages " . $max_pages;
     local $machine=AGENT_MACHINE->new($self);
     $machine->callback(\&bookmaker_callback);
 
@@ -54,7 +54,11 @@ sub bookmaker_callback{
     $reference=$self->reference($reference_url) unless $reference;
     my $new_page=$self->add_page($html,$reference_url,$reference);
 
-
+    my $cache=$response->header('Cache-Location');
+    $$new_page{cache}=$cache if $cache;
+    # don't keep html if it is in cache
+    my $hints = $$self{_hints};
+    delete $$new_page{html} if $$hints{cache_only};
     my $old_depth;
     $old_depth=$$old_request{_book_depth} if $old_request;
     print "requestthinksitis $old_depth \n" if $main::debugging;
@@ -69,8 +73,8 @@ my $new_key;
 	for (@{ $html->extract_links(qw(a)) }) {
 	    my ($urltext, $element) = @$_;
 	    my $url=URI::URL->new($urltext,$response->request->url);
-#	    print "new: " . $url->as_string . " base: " . $response->request->url->as_string ." \n";
-	    $new_key=$self->add_link($url,$old_depth+1) if $url->host;
+#	    print "new: " . $url->abs->as_string . " base: " . $response->request->url->as_string ." \n";
+	    $new_key=$self->add_link($url,$old_depth+1) if $url->abs->host;
 	    push(@new_keys,$new_key);
 	    $element->attr('book_reference',$new_key);
 	}
@@ -227,7 +231,15 @@ my $page;
     while($counter<$$self{page}){
 	$page=$self->page($counter);
 	print "generate html for $counter \n";
-	$html->push($$page{html}) if $page;
+	if ($page){
+	    if($$page{html}){
+		$html->push($$page{html}) ;
+	    } else {
+		$html->push( IF::Run::parse_html_file($$page{cache} . "/.content")) if $$page{cache};
+	    }
+	   
+	}
+
 	$counter++;
     }
     return $html;
