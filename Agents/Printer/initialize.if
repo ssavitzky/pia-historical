@@ -11,6 +11,7 @@ $current_self->option('render_method',"latex");
 $current_self->option('preview_number',"100");
 $current_self->option('thumbsize',"72");
 $current_self->option('book_depth',"2");
+$current_self->option('device',"lp");
 
 my $name= $current_self->name;
 $printer_root_directory=$current_self->agent_directory . "spool/";
@@ -27,6 +28,6 @@ $printer_base_url= $current_self->agent_url . "spool/";
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Sun Nov 10 19:21:45 1996
+Last modified: Tue Nov 12 19:41:52 1996
 <!-- hhmts end -->
 </body></html>

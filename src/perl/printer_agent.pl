@@ -54,6 +54,9 @@ sub file_names{
 
     #return $string;
 }
+sub ps_file_name{
+    return $ps_file;
+}
 
 sub html_latex_ps{
 

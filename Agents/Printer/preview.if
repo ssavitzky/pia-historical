@@ -15,13 +15,6 @@ You are Previewing <code language=perl> ${$current_request->parameters()}{URL}; 
 <code language=perl>
 my %form_parameters=%{$current_request->parameters()};
 my $name=$current_self->name;
-my $form=make_form("/$name/print.if",({name => 'URL',size => 50,value =>
-$form_parameters{URL}},{type => 'submit',value => 'Print'}));
-return $form;
-</code>
-<code language=perl>
-my %form_parameters=%{$current_request->parameters()};
-my $name=$current_self->name;
 my $form=make_form("/$name/preview.if",({name => 'URL',type => 'hidden',value =>
 $form_parameters{URL}},{name => 'thumbsize',type => 'hidden',value => 30},{type => 'submit',value => 'SmallThumbnails'}));
 return $form;
@@ -55,9 +48,17 @@ return $element;
 
 </code>
 
+<code language=perl>
+my %form_parameters=%{$current_request->parameters()};
+my $name=$current_self->name;
+my $form=make_form("/$name/print.if",({name => 'URL',size => 50,value =>
+$form_parameters{URL}},{name => 'spoolfile', type => 'hidden', value => $current_self->ps_file_name},{type => 'submit',value => 'Print'}));
+return $form;
+</code>
+
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Nov  1 18:14:28 1996
+Last modified: Tue Nov 12 19:49:22 1996
 <!-- hhmts end -->
 </body></html>
