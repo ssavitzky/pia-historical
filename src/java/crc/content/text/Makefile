@@ -5,7 +5,6 @@ TOPDIR=../../..
 FILES = \
 	Default.java \
 	html.java \
-	annotatedhtml.java \
 	ProcessedContent.java \
 	StringContent.java
 
