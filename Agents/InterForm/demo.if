@@ -1,13 +1,17 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>InterForm Actor Demo Page</title>
+<title>Standard Tagset Examples</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
+<if><agent-running name=InterForm>
+<then>
+<!-- normal mode; running from the InterForm agent. -->
 <set entity name=title>&agentName; Agent<br>Actor Demonstration Page</set>
 <read interform file="heading.inc" process>
 
 <set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
+<set entity name=IFtags>tag_man.if</set>
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170 valign=center>
 <td>
@@ -17,22 +21,31 @@
     <th valign=top align=right width=170>
     <td valign=top> Demonstration and Test agent
   <tr><th align=right><a href="/&agentName;"><b>&agentName;:</b></a>
-          <td> <a href=demo.if>Demonstration Page</a>
+          <td> <a href=demo.if>Demonstration/Example Page</a>
   <tr><th><td> <a href=actors.if>Defined InterForm Actors</a>
   <tr><th><td> <a href=entities.if>Defined Entities</a>
   <tr><th><td> <a href=/Agency/agents.if>Running PIA Agents</a>
   <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
   </table>
 </table>
- 
-<h3>About This Page:</h3>
+</then>
+<else>
+<!-- We are running this page through iffilter to make the tagset examples -->
+<!-- WARNING! This document is automatically generated.  DO NOT EDIT. -->
+<set entity name=IFman>index.html</set>
+<set entity name=IFtags>tag_man.html</set>
+<h1>Standard Tagset Examples</h1>
+</else>
+</if>
+
+<h3>About This document:</h3>
 
 This page is intended eventually to have a <em>complete</em> set of examples
 illustrating every feature of every InterForm actor in the Standard Tagset,
-along with a brief description.  There is also a complete active document
-describing the <a href="tag_man.if">Standard Tagset</a>, and a more
-conventional <a href="/PIA/Doc/Manuals/InterForm/index.html">InterForm
-Manual</a>.<p>
+along with a brief description.  Every example is cross-linked to the
+corresponding entry in the <a href="&IFtags;">Standard Tagset Manual</a>,
+which is part of the <a href="&IFman">InterForm Manual</a>.
+<p>
 
 
 <h3>Actor Index</h3>
@@ -86,7 +99,7 @@ cross-referenced to the manual.">
     <dt> <b>Definition:</b>
     <dd> &lt;actor <actor-attrs name="&name;">&gt;
     <dt> <b>See Also:</b>
-    <dd> <a href="tag_man.if#&name;">Manual entry</a>
+    <dd> <a href="&IFtags;#&name;">Manual entry</a>
   </dl>
 </actor>
 <actor tag=alist dscr="Make a list of actor tags">
@@ -99,7 +112,8 @@ cross-referenced to the manual.">
  
 <hr> <!-- ========================================================== -->
 <h2>Actor Definition and Control</h2>
-<alist>actor  actor-names actor-attrs actor-doc actor-dscr actor-syntax</alist>
+<alist>actor  actor-attrs actor-doc actor-dscr actor-names actor-syntax
+element</alist>
 
 <adscr>actor</adscr>
   
@@ -122,16 +136,27 @@ cross-referenced to the manual.">
 <demo><demo><get pia name="pia.debug"></demo></demo>
 <p>
 
-<adscr>actor-names</adscr>
-
 <adscr>actor-attrs</adscr>
+
+<dl>
+  <dt> <demo><actor-attrs name=demo></demo>
+  <dd> 
+</dl>
 
 <adscr>actor-doc</adscr>
 
 <adscr>actor-dscr</adscr>
 
+<dl>
+  <dt> <demo><actor-dscr name=demo></demo>
+  <dd> 
+</dl>
+
+<adscr>actor-names</adscr>
+
 <adscr>actor-syntax</adscr>
 
+<adscr>element</adscr>
 
 <hr> <!-- ========================================================== -->
 <h2>Name Bindings</h2>
@@ -141,6 +166,13 @@ cross-referenced to the manual.">
 <adscr>get</adscr>
   
 <dl>
+  <dt> <demo><set name="foo">foo</set></demo>
+  <dd> 
+  <dt> <demo><get name="foo"></demo>
+  <dd> 
+  <dt> <demo>&foo;</demo>
+  <dd> names defined with &lt;set&gt; are accessible both with &lt;get&gt; and
+       with entity references.
   <dt> <demo><get pia name="crc.pia.verbose"></demo>
   <dd> 
   <dt> <demo><code attribute=value><get element name=attribute></code></demo>
@@ -163,7 +195,7 @@ cross-referenced to the manual.">
 <hr> <!-- ========================================================== -->
 <h2>Control Structure</h2>
 
-<alist>if then else repeat -foreach-</alist>
+<alist>if then else foreach -foreach- repeat</alist>
 
 <adscr>if</adscr>
 
@@ -179,8 +211,37 @@ cross-referenced to the manual.">
   <dd> 
 </dl>
 
+<adscr>foreach</adscr>
+
+<dl>
+  <dt> <demo><foreach list="a b c">&li; &li; </foreach></demo>
+  <dd> 
+  <dt> <demo><foreach list="a b c" entity="foo">&foo;</foreach></demo>
+  <dd> 
+  <dt> <demo><foreach list="a b c">&li;<foreach list="d e f">&li;</> </></demo>
+  <dd> 
+  <dt> <demo><set entity name=foo><ul><li>1<li>2</ul></set></demo><br>
+       <demo><foreach list="&foo;">&li;--</foreach></demo>
+  <dd> 
+  <dt> <demo><set entity name=foo><li>1<li>2</set></demo><br>
+       <demo><foreach list="&foo;">&li;--</foreach></demo>
+  <dd> 
+</dl>
+
+<adscr>-foreach-</adscr>
+
+<dl>
+  <dt> <demo><ol foreach list="a b c"><li> &li;</ol></demo>
+  <dd> when foreach is an <em>attribute</em> the entire matching element
+       is returned, with the content repeated.
+</dl>
+
 <adscr>repeat</adscr>
 
+<dl>
+  <dt> at the moment repeat is just a synonym for foreach.
+  <dd> 
+</dl>
 <dl>
   <dt> <demo><repeat list="a b c">&li; &li; </repeat></demo>
   <dd> 
@@ -193,13 +254,6 @@ cross-referenced to the manual.">
   <dd> 
   <dt> <demo><set entity name=foo><li>1<li>2</set></demo><br>
        <demo><repeat list="&foo;">&li;--</repeat></demo>
-  <dd> 
-</dl>
-
-<adscr>-foreach-</adscr>
-
-<dl>
-  <dt> <demo><ol foreach list="a b c"><li> &li;</ol></demo>
   <dd> 
 </dl>
 
@@ -308,7 +362,6 @@ cross-referenced to the manual.">
 
 <hr> <!-- ========================================================== -->
 <h2>List Processing</h2>
-
 <alist>sort</alist>
 
 <adscr>sort</adscr>
@@ -332,14 +385,32 @@ cross-referenced to the manual.">
 
 <hr> <!-- ========================================================== -->
 <h2>String Processing</h2>
-<alist>pad</alist>
+<alist>add-markup pad trim</alist>
+
+<adscr>add-markup</adscr>
+
 
 <adscr>pad</adscr>
 
 
+<adscr>trim</adscr>
+
+
+<hr> <!-- ========================================================== -->
+<h2>OS Operations</h2>
+<alist>os-command os-command-output read write</alist>
+
+<h3><name>os-command</name></h3>
+
+<h3><name>os-command-results</name></h3>
+
+<adscr>read</adscr>
+
+<adscr>write</adscr>
+
+
 <hr> <!-- ========================================================== -->
 <h2>PIA Agents</h2>
-
 <alist>agent-home agent-running agent-set-options</alist>
 
 <h3><name>agent-home</name></h3>
@@ -351,19 +422,16 @@ cross-referenced to the manual.">
 <h3><name>agent-set-options</name></h3>
 
 
-<hr> <!-- ========================================================== -->
-<h2>OS Operations</h2>
-
-<h3><name>os-command</name></h3>
-
-<h3><name>os-command-results</name></h3>
 
 
-
+<if><agent-running name=InterForm>
+<then>
 <hr>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 <b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+</then>
+</if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b>
