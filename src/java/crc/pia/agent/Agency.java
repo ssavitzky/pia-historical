@@ -3,9 +3,10 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
 /**
- * This is the class for the ``agency'' agent; i.e. the one that
- * handles requests directed at agents.  It slso owns the resolver,
- * which may not be a good idea.
+ * This is the class for the ``Agency'' agent; i.e. the one that
+ *	handles requests directed at agents.  It contains the specialized
+ *	code that installs agents, and an <code>actOn</code> method that
+ *	determines which agent should handle a request.
  */
 
 package crc.pia.agent;
