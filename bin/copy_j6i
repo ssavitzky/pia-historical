@@ -5,6 +5,7 @@
 $quantfile = "~/.pia/Photo_Album/.quant";  # saves time for thumbnails
 $tmpfile = "/tmp/pnm"; # not used currently
 
+print "";
 ###should directory be unmounted afterwards?
 $unmount = 1;
 umask 2;
@@ -43,9 +44,12 @@ $tonew = $to;
 
 #print "copy_j6i $from $to\n";
 
+$todir = $today;     #for GET below
+
 ## check for existing directory
 while (-e $to) {		# Fix this for better filenames
     $to = "$tonew.$ct";
+    $todir = "$today.$ct";
     $ct++;
 }
 
@@ -74,7 +78,7 @@ $copystatus = system("rm -f $from/* ") unless -e "/home/pia/.pia/Photo_Album/no_
 #unmount ?
 $unmountstatus = system("umount  $from ") if $unmount;
 
-
+print "";
 
 				#  convert to jpg
 chdir $to;
@@ -100,6 +104,9 @@ for $file (@jfiles){
 
 #create a table from a list of files
 $root = "";			# if the img files are in another dir put it here
+
+$formnotify = "http://localhost:8001/Photo_Album/add_new_pictures.if?dir=$todir";
+
 $formmaker = $formproc;
 $formdefault = "http://photos/Photo_Album/captions.if ";
 $formmaker = $formdefault unless defined $formmaker; 
@@ -202,9 +209,11 @@ open(LOG,">>.catalog");
 print LOG "$dirnam\n";
 close LOG;
 
+## Notify agency of new pix
+$notifystatus = system("GET  $formnotify ") if $formnotify;
 
-
-
+print "";
+print "";
 
 
 
