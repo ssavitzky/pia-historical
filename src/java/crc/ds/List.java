@@ -188,6 +188,22 @@ public class List implements Stuff {
   ** additional operations:
   ************************************************************************/
 
+  /**
+   * insert an element and position @param i
+   * if i is not valid, place at beginning or end
+   */
+
+  public Stuff insertAt(Object o,int i){
+    if(i<=0) return unshift(o);
+    try{
+      items.insertElementAt( o, i);
+    } catch(ArrayIndexOutOfBoundsException e) 
+      {// put at end
+	 push(o);
+      }
+    return this;
+  }
+
   public void clear() {
     items.removeAllElements();
   }
