@@ -14,12 +14,14 @@
 #include <stdio.h>
 
 char *args[] = {
-  /*  "/bin/sh", "run_pia", "-c" */
-  /*  "./pia/bin/pia &> ./.pia/log", */
-
+#if 0
+  "/bin/sh", "run_pia", "-c",
+  "./pia/bin/pia -l ./.pia/log",
+#else
   "/usr/bin/perl", "run_pia", 
   "./pia/lib/perl/pia.pl",
   "-l", "./.pia/log",
+#endif
   0
 };
 
@@ -31,6 +33,7 @@ main(int argc, char** argv, char** env)
   setenv("USER", pw->pw_name, 1);
   setenv("LOGNAME", pw->pw_name, 1);	
   setenv("HOME", pw->pw_dir, 1);
+  setenv("PIA_DIR", "/home/pia/pia",1);
 
   args[1]=argv[0];			/* show correct name */
   setgid(pw->pw_gid);	
@@ -39,5 +42,5 @@ main(int argc, char** argv, char** env)
     exit(-1);
   }
   chdir(pw->pw_dir);
-  execve (args[0], args+1, env);	
+  execv (args[0], args+1);	
 }
