@@ -19,7 +19,7 @@
   <li> <a href="JavaDoc/">Java Documentation</a><br>
        <a href="JavaDoc/packages.html">Packages</a>,
        <a href="JavaDoc/tree.html">Class Hierarchy</a>,
-       <a href="JavaDoc/AllNames.html">Index</a>
+       <a href="JavaDoc/Index.html">Index</a>
 </ul>
 
 <hr>
@@ -90,7 +90,7 @@ The PIA is implemented using the following packages:
        handlers. 
   <dt> <a href="JavaDoc/Package-crc.dps.handle.html">crc.dps.handle</a>
   <dd> Classes that <em>handle</em> particular InterForm elements. 
-  <dt> <a href="JavaDoc/Package-crc.dps.tagset.html">crc.dps.tagset</a>
+  <dt> <a href="JavaDoc/Package-crc.dps.Tagset.html">crc.dps.Tagset</a>
   <dd> Classes and tagset definition files that implement the various tagsets.
   <dt> <a href="JavaDoc/Package-crc.pia.html">crc.pia</a>
   <dd> The <em>PIA</em> itself, and in general everything that deals with HTTP
@@ -141,8 +141,8 @@ phases:
   <li> In the first phase, <a href="JavaDoc/crc.pia.Agent.html">Agent</a>s
        are matched with the <a
        href="JavaDoc/crc.pia.Transaction.html">Transaction</a>'s
-       <a href="JavaDoc/crc.pia.Feature.html">Feature</a>s according to their
-       match <a href="JavaDoc/crc.pia.Criteria.html">Criteria</a>, and are
+       <a href="JavaDoc/crc.ds.Features.html">Feature</a>s according to their
+       match <a href="JavaDoc/crc.ds.Criteria.html">Criteria</a>, and are
        allowed to <a href="JavaDoc/crc.pia.Agent.html#actOn">act on</a> the
        matched <a href="JavaDoc/crc.pia.Transaction.html">Transaction</a>.
 
@@ -205,16 +205,16 @@ them descend from <a
 href="JavaDoc/crc.pia.GenericAgent.html">GenericAgent</a>.  Many Agents are,
 in fact, implemented directly by <a
 href="JavaDoc/crc.pia.GenericAgent.html">GenericAgent</a>, the main exceptions
-at the moment being <a href="JavaDoc/crc.pia.Agency.html">Agency</a>, <a
-href="JavaDoc/crc.pia.Dofs.html">Dofs</a>, and <a
-href="JavaDoc/crc.pia.Logo.html">Logo</a>.  Cache, when we implement it, will
+at the moment being <a href="JavaDoc/crc.pia.agent.Agency.html">Agency</a>, <a
+href="JavaDoc/crc.pia.agent.Dofs.html">Dofs</a>, and <a
+href="JavaDoc/crc.pia.agent.Logo.html">Logo</a>.  Cache, when we implement it, will
 probably also require its own class.<p>
 
 The main reason for implementing an Agent as a separate class so that the Java
 code can grab control before dispatching a URL to an InterForm.  Efficiency
-(<a href="JavaDoc/crc.pia.Agency.html">Agency</a>) and the ability to handle
-non-HTML data (<a href="JavaDoc/crc.pia.Logo.html">Logo</a>) also play a part,
-although in fact <a href="JavaDoc/crc.pia.Logo.html">Logo</a> is currently
+(<a href="JavaDoc/crc.pia.agent.Agency.html">Agency</a>) and the ability to handle
+non-HTML data (<a href="JavaDoc/crc.pia.agent.Logo.html">Logo</a>) also play a part,
+although in fact <a href="JavaDoc/crc.pia.agent.Logo.html">Logo</a> is currently
 implemented by dispatching to a <code>PERL</code> program.<p>
 
 
