@@ -595,16 +595,21 @@ sub start_it {
     ##	  stack.  Otherwise, handle it appropriately for a completed
     ##	  element.
 
-    if (ref($it)) {
-	my $tag = $it->tag;
-	while ($self->implicit_end($tag)) {
-	    $self->end_it('', 'one');
-	}
+    my $syntax = $self->tagset->syntax;
+    my $tag = $it->tag;
+    while ($self->implicit_end($tag)) {
+	$self->end_it('', 'one');
     }
-    if ($it->needs_end_tag($self)) {
-	$self->resolve($it, 1);
-    } else {
+
+    $self->resolve($it, $it->needs_end_tag);
+    return;
+
+    ## === doesn't work ===
+    my $elt = $syntax->{$tag};
+    if (ref $elt && $elt->attr('empty')) {
 	$self->resolve($it, 0);
+    } else {
+	$self->resolve($it, 1);
     }
 }
 

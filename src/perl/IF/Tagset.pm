@@ -66,6 +66,7 @@ sub new {
     $$self{_actors} = {} unless $$self{_actors};
     $$self{_passive} = [] unless $$self{_passive};
     $$self{_entities}= {} unless $$self{_entities};
+    $$self{_syntax}= {} unless $$self{_syntax};
 
     $self->attr('name', $name) if $name;
     $tagsets{$name} = $self if $name;
@@ -83,15 +84,17 @@ sub clone {
     my $actors   = $$self{_actors};
     my $passive  = $$self{_passive};
     my $entities = $$self{_entities};
+    my $syntax   = $$self{_syntax};
 
     my %newactors  = %$actors;
     my @newpassive = @$passive;
     my %newents    = %$entities;
+    my %newsyntax  = %$syntax;
 
     ## === We can worry about attributes later if necessary.
 
     return IF::Tagset->new('', _actors=>\%newactors, _passive=>\@newpassive,
-			   _entities=>\%newents);
+			   _entities=>\%newents, _syntax=>\%newsyntax);
 }
 
 sub include {
@@ -139,6 +142,11 @@ sub entities {
     return $$self{_entities};
 }
 
+sub syntax {
+    my ($self) = @_;
+    return $$self{_syntax};
+}
+
 sub name {
     my ($self, $v) = @_;
     return $self->attr('name', $v);
@@ -175,14 +183,20 @@ sub define_actor {
     my $tag = $actor->attr('tag');
     my $doc = $self->attr('doc');
 
-    push(@{$self->passive}, $actor) unless $tag;
-    $self->actors->{$name} = $actor;
-
-    print "Defined IF actor $name in ".$self->name."\n" if $main::debugging; 
+    if ($actor->tag eq '-element-') {
+	$self->syntax->{$name} = $actor;
+    } else {
+	push(@{$self->passive}, $actor) unless $tag;
+	$self->syntax->{$name} = $actor if $tag;
+	$self->actors->{$name} = $actor;
+    }
     if ($doc) {
-	## === worry about defining a documentation actor ===
-	return IF::IT->new('h3', IF::IT->new('a', 'name'=> $name,
-					     "Actor $name"));
+	if ($doc eq 'doc') {
+	    return IF::IT->new('h3', IF::IT->new('a', 'name'=> $name,
+						 "Actor $name"));
+	} else {
+	    return IF::IT->new($doc, $name);
+	}
     } else {
 	return '';
     }

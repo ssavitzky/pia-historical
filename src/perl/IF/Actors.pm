@@ -30,38 +30,23 @@ use PIA::Utilities;
 sub define_actor {
     my ($actor, @attrs) = @_;
 
-    ## Define a new actor, globally.
+    ## Define a new actor in the tagset currently being initialized.
     ##	  Optionally takes a name and attribute-list.
 
     $actor = IF::IA->new($actor, 'handle'=>1, @attrs) unless ref($actor);
     $tagset->define_actor($actor);
 }
 
-#############################################################################
-###
-### Shared handles:
-###
+sub define_element {
+    my ($actor, @attrs) = @_;
 
-sub null_handle {
-    my ($self, $it, $ii) = @_;
+    ## Define a new HTML element
+    ##	  Optionally takes a name and attribute-list.
 
-    ## Just pass the tag and its contents.  Take no action
-
+    $actor = IF::IA->new($actor, 'element'=> 1, @attrs) unless ref($actor);
+    $tagset->define_actor($actor);
 }
 
-sub generic_handle {
-    my ($self, $it, $ii) = @_;
-
-    ## This is the handler for a generic agent with content.
-    ## === not really clear what to do about context ($it)
-    ## => use an attribute for the name (or parts), and define entities
-    ##	  using shallow binding.
-
-    $ii->defvar("element", $it);
-    $ii->defvar("content", $it->content);
-    $ii->push_into($self->content);
-    $ii->delete_it;
-}
 
 ### Uncomment to test handle and package search
 #define_actor('-foo1-', 'package' => frobozz, 'handle' => 'new');
@@ -75,6 +60,18 @@ sub generic_handle {
 ###
 
 $tagset = IF::Tagset->new('HTML');
+
+define_element('!', 'empty'=>1, 'special'=> 1);
+define_element('!--', 'empty'=>1, 'special'=> 1);
+define_element('?', 'empty'=>1, 'special'=> 1);
+
+define_element('img', 'empty'=>1);
+define_element('hr', 'empty'=>1);
+define_element('br', 'empty'=>1);
+define_element('link', 'empty'=>1);
+define_element('input', 'empty'=>1);
+define_element('p', 'empty'=>1, 'dscr'=>"Really needs to be content-optional");
+
 
 #############################################################################
 ###
@@ -94,7 +91,6 @@ $tagset->include('HTML');
 
 define_actor('-eval-perl-', 'quoted' => 'quoted', 'unsafe' => 1,
 	     'match' => 'language=perl', 'package' => 'IF::Run', 
-#	     _handle => \&IF::Run::eval_perl,
 	     'dscr' => "evaluate CONTENT as perl code (DEPRECATED).");
 
 ### -foreach-		attr: foreach
@@ -154,6 +150,15 @@ define_actor('actor', 'quoted' => 'quoted',
 
 sub actor_handle {
     my ($self, $it, $ii) = @_;
+    $ii->replace_it($ii->define_actor(IF::IA->recruit($it)));
+}
+
+define_actor('element', 'empty' => 1,
+	     'dscr' => "define an HTML element");
+
+sub element_handle {
+    my ($self, $it, $ii) = @_;
+    $it->attr('element', 1);
     $ii->replace_it($ii->define_actor(IF::IA->recruit($it)));
 }
 
@@ -968,21 +973,25 @@ sub read_handle {
 	    my $x = -x $fn;
 	    my $r = -r $fn;
 
-	    if ($info =~ /^d/i)    { $content = $isdir? 'd' : '' }
-	    elsif ($info =~ /^r/i) { $content = $r? 'r' : '' }
-	    elsif ($info =~ /^w/i) { $content = $w? 'w' : '' }
-	    elsif ($info =~ /^x/i) { $content = $x? 'x' : '' }
-	    elsif ($info =~ /^p/i) { $content = $fn }
+	    ## === use stat stuff if ALL ===
+	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+		$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
+
+	    if ($info =~ /^d/i)    { $content = $isdir? 'd' : ''; }
+	    elsif ($info =~ /^r/i) { $content = $r? 'r' : ''; }
+	    elsif ($info =~ /^w/i) { $content = $w? 'w' : ''; }
+	    elsif ($info =~ /^x/i) { $content = $x? 'x' : ''; }
+	    elsif ($info =~ /^p/i) { $content = $fn; }    	# path
+	    elsif ($info =~ /^m/i) { $content = $mtime; } 	# modified
+	    elsif ($info =~ /^s/i) { $content = $size; }  	# size
 	    else {
 		$content = $isdir? 'd' : '-';
 		$content .= $r? 'r' : '-';
 		$content .= $w? 'w' : '-';
 		$content .= $x? 'x' : '-';
-		$content .= " $fn";
+		$content .= " $size";
+		$content .= "	$fn";
 	    }
-	    ## === use stat stuff if ALL ===
-	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
-		$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
 	} elsif ($dir || $isdir) {
 	    my @names;
 	    if (opendir(DIR, $fn)) {

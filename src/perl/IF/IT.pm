@@ -337,12 +337,14 @@ sub starttag {
     for (@$list) {
 	next if /^_/;
 	my $val = $self->{$_};
+	$val = $val->as_string if ref $val; # === should really be as_attr
 	if ($_ eq $val 
 	    ## && exists($boolean_attr{$name}) && $boolean_attr{$name} eq $_
 	    ) {
 	    $tag .= " $_";
 	} else {
-	    HTML::Entities::encode_entities($val, '&">'); #"
+	    ## Had & in encode_entities, but this breaks entities already there
+	    HTML::Entities::encode_entities($val, '">'); #"
 	    $val = qq{"$val"} unless $val =~ /^\d+$/;
 	    $tag .= qq{ $_=$val};
 	}
@@ -394,43 +396,7 @@ sub traverse {
     $self;
 }
 
-sub extract_links {
-    my $self = shift;
-    my %wantType; @wantType{map { lc $_ } @_} = (1) x @_;
-    my $wantType = scalar(@_);
-    my @links;
-    $self->traverse(
-	sub {
-	    my($self, $start, $depth) = @_;
-	    return 1 unless $start;
-	    my $tag = $self->{'_tag'};
-	    return 1 if $wantType && !$wantType{$tag};
-	    my $attr = $linkElements{$tag};
-	    return 1 unless defined $attr;
-	    $attr = [$attr] unless ref $attr;
-            for (@$attr) {
-	       my $val = $self->attr($_);
-	       push(@links, [$val, $self]) if defined $val;
-            }
-	    1;
-	}, 'ignoretext');
-    \@links;
-}
-
-# Elements that might contain links and the name of the link attribute
-%linkElements =
-(
- body   => 'background',
- base   => 'href',
- a      => 'href',
- img    => [qw(src lowsrc usemap)],   # lowsrc is a Netscape invention
- form   => 'action',
- input  => 'src',
-'link'  => 'href',          # need quoting since link is a perl builtin
- frame  => 'src',
- applet => 'codebase',
- area   => 'href',
-);
+### === extract_links removed: unused.
 
 #############################################################################
 ###

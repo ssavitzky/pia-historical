@@ -22,7 +22,7 @@ push(@ISA,IF::IT);
 
 sub new {
     my ($class, $name, @attrs) = @_;
-    my $self = IF::IT->new('_actor_', @attrs);
+    my $self = IF::IT->new('-actor-', @attrs);
     bless $self, $class;
     $self->initialize($name);
 }
@@ -34,7 +34,6 @@ sub recruit {
     ##	  Re-bless and properly initialize an InterForm Token.
 
     bless $self, $class;
-    $self->tag('_actor_');
     $self->initialize;
 }
 
@@ -73,6 +72,13 @@ sub initialize {
     ##	  Force the actor to obey the standard conventions:
     ##	    force name lowercase to match tag if active
     ##	    'active' attribute if active.
+
+    ## If there's an 'element' attribute, this ``actor'' is just a 
+    ## 	  syntactic description of an HTML element, and is not active.
+    ##	  It's not used for anything at the moment.
+
+    my $element = $self->attr('element');
+    $self->tag($element? '-element-' : '-actor-');
 
     $name = $self->attr('name') unless defined $name;
     my $tag = $self->attr('tag');
@@ -114,8 +120,10 @@ sub initialize {
     }
 
     my $handle = $self->attr('handle');
-    if ($handle eq 'handle' || $handle eq '1') {
+    if (lc $handle eq 'handle' || $handle eq '1') {
 	$handle = $name;
+    } elsif (lc $handle eq 'null') {
+	$handle = '';
     }
     if ($handle) {
 	$handle =~ s/^[-.]//;
@@ -128,10 +136,8 @@ sub initialize {
 	} else {
 	    print "Cannot find handler $handle in package $package\n";
 	}
-    }
-    if (! $self->attr('_handle')) {
-	$self->{'_handle'} = ($self->is_empty) ? \&IF::Actors::null_handle 
-	                                       : \&IF::Actors::generic_handle;
+    } elsif (! $self->is_empty) {
+	$self->{'_handle'} = \&generic_handle;
     }
     $self;
 }
@@ -255,7 +261,7 @@ sub act_parsed {
     ##	  Tell the interpretor to parse (and evaluate) the contents.
 
     return 0 if $quoting || $inc <= 0;
-    $ii->add_handler($self);
+    $ii->add_handler($self) if $self->{_handle};
     $ii->parse_it;
 }
 
@@ -266,7 +272,7 @@ sub act_quoted {
     ##	  Tell the interpretor to parse the contents without evaluating.
 
     return 0 if $quoting || $inc <= 0;
-    $ii->add_handler($self);
+    $ii->add_handler($self) if $self->{_handle};
     $ii->quote_it($self->attr('quoted'));
 }
 
@@ -280,7 +286,7 @@ sub act_empty {
 	$ii->complete_it($it);
 	$it->attr(_endless, 1);
     } elsif (! $quoting) {
-	$ii->add_handler($self);
+	$ii->add_handler($self) if $self->{_handle};
     }
 }
 
@@ -316,9 +322,43 @@ sub act_generic {
 	    }
 	}
     } elsif (! $quoting) {
-	$ii->add_handler($self);
+	$ii->add_handler($self) if $self->{_handle};
     }
 }
 
+#############################################################################
+###
+### Shared handles:
+###
+
+sub null_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## Just pass the tag and its contents.  Take no action
+    ##	 === not really used in the Perl version.
+
+}
+
+sub generic_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## This is the handler for a generic agent with content.
+    ## => use an attribute for the name (or parts), and define entities
+    ##	  using shallow binding.
+
+    ## === not clear if this will end up in the right state frame; 
+    ##	   we may need to push a tagless node in order to have the
+    ##	   variables and tagset popped when $self->content is done.
+
+    $ii->defvar("element", $it);
+    $ii->defvar("content", $it->content);
+    $ii->push_into($self->content);
+
+    ## Set up tagset context for content.
+    my $ts = $self->attr('tagset');
+    $ii->tagset($ts) if $ts;
+
+    $ii->delete_it;
+}
 
 1;
