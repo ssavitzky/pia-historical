@@ -49,19 +49,19 @@ public class Form extends crc.interform.Handler {
       if (it.hasAttr("if-processed")) {
 	ii.replaceIt(it.attr("if-processed"));
       }
-    } else {
-      if (it.hasAttr("id")) {
-	// Either the user or a <submit> tag wants us to put out an ID
-	Element id = new Element("input");
-	id.attr("name", "id");
-	id.attr("value", getFormId(it, ii));
-	id.attr("type", "hidden");
-	((Element)it).addItem(id);
-      }
-      if (it.hasAttr("submit")) {
-	dispatch("submit-forms", ia, it, ii);
-      }
     }
+    if (it.hasAttr("id")) {
+      // Either the user or a <submit> tag wants us to put out an ID
+      Element id = new Element("input");
+      id.attr("name", "id");
+      id.attr("value", getFormId(it, ii));
+      id.attr("type", "hidden");
+      ((Element)it).addItem(id);
+    }
+    if (it.hasAttr("submit")) {
+      dispatch("submit-forms", ia, it, ii);
+    }
+  
     // otherwise, the form element just gets passed along.
 
     // Now that we're done, increment the &forms; counter
