@@ -107,12 +107,13 @@ public class Expand {
   public static ParseNodeList processNodes(NodeList nl, Context c) {
     Input in = new FromParseNodes(nl);
     ToNodeList out = new ToNodeList();
-    c.subProcess(in, out).run();
+    if (nl != null) c.subProcess(in, out).run();
     return out.getList();
   }
 
   /** Process a node list and return the result. */
   public static void processNodes(NodeList nl, Context c, Output out) {
+    if (nl == null || nl.getLength() == 0) return;
     Input in = new FromParseNodes(nl);
     c.subProcess(in, out).run();
   }

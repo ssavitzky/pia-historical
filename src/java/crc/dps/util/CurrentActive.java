@@ -147,7 +147,7 @@ public class CurrentActive implements Cursor {
 
   /** This will have to be overridden if the tree is being built on the fly. */
   protected boolean hasChildren() {
-    return active.hasChildren();
+    return active != null &&  active.hasChildren();
   }
 
   /** This should be overridden to if more information is available. */
