@@ -52,6 +52,7 @@
      <input type="checkbox" name="&myurl;">
      </li>
   </ul>
+  <input type=hidden name=uid value=&user;>
   <input type="SUBMIT" value="Remove" name=buttonaction> selected forms
   <b>or</b> <input type="SUBMIT" value="Keep" name=buttonaction> selected
   forms on "pending" list (forms removed from this list will remain on the
