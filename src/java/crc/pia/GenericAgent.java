@@ -3,6 +3,7 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.pia;
 import java.util.Hashtable;
+import java.util.Vector;
 import crc.pia.Agent;
 import crc.pia.agent.AgentMachine;
 import crc.pia.Transaction;
@@ -10,9 +11,14 @@ import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
 
-import crc.ds.Thing;
 
-public class GenericAgent extends Thing implements Agent {
+public class GenericAgent implements Agent {
+  private String filesep = System.getProperty("file.separator");
+  /**
+   * Attribute index - attribute table
+   */
+  protected Hashtable attributes = new Hashtable();
+
   /**
    * Attribute index - name of this agent
    *
@@ -32,7 +38,7 @@ public class GenericAgent extends Thing implements Agent {
   protected String version;
 
   /**
-   * Attribute index - directories that this agent can write to
+   * Attribute index - directory that this agent can write to
    *
    */
   protected Hashtable dirTable;
@@ -65,68 +71,28 @@ public class GenericAgent extends Thing implements Agent {
     String url;
     Transaction request;
 
-    if( !n.equalsIgnoreCase( t ) ) type( t );
+    if( t != null && !n.equalsIgnoreCase( t ) ) 
+      type( t );
 
     option("name", n);
-    option("type", t);
+    option("type", type());
 
-    url = "/" + n + "/" + "initialize.if";
+    
+    url = filesep + n + filesep + "initialize.if";
     request = createRequest("GET", url );
-    submit( request );
+    Pia.instance().resolver().unshift( request );
   }
 
- 
   /**
-   * put request on stack for resolution
-   * used only in PIA::Agent::initialize and run_init_file.
+   * Create a new request given method, url
    */
-  public void submit( Transaction request ){
-
-    /*
-     put request on stack for resolution
-     $request=PIA::Transaction->new($request,$main::this_machine)
-	unless ref($request) eq 'PIA::Transaction';
-    */
-    pia.resolver.unshift( request );
-  }
-
- /**
-  * runInitFile
-  * Submit each form and get each link in file fileName.
-  * Look up fileName as an interform if find is positive.
-  * Treat file as a string if find is negative.
-  */
-  public int runInitFile(String fileName, int find){
-    /*
-    my $html;
-    my $count=0;
-    my $request;
-
-    if ($find < 0) {
-	$html = IF::Run::parse_html_string($fn);
-    } else {
-	my $file = $find? $file = $self->find_interform($fn) : $fn;
-	return unless -e $file;
-	$html = IF::Run::parse_init_file($file);
-    }
-    for (@{ $html->extract_links(qw(a form)) }) {
-	my ($url, $element) = @$_;
-	if ($element->tag =~ /form/i) {
-	    $method=$element->attr('method');
-	    $request=$self->create_request($method,$url,$element);
-	} else {
-	    ## A name= link would probably cause confusion.
-	    $request=$self->create_request('GET',$url,$element);
-	}
-	my $status=$self->submit($request);
-	$count+=1;
-    }
-    ## $html->delete;
-    return $count;
-    */
+  public Transaction createRequest(String method, String url){
+    Transaction request =  new Transaction(Pia.instance().thisMachine());
+    request.assert(Transaction.METHOD, method);
+    request.assert(Transaction.ZURL, url);
+    return request;
   }
  
-
   /**
    * @return name of agent
    */
@@ -182,145 +148,100 @@ public class GenericAgent extends Thing implements Agent {
    * set a file attribute
    *
    */
-  public void fileAttribute(String key, String value){
-    fileTable.put( "_" + key, value ); 
+  public void fileAttribute(String key, String[] value){
+    fileTable.put( key, value ); 
   }
 
   /**
    * get a file attribute
    */
-  public StringBuffer fileAttribute(String key){
-    StringBuffer value;
+  public String[] fileAttribute(String key){
+    String v = null;
+    String[] res = null;
 
-    String v = (String)fileTable.get(key);
-    if( !v ){
+    if( fileTable.containsKey( key ) )
+      res = (String[])fileTable.get(key);
+    if( !res ){
       v = option( key );
-      if ( v.startsWith("~/") ){
+      if ( v && v.startsWith("~/") ){
+	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
 	  value = new StringBuffer( v.substring(2) );
-	  value.insert(0,home + "/");
-	  fileTable.put( "_"+key, value );
+	  value.insert(0,home);
+	  v = new String( value );
+	  if(!v.endsWith(filesep) ) { v = v + filesep; }
+	  res = new String[1];
+	  res[0] = v;
+	  fileTable.put( key, res );
       }
     }
-    else value = new StringBuffer( v );
-    
-    if( !value ) value = new StringBuffer("");
-    return value;
+
+    return res;
   }
 
   /**
    * set a directory attribute
    *
    */
-  public void dirAttribute(String key, String value){
-    dirTable.put( "_" + key, value ); 
+  public void dirAttribute(String key, String[] value){
+    dirTable.put( key, value ); 
   }
 
   /**
    * retrieve a directory attribute.
-   * Performs ~ expansion on the filename
-   * Makes sure that it ends in a '/' character.
+   * Makes sure that it ends in a file separator character.
    */
-  public StringBuffer dirAttribute(String key){
-    StringBuffer value;
+  public String[] dirAttribute(String key){
+    String v = null;
+    String[] res = null;
 
-    String v = (String)dirTable.get(key);
-    if( !v ){
+    if( dirTable.containsKey( key ) )
+      res = (String[])dirTable.get(key);
+    if( !res ){
       v = option( key );
-      if ( v ){
-	if ( v.startsWith("~/") ){
+      if ( v && v.startsWith("~/") ){
+	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
 	  value = new StringBuffer( v.substring(2) );
-	  value.insert(0,home + "/");
-	}
-	String tmp = new String( value );
-	if ( !tmp.endsWith("/") ) { value = value.append( '/' ); }
-	dirTable.put( "_"+key, value );
+	  value.insert(0,home);
+	  v = new String( value );
+	  if(!v.endsWith(filesep) ) { v = v + filesep; }
+	  res = new String[1];
+	  res[0] = v;
+	  dirTable.put( key, res );
       }
     }
-    else value = new StringBuffer( v );
 
-    if( !value ) value = new StringBuffer("");
-    return value;
+    return res;
   }
 
   /**
    *  returns a directory that we can write data into.
    *  creates one if necessary, starts with agent_directory,
-   *  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
    */
-  public StringBuffer agentDirectory(){
-    StringBuffer directory = dirAttribute("agent_directory");
-    if( directory )
-      return directory;
-    String[] possibilities = { pia.USR_DIR + "/" + name + "/",
-			       pia.USR_DIR + "/" + type + "/",
-			       pia.USR_DIR + "/tmp/" + name + "/" };
+  public String agentDirectory(){
+    String filesep = System.getProperty("file.separator");
+
+    String[] directories = dirAttribute("agent_directory");
+    if( directories && directories.lenth > 0)
+      return directories[0];
+
+    String[] possibilities = { Pia.instance().piaUsrAgentsDataStr() + filesep + name + filesep,
+			       Pia.instance().piaUsrAgentsDataStr() + filesep + type + filesep,
+			       filesep + "tmp" + filesep + name + filesep };
     String name = name();
     String type = type();
     
-    int index;
-    StringBuffer direct;
     for(int i = 0; i < possibilities.length(); i++){
       String dir = possibilities[i];
 
-      if( dir.endsWith("/") ){
-	  index = dir.lastIndexOf("/");
-	  direct = new StringBuffer( dir );
-	  direct.setCharAt(index, ' ');
-      }
-      
-      File myFileDir = new File( direct );
+      File myFileDir = new File( dir );
       if( myFileDir.exists() || myFileDir.mkdir() ){
 	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
-	  directory = dirAttribute( "agent_directory", directory );
-	  return directory.append('/');
-	}
-      }
-    }
-
-    pia.errMsg( name()+ "could not find appropriate, writable directory");
-    return null;
-  }
-
-  /**
-   * returns a directory that we can write InterForms into
-   * creates one if necessary, starts with if_root, then
-   * USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
-   */
-  public StringBuffer agentIfRoot(){
-    StringBuffer root = dirAttribute("if_root");
-    String[] possibilities = new String[10];
-    if( root )
-      possibilities[0] = root;
-    
-    String name = name();
-    String type = type();
-    
-    possibilities[1] = pia.USR_ROOT + "/" + name + "/";
-    possiblilties[2] = pia.USR_ROOT + "/" + type + "/";
-    possiblilties[3] = pia.PIA_ROOT + "/" + name + "/";
-    possiblilties[4] = pia.PIA_ROOT + "/" + type + "/";
-    possiblilties[5] = "/tmp" + name + "/";
-
-    int index;
-    StringBuffer direct;
-    StringBuffer directory;
-
-    for(int i = 0; i < possibilities.length(); i++){
-      String dir = possibilities[i];
-
-      if( dir.endsWith("/") ){
-	  index = dir.lastIndexOf("/");
-	  direct = new StringBuffer( dir );
-	  direct.setCharAt(index, ' ');
-      }
-      
-      File myFileDir = new File( direct );
-      if( myFileDir.exists() || myFileDir.mkdir() ){
-	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
-	  directory = dirAttribute( "agent_directory", directory );
-	  return directory.append('/');
+	  String[] dirs = new String[1];
+	  dirs[0] = dir;
+	  dirAttribute( "agent_directory", dirs );
+	  return dir;
 	}
       }
     }
@@ -335,8 +256,9 @@ public class GenericAgent extends Thing implements Agent {
    * optional path argument just for convenience--
    * returns full url for accessing that file
    */
-  public StringBuffer agentUrl(String path){
-    StringBuffer url = pia.PIA_URL + name() + "/" + path;
+  public String agentUrl(String path){
+    String url = Pia.instance().url() + filesep + name() + filesep + path;
+    return url;
   }
 
   /**
@@ -421,18 +343,29 @@ public class GenericAgent extends Thing implements Agent {
     errMsg(name() + "If you come this far, you have execute the generic agent Handle.");
   }
 
+
+  /**
+   * Respond to a direct request.
+   * This is called from the agent's Agent::Machine
+   */
+  public respond(Transaction trans, Resolver res){
+    URL zurl = trans.requestURL();
+    String url = zurl.getFile();
+    respondToInterform( trans, url, res );
+  }
+
   /**
    * Options are strings stored in attributes.  Options may have
    * corresponding features derived from them, which we compute on demand.
    */
-  public void option(String key, String value){
-    /*
-    if (defined $value) {
-	$self->attr($key, $value);
-	$self->compute($key) if $self->has($key);
+  public void option(String key, String value) throws NullPointerException{
+    if( key == null || value == null )
+      throw new NullPointerException("Key or value can not be null.");
+
+      attributes.put( key, value );
+      if( has( key ) )
+	compute( key ); 
     }
-    return $self->attr($key);
-    */
   }
 
   /**
@@ -440,6 +373,8 @@ public class GenericAgent extends Thing implements Agent {
    *
    */
   public String option(String key){
+    if( !key ) return null;
+    return (String) attributes.get( key );
   }
 
   /**
@@ -481,19 +416,25 @@ public class GenericAgent extends Thing implements Agent {
     // Find interform name in URL.
 
     if ( noDefault ){
+      // are v doing defaults? no no
     }
-    else if( (index = path.indexOf(myname+"/") ) != -1 ){ // default to index.if
-      form = path.substring( index + (myname+"/").length() );
-      if( form.length() == 0 )
+    else { // default to index.if
+      RegExp re = new RegExp(myname + filesep + ".*$");
+      MatchInfo mi = re.match(path);
+      if( mi ){
+	index = path.indexOf(myname+filesep)  ){ // default to index.if
+	form  = path.substring( index + (myname+filesep).length() );
+	if( form.length() == 0 )
 	form = "index.if";
-    }else if( path.endsWith( myname ) ){  // default to home.if
-      form = "home.if";
-    }else if( path == "/" || path.length() == 0 ){
-      form = "ROOTindex.if";
+      }else if( path.endsWith( myname ) ){  // default to home.if
+	form = "home.if";
+      }else if( path == filesep || path.length() == 0 ){
+	form = "ROOTindex.if";
+      }
     }
 
-    String if_path = dirAttribute( "if_path" );
-    if( if_path == "" ){
+    String[] if_path = dirAttribute( "if_path" );
+    if( if_path == null ){
      /*
       * If the path isn't already defined, set it up now.
       *
@@ -503,44 +444,54 @@ public class GenericAgent extends Thing implements Agent {
       *  then PIA_ROOT (PIA_ROOT/$myname, PIA_ROOT/$mytype)
       *  then USR_ROOT, then PIA_ROOT (for inheriting forms)
       */
-      StringBuffer home = pia.PIA_ROOT;
-      if ( !home.endsWith( "/" ) ){ home.append('/'); }
+      String home = Pia.instance().piaAgents();
+      if ( !home.endsWith( filesep ) ){ home = home + filesep; }
 
-      StringBuffer root = dirAttribute( "if_root" );
-      if ( root != "" ){
+      String[] roots = dirAttribute( "if_root" );
+      String root;
+      if ( roots && roots.length == 1 ){
 	// handle a user-defined root first:
 
-	if ( !root.endsWith( "/" ) )       { root.append('/'); }
-	if ( root.endsWith( "/"+myname+"/" )) { 
-	  String tmp = new String( root );
-	  int index  = tmp.indexOf( "/"+myname+"/" );
-	  root       = new StringBuffer( tmp.substring( 0, index+1 ) );
+	root = roots[0];
+	if ( !root.endsWith( filesep ) ) { root = root + filesep; }
+	if ( root.endsWith( filesep + myname + filesep )) {
+	  RegExp re = new RegExp( filesep + myname + filesep + "$" );
+	  re.substitute( root, filesep );
+	}
+
+	if ( root.endsWith( filesep + mytype + filesep )) {
+	  RegExp re = new RegExp( filesep + mytype + filesep + "$" );
+	  re.substitute( root, filesep );
 	}
 	
 	Vector pathVector = new Vector();
-	pathVector.addElement( root+myname+"/" );
+	pathVector.addElement( root+myname+filesep );
 	if( myname != mytype )
-	  pathVector.addElement( root+mytype+"/" );
+	  pathVector.addElement( root+mytype+filesep );
 	pathVector.addElement( root );
-	}	
+      }	
 	/*
         * Then see whether the user has overridden the form.
 	*    It's possible that one of these will be a duplicate.
 	*    That slows us down, but not much.
 	*/
 	
-        root = pia.USR_ROOT;
-        if ( !root.endsWith("/") ) { root.append( "/" ); }
-        pathVector.addElement( root+myname+"/" );
+        root = Pia.instance.piaUsrAgents();
+        if ( !root.endsWith( filesep ) ) { root = root + filesep; }
+        pathVector.addElement( root+myname+filesep );
 	if ( myname != mytype )
-	  pathVector.addElement( root+mytype+"/" );
-	pathVector.addElement( home+myname+"/" );
+	  pathVector.addElement( root+mytype+filesep );
+	pathVector.addElement( home+myname+filesep );
 	if( myname != mytype )
-	  pathVector.addElement( home+type+"/" );
+	  pathVector.addElement( home+type+filesep );
 	pathVector.addElement( root );
 	pathVector.addElement( home );
 
-	dirAttribute("if_path", if_path );
+
+	String[] tmp = new String[pathVector.size()];
+	for(int i=0; i<pathVector.size(); i++)
+	  tmp[i] = (String) pathVector.elementAt(i);
+	dirAttribute("if_path", tmp );
 	
 	}
 	  File f;
@@ -562,6 +513,7 @@ public class GenericAgent extends Thing implements Agent {
    * URL or a path.
    */
     public String respondToInterform(){
+      return "";
     }
 
   /**
@@ -571,13 +523,13 @@ public class GenericAgent extends Thing implements Agent {
    * URL or a path.
    */
     public String respondToInterformPut(){
+      return "";
     }
 
 
   public GenericAgent(String name, String type){
-    //$self->{_list} = ['name', 'type', ];
-
     dirTable = new HashTable();
+    fileTable = new HashTable();
 
     if( name ) this.name( name );
     if( type )
