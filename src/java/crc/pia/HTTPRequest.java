@@ -34,6 +34,7 @@ import crc.pia.HTTPResponse;
 
 import crc.ds.Queue;
 import crc.ds.Features;
+import crc.ds.Table;
 import crc.util.Utilities;
 import crc.tf.Registry;
 
@@ -174,6 +175,28 @@ public class  HTTPRequest extends Transaction {
       return false;
   }
 
+  /**
+   * return parameters associated with a request in a table
+   * urldecoded.
+   */
+  public Table getParameters(){
+    Table zTable = null;
+
+    Content c = contentObj();
+    if( c!= null ){
+      FormContent fc;
+
+      if( c instanceof FormContent ){
+	fc = (FormContent) c;
+	zTable = fc.getParameters();
+	return zTable;
+      }
+      else return null;
+    }
+    else
+      return null;
+  }
+
 
   /**
    * return parameters associated with a request( urlencoded ).
@@ -250,7 +273,9 @@ public class  HTTPRequest extends Transaction {
     myurl = requestURL();
     if ( myurl == null || method() == null ) return null;
 
-    proxy = fromMachine().proxy( protocol() );
+    Machine m = fromMachine();
+    if( m != null )
+      proxy = m.proxy( protocol() );
 
     buf = new StringBuffer();
     buf.append( method() );
@@ -269,7 +294,7 @@ public class  HTTPRequest extends Transaction {
       }
     }
 
-
+    Pia.instance().debug(this, new String( buf ) );
     if( hasQueryString() && method().equalsIgnoreCase("GET") )
       buf.append( queryString() );
 
@@ -384,8 +409,9 @@ public class  HTTPRequest extends Transaction {
     if( queryString()!= null && mymethod.equalsIgnoreCase( "GET" ) ){
       fc.setParameters( queryString() );
     }else {
-      //      if( mymethod.equalsIgnoreCase( "POST" )  )
-      //	fc.setParameters(null);
+      if( mymethod.equalsIgnoreCase( "POST" )  )
+	// sucks actual parameters from body of content;this is why a null parameter
+	fc.setParameters(null);
     }
 
   }
@@ -489,12 +515,11 @@ public class  HTTPRequest extends Transaction {
    * 
    */
   public HTTPRequest(){
-    Pia.instance().debug(this, "Constructor-- [ machine from ] -- on duty...");
+    Pia.instance().debug(this, "Constructor-- [ default ] -- on duty...");
     handlers = new Queue();
     new Features( this );
 
     // we probably only need one instance of these objects
-    
     fromMachine( null );
     toMachine( null );// done by default anyway
 
@@ -542,6 +567,34 @@ public class  HTTPRequest extends Transaction {
 
     startThread();
   }
+
+ /**
+   * A request transaction with default blank header and a define content.
+   * @param from originator of request -- later data will be sent to this machine.
+   * @param ct a define content.
+   * @param start flag -- if true starts thread automatically;otherwise,
+   * user must issue dostart()
+   */
+
+  public HTTPRequest( Machine from, Content ct, boolean start ){
+    Pia.instance().debug(this, "Constructor-- [ machine from, content ct ] on duty...");
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = ct;
+    headersObj = new Headers(); // blank header  
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+
+    fromMachine( from );
+    toMachine( null );
+
+    if( start )
+      startThread();
+  }
+  
+ 
  
   /**
    * A request transaction with define header and content.
@@ -618,10 +671,13 @@ public class  HTTPRequest extends Transaction {
       InputStream in = new FileInputStream (filename);
       c.source( in );
 
-      boolean debug = true;
+
+      Boolean debug = new Boolean( true );
       Transaction trans = new HTTPRequest( machine, c, debug );
       //printOn only prints if method is post and content has data
       trans.setMethod( "POST" );
+      trans.setContentLength( 51 );
+      ((HTTPRequest)trans).setParam();
 
       Thread thread1 = new Thread( trans );
       thread1.start();
@@ -913,8 +969,8 @@ public class  HTTPRequest extends Transaction {
    * automatically
    */
 
-  public HTTPRequest( Machine from, Content ct, boolean debugflag ){
-    DEBUG = debugflag;
+  public HTTPRequest( Machine from, Content ct, Boolean debugflag ){
+    DEBUG = debugflag.booleanValue();
 
     Pia.instance().debug(this, "Constructor-- [ machine from, content ct ] on duty...");
     handlers = new Queue();
