@@ -1,18 +1,37 @@
-README: The Personal Information Agency Alpha release 0.9
-=========================================================
+README: The Information Agency Alpha release 0.9
+==================================================
 
-This is 0.9 (Alpha) release of the Personal Information Agency (PIA).
-The PIA is a proxy server that provides a framework on which to develop
-agents that do computation on requested documents.
+This is 0.9 (Alpha) release of the Information Agency.
+An Information Agency is a kind of proxy web server that provides an
+environment for document processing agents.  A Personal Information Agency
+sits between you and the rest of the web world, providing a place for agents
+which can perform many kinds of tasks for you, such as:
+	   * maintain a searchable history of all documents visited
+	   * filter advertisements from documents
+	   * notify you of changes to interesting documents
 
-For further information about the PIA and agent
-concepts, please select Doc from the PIA homepage.
+A Peripheral Information Agency sits between a device, such as a printer,
+and the web, allowing you to access all functions of the device through any
+web browser.  Peripheral agents can provide value added features, such as:
+	   * formatting web documents for printing on paper
+	   * searching a set of digital photographs
+	   * automated forms processing
+
+Most importantly, Information Agencies make it very easy to modify and use
+new agents using "InterForms" -- Interface Forms that are simple extensions
+to HTML. 
+
+For further information about PIA's and agent concepts, please see
+http://pia.crc.ricoh.com/, send mail to pia@crc.ricoh.com, or start your own
+Information Agency (see below) and select "Documentation" from the home
+page.
+
 
 Supported platforms
 -------------------
 
 The PIA is written in Java, and should be extremely portable.  So far 
-it has been tested on Solaris and Linux with JDK 1.0.1 and JDK 1.1
+it has been tested on Solaris and Linux with JDK 1.0.2 and JDK 1.1
 
 
 Quick Start
