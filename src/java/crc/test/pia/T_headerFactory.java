@@ -31,6 +31,9 @@ public class T_headerFactory
       System.exit( 1 );
     }
 
+    System.out.println("Test creating a header from the HeaderFactory class.");
+    System.out.println("Input is read from a file input/headerstest.txt.");
+    System.out.println("Output is a dump of the created header.\n\n");
     String filename = args[0];
 
     HeaderFactory hf = new HeaderFactory();
@@ -40,6 +43,7 @@ public class T_headerFactory
 			(new FileInputStream (filename)));
     
       Headers h = hf.createHeader( in );
+      Pia.debug( true );
       Pia.debug( h.toString() );
     }catch(Exception e ){
       Pia.debug( e.toString() );
