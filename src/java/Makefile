@@ -33,6 +33,10 @@ SUNPACKAGENAMES= \
 	java.util \
 	java.net
 
+MISCPACKAGENAMES= \
+	w3c.www.http \
+	w3c.www.mime
+
 PACKAGENAMES= $(PIAPACKAGENAMES) $(SUNPACKAGENAMES)
 
 
@@ -58,13 +62,48 @@ crc.zip: pia_class.toc
 doc:: alldoc
 	@echo Java documentation complete
 
-# Non-recursive JavaDoc documentation -- the whole shebang.
-#	We do this because javadoc doesn't append to existing index files,
-#	it smashes them.  This makes it useless when run recursively.
+### "make logs" does "make clean", "make all", and "make doc".
+###	Each operation is logged and timed.  
 
-JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR):$(CLASSPATH):$(JAVASOURCE)
+logs::  report start.logs clean.log make.log doc.log 
+	@date						>> summary.log
+	@echo make logs complete.  Summary:
+	cat summary.log
 
-# non-recursive doc.
+start.logs::
+	@echo Doing clean makes to produce log files.
+	@echo Go get some coffee -- this takes about 20 minutes
+
+clean.log::
+	(time make -k clean				2>&1) | tee clean.log
+
+make.log::
+	(time make -k JAVAFLAGS=-deprecation all	2>&1) | tee make.log
+	@echo Times:  make				>> summary.log
+	@tail -2 make.log				>> summary.log
+
+doc.log::
+	(time make -k doc				2>&1) | tee doc.log
+	@echo Times:  doc				>> summary.log
+	@tail -2 doc.log				>> summary.log
+
+report::
+	@date 						| tee	   summary.log
+	$(PIADIR)/src/app/tools/hole-report 			 > holes.log
+	find ${*-.} -type f -name '*.java' -exec wc -l {} \; 	 > lines.log
+	@echo FILES: `wc -l lines.log` 			| tee -a   summary.log
+	@echo HOLES: `wc -l holes.log` 			| tee -a   summary.log
+
+### JavaDoc documentation -- non-recursive.
+###	We do this because javadoc doesn't append to existing index files,
+###	it smashes them.  This makes it useless when run recursively.
+
+JIGSAWSOURCE = /pia1/ext/java/Jigsaw/src/classes
+JAVADOC_CLASSES = $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
+JAVADOC_SOURCES = $(CLASSDIR):$(CLASSPATH):$(JAVASOURCE):$(JIGSAWSOURCE)
+JAVADOC_CMD = javadoc -d $(ADOCDIR) -package \
+	-classpath $(JAVADOC_CLASSES) -sourcepath $(JAVADOC_SOURCES)
+
 alldoc::
 	-$(JAVADOC_CMD) $(PACKAGENAMES)
 
@@ -73,16 +112,4 @@ piadoc::
 
 sundoc::
 	-$(JAVADOC_CMD) $(SUNPACKAGENAMES)
-
-
-
-
-
-
-
-
-
-
-
-
 
