@@ -17,7 +17,7 @@ public class Queue{
    * 
    */  
   public Enumeration queue() {
-    if(!queue)
+    if(queue == null)
       queue = new Array();
     return queue.elements();
   } 

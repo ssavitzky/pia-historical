@@ -23,6 +23,9 @@
 
 package crc.ds;
 
+import java.util.Hashtable;
+import java.lang.Boolean;
+
 //import Thing;
 //import UnaryFunctor;
 
@@ -31,7 +34,7 @@ public class Features{
    * Attribute index - feature table
    * 
    */
-  protected HashTable featureTable;
+  protected Hashtable featureTable;
 
   /**
    * Compute and assert the value of some initial features.
@@ -40,7 +43,7 @@ public class Features{
    */
   protected void initialize( Thing parent ){
     
-    featureTable.put( "NEVER", false );
+    featureTable.put( "NEVER", Boolean.FALSE );
     
     /*
     * NEVER is useful for creating things that never match.
@@ -55,13 +58,13 @@ public class Features{
   public Object assert(String feature, Object v){
     Object value;
 
-    if(!v){
-      value = new Boolean( true );
+    if(v == null) {
+      value = Boolean.TRUE;
       featureTable.put( feature, value );
-    }else if( v instanceof String && v == "" ){
+    } else if( v instanceof String && v == "" ){
       value = new Boolean( false );
       featureTable.put( feature, value );
-    }else {
+    } else {
         featureTable.put( feature, v );
 	value = v;
     }
@@ -103,14 +106,14 @@ public class Features{
     if( value == null )
       value = compute(feature, parent);
 
-    return !!value;
+    return value != null && value != Boolean.FALSE;
   }
 
   /**
    * @return the value associated with a named feature. 
    */
 
-  public Object feature( String featureName ){
+  public Object feature( String feature ){
     Object val ;
 
     val = featureTable.get( feature );
