@@ -30,8 +30,10 @@ public class ArrayNodeListEnumerator implements NodeEnumerator {
    */
   public Node getFirst()
   { 
-    if( l.isEmpty() ) return null;
+    Report.debug(this, " getfirst " + Integer.toString((int)l.getLength()));
+    if( l.getLength() == 0 ) return null;
     cursor = 0;
+    Report.debug(this, "before first element");
     return (Node)l.firstElement();
     
   }
