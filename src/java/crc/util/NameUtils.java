@@ -76,6 +76,13 @@ public class NameUtils {
     return directory + filename;
   }
 
+  /** Extract the filename from a (system) path. */
+  public static String filenamePart(String path) {
+    char sep = System.getProperty("file.separator", "/").charAt(0);
+    int i = path.lastIndexOf(sep);
+    return (i < 0)? path : path.substring(i+1);
+  }
+
   /************************************************************************
   ** Class name utilities:
   ************************************************************************/
