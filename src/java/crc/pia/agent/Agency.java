@@ -174,21 +174,7 @@ public class Agency extends GenericAgent {
     if (path.startsWith("/")) path = path.substring(1);
     List pathList = new List(new java.util.StringTokenizer(path, "/"));
 
-    Agent agent = null;
-
-    if (pathList.nItems() > 1) {
-      String name = pathList.at(1).toString();
-      String type = pathList.at(0).toString();
-      Pia.debug(this, "Looking for agent :" + name);
-      agent = res.agent(name);
-      if (agent == null || !type.equals(agent.type())) {
-	Pia.debug(this, "Looking for agent :" + name);
-	agent = res.agent(type);
-      }
-    } else {
-      String name = pathList.at(0).toString();
-      agent = res.agent(name);
-    }
+    Agent agent = res.agentFromPath(path);
 
     if( agent == null ){
       Pia.debug(this, "Agent not found");
@@ -199,6 +185,9 @@ public class Agency extends GenericAgent {
     }
   }
 
+  /**
+   * Constructor.
+   */
   public Agency(String name, String type){
     super(name, type);
   }

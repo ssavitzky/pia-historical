@@ -77,12 +77,12 @@ public class AgentMachine extends Machine {
      */
      Transaction req = reply.requestTran();
      if ( req != null )
-       Pia.instance().debug(this, "AgentMachine -- output from sendResponse with request url" + req.requestURL().toExternalForm());
+       Pia.debug(this, "AgentMachine -- output from sendResponse with request url" + req.requestURL().toExternalForm());
      if( reply != null ){
        Content c = reply.contentObj();
        if( c != null ){
 	 String cs = c.toString();
-	 Pia.instance().debug(this, cs);
+	 Pia.debug(this, null, cs);
        }
      }
      
