@@ -155,10 +155,13 @@ public class Set extends crc.interform.Handler {
 
 
   /**
-   * return the contents of it
+   * return the contents of it  as a token
    */
   protected SGML getValue(SGML it){
-    return it.isEmpty()? new Text("") : it.content().simplify();
+    SGML result = it.isEmpty()? new Text("") : it.content().simplify();
+    if(result instanceof Tokens)
+       result = new Element("", result);
+    return result;
   }
 
   /**
