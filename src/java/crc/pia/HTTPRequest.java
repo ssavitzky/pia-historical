@@ -465,6 +465,24 @@ public class  HTTPRequest extends Transaction {
   }
 
   /**
+   *  Client needs to set fromMachine, toMachine, and start the thread.
+   * 
+   */
+  public HTTPRequest(){
+    Pia.instance().debug(this, "Constructor-- [ machine from ] -- on duty...");
+    handlers = new Queue();
+    new Features( this );
+
+    // we probably only need one instance of these objects
+    
+    fromMachine( null );
+    toMachine( null );// done by default anyway
+
+  }
+
+
+
+  /**
    *  Take a machine as source of input for header and content.
    *  @param from source of input for this transaction
    *  
