@@ -35,7 +35,7 @@ public abstract class BasicNamedNode extends AbstractNode  {
     for( long i = 0; i < len; i++ ){
       try{
 	n = value.item( i );
-	append((AbstractNode)n);
+	insertAtEnd((AbstractNode)n);
       }catch(NoSuchNodeException e){
       }
     }
