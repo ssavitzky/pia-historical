@@ -221,23 +221,20 @@ Note that we only need these inside the PIA.
 	want to put after the standard start.
   </doc>
   <action>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
-    <then><a href="/&agentType;/home">&agentType;</a>
-          <a href="/&agentType;/"> / </a>
-          <a href="/&agentType;/&agentName;">&agentName;</a>:
-          <a href="/&agentType;/&agentName;/">index</a>
-	  <a href="/&agentType;/&agentName;/options">options</a>
-          <a href="/&agentType;/&agentName;/help">help</a> (
-	     <a href="/&agentType;/&agentName;/help#context-specific">specific</a>
-	     <a href="/&agentType;/&agentName;/help#general">general</a> )
-    <else><a href="/&agentName;/home">&agentName;</a>:
-	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/options">options</a>
-	  <a href="/&agentName;/help">help</a> (
-	     <a href="/&agentName;/help#context-specific">specific</a>
-	     <a href="/&agentName;/help#general">general</a> )
+    <then><a href="/&agentType;~">&agentType;</a>
+          <a href="/&agentType;~/"> / </a>
+    </then>
 </if>
+          <a href="/&agentName;">&agentName;</a>:
+          <a href="/&agentName;~">home</a>
+          <a href="/&agentName;~/">/index/</a>
+	  <a href="/&agentName;~/options">options</a>
+          <a href="/&agentName;~/help">help</a> (
+	     <a href="/&agentName;~/help#context-specific">specific</a>
+	     <a href="/&agentName;~/help#general">general</a> )
+          <a href="/&agentName;/~/">/data/</a>
   </action>
 </define>
 
