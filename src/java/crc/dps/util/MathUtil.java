@@ -43,6 +43,19 @@ public class MathUtil {
   ** Attribute Conversion:
   ************************************************************************/
 
+  public static Association getNumeric(ActiveAttrList atts, String name,
+				       String dflt) {
+    String v = atts.getAttributeString(name);
+    if (v == null) {
+      if (dflt == null) return null;
+      else v = dflt;
+    }
+    Association a = Association.associateNumeric(v, v);
+    return a.isNumeric()
+      ? a
+      : (dflt == null)? null : Association.associateNumeric(null, dflt);
+  }
+
   public static int getInt(ActiveAttrList atts, String name, int dflt) {
     String v = atts.getAttributeString(name);
     if (v == null) return dflt;
