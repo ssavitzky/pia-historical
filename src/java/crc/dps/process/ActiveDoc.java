@@ -264,8 +264,6 @@ public class ActiveDoc extends TopProcessor {
     return null;
   }
 
-
-
   /************************************************************************
   ** Sub-processing:
   ************************************************************************/
@@ -280,6 +278,15 @@ public class ActiveDoc extends TopProcessor {
   public TopContext subDocument(Input in, Context cxt, Output out, Tagset ts) {
     if (ts == null) ts = tagset;
     return new ActiveDoc(in, cxt, out, ts, agent, request, response, resolver);
+  }
+
+  /************************************************************************
+  ** Handler Utilities:
+  ************************************************************************/
+
+  public static ActiveDoc getInterFormContext(Context cxt) {
+    TopContext top = cxt.getTopContext();
+    return (top instanceof ActiveDoc)? (ActiveDoc)top : null;
   }
 
   /************************************************************************
