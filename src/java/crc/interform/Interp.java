@@ -473,7 +473,7 @@ public class Interp extends State {
 
   public void pushInput(SGML t) {
     if (t.isList()) {
-      input = new InputList(t.content(), input);
+      if(! t.isEmpty()) input = new InputList(t.content(), input);
     } else {
       input = new InputToken(t, input);
     }
@@ -494,13 +494,13 @@ public class Interp extends State {
       input = new InputExpand(t, input);
     } else {
       debug("Expanding ["+t.content().nItems()+"]");
-      input = new InputList(t.content(), input);
+      if (! t.isEmpty()) input = new InputList(t.content(), input);
     }
   }
 
   public void pushInto(Tokens t) {
     debug("Expanding ["+t.nItems()+"]");
-    input = new InputList(t, input);
+    if (! t.isEmpty()) input = new InputList(t, input);
   }
 
   /** Repeatedly expand content, with the given entity bound to each
@@ -638,7 +638,7 @@ public class Interp extends State {
       if (it == null) {
 	debug("deleted\n");
       } else if (it.isList()) {
-	input = new InputList(it.content(), input);
+	if (! it.isEmpty()) input = new InputList(it.content(), input);
 	debug("expand list");
 	continue;
       } else if (incomplete > 0) {
