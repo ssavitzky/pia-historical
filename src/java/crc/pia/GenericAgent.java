@@ -676,7 +676,7 @@ public class GenericAgent extends AttrBase implements Agent {
     originalPath = path;
 
     if (path.equals("/")) {
-      path = "/ROOTindex.if";
+      path = "/Agency/ROOTindex.if";
     } else if (path.equals("/" + myname)) {
       path += "/home.if";
     } else if (path.equals("/" + myname + "/")) {
@@ -910,7 +910,7 @@ public class GenericAgent extends AttrBase implements Agent {
 	String msg = "cgi invocation unimplemented.";
 	throw new PiaRuntimeException (this, "respondToInterform", msg) ;
       } else {
-	crc.pia.agent.Dofs.retrieveFile(file, request, this);
+	crc.pia.FileAccess.retrieveFile(file, request, this);
       }
       return true;
     }
