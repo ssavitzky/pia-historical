@@ -1,9 +1,3 @@
-<!doctype html public "-//IETF//DTD HTML//EN//2.0">
-<html><head>
-<title></title>
-<link rev="made" href="mailto:rithy@crc.ricoh.com"></link>
-</head><body>
-
  <set name=currentcal><get agent name=currentcal></set>
  <set name=mymonth><get agent name=selmonth></set>
  <set name=myyear><get agent name=selyear></set>
@@ -17,12 +11,5 @@
  <then>
       <set agent name=tinycal><calendar month=&mymonth; year=&myyear;></calendar></set>
  </then>    
-</body></html>
-
-
-
-
-
-
-
+ </if>
 
