@@ -1,0 +1,34 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>caption processing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<h1>&agentName; captions</h1>
+<set name=directory>&FORM.directory;</set>
+<set name=files>&FORM.files;</set>
+<write file="&directory;/captions.html" append>
+<repeat list=&files;>
+<if><test><get form name=&li;></get></test>
+<then><br> <a href="&li;.jpg"><img src="&li;.small.gif"><get form name=&li;></get></a></then>
+</if>
+</repeat>
+</write>
+<!-- also write cap file for each-->
+<repeat list=&files;>
+<if><test><get form name=&li;></get></test>
+<then><write append file="&directory;/&li;.cap"><get form name=&li;></get></write></then>
+</if>
+</repeat>
+<write append file=&AGENT.master_list;>
+<a href="/photos/&directory;/captions.html">&FORM.captTitle;</a>
+</write>
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>
+

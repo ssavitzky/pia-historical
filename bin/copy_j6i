@@ -1,0 +1,198 @@
+#!/usr/bin/perl
+
+###copy all files in from $1 to $2, create jpegs and makeTOC
+$quantfile = "~/.pia/Photo_Album/.quant";  # saves time for thumbnails
+$tmpfile = "/tmp/pnm"; # not used currently
+
+##should make stats same for new file as for j6i
+
+sub cvj6i {
+    local($from, $to, $togif) = @_;
+
+    $status = system("tail +173c $from | djpeg |pnmscale -width 640 -height 480 | cjpeg -quality 85 > $to");
+				#  if fast jpeg available...
+#    $status = system("jpeg -u -packRGB -C 2 < $from | pnmcut 4 0 764 480 | pnmscale -width 640 -height 480  >$tmpfile"); 	# pnmcut causes pipes to be killed
+#    $status= system("pnmtorast $tmpfile | jpeg -Q 25 > $to");
+
+    die "failed conversion $status on $from $to \n command was \n" if $status;
+				# Now make icon
+    my $options = "256";
+				#  quantization file saves time
+    $options ="-map $quantfile" if -f $quantfile;
+    
+    $status = system("djpeg < $to | pnmscale -width 64 -height 48 |ppmquant  $options | ppmtogif> $togif") if defined $togif;
+
+}
+
+$from = shift;
+$from = "/ide" unless $from;
+
+$date = localtime;
+@day = split(" ",$date);
+$today = "$day[1]$day[2]$day[4]";
+$to =  shift;
+$to = "~/.pia/Photo_Album"  unless $to;
+$to = "$to/$today";
+$ct = 0;
+$tonew = $to;
+
+## check for existing directory
+while (-e $to) {		# Fix this for better filenames
+    $to = "$tonew.$ct";
+    $ct++;
+}
+
+
+print "making $to" if $main::debugging;
+mkdir ($to,0777);
+
+##get right directory name
+@foo = split("/",$to);
+$dirnam = $foo[$#foo];
+
+$formproc = "/Photo_Album/captions.if";
+$table = "$to/index.html";
+
+# check for non j6i disc and abort
+@files = <$from/*.j6*>;
+die " not j6i disc " unless $#files > -1;
+
+# copy all files over
+$copystatus = system("cp -p $from/*  $to ");
+die " copy failed" if $copystatus;
+				# remove files now before card gets removed
+$copystatus = system("rm -f $from/* ");
+
+				#  convert to jpg
+chdir $to;
+
+@jfiles = <*.j6i>;
+
+for $file (@jfiles){
+    if (-f $file) {
+	$f=$file;
+	$f =~ s/\.j6i$//;
+	$f2 = "$f.jpg";
+	$f3 = "$f.small.gif";
+	
+	cvj6i($file,$f2,$f3);
+	push(@jpegs,$f);
+	
+    } else {
+#	print "not found $f \n";
+    }
+}
+				#  now make index
+
+
+#create a table from a list of files
+$root = "";			# if the img files are in another dir put it here
+$formmaker = $formproc;
+$formdefault = "http://photos/Photo_Album/captions.if ";
+$formmaker = $formdefault unless defined $formmaker; 
+$rowsize = 5;
+$header = "<table align=center cellspacing=3 cellpadding=0>\n";
+$rowheader = "<tr>\n";
+$trailer = "</table>\n";
+$rowtrail = "</tr>\n";
+$td = "<td valign=top align=center>\n";
+$tdtrail = "</td>\n";
+$ahead = "<a href=";
+$atrail = "</a>";
+$imghead = "<img src=";
+$imgtrail = ">";
+$jpg["jpg"] = 1;
+$jpg["jpeg"] = 1;
+
+$jpegs=join(" ",@jpegs);
+
+	     
+$formheader = "<form method=POST action=$formmaker> <input type=hidden name=directory value=$dirnam> <input type=hidden name=files value=\"$jpegs\"> ";
+$formender = "<input name=captTitle value=\"Images from the DC1\"> <input type=submit value=\"Submit Captions\"> </form>";
+
+$captionsize = 15;
+$addcaptionbox = 1;		# Adds an entry box for adding a caption
+
+
+sub printImg {
+    local($filename,$link) = @_;
+    print " $ahead$link>  $imghead$root$filename$imgtrail$atrail";    
+}
+
+sub printText {
+    local($filename, $caption) = @_;
+    if ($addcaptionbox) {
+	$txt = "<input name=$filename size=$captionsize>";
+    } else {
+	$txt = " $ahead$root$filename> $caption $atrail";
+    }
+    print "$txt";
+
+}
+
+sub make_index{
+
+
+$count = 0;
+$flag = 0;
+print $formheader if $captionsize;
+print $header;
+print $rowheader;
+
+for(@_){
+    chop;
+  
+    ($file, $ext ) = split('\.');
+    $text[$count] = "$file.$ext";
+
+    print $td;
+
+    if($jpg[$ext]){		# Stick a small jpeg image in
+
+	$image[$count] = "$file.small.gif";
+	$flag = 1;		# 
+	printImg($image[$count],$text[$count]);
+				# Force a line feed to put caption below
+	print "<br>";
+    }
+	printText($text[$count],$text[$count]);
+	print $tdtrail;
+    
+
+    $count++;
+    if($count >= $rowsize){
+	print "$rowtrail $rowheader";
+	$count = 0;
+	$flag = 0;
+    }				# 
+}
+    if($count){
+	print "$rowtrail ";
+    }
+
+
+print "$trailer";
+print $formender if $captionsize;
+
+}
+				# shouldlet agency make table...
+open(INDEX,">$table");
+select INDEX;
+make_index(@jfiles);
+select STDOUT;
+close INDEX;
+
+chdir "..";
+open(LOG,">.latest");
+print LOG "$to";
+close LOG;
+open(LOG,">>.catalog");
+print LOG "$to";
+close LOG;
+
+
+
+
+
+
+
