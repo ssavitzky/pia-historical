@@ -29,7 +29,8 @@ FILES = $(BASE_CLASSES) $(JAVA_TAGSETS)
 MAIN_TAGSETS = \
 	basic.ts \
 	xxml.ts \
-	xhtml.ts
+	xhtml.ts \
+	pia-xhtml.ts
 
 ### Auxiliary tagsets: used internally..
 AUX_TAGSETS = \
@@ -64,11 +65,11 @@ DOC_TS = tsdoc.ts
 .ts.html:
 	process -t tsdoc -q $<  > $@
 
-#legacyTSdoc is a temporary kludge. 
-
 DOC_CMD= $(BINDIR)/pia_wrapper crc.dps.Filter
 
-doc:: count ts-tsos ts-doc
+# For some reason making docs with tsdoc.tso fails.  Not good.
+
+doc:: count ts-doc
 
 ts-doc:: $(TAGSET_DOCS)
 	cp $? $(TSDOCDIR)

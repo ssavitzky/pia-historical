@@ -397,7 +397,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
 </define>
 
-<define element=namespace handler><!-- unimplemented -->
+<undefine element=namespace handler><!-- unimplemented -->
   <doc> This defines a namespace for entities. 
   </doc>
   <define attribute=name optional>
@@ -419,7 +419,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  which effectively includes by reference.
     </doc>
   </define>
-</define>
+</undefine>
 
 
 <h3>Documentation Elements</h3>

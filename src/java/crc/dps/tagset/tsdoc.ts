@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=tsdoc parent=HTML tagset=standard>
+<tagset name=tsdoc parent=HTML tagset=xhtml>
 
 <h1>Tagset Documentation Tagset</h1>
 
@@ -21,8 +21,8 @@ documented in <a href="tagset.html">tagset.html</a>.
     </head><body>
       <h1>&lt;tagset <repeat list="&attributes;"> &li; </repeat>&gt;</h1>
 	<blockquote>
-	  This documentation generated from &DPS:inputFile; using
-	  &DPS:tagsetName; 
+	  <hide> This documentation generated from &DPS:inputFile; using
+	  &DPS:tagsetName; </hide>
 	</blockquote>
       <if>&content;<then>&content;</if>
     </body></html>

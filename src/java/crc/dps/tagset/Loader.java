@@ -118,12 +118,14 @@ public class Loader {
 	|| name.endsWith(".tss")
 	|| name.endsWith(".tso")) {
       // Definitely a file. 
-      loadTagsetFile(name, cxt);
+      return loadTagsetFile(name, cxt);
     } else if (name.indexOf(".") >= 0) {
       // Definitely a resource or class
-      loadTagsetFromResource(name);
+      return loadTagsetFromResource(name);
     }
     ts = loadTagsetSubclass(name);
+    if (ts != null) return ts;
+    ts = loadTagsetFile(name, cxt);
     if (ts != null) return ts;
     ts = loadTagsetFromResource(name);
     return ts;
@@ -278,11 +280,13 @@ public class Loader {
   protected static Tagset loadTagsetFile(String name, TopContext cxt) {
     boolean boot = false;
     Tagset ts = null;
+    File theFile;
 
     if (name.endsWith(".ts")
 	|| name.endsWith(".tss")
 	|| name.endsWith(".tso")) {
       // We know the extension already.
+      theFile = locateFile(name, cxt);
     } else {
       File tsFile  = locateFile(name + ".ts", cxt);
       File tsoFile = locateFile(name + ".tso", cxt);
@@ -292,6 +296,9 @@ public class Loader {
 	  && tsoFile.lastModified() > tsFile.lastModified()) {
 	try {
 	  ts = (Tagset)crc.util.Utilities.readObjectFrom(name+".tso");
+	  if (verbosity > 0 && ts != null) {
+	    log.println("Tagset loaded from file " + name + ".tso");
+	  }
 	} catch (Exception ex) {
 	  ex.printStackTrace(log);
 	  ts = null;
@@ -302,15 +309,21 @@ public class Loader {
 	  && tssFile.lastModified() > tsFile.lastModified()) {
 	name += ".tss";
 	boot = true;
+	theFile = tssFile;
       } else {
 	name += ".ts";
+	theFile = tsFile;
       }
     }
     FileInputStream s = null;
     try {
-      s = new FileInputStream(name);
+      s = new FileInputStream(theFile);
     } catch (FileNotFoundException ex) {
       return null;
+    }
+    if (verbosity > 0) {
+      log.println("Tagset loaded from file " + name
+		  + (boot? ".tss" : ".ts"));
     }
     ts = (s == null)? null : loadTagsetFromStream(s, boot);
     if (s != null) try { s.close(); } catch (Exception ex) {}
