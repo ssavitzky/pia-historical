@@ -48,8 +48,8 @@ href="/History">History</a> agent's data directory:
   <dd> <a href="/My/History/&year;/&month;/&day;.html">
        /My/History/&year;/&month;/&day;.html</a> --
        the history for today
-  <dt> <a href="/My/History/.last.html">&hour;:&minute;</a>] --
-  <dd> <a href="/My/History/.last.html">/My/History/.last.html</a>
+  <dt> <a href="/My/History/last.html">&hour;:&minute;</a>] --
+  <dd> <a href="/My/History/last.html">/My/History/last.html</a>
 </dl>
 
 

@@ -7,14 +7,13 @@
 
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
 
-<set entity name=title>&agentName; agent <br>Home Page</set>
-<read interform file="heading.inc" process>
-<table cellspacing=0 cellpadding=0>
+<set entity name=title>Home Page</set>
+<read interform file="heading.inc" process><p>
+
+<table cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170><td>
-  <table cellspacing=0 cellpadding=0>
+  <table cellspacing=0 cellpadding=0 border=0>
     <tr><th width=170><td> <a href="index.if">Index Page</a>
-    <tr><th align=right><a href="home.if">&agentName;</a>:
-	<td><strong>Home Page</strong>
     <tr><th>
         <td><a href="options.if">options</a>
 	<if><read info interform file="initialize.if">
