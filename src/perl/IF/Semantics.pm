@@ -13,7 +13,7 @@ require Exporter;
 push(@ISA,Exporter);
 @EXPORT = qw(split_list is_one_of tagset
 	     analyze remove_spaces list_items list_pairs
-	     get_list get_pairs get_hash
+	     get_text get_list get_pairs get_hash
 	     text_item lc_text_item string_item lc_string_item
 	     link_item lc_link_item
 	     prep_item_sub 
@@ -288,6 +288,22 @@ sub list_pairs {
     return \@out;
 }
 
+
+#############################################################################
+###
+### Content or Attributes:
+###
+
+sub get_text {
+    my ($it, $attr) = @_;
+
+    ## Returns a string
+    ##	  This is either the value of the $attr (if present),
+    ##	  or the text extracted from the content.
+
+    my $text = $it->attr($attr) if defined $attr;
+    return (defined $text)? $text : $it->content_text;
+}
 
 sub get_list {
     my ($it, $attr) = @_;
