@@ -12,6 +12,8 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
+import crc.util.regexp.RegExp;
+
 
 /** Handler class for &lt;subst&gt tag 
  * <dl>
@@ -32,29 +34,18 @@ public class Subst extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    String match = it.attrString("match");
+    if (ii.missing(ia, "match", match)) return;
 
-    ii.unimplemented(ia);
+    String repl = it.attrString("result");
+
+    String text = it.contentString();
+    try {
+      RegExp re = new RegExp(match);
+      text = re.substitute(text, repl, true);
+    } catch (Exception e) {
+      ii.error(ia, "Exception in regexp: "+e.toString());
+    }
+    ii.replaceIt(text);
   }
 }
-
-/* ====================================================================
-### <subst match="pattern" result="pattern">text</subst>
-### global by default
-define_actor('subst', 'dscr' => "substitute pattern in text");
-
-sub subst_handle{
-    my ($self, $it, $ii) = @_;
-
-    my $match = $it->attr('match');
-    return unless defined $match;
-    my $pattern = $it->attr('result');
-    my $string = $it->content_string;
-    if($string =~ s/$match/$pattern/g){
-	$ii->replace_it($string);
-	return;
-    }
-    $ii->replace_it('');
-		    
-}
-
-*/
