@@ -93,19 +93,48 @@ public class ActiveDoc extends TopProcessor {
   ** Setup:
   ************************************************************************/
 
+  /** Initialize the various entities.  
+   *	Done in four separate methods (counting super), for easy customization.
+   *
+   * @see crc.dps.process.TopProcessor#initializeEntities
+   * @see #initializeNamespaceEntities
+   * @see #initializeLegacyEntities
+   * @see #initializeHookEntities
+   */
   public void initializeEntities() {
     super.initializeEntities();
+    initializeNamespaceEntities();
     initializeLegacyEntities();
     initializeHookEntities();
   }
 
-  public void initializeLegacyEntities() {
-    Transaction transaction = getTransaction();
+  /** Initialize the entities that contain namespaces. */
+  public void initializeNamespaceEntities() {
 
+    define("PIA", Pia.instance().properties());
+    if (agent != null) define("AGENT", agent);
+
+    Transaction transaction = getTransaction();
     if (transaction != null) {
       define("TRANS", transaction);
       //define("HEADERS",transaction.getHeaders());
 
+      Transaction req = transaction.requestTran();
+      define("REQ", req);
+      if (req.hasQueryString()){
+	define("FORM", req.getParameters());
+      }
+    }
+
+  }
+
+  /** Initialize the entities that correspond to entities in the old
+   *	(legacy) InterForm processor.  Many files still use them.
+   */
+  public void initializeLegacyEntities() {
+    Transaction transaction = getTransaction();
+
+    if (transaction != null) {
       Transaction req = transaction.requestTran();
 
       URL url = transaction.requestURL();
@@ -116,7 +145,6 @@ public class ActiveDoc extends TopProcessor {
       // form parameters might be either query string or POST data
       if (req.hasQueryString()){
         define("urlQuery",  req.queryString());
-	define("FORM", req.getParameters());
       } else {
 	define("urlQuery",  "");
 	define("FORM", new Table());
@@ -144,6 +172,8 @@ public class ActiveDoc extends TopProcessor {
     }
 
     Pia pia = Pia.instance();
+    define("PIA", pia.properties());
+
     define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
     define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
     define("piaPORT", pia.properties().getProperty(Pia.PIA_PORT));
@@ -165,11 +195,6 @@ public class ActiveDoc extends TopProcessor {
       define("agentPath", "/"+agent.name());
     } else {
       define("agentPath", "/"+agent.type()+"/"+agent.name());
-    }
-
-    try {
-      define("AGENT", (Tabular)agent);
-    } catch (Exception e) {
     }
 
    define("agentNames", resolver.agentNames());
