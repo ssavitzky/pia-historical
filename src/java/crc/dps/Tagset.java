@@ -212,11 +212,11 @@ public interface Tagset extends DOMFactory {
    *	Node types other than Element unless the implementation gives
    *	them distinctive, generated names.
    */
-  public Enumeration elementNames();
+  public Enumeration handlerNames();
 
   /** Returns an Enumeration of the element names defined in this table and
-   *	its context. */
-  public Enumeration allNames();
+   *	its context, in order of definition (most recent last). */
+  public Enumeration allHandlerNames();
 
 
 }
