@@ -1,0 +1,20 @@
+#!/bin/sh
+#	$Id$
+# Pia launcher.  Also handles other classes in the PIA hierarchy.
+#	Always tacks on -p propertyFile, which may be a misfeature.
+#
+
+#find out where jar is
+PRG=`type -p jar` >/dev/null 2>&1
+JAR_HOME=`dirname $PRG`/..
+
+#where jar lives
+JAR_BIN=$JAR_HOME/bin/jar
+export JAR_BIN
+
+exec $JAR_BIN cvf crc.zip `cat pia_class.toc`
+
+
+
+
+
