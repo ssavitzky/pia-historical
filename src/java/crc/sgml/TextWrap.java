@@ -30,6 +30,14 @@ public class TextWrap extends Text {
     return new TextWrap(value);
   }
 
+  public Object value() {
+    return value;
+  }
+
+  public void value(Object v) {
+    value = v;
+  }
+
   /************************************************************************
   ** SGML interface:
   ************************************************************************/

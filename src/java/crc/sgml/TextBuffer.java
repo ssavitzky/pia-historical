@@ -11,8 +11,10 @@ import crc.ds.Index;
  *	TextBuffer is meant to be appended to.  It is the only subclass
  *	of Text that, like Tokens, appends ``in place''. <p>
  */
-public class TextBuffer extends Text {
-  private StringBuffer buffer;
+public class TextBuffer extends TextLike {
+
+  /** The StringBuffer being wrapped. */
+  protected final StringBuffer buffer;
 
   /************************************************************************
   ** Object operations:
@@ -24,6 +26,10 @@ public class TextBuffer extends Text {
 
   public Object clone() {
     return new TextBuffer(buffer);
+  }
+
+  public StringBuffer getBuffer() {
+    return buffer;
   }
 
   /************************************************************************

@@ -17,7 +17,9 @@ FILES = \
 	SGML.java \
 	TableElement.java \
 	Text.java \
+	TextLike.java \
 	TextBuffer.java \
+	TextWrap.java \
 	Token.java \
 	Tokens.java \
 	Util.java
@@ -46,7 +48,13 @@ Element.class: Token.java SGML.java
 
 SGML.class: SGML.java Attrs.java
 
-Text.class: Text.java Token.java SGML.java
+TextLike.class: Token.java SGML.java
+
+Text.class: TextLike.java Token.java SGML.java
+
+TextBuffer.class: TextLike.java Token.java SGML.java
+
+TextWrap.class: TextLike.java Token.java SGML.java
 
 Token.class: Token.java Tokens.java SGML.java ../ds/List.java ../ds/Table.java
 
