@@ -103,6 +103,55 @@ public class BasicHandler extends AbstractHandler {
   }
 
   /************************************************************************
+  ** Parsing Operations:
+  ************************************************************************/
+
+  /** If the handler corresponds to an Element, this determines its syntax.
+   *	<dl compact>
+   *	    <dt> -1 <dd> known to be non-empty.
+   *	    <dt>  0 <dd> unknown
+   *	    <dt>  1 <dd> known to be empty.
+   *	</dl>
+   */
+  protected int elementSyntax = 0;
+
+  /** What the Handler knows about a Token's syntax without looking at it.
+   *
+   * @return
+   *	<dl compact>
+   *	    <dt> -1 <dd> known to be non-empty.
+   *	    <dt>  0 <dd> unknown
+   *	    <dt>  1 <dd> known to be empty.
+   *	</dl>
+   */
+  public int getElementSyntax() { return elementSyntax; }
+  public setElementSyntax(int value) { elementSyntax = value; }
+  
+  /** Called to determine whether the given Token (for which this is
+   *	the Handler) is an empty element, or whether content is expected.
+   *	It is assumed that <code>this</code> is the result of the Tagset
+   *	method <code>handlerForTag</code>.
+   *
+   *	If elementSyntax is zero, 
+   *
+   * @param t the Token for which this is the handler, and for which the
+   *	ssyntax is being checked.
+   * @return <code>true</code> if the Token is an empty Element.
+   * @see crc.dps.Tagset
+   */
+  public boolean isEmptyElement(Token t) {
+    if (elementSyntax != 0) return elementSyntax > 0;
+    else return t.hasEmptyDelimiter();
+  }
+
+  /** Called to determine the correct Handler for a given Token.
+   *	The default action is to return <code>this</code>.
+   */
+  public Handler getHandlerForToken(Token t) {
+    return this;
+  }
+
+  /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
 

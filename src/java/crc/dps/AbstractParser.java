@@ -5,11 +5,18 @@
 package crc.dps;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
+import java.util.BitSet;
 
+import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.Reader;
+import java.io.IOException;
 
 /**
- * An abstract implementation of the Parser interface. 
+ * An abstract implementation of the Parser interface.  <p>
+ *
+ *	This class contains the methods required to recognize the basic
+ *	low-level syntactic elements of SGML such as identifiers and tags.
  *
  *	  <p>
  *
@@ -28,9 +35,11 @@ public abstract class AbstractParser extends AbstractInputFrame
 
   protected Processor processor;
 
-  /** Returns the Processor for which this AbstractParser is providing input.
-   */
   public Processor getProcessor() { return processor; }
+
+  public void setProcessor(Processor aProcessor) {
+    processor = aProcessor;
+  }
 
   /************************************************************************
   ** Reader Access:
@@ -48,19 +57,224 @@ public abstract class AbstractParser extends AbstractInputFrame
   protected Tagset tagset;
   protected EntityTable entities; 
 
-  /** Returns the Tagset being used by the AbstractParser. */
   public Tagset getTagset() { return tagset; }
+  public void setTagset(Tagset aTagset) { tagset = aTagset; }
 
-  /** Returns the character entity table to be used by the AbstractParser.
-   *	Entities in the table are quietly replaced by their values;
-   *	they should correspond only to single characters.  This entity
-   *	table is used for things like <code>&amp;amp;</code>.  */
   public EntityTable getEntities() { return entities; }
+  public void setEntities(EntityTable anEntityTable) {
+    entities = anEntityTable;
+  }
 
   /************************************************************************
-  ** Scanning Utilities:
+  ** Syntax tables:
   ************************************************************************/
 
+  /** True for every character that is part of an identifier.  Does not
+   *	distinguish the characters ('-' and '.') that are not officially
+   *	permitted at the <em>beginning</em> of an identifier. */
+  public static BitSet isIdent;
+
+  /** True for every character that is whitespace. */
+  public static BitSet isSpace;
+  
+  /** True for every character permitted in a URL */
+  public static BitSet isURL;
+
+  /** True for every character not permitted in an attribute */
+  public static BitSet notAttr;
+
+  /** Initialize the identifier and whitespace BitSet's.  Since we are only 
+   *	concerned with the SGML reference syntax, we don't have to make these 
+   *	public or have a set for each Parser object. */
+  static void initializeTables() {
+    int i;
+    isIdent = new BitSet();
+    isSpace = new BitSet();
+    isURL = new BitSet();
+    notAttr = new BitSet();
+    for (i = 0; i <= ' '; ++i) { isSpace.set(i); notAttr.set(i); }
+    for (i = 'A'; i <= 'Z'; ++i) { isIdent.set(i); isURL.set(i); }
+    for (i = 'a'; i <= 'z'; ++i) { isIdent.set(i); isURL.set(i); }
+    for (i = '0'; i <= '9'; ++i) { isIdent.set(i); isURL.set(i); }
+    isIdent.set('-'); isURL.set('-');
+    isIdent.set('.'); isURL.set('.');
+    String url = ":/?+~%&;";
+    for (i = 0; i < url.length(); ++i) isURL.set(url.charAt(i));
+    String s = "<>\"'";
+    for (i = 0; i < s.length(); ++i) notAttr.set(s.charAt(i));
+  }
+
+
+
+  /************************************************************************
+  ** Low-level Recognizers:
+  ************************************************************************/
+
+  /** Holds characters that have been ``eaten'' from the stream. */
+  protected StringBuffer buf = new StringBuffer(256);
+
+  /** Holds an identifier ``eaten'' from the stream. */
+  protected String ident;
+
+  /** Holds the character that terminated the current token, or -1 if
+   *    the token was terminated by end-of-file.  It will be prepended to 
+   *	the <em>next</em> token if non-null.  This gives the scanner
+   *	one character of lookahead, which is almost always enough.
+   */
+  protected int last = 0;
+
+  /** Returns true if it is known that no more tokens are available. 
+   *	The implementation takes advantage of the fact that a Reader returns
+   *	<code>-1</code> if no input is available, and that the last character
+   *	read is always in <code>last</code>.
+   */
+  public boolean atEnd() {
+    return last < 0;
+  }
+
+  /** Holds the next item, usually either an entity reference or a tag. */
+  protected Token next;
+
+  /** Starting at <code>last</code> (or the next available character
+   *	if <code>last</code> is zero), append characters to
+   *	<code>buf</code> until the next non-ordinary character (&amp; or
+   *	&lt;) or end-of-buffer is seen.  The terminating character ends
+   *	up in <code>last</code>.
+   *
+   *	@return true if at least one character is eaten. */
+   protected final boolean eatText() throws IOException {
+    if (last == 0) last = in.read();
+    if (last < 0) return false;
+    if (last == '&' || last == '<') return true;
+    do {
+      buf.append((char)last);
+      last = in.read();
+    } while (last >= 0 && last != '&' && last != '<');
+    return last >= 0;    
+  }
+
+  /** Starting at <code>last</code> (or the next available character
+   *	if <code>last</code> is zero), append characters to a
+   *	String until a character that does not belong in an identifier
+   *	is found.  Identifiers, in SGML-land, may include letters,
+   *	digits, "-", and ".".  The terminating character ends up in
+   *	<code>last</code>, and the string in <code>ident</code>.
+   *
+   *	@return true if at least one character is eaten.  */
+   protected final boolean eatIdent() throws IOException {
+    if (last == 0) last = in.read();
+    String id = "";
+    if (last < 0 || ! isIdent.get(last)) return false;
+    do {
+      id += (char)last;
+      last = in.read();
+    } while (last >= 0 && isIdent.get(last));
+    ident = id;
+    return true;    
+  }
+    
+  /** Starting at the next available character, append characters to
+   *	<code>buf</code> until <code>aCharacter</code> (typically a
+   *	quote) is seen.
+   *
+   *	@return false if end-of-file is reached before a match. */
+   protected final boolean eatUntil(int aCharacter, boolean checkEntities)
+       throws IOException {
+    if (last == 0) last = in.read();
+    while (last >= 0 && last != aCharacter
+	   && !(checkEntities && last == '&')) {
+      buf.append((char)last);
+      last = in.read();
+    } 
+    return last >= 0;    
+  }
+
+  /** Starting at the next available character, append characters to
+   *	<code>buf</code> until a character in <code>aBitSet</code> is seen.
+   *
+   *	@return false if end-of-file is reached before a match. */
+   protected final boolean eatUntil(BitSet aBitSet, boolean checkEntities)
+       throws IOException {
+    if (last == 0) last = in.read();
+    while (last >= 0 && ! aBitSet.get(last)
+	   && !(checkEntities && last == '&')) {
+      buf.append((char)last);
+      last = in.read();
+    } 
+    return last >= 0;    
+  }
+
+  /** Starting at the next available character, append characters to
+   *	<code>buf</code> until <code>aString</code> (typically an end
+   *	tag) is matched.  A case-insensitive match is done.
+   *
+   *	@return false if end-of-file is reached before a match. */
+   protected final boolean eatUntil(String aString, boolean checkEntities)
+       throws IOException {
+    int start = buf.length();
+    aString = aString.toLowerCase();
+    int matchLength = aString.length();
+    char aCharacter = aString.charAt(0);
+    int itsPosition = -1;
+    int nextPosition = aString.indexOf(aCharacter, 1);
+
+    if (last == 0) last = in.read();
+    while (last >= 0) {
+
+      /* This could be faster, but it could be a lot slower, too.  We
+       * append, looking for aCharacter, the first character in
+       * aString.  We keep track of its position in itsPosition, the
+       * tentative starting point of a match to aString.
+       */
+      if (Character.toLowerCase((char)last) == aCharacter && itsPosition < 0) {
+	itsPosition = buf.length();
+      }
+      buf.append((char)last);
+
+      /* When we have enough characters to match the whole string, we
+       * try for a match.  This would be much simpler if StringBuffer
+       * had all the methods of String.
+       */
+      if (itsPosition >= 0 &&
+	  (buf.length() - itsPosition) == matchLength) {
+	int i = 1, j = itsPosition + 1;
+	for ( ; i < matchLength; ++i, ++j) {
+	  if (aString.charAt(i) != Character.toLowerCase(buf.charAt(j))) {
+	    j = 0;
+	    break;
+	  }
+	}
+	if (j > 0) {		// Success
+	  buf.setLength(buf.length() - matchLength);
+	  return true;
+	}
+
+	/* The match failed.  Advance the tentative starting point to the
+	 * next occurrence of aCharacter, if any.
+	 */
+	if (nextPosition > 0 && nextPosition < i) 
+	  itsPosition += nextPosition;
+	else
+	  itsPosition = -1;
+      }
+      last = in.read();
+    } 
+    // ===
+    return false;
+  }
+
+  /** Starting at <code>last</code> (or the next available character
+   *	if <code>last</code> is zero), append spaces to 
+   * <code>buf</code> until a non-blank character is reached.  */
+   protected final boolean eatSpaces() throws IOException {
+    if (last == 0) last = in.read();
+    if (last < 0) return false;
+    while (last >= 0 && last <= ' ') {
+      buf.append((char)last);
+      last = in.read();
+    }
+    return last >= 0;    
+  }
 
 
   /************************************************************************
@@ -72,4 +286,26 @@ public abstract class AbstractParser extends AbstractInputFrame
   /************************************************************************
   ** Construction:
   ************************************************************************/
+  
+  public AbstractParser() {
+    if (isIdent == null) initializeTables();
+  }
+
+  public AbstractParser(InputStack previous) {
+    super(previous);
+    if (isIdent == null) initializeTables();
+  }
+
+  public AbstractParser(InputStream in, InputStack previous) {
+    super(previous);
+    this.in = new InputStreamReader(in);
+    if (isIdent == null) initializeTables();
+  }
+
+  public AbstractParser(Reader in, InputStack previous) {
+    super(previous);
+    this.in = in;
+    if (isIdent == null) initializeTables();
+  }
+
 }

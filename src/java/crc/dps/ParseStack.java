@@ -112,14 +112,23 @@ public class ParseStack extends StackFrame {
   ************************************************************************/
 
   /** Returns the current EntityTable. 
-   *	Returns null if no entities are defined at this level.  
+   *	Goes up the context stack if no entities are defined at this level.  
    */
   public final EntityTable getEntities() {
+    if (entities != null) return entities;
+    else if (handlerContext == null) return null;
+    else return handlerContext.getEntities();
+  }
+
+  /** Returns the current local EntityTable. 
+   *	Returns null if no entities are defined at this level.  
+   */
+  public final EntityTable getLocalEntities() {
     return entities;
   }
 
   /** Returns the next stack frame in which entities are defined. 
-   *	Using <code>entityContext</code> instead of <code>next</code>
+   *	Using <code>entityContext</code> instead of <code>parseStack</code>
    *	allows the search for an entity's value to skip over unproductive
    *	regions of the stack.
    */
@@ -128,14 +137,23 @@ public class ParseStack extends StackFrame {
   }
 
   /** Returns the current Tagset. 
-   *	Returns null if no entities are defined at this level.  
+   *	Goes up the context stack if no handlers are defined at this level.  
    */
   public final Tagset getHandlers() {
+    if (handlers != null) return handlers;
+    else if (handlerContext == null) return null;
+    else return handlerContext.getHandlers();
+  }
+
+  /** Returns the current local Tagset. 
+   *	Returns null if no handlers are defined at this level.  
+   */
+  public final Tagset getLocalHandlers() {
     return handlers;
   }
 
   /** Returns the next stack frame in which entities are defined. 
-   *	Using <code>handlerContext</code> instead of <code>next</code>
+   *	Using <code>handlerContext</code> instead of <code>parseStack</code>
    *	allows the search for an handler's value to skip over unproductive
    *	regions of the stack.
    */
@@ -148,7 +166,7 @@ public class ParseStack extends StackFrame {
   ************************************************************************/
 
   /** The pointer to the next ParseStack frame in the stack. */
-  protected ParseStack next = null;
+  protected ParseStack parseStack = null;
 
   
   /************************************************************************
@@ -158,13 +176,61 @@ public class ParseStack extends StackFrame {
   /** Returns the next ParseStack frame in the linked list.
    */
   public final ParseStack getNext() {
-    return next;
+    return parseStack;
   }
 
   public final StackFrame getNextFrame() {
-    return next;
+    return parseStack;
   }
 
+
+  /************************************************************************
+  ** Pushing and Popping:
+  ************************************************************************/
+
+  protected void push() {
+
+    parseStack = new ParseStack(parseStack);
+
+    depth++;
+    parseStack.node 		= node;
+    parseStack.token		= token;
+    parseStack.parsing		= parsing;
+    parseStack.expanding	= expanding;
+    parseStack.passing		= passing;
+    parseStack.entities		= entities;
+    parseStack.entityContext	= entityContext;
+    parseStack.handlers		= handlers;
+    parseStack.handlerContext	= handlerContext;
+  }
+
+  /** Push a Token onto the parse stack. */
+  public void pushToken(Token aToken){
+    push();
+    node = null;
+    token = aToken;
+  }
+
+  /** Pop the parse stack. 
+   * @return <code>false</code> if the parse stack is empty
+   */
+  public boolean popParseStack() {
+    if (parseStack == null) return false;
+
+    depth--;
+    node 		= parseStack.node;
+    token 		= parseStack.token;
+    parsing 		= parseStack.parsing;
+    expanding		= parseStack.expanding;
+    passing 		= parseStack.passing;
+    entities 		= parseStack.entities;
+    entityContext 	= parseStack.entityContext;
+    handlers 		= parseStack.handlers;
+    handlerContext 	= parseStack.handlerContext;
+    parseStack 		= parseStack.parseStack;
+
+    return true;
+  }
 
   /************************************************************************
   ** Construction:
@@ -174,9 +240,9 @@ public class ParseStack extends StackFrame {
     super(0);
   }
 
-  public ParseStack(ParseStack nxt) {
-    super(nxt.depth + 1);
-    next = nxt;
+  public ParseStack(ParseStack next) {
+    super(next.depth + 1);
+    parseStack = next;
   }
 
 }

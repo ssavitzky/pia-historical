@@ -5,7 +5,6 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.DOMFactory;
-import crc.dom.NodeType;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
 import crc.dom.AttributeList;
@@ -39,23 +38,24 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   ** Instance Variables:
   ************************************************************************/
 
-  protected Node originalNode;
-  protected Handler handler;
-  protected ElementDefinition definition;
+  protected Node originalNode = null;
+  protected Handler handler = null;
+  protected ElementDefinition definition = null;
 
   /** Values are -1 for start tag, 1 for end tag, 0 for whole node. */
-  protected int syntax;
+  protected int syntax = -1;
 
-  protected boolean isEmpty;
-  protected boolean hasEmptyDelim;
-  protected boolean implicitEnd;
+  protected boolean isEmpty = true;
+  protected boolean hasEmptyDelim = false;
+  protected boolean hasClosingDelim = true;
+  protected boolean implicitEnd = false;
 
   protected int nodeType;
 
-  protected String data;
-  protected boolean isIgnorableWhitespace;
+  protected String data = null;
+  protected boolean isIgnorableWhitespace = false;
 
-  protected String name;
+  protected String name = null;
 
   /************************************************************************
   ** Semantics:
@@ -154,12 +154,11 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     return isEmpty;
   }
 
-  /** Returns true if the Token corresponds to an empty Element and
-   *	its (start) tag contains the final ``<code>/</code>'' that marks
-   *	an empty element in XML.
-   */
   public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
   public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
+
+  public boolean hasClosingDelimiter() { return hasClosingDelim; }
+  public void setHasClosingDelimiter(boolean value) { hasClosingDelim = value; }
 
   /** Returns true if the Token corresponds to an Element which has content
    *	but no end tag, or to an end tag that was omitted from the input or 
@@ -197,6 +196,12 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 
   public BasicToken(int nodeType) {
     this.nodeType = nodeType;
+  }
+
+  public BasicToken(int nodeType, String name, String data) {
+    this.nodeType = nodeType;
+    setName(name);
+    setData(data);
   }
 
   public BasicToken(int nodeType, String data) {
@@ -300,6 +305,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       return "<?" + (name == null? "" : name);
 			 
     default:
+      // if (originalNode != null) return originalNode.startString();
       return "<!-- nodeType=" + getNodeType() + " -->";
     }
   }
@@ -323,6 +329,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       return (data == null? "" : " " + data);
 			 
     default:
+      // if (originalNode != null) return originalNode.contentString();
       return "";
     }
   }
@@ -346,6 +353,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       return ">";
 			 
     default:
+      // if (originalNode != null) return originalNode.endString();
       return "";
     }
   }
@@ -358,7 +366,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public String toString() {
     if (handler != null) return handler.convertToString(this);
     else if (syntax == 0) {
-      return basicToString(-1) + basicToString(0) + basicToString(1); 
+      return startString() + contentString() + endString(); 
     } else {
       return basicToString(syntax);
     }
@@ -443,6 +451,51 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       return node;
     } else {
       return createNode(f);
+    }
+  }
+
+  /************************************************************************
+  ** Convenience Functions:
+  ************************************************************************/
+
+  /** Append a new child.
+   *	Can be more efficient than <code>insertBefore()</code>
+   */
+  public void append(Token newChild) {
+    try {
+      insertBefore(newChild, null);
+    } catch (crc.dom.NotMyChildException e) {
+	  // === not clear what to do here...  shouldn't happen. ===
+    }
+  }
+  /** Append a new attribute.
+   *	Can be more efficient than <code>insertBefore()</code>
+   */
+  public void addAttr(String aname, crc.dom.NodeList value) {
+    crc.dom.Attribute attr = new crc.dom.BasicAttribute(aname, value);
+    attr.setSpecified(value != null);
+    setAttribute(attr);
+  }
+
+  /** Create a new node for children to append to. */
+  public Node createNodeUnder(Node parent) {
+    Node node = (handler == null)? this : handler.createNode(this);
+    if (parent != null && node != null) try {
+      parent.insertBefore(node, null);
+    } catch (crc.dom.NotMyChildException e) {
+	  // === not clear what to do here...  shouldn't happen. ===
+    }
+    return node;
+  }
+
+  /** Create a new node and append it to the given node. */
+  public void appendTreeTo(Node parent) {
+    // === This should probably call createTree instead of createNode. 
+    Node node = (handler == null)? this : handler.createNode(this);
+    if (parent != null && node != null) try {
+      parent.insertBefore(node, null);
+    } catch (crc.dom.NotMyChildException e) {
+	  // === not clear what to do here...  shouldn't happen. ===
     }
   }
 

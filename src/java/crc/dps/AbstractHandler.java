@@ -6,7 +6,6 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.BasicElement;
 import crc.dom.NodeList;
-import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
 /**
@@ -105,7 +104,7 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
    *	if necessary.
    */
   public String convertToString(Token t) {
-    return t.basicToString();
+    return t.startString() + t.contentString() + t.endString();
   }
 
   /************************************************************************

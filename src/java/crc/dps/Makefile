@@ -21,10 +21,12 @@ FILES = \
 	BasicProcessor.java \
 	BasicTagset.java \
 	BasicToken.java \
+	BasicTokenList.java \
 	EntityTable.java \
 	Handler.java \
 	Input.java \
 	InputStack.java \
+	NodeType.java \
 	Output.java \
 	ParseStack.java \
 	Parser.java \
@@ -32,6 +34,7 @@ FILES = \
 	StackFrame.java \
 	Tagset.java \
 	Token.java \
+	TokenList.java \
 	Util.java
 
 include $(TOPDIR)/makefiles/file.make

@@ -15,7 +15,7 @@ import crc.dom.NodeList;
  *		 along with additional processor state.
  *	</ol>
  *
- *	There are two ways in which an object can interface to a 
+ *	There are three ways in which an object can interface to a 
  *	Processor:
  *
  *	<ol>
@@ -28,10 +28,19 @@ import crc.dom.NodeList;
  *		 to the Output as they become available.  In this case
  *		 the Processor runs ``to completion,'' which is somewhat
  *		 more efficient.
+ *
+ *	    <li> ``Parse mode'' -- the Processor constructs a complete
+ *		 Document, which the object requests.
  *	</ol>
  *
  *	A Processor will normally ensure that any element started inside
  *	an Input is ended when that Input is popped off the stack.<p>
+ *
+ * === The ideal thing would be for a Processor to build documents
+ *	using Token only for the nodes that will have to be
+ *	executable, and objects out of crc.dom for everything else.
+ *	Tricky.  Wonder whether the different ``ways'' above correspond
+ *	to different extensions of Processor...
  *
  * === NOTE: Both Parser and Processor need DTD and parse stack info. ===
  * === it's up to the Parser to associate Handler, etc. with Token. ===
@@ -69,14 +78,11 @@ public interface Processor extends Input {
   ** Context Operations:
   ************************************************************************/
 
-  /** Obtain the Handler for a given tag. */
-  public Handler getHandlerForTag(String tag);
+  /** Obtain the current handler bindings. */
+  public Tagset getHandlers();
 
-  /** Obtain the Handler for a given Node. */
-  public Handler getHandlerForNode(Node aNode);
-
-  /** Obtain the value associated with a given entity. */
-  public NodeList getEntityValue(String name);
+  /** Obtain the current entity bindings. */
+  public EntityTable getEntities();
 
 
   /************************************************************************
@@ -128,9 +134,6 @@ public interface Processor extends Input {
   ** Parse Stack Operations:
   ************************************************************************/
 
-  /** Push a Node onto the parse stack. */
-  public void pushNode(Node aNode);
-
   /** Push a Token onto the parse stack. */
   public void pushToken(Token aToken);
 
@@ -161,10 +164,6 @@ public interface Processor extends Input {
    */
   public void setExpanding(boolean value);
 
-
-  /************************************************************************
-  ** Control Operations:
-  ************************************************************************/
 
   /************************************************************************
   ** Operations Used by Handlers:

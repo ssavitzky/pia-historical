@@ -31,6 +31,10 @@ public interface Parser extends Input {
    */
   public Processor getProcessor();
 
+  /** Sets the Processor for which this Parser is providing input.
+   */
+  public void setProcessor(Processor aProcessor);
+
   /************************************************************************
   ** Reader Access:
   ************************************************************************/
@@ -48,10 +52,15 @@ public interface Parser extends Input {
   /** Returns the Tagset being used by the Parser. */
   public Tagset getTagset();
 
+  /** Sets the Tagset being used by the Parser. */
+  public void setTagset(Tagset aTagset);
+
   /** Returns the character entity table to be used by the Parser.
    *	Entities in the table are quietly replaced by their values;
    *	they should correspond only to single characters.  This entity
    *	table is used for things like <code>&amp;amp;</code>.  */
   public EntityTable getEntities();
 
+  /** Sets the Tagset being used by the Parser. */
+  public void setEntities(EntityTable anEntityTable);
 }

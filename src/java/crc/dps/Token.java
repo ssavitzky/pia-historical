@@ -4,6 +4,7 @@
 
 package crc.dps;
 import crc.dom.Node;
+import crc.dom.NodeList;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
@@ -77,7 +78,7 @@ public interface Token extends Element, Text {
   ** Syntax: convenience flags:
   ************************************************************************/
 
-  /** Returns a negative number is <code>isStartTag</code>, a positive
+  /** Returns a negative number if <code>isStartTag</code>, a positive
    *	number if <code>isEndTag</code>, and zero if <code>isNode</code>.
    */
   public int getSyntax();
@@ -127,6 +128,14 @@ public interface Token extends Element, Text {
 
   /** Sets the internal flag corresponding to hasEmptyDelimiter. */
   public void setHasEmptyDelimiter(boolean value);
+
+  /** Returns true if the Token corresponds to a non-Element and its
+   *	closing delimiter (e.g. <code>;</code> for an Entity) is present.
+   */
+  public boolean hasClosingDelimiter();
+
+  /** Sets the internal flag corresponding to hasClosingDelimiter. */
+  public void setHasClosingDelimiter(boolean value);
 
   /** Returns true if the Token corresponds to an Element which has content
    *	but no end tag, or to an end tag that was omitted from the input or 
@@ -203,4 +212,23 @@ public interface Token extends Element, Text {
    */
   public Node createTree(DOMFactory f);
 
+  /************************************************************************
+  ** Convenience Functions:
+  ************************************************************************/
+
+  /** Append a new child.
+   *	Can be more efficient than <code>insertBefore()</code>
+   */
+  public void append(Token newChild);
+
+  /** Append a new attribute.
+   *	Can be more efficient than <code>insertBefore()</code>
+   */
+  public void addAttr(String aname, NodeList value);
+
+  /** Create a new node for children to append to. */
+  public Node createNodeUnder(Node parent);
+
+  /** Create a new node and append it to the given node. */
+  public void appendTreeTo(Node parent);
 }

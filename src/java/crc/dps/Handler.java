@@ -96,6 +96,35 @@ public interface Handler {
 
 
   /************************************************************************
+  ** Parsing Operations:
+  ************************************************************************/
+
+  /** Called to determine whether the given Token (for which this is
+   *	the Handler) is an empty element, or whether content is expected.
+   *	It is assumed that <code>this</code> is the result of the Tagset
+   *	method <code>handlerForTag</code>.
+   *
+   * @param t the Token for which this is the handler, and for which the
+   *	ssyntax is being checked.
+   * @return <code>true</code> if the Token is an empty Element.
+   * @see crc.dps.Tagset
+   */
+  public boolean isEmptyElement(Token t);
+
+  /** Called to determine the correct Handler for a Token.
+   *	It is assumed that <code>this</code> is the result of the
+   *	Tagset method <code>handlerForTag</code>.  Normally just
+   *	returns <code>this</code>, but a handler may further examine
+   *	the Token's attributes and return something more specific.
+   *
+   * @param t the Token for which this is a handler, and for which the
+   *	nesting is being checked.
+   * @return the correct Handler for the Token.  
+   * @see crc.dps.Tagset
+   */
+  public Handler getHandlerForToken(Token t);
+
+  /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
 

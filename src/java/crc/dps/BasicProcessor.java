@@ -30,12 +30,8 @@ import java.util.NoSuchElementException;
 public class BasicProcessor extends ParseStack implements Processor {
 
   /************************************************************************
-  ** Generating Output:
+  ** Main Loop:
   ************************************************************************/
-
-  protected boolean running;
-
-  public boolean isRunning() { return running; }
 
   /** The Processor's main loop.  <p>
    *
@@ -44,12 +40,69 @@ public class BasicProcessor extends ParseStack implements Processor {
    *	continues until one or more output Tokens are generated. <p>
    *
    *	If the Processor <code>isRunning</code>, the output is sent to
-   *	the current Output.  Otherwise it just waits until the
-   *	<code>nextToken</code> is requested.
+   *	the current Output.  Otherwise it just waits in the
+   *	<code>outputQueue</code> until the <code>nextToken</code> is
+   *	requested.
    */
   protected void process() {
-				// ===
+    Handler handler;
+    // Loop as long as there's input.
+    while ((token = nextInput()) != null) {
+      if (token.isStartTag()) {			// Start tag
+	/* Here's where it gets tricky.
+	 *	We want to end up with parseStack.token being the current
+	 *	token (which we will pop when we see the end tag).  But
+	 *	we have to save all the other variables before calling the
+	 *	handler.
+	 */
+	pushToken(token);
+	handler = token.getHandler();
+	if (expanding) token = handler.startAction(token, this);
+	parseStack.token = token;
+	// === next line: only if expanding.  Otherwise copy the token. ===
+	// === pass expanding to createNodeUnder?
+	if (parsing && token != null) node = token.createNodeUnder(node);
+      } else if (token.isEndTag()) {		// End tag
+	popParseStack();
+	// the handler we want is the one from the start tag on the stack.
+	handler = token.getHandler();
+	if (expanding) token = handler.endAction(token, this);
+	// Don't have to appendTreeTo, since the start tag did that already.
+	// If we were passing, we really need to just pass the end tag.
+	if (passing && token != null) token.setEndTag();
+      } else /* token.isNode() */ {		// Complete node
+	handler = token.getHandler();
+	// === We would like nodeAction on a parsed subtree to do an eval.
+	// === We require eval to be equivalent to the blind expansion...
+	if (expanding) token = handler.nodeAction(token, this);
+	// === next line: only if expanding.  Otherwise copy the token. ===
+	// === Worry about shallow/deep and whether expansion is done.  ===
+	// === pass expanding to appendTreeTo?
+	if (parsing && token != null) token.appendTreeTo(node);
+      }
+
+      // If we still have a token and we're passing it...
+      if (passing && token != null) {
+	// pass the token to the output
+	passOutput(token);
+	// if we're not running continuously, we're done.
+	if (! running) return;
+      }
+    }
   }
+
+  /************************************************************************
+  ** Generating Output:
+  ************************************************************************/
+
+  protected boolean running;
+
+  public boolean isRunning() { return running; }
+
+  /** The output queue. Used as a buffer in case we generate more than
+   *	one token in one step.
+   */
+  protected BasicTokenList outputQueue = new BasicTokenList();
 
   /************************************************************************
   ** Pushing Output from the Processor:
@@ -73,24 +126,20 @@ public class BasicProcessor extends ParseStack implements Processor {
     process();
   }
 
+  protected void passOutput(Token aToken) {
 
-  /************************************************************************
-  ** Context Operations:
-  ************************************************************************/
-
-  /** Obtain the Handler for a given tag. */
-  public Handler getHandlerForTag(String tag) {
-    return null;		// ===
   }
 
-  /** Obtain the Handler for a given Node. */
-  public Handler getHandlerForNode(Node aNode) {
-    return null;		// ===
+  protected void passOutput(TokenList someTokens) {
+
   }
 
-  /** Obtain the value associated with a given entity. */
-  public NodeList getEntityValue(String name) {
-    return null;		// ===
+  protected void passOutput(Node aNode) {
+
+  }
+
+  protected void passOutput(NodeList someNodes) {
+
   }
 
 
@@ -102,6 +151,26 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   /** Return the input stack */
   public InputStack getInputStack() { return inputStack; }
+
+  /** Get a Token from the InputStack.
+   *	If the top Input on the stack returns null, pop it.
+   *<p>
+   *	We don't worry about keeping start and end tags balanced, since
+   *	most Input's don't need it.  When pushing a Parser which may need
+   *	its own environment, we make an empty parse stack frame and push
+   *	an anonymous end tag before pushing the Parser.
+   */
+  public Token nextInput() {
+    if (inputStack == null) return null;
+    Token t;
+    for (t = inputStack.nextToken();
+	 t == null;
+	 t = inputStack.nextToken()) {
+      inputStack = inputStack.popInput();
+      if (inputStack == null) return null;
+    }
+    return t;
+  }
 
   /** Push an Input onto the input stack. */
   public void pushInput(Input anInput) { 
@@ -161,29 +230,11 @@ public class BasicProcessor extends ParseStack implements Processor {
 
 
   /************************************************************************
-  ** Parse Stack Operations:
-  ************************************************************************/
-
-  /** Push a Node onto the parse stack. */
-  public void pushNode(Node aNode){
-				// ===
-  }
-
-  /** Push a Token onto the parse stack. */
-  public void pushToken(Token aToken){
-				// ===
-  }
-
-
-  /************************************************************************
   ** Input Operations:
   ************************************************************************/
 
-    /** Returns the next Token from this source and advances to the
-   *	next.  This is just the typed version of the Enumeration
-   *	operation <code>nextElement</code>, except that it returns
-   *	<code>null</code> at the end of the input rather than throwing
-   *	NoSuchElementException.  <p>
+  /** Returns the next Token from this source and advances to the
+   *	next.
    *
    * @return next Token, 
    *	or <code>null</code> if and only if no more tokens are available.
@@ -193,12 +244,7 @@ public class BasicProcessor extends ParseStack implements Processor {
   }
 
   /** Returns true if it is known that no more Tokens are available.
-   * 	Note that in some cases <code>nextToken</code> will return 
-   *	<code>null</code> even after <code>atEnd</code> has returned 
-   *	<code>false</code> This may happen if, for example, the end of
-   *	a token can be determined without asking the input stream for
-   *	the next character, or if the remainder of the input stream is
-   *	ignorable.
+   *
    */
   public boolean atEnd() {
     return false;		// ===
@@ -227,5 +273,23 @@ public class BasicProcessor extends ParseStack implements Processor {
   ** Operations Used by Handlers:
   ************************************************************************/
 
+  /************************************************************************
+  ** Debugging:
+  **	This is a subset of crc.util.Report.
+  ************************************************************************/
+
+  protected int verbosity = 0;
+
+  public int getVerbosity() { return verbosity; }
+  public void setVerbosity(int value) { verbosity = value; }
+
+  public void debug(String message) {
+    if (verbosity >= 2) System.err.print(message);
+  }
+
+  public void setDebug() 	{ verbosity = 2; }
+  public void setVerbose() 	{ verbosity = 1; }
+  public void setNormal() 	{ verbosity = 0; }
+  public void setQuiet() 	{ verbosity = -1; }
 
 }
