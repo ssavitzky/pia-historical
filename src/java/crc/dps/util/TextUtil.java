@@ -24,7 +24,11 @@ import crc.ds.Table;
 import crc.ds.List;
 import crc.ds.Association;
 
+import crc.util.*;
+
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.net.*;
 
 /**
  * Text-processing utilities.
@@ -373,6 +377,170 @@ public class TextUtil {
 
 
   /************************************************************************
+  ** Encoding/Decoding
+  ************************************************************************/
+
+
+  /** Find each occurrence of encoded html special characters
+    * in a text string and replace with their text
+    * equivalents.
+    * @param text The string contain the encoded character(s).
+    */
+  public static String decodeEntity(String text) {
+
+    String d     = subEntity("&amp;", text);
+    String dd    = subEntity("&lt;", d);
+    String ddd   = subEntity("&gt;", dd);
+    String dddd  = subEntity("&apos;", ddd);
+    String ddddd = subEntity("&quot;", dddd);
+    return ddddd; 
+  }
+
+  /** Loop through string and replace each occurrence of
+      markup entity with its ascii equivalent.  For example,
+      replace &lt; with <.
+      @param ent The entity to be replaced.
+      @param text The string containing the entity.
+  */ 
+  protected static String subEntity(String ent, String text){
+    int spos=0;
+    int epos=0;
+    int fpos=0;
+    boolean found = false;
+    StringBuffer sb = new StringBuffer();
+    
+    fpos = text.indexOf(ent);
+
+    while( fpos != -1 ){
+      found = true;
+      // System.out.println("spos is-->"+Integer.toString(spos));
+      // System.out.println("fpos is-->"+Integer.toString(fpos));
+      // System.out.println("The substring is-->"+text.substring(spos, fpos));
+      sb.append(text.substring(spos, fpos));
+      spos = fpos + ent.length();
+      sb.append((String)predefEntityTab.get(ent));
+      fpos = text.indexOf( ent, fpos+1 );
+    }
+    if( !found ) 
+      return text;
+    
+    if( spos != 0 )
+      sb.append(text.substring(spos, text.length()));
+    
+    return new String( sb );
+  }
+
+  /** Lookup table for html entities and their ascii equivalents */
+  protected static Hashtable predefEntityTab;
+
+  static{
+    predefEntityTab = new Hashtable();
+    predefEntityTab.put("&lt;", "<");
+    predefEntityTab.put("&gt;", ">");
+    predefEntityTab.put("&amp;", "&");
+    predefEntityTab.put("&apos;", "'");
+    predefEntityTab.put("&quot;", "\"");
+  }
+
+
+  /** Encode text node strings using URL encoding. */
+  public static List encodeURLListItems(NodeList nl) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List results = new List();
+    
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if(n.getNodeType() == NodeType.TEXT) {
+	Text tNode = (Text)n;
+	String bStr = URLEncoder.encode(tNode.toString());
+	tNode.setData(bStr);
+	results.push(tNode);
+      }
+      else {
+	// push other node type unchanged
+	results.push(n);
+      }
+    }
+    return results;
+  }
+
+  /** Encode text node contents in base64 */
+  public static List encodeBase64ListItems(NodeList nl) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List results = new List();
+    
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if(n.getNodeType() == NodeType.TEXT) {
+	Text tNode = (Text)n;
+	String s = tNode.toString();
+	String bStr = Utilities.encodeBase64(s.getBytes());
+	tNode.setData(bStr);
+	results.push(tNode);
+      }
+      else {
+	// push other node type unchanged
+	results.push(n);
+      }
+    }
+    return results;
+  }
+
+  /** Returns an List of string tokens which include text plus tokens for
+    * markup characters as well as any accompanying text.
+    */
+  public static List encodeEntityListItems(NodeList nl, String markupChars) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List tokenList = new List();
+    List resultList = new List();
+    
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if(n.getNodeType() == NodeType.TEXT) {
+	Text tNode = (Text)n;
+	String s = tNode.toString();
+
+	// true means return delimiters as tokens
+	tokenList.append(List.split(s, markupChars, true));
+      }
+      else {
+	// push other node type unchanged
+	tokenList.push(n);
+      }
+    }
+    // Convert each string token to the correct node type
+    Enumeration tlEnum = tokenList.elements();
+    while(tlEnum.hasMoreElements()) {
+      String tmpStr = (String)tlEnum.nextElement();
+      // Get token type
+      if(markupChars.indexOf(tmpStr) == -1) {
+	// Not a markup token
+	ParseTreeText ptt = new ParseTreeText(tmpStr);
+	resultList.push(ptt);
+      }
+      else {
+	// Markup token:  do a table lookup to get encoding
+	String tStr = (String)TextUtil.encodeEntityTab.get(tmpStr);
+	ParseTreeEntity pte = new ParseTreeEntity(tStr);
+	resultList.push(pte);
+      }
+    }
+    return resultList;
+  }
+
+
+  /** Lookup table for text characters that are encoded as entities.
+      ParseTreeEntity adds &; to encoding.
+  */
+  public static Hashtable encodeEntityTab;
+
+  static{
+    encodeEntityTab = new Hashtable();
+    encodeEntityTab.put("<", "lt");
+    encodeEntityTab.put(">", "gt");
+    encodeEntityTab.put("&", "amp");
+    encodeEntityTab.put("'", "apos");
+    encodeEntityTab.put("\"", "quot");
+  }
+
+  /************************************************************************
   ** Debugging
   ************************************************************************/
 
@@ -380,6 +548,7 @@ public class TextUtil {
   static public void printNodeList(NodeList nl) {
     NodeEnumerator enum = nl.getEnumerator();
     for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      System.err.println(n.toString());
     }
   }
 
@@ -387,11 +556,10 @@ public class TextUtil {
   // Print contents of a List
   static public void printList(List list) {
     
-    long len = list.size();
-    for (int i = 0; i < len; i++) {
-      Association assoc = (Association)list.at(i);
-      Node value = (Node)assoc.value();
+    System.out.println("List size: " + list.size());
+    Enumeration enum = list.elements();
+    while(enum.hasMoreElements()) {
+      System.err.println(enum.nextElement());
     }
   }
-
 }
