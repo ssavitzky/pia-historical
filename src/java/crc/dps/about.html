@@ -10,6 +10,12 @@
   (DPS), as implemented in the Java module <code>crc.dps</code>.
 </em></blockquote>
 
+<h3>See Also:</h3>
+<ul>
+  <li> <a href="handle/about.html">About Handlers</a> in
+       <a href="handle/"><code>handle/</code></a>
+</ul>
+
 <h2>Philosophy</h2>
 
 The DPS has several ways of looking at a document:
@@ -122,6 +128,9 @@ The fundamental implementation is to <em>traverse</em> an active document
 	      are present. 
        </ul>
 </ul>
+
+(Note that <code>ParseTreeIterator</code> has been dropped from recent
+versions of the DOM Level 1, but it's still a good idea.)<p>
 
 Similarly, the output is constructed by means of an <code>Output</code>.  This
 combines traversal with construction, so that it is possible to add a node to
