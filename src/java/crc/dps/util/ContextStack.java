@@ -83,9 +83,9 @@ public class ContextStack  implements Context {
   /** Get the value of an entity, given its name. 
    * @return <code>null</code> if the entity is undefined.
    */
-  public NodeList getEntityValue(String name) {
+  public NodeList getEntityValue(String name, boolean local) {
     EntityTable ents = getEntities();
-    return (ents == null)? null : ents.getValueForEntity(name, false);
+    return (ents == null)? null : ents.getEntityValue(name, local);
   }
 
   /** Get the value of an index, i.e. a dotted list of entity names. 
@@ -94,8 +94,30 @@ public class ContextStack  implements Context {
   public NodeList getIndexValue(String index) {
     EntityTable ents = getEntities();
     // === getIndexValue currently broken ===
-    return (ents == null)? null : ents.getValueForEntity(index, false);
+    return (ents == null)? null : ents.getEntityValue(index, false);
   }
+
+  /** Set the value of an entity. 
+   */
+  public void setEntityValue(String name, NodeList value, boolean local) {
+    EntityTable ents = getEntities();
+    EntityTable context = (stack == null)? null : stack.getEntities();
+    if (ents == null || (local && ents == context)) {
+      // Either there is no entity table, or we need a local one.
+      // In either case,  make a new one.
+      ents = new BasicEntityTable(ents);
+      setEntities(ents);
+    }
+    ents.setEntityValue(name, value, local);
+  }
+
+  /** Set the value of an index, i.e. a dotted list of entity names. 
+   */
+  public void setIndexValue(String index, NodeList value) {
+    // === getIndexValue currently broken ===
+    setEntityValue(index, value, false);
+  }
+
 
 
   /************************************************************************

@@ -7,7 +7,6 @@ package crc.dps.aux;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
-import crc.dom.NodeEnumerator;
 import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
@@ -33,15 +32,46 @@ import java.util.Enumeration;
 public class Create {
 
   /************************************************************************
-  ** Node Construction:
+  ** NodeList Construction:
   ************************************************************************/
 
-  /** Create a singleton NodeList containing a given node */
+  /** Create a singleton NodeList containing a given node. */
   public static NodeList createNodeList(Node aNode) {
     return new ArrayNodeList(aNode);
   }
 
-  /** Create an arbitrary ActiveNode with optional name and data */
+  /** Create a singleton NodeList containing a given String. */
+  public static NodeList createNodeList(String aString) {
+    return new ArrayNodeList(new ParseTreeText(aString));
+  }
+
+  /** Create a NodeList by splitting a string on whitespace. */
+  public static NodeList split(String aString) {
+    return createNodeList(new java.util.StringTokenizer(aString), " ");
+  }
+
+  /** Create a NodeList from an enumeration of elements, with an optional 
+   *	separator.  The separator is made ignorable if it is whitespace.
+   */
+  public static NodeList createNodeList(Enumeration enum, String sep) {
+    boolean iws = (sep != null) && Test.isWhitespace(sep);
+    ArrayNodeList nl = new ArrayNodeList();
+    while (enum.hasMoreElements()) {
+      Object o = enum.nextElement();
+      if (o instanceof Node) { nl.append((Node)o); }
+      else { nl.append(new ParseTreeText(o.toString())); }
+      if (sep != null && enum.hasMoreElements()) {
+	nl.append(new ParseTreeText(sep, iws));
+      }
+    }
+    return nl;
+  }
+
+  /************************************************************************
+  ** Node Construction:
+  ************************************************************************/
+
+  /** Create an arbitrary ActiveNode with optional name and data. */
   public static ActiveNode createActiveNode(int nodeType,
 					    String name, String data) {
     switch (nodeType) {
@@ -56,7 +86,9 @@ public class Create {
     case NodeType.ELEMENT:
       return new ParseTreeElement(name, null);
     default:
-      return null;
+      return new ParseTreeComment("Undefined type " + nodeType
+				  + " name=" + name + " data=" + data);
+      //return null;
     }
   }
 

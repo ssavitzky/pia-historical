@@ -39,12 +39,12 @@ public class Test {
    */
   public static boolean isWhitespace(String s) {
     for (int i = 0; i < s.length(); ++i) 
-      if (Character.isWhitespace(s.charAt(i))) return true;
-    return false;
+      if (! Character.isWhitespace(s.charAt(i))) return false;
+    return true;
   }
 
   /************************************************************************
-  ** Tests on Nodesd:
+  ** Tests on Nodes:
   ************************************************************************/
 
   /** Determine whether a Node should be considered <code>true</code> as
@@ -52,6 +52,7 @@ public class Test {
    *	are considered false; everything else is true.
    */
   public static boolean trueValue(Node aNode) {
+    if (aNode == null) return false;
     int nodeType = aNode.getNodeType();
     switch (nodeType) {
     case NodeType.ELEMENT: 

@@ -260,7 +260,7 @@ public class CursorStack implements Cursor {
 
   public boolean insideElement(String tag, boolean ignoreCase) {
     for (CursorStack frame = this; frame != null; frame = frame.stack) {
-      if (tagName == null) continue;
+      if (frame.tagName == null) continue;
       if (ignoreCase && tag.equalsIgnoreCase(frame.tagName)) return true;
       else if (!ignoreCase && tag.equals(frame.tagName)) return true;
     }

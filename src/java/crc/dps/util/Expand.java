@@ -64,6 +64,38 @@ public class Expand {
     return out.getString();
   }
 
+  /** Get the processed content of the current node. */
+  public static ParseNodeList getProcessedText(Input in, Context c) {
+    ToNodeList out = new ToNodeList();
+    new BasicProcessor(in, c, new FilterText(out)).processChildren();
+    return out.getList();
+  }
+
+  /** Get the processed content of the current node as a string. */
+  public static String getProcessedTextString(Input in, Context c) {
+    ToString out = new ToString();
+    c.subProcess(in, new FilterText(out)).processChildren();
+    return out.getString();
+  }
+
+  /** Get the unprocessed content of the current node. */
+  public static ParseNodeList getText(Input in, Context c) {
+    ToNodeList out = new ToNodeList();
+    Copy.copyChildren(in, new FilterText(out));
+    return out.getList();
+  }
+
+  /** Get the unprocessed content of the current node as a string. */
+  public static String getTextString(Input in, Context c) {
+    ToString out = new ToString();
+    Copy.copyChildren(in, new FilterText(out));
+    return out.getString();
+  }
+
+  /************************************************************************
+  ** NodeList Processing:
+  ************************************************************************/
+
   /** Process a node list and return the result. */
   public static ParseNodeList processNodes(NodeList nl, Context c) {
     Input in = new FromParseNodes(nl);
@@ -154,8 +186,9 @@ public class Expand {
   /** Expand a single entity. */
   public static void expandEntity(Context c, Entity n, Output dst) {
     String name = n.getName();
-    NodeList value =
-      (name.indexOf('.') >= 0)? c.getIndexValue(name): c.getEntityValue(name);
+    NodeList value = (name.indexOf('.') >= 0)
+      ? c.getIndexValue(name)
+      : c.getEntityValue(name, false);
     if (value == null) {
       dst.putNode(n);
     } else {

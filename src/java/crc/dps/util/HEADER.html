@@ -6,12 +6,53 @@
 This directory contains classes that are used internally in the DPS,
 and rarely need to be exposed to the casual user. <p>
 
-<h2>Classes</h2>
+<h2>Normal Classes</h2>
 
-<ul>
-  <li>
-</ul>
+These are implementations of interfaces in the DPS.
 
+<dl>
+  <dt> <a href="BasicEntityTable.java">BasicEntityTable</a>
+  <dd> Implements <a href="../EntityTable.java">EntityTable</a>
+  <dt> <a href="ContextStack.java">ContextStack</a>
+  <dd> Implements <a href="../Context.java">Context</a>
+  <dt> <a href="CurrentActive.java">CurrentActive</a>
+  <dd> Implements <a href="../Cursor.java">Cursor</a> specifically for parse
+       trees, which are composed of implementations of <a
+       href="../active/ActiveNode">ActiveNode</a> 
+  <dt> <a href="CurrentNode.java">CurrentNode</a>
+  <dd> Implements <a href="../Cursor.java">Cursor</a> for generic Nodes.
+  <dt> <a href="CursorStack.java">CursorStack</a>
+  <dd> Implements <a href="../Cursor.java">Cursor</a> for disconnected
+       instances of <a href="../active/ActiveNode">ActiveNode</a> in parse
+       trees under construction or being output as text.
+</dl>
+
+<h2>Utility Classes</h2>
+
+Utility classes contain only static methods.  A few of the names (e.g.,
+<code>MathUtil</code>) have ``Util'' appended to prevent confusion with
+other frequently-imported classes (e.g., <code>java.lang.Math</code>).
+
+<dl>
+  <dt> <a href="Copy.java">Copy</a>
+  <dd> Methods for copying nodes  and lists to various destinations. 
+  <dt> <a href="Create.java">Create</a>
+  <dd> Methods for creating nodes.
+  <dt> <a href="Expand.java">Expand</a>
+  <dd> Methods for expanding and processing nodes and lists. 
+  <dt> <a href="Extract.java">Extract</a> [tbi]
+  <dd> Methods for extraction, selection, and filtering operations.
+  <dt> <a href="ListUtil.java">ListUtil</a> [tbi]
+  <dd> List-processing utilities.
+  <dt> <a href="MathUtil.java">MathUtil</a> [tbi]
+  <dd> Methods for mathematical operations.
+  <dt> <a href="Sort.java">Sort</a> [tbi]
+  <dd> Methods for sorting.
+  <dt> <a href="Test.java">Test</a>
+  <dd> Methods for performing various tests. 
+  <dt> <a href="TextUtil.java">Text</a> [tbi]
+  <dd> Text processing utilities
+</dl>
 
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>

@@ -55,23 +55,23 @@ public class BasicEntityTable extends ParseTreeElement implements EntityTable {
   /** Return the value for a given name.  Performs recursive lookup in the
    *	context if necessary. 
    */
-  public NodeList getValueForEntity(String name, boolean local) {
+  public NodeList getEntityValue(String name, boolean local) {
     Attribute binding = getBinding(name);
     if (binding != null) return binding.getValue();
     return (local || context == null) ? null
-      				      : context.getValueForEntity(name, local);
+      				      : context.getEntityValue(name, local);
   }
 
   /** Set the value for a given name.
    */
-  public void setValueForEntity(String name, NodeList value, boolean local) {
+  public void setEntityValue(String name, NodeList value, boolean local) {
     Attribute binding = getBinding(name);
     if (binding != null) {
       binding.setValue(value);
     } else if (local || context == null) {
       setBinding(name, value);
     } else {
-      context.setValueForEntity(name, value,local);
+      context.setEntityValue(name, value,local);
     }
   }
 

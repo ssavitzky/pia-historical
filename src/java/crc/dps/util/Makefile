@@ -16,6 +16,7 @@ CLASSES = \
 
 UTILITIES = \
 	Copy.java \
+	Create.java \
 	Expand.java \
 	Log.java \
 	Test.java
