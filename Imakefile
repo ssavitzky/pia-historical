@@ -124,9 +124,9 @@ pia_bin.tar:	pia_bin.toc
 
 pia.toc:: rm_pia_tar prep_rel
 	cd ..;	find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc > pia/pia_bin.toc 
+	    | grep -v CVS | grep -v InternalDoc > pia/pia.toc 
 
-pia.tar:	src.toc
+pia.tar:	pia.toc
 	cd ..; /usr/local/bin/tar cfT pia/pia.tar pia/pia.toc ;	/bin/gzip pia/pia.tar
 
 
