@@ -155,6 +155,23 @@ public interface Token extends Element, Text {
    */
   public String basicToString(int syntax);
 
+  /** Return the String equivalent of the Token's start tag (for an element)
+   *	or the part that comes before the <code>data()</code>.
+   */
+  public String startString();
+
+  /** Return the String equivalent of the Token's content or
+   *	<code>data()</code>.  Entities are substituted for characters
+   *	with special significance, such as ampersand.
+   */
+  public String contentString();
+
+  /** Return the String equivalent of the Token's end tag (for an element)
+   *	or the part that comes after the <code>data()</code>.
+   */
+  public String endString();
+
+
   /************************************************************************
   ** Copying:
   ************************************************************************/

@@ -274,36 +274,82 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    *	method, which in turn is called by the Token's <code>toString</code>.
    */
   public String basicToString(int syntax) {
+    if      (syntax <  0) return startString();
+    else if (syntax == 0) return contentString();
+    else 		  return endString();
+  }
+
+  /** Return the String equivalent of the Token's start tag (for an element)
+   *	or the part that comes before the <code>data()</code>.
+   */
+  public String startString() {
     switch (nodeType) {
     case NodeType.ELEMENT:
-      if (syntax == 0) {
-	return (getChildren() == null)? "" : getChildren().toString();
-      } else if (syntax < 0) {
-	return "<" +
-	  (tagName == null ? "" : tagName) +
-	  (getAttributes() == null ? "" : " " + getAttributes().toString()) +
-	  (hasEmptyDelimiter() ? "/" : "") + ">";
-      } else if (syntax < 0) {
-	if (implicitEnd()) return "";
-	else return "</" + (tagName == null ? "" : tagName) + ">";
-      }
+      return "<" +
+	(tagName == null ? "" : tagName) +
+	(getAttributes() == null ? "" : " " + getAttributes().toString()) +
+	(hasEmptyDelimiter() ? "/" : "") + ">";
+
     case NodeType.TEXT:
-      if (syntax == 0) return data; else return "";
+      return "";
 
     case NodeType.COMMENT:
-      if (syntax == 0) return data;
-      else if (syntax < 0) return "<!--";
-      else if (syntax > 0) return "-->";
-			 
+      return "<!--";
+     
     case NodeType.PI:
-      if (syntax == 0) return (data == null? "" : " " + data);
-      else if (syntax < 0) return "<?" + (name == null? "" : name);
-      else if (syntax > 0) return ">";
+      return "<?" + (name == null? "" : name);
 			 
     default:
-      return "UNKNOWN";
+      return "<!-- nodeType=" + getNodeType() + " -->";
     }
   }
+
+  /** Return the String equivalent of the Token's content or
+   *	<code>data()</code>.  Entities are substituted for characters
+   *	with special significance, such as ampersand.
+   */
+  public String contentString() {
+    switch (nodeType) {
+    case NodeType.ELEMENT:
+      return (getChildren() == null)? "" : getChildren().toString();
+
+    case NodeType.TEXT:
+      return data;		// === need to do entity substitution.
+
+    case NodeType.COMMENT:
+      return data;
+			 
+    case NodeType.PI:
+      return (data == null? "" : " " + data);
+			 
+    default:
+      return "";
+    }
+  }
+
+  /** Return the String equivalent of the Token's end tag (for an element)
+   *	or the part that comes after the <code>data()</code>.
+   */
+  public String endString() {
+    switch (nodeType) {
+    case NodeType.ELEMENT:
+      if (implicitEnd()) return "";
+      else return "</" + (tagName == null ? "" : tagName) + ">";
+
+    case NodeType.TEXT:
+      return "";
+
+    case NodeType.COMMENT:
+      return "-->";
+			 
+    case NodeType.PI:
+      return ">";
+			 
+    default:
+      return "";
+    }
+  }
+
 
   /** Convert the Token to a String using the Handler's
    *	<code>convertToString</code> method, if there is one.
@@ -391,7 +437,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 	try {
 	  node.insertBefore(newChild, null);
 	} catch (crc.dom.NotMyChildException e) {
-	  // === not clear what to do here... ===
+	  // === not clear what to do here...  shouldn't happen. ===
 	}
       }
       return node;

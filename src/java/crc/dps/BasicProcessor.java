@@ -55,7 +55,7 @@ public class BasicProcessor extends ParseStack implements Processor {
   ** Pushing Output from the Processor:
   ************************************************************************/
 
-  protected Output output;
+  protected Output output = null;
 
   /** Registers an Output object for the Processor.  The Processor 
    *	will call the Output's <code>nextToken</code> method with
@@ -69,7 +69,8 @@ public class BasicProcessor extends ParseStack implements Processor {
    *	method returns <code>false</code>.
    */
   public void run() {
-				// ===
+    running = true;
+    process();
   }
 
 
