@@ -1,0 +1,14 @@
+<!-- This gets inserted in the PIA's home page -- -*-html-helper-*- -->
+<!-- Copyright 1997 Ricoh Silicon Valley -->
+
+<a href="/MB3/home.if"><strong>Example MB3 agent</strong></a><br>
+<pre>
+MB3 picture would go here
+</pre>
+<br>
+
+<a href="/PIA/Doc">Information Agency Documentation</a><br>
+<a href="/PIA/Doc/Release">Information Agency Release Notes</a><br>
+<a href="/Agency/bug.if">Information Agency Bug Reports</a>
+<!-- $Id$ -->
+

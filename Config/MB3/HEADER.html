@@ -3,17 +3,19 @@
 <title>MB3 Configuration</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<h1>MB3 Configuration steps</h1>
+<h1>MB3 Configuration steps (on Windows machine)</h1>
 <ol>
-  <li> Install a java runtime (for example jdk1.2)
-  <li> Install the PIA (unpack pia_bin.tgz)
-  <li> If on a windows platform, make sure that police size of the environment
-       for DOS programs is sufficiently large (1024 -- see properties of
-        <a href=../../bin/pia.bat>PIADIR/bin/pia.bat </a>)
-  <li> Copy the contents of the  <a href=my>my </a> subdirectory to the USRDIR
-       (normally ~/.pia)  (this step can be skipped for the MB3 distribution
-       which already has the configuration files in the proper place)
-  <li> Start the pia by clicking on PIADIR/bin/pia.bat (you may want to put
+  <li> Download and install a java runtime (click <a href=jdk1.2beta2.exe>here
+       for jdk1.2</a> -- For convenience use default installation directory -- c:\jdk1.2beta2)
+  <li> Install the PIA (download and unpack <a href=../../pia_bin.tgz>pia_bin.tgz</a>)
+   <li> Copy the contents of the  <a href=my>my </a> subdirectory to the USRDIR
+       directory
+       (USRDIR by default is ~/.pia on Unix system, c:\PIAUSERS\nobody on windows.)  
+  <li> Copy the contents of the  <a href=piajdk.bat>piajdk.bat </a> to
+       PIADIR/bin/piajdk.bat -- overwriting the existing file which has path
+       names set up for the CD-ROM.  Check the properties of this batch file
+       and make sure that the environment memory is set to at least 1024. Now
+       start the Agency  using this batch file (you may want to put a shortcut to
        this in the windows startup folder along with a web browser).
   <li> (optional) Configure web browsers on the MB3 to use the Agency
        (<code>localhost:8888 </code>) as proxy.
@@ -26,7 +28,7 @@
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Mar 27 18:16:57 1998
+Last modified: Mon Mar 30 21:19:34 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
