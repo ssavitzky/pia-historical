@@ -35,10 +35,20 @@ public final class GetAgent implements UnaryFunctor{
       if( !url ) return null;
       String path = url.getFile();
       if( !path ) return null;
+
       if( path.startsWith("/") ){
-	StringTokenizer tokens = new StringTokenizer(path, "/");
-	if( tokens.hasMoreTokens() )
-	  String name = tokens.nextToken();
+	StreamParser sp = new StreamParser( new StringBufferInputStream(path) );
+	try{
+	  Object o = sp.nextToken();  // first "/"
+	  o = sp.nextToken();         
+	  if( o instanceof String ){
+	    name = (String)o;         // \w+ equivalent
+	  }
+	}catch(IOException e1){
+	  e.printStackTrace();
+	}catch(NoSuchElementException e2){
+	  
+	}
       }
       return name;
     }
