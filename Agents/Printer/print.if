@@ -12,7 +12,7 @@ return $element;
 
 <code language=perl>
 my $printer=$current_self->option('device');
-$printer="ps3";
+$printer="ps3"  unless $printer;
 if(! $printer){
 my $element=IF::IT->new('a',href => "/$name/options.if");
 $element->push_content("please specify a printer");
@@ -64,6 +64,6 @@ return "neither post nor put\n";
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Tue Nov 12 19:53:18 1996
+Last modified: Tue Nov 12 20:10:17 1996
 <!-- hhmts end -->
 </body></html>
