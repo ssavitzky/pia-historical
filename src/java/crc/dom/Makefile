@@ -14,6 +14,7 @@ FILES = \
 	Attribute.java \
 	AttributeList.java \
 	Comment.java \
+	Declaration.java \
 	DOM.java \
 	DOMFactory.java \
 	Document.java \
