@@ -16,6 +16,7 @@ import crc.sgml.Element;
 import crc.sgml.DescriptionList;
 
 import java.util.Enumeration;
+import java.util.Vector;
 import java.util.StringTokenizer;
 
 import crc.pia.Pia;
@@ -526,19 +527,22 @@ public class Index {
       what = nextPositions(); 
     }
     
-    /*
+    
+    System.out.println("my class is-->"+datum.getClass().toString());
+    System.out.println("my content is-->"+Integer.toString(datum.content().nItems()));
+
     if( datum instanceof Tokens && datum.content().nItems() == 1 ){
       // datum is a Tokens.  return a Token instead with the datum's content
       
       System.out.println("Datum is a Tokens with 1 content");
       
       SGML element = datum.content().itemAt(0);
-      if( element instanceof Token )
+      if( element.isToken())
 	System.out.println("Datum is return as a Token");
 
       return element;
     }
-    */
+    
     return datum;
   }
 
@@ -551,7 +555,54 @@ public class Index {
     return lookup(data);
   }
 
-  
+  protected SGML putAt( SGML cs, int where ){
+    Tokens conts = cs.content();
+    SGML e = cs;
+    SGML target;
+    int len = cs.content().nItems();
+
+    for(int i = 0; i < len; i++){
+      e = conts.itemAt( i );
+      target = e.content().itemAt( where-1 );
+      if( target == null )
+	return e;
+    }
+    return e;
+  }
+
+  SGML insertAt(int where, SGML item, SGML ts){
+      Vector l = new Vector();
+      SGML t, saveItem;
+      int len;
+      Tokens cont = ts.content();
+      len       = ts.content().nItems();
+      Tokens result;
+	
+      where--;
+      if( len == 0 ) return ts;
+      if( where >= 0 && where <= len ){
+	for(int i=0; i < len; i++){
+	    if( where != i ){
+	        t = cont.itemAt(i);
+		l.addElement(t);
+    	    }
+	    else{
+		saveItem = cont.itemAt( i );
+	   	l.addElement( item );
+		l.addElement( saveItem );
+            }
+        }
+
+	result = new Tokens();
+	int size = l.size();
+	for( int j=0; j < size; j++ )
+	    result.append((SGML)l.elementAt( j ));
+	return result;
+
+      }
+      else return ts;
+  }   
+
   /**  recursive function for setting path to value for SGML objects
     semantics of set, attr(name,value), depend on object
     same  inner loop as lookup except that missing objects get created
@@ -559,42 +610,84 @@ public class Index {
 
   public SGML path(SGML datum) throws InvalidInput, IllegalArgumentException {
     int what;
-    SGML  path      = datum;
-    SGML  curLoc    = datum;
-    int pPathIndex;
-    
+    SGML  prev      = datum;
+    SGML  cur       = datum;
+    SGML  newElement;
+    SGML  whereToPut;
+    SGML  origDatum = datum;
+    Tokens  cont;
+    int contNum;
+    String newTag;
+
+    SGML foobar = new Element();
+
+    System.out.println("In path=========================");
+
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
-    System.out.println("path-->"+datum.toString());
+    System.out.println("original datum-->"+datum.toString());
 
     what = nextPositions();
     
     while ( what != EOFINPUT ){
-      path = curLoc;
+      prev = cur;
 
-      curLoc = doProcess( what, curLoc ); 
-      if( curLoc.content().nItems() == 0 ){
-	System.out.println(" not successfull ");
+
+      cur = doProcess( what, cur ); 
+
+      if( cur.content().nItems() == 0 ){
+	System.out.println(" not successfull "+prev.getClass().toString());
 	
-	SGML e = null;
-	Tokens ts = path.content();
-	System.out.println("the path content is-->"+path.toString()+ Integer.toString( ts.nItems() ));
-	if ( ts.nItems() > 0 )
-	  e = ts.itemAt( 0 );
-
-	SGML foo = new Element("foobar","");
-
-	if( e != null )
-	  e.append( foo );
+	if( prev.content().itemAt(0).toString().equalsIgnoreCase("") )
+	  whereToPut = prev;
+	else if( prev instanceof Element ){
+	  System.out.println("************");
+	  whereToPut = prev;
+	}
+	else{
+	  cont    = prev.content();
+	  System.out.println("The current cont is-->"+cont.toString());
+	  
+	  contNum = cont.nItems();
+	  System.out.println("The contNum is-->"+Integer.toString(contNum));
+	  
+	  if( contNum == 1 )
+	    whereToPut = prev.content().itemAt(0);
+	  else if( contNum > 1 && isAllSameTag( cont.itemAt(0).tag(), cont ) )
+	    whereToPut = putAt( cont, getStart() );
+	  else if( contNum > 1 )
+	    whereToPut = cont.itemAt(0);
+	  else whereToPut = prev;  
+        }
 	
-	System.out.println("the dummy path is-->"+path.toString());
+	System.out.println("where to put-->"+whereToPut.toString());
+	System.out.println("tag-->"+getTag());
+	System.out.println("start-->"+Integer.toString( getStart() ));
+	
+	System.out.println(" before get tag.");
+	if ( getTag().equalsIgnoreCase( ANY ))
+	  newTag = "";
+	else
+	  newTag = getTag();
+	newElement = new Element( newTag, "" );
+	System.out.println("after create element-->"+newElement.toString());
+
+	if( getStart() >= whereToPut.content().nItems() ){
+	  whereToPut.append( newElement );
+	  System.out.println("In append case greater or equal");
+	}
+	else
+	  whereToPut.append( newElement );
+	
+	cur = newElement;
+	foobar.append( whereToPut );	
+	System.out.println("the cur path is-->"+whereToPut.toString());
       }
-
 
       resetPositionAttr();
       what = nextPositions(); 
-    }
-    System.out.println("The path is-->"+path.toString());
-    return curLoc;
+      }
+    System.out.println("original datum-->"+datum.toString());
+    return cur;
   }
 
   
@@ -782,6 +875,7 @@ public class Index {
       foo = makeHtml5();
       break;
     default:
+      foo = new Element("table", "");
       break;
     }
 	
@@ -792,6 +886,7 @@ public class Index {
 
       Index i = new Index( argv[1] );
       SGML result = i.path( foo );
+
 
       System.out.println("Here is the result-->"+result.toString());
     }catch(Exception e){
