@@ -10,6 +10,7 @@ FILES = \
 	Criterion.java \
 	ValueCriterion.java \
 	Features.java \
+	HasFeatures.java \
 	List.java \
 	Queue.java \
 	Table.java \
@@ -31,7 +32,9 @@ Thing.class: Stuff.java
 
 Queue.class: List.java Stuff.java
 
-Features.class: Criteria.java
+Features.class: Criteria.java HasFeatures.java 
+
+HasFeatures.class: 
 
 Criteria.class: Criterion.java Features.java List.java Stuff.java
 

@@ -5,6 +5,7 @@
 package crc.ds;
 
 import crc.ds.Features;
+import crc.ds.HasFeatures;
 
 /**
  *  A Criterion performs a matching operation on a named Feature.
@@ -12,7 +13,7 @@ import crc.ds.Features;
 public class Criterion {
 
   String name;
- 
+
   /** Return the feature that this criterion matches. */
   public final String name() {
     return name;
@@ -32,7 +33,7 @@ public class Criterion {
    *	if necessary.  This can be overridden for subclasses that match 
    *	more than one feature.
    */
-  public boolean match(Features features, Object parent) {
+  public boolean match(Features features, HasFeatures parent) {
     // crc.pia.Pia.instance().debug(this, "     feature "+name);
     return match(features.getFeature(name, parent));
   }
@@ -46,7 +47,7 @@ public class Criterion {
   }
 
   public Criterion(String nm) {
-    name = nm;
+    name = Features.cannonicalName(nm);
   }
 
   /************************************************************************

@@ -2,24 +2,23 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
-/**
- *	A Features list is attached to a Thing when it is first 
- *	needed.  It is used to perform lazy evaluation of named
- *	features.  The association between names and functions is made
- *	using a hash; a reference to this is returned by $f->computers, 
- *	which returns a reference to a class-specific hash that
- *	associates feature names with functions.
+/** A cache for lazy evaluation of named values.  A Features is
+ *	attached to a Transaction or other implementation of the
+ *	Featured interface.  The association between names and
+ *	functions is usually made using a class-specific hash that
+ *	associates feature names with functors; it is class-specific
+ *	so that every implementation of HasFeatures can have its own
+ *	interface or superclass for feature-computers.<p>
  *
- *	The Features list is normally accessed only by a method on
- *	its parent:  $something->is('feature').  Note that there is
- *	no backlink to the parent from its features; this makes
- *	objects easier to delete by avoiding circularities.
+ *	The Features is normally accessed only by a method on its
+ *	parent.  Note that there is no backlink to the parent from its
+ *	features; this makes objects easier to delete by avoiding
+ *	circularities.<p>
  *
  *	Features may actually have any value, but the matching process
  *	is normally only interested in truth value.  Some agents,
  *	however, make use of feature values.  In particular, 'agent'
- *	binds to the name of the agent at which a request is directed.
- */
+ *	binds to the name of the agent at which a request is directed.  */
 
 package crc.ds;
 
@@ -27,51 +26,34 @@ import java.util.Hashtable;
 import java.util.Vector;
 import crc.pia.Transaction;
 import crc.pia.Agent;
-import crc.tf.UnknownNameException;
 
-public class Features{
+import crc.ds.HasFeatures;
+import crc.ds.Criterion;
+
+public class Features {
+
   /**
    * Attribute index - feature table
-   * 
    */
   protected Hashtable featureTable;
 
-  /**
-   * Compute and assert the value of some initial features.
-   *    We do this here because the features are closely related, so
-   *    we can get many assertions out of a small number of requests.  
-   */
-  protected void initialize( Object parent ){
-    
-    featureTable.put( "NEVER", new Boolean( false ) );
-    
-    /*
-    * NEVER is useful for creating things that never match.
-    *	  A null criteria list will always match, so there's no need
-    *	  for an ALWAYS.
-    */
-  }
 
   /************************************************************************
   ** Setting Feature Values:
   ************************************************************************/
 
   /**
-   * Assert a named feature, with a value. 
+   * Assert a named feature, with a value.  Uses
+   *	<code>cannonicalName<code> to convert the feature name
+   *	to a cannonical form shared by each Criterion; this avoids having
+   *	to convert names when testing multiple times.  Similarly, values
+   *	(particularly null values) are converted to a cannonical form to 
+   *	speed up testing for truth value.
    */
-  public Object assert(String feature, Object v){
-    Object value;
-
-    if (v == null) {
-      value = new Boolean( true );
-      featureTable.put( feature, value );
-    } else if (v instanceof String && "".equals(v)) {
-      value = new Boolean( false );
-      featureTable.put( feature, value );
-    } else {
-        featureTable.put( feature, v );
-	value = v;
-    }
+  public Object assert(String feature, Object value){
+    value = cannonicalValue(value);
+    feature = cannonicalName(feature);
+    featureTable.put( feature, value );
     return value;
   }
 
@@ -79,19 +61,15 @@ public class Features{
    * Assert a named feature, i.e. assign it a value of true. 
    */
   public Object assert(String feature){
-    Object value = new Boolean( true );
-
-    featureTable.put( feature, value );
-    return value;
+    return assert(feature, new Boolean(true));
   }
 
 
   /**
    * Deny a named feature, i.e. assign it a value of false
    */
-  public boolean deny(String feature){
-    featureTable.put( feature, new Boolean( false ) );
-    return false;
+  public Object deny(String feature){
+    return assert(feature, new Boolean(false));
   }
 
   /************************************************************************
@@ -108,18 +86,18 @@ public class Features{
   /**
    * Test a named feature and return a boolean.
    */
-  public final boolean test(String feature, Object parent){
+  public final boolean test(String feature, HasFeatures parent){
     Object value = featureTable.get( feature );
     
     if (value == null) value = compute(feature, parent);
 
-    return test(value);
+    return testCannonical(value);
   }
 
   /**
    *  Return the raw value of the feature.
    */
-  public final Object feature( String featureName, Object parent ){
+  public final Object feature( String featureName, HasFeatures parent ){
     Object val = featureTable.get(featureName);
     if (val == null)
       return compute(featureName, parent); 
@@ -130,7 +108,7 @@ public class Features{
   /**
    *  Return the raw value of the feature.
    */
-  public final Object getFeature( String featureName, Object parent ){
+  public final Object getFeature( String featureName, HasFeatures parent ){
     Object val = featureTable.get(featureName);
     if (val == null)
       return compute(featureName, parent); 
@@ -150,27 +128,48 @@ public class Features{
    * Compute and assert the value of the given feature.
    * Can be used to recompute features after changes
    */
-  public final Object compute(String feature, Object parent){
+  public final Object compute(String feature, HasFeatures parent){
     Object val;
 
-    try{
-      if( parent instanceof Transaction )
-	val = ((Transaction) parent).computeFeature( feature );
-      else
-	val = ((Agent) parent).computeFeature( feature );
+    try {
+      val = parent.computeFeature( feature );
       return setFeature( feature, val );
-    }catch(UnknownNameException e){
-      return assert(feature, "");
+    }catch(Exception e){
+      return deny(feature);
     }
   }
 
 
   /************************************************************************
-  ** Matching:
+  ** Cannonical Form:
   ************************************************************************/
 
-  /** Test a value.  
-   *	@return false for null, False, and "", true otherwose.
+  public static final Boolean True       = new Boolean(true);
+  public static final Boolean False      = new Boolean(false);
+  public static final Object  Nil        = new Object();
+  public static final String  NullString = "";
+
+  /** Convert name to cannonical form. */
+  public static final String cannonicalName(String name) {
+    return crc.interform.Util.javaName(name);
+  }
+
+  /** Convert value to cannonical form. */
+  public static final Object cannonicalValue(Object value) {
+    if (value == null) return Nil;
+    else if (value instanceof Boolean) {
+      return ((Boolean)value).booleanValue()? True : False;
+    } else if (value instanceof String && "".equals((String)value)) {
+      return NullString;
+    } else return value;
+  }
+
+  /************************************************************************
+  ** Testing for Truth:
+  ************************************************************************/
+
+  /** Test an arbitrary value.  
+   *	@return false for null, False, and "", true otherwise.
    */
   public static final boolean test(Object value) {
     if (value == null) return false;
@@ -183,8 +182,19 @@ public class Features{
     }
   }
 
+  /** Test a value known to be in cannonical form.
+   *	@return false for null, False, and "", true otherwise.
+   */
+  public static final boolean testCannonical(Object value) {
+    return !(value == Nil || value == NullString || value == False);
+  }
+
+  /************************************************************************
+  ** Matching:
+  ************************************************************************/
+
   /** Matching.  Returns true if the list of criteria matches the parent. */
-  public boolean matches (Criteria criteria, Object parent) {
+  public boolean matches (Criteria criteria, HasFeatures parent) {
     return criteria.match(this, parent);
   }
   
@@ -201,12 +211,10 @@ public class Features{
   public Features (Transaction parent) {
     featureTable = new Hashtable();
     parent.setFeatures( this );
-    initialize( parent );
    }
 
   public Features() {
     featureTable = new Hashtable();
-    initialize(null);
   }
 
 }

@@ -11,7 +11,7 @@ package crc.ds;
 public class Criteria extends List {
 
   /** Match the features in parent (which we need for computing values). */
-  public boolean match(Features features, Object parent) {
+  public boolean match(Features features, HasFeatures parent) {
     for (int i = 0; i < nItems(); ++i) {
       Criterion c = (Criterion)at(i);
       if (! c.match(features, parent)) return false;
