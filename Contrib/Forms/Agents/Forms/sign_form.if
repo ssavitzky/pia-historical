@@ -30,7 +30,7 @@
 
 <if> <get name=signature> <then>
 
-	 Signature added to document.
+	 Signature added to <a href=show_signatures.if?formurl=&myformurl;>form.</a>
 	 <notify-next-recipient form=&myformurl; user=&FORM.user;>
 
 <write append file=&myformurl;.sig>
