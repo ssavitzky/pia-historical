@@ -131,7 +131,7 @@ public class  DescriptionList extends crc.sgml.Element {
       if( start == -1 )
 	myList.push( new Text("") );
       else
-	myList.push( new Text( itemAt(start).contentString() ) );
+	myList.push( itemAt(start).contentText() );
       ddTokens = grabDd(dds, start, end );
       if( ddTokens == null )
 	myList.push( Token.empty );
@@ -145,7 +145,7 @@ public class  DescriptionList extends crc.sgml.Element {
   }
 
   protected Tokens getRangeWKeyVal( List l, String myTag, int s, int e ){
-    String dtText;
+    crc.sgml.Text dtText;
     SGML dd;
     int howmany = 1;
     Tokens result = new Tokens();
@@ -174,9 +174,9 @@ public class  DescriptionList extends crc.sgml.Element {
 	if( howmany >= s && howmany <= e ){
 	  
 	  if( isKey ){
-	    dtText = ((SGML)l.at( j - 1 )).contentString();
-	    if( dtText != "" ){
-	      result.append( new Text( dtText ) );
+	    dtText = ((SGML)l.at( j - 1 )).contentText();
+	    if( dtText != null && dtText.contentString() != "" ){
+	      result.append( dtText );
 	      howmany++;
 	    }
 	  }else{
@@ -196,7 +196,7 @@ public class  DescriptionList extends crc.sgml.Element {
 
 
   protected Tokens getRange( List l, String myTag, int s, int e ){
-    String dtText;
+    crc.sgml.Text dtText;
     SGML dd;
     int howmany = 1;
     Tokens result = new Tokens();
@@ -213,12 +213,12 @@ public class  DescriptionList extends crc.sgml.Element {
     //System.out.println("end-->"+e);
 
     for( int j = 0 ; j < len ; j++ ){
-      dtText = ((SGML)l.at( j )).contentString();
+      dtText = ((SGML)l.at( j )).contentText();
       //System.out.println("dt text-->["+dtText+"]");
       if( j <= len - 2 ){
 	j++;
 
-	if( myTag.equalsIgnoreCase( dtText.trim() ) ){
+	if( myTag.equalsIgnoreCase( dtText.contentString().trim() ) ){
 	  //System.out.println("In equal");
 	  if( howmany >= s && howmany <= e ){
 	    //System.out.println("howmany-->"+Integer.toString(howmany));

@@ -251,7 +251,10 @@ public class Util {
    */
 
   public static String  getSGMLTree(SGML element,String prefix){
-    String result = prefix +  element.getClass().getName() + "(tag="+element.tag()+") \n";
+    String result = prefix +  element.getClass().getName() + "(tag="+element.tag();
+    if(element instanceof Text) 
+     result+= "text " + element.contentString();
+     result += ") \n";
     Tokens t = element.content();
     if( t == null) return result;
      Enumeration e =  t.elements();
