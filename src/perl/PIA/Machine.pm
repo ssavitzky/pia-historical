@@ -92,9 +92,13 @@ sub send_response{
     $string.=$reply->message;
     $string.="\n";
     print $string  if $main::debugging;
-    my $control;
+    my ($control, $content);
     $control=join(" ",$reply->controls)	if $reply->content_type =~ /text/;
-    $reply->content_length($reply->content_length + length($control)) if $control;
+
+    if ($control) {
+	$content = $reply->content;
+	$reply->content_length($reply->content_length + length($control));
+    }
     
     print "content type ". $reply->content_type . "\n"  if $main::debugging;
     	print $reply->headers_as_string() ."\n"  if $main::debugging;
@@ -109,13 +113,16 @@ sub send_response{
 	print {$output} $string;
 	print {$output} $reply->headers_as_string();
 	print {$output} "\n";
-##Temporary
 
-	
-	print {$output} $control if $control;
+##Temporary because hooks don't work
+	if ($control && $content =~ m/\<body[^>]*\>/is) {
+	    $content =~ s/(\<body[^>]*\>)/$1$control/is;
+	} else {
+	    print {$output} $control if $control;
+	}
 	print "sent controls $control" if $control && $main::debugging;
 	##$reply->content_object->add_hook(sub { shift =~ s/<body>/$controls/i});
-	print {$output} $reply->content;
+	print {$output} ($control? $content : $reply->content);
 	$self->close_stream;
     };
     warn $@ if $@;
