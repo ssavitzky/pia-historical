@@ -3,18 +3,18 @@ PACKAGE=crc.tf
 FILES = \
 	 Title.java \
 	 Agent.java \
-         IsAgReq.java \
- 	 IsAgResp.java \
-	 IsClNets.java \
-	 IsFileRq.java \
+         IsAgentRequest.java \
+ 	 IsAgentResponse.java \
+	 IsClientNetscape.java \
+	 IsFileRequest.java \
 	 IsHtml.java \
 	 IsImage.java \
-	 IsIntFrm.java \
+	 IsInterform.java \
 	 IsLclSrc.java \
 	 IsLocal.java \
-	 IsPrxReq.java \
-	 IsReques.java \
-	 IsRespon.java \
+	 IsProxyRequest.java \
+	 IsRequest.java \
+	 IsResponse.java \
 	 IsText.java \
 	 Registry.java \
 	 UnknownNameException.java
