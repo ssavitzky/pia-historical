@@ -15,7 +15,8 @@ FILES = \
 	T_formContent.java \
 	T_hTTPRequest.java \
 	T_hTTPResponse.java \
-	T_machine.java
+	T_machine.java \
+	T_agentRedir.java
 
 include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make
@@ -37,7 +38,8 @@ CASEFILES = \
 	httpres_5.case \
 	machine_1.case \
 	machine_2.case \
-	machine_3.case 
+	machine_3.case \
+	agentredir.case
 
 .SUFFIXES: .case .txt .html .if .out .ok .diff .run .java .class
 
