@@ -17,10 +17,24 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Impr:</b> Could simplify by assuming ActiveNode everywhere <br>
-       Replacing <code>Node</code> with <code>ActiveNode</code> everywhere in
-       the DPS would give faster, simpler code.
-       (1998-07-05) <br>
+  <li> <b>Impr:</b> Move Processor implementations to subdir. <br>
+       (1998-07-08) <br>
+
+  <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
+       Neither does its predecessor, InterFormContent.
+       (1998-07-08) <br>
+
+  <li> <b>Hole:</b> Need <code>lookupFile(fn, write)</code> in TopContext. <br>
+       (1998-07-08) <br>
+
+  <li> <b>Hole:</b> need HookProcessor to run Agent hooks. <br>
+       (1998-07-08) <br>
+
+  <li> <b>Impr:</b> Add ActiveNode operations to <code>Input</code>, etc. <br>
+       Fully supporting <code>ActiveNode</code> as well as <code>Node</code>
+       everywhere in the DPS would give faster, simpler code.  It is already
+       impossible to use ordinary DOM Nodes in a Processor.
+       (1998-07-07) <br>
 
   <li> <b>Impr:</b> Parser should put text in <code>next</code> <br>
        (instead of putting it in <code>nextText</code> and increasing the
@@ -37,12 +51,12 @@ See also:
        <code>foo</code> undefined.  There must be an explanation...
        (1998-06-26) <br>
 
-  <li> <b>Bug:</b> replaceChild when redefining entity or handler <br>
+  <li> <b>Bug:</b> must replaceChild when redefining entity or handler <br>
        BasicTagset and BasicEntityTable have to do a replaceChild when
        replacing a binding.
        (1998-06-26) <br>
 
-  <li> <b>Hole:</b> Must define tags at parse time to cache trees <br>
+  <li> <b>Hole:</b> Must define tags at parse time to cache trees. <br>
        In order to parse correctly, you have to have the whole DTD in
        advance.  Yet another argument for the position that a tagset is a
        DTD. 
@@ -55,8 +69,8 @@ See also:
        (1998-06-25) <br>
 
   <li> <b>Goal:</b> (8-1) Run Most Agents <br>
-       Be able to run all of the agents in daily use (i.e. history, etc., but
-       not the wacko stuff in on the form server).
+       Be able to run all of the agents in (my) daily use (i.e. history, etc.,
+       but not the wacko stuff in the form server).
        (1998-06-24) <br>
 
   <li> <b>Bug:</b> Flag unimplemented legacy options. <br>
@@ -64,6 +78,9 @@ See also:
        the user's attention with error messages.  Requires a mode flag or,
        better, dispatching via the legacy handler first.
        (1998-06-24) <br>
+       -- Note that static caching allows the correct handler class to be
+	  loaded without having to hack the search order in
+	  <code>loadHandler</code>. 
 
   <li> <b>Impr:</b> Character Entities should be defined in tagset <br>
        Should have defined value; copy value into references to short-circuit
@@ -92,26 +109,18 @@ See also:
        in attributes.
        (1998-06-18) <br>
 
-  <li> <b>Hole:</b> <code>ParseTreeDocument</code> &amp; XML nodes. <br>
+  <li> <b>Hole:</b> <code>ParseTreeDocument</code>, DTD, &amp; XML nodes. <br>
        ...are still unimplemented. 
        (1998-06-18) <br>
 
-  <li> <b>Hole:</b> PIA transition from old to new interp. <br>
-       Agents need to know which interpretor (and tagset, of course) they
-       should be using.  Hooks can be distinguished by type.
-       (1998-06-18) <br>
-
-  <li> <b>Hole:</b> PIA Content in push mode. <br>
-       <code>crc.pia.Content</code> currently operates in pull mode, expecting
-       to read from an input stream.  For the DPS it needs to run in push
-       mode, giving the DPS a suitable output stream and letting it run.
-       (1998-06-18) <br>
-
   <li> <b>Hole:</b> PIA namespaces and data types <br>
-       During the transition Agent, Transaction, etc. need to be able to
+       During the transition Agent and Transaction need to be able to
        return both SGML and DOM data as needed.  Fortunately many of the
        namespaces contain only strings; it's really only hooks that differ.
        (1998-06-18) <br>
+       -- Part of the solution is making Agent and Transaction implement an
+	  interface with methods like <code>getObjectAt</code> and
+	  <code>getStringAt</code>, etc. instead of the Attr interface.
 
   <li> <b>Prop:</b> New InterForm extensions (?). <br>
        (of course, the really obvious one is <code>.dpml</code> -- Document

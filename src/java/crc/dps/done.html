@@ -196,6 +196,24 @@ See also:
        Besides; DOMFactory is going away.
        (1998-06) <br>
 
+  <li> 1998-07-07 <b>Impr:</b> Pre-load tagset and handler classes. <br>
+       Probably best done by having explicit tagset and handler cache classes.
+       (1998-07-07) <br>
+
+  <li> 1998-07-09 <b>Hole:</b> PIA transition from old to new interp. <br>
+       Agents need to know which interpretor (and tagset, of course) they
+       should be using.  Hooks can be distinguished by type.
+       (1998-06-18) <br>
+
+  <li> 1998-07-08 <b>Hole:</b> PIA Content in push mode. <br>
+       <code>crc.pia.Content</code> currently operates in pull mode, expecting
+       to read from an input stream.  For the DPS it needs to run in push
+       mode, giving the DPS a suitable output stream and letting it run.
+       (1998-06-18) <br>
+       -- (Actually, Content always did the right thing; it was just
+	  <code>StreamContent</code> that didn't.  The alternative, though,
+	  never handled insertions correctly.)
+       
 </ul>
 <a name="end">End of list.</a>
 <hr>
