@@ -99,7 +99,7 @@ sub send_response{
 
 	$control=join(" ",$reply->controls);
 	print {$output} $control;
-	print "sent controls $control";
+	print "sent controls $control" if $main::debugging;
 	##$reply->content_object->add_hook(sub { shift =~ s/<body>/$controls/i});
 	print {$output} $reply->content;
 	$self->close_stream;
