@@ -161,12 +161,14 @@ class Setup extends Configuration {
     if (usrRoot == null) {
       System.err.println("Warning! "
 			 + "  You do not have a personal '.pia' directory.\n"
-			 + "  Please create one, or specify an alternative "
-			 + "with the -u option on the command line." );
+			 + "  This is the directory where agents will put their data.\n"
+			 + "  Please create one, or specify an alternative\n "
+			 + "  with the -u option on the command line." );
 
       // We could get more elaborate and use /tmp or try some alternatives.
 
       System.err.println("Continuing without a user root");
+      return true;
     } else {
       properties.put("crc.pia.usrroot", fixFileName(usrRoot));
     }
