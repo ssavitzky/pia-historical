@@ -20,11 +20,12 @@ CLASS=crc.interform.Filter
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 .html.out:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t HTML $< > $@ 2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t HTML -e $< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
+# ./$< is used to make fileName and filePath different.
 .if.out:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone $< > $@ 2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone ./$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 include $(TOPDIR)/makefiles/file.make
