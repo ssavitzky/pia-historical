@@ -35,7 +35,8 @@
 
 <!-- Add an image for some decoration -->
 <TR>
-<TD><IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100></TD>
+<!--<TD><IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100></TD>-->
+<TD><IMG SRC="images/sm_snow.gif" HEIGHT=310 WIDTH=203></TD>
 
 <!-- =================================================================== -->
 <!-- Display links, if there are any.  AGENT:links is an entity that is
