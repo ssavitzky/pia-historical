@@ -3,6 +3,7 @@ package HTML::FormatLatex;
 #format html into latex
 
 require HTML::Formatter;
+
 push (@ISA,qw(HTML::Formatter));
 
 $main::latex_column_width=3.5;
@@ -98,7 +99,7 @@ sub header{
     $string.="]{" . $$self{_type} . "}\n";
     $string.="\\usepackage{psfig}\n";
     if ($$self{_columns} == 2) {
-$string.=" \\addtolength{\\textwidth}{3.75cm}\\addtolength{\\textheight}{6cm}";
+$string.=" \\addtolength{\\textwidth}{2.75cm}\\addtolength{\\textheight}{6cm}";
 $string.="\\addtolength{\\topmargin}{-3.0cm}";
 $string.="\\setlength{\\oddsidemargin}{-1.5cm}\\setlength{\\evensidemargin}{-1.5cm}";
 }else {
@@ -126,6 +127,10 @@ sub footer{
 ##realwork done here
 ####LATEX
 sub latex_string{
+#entities look like strings,so substitute here
+#    if(/\&\w\;/){
+      HTML::Entities::decode($_);
+#    }
     #protect from latex
     s/<|>/\$$&\$/g;
     s/\^/\\\^\{\}/g;

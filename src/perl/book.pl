@@ -133,8 +133,8 @@ sub bookmaker_callback{
     my $reference_url=$old_request->url;
     $reference=$self->reference($reference_url) unless $reference;
     my $new_page=$self->add_page($html,$reference_url,$reference);
-
-    my $cache=$response->header('Cache-Location');
+    my $cache;
+#caching disabled for now    my $cache=$response->header('Cache-Location');
     $$new_page{cache}=$cache if $cache;
     # don't keep html if it is in cache
     my $hints = $$self{_hints};
@@ -150,8 +150,20 @@ sub bookmaker_callback{
     print "max pages exceeded " . $$self{page} . "\n" if($$self{page}>$$self{_max_pages});
     return 1 if($$self{page}>$$self{_max_pages});
     if($old_depth < $$self{_max_depth}){
-	for (@{ $html->extract_links(qw(a)) }) {
-	    my ($urltext, $element) = @$_;
+	local @link_elements;
+			#get links
+	$html->traverse(sub{
+	    my ($tag,$start)=@_;
+	    return unless $start;
+	    push(@link_elements,$tag) if $tag->tag  eq 'a';
+	    return 1;
+	},1);
+	#for (@{ $html->extract_links(qw(a)) }) {
+	for (@link_elements){
+	    my ($urltext, $element);
+	    $element = $_;
+	    $urltext=$element->attr('href') if ref($element);
+	    next unless $urltext;
 	    my $url=URI::URL->new($urltext,$response->url);
 #	    print "new: " . $url->abs->as_string . " base: " . $response->url->as_string ." \n";
 	    $url=$url->abs;
