@@ -30,14 +30,17 @@ CLASS=crc.interform.Filter
 
 # make foo.run runs the tests with output on STDOUT.
 .txt.run:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t Bootstrap $<  2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t Bootstrap $<  2>$*.log \
+	| tee $*.out
 
 .html.run:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t HTML -e $< 2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t HTML -e $< 2>$*.log \
+	| tee $*.out
 
 # ./$< is used to make fileName and filePath different.
 .if.run:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone ./$< 2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone ./$< 2>$*.log \
+	| tee $*.out
 
 
 include $(TOPDIR)/makefiles/file.make
