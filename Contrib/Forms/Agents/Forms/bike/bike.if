@@ -1,0 +1,21 @@
+<html><head>
+<title>Bike Locker Request</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Bike Locker Request</h1>
+
+<form method=POST action="bike_process.if">
+      
+Date of locker use:
+<input name=date size=8><p>
+Username:
+<select name="name"><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select><p>
+Use:
+<select name=use><option>- <option>Commute <option>Exercise </select><p>
+<input type=submit name=process value=Process>
+
+</html>

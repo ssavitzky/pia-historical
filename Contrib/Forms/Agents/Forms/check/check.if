@@ -1,0 +1,29 @@
+<html><head>
+<title>Check Request Form</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Check Request Form</h1>
+
+<form method=POST action="check_process.if">
+
+<set entity name=accountlist><read file="account_types.dat"></set>
+Please prepare a check in the amount of ($):
+<input name=amount><p>
+Payable to the order of:
+<input name=payto><p>
+For:
+<textarea name=for rows=3 cols=70><p>
+Expense Type: <select name=po><repeat list="&accountlist;"><option>&li;</repeat></select>
+Vendor's Invoice No.:
+<input name=invoice><p>
+Requested by:
+<select name="name"><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select>
+Date Required:
+<input name=date size=8><p>
+<input type=submit name=process value=Process>
+  
+</html>

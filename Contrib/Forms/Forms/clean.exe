@@ -1,0 +1,13 @@
+rm -r bike
+rm -r check
+rm -r expense
+rm -r inspiration
+rm -r invention
+rm -r kiansho
+rm -r purchasereq
+rm -r techreport
+rm -r timecard
+rm -r travel
+rm -r vacation
+rm -r users
+rm -r timecard_reports

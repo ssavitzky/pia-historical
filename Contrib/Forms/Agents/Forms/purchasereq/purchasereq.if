@@ -1,0 +1,33 @@
+<html><head>
+<title>Purchase Request</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Purchase Requisition</h1>
+
+<form method=POST action="purchasereq_process.if">
+
+Username:
+<select name=name><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select>
+
+<set entity name=accountlist><read file="account_types.dat"></set>
+Expense Type: <select name=expensetype><repeat list="&accountlist;"><option>&li;</repeat></select><p>
+
+Suggested Supplier:
+<input name=supplier size=25><br>
+
+Estimated Total Cost ($):
+<input name=cost value=0><p>
+
+Items to be purchased:<br>
+<set entity name=numlist><read file="numlist2.dat"></set><ol foreach list="&numlist;"><li> <input name=item&li; size=45> Qty: <input name=quantity&li; size=10><br></ol><p>
+
+Special Instructions (Contact numbers and additional info can be included here):<br>
+<textarea name=comments rows=2 cols=70></textarea><br>
+
+<input type=submit name=process value=Process>
+  
+</html>

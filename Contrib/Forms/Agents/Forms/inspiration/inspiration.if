@@ -1,0 +1,21 @@
+<html><head>
+<title>Inspiration</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Inspiration</h1>
+
+<form method=POST action="inspiration_process.if">
+
+Username:
+<select name="name"><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select><p>
+      
+Idea:<br>
+<textarea name=idea rows=20 cols=70></textarea><p>
+
+<input type=submit name=process value=Process>
+  
+</html>

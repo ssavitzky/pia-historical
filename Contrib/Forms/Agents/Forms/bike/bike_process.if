@@ -1,0 +1,18 @@
+<html><head>
+<title>Bike Locker Request</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<set entity name=dir>bike</set>
+
+<set entity name=dataobject><dl><dt><b>Date:</b><dd><u>&FORM.date;</u><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Use:</b><dd><u>&FORM.use;</u></dl></set>
+
+<set entity name=mlist><read file="mgr.dat" process></set>    
+<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=routeobject> <dl><dt>&FORM.name;<dd>NULL</dl></set>
+
+<set entity name=timesec>&time;:&second;</set> 
+<read interform file="write.inc" process><p> 
+  
+</html>

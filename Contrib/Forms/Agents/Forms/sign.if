@@ -1,0 +1,53 @@
+<title>&FORM.dir; Signature Result</title>
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+
+<h2>&FORM.dir; Signature Result</h2><p>
+
+<set entity name=routeobject><read file="&FORM.routepath;" process></set>
+<set entity name=nextperson><get name="routeobject.&FORM.name;"></set>
+<set entity name=nameobject><read file="usertoname.dat" process></set>
+
+<if><test text>&FORM.signature;</test><then>
+    <if><authenticate user="&FORM.name;" password="&FORM.signature;" file="/home/dgillen/.pia/Forms/passwd"><then>
+        <if><test match="&FORM.name;">&routeobject;</test><then>
+            <if><test match="signed">&nextperson;</test><then>
+                You have already signed this document.<p></then>
+            <else><set name="routeobject.&FORM.name;">signed &dateString;</set>
+                  <write file="&FORM.routepath;">&routeobject;</write>
+                  <if><test exact match="NULL">&nextperson;</test><then>
+                  <else><write append file="users/&nextperson;.html">
+                        <li><a href="../&FORM.filepath;">&FORM.dir; form --- &FORM.name; &dateString;</a><br></write>
+                  </else>
+                  </if>
+                  <write append file="&FORM.filepath;"><b><get name="nameobject.&FORM.name;"></b> &dateString;<br></write>
+                  Your signature has been appended to the document.<br>
+                  <if><test exact match="NULL">&nextperson;</test><then>
+                  This document requires no additional electronic signatures.
+                  <else>This document is now being routed to &nextperson; for signing.
+                  </else>
+                  </if><p>
+                  <set name=sigs><read file="users/&FORM.name;.html" process></set>
+                  <repeat list=&sigs;>
+                  <if><test match="&FORM.filepath;">&li;</test><then>
+                  <write file="users/&FORM.name;_complete.html"><sort numeric><read file="users/&FORM.name;_complete.html" process> &li;</sort></write>
+                  <else><write append file="users/.&FORM.name;.html.temp">&li;</write>
+                  </else>
+                  </if></repeat>
+                  <write file="users/&FORM.name;.html">
+                  <read file="users/.&FORM.name;.html.temp"></write>
+                  <write file="users/.&FORM.name;.html.temp"></write>
+                  <read interform file="timecard.inc" process>
+              </else>
+              </if>
+       <else>Your signature is not requested for this form.<p>
+       </else>
+       </if>
+    <else>The signature you entered is not correct. 
+          Please contact the system administrator immediately.
+    </else>
+    </if>
+<else>Please enter your signature in the space provided.
+</else>
+</if>

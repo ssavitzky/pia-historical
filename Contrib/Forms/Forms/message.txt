@@ -1,0 +1,6 @@
+Hello,
+This message is to inform you that your electronic signature has been requested by one or more forms. For links to the forms that require your signature, go to http://rhine:8888/Forms/users.if/ and click on your username.
+
+Questions and comments should be mailed to dgillen@crc.ricoh.com.
+
+Thank you.

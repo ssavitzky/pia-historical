@@ -1,0 +1,82 @@
+<html><head>
+<title>Expense Report</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<center><h1>Expense Report</h1></center>
+
+<form method=POST action="expense_process.if">
+
+Username:
+<select name=name><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li;</repeat></select><hr>
+
+<center><h1>Personal Auto</h1></center>
+Date: <input name=autodate1 size=8>
+Departure/Destination: <input name=dd1 size=35>
+# Miles: <input name=miles1 value=0 size=5><br>
+Date: <input name=autodate2 size=8>
+Departure/Destination: <input name=dd2 size=35>
+# Miles: <input name=miles2 value=0 size=5><hr>
+
+<center><h1>Hotel</h1></center>
+Nightly Rate with Tax: <input name=rate size=10>
+Number of Nights: <input name=nights1 value=0 size=2>
+Hotel: <input name=hotel1 size=15><br><hr>
+
+<center><h1>Per Diem</h1></center>
+Number of Days: <input name=days value=0 size=5>
+Destination: <select name=dest1><option>Domestic US<option>Japan <option>Other International</select><br>
+Number of Days: <input name=perdays2 value=0 size=5>
+Destination: <select name=perdest2><option>Domestic US<option>Japan <option>Other International</select><hr>
+
+<center><h1>Business Meals</h1></center>
+Guests: <input name=guests1>
+Purpose: <input name=purpose1>
+Cost: <input name=cost1 value=0><br>
+Guests: <input name=guests2>
+Purpose: <input name=purpose2>
+Cost: <input name=cost2 value=0><br>
+Guests: <input name=guests3>
+Purpose: <input name=purpose3>
+Cost: <input name=cost3 value=0><hr>
+
+<set entity name=accountlist><read file="account_types.dat"></set>
+<center><h1>Other</h1></center>
+Description: <input name=description1 size=40>
+Type: <select name=account1><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount1 size=6 value=0><br>
+Description: <input name=description2 size=40>
+Type: <select name=account2><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount2 size=6 value=0><br>
+Description: <input name=description3 size=40>
+Type: <select name=account3><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount3 size=6 value=0><br>
+Description: <input name=description4 size=40>
+Type: <select name=account4><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount4 size=6 value=0><br>
+Description: <input name=description5 size=40>
+Type: <select name=account5><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount5 size=6 value=0><br>
+Description: <input name=description6 size=40>
+Type: <select name=account6><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount6 size=6 value=0><br>
+Description: <input name=description7 size=40>
+Type: <select name=account7><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount7 size=6 value=0><br>
+Description: <input name=description8 size=40>
+Type: <select name=account8><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount8 size=6 value=0><br>
+Description: <input name=description9 size=40>
+Type: <select name=account9><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount9 size=6 value=0><br>
+Description: <input name=description10 size=40>
+Type: <select name=account10><repeat list="&accountlist;"><option>&li;</repeat></select>
+Amount: <input name=amount10 size=6 value=0><hr>
+
+<INPUT type=submit name=process value="Process"><p>
+ 
+</html>
+

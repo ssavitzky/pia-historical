@@ -1,0 +1,22 @@
+<html><head>
+<title>Users</title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="formsbutton.gif"></a><img src="user.gif"><a href="http://rhine:8888/Forms/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+
+<center><table border>
+<caption>User Pages</caption>
+<th>pending<th>completed<tr>
+<td><set entity name=namelist><read file="namelist2.dat"></set>
+<repeat list="&namelist;"><li><a href="http://rhine:8888/My/Forms/users/&li;.html">&li;<a></repeat>
+<td><repeat list="&namelist;"><li><a href="http://rhine:8888/My/Forms/users/&li;_complete.html">&li;<a></repeat><tr>
+</table><p>
+
+<center><b>pending</b>: <a href="http://rhine:8888/My/Forms/users/Accounting.html">Accounting</a>, <a href="http://rhine:8888/My/Forms/users/Auditor.html">Auditor</a>, <a href="http://rhine:8888/My/Forms/users/FrontOffice.html">Front Office</a>, <a href="http://rhine:8888/My/Forms/users/Purchasing.html">Purchasing</a><br>
+<b>completed</b>: <a href="http://rhine:8888/My/Forms/users/Accounting_complete.html">Accounting</a>, <a href="http://rhine:8888/My/Forms/users/Auditor_complete.html">Auditor</a>, <a href="http://rhine:8888/My/Forms/users/FrontOffice_complete.html">Front Office</a>, <a href="http://rhine:8888/My/Forms/users/Purchasing_complete.html">Purchasing</a>
+<p></center>
+
+</body></html>
+

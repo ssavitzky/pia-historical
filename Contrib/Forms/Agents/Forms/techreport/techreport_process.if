@@ -1,0 +1,18 @@
+<html><head>
+<title>Tech Report Form</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<set entity name=dir>techreport</set>
+
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Confidentiality:</b><dd><u>&FORM.radio95078;</u><dt><b>Type:</b><dd><u>&FORM.type;</u><p><dt><b>Date:</b><dd><u>&FORM.date;</u><dt><b>Title:</b><dd><u>&FORM.title;</u><dt><b>Author:</b><dd><u>&FORM.author;</u><dt><b>Keywords:</b><dd><u>&FORM.keywords;</u><dt><b>Abstract:</b><dd><u>&FORM.abstract;</u><p><dt><b>Conference:</b><dd><u>&FORM.conference;</u><dt><b>Publication:</b><dd><u>&FORM.publication;</u><dt><b>Location:</b><dd><u>&FORM.location;</u><dt><b>Distribution:</b><dd><u>&FORM.distribution;</u><p><dt><b>Notes:</b><dd><u>&FORM.notes;</u></dl></set>
+
+<set entity name=mlist><read file="mgr.dat" process></set>    
+<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=routeobject> <dl><dt>&FORM.name;<dd>Librarian<dt>Librarian<dd>NULL</dl></set>
+
+<set entity name=timesec>&time;:&second;</set> 
+<read interform file="write.inc" process><p>
+
+</html>

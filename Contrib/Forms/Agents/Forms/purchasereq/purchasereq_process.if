@@ -1,0 +1,33 @@
+<html><head>
+<title>Purchase Request</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<set entity name=dir>purchasereq</set>
+<write file="purchasereq.dat"><sum>1 <read file="purchasereq.dat"></sum></write>
+<set entity name=pnum><read file="purchasereq.dat"></set>
+
+<set entity name=departmentobject><read file="usertodept.dat" process></set>
+<set entity name=acctobject><read file="acct_codes.dat" process></set>
+
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Purchase Request number:</b><dd><u>&pnum;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Expense type/Account #:</b><dd><u>&FORM.expensetype;/<get name="acctobject.&FORM.expensetype;"></u><dt><b>Supplier:</b><dd><u>&FORM.supplier;</u><dt><b>Cost:</b><dd><u>&FORM.cost;</u></dl><p>
+<table border><caption><h2>Item List</h2></caption>
+<th>Item <th>Quantity <tr>
+<td>&FORM.item1; <td>&FORM.quantity1; <tr>
+<td>&FORM.item2; <td>&FORM.quantity2; <tr>
+<td>&FORM.item3; <td>&FORM.quantity3; <tr>
+<td>&FORM.item4; <td>&FORM.quantity4; <tr>
+<td>&FORM.item5; <td>&FORM.quantity5; <tr>
+<td>&FORM.item6; <td>&FORM.quantity6; <tr></table><p>
+<dl><dt><b>Special instructions:</b><dd><u>&FORM.comments;</u></dl></set>
+
+<set entity name=mlist><read file="mgr.dat" process></set>    
+<set entity name=manager><get name="mlist.&FORM.name;"></set>
+
+<read interform file="variable_routing.inc" process>
+
+<set entity name=timesec>&time;:&second;</set> 
+<read interform file="write.inc" process><p>    
+
+</html>

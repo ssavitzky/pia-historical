@@ -1,0 +1,51 @@
+<html><head>
+<title>Travel Arrangement Request Form</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<set entity name=dir>travel</set>
+<set entity name=departmentobject><read file="usertodept.dat" process></set>
+<set entity name=extobject><read file="usertoext.dat" process></set>
+
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Extension:</b><dd><u><get name="extobject.&FORM.name;"></u><dt><b>Purpose:</b><dd><u>&FORM.purpose;</u><p><h2>Air</h2><dt><b>Destination:</b><dd><u>&FORM.dest1;</u><dt><b>Air date:</b><dd><u>&FORM.airdate1;</u><dt><b>Depart time:</b><dd><u>&FORM.depart1;</u><dt><b>Arrive time:</b><dd><u>&FORM.arrive1;</u><dt><b>From:</b><dd><u>SF/San Jose</u><dt><b>To:</b><dd><u>&FORM.to1;</u><dt><b>Airline:</b><dd><u>&FORM.airline1;</u><p><h2>Rent-a-Car</h2><dt><b>Car Rental company:</b><dd><u>&FORM.company1;</u><dt><b>Size:</b><dd><u>&FORM.size1;</u><dt><b>Num days with car:</b><dd><u>&FORM.cdays;</u><p><dt><b>Pick-up date:</b><dd><u>&FORM.pickdate1;</u><dt><b>Pick-up time:</b><dd><u>&FORM.picktime1;</u><dt><b>Pick-up place:</b><dd><u>&FORM.pickplace1;</u><p><dt><b>Drop-off date:</b><dd><u>&FORM.dropdate1;</u><dt><b>Drop-off time:</b><dd><u>&FORM.droptime1;</u><dt><b>Drop-off place:</b><dd><u>&FORM.dropplace1;</u><p><dt><b>Remarks</b><dd><u>&FORM.remarks1;</u><p><h2>Hotel</h2><dt><b>Hotel:</b><dd><u>&FORM.hotel1;</u><dt><b>Nightly rate:</b><dd><u>&FORM.rate;</u><dt><b>Room type:</b><dd><u>&FORM.type1;</u><dt><b>Date in:</b><dd><u>&FORM.datein1;</u><dt><b>Date out:</b><dd><u>&FORM.dateout1;</u><dt><b>Num nights:</b><dd><u>&FORM.nights1;</u><dt><b>Remarks:</b><dd><u>&FORM.remarks3;</u></dl></set>
+
+<if><test match="East Coast">&FORM.dest1;</test>
+<then><set entity name=fcost>700</set>
+<set entity name=perdiem><product>&FORM.nights1 34</product></set></if>
+      
+<if><test match="Mid West">&FORM.dest1;</test>
+<then><set entity name=fcost>400</set>
+<set entity name=perdiem><product>&FORM.nights1 34</product></set></if>
+
+<if><test match="West Coast">&FORM.dest1;</test>
+<then><set entity name=fcost>300</set>
+<set entity name=perdiem><product>&FORM.nights1 34</product></set></if>
+
+<if><test match="Japan">&FORM.dest1;</test>
+<then><set entity name=fcost>1000</set>
+<set entity name=perdiem><product>&FORM.nights1 60</product></set></if>
+
+<if><test match="Other International">&FORM.dest1;</test>
+<then><set entity name=fcost>1500</set>
+<set entity name=perdiem><product>&FORM.nights1 47</product></set></if>
+        
+<set entity name=ctotal><product>&FORM.cdays; 40</product></set>
+<set entity name=htotal><product>&FORM.nights1; &FORM.rate;</product></set>
+<set entity name=grandtotal><sum>&fcost; &ctotal; &htotal; &perdiem; </sum></set>
+
+<set entity name=mlist><read file="mgr.dat" process></set>    
+<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=routeobject> <dl><dt>&FORM.name;<dd>&manager;<dt>&manager;<dd>FrontOffice<dt>FrontOffice<dd>NULL</dl></set>
+
+<set entity name=timesec>&time;:&second;</set> 
+<write file="&dir;/&year;/&month;/&timesec;.html">
+<body bgcolor="#ffffff">
+Estimate of Costs: (this estimate is preliminary and will not neccessarily be used)<br>
+<ul><li>Per Diem Est ($): &perdiem; <li>Hotel Est ($): &htotal; <li>Air Fare Est ($): &fcost; <li>Other Trans Est ($): &ctotal; </ul>
+<strong>Total Cost Est ($):</strong> &grandtotal;<p><hr>
+</write>
+
+<read interform file="write.inc" process><p>  
+
+</html>

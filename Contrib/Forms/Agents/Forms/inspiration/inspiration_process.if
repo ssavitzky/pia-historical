@@ -1,0 +1,18 @@
+<html><head>
+<title>Inspiration</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<set entity name=dir>inspiration</set>
+
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Idea:</b><dd><u>&FORM.idea;</u></dl></set>
+
+<set entity name=mlist><read file="mgr.dat" process></set>    
+<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=routeobject> <dl><dt>&FORM.name;<dd>&manager;<dt>&manager;<dd>NULL</dl></set>
+
+<set entity name=timesec>&time;:&second;</set> 
+<read interform file="write.inc" process><p> 
+  
+</html>

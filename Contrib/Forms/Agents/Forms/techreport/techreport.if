@@ -1,0 +1,30 @@
+<html><head>
+<title>Tech Report Form</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Submitting a Tech Report</h1>
+
+<form method=POST action="techreport_process.if">
+
+Your username:      
+<select name="name"><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select><br>
+Confidential: <INPUT TYPE="radio" VALUE="Confidential" NAME="radio95078" CHECKED="true">Yes<INPUT TYPE="radio" VALUE="Public" NAME="radio95078">No<p>
+Type:<SELECT name="type"><OPTION>- <OPTION>Technical Report<OPTION>Public Paper<OPTION>Travel or Conference paper<OPTION>Minutes<OPTION>Videotape</SELECT><p>
+        
+Date: <INPUT NAME="date" TYPE="text" SIZE="8"><p>
+Title: <INPUT NAME="title" TYPE="text" SIZE="66"><BR>
+Author: <INPUT NAME="author" TYPE="text" SIZE="64"><BR>
+Keywords: <INPUT NAME="keywords" TYPE="text" SIZE="61"><BR>
+Abstract: <TEXTAREA NAME="abstract" ROWS="6" COLS="60"></TEXTAREA><p>
+Conference: <INPUT NAME="conference" TYPE="text" SIZE="60"><BR>
+Publication: <INPUT NAME="publication" TYPE="text" SIZE="60"><BR>
+File Location: <INPUT NAME="location" TYPE="text" SIZE="59"><BR>
+Distribution:  <TEXTAREA NAME="distribution" ROWS="3" COLS="55"></TEXTAREA><BR>
+Notes: <TEXTAREA NAME="notes" ROWS="2" COLS="61"></TEXTAREA><p>
+<INPUT type=submit name=process value=Process><p>
+
+</html>

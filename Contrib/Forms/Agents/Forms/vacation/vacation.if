@@ -1,0 +1,23 @@
+<html><head>
+<title>Vacation Request Form</Title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+
+<h1>Vacation Request Form</h1>
+
+<form method=POST action="vacation_process.if">
+
+Username:
+<select name="name"><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li; </repeat></select><p>
+Accrued Vacation Hours (from last paystub):
+<input name=accrued size=4><p>
+Dates of Requested Vacation:
+<input name=from size=8>-<input name=to size=8><p>
+Statement of Understanding:<p>
+In the event an employee who resigns or is terminated has a negative vacation balance (i.e. the employee has used more vacation time than was accrued through the date of termination), the amout due the company will be deducted from any monies due the employee. Should the amount due the company exceed the amount due the employee, the employee shall refund the excess to the company.<p>
+<input type=submit name=process value=Process>
+  
+</html>

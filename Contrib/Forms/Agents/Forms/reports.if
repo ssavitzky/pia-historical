@@ -1,0 +1,20 @@
+<html><head>
+<title>Reports</title>
+</head>
+
+<body bgcolor="#ffffff">
+
+<center><a href="http://rhine:8888/Forms/forms.if"><img src="formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="userbutton.gif"></a><img src="reports.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+
+<form method=POST action="reports_process.if">
+
+Select a form: <select name="form"><option>timecard <option>purchasereq <option>kiansho <option>check <option>expense <option>invention <option>techreport <option>inspiration <option>travel <option>vacation <option>bike </select><p>
+
+Select a time period: <select name="period"><option>all <option>&year; <option>01 <option>02 <option>03 <option>04 <option>05 <option>06 <option>07 <option>08 <option>09 <option>10 <option>11 <option>12 </select><p>
+
+Select an ordering: <select name="order"><option>Time of Submission</option><option>Reverse Time of Submission</option><option>Alphabetical by Username</option></select><p>
+
+<input type=submit name=process value="Generate Report">
+
+</body></html>
+
