@@ -22,22 +22,17 @@ public abstract class BasicNamedNode extends AbstractNode  {
    *	distinguish a null value (no value) from an empty one.
    */
   public void setValue(NodeList value) {
+    head = null; tail = null; // clear old children
     if (value == null) {
       isAssigned = false;
-      head = null; // clear old children
       return;
     } else {
       isAssigned = true;
     }
-    long len = value.getLength();
-    Node n = null;
-    head = null; // clear old children
-    for( long i = 0; i < len; i++ ){
-      try{
-	n = value.item( i );
-	insertAtEnd((AbstractNode)n);
-      }catch(NoSuchNodeException e){
-      }
+    NodeEnumerator e = value.getEnumerator();
+    head = null; tail=null; // clear old children
+    for(Node n = e.getFirst(); n != null; n = e.getNext()) {
+      insertAtEnd((AbstractNode)n);
     }
   }
 

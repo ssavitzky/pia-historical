@@ -45,7 +45,7 @@ public class CRCAttribute extends BasicAttribute implements Attribute {
     if( !getIsAssigned() ){
       NodeList dv = m.getDefaultValue();
       if( dv != null )
-	value = dv;
+	setValue(dv);
     }
   }
 

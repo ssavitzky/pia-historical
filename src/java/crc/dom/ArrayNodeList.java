@@ -175,9 +175,8 @@ public class ArrayNodeList implements EditableNodeList {
     String result = "";
     long length = getLength();
     for (long i = 0; i < length; ++i) try {
-      Node attr = item(i);
-      result += attr.toString();
-      if (i < length - 1) result += " ";
+      Node n = item(i);
+      result += n.toString();
     }catch(NoSuchNodeException e){
     }
     return result;

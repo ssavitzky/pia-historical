@@ -32,7 +32,17 @@ public class BasicElement extends AbstractNode implements Element {
     copyChildren( e );
     AttributeList l = e.getAttributes();
     if( l != null )
-      setAttributes( new AttrList( e.getAttributes() ) );
+      setAttributes( new AttrList( l ) );
+  }
+
+  public BasicElement( BasicElement e, AttributeList atts ){
+    setParent( null );
+    setPrevious( null );
+    setNext( null );
+    setTagName( e.getTagName() );
+    copyChildren( e );
+    if( atts != null )
+      setAttributes( new AttrList( atts ) );
   }
 
   public BasicElement(Node myParent){
@@ -247,8 +257,12 @@ public class BasicElement extends AbstractNode implements Element {
    *
    */
   public String startString() {
-    return "<" + getTagName() + printAttributes()
-      +  (hasEmptyDelimiter() ? "/>" : ">");
+    String s = "<" + (tagName == null ? "" : tagName);
+    AttributeList attrs = getAttributes();
+    if (attrs != null && attrs.getLength() > 0) {
+      s += " " + attrs.toString();
+    }
+    return s + (hasEmptyDelimiter() ? "/" : "") + ">";
   }
 
   /** Return the String equivalent of all children concatenated

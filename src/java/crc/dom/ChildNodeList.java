@@ -79,17 +79,17 @@ public class ChildNodeList implements NodeList{
    */
   public long getLength()
   {
+    Node ptr = parent.getFirstChild();
+    long count = 0;
+    while( ptr != null ){
+      count++;
+      ptr = ptr.getNextSibling();
+    }
+    return count;
+    /*
     if( parent == null ) return 0;
-
-    //  Node ptr = parent.getFirstChild();
-    //long count = 0;
-    //while( ptr != null ){
-    //  count++;
-    //  ptr = ptr.getNextSibling();
-    //}
-    //return count;
-
-    return parent.getChildCount();
+    return parent.getChildCount(); // === getChildCount is buggy ===
+    */
   }
 
   /**

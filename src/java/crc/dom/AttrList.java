@@ -5,6 +5,7 @@
 package crc.dom;
 
 import java.io.*;
+import crc.dps.active.ActiveNode;
 
 /**
  * Implementing Attribute list.
@@ -87,8 +88,11 @@ public class AttrList extends AbstractNamedList implements AttributeList {
 
     for (long i = 0; i < l.getLength(); ++i) try {
       Attribute attr = (Attribute)l.item( i );
-      while( attr != null ){
-	if( attr instanceof AbstractNode )
+      if ( attr != null ) {
+	if (attr instanceof ActiveNode) 
+	  //setItem( attr.getName(), ((ActiveNode)attr).deepCopy());
+	  setItem( attr.getName(), attr );
+	else if( attr instanceof AbstractNode)
 	  setItem( attr.getName(), ((AbstractNode)attr).clone() );
 	else
 	  // If it is a foreign attribute, do nothing but refers to it

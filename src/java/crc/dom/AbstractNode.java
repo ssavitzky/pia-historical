@@ -200,7 +200,6 @@ public abstract class AbstractNode implements Node, Cloneable {
 
     if( refChild == null ){ 
       insertAtEnd( newChild );
-      incChildCount();
     }
     else if( refChild.getParentNode() != this ){
       String err = ("The reference child is not mine.");
@@ -221,6 +220,7 @@ public abstract class AbstractNode implements Node, Cloneable {
       
       setHead( newChild );
       setTail( newChild );
+      incChildCount();
     }
     else append( (AbstractNode)newChild );
   }
@@ -230,6 +230,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    */
   protected void append( AbstractNode newChild ){
     //Report.debug("Appending...");
+    incChildCount();
     AbstractNode last = getTail();
     
     newChild.setPrevious( last );

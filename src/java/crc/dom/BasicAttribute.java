@@ -15,14 +15,11 @@ public class BasicAttribute extends BasicNamedNode implements Attribute {
 
   public BasicAttribute(String n, NodeList v) {
     super(n);
-    if( v != null )
-      setValue( v );
-    else
-      setNullValue();
-
+    setValue( v );
+    
     // explicitly assigned value
     setIsAssigned( true );
-
+    setSpecified( v != null );
   }
 
   public BasicAttribute(Node myParent){
@@ -35,7 +32,7 @@ public class BasicAttribute extends BasicNamedNode implements Attribute {
    * Deep copy constructor.
    */
   public BasicAttribute(BasicAttribute attr){
-    super(attr);
+    super((BasicNamedNode)attr);
     setSpecified( attr.getSpecified() );
     setIsAssigned( attr.getIsAssigned() );
   }
@@ -86,17 +83,15 @@ public class BasicAttribute extends BasicNamedNode implements Attribute {
    */ 
   public void setValue(NodeList value){
     setIsAssigned( true );
-    if( value == null )
-      setNullValue();
-    else
-      super.setValue(value);
+    setSpecified(value != null);
+    super.setValue(value);
   }
   
   /**
    * Return attribute value
    * @return attribute value.
    */
-  public NodeList getValue(){ return value; }
+  public NodeList getValue(){ return getChildren(); }
   
   /**
    * Set specified value.If this attribute was explicitly given a value in the original document, this
@@ -109,43 +104,24 @@ public class BasicAttribute extends BasicNamedNode implements Attribute {
    */
   public boolean getSpecified(){return specified;}
 
-  /**
-   * Returns the value of the attribute as a string. Character and general entity
-   * references will have been replaced with their values in the returned string. 
-   */
-  public String toString(){
-    if( value == null) return "";
-    StringBuffer sb = new StringBuffer();
-    
-    long len = (value == null)? 0 : value.getLength();
-    Node n = null;
-
-    for( long i = 0; i < len; i++ ){
-      try{
-	n = value.item( i );
-	if(n != null) sb.append( n.toString() );
-	if (i < len - 1) sb.append( " " );
-      }catch(NoSuchNodeException e){
-      }
-    }
-
-    return new String( sb );
+  public String startString() {
+    return getName() + ((! getSpecified() || getValue() == null)? "" : "=");
   }
 
-  protected void setNullValue(){
-    try{
-      Text al = new BasicText("AttributeList");
-      al.insertBefore(new BasicText(), null);
-      value = al.getChildren();
-    }catch(Exception e){
-    }
+  public String contentString() {
+    return (! getSpecified() || getValue() == null)
+      ? ""
+      : "'" + getValue().toString() + "'";
   }
 
-  /* attribute name */
-  protected String name;
+  public String endString() {
+    return "";
+  }
 
-  /* list of values */
-  protected NodeList value;
+  public String toString() {
+    return startString() + contentString() + endString();
+  }
+
 
   /* whether value is specified in the original document */
   protected boolean specified;
