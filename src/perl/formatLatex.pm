@@ -58,7 +58,7 @@ sub preprocess{
 }
 sub header{
 
-    my $string="\\documentstyle[psfig,10pt,twocolumn]{article}\n";
+    my $string="\\documentstyle[psfig,11pt,twocolumn]{article}\n";
 $string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
     $string.="\\begin{document}\n"; 
     return $string;
@@ -116,7 +116,7 @@ sub latex_end{
  # latex stuff
 sub latex{
     my($self,$ignore_functions)=@_;
-    print "latexing ".$self->tag ."\n" if $main::debugging;
+    #print "latexing ".$self->tag ."\n" if $main::debugging;
     return latex_function($self) if !$ignore_functions && exists $latex_functions{$self->tag};
     my $string;
     $string=latex_start($self);
