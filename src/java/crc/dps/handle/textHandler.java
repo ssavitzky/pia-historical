@@ -4,6 +4,7 @@
 
 package crc.dps.handle;
 import crc.dom.Node;
+import crc.dom.Text;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
@@ -17,8 +18,10 @@ import crc.ds.Association;
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
+import crc.util.*;
 
 import java.util.Enumeration;
+
 
 /**
  * Handler for &lt;text&gt;....&lt;/&gt;  <p>
@@ -54,6 +57,8 @@ public class textHandler extends GenericHandler {
     if (dispatch(e, "pad"))      return text_pad.handle(e);
     if (dispatch(e, "split"))    return text_split.handle(e);
     if (dispatch(e, "join"))     return text_join.handle(e);
+    if (dispatch(e, "decode"))   return text_decode.handle(e);
+    if (dispatch(e, "encode"))   return text_encode.handle(e);
     return this;
   }
 
@@ -194,12 +199,12 @@ class text_pad extends textHandler {
 /** Split text at the whitespace and return a new node for each individual word.
     If the sep attribute has been specified, a new separator node is created and added
     to the node list after each text node.  A separator is not added after the last
-    node on the list.  Marked up nodes are not split unless the text attribute is used.
-    If the text attribute is specified, text is retrieved from marked up nodes and split.
+    node on the list.  Marked up nodes are not split unless the extrat attribute is used.
+    If the extract attribute is used, text is retrieved from marked up nodes and split.
 */
 class text_split extends textHandler {
 
-  protected boolean text = false;
+  protected boolean extract = false;
   protected String sep = null;
   
   public void action(Input in, Context aContext, Output out, 
@@ -207,8 +212,8 @@ class text_split extends textHandler {
 
     Enumeration resultList = null;
     Enumeration tmpEnum = null;
-    // Text attribute extracts text and ignores mark up
-    if(text) {
+    // Extract attribute extracts text and ignores mark up
+    if(extract) {
       NodeList nl = TextUtil.getText(content);
       tmpEnum = ListUtil.getListItems(nl);
     }
@@ -241,7 +246,7 @@ class text_split extends textHandler {
     super(e);
     ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
     sep    = atts.getAttributeString("sep");
-    text   = atts.hasTrueAttribute("text");
+    extract   = atts.hasTrueAttribute("extract");
   }
 
   static Action handle(ActiveElement e) { return new text_split(e); }
@@ -251,7 +256,7 @@ class text_split extends textHandler {
 
 /** 
     Replaces whitespace in text nodes with a separator and combines
-    separated text into a single node.  Unless the text attribute is specified,
+    separated text into a single node.  Unless the extract attribute is specified,
     marked up nodes are unchanged.  The result from text_join is a list of
     combined nodes and marked up nodes.  Separators are added between each node
     on the result list, as well as each item within the combined nodes.
@@ -261,17 +266,17 @@ class text_split extends textHandler {
     combined_text1;markup1;combined_text2;markup2.  combined_text1 looks like this:
     text1;text2.  
 
-    Attributes are sep and text.  If sep is not specified, space is
+    Attributes are sep and extract.  If sep is not specified, space is
     used as the separator, otherwise the specified separator is placed
     between each word in a combined node and between any combined
-    nodes and marked up nodes.  If the text attribute is specified,
+    nodes and marked up nodes.  If the extract attribute is used,
     text is extracted from marked up nodes, split at whitespace and
     joined using the sep attribute.
 */
 class text_join extends textHandler {
 
   protected String sep = null;
-  protected boolean text = false;
+  protected boolean extract = false;
   
   public void action(Input in, Context aContext, Output out, 
 		     ActiveAttrList atts, NodeList content) {
@@ -283,8 +288,8 @@ class text_join extends textHandler {
     if(sep == null)
       sep = " ";
 
-    // Text attribute extracts text and ignores mark up
-    if(text) {
+    // Extract attribute extracts text and ignores mark up
+    if(extract) {
       NodeList nl = TextUtil.getText(content);
       tmpEnum = ListUtil.joinListItems(nl, sep);
     }
@@ -306,10 +311,321 @@ class text_join extends textHandler {
   public text_join(ActiveElement e) {
     super(e);
     ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
-    sep   = atts.getAttributeString("sep");
-    text   = atts.hasTrueAttribute("text");
+    sep  = atts.getAttributeString("sep");
+    extract = atts.hasTrueAttribute("extract");
+  }
+  static Action handle(ActiveElement e) { return new text_join(e); }
+}
+
+
+/** Translate from URL, base64, or entity encoding to text.
+
+   <H3>
+   How to extend the decode handler</H3>
+   The <TT>text_decode</TT> handler already decodes url, base64, and entity
+   encoding. To add a new decoding type, the <TT>text_decode</TT> class needs
+   to be extended as follows:&nbsp; add an attribute to the text tag, then
+   extend the action associated with this tag.&nbsp; As an example, suppose
+   we want to add an encrypt attribute to decode some encrypted text.&nbsp;
+   Amend the existing code as follows.
+   <UL>
+   <LI>
+   &nbsp; Add the new attribute</LI>
+   </UL>
+
+   <UL>
+   <UL>
+   <LI>
+   First, add a variable to the <TT>text_decode</TT> class to flag&nbsp; when
+   the attribute is being used</LI>
+
+   <BR>&nbsp;<TT>class text_decode extends textHandler {</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean url&nbsp;&nbsp;&nbsp;&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean base64&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean entity&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean encrypt = false;</TT>
+   <BR><TT>&nbsp;&nbsp; ...</TT>
+   <BR><TT>&nbsp;}</TT></UL>
+   &nbsp;
+   <UL>
+   <LI>
+   Set this variable in the <TT>text_decode</TT> constructor by calling the
+   <TT>hasTrueAttribute</TT> method with the attribute name as its argument.&nbsp;&nbsp;&nbsp;
+   The <TT>hasTrueAttribute</TT> method returns true if the attribute is present
+   as a node in the document parse tree.</LI>
+   </UL>
+   <TT>&nbsp;</TT>
+   <UL><TT>public text_decode(ActiveElement e) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; super(e);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; ActiveAttrList atts = (ActiveAttrList)
+   e.getAttributes();</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; url&nbsp;&nbsp;&nbsp;&nbsp; = atts.hasTrueAttribute("url");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; base64&nbsp; = atts.hasTrueAttribute("base64");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; entity&nbsp; = atts.hasTrueAttribute("entity");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; encrypt = atts.hasTrueAttribute("encrypt");</TT>
+   <BR><TT>&nbsp; }</TT></UL>
+
+   <LI>
+   Extend the text_decode action method.&nbsp; This function is triggered
+   when the text tag is evaluated.&nbsp; Add an if clause to the existing
+   action method to call the encryption routine that will be used to&nbsp;
+   decrypt the string.</LI>
+   </UL>
+
+   <UL>This particular action method goes through all text nodes associated
+   with the text tag (which may only be one node) and extracts the String
+   value from each node.&nbsp; The appropriate routine is then called to decode
+   each string.&nbsp; In the case of the new encrypt attribute, a new encryption
+   routine will be called.&nbsp; The result of the decoding is concatenated
+   to a&nbsp; result string, which is eventually written to output.
+   <BR>&nbsp;<TT>public void action(Input in, Context aContext, Output out,</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ActiveAttrList atts,
+   NodeList content) {</TT>
+
+   <P><TT>&nbsp;&nbsp;&nbsp;&nbsp; String resultStr = "";</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; String dStr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   = null;</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; String str&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   = null;</TT>
+
+   <P><TT>&nbsp;&nbsp;&nbsp;&nbsp; NodeEnumerator enum = content.getEnumerator();</TT>
+
+   <P><TT>&nbsp;&nbsp;&nbsp;&nbsp; for (Node n = enum.getFirst(); n != null;
+   n = enum.getNext()) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; str = TextUtil.getTextString((ActiveNode)n);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(url) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dStr = Utilities.urlDecode(str);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; resultStr
+   += dStr;</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if(encrypt) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dStr = Utilities.decrypt(str);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; resultStr
+   += dStr;</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+   ...</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; }</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; out.putNode(newText(aContext, resultStr));</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp; }</TT>
+   <LI>
+   Write, or incorporate, a string decoding method.&nbsp; This method needs
+   to take an encoded string as an argument, and return the decoded string.
+   This routine can be added as a static method to the dps/aux/TextUtil class.</LI>
+   </UL>
+
+   <UL>
+   <LI>
+   Test the new attribute.&nbsp; Add the following lines to the <TT>encrypt.xh</TT>
+   example above.</LI>
+
+
+   <P><TT>TEST 2: decode encrypt: &Ccedil;=&ETH;&deg;S></TT>
+   <BR><TT>Should return:&nbsp; hello</TT>
+   <BR><TT>&lt;text decode encrypt>&Ccedil;=&ETH;&deg;S>&lt;/text></TT>
+   <BR><TT></TT>&nbsp;</UL>
+   &nbsp;
+
+  */
+class text_decode extends textHandler {
+
+  protected boolean url    = false;
+  protected boolean base64 = false;
+  protected boolean entity = false;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    String resultStr = "";
+    String dStr      = null;
+    String str       = null;
+
+    NodeEnumerator enum = content.getEnumerator();
+
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      str = TextUtil.getTextString((ActiveNode)n);
+      if(url) {
+	dStr = Utilities.urlDecode(str);
+	resultStr += dStr;
+      }
+      else if(base64) {
+	byte bytes[] = Utilities.decodeBase64(str);
+	dStr = new String(bytes);
+	resultStr += dStr;
+      }
+      else if(entity) {
+	dStr = TextUtil.decodeEntity(str);
+	resultStr += dStr;
+      }
+      else {
+	// Return text string unchanged
+	resultStr += str;
+      }
+    }
+    out.putNode(newText(aContext, resultStr));
   }
 
-  static Action handle(ActiveElement e) { return new text_join(e); }
+  public text_decode(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    url    = atts.hasTrueAttribute("url");
+    base64 = atts.hasTrueAttribute("base64");
+    entity = atts.hasTrueAttribute("entity");
+  }
 
+  static Action handle(ActiveElement e) { return new text_decode(e); }
 }
+
+
+/** Translate text to URL, base64, or entity encoding.
+
+   <H3>
+   How to extend the encode handler</H3>
+   The text_encode handler already encodes url, base64, and entity characters.
+   To add a new encoding type, the <TT>text_encode</TT> class needs to be
+   extended as follows:&nbsp; add an attribute to the text tag, then extend
+   the action associated with this tag.&nbsp; As an example, suppose we want
+   to add an encrypt attribute to encrypt some text.&nbsp; Amend the existing
+   code as follows.
+   <UL>
+   <LI>
+   &nbsp;Add the new attribute</LI>
+
+   <UL>
+   <LI>
+   &nbsp;&nbsp;&nbsp; First, add a variable to the <TT>text_encode</TT> class
+   to flag when the attribute is being used</LI>
+
+   <BR>&nbsp;<TT>class text_encode extends textHandler {</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean url&nbsp;&nbsp;&nbsp;&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean base64&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean entity&nbsp; = false;</TT>
+   <BR><TT>&nbsp;&nbsp; protected boolean encrypt = false;</TT>
+   <BR><TT>&nbsp;&nbsp; ...</TT>
+   <BR><TT>&nbsp;}</TT>
+   <BR><TT></TT>&nbsp;
+   <LI>
+   Set this variable in the <TT>text_encode</TT> constructor by calling the
+   <TT>hasTrueAttribute</TT> method with the attribute name as its argument.&nbsp;
+   The <TT>hasTrueAttribute</TT> method returns <TT>true </TT>if the attribute
+   is present as a node in the document parse tree.</LI>
+
+   <BR><TT>public text_encode(ActiveElement e) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; super(e);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; ActiveAttrList atts = (ActiveAttrList)
+   e.getAttributes();</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; url&nbsp;&nbsp;&nbsp;&nbsp; = atts.hasTrueAttribute("url");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; base64&nbsp; = atts.hasTrueAttribute("base64");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; entity&nbsp; = atts.hasTrueAttribute("entity");</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; encrypt = atts.hasTrueAttribute("encrypt");</TT>
+   <BR><TT>&nbsp; }</TT></UL>
+
+   <LI>
+   &nbsp;Extend the <TT>text_encode</TT> action method.&nbsp; This function
+   is triggered when the text tag is evaluated.&nbsp; Add an if clause to
+   the existing action method to call the encoding routine that will be used
+   to encrypt the string.</LI>
+
+   <BR>&nbsp;<TT>public void action(Input in, Context aContext, Output out,</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ActiveAttrList atts,
+   NodeList content) {</TT><TT></TT>
+
+   <P><TT>&nbsp;&nbsp;&nbsp;&nbsp; List resultList = new List();</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; if(url) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; resultList.append(TextUtil.encodeURLListItems(content));</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; }</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; else if(encrypt) {</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; resultList = TextUtil.encryptListItems(content);</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; }</TT>
+   <BR><TT>&nbsp;&nbsp; ...</TT>
+   <BR><TT>&nbsp;&nbsp;&nbsp;&nbsp; putEnum(out, resultList.elements());</TT>
+   <BR><TT>&nbsp;&nbsp; }</TT>
+   <LI>
+   Write or incorporate a string encoding method. The function that does the
+   encoding will be similar to that written for URL encoding:&nbsp; <TT>TextUtil.encodeURLListItems</TT>.&nbsp;
+   The function should take</LI>
+
+   <BR>the content node list (which is the list of nodes in the parse tree)
+   as an argument, and return a list of encoded nodes.&nbsp; These nodes are
+   then output using the <TT>putEnum</TT> convenience function.
+   <BR>In general, the function should:
+   <UL>
+   <LI>
+   &nbsp;Loop through the content node list.</LI>
+
+   <LI>
+   &nbsp;For each node that is of type NodeType.TEXT, extract its value, which
+   is a String.</LI>
+
+   <LI>
+   &nbsp;Encode the string.</LI>
+
+   <LI>
+   &nbsp;Set the node value to the encoded string.</LI>
+
+   <LI>
+   &nbsp;Push the node onto a result list.</LI>
+   </UL>
+
+   <LI>
+   Test the new attribute.&nbsp; Below is an example of a test file called
+   <TT>encrypt.xh</TT>. The test code is run as follows:&nbsp;&nbsp; <TT>process
+   -t standard decode.xh.</TT>&nbsp; The process program processes the test
+   file and writes the results of the tag evaluation to standard out.&nbsp;
+   The <TT>standard</TT> argument refers to the standard tagset.</LI>
+   </UL>
+
+   <UL><TT>&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"></TT>
+   <BR><TT>&lt;html>&lt;head></TT>
+   <BR><TT>&lt;title>t1.if&lt;/title></TT>
+   <BR><TT>&lt;link rev="made" href="mailto:pgage@rsv.ricoh.com"></TT>
+   <BR><TT>&lt;/head>&lt;body></TT>
+   <BR><TT>&lt;h1>Test file encrypt.xh&lt;/h1></TT><TT></TT>
+
+   <P><TT>&lt;h2>Test encode encrypt&lt;/h2></TT><TT></TT>
+
+   <P><TT>TEST 1: encode encrypt: hello</TT>
+   <BR><TT>Should return:&nbsp; &Ccedil;=&ETH;&deg;Š></TT>
+   <BR><TT>&lt;text encode encrypt>hello/text></TT><TT></TT>
+
+   <P><TT>&lt;hr></TT>
+   <BR><TT>&lt;b>Copyright &amp;copy; 1997 Ricoh Silicon Valley&lt;/b>&lt;br></TT>
+   <BR><TT>&lt;!-- the following conditional keeps the id out of the results
+   -->&lt;if></TT>
+   <BR><TT>&lt;then>&lt;b>$Id$&lt;/b>&lt;br>&lt;/then>&lt;/if></TT>
+   <BR><TT>&lt;/body>&lt;/html></TT></UL>
+   &nbsp;
+*/
+class text_encode extends textHandler {
+
+  protected boolean url    = false;
+  protected boolean base64 = false;
+  protected boolean entity = false;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    List resultList = new List();
+    if(url) {
+      resultList.append(TextUtil.encodeURLListItems(content));
+    }
+    else if(entity) {
+      resultList = TextUtil.encodeEntityListItems(content, "&<>'\"");
+    }
+    else if(base64) {
+      resultList.append(TextUtil.encodeBase64ListItems(content));
+    }
+    putEnum(out, resultList.elements());
+  }
+
+  /** Encode special characters as either url, base64 or entity. */
+  public text_encode(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    url    = atts.hasTrueAttribute("url");
+    base64 = atts.hasTrueAttribute("base64");
+    entity = atts.hasTrueAttribute("entity");
+  }
+  static Action handle(ActiveElement e) { return new text_encode(e); }
+}
+
