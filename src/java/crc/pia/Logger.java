@@ -52,26 +52,33 @@ public class Logger {
 	f.write (msgbuf, 0, len) ;
     }
 
-    protected synchronized void appendLogBuffer(String msg)
-    throws IOException
+    protected synchronized void appendLogBuffer(byte msg[]) 
+       throws IOException
     {
-	int msglen = msg.length();
+	int msglen = msg.length;
 	if ( bufptr + msglen > buffer.length ) {
 	    // Flush the buffer:
 	    log.write(buffer, 0, bufptr);
 	    bufptr = 0;
 	    // Check for messages greater then buffer:
 	    if ( msglen > buffer.length ) {
-		byte huge[] = new byte[msglen];
-		msg.getBytes(0, msglen, huge, 0);
-		log.write(huge, 0, msglen);
+		log.write(msg, 0, msglen);
 		return;
+	    } else {
+	      System.arraycopy(msg, 0, buffer, bufptr, msglen);
+	      bufptr += msglen;
 	    }
 	} else {
 	    // Append that message to buffer:
-	    msg.getBytes(0, msglen, buffer, bufptr);
-	    bufptr += msglen;
+	  System.arraycopy(msg, 0, buffer, bufptr, msglen);
+	  bufptr += msglen;
 	}
+    }
+
+    protected synchronized void appendLogBuffer(String msg)
+       throws IOException
+    {
+	appendLogBuffer(msg.getBytes());
     }
 
     protected void logmsg (String msg) {
