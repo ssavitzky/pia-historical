@@ -20,7 +20,8 @@ import java.util.Enumeration;
  * @see crc.dps.Token
  * @see crc.dom.Node
  */
-public class ParseNodeList extends ArrayNodeList implements ActiveNodeList {
+public class ParseNodeList extends ArrayNodeList
+implements ActiveNodeList, java.io.Serializable {
 
   /**
    * Returns the indexth item in the collection, as a ActiveNode.
