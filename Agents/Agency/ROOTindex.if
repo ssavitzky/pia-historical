@@ -19,7 +19,7 @@
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21 align=top></a>
     <th valign=top align=right width=170><font size=5 face=helvetica>
-	    <if><test exact match='pia'>&piaUSER;></test>
+	    <if><test exact match='pia'>&piaUSER;</test>
 		<then></then>
 		<else><a href="/My/">&piaUSER;'s</a> </else></if></font></th>
 	<th align=left valign=top><font size=5 face=helvetica>
