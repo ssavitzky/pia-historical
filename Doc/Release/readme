@@ -1,0 +1,132 @@
+README: The Information Agency Alpha release 1.0
+==================================================
+This cd-rom contains the pia release 1.0
+
+CONTENTS:
+	I.   CD-ROM contents
+	II.  Release Note
+	III. Quick Start
+	     A. Running from CD
+	     B. Installing on HD
+	IV. Supported platforms / Java VM
+	V. Where to find more information
+
+=========================================================================
+I. CD-ROM contents
+------------------
+	README		this file
+	autorun.inf	Windows auto play information
+	pia_bin.tar.gz  PIA 1.0 binary release
+	pia.tar.gz      PIA 1.0 source release
+	pia	    	PIA home directory
+	java		java-jdk 
+	  windows	java-jdk.1.1.4
+	  linux         java-jdk.1.1.3
+
+
+II. Release Note
+----------------
+This is 1.0 (Alpha) release of the Information Agency.  The
+Information Agency is a proxy web server (implemented in Java) that
+provides an environment for document processing agents.  This release
+includes several demonstration agents and serves as an introduction to
+rapid prototyping of Network User Interfaces using PIA technology.
+
+We recommend that interested users start by installing and running
+their own Personal Information Agency as described in the next
+section.  Once the agency is running, you can view further
+documentation through the agency and try customizing the demonstration
+agents.
+
+For further information about using the PIA to prototype Network User
+Interfaces see and agent concepts, please see the paper entitled
+"Building Network Office Appliances using the PIA Framework" which can
+be found on this CD in the pia/Doc/Papers/BuildingNOA directory (in
+Postscript, Latex, and HTML formats) or contact the PIA group would by
+sending mail to pia@crc.ricoh.com.  Our website, http://pia.crc.ricoh.com/
+may soon be available on RWAN.
+
+
+III.A Quick Start -- Running from the CD
+---------------------------------------
+A Personal Information Agency can be run directly from this CD (if you
+are using Windows or another OS which understands the Joliet file
+system so that long file names can be used).
+
+	Windows
+	   If "autoplay" is enabled, then the agency should start
+	   automatically when the CD is inserted.
+	   Otherwise, you can start the agency by running
+	   pia\bin\pia.bat
+	   The directory C:\PIAUSERS will be created to store local
+           data.  (To change the location of this directory or other 
+ 	   options, see the installation manual in pia\Doc\Manuals\INSTALL.)
+
+	Unix 
+	    	cd pia
+		./bin/pia
+
+Once the agency is running, point your web browser at:
+	http://localhost:8888/
+("localhost" can be replaced by the name or IP address of your computer.)
+
+
+III.B Installing onto HD
+------------------------
+If you cannot run from the CD, install the distribution onto your
+local drive.  The binary distribution is included on this CD as:
+	piabin.tgz
+and contains all the necessary files. (piasrc.tgz distribution
+includes the .java source files.)
+
+This is a tar file that has been compressed with gzip.  
+	(The Unix command: gunzip -c piabin.tgz | tar -xf - 
+ 	 should extract all the files.  
+ 	 The WINZIP utility can be used under windows.)
+
+After unpacking, the PIA can be run using the PIAHOME/bin/pia script.
+(This script sets up the CLASSPATH and runs:  java crc.pia.Pia )
+
+See the installation manual for more details (pia/INSTALL).
+
+
+IV. Supported platforms / Java VM
+--------------------------------
+The PIA is a java application (NOTE: it is NOT an applet) and requires
+a Java Virtual Machine (VM) version 1.1 or greater to run.  
+This CD includes a VM for Windows (JDK 1.1.4) and Linux (JDK 1.1.3).
+
+The latest releases and Java Virtual Machines for other platforms can
+be found at the Javasoft site:
+	http://www.javasoft.com/
+
+
+V. Where to find more information
+-------------------------------
+See the following documentation in the pia directory:
+
+	INSTALL
+		How to get and install the PIA.
+
+	Doc
+		Documentation directory.  All documentation is in HTML
+		and should be readable using any Web browser.
+
+Contact the PIA group:
+	pia@crc.ricoh.com
+	http://pia.crc.ricoh.com/
+
+========================================================================
+Copyright 1997 Ricoh Silicon Valley
+
+
+
+
+
+
+
+
+
+
+
+
