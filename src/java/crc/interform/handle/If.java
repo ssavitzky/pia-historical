@@ -22,6 +22,10 @@ import crc.sgml.Tokens;
 public class If extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens from = it.content();
+    if (from == null) {
+      ii.deleteIt(); 
+      return;
+    }
     Tokens list = new Tokens();
     Tokens thenDo = null;
     Tokens elseDo = null;
