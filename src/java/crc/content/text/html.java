@@ -59,7 +59,7 @@ public class html extends Default
 
 	}catch(Exception e){
 	  crc.pia.Pia.debug( this,"reg exp failed" );     
-	  e.printStackTrace();
+	  if (crc.pia.Pia.debug()) e.printStackTrace();
 	}
 	
 	crc.pia.Pia.debug( this," putting at"+  bend);
