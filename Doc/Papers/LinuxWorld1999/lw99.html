@@ -11,7 +11,7 @@
     expect to see a little bit of junk at the end of this paragraph: (
 <!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
 <!-- See mail.conferences:102 -->
-<set name=DOC:hh>440</set><!-- Tweak size for Netscape at 800x600 -->
+<set name=DOC:hh>380</set><!-- Tweak size for printing -->
 			  <!-- horizontal scrollbar eats into height... -->
 <set name=DOC:logo><img src="Images/pent24.gif"></set>
 )
@@ -127,6 +127,37 @@
 
 </slide>
 
+<slide><h2>What is our system?</h2>
+<p>&nbsp;
+<div align=center>
+  <strong>A Document-Processing Engine for the Web</strong>
+</div>
+<ul>
+  <li> The Web is made of documents
+  <li> ``<em>In the future, the only API's that matter will be the API's of web
+       sites</em>'' <br>
+       -- Tim O'Reilly
+  <li> What we have is a general-purpose document processor
+  <li> designed <em>specifically</em> for web applications.
+       <ul>
+	 <li> Can operate as client, server, proxy, or any combination
+	 <li> Can process other servers' documents<br>
+	      ... <em>examples further on</em>
+       </ul>
+  <li> Basis for
+       <ul>
+	 <li> personal web assistants
+	 <li> easy to develop and maintain sites
+	 <li> web-based information appliances
+       </ul>
+</ul>
+<p>&nbsp;
+<div align=center>
+   ``<strong>Like a spreadsheet for documents</strong>''
+</div>
+</slide>
+
+
 <hr><set name=subCaption>Documents and the Web</set>
 <slide><h2>Documents and the Web</h2>
 <table>
@@ -155,86 +186,16 @@
 	<td> browsers and servers
   <tr>	<th> User interfaces
 	<td> GUI widgets
-	<td> forms
-</ul>
-</slide>
-
-<slide><h2>What is our system?</h2>
-<p>&nbsp;
-<div align=center>
-  <strong>A Document-Processing Engine for the Web</strong>
-</div>
-<ul>
-  <li> The Web is made of documents
-  <li> ``<em>In the future, the only API's that matter will be the API's of web
-       sites</em>'' <br>
-       -- Tim O'Reilly
-  <li> What we have is a general-purpose document processor
-  <li> designed <em>specifically</em> for web applications.
-       <ul>
-	 <li> Can operate as client, server, proxy, or any combination
-	 <li> Can process other servers' documents<br>
-	      ... <em>examples further on</em>
-       </ul>
-  <li> Serves as the basis for
-       <ul>
-	 <li> personal web assistants
-	 <li> easy-to-administer servers
-	 <li> web-based information appliances
-       </ul>
-</ul>
-<p>&nbsp;
-<div align=center>
-   ``<strong>Like a spreadsheet for documents</strong>''
-</div>
-</slide>
-
-<slide><h2>Example: Browsing History</h2>
-<ul>
-  <li> Consider this: (<a href="/History">live</a>)<br>
-           
-       <a href='Images/history-index.html'>/~History</a> /
-       <a href='Images/1999.html'>1999</a> /
-       <a href='Images/01.html'>01</a> /
-       <a href='Images/29.html'>29</a>
-
-  <li> ... which points to this (and more)<br>
-14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
-14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
-14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
-14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
-14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
-15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
-15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
-15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
-...
-  <li> (This is why I designed the system in the first place...)
-</ul>
-</slide>
-
-
-<slide><h2>What's Going On?</h2>
-<ul>
-  <li> The document processor is <em>between the browser and the web</em>
-  <li> It can look at
-       <ul>
-	 <li> requests
-	 <li> responses
-	 <li> documents
-	 <li> local files
-       </ul>
-  <li> ``Agent'' (History, in this case)
-       <ul>
-	 <li> looks like a top-level directory
-	      (<a href="/History">/History</a>)
-	 <li> does processing on behalf of <em>one user</em> (me)
-	 <li> keeps persistent state.
-       </ul>
-  <li> 
+	<td> forms / links
+<tr>	<th>
+	<td> Applications
+	<td> Web sites / Infoware
+  
 </ul>
 </slide>
 <hr><set name=subCaption>Information Applications</set>
 <slide><h2>InfoWare, not software</h2>
+<!-- replace InfoWare with Infoware -->
 
 <p><em>``A killer application is no longer a desktop productivity application
 or even a back-office enterprise software system, but an entirely new breed,
@@ -256,7 +217,7 @@ support.)''  </em>
 
 
 <slide><h2>The New Killer Application</h2>
-
+<!-- delete this slide -- say as prelude to previous -->
 <p> <em>Killer application:</em> n. An application that makes someone want to
     go out and buy a computer.
 
@@ -307,7 +268,7 @@ support.)''  </em>
        </ul>
 
   <li> <strong>Processing is distributed:</strong>
-       <ul>
+<!-- what is the point here? -->       <ul>
 	 <li> every group has its procedures
 	 <li> <em>The user must be able to do processing, too!</em>
        </ul>
@@ -316,6 +277,7 @@ support.)''  </em>
 
 
 <slide><h2>Infoware in the Organization</h2>
+<!-- delete this slide -->
 <ul>
   <li> Large organizations can afford a large IT staff
        <ul>
@@ -353,8 +315,56 @@ support.)''  </em>
 </slide>
 
 
+
+<slide><h2>Example: Browsing History</h2>
+<ul>
+  <li> Consider this: (<a href="/History">live</a>)<br>
+           
+       <a href='Images/history-index.html'>/~History</a> /
+       <a href='Images/1999.html'>1999</a> /
+       <a href='Images/01.html'>01</a> /
+       <a href='Images/29.html'>29</a>
+
+  <li> ... which points to this (and more)<br>
+14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
+14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
+15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
+15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
+15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
+...
+  <li> (This is why I designed the system in the first place...)
+</ul>
+</slide>
+
+
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> The document processor is <em>between the browser and the web</em>
+  <li> It can look at
+       <ul>
+	 <li> requests
+	 <li> responses
+	 <li> documents
+	 <li> local files
+       </ul>
+  <li> ``Agent'' (History, in this case)
+       <ul>
+	 <li> looks like a top-level directory
+	      (<a href="/History">/History</a>)
+	 <li> does processing on behalf of <em>one user</em> (me)
+	 <li> keeps persistent state.
+       </ul>
+  <li> 
+</ul>
+</slide>
+
+
 <hr><set name=subCaption>Document Processing</set>
 <slide><h2>What Are Documents?</h2>
+<!-- combine with next slide -->
 <ul>
   <li> A document is a <em>tree-structured collection of text</em>
   <li> Document = content (text) + structure (markup tags)
@@ -442,7 +452,7 @@ support.)''  </em>
        a DTD with formatting commands. 
   <li> ... also represented in XML.
   <li> ... extended with standard programming constructs (XXML)
-  <li> <em>Any</em> document may contain ``active'' constructs
+<!-- make clear still XML docs -->  <li> <em>Any</em> document may contain ``active'' constructs
   <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
 </ul>
 </slide>
@@ -465,6 +475,8 @@ support.)''  </em>
 
 
 <slide><h2>What's Going On?</h2>
+<!-- need better example than slide formatting -- does not show differences
+with regular SGML -- at least make clear agent interface for viewing slides -->
 <ul>
   <li> Documents contain only content and markup (structure)
   <li> Behavior is associated with tags by a tagset
