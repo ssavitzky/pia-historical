@@ -1,0 +1,79 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>  &agentName; preview</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName;  PreviewPage</set>
+<read interform file="heading.inc" process>
+
+<tagset-load name=Printer-agent-actors>
+
+
+<if><test><get form name="cachenum"></test>
+  <then>
+    <set name="thenum"><get name=cachenum form></set>
+    <set name=centry><get-cache-entry num=&thenum;></set>
+    <set name="spoolfile"><get name=centry attr=spoolfile></set>
+    <set name="theurl"><get name=centry attr=href></set>
+    <set name="thestyle"><get name=centry attr=style></set>
+   </then>
+  </if>
+
+
+<if><test><get form name="spoolfile"></test>
+  <then>
+    <set name="spoolfile"><get form name=spoolfile></set>
+    <set name="theurl"><get name=URL form></set>
+    <set name="thestyle"><get name=style form></set>
+   </then>
+  </if>
+
+<if><get form name="newstyle">
+  <then>
+  <set name=thisstyle><get name=newstyle form></set>
+  <set name=oldspoolfile><get name=spoolfile></set>
+  <set name=spoolfile><new-file-name></set>
+
+    <fetch-file input=&oldspoolfile;.html style=&thisstyle; output=&spoolfile;
+    base=&theurl;>
+
+<!--     creating Postscript...using style &thisstyle; -->
+
+    <create-ps-file-simple file=&spoolfile;.html input=&theurl;
+    output=&spoolfile; style=&thisstyle;>
+
+<!--    creating Previews ... ps file command returned: &commandout; --> 
+     <create-ps-preview-simple style=&thisstyle; psfile=&spoolfile;>
+
+<!-- Preview command returned: &commandout; -->
+
+</then>
+<else>
+ <!-- get the document -->
+<set name="document"><read file=&spoolfile;.html process></set>
+</else>
+</if>
+
+<if><get name="spoolfile">
+  <then>
+     <show-summary spoolfile=&spoolfile; parseddoc=&document; url=&theurl;>
+     </show-summary>
+
+
+<print-bar spoolfile=&spoolfile; url=&theurl; style=&thisstyle;>
+
+</then>
+<else>
+	<form action="&url;" method="get">
+	Enter document ID (or select from list below)
+	<input type="text" name=cachenum value="" size=3>
+        <input type=submit value="Show summary">
+	</form>
+
+
+<show-cache-entries>
+</else>
+</if>
+
+<page-footer> </page-footer>
+</body></html>

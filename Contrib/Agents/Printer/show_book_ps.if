@@ -1,0 +1,34 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> &agentName; Book preview</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName;  Book Preview</set>
+<read interform file="heading.inc" process>
+
+
+<code language=perl>
+my $book=$agent->current_book;
+
+my $element=$agent->book_ps($book);
+
+print "book preview created \n";
+return $element;
+</code>
+
+<code language=perl>
+my %form_parameters=%{$request->parameters()};
+my $name=$agent->name;
+my $form=make_form("/$name/print.if",({name => 'spoolfile', type => 'hidden',
+         value => $agent->ps_file_name},{type => 'submit',value => 'Print'}));
+return $form;
+</code>
+
+<hr><if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Jun  5 13:23:53 1997
+<!-- hhmts end -->
+</body></html>

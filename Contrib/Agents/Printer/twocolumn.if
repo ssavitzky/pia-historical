@@ -1,0 +1,23 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; set columns</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName; 2column</set>
+<read interform file="heading.inc" process>
+
+
+<code language=perl>
+$main::format_options{_columns}=2;
+$main::format_options{_column_width}="3.5";
+return "2 column format set";
+</code>
+<hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Jun  5 13:11:02 1997
+<!-- hhmts end -->
+</body></html>

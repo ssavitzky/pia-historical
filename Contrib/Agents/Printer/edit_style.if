@@ -1,0 +1,180 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>  &agentName; preview</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName;  Edit Styles</set>
+<read interform file="heading.inc" process>
+
+<tagset-load name=Printer-agent-actors>
+
+<table>
+<tr><td><form action="&url;" method="post">
+<input type="submit" value="Edit style:">
+<select name=style>
+<style-option-list url=http://anywhere.com/>
+ </select>
+</form></td>
+<td>
+<form action="&url;" method="post" process copy>
+<process>
+ <set agent name=styles key=&FORM.newstyle;><style name=&FORM.newstyle;>
+ </style></set>
+  <save-styles>
+ </process>
+<input type="submit" value="NewStyle:">
+<input name="newstyle" size="10">
+</form>
+ </td>
+</table>
+
+<hr>
+
+<if><get name="style" form>
+<then>
+ <set name="mystyle"><get name="styles" agent key=&FORM.style;></set>
+ <set name="mystylename"><get name=style form></set>
+<form action="&url;" method="post" process copy>
+<process copy> 
+
+  <if><get name="preproc" form>
+   <then>
+    <write file=styles/&mystylename;.preproc><get name="preproc" form></write> 
+    <if>    <get index="mystyle.stylepreproc">
+       <then><set index="mystyle.stylepreproc" replace insert=1></set><set index="mystyle.stylepreproc" replace insert=2></set><set index="mystyle.stylepreproc" replace insert=0>styles/&mystylename;.preproc</set> </then> 
+       <else><set name="mystyle" insert=-1><stylepreproc>styles/&mystylename;.preproc</stylepreproc></set> </else>
+    </if>
+   </then> 
+  </if>
+
+  <if><get name="postproc" form>
+   <then>Writing postproc...
+    <write file=styles/&mystylename;.postproc><get name="postproc" form></write> 
+    <if>    <get index="mystyle.stylepostproc">
+       <then><set index="mystyle.stylepostproc" replace insert=1></set><set index="mystyle.stylepostproc" replace insert=2></set><set index="mystyle.stylepostproc" replace insert=0>styles/&mystylename;.postproc</set> </then> 
+       <else><set name="mystyle" insert=-1><stylepostproc>styles/&mystylename;.postproc</stylepostproc></set> </else>
+    </if>
+   </then> <else></else>
+  </if>
+
+
+  <if><get name="ts" form>
+   <then>
+   <set name=tsreadflag>styles/&mystylename;.ts</set>
+    <write file=styles/&mystylename;.ts>
+    <get form name=ts>
+    </write>
+    <if>    <get index="mystyle.stylets">
+       <then><set index="mystyle.stylets" replace insert=1></set><set index="mystyle.stylets" replace insert=2></set><set index="mystyle.stylets" replace insert=0>Printer-styles-&mystylename;</set> </then> 
+       <else><set name="mystyle" insert=-1><stylets>Printer-styles-&mystylename;</stylets></set> </else>
+    </if>
+    <if>    <get index="mystyle.styletsfile">
+       <then><set index="mystyle.styletsfile" replace insert=1></set><set
+       index="mystyle.styletsfile" replace insert=2></set><set index="mystyle.styletsfile" replace insert=0>styles/&mystylename;.ts</set> </then> 
+       <else><set name="mystyle" insert=-1><styletsfile>styles/&mystylename;.ts</stylets></set> </else>
+    </if>
+
+   </then> 
+  </if>
+
+  <if><get name="psrc" form>
+   <then>
+    <write file=styles/&mystylename;.html2psrc><get name="psrc" form></write> 
+    <if>    <get index="mystyle.stylepsrc">
+       <then><set index="mystyle.stylepsrc" replace insert=1></set><set
+       index="mystyle.stylepsrc" replace insert=2></set><set index="mystyle.stylepsrc" replace insert=0>&usrDIR;/&agentName;/styles/&mystylename;.html2psrc</set> </then> 
+       <else><set name="mystyle" insert=-1><stylepsrc>&usrDIR;/&agentName;/styles/&mystylename;.html2psrc</stylepsrc></set> </else>
+    </if>
+   </then> 
+  </if>
+
+  <if><get name="deletestyle" form><then>
+  <set agent name=styles key=&mystylename; delete> </set>
+  </then></if>
+  <save-styles>
+
+</process>
+
+<h2>Editing <get name=style form> Style </h2>
+
+<table>
+<tr><th> Pre process <td> <textarea  name=preproc rows=6 cols=60> 
+ <if><get index="mystyle.stylepreproc.Text">
+  <then><read file=&mystyle.stylepreproc.Text;> </then> 
+ </if>
+ </textarea></td>
+ <td>Evaluated before the URL is retrieved.  The following
+ entities are available: <code>inurl</code>
+<code>qs</code> (query string)
+<code>mystyle</code>
+<code>output</code>
+ </td>
+ </tr>
+<tr><th> tagset <td> <textarea name=ts rows=8 cols=60> 
+ <if><get index="mystyle.styletsfile.Text">
+  <then><read file="&mystyle.styletsfile.Text;"> </then> 
+ </if>
+ </textarea></td>
+ <td>Tagset used to process the URL --  put <code>&lt;tagset
+ name=Printer-styles-&mystylename; base=Standard&gt; &lt;/tagset&gt;
+     &lt;tagset-load name=Printer-styles-&mystylename;&gt;
+    </code> at the top of this section.  The tagset will be loaded after saving</td>
+ </tr>
+<tr><th>post process <td> <textarea  name=postproc rows=6 cols=60> 
+ <if><get index="mystyle.stylepostproc.Text">
+  <then><read file="&mystyle.stylepostproc.Text;"> </then> 
+ </if>
+ </textarea></td>
+<td>evaluated after the document has been read in and parsed --available as
+the <code>document</code> entity, also <code>AGENT.cachecounter </code>is the
+number of the cache entry for this document </td>
+ </tr>
+<tr><th>html2psrc <td> <textarea  name=psrc rows=6 cols=60> 
+ <if><get index="mystyle.stylepsrc.Text">
+  <then><read file="&mystyle.stylepsrc.Text;"> </then> 
+ </if>
+ </textarea></td>
+ <td>configuration file for the <a href=http://www.tdb.uu.se/~jan/html2ps.html>HTML2PS</a> processor </td>
+ </tr>
+</table>
+<input type=hidden name=style value=&FORM.style;>
+<input type="submit" value="SaveEdits">
+<input type="submit" name=deletestyle value="Delete Style">
+</form>
+</then>
+<else>
+<!-- showed example stylesand edit them -->
+<table border="1">
+<caption>choose a style to edit </caption>
+<set local name="mystyles"><dummy><get agent name=styles keys></dummy></set>
+ <repeat list="&mystyles;" entity=s>
+ <tr><td><a href=&url;?style=&s;><get name="s"></a></td>
+        <if><read file="styles/&s;.gif">
+	<then><td><a href=&url;?style=&s;><img src=/~&agentName;/styles/&s;.gif></a></td> </then></if>
+ </tr>
+ </repeat>
+</table>
+
+ </else>
+
+</if>
+
+
+<hr>
+<h3>Default styles</h3>
+<table>
+<tr><th>Web Site<th>Style</tr>
+<repeat list="&AGENT.defaltstyles.keys;" entity=k>
+<tr><td><get name=k> </td> <td><get agent name=defaultstyles key=&k;> </td></tr>
+</repeat>
+</table>
+
+<hr>
+
+
+<page-footer> </page-footer>
+<if>
+<get name="tsreadflag">
+<then><read file="&tsreadflag;" process> </then> 
+ </if>
+</body></html>

@@ -1,0 +1,87 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> WebPrinter </title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<tagset-load name=Printer-agent-actors>
+
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Icon/ricoh.gif"
+	border=0 width=170 height=48 alt="R I C O H"></a>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Icon/pia45.gif" alt=PIA></a><br></tr>
+<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+    ><img src="/Icon/blackline.gif" height=2 width=510><br></tr>
+<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+	src="/Icon/silicon-valley.gif" alt="Silicon Valley"
+	border=0 width=170 height=21></a>
+    <th>
+    <th align=left><font face=helvetica size=12pt>WebPrinter</font>
+<tr><th width=170>
+    <td><br>
+<if><agent-running name="&agentName;"><then>
+<TR><th>
+    <TD align=right height=32><td>
+	<form action="preview.if" method="post">
+        <input type=image src="/&agentName;/preview.gif"
+        height=32 width=32 border=0 alt=Preview>
+        <!-- input type=submit value="Preview" -->
+       <set name="refered"><get trans headers request name=referer></set>
+       <if><test match=&piaHOST;><get name=refered></test>
+        <else><set name=myurl><get name=refered></set> </else>
+	</if>
+	<if>
+	<test><get name="myurl"></test>
+	<else>
+	<set-lastlink>
+	<set name="myurl"><get name="lastlink" attr=href></set>
+	</else>
+	</if>
+	<input type="url" name=URL value="&myurl;" size=20>
+	</form>
+</then></if>
+
+
+<TR><th rowspan=3 valign=center>
+      <a href="http://www.ricohcorp.com/ccopysub.htm">  <img src="/&agentName;/rprinter.jpg" width=144 border=0></a> 
+    <TD align=right><td>
+	<form action="print.if" method="post">
+        <input type=image src="/&agentName;/printer.gif"
+        height=32 width=32 border=0 alt=Print>
+        <!-- input type=submit value="Print" -->
+	<input type="url" name=url value="&myurl;" size=20>
+	</form>
+
+<TR><TD align=right><td><!-- move td to after the icon to get the -->
+                        <!-- icons lined up to the left of the PIA -->
+	<form action="mkbook.if" method="post">
+        <input type=image src="/&agentName;/bookmark.gif"
+        height=32 width=32 border=0 alt=Print>
+	<input type="url" name=url value="&myurl;" size=20>
+	</form>
+
+<TR>
+    <TD align=right><td>
+	<form action="previous.if" method="get">
+        <input type=image src="/&agentName;/previews.gif"
+        height=32 width=32 border=0 alt=Previous>
+        <!-- input type=submit value="Previous Print" -->
+         Previous print:
+	<input type="text" name=cachenum value="" size=3>
+	</form>
+       
+<tr><th>
+    <TD align=right><td>
+
+</table>  
+
+
+  
+
+  <hr>
+<page-footer> </page-footer>
+
+</body></html>

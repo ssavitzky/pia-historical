@@ -1,0 +1,38 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Options for &agentName;</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName; options</set>
+<read interform file="heading.inc" process>
+
+<set entity name=title>Change options</set>
+<read interform file="heading.inc" process>
+
+
+<tagset-load name=Form-agent-actors>
+<hr>
+<table>
+<tr> <td>
+<form action="&url;" process copy method=post>
+ <process copy>
+<if><get name="device" form>
+ <then><set name="device" agent><get name="device" form></set> </then> 
+ <else> </else></if>
+ <write file=device.dat><get name="device" agent></write>
+</process>
+</form>
+Device: <input name="device" value="&AGENT.device;"><br>
+(<code>lp </code> is default)
+ </td>
+<td><a href="edit_style.if"> Styles</a> </td>
+<td><a href=toggle_page_controls.if>Turn on/off proxy banner </td> <br>
+(control buttons inserted on proxy to pages)
+</tr>
+</table>
+
+
+
+<page-footer> </page-footer>
+
+</body></html>
