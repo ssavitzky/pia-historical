@@ -7,14 +7,10 @@
 
 <hide>
 <p> Note: you are viewing the plain form of a document that was designed to be
-    viewed as a <a href="lw99.slides.html">slide presentation</a>.  You can
-    expect to see a little bit of junk at the end of this paragraph: (
+    viewed as a <a href="lw99.slides.html">slide presentation</a>.
+<include src=config.inc>
 <!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
 <!-- See mail.conferences:102 -->
-<set name=DOC:hh>440</set><!-- 380 for printing; 440 for screen. -->
-<set name=DOC:logo><img src="Images/pent24.gif"></set>
-<!-- set name=DOC:leftBg>yellow</set -->
-)
 </hide>
 
 <p> Note: The <a href="lw99.slides.html">processed form</a> of this
@@ -388,7 +384,7 @@ support.)''  </em>
 	 <li> Describes what to do with each tag
        </ul>
   <li> <code>process -tagset slides lw99.html &gt; lw99.slides.html</code>
-  <li> Output: another document (this slide).
+  <li> Output: another document (this slide). 
 </ul>
 </slide>
 
@@ -413,6 +409,21 @@ support.)''  </em>
 </slide>
 
 
+<slide><h2>Example: Web Server</h2>
+<ul>
+  <li> Active documents can be used on a web server.
+  <li> The <em>server</em> does the processing
+       <ul>
+	 <li> browser gets plain HTML
+       </ul>
+  <li> We call a collection of active documents an ``Agent''
+       <p>
+
+  <li> <a href="/">Home page of this server</a>
+  <li> <a href="/Admin">Server Administration Agent's home page</a>
+  <li> <a href="/Admin/installers">Agent installer form</a>
+
+</ul>
 
 <slide><h2>Example: Documentation</h2>
 <ul>
@@ -428,6 +439,7 @@ support.)''  </em>
   <li> Same document can be viewed many ways:
        see <a href="Images/View.html">this form</a>
        (<a href="/View">live</a>)
+       (<a href="/Admin/installers#View">install</a>)
 </ul>
 </slide>
 
@@ -459,7 +471,6 @@ with regular SGML -- at least make clear agent interface for viewing slides -->
   <li> <a href="who-what.slides.html#0">Users and Uses</a>
   <li> <a href="open-source.slides.html#0">Open Source</a>
   <li> <a href="oss-bkgnd.slides.html#0">Open Source Background Info</a>
-  <li> <a href="open-source-and-ricoh.slides.html">Open Source &amp; Ricoh</a>
   <li> <a href="appendices.slides.html#0">Appendices</a>
        <p>
   <li> Our web site:

@@ -13,7 +13,12 @@ include $(MF_DIR)/subdir.make
 
 SUBDIRS= Images
 
-all:: lw99.slides.html architecture.slides.html who-what.slides.html \
-	open-source.slides.html oss-bkgnd.slides.html appendices.slides.html \
-	open-source-and-ricoh.slides.html
+FILES = lw99.html architecture.html who-what.html \
+	open-source.html oss-bkgnd.html appendices.html \
+	open-source-and-ricoh.html appliances.html
 
+SLIDES = $(FILES:.html=.slides.html)
+
+all:: $(SLIDES)
+
+*.slides.html: config.inc
