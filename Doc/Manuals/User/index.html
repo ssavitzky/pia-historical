@@ -80,10 +80,9 @@ else's, or a printer's, PIA. <p>
 
 
 <h2>Command-Line Options</h2>
-
 <dl>
-  <dt> <code>-s <em>PIA_DIR</em></code>
-  <dd> Set the <code>PIA_DIR</code> environment variable.  This is normally
+  <dt> <code>-root <em>PIA_DIR</em></code>
+  <dd> This is normally
        the place where the PIA is installed; if you have your own copy it is
        <code>~/pia</code>, otherwise it's probably
        <code>/usr/local/pia</code>.  It is accessible in the pia as the DOFS
@@ -93,30 +92,30 @@ else's, or a printer's, PIA. <p>
        <code>~/.pia</code>, and is accessible in the pia as the DOFS <code><a
        href="/My/">/My/</a></code>.  It's where the PIA keeps your
        customizations, history, and private agent state.
-  <dt> <code>-p <em>[port_number]</em></code>
+  <dt> <code>-port <em>[port_number]</em></code>
   <dd> Specifies the port on which the agency is listening for connections.
-       This is normally 8001.
-  <dt> <code>-P</code>
+       This is normally 8888.
+  <dt> <code>-port</code>
   <dd> Listen on port =  8000 + your user ID, in case you're sharing a
        computer with other people.
        <p>
-
-  <dt> <code>-c <em>command</em></code>
-  <dd> Run the specified command with the proxy environment variables set
-       correctly.  The <code><em>command</em></code> is normally the name of a
-       browser.  Don't bother running Netscape this way; it doesn't look in
-       the environment for its proxies; Chimera and Mosaic do.
-  <dt> <code>-e</code>
-  <dd> Print out the proxy environment variables.
-       <p>
+  <dt> <code>-p <em>configurationfile</em></code>
+  <dd> The configuration file for the PIA; please specify the complete path.  The
+       default file is stored under pia/Config/pia.props.  You can create a
+       customizable copy in your home directory under ~./pia with the command
+<p>
+       pia/bin/makeconfig
+       
   <dt> <code>-q</code>
   <dd> Be quiet -- only print out error messages.
   <dt> <code>-v</code>
   <dd> Be verbose.  Print out a little more information than usual.
-  <dt> <code>-d<em>n</em></code>
+  <dt> <code>-d</code>
   <dd> Debugging -- print out <em>lots</em> of stuff.  If <em>n</em> is 2 or
        more, print out even more information, from the InterForm parser.
        Debugging printout makes the Agency run <em>very</em> slowly.
+  <dt> <code>-?</code>
+  <dd> Print out command line options
 </dl>
 
 <h2>Agents</h2>
@@ -424,7 +423,7 @@ be a <code><a href="/proxy">proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Dec 16 16:13:33 1996
+Last modified: Tue Jul 22 15:28:06 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
