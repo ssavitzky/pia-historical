@@ -1044,6 +1044,21 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
+   * Respond to a transaction with a stream of HTML.
+   */
+  public void sendProcessedResponse ( String file, String path, 
+				      Transaction trans, Resolver res ) {
+    String ts = tagsetName(file);
+    Transaction response = new HTTPResponse( trans, false );
+    Content c = new crc.content.text.ProcessedContent(this, file, path, ts,
+						      trans, response, res);
+    response.setStatus( 200 ); 
+    response.setContentType( resultType(file) );
+    response.setContentObj( c );
+    response.startThread();
+  }
+
+  /**
    * authenticate the origin of a request
    * @return false if cannot authenticate
    */
@@ -1087,6 +1102,18 @@ public class GenericAgent extends AttrBase implements Agent {
     return respondToInterform(request, url.getFile(), res);
   }
 
+  /** Extensions of executable files.
+   *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
+   *	processed with the DPS. 
+   */
+  protected int firstDPSType = 2;
+  protected String executableTypes[] = {
+    "cgi", 	"if",   	"lif",  	"dpml"};
+  protected String resultTypes[] = {
+    null, 	"text/html",	"text/html",	"text/html"};
+  protected String tagsetNames[] = {
+    null, 	"Standard",	"legacy", 	"standard"};
+
   /**
    * Strip off destination file name for put
    * @return path with interform or cgi
@@ -1094,20 +1121,40 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected String stripDestFile(String path){
     // If there is a destination file name after the interform file, strip it
-    
-    int pos = path.indexOf(".if/");
-    if( pos > 0 ){
-      destFileName = path.substring(pos+".if/".length());
-      return path.substring(0, pos+3);
-    }
+    destFileName = null;
 
-    pos = path.indexOf(".cgi/");
-    if( pos < 0 ) return path;
-    else {
-      destFileName = path.substring(pos+".cgi/".length());
-      return path.substring(0, pos+4);
+    for (int i = 0; i < executableTypes.length; ++i) {
+      String ext = "." + executableTypes[i] + "/";
+      int pos = path.indexOf(ext);
+      if( pos > 0 ){
+	destFileName = path.substring(pos+ext.length());
+	return path.substring(0, pos+ext.length());
+      }
     }
+    return path;
+  }
 
+  protected boolean isDPSType(String path) {
+    for (int i = firstDPSType; i < executableTypes.length; ++i) {
+      if (path.endsWith("."+executableTypes[i])) return true;
+    }
+    return false;
+  }
+
+  protected String resultType(String path) {
+    for (int i = 0; i < executableTypes.length; ++i) {
+      if (path.endsWith("."+executableTypes[i])
+	  && resultTypes[i] != null) return resultTypes[i];
+    }
+    return "text/html";
+  }
+
+  protected String tagsetName(String path) {
+    for (int i = 0; i < executableTypes.length; ++i) {
+      if (path.endsWith("."+executableTypes[i])
+	  && resultTypes[i] != null) return tagsetNames[i];
+    }
+    return null;
   }
 
   /**
@@ -1127,10 +1174,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if(end > 0) path = path.substring(0, end);
 
     // If there is a destination file name after the interform file, strip it
-    if( !path.endsWith(".if") || !path.endsWith(".cgi") ){
-      path = stripDestFile( path );
-    }
-     
+    path = stripDestFile( path );
 
     // Find the file.  If not found, return false.
     String file = findInterform( path );
@@ -1157,7 +1201,9 @@ public class GenericAgent extends AttrBase implements Agent {
       try{
 	InputStream in;
 
-	in = ( destFileName != null )? Run.interformFile(this, file, destFileName, request, res): Run.interformFile(this, file, request, res);
+	in = ( destFileName != null )
+	  ? Run.interformFile(this, file, destFileName, request, res)
+	  : Run.interformFile(this, file, request, res);
 	sendStreamResponse(request, in);
       }catch(PiaRuntimeException ee ){
 	throw ee;
@@ -1175,6 +1221,8 @@ public class GenericAgent extends AttrBase implements Agent {
       }catch(PiaRuntimeException ee ){
 	throw ee;
       }
+    } else if (isDPSType(file)) {
+      sendProcessedResponse(file, destFileName, request, res);
     } else {
       crc.pia.FileAccess.retrieveFile(file, request, this);
     }
