@@ -154,28 +154,28 @@ Note that we only need these inside the PIA.
     <doc> If present, show the date underneath the title.
     </doc>
   </define>
-  <action>
-<if><get name=content><then><set name=title>&content;</set></if>
-<set name=agentNames><text sort case>&agentNames;</set>
-<if><get name=ltitle>
-    <else><set name=ltitle><a href="/&agentName;">&AGENT:name;</a>:</if>
-
+<action><hide>
+    <if><get name=content><then><set name=title>&content;</set></if>
+    <set name=agentNames><text sort case>&agentNames;</set>
+    <if><get name=ltitle>
+        <else><set name=ltitle><a href="/&agentName;">&AGENT:name;</a>:</if>
+</hide>
+<table cellpadding=0 cellspacing=0>
+<tr><th><a href="http://pia.rsv.ricoh.com/"><img
+		src="/Icon/pia45.gif"
+		border=0 width=85 height=45 alt="P I A"></a></th>
+    <td valign=bottom>
+    <table>
+      <tr><th valign=bottom align=left>
+	     <em>the</em> Platform for Information Applications
+      <tr height=6><td><img src="/Icon/rule.gif" height=6 width=469></tr>
+    </table>
+</table>
+<!-- no longer want nowrap nobr in the next heading -->
 <table cellspacing=0 cellpadding=0 border=0>
-<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
-	href="http://rsv.ricoh.com/"><img src="/Icon/ricoh.gif"
-	border=0 width=170 height=48 alt="R I C O H"></a></th>
-    <th width=170 nowrap></th>
-    <th align=left nowrap nobr valign=center width=170>
-        <a href="/"><img width=85 height=45 border=0
-	    	         src="/Icon/pia45.gif" alt=PIA></a></th></tr>
-<tr height=2><td colspan=3  nowrap nobr
-    ><img src="/Icon/rule.gif" height=6 width=469></td></tr>
-<!--img src="/Icon/blackline425.gif" height=2 width=425-->
-<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
-	src="/Icon/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
-	border=0 width=170 height=21></a></th>
+<tr><th align=left valign=top width=170>&nbsp;</th>
     <th align=right valign=top width=170>&ltitle;&nbsp; </th>
-    <th align=left colspan=2><if><get entity name=title>
+    <th align=left valign=top><if><get entity name=title>
 	<then><get entity name=title></then>
 	<else>&fileName;</else></if></th></tr>
 <if>&attributes:show-date;<then>
@@ -183,7 +183,7 @@ Note that we only need these inside the PIA.
     <td colspan=2><td>&dayName;, &year;-&month;-&day;, &time;:&second;</tr>
 </if>
 </table>
-  </action>
+</action>
 </define>
 
 <define element=sub-head quoted>
