@@ -5,7 +5,7 @@ package crc.dom;
 
 public interface EditableNodeList extends NodeList {
 
-  void replace(long index,Node replacedNode) 
+  Node replace(long index,Node replacedNode) 
     throws NoSuchNodeException;
 
   void insert(long index,Node newNode) 
