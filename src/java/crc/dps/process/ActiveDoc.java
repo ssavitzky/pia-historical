@@ -151,7 +151,7 @@ public class ActiveDoc extends TopProcessor {
 	define("urlPath", transaction.requestURL().getFile());
       }
       // form parameters might be either query string or POST data
-      if (req.hasQueryString()){
+      if (req != null && req.hasQueryString()){
         define("urlQuery",  req.queryString());
       } else {
 	define("urlQuery",  "");
