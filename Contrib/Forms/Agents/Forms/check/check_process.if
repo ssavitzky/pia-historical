@@ -4,11 +4,6 @@
 
 <body bgcolor="#ffffff">
 
-<h2> This is new behavior </h2>
-Your request for &FORM.amount; is rejected ...
-
-
-
 <set entity name=dir>check</set>
 <set entity name=acctobject><read file="acct_codes.dat" process></set>
 
