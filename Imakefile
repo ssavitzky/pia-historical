@@ -64,11 +64,11 @@ lib/perl:
  *	If there is no PIA_DIR in the environment, it overrides it.
  *	Eventually we'll have to have both perl and java versions.
  */
-bin/pia: bin Makefile
+bin/pia: bin Makefile lib
 	echo '#!/bin/sh' > bin/pia
 	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`/bin/pwd` >> bin/pia
 	echo export PIA_DIR >> bin/pia
-	echo perl `/bin/pwd`/src/Agencies/perl_small/pia.pl '$$*' >> bin/pia
+	echo perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> bin/pia
 	chmod +x bin/pia
 
 
