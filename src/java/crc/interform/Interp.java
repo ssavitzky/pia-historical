@@ -733,14 +733,24 @@ public class Interp extends State {
     }
   }
 
-  /** Run the handle method of any actor that has registered its interest. */
+  /** Run the handle method of any actor that has registered its interest.
+   *	We go to some pains to make sure that a tag that has been replaced 
+   *	gets used in subsequent handlers, and that a tag that has been deleted
+   *	<em>stays</em> deleted even if a subsequent handler does a careless
+   *	replaceIt.<p>
+   * === it might be better to modify replaceIt to check for null. ===
+   */
   final void checkForHandlers(SGML it) {
     if (handlers == null) return;
+    boolean deleted = (this.it == null);
     Actor a;
     while ((a = (Actor)handlers.pop()) != null) {
       debug(" " + a.name() + "!");
       a.handle(it, this);
+      if (this.it == null) deleted = true;
+      else if (this.it != it) it = this.it;
     }
+    if (deleted) this.it = null;
   }
 
 
