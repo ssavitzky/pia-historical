@@ -74,6 +74,12 @@
   <input type="SUBMIT" value="Submit">  
  </form>
 
+   <set name=myuser><get name=users agent key=&uid;></set>
+   <if> <get index=myuser.userpublickey.Text> <then> </then>
+   <else>
+   This user does not have a public key, and should <a href="register.if">create a
+   key</a> before digitally signing forms.
+ </else></if>
 
  </then>
 </if>
@@ -116,6 +122,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 12:29:13 1998
+Last modified: Tue Feb 17 12:48:59 1998
 <!-- hhmts end -->
 </body></html>

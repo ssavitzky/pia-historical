@@ -22,15 +22,16 @@
          </if-in-group>
 </repeat>
 <TD> <form action="fill_out_form.if">
-<input type="SUBMIT" value="Fill Out Form">:
-<select name="formtype">
+Fill out: <select name="formtype">
  <option>timecard</option>
  <repeat list=&AGENT.forms;>
   <option>&li;</option>
  </repeat>
 </select>
+<input type="SUBMIT" value="Form">:
+
 </form>
- <a href="forms.if">Forms</a>
+ <a href="forms.if">List of Forms</a>
 <TR><TD>  <a href="status.if"> Status</a>
 <if-in-group group=FrontOffice><TR><TD>  <a href="reports.if"> Reports</a>
 </TD></TR></if-in-group>

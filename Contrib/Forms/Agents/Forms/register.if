@@ -17,9 +17,14 @@
   <li> Your Extension: <b><get index=u.userext></b>       
     <li> Your Department: <b><get index=u.userdept></b>       
 </ul>
+<if><get index=u.usermanager.Text> <then>
 If these values are correct, please continue on to the next section, otherwise
 please <a href="edit_user.if?euser=&auser;">EDIT</a> these values and then
 return to this page.
+</then> <else>
+Please <a href="edit_user.if?euser=&auser;">EDIT</a> these values and then
+return to this page.
+</else></if>
 
 <h3>Create a key</h3>
  The forms server uses a Public key/Private key system to create digital
