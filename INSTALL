@@ -133,7 +133,7 @@ IV. Running the PIA
 	This is a one-line shell script that runs "pia_wrapper".  A
 	complete list of command-line options can be found by running
 
-	  pia/bin/pia -h
+	  pia/bin/pia -?
 
 	The first time the PIA is run, it will create a directory under
 	your home directory:

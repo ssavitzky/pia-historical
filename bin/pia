@@ -9,7 +9,7 @@
 #	piadirectory  -- is the directory which the PIA is installed
 
 if [ -n "$(echo $1 | grep '-')" ] ; then
-    if [ $1 = "-h" ] ; then
+    if [ $1 = "-?" ] ; then
 	exec pia_wrapper crc.pia.Pia ?
 	exit 1
     fi
