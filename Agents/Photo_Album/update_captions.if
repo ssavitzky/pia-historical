@@ -11,16 +11,16 @@
 <repeat list=&rows; entity=aref>
  <set name=dir><get name=aref attr=href></set>
  <set name=capfile>&dir;/photocaptions.xml</set>
- <if><read info file=&capfile;> <then></then> <else>
-<write file=&capfile;><create-photo-captions directory=&roll;></write>
- </else> </if>
+
+<write file=&capfile;><create-photo-captions directory=&dir;></write>
+
  <set name=aref attr=href>show_captioned.if?capfile=&capfile;</set>
 </repeat>
 <write file="&AGENT.masterlist;"><get name=master></write>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Mar 11 19:49:39 1998
+Last modified: Wed Mar 11 19:54:12 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
