@@ -33,6 +33,10 @@
 	<if><test exact match='pia'><get env name="USER"></test>
 	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
   <tr>
+    <th valign=top align=right>
+    <td valign=top> <a href="/Agency/checkpoint.if">checkpoint</a> /
+	<a href="/Agency/restore.if">restore</a> state
+  <tr>
     <th valign=top align=right><b>Files:</b>
     <td valign=top> <a href="/PIA/">PIA files</a>
 	<a href="/My/">My files</a>

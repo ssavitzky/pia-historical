@@ -12,7 +12,9 @@
     <tr><th width=170><td><br>
     <tr><th align=right><a href="home.if">&agentName;</a>:<td>Index Page
     <tr><th align=right><td> <a href="home.if">Home Page</a>
-    <tr><th><td> <a href="options.if">Options</a>
+    <tr><th><td> <a href="options.if">Options</a> /
+  	<a href="/Agency/checkpoint.if">checkpoint</a> /
+	<a href="/Agency/restore.if">restore</a> state
     <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
     <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
     <tr>

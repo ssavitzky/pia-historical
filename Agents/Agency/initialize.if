@@ -5,6 +5,23 @@
 </head><body>
 <h1>The Agency Initialization InterForm</h1>
 
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+<if><read.file interform file="checkpoint.dat" info>
+    <then>
+	<user-message>Restoring from checkpoint.dat</user-message>
+	<agent-restore interform file=checkpoint.dat>
+	restored from <code>checkpoint.dat</code>.
+    </then>
+    <else>
+	<user-message>Loading startup file <read interform info=path
+		file="/Agency/START-UP.html"></user-message> 
+	<!-- Define an actor to handle forms -->
+	<actor name=form tag=form handle="submit_forms"></actor>
+	<read file="/Agency/START-UP.html" interform process skip>
+    </else>
+</if>
+<hr>
 This form gets requested by the agency at start-up.  It looks for a <a
 href=START-UP.html>START-UP.html</a> file and submits each of the forms
 found in that file in turn.
@@ -13,28 +30,8 @@ found in that file in turn.
 It is also possible to override <em>this</em> file with your own version, in
 (<code>/My/Agents/Agency/initialize.if</code>) and put arbitrary InterForm
 code into it.
-<hr>
-
-
-<if><agent-running name="PIA">
-    <then>Already initialized; nothing to do.
-	<user-message>Agency already initialized.</user-message>
-    </then>
-    <else>
-	<user-message>Initializing &agentName; from &filePath;</user-message>
-	<user-message>Loading startup file <read interform info=path
-		file="/Agency/START-UP.html"></user-message> 
-	<!-- Define an actor to handle forms -->
-	<actor name=form tag=form handle="submit_forms"></actor>
-	<read file="/Agency/START-UP.html" interform process skip>
-    </else>
-</if>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="http://rsv.ricoh.com/~steve/"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 </body></html>

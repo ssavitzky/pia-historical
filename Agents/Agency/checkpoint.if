@@ -1,0 +1,40 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Checkpoint the PIA</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Checkpoint the PIA</h1>
+
+<form method=GET action="&url;">
+<if><get form name=agent>
+    <then><set entity name=agent><get form name=agent></set>
+	  <agent-save file="&agent;.dat" interform name="&agent;">
+	  <user-message>Checkpointed &agent in &agent;.dat</user-message>
+	  Checkpointed:
+    </then><else>
+	   <input type=submit value="Checkpoint Agent">
+    </else>
+</if>
+  <set entity name=agent><get form name=agent></set>
+  <input size=50 name=agent value="&agent;">
+</form>
+
+<form method=GET action="&url;">
+<if><get form name=all>
+    <then><set entity name=agent><get form name=agent></set>
+	  <agent-save interform file="checkpoint.dat" list="&agentNames;">
+	  <user-message>Saved &agentNames; in checkpoint.dat</user-message>
+	  Saved &agentNames; in <code>checkpoint.dat</code>
+    </then>
+    </then><else>
+	   <input type=submit value="Checkpoint All">
+    </else>
+</if>
+  <input type=hidden name=all value=true>
+</form>
+
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

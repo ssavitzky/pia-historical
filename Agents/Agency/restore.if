@@ -1,0 +1,34 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Restore Agency State</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>Restore Agency State</h1>
+
+<if><read.file interform file="checkpoint.dat" info>
+<then> CONFIRM:
+<else>
+  Checkpoint file <code>~/.pia/Agents/Agency/checkpoint.dat</code>
+  does not exist.
+</else>
+</if>
+
+  <form method=GET action="&url;">
+  <if><get form name=all>
+      <then>
+	<user-message>Restoring from checkpoint.dat</user-message>
+	<agent-restore interform file=checkpoint.dat>
+	restored from <code>checkpoint.dat</code>.
+      </then>
+      </then><else>
+	<input type=submit value="Restore Agency State">
+	from <code>checkpoint.dat</code>.
+      </else>
+  </if>
+    <input type=hidden name=all value=true>
+  </form>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
