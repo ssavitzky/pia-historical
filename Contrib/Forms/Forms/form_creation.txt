@@ -58,6 +58,40 @@ that are automatically created based on the date of the form submission. There i
 an html-based report within each subdirectory which contains links to all of the data 
 files within its child directories.
 
-Actions performed by write.inc:
-  (1) creates an html document for signing, and immediately presents it
-  (2) updates all appropriate report and data files
+Here are descriptions of the global data files:
+
+account_types.dat
+   -list of possible account types
+
+acct_codes.dat
+   -corresponding account number for each account type
+
+kiansho.dat
+   -single digit which kiansho form uses to serialize requests
+
+message.txt
+   -message that is mailed by emailer to inform a user of pending requests
+
+mgr.dat
+   -corresponding manager for each username
+
+namelist.dat
+   -list of all usernames (employees)
+
+numlist2.dat
+   -used by purchasereq to make code more consise
+
+paydate.dat
+   -list of possible paydates (used by the timecard form)
+
+purchasereq.dat
+   -single digit which purhcasereq form uses to serialize requests
+
+usertodept.dat
+   -corresponding department number for each username
+
+usertoext.dat
+   -corresponding extension number for each username
+
+usertoname.dat
+   -corresponding full name for each username
