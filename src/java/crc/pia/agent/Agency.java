@@ -11,15 +11,15 @@
 package crc.pia.agent;
 import java.util.NoSuchElementException;
 
-import crc.pia.Agent;
+import crc.pia.GenAgent;
 import crc.pia.Resolver;
 
 
-public class Agency extends Agent {
-  /**
-   * resolver
-   */
-  protected Resolver resolver;
+public class Agency extends GenAgent {
+
+  public Agency(String name, String type){
+    super(name, type);
+  }
 
   /**
    * initialize 
@@ -30,29 +30,13 @@ public class Agency extends Agent {
     super.initialize();
   }
 
-  /**
-   * set resolver
-   */
-  public void setResolver( Resolver r ){
-    if( r )
-    resolver = r;
-  }
-
-
-
-  /**
-   * get resolver
-   */
-  public resolver getResolver(){
-    return resolver;
-  }
 
   /**
    * take the agent off the resolver list
    *
    */
   public void unInstallAgent(String name){
-    getResolver().unRegisterAgent( name );
+    Pia.getInstance().getResolver().unRegisterAgent( name );
   }
 
   /**
@@ -60,7 +44,7 @@ public class Agency extends Agent {
    *
    */
   public void installAgent(Agent newAgent){
-    getResolver().registerAgent( newAgent );
+    Pia.getInstance().getResolver().registerAgent( newAgent );
   }
 
   /**
@@ -167,7 +151,7 @@ public class Agency extends Agent {
 	}
     }// if
 
-    Agent agent = getResolver().agent( name );
+    Agent agent = Pia.getInstance().getResolver().agent( name );
     if( ! agent ){
       return;
     }else{
