@@ -41,8 +41,8 @@
 <hr> Functions: <a href="show_slide.if?capfile=&capfile;"> view
      these as slide show</a> || 
 <a href=ftp://&piaHOST;/&roll;.tar.gz> download this roll using FTP</a>
-|| <a href="edit_roll.if?capfile=&capfile;"> Edit (captions, rotate
-images, etc.)</a>
+|| <a href="edit_roll.if?capfile=&capfile;"> Edit (rotate
+images)</a>
 <hr>
 </then> <else>
 <h2>No photos found </h2>

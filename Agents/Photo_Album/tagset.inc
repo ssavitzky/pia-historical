@@ -83,7 +83,7 @@ Day:
  <br> <a href=/~&agentName;/&mydirectory;/&myfile;><get index=myphoto.photocaption></a> 
 </then>
 <else> 
- <br><input name=caption&myphoto.photoindex.Text;>
+ <br><input name=caption&myphoto.photoindex.Text; size=8>
 </else>
  </if>
 </actor>
