@@ -21,8 +21,9 @@
 <ul>
   <li> <a href="../Author/index.html">Agent Author's Manual</a>
   <li> <a href="Tagset/basic.html">Basic (Primitive) Tagset Manual</a>
-  <li> <a href="Tagset/standalone.html">Standalone (XXML) Tagset Manual</a>
-  <li> <a href="Tagset/standard.html">Standard (XHML) Tagset Manual</a>
+  <li> <a href="Tagset/xxml.html">eXtended XML (XXML) Tagset Manual</a>
+  <li> <a href="Tagset/xhtml.html">eXtended HTML (XHTML) Tagset Manual</a>
+  <li> <a href="Tagset/pia-xhtml.html">PIA XHTML Tagset Manual</a>
        <p>
   <li> <a href="/InterForm/home.if">InterForm Demonstration Agent</a> (from PIA
        only)
@@ -136,7 +137,8 @@ extension of an SGML or XML <dfn>Document Type Definition</dfn> (DTD),
 although tagsets are usually defined using an XML-based notation which is
 easier to parse and to extend. <p>
 
-The PIA defines a ``standard tagset'' for use in InterForms.  Some agents may
+The PIA defines a standard tagset, called <code>pia-xhtm</code> for use in
+InterForms.  Some agents may 
 define special tagsets as extensions to the standard one.  Completely
 different tagsets can also be defined for different kinds of document
 processing: parsing HTML, formatting, even translating SGML documents with
@@ -617,15 +619,19 @@ The following tagsets are currently predefined:
        The definitions of the ``primitive'' tags -- the ones that <em>all</em>
        tagsets use, and that are implemented using Java ``handlers'' rather
        than being defined in terms of other tags.
-  <li> <a href="Tagset/standalone.html">standalone</a><br>
+  <li> <a href="Tagset/xxml.html">xxml</a><br>
        The tagset intended for stand-alone XML processing.  It adds a
        comparatively small number of tags to
        <a href="Tagset/basic.html">basic</a> that are defined in terms of
        other tags. 
-  <li> <a href="Tagset/standard.html">standard</a><br>
+  <li> <a href="Tagset/xhtml.html">xhtml</a><br>
        The tagset used in the PIA for HTML processing, containing all the tags
-       defined in both <a href="Tagset/standalone.html">standalone</a> and
+       defined in both <a href="Tagset/xxml.html">standalone</a> and
        HTML. 
+  <li> <a href="Tagset/pia-xhtml.html">pia-xhtml</a><br>
+       The tagset used in the PIA for HTML processing, containing all the tags
+       defined <a href="Tagset/xhtml.html">xhtml</a> along with some tags used
+       for formatting InterForm pages.
   <li> <a href="Tagset/Standard-tagset.html">Standard</a> <b>(obsolete)</b><br>
        The ``legacy'' (old) tagset used for expanding agent InterForms in the
        PIA.  
@@ -636,6 +642,12 @@ although the documentation of each actor may be slightly sketchy in places, it
 is at least complete and up-to-date.  Several other, special-purpose tagsets
 are also defined; a complete set of documentation can be found in the <a
 href="Tagset">Tagset/</a> subdirectory.  <p>
+
+Note that any agent can have a private tagset.  Its name is
+<code><em>type</em>-xhtml</code>, where <code><em>type</em></code> is the
+agent's ``type''.  For most agents this is the same as the agent's name; DOFS
+and Spy are examples of type names. <p>
+
 
 Also, the following active documents are available if you are viewing this
 manual through a PIA:
@@ -677,7 +689,7 @@ The command-line options are:
   <dt> <code>-p</code>
   <dd> Build a parse tree (which is output as a serialized Java object)
   <dt> <code>-t <em>tagset-name</em></code>
-  <dd> specify tagset (default <code>standard</code>).
+  <dd> specify tagset (default <code>xhtml</code>).
   <dt> <code>-s</code>
   <dd> silent.  Non-fatal error messages suppressed.
   <dt> <code>-q</code>
