@@ -78,7 +78,7 @@ attr=name></text></repeat></set>
  <set name=rid><get index=step.routeid.Text></set>
  <if><get form name=delete&rid;><then></then> <else>
  <set name="newroute" insert=-1><get name=step></set>
- <if><test numeric positive> <difference> &rid; &maxid;</difference>
+ <if><test numeric positive> <difference> &rid; &maxid;</difference></test>
    <then> <set name=maxid><get name=rid></set></then></if>
  </else></if></repeat>
 
@@ -116,6 +116,8 @@ attr=name></text></repeat></set>
 	  </write>
 	    Route &routefile; for &form; updated.
  </if-in-group>
+
+MAX ID: &maxid;
 </process>
 
 
