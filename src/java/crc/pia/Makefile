@@ -32,4 +32,14 @@ FILES = \
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
 
+### Dependencies:
+
+Transaction.class: Transaction.java Machine.java Content.java Resolver.java \
+	Athread.java ../tf/Registry.java ../util/Utilities.java \
+	../ds/Features.java ../ds/Queue.java ../ds/UnaryFunctor.java \
+	../sgml/SGML.java ../sgml/AttrBase.java
+
+HTTPRequest.class: HTTPRequest.java Transaction.java
+
+HTTPResponse.class: HTTPResponse.java Transaction.java
 
