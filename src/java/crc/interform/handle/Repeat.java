@@ -18,7 +18,8 @@ import crc.sgml.Tokens;
  * <dt>Syntax:<dd>
  *	&lt;repeat list="..." [entity="name"]&gt;...&lt;/repeat&gt;
  * <dt>Dscr:<dd>
- *	Repeat CONTENT with ENTITY (default &amp;amp;li; in LIST of words.
+ *	Repeat CONTENT with ENTITY (default &amp;amp;li;) in LIST.
+ *	Return the repeated CONTENT.
  *  </dl>
  */
 public class Repeat extends crc.interform.Handler {
@@ -28,7 +29,8 @@ public class Repeat extends crc.interform.Handler {
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "Repeat CONTENT with ENTITY (default &amp;li; in LIST of words.\n" +
+    "Repeat CONTENT with ENTITY (default &amp;li;) in LIST.\n" +
+    "Return the repeated CONTENT \n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {

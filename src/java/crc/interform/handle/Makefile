@@ -21,6 +21,7 @@ BASIC_ACTORS = \
 	Equal.java \
 	Expand.java \
 	Foreach.java \
+	Foreach_.java \
 	Get.java \
 	If.java \
 	Pad.java \

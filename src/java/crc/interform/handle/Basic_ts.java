@@ -27,7 +27,7 @@ public class Basic_ts extends HTML_ts {
   static String parsedActors = "add-markup difference equal expand if"
   + " pad product protect-result quotient set sort sorted subst sum"
   + " tagset test text trim user-message";
-  static String quotedActors = "protect repeat actor";
+  static String quotedActors = "protect repeat foreach actor";
 
   public Basic_ts() {
     this("Basic", true);
@@ -41,7 +41,7 @@ public class Basic_ts extends HTML_ts {
     defActors(quotedActors, "quoted", true);
 
     // -foreach- needs a match.
-    Actor a = new Actor("-foreach-", null, "quoted", "foreach");
+    Actor a = new Actor("-foreach-", null, "quoted", "foreach_");
     a.attr("match", "foreach");
     a.initMatch();
     define(a);

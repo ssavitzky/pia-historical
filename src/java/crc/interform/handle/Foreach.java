@@ -1,4 +1,4 @@
-////// Foreach.java:  Handler for <... foreach>
+////// Foreach.java:  Handler for <foreach>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -14,50 +14,33 @@ import crc.sgml.Element;
 import crc.sgml.Tokens;
 
 
-/** Handler class for &lt;... foreach list=...&gt 
+/** Handler class for &lt;foreach list=...&gt 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;... foreach list="list" [entity=ident]&gt;element&lt;/&gt;
+ *	&lt;foreach list="list" [entity=ident]&gt;element&lt;/&gt;
  * <dt>Dscr:<dd>
- *	Repeat ELEMENT for each ENTITY (default &amp;amp;li;) in LIST of words.
+ *	Repeat CONTENT for each ENTITY (default &amp;amp;li;) in LIST.
+ *	Return the repeated CONTENT.
  *  </dl>
  */
 public class Foreach extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<... foreach list=\"list\" [entity=ident]>element</>\n" +
+    "<foreach list=\"list\" [entity=ident]>element</>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "Repeat ELEMENT for each ENTITY (default &amp;li;) in LIST of words.\n" +
+    "Repeat CONTENT for each ENTITY (default &amp;li;) in LIST.\n" +
+    "Return the repeated CONTENT.  \n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens list = Util.listItems(it.attr("list"));
     String entity = Util.getString(it, "entity", "li");
 
-    // re-push "it" with empty content and no foreach or list attr.
-    Element t = new Element(it.tag());
-    Element itt = Element.valueOf(it);
-    for (int i = 0; i < itt.nAttrs(); ++i) {
-      String name = itt.attrNameAt(i);
-      if (name.equals("list") || name.equals("foreach")
-	  || name.equals("entity")) continue;
-      t.addAttr(name, itt.attrValueAt(i));
-    }
-
-    ii.pushInput(Element.endTagFor(it.tag()));
     ii.pushForeach(it.content(), entity, list);
     ii.hoistParseFlags();
-    ii.stackToken(t);
-    ii.replaceIt(t);
-
-    /* === the old way involved faking a repeat.
-    itt.tag("repeat");
-    t.addItem(itt);
-    ii.pushInto(t);
     ii.deleteIt();
-    */
   }
 }
 
