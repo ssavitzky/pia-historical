@@ -36,9 +36,12 @@ public class Agent_install extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     Run env = Run.environment(ii);
     crc.ds.Table form = env.transaction.getParameters();
+
+    // === at this point should get form parameters from content ===
+
     if (form == null) {
-      ii.error(ia, "No form in transaction");
-      ii.replaceIt("No form in transaction");
+      ii.error(ia, "no form in transaction");
+      ii.deleteIt();
       return;
     }
 
@@ -48,7 +51,7 @@ public class Agent_install extends crc.interform.Handler {
 
     if (name == null) {
       ii.error(ia, "name or agent attribute must be supplied");
-      ii.replaceIt("name or agent attribute must be supplied");
+      ii.deleteIt();
       return;
     }
     form.at("name", name);
@@ -58,7 +61,10 @@ public class Agent_install extends crc.interform.Handler {
       agency.install(form); 
       ii.message("Agent "+name+" installed.");
     } catch (Exception e) {
-      ii.error(ia, "only works in the Agency agent");
+      // === Not clear where this is happening. ===
+      //ii.error(ia, "only works in the Agency agent");
+      ii.deleteIt();
+      return;
     }
 
     ii.replaceIt(name);
