@@ -10,14 +10,14 @@
 	border=0 width=170 height=48 alt="R I C O H"></a>
     <th width=170 nowrap>
 <tr height=2><td colspan=2 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=340><br></tr>
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=340></td></tr>
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21 align=top></a>
     <th align=right width=170>
     <th align=left nowrap nobr valign=center><font face=helvetica>
         <a href="/"><img width=85 height=45 border=0 alt=PIA
-	    	         src="/Agency/Icons/pia45.gif"></a></font><br></tr>
+	    	         src="/Agency/Icons/pia45.gif"></a></font></th></tr>
 <tr><th><th valign=top align=right width=170><font face=helvetica>
 	    <if><test exact match='pia'><get env name="USER"></test>
 		<then></then>
@@ -26,7 +26,7 @@
 	<if><test exact match='pia'><get env name="USER"></test>
 	    <then>An Information Appliance</then>
 	    <else>Personal Information Agency</else>
-	</if></font></th> <br>
+	</if></font></th>
 <tr><th><br>
 </table>
 
@@ -74,7 +74,9 @@
 	<th valign=top align=right><b>History:</b>
 	<td valign=top> <a href="/History">Agent</a>
 	    [<a href="/My/History">All</a> | 
-	    <a href="/My/History/&date;.html">&date;</a>]
+	     <a href="/My/History/&year;/">&year;</a>/<a
+		href="/My/History/&year;/&month;/">&month;</a>/<a
+		href="/My/History/&year;/&month;/&day;.html">&day;</a>]
 	    <br></then>
     </if>
     <tr><th><br>
