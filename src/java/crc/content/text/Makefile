@@ -5,6 +5,7 @@ TOPDIR=../../..
 FILES = \
 	Default.java \
 	html.java \
+	annotatedhtml.java \
 	ParsedContent.java \
 	InterFormContent.java \
 	ProcessedContent.java \
@@ -17,4 +18,5 @@ include $(TOPDIR)/makefiles/file.make
 Default.class:	../StreamingContent.java
 
 html.class:  Default.java 
+annotatedhtml.class:  html.java
 ProcessedContent.class: ../../dps/process/ActiveDoc.java
