@@ -8,7 +8,7 @@
 <read interform file="heading.inc" process>
 
 <table  border=1>
-<TR><TH><TH>Title<TH>Captions created</TR>
+<TR><TH>Title<TH>Captions created</TR>
 <read file="&AGENT.masterlist;">
 </table>
 
