@@ -374,8 +374,6 @@ public class Utilities {
    */
   public static synchronized List readObjectsFrom( String fileName )
        throws NullPointerException, FileNotFoundException, IOException
-	 //, ClassNotFoundException, InvalidClassException, 
-	 //StreamCorruptedException, OptionalDataException 
   {
     FileInputStream f = null;
     ObjectInputStream source = null;
@@ -383,6 +381,51 @@ public class Utilities {
 
     try {
       f = new FileInputStream( fileName );
+      source = new ObjectInputStream(f);
+      for ( ;; ) {
+	Object o = source.readObject();
+	if (o instanceof List) list.append((List)o);
+	else		       list.push(o);
+      }
+    }catch(NullPointerException e1){
+      throw e1;
+    }catch(FileNotFoundException e2){
+      throw e2;
+    }catch(ClassNotFoundException e){
+      report(e); //throw e;
+    }catch(InvalidClassException e){
+      report(e); //throw e;
+    }catch(StreamCorruptedException e){
+      report(e); //throw e;
+    }catch(OptionalDataException  e){
+      report(e); //throw e;
+    }catch(java.io.EOFException e){
+      if ( list.nItems() == 0 ) {
+	report(e);
+	throw e;
+      } // expected.
+    }catch(IOException e){
+      if ( list.nItems() > 0 ) report(e);
+      else throw e;
+    }finally{
+      try {
+	if (source != null) source.close();
+	else if (f != null) f.close();
+      }catch(IOException e5){
+	throw e5;
+      }
+    }
+    register(list);
+    return list;
+  }
+  
+  public static synchronized List readObjectsFrom( InputStream f )
+       throws NullPointerException, FileNotFoundException, IOException
+  {
+    ObjectInputStream source = null;
+    List list = new List();
+
+    try {
       source = new ObjectInputStream(f);
       for ( ;; ) {
 	Object o = source.readObject();

@@ -91,5 +91,50 @@ public class Agent_restore extends crc.interform.Handler {
 
     ii.replaceIt(result);
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.process.ActiveDoc env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running.");
+
+    String name = env.getAgentName(atts.getAttributeString("file"));
+    if (name == null) {
+      return legacyError(aContext, tag, "File attribute missing.");
+    }
+    java.io.File file = env.locateSystemResource(name, false);
+
+    boolean exists = file.exists();
+    boolean isdir  = file.isDirectory();
+
+    String result = "";
+
+    if (! file.exists()) {
+      return legacyError(aContext, tag, "File '"+name+"' does not exist.");
+    }
+
+    if (! file.canRead()) {
+      return legacyError(aContext, tag, "File '"+name+"' cannot be read.");
+    }
+
+    if (isdir) {
+      return legacyError(aContext, tag, "File '"+name+"' is a directory.");
+    }
+
+    try {
+      java.io.FileInputStream stm = new java.io.FileInputStream(file);
+      List list = crc.util.Utilities.readObjectsFrom(stm);
+      for (int i = 0; i < list.nItems(); ++i) {
+	if (list.at(i) instanceof Agent) {
+	  putText(out, ((Agent)list.at(i)).name());
+	}
+      }
+    } catch (Exception e) {
+      // exception reported in readObjectsFrom
+    }    
+
+    return true;
+  }
 }
 
