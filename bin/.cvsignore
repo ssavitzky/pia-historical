@@ -1,7 +1,8 @@
 Makefile
 ccwriter
-ccwriter08
 formatter
-formatter102
 pia
 scsitest
+be_pia
+run_pia
+shutdown
