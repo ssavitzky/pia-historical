@@ -3,7 +3,8 @@
 <title>&AGENT:name; Index</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <header>Index Page</header>
-<sub-head page=index> </sub-head>
+<sub-head page=index>
+  <tr><th align=right>criteria: &nbsp; <td>&AGENT:criteria; </sub-head>
 <p>
 <agent-index/>
 

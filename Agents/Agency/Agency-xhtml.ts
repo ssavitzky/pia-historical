@@ -55,7 +55,7 @@
 		alt="AGENCY"></value>
 </define>
 <!-- these two aren't being picked up from pia-xhtml; check namespace stuff
-     in TopProcessor. -->
+     in TopProcessor and BasicTagset. -->
 <define entity=blank-170x1>
   <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
 		alt=" "></value>
@@ -141,22 +141,25 @@
     <tr><th valign=top align=right>
 	     <xopt page="&attributes:page;"
 		   pages="agents installers remove_agent">&blue-dot;</xopt>
-	<td valign=top> <xa href="/Agency/agents" page="&attributes:page;">list</xa> / 
+	     &nbsp;
+	<td valign=top>
+	    <xa href="/Agency/agents" page="&attributes:page;">list</xa> / 
 	    <xa href="/Agency/installers" page="&attributes:page;">install</xa> / 
- 	    <xa href="/Agency/remove_agent" page="&attributes:page;">remove</xa> agents<br>
-    <tr><th valign=top align=right>Files:
+ 	    <xa href="/Agency/remove_agent" page="&attributes:page;">remove</xa>
+	     agents<br>
+    <tr><th valign=top align=right>Files: &nbsp;
 	<td><a href="/PIA/Doc/"><b>Docs</b></a>
 	    <a href="/My/">My files</a>
 	    <a href="/PIA/src/">Sources</a>
 	    <a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	    <a href="/My/Agents/&agentPath;/">(Customized)</a>
-    <tr><th valign=top align=right><b>Agents:</b>
+    <tr><th valign=top align=right><b>Agents:</b> &nbsp;
         <td valign=top> <repeat list="&agentNames;" entity="foo">
             <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
             </repeat><br>
+   <get name=content>
   </table>
 </table>
-
 
   </action>
 </define>
@@ -168,9 +171,9 @@
 	want to put after the standard start.
   </doc>
   <action>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
-<a href="/&agentName;/">index</a>
-<a href="/&agentName;/agents">agents</a>
+<a href="/">PIA</a> || <a href="/Agency">&AGENT:name;</a>:
+<a href="/&AGENT:name;/">index</a>
+<a href="/&AGENT:name;/agents">agents</a>
   </action>
 </define>
 

@@ -162,7 +162,11 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @return <code>null</code> if the entity is undefined.
    */
   public ActiveEntity getEntityBinding(String name) {
-    return (entities == null) ? null : entities.getEntityBinding(name);
+    if (entities != null) {
+      ActiveEntity binding = entities.getEntityBinding(name);
+      if (binding != null) return binding;
+    }
+    return (context == null)? null : context.getEntityBinding(name);
   }
 
 

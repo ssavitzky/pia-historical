@@ -863,13 +863,13 @@ example).
 		 case-insensitive.)
            </doc>
          </define>
-         <define attribute=recursive optional><!-- unimplemented -->
+         <define attribute=recursive optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Note that if a node (e.g. a
 		 list) is selected, its content will not be further examined.
            </doc>
          </define>
-         <define attribute=all optional><!-- unimplemented -->
+         <define attribute=all optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Unlike <code>recursive</code>,
 		 content even of selected nodes will be further examined; this
@@ -895,6 +895,20 @@ example).
 		 delimiter will be ignored.
            </doc>
          </define>
+         <define attribute=recursive optional>
+           <doc> Causes the matching to descend recursively into the children
+		 (content) of the current set.  Note that if a node (e.g. a
+		 list) is selected, its content will not be further examined.
+           </doc>
+         </define>
+         <define attribute=all optional>
+           <doc> Causes the matching to descend recursively into the children
+		 (content) of the current set.  Unlike <code>recursive</code>,
+		 content even of selected nodes will be further examined; this
+		 will result in selecting <em>all</em> elements with the
+		 matching tag.
+           </doc>
+         </define>
        </define>
   <li> <define element=match parent=select handler>
          <doc> Contains a <em>regular expression</em> which is matched against
@@ -903,7 +917,7 @@ example).
          </doc>
          <define attribute=case optional>
          </define>
-         <define attribute=text optional>
+         <define attribute=text optional><!-- unimplemented -->
            <doc> If present, elements are matched using only the text in their
 		 content.
            </doc>
