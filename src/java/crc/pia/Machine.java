@@ -178,7 +178,7 @@ public class Machine {
    * Sends a response through output stream, and if there are controls associated with
    * this response they are added.
    */
-  public void sendResponse (Transaction reply, Resolver resolver) throws IOException {
+  public void sendResponse (Transaction reply, Resolver resolver)throws PiaRuntimeException {
     OutputStream out = null;
     StringBuffer ctrlStrings = null;
     Content content = null;
@@ -276,8 +276,14 @@ public class Machine {
 				     , "sendResponse"
 				     , msg) ;
 
+    }catch(IOException e2){
+      Pia.instance().debug(this, "Client close connection...");
+      String msg = "Client close connection...\n";
+      closeConnection();
+      throw new PiaRuntimeException (this
+				     , "sendResponse"
+				     , msg) ;
     }
-    
     
 
   }
@@ -292,6 +298,8 @@ public class Machine {
 	if( withnewline )
 	  out.write( '\n' );
       }catch(IOException e){
+
+	Pia.instance().debug(this, e.getClass().getName());
 	String msg = "Can not write...\n";
 	throw new PiaRuntimeException (this
 				       , "shipOutput"
@@ -321,6 +329,7 @@ public class Machine {
 	Pia.instance().debug(this, "the write length is---->"+Integer.toString(bytesRead));
       }
     }catch(IOException e){
+      Pia.instance().debug(this, e.getClass().getName());
       String msg = "Can not write...\n";
       throw new PiaRuntimeException (this
 				     , "sendImageContent"
@@ -352,7 +361,7 @@ public class Machine {
   /**
    * Get request through a proxy by opening the proxy socket
    */
-  protected void getReqThruSock(URL url, Transaction request, Resolver resolver) throws PiaRuntimeException {
+  protected void getReqThruSock(URL url, Transaction request, Resolver resolver) throws PiaRuntimeException, UnknownHostException {
     int zport = 80;
     String zhost;
 
@@ -372,10 +381,7 @@ public class Machine {
       new HTTPResponse(request, this);
 
     }catch(UnknownHostException ue){
-      String msg = "Unknown proxy host\n";
-      throw new PiaRuntimeException (this
-				     , "getReqThruSock"
-				     , msg) ;
+      throw ue;
     }catch(IOException e){
       String msg = "Can not get data through proxy request\n";
       throw new PiaRuntimeException (this
@@ -387,7 +393,7 @@ public class Machine {
   /**
    * Get request data and create a response with the data 
    */
-  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException  {
+  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException, UnknownHostException  {
     URL proxy;
     URL agentURL;
     URL url;
@@ -409,6 +415,8 @@ public class Machine {
       throw new PiaRuntimeException (this
 				     , "getRequest"
 				     , msg) ;
+    }catch(UnknownHostException e2){
+      throw e2;
     }finally{
       ztimer.stop();
     }
