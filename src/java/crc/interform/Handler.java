@@ -9,6 +9,7 @@ import crc.interform.Interp;
 import crc.sgml.SGML;
 import crc.ds.Table;
 import crc.dps.active.ActiveNode;
+import crc.dps.active.ActiveAttrList;
 import crc.dps.handle.LegacyHandler;
 
 /** Handler functor (<b>Strategy</b> pattern) for Actors.  Handlers
@@ -193,6 +194,15 @@ public class Handler implements java.io.Serializable {
   protected boolean legacyError(crc.dps.Context aContext, String tag,
 				String message) {
     aContext.message(-1, "InterForm error in <" + tag + ">:" + message,
+		     0, true);
+    return true;
+  }
+
+  /** Legacy action: report an InterForm error. */
+  protected boolean reportError(crc.dps.Context aContext, String tag, 
+				ActiveAttrList atts, String message) {
+    aContext.message(-1, "InterForm error in <" + tag
+		     + (atts != null? " " + atts : "") + ">:" + message,
 		     0, true);
     return true;
   }
