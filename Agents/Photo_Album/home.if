@@ -17,7 +17,7 @@ Album</a>
 <a href="http://&piaHOST;:&piaPORT;/&agentName;/slide_show.if">
 <if><agent-running name="Logo"><then><img src="/Logo/slides.gif"  height=32 width=32 alt=slides><br></then></if>
 Slideshows</a>
-<TR><TD><TD><if><agent-running name="Logo"><then><img src="/Logo/camera.gif"  height=32 width=32 alt=camera><br></then></if>
+<TR><TD><TD><if><agent-running name="Logo"><then><img src="/Logo/camera1.gif"  height=32 width=32 alt=camera><br></then></if>
 Digital Camera<br>
 Photo Album
 <TR><TD>
