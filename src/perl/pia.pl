@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl 
+#!/usr/bin/perl 
 ##secure switches... -Tw
 
 ###### Small perl5 agency
@@ -25,6 +25,7 @@ $printenv= 0;			# causes printout of environment vbls.
 $command = '';
 $exit = '0';
 $ftp = 0;
+$logfile = "";
 
 ### Parse the command line.
 
@@ -36,9 +37,10 @@ while ($arg = shift) {
     elsif ($arg =~ /^[p:]?[0-9]+$/)	{ $PIA_PORT = $arg; }
     elsif ($arg eq '-e')		{ $printenv = 1; $quiet = 1; }
     elsif ($arg eq '-f')		{ $ftp = 1; }
-    elsif ($arg eq '-p')		{ $PIA_PORT = $shift; }
-    elsif ($arg eq '-s')		{ $PIA_DIR = $shift; }
-    elsif ($arg eq '-u')		{ $USR_DIR = $shift; }
+    elsif ($arg eq '-p')		{ $PIA_PORT = shift; }
+    elsif ($arg eq '-s')		{ $PIA_DIR = shift; }
+    elsif ($arg eq '-u')		{ $USR_DIR = shift; }
+    elsif ($arg eq '-l')		{ $logfile = shift; }
     elsif ($arg eq '-x')		{ $exit = 1; }
     elsif ($arg eq '-c')		{ $command = shift; }
     elsif ($arg =~ /^(.*)=(.*)$/)	{ my $x = $1; $$x = $2; }
@@ -50,6 +52,7 @@ sub usage {
     Options:
 	-s PIA_DIR	source dir: (.:~/pia/src:/pia1/pia/src)
 	-u USR_DIR	(~/.PIA)
+	-l logfile
 	-p port		(8001)
 	-c command
 	-v		verbose
@@ -63,6 +66,13 @@ sub usage {
 
 if ($debugging) { $verbose = 1; $quiet   = 0; }
 if ($verbose)   { $quiet = 0; }
+
+if ($logfile ne '') {
+    open(STDOUT, ">$logfile");
+    open(STDERR, ">&STDOUT");
+    select(STDOUT); $|=1;
+    select(STDERR); $|=1;
+}
 
 
 ### Set up defaults for directories.
@@ -117,6 +127,7 @@ if ($printenv) {
     print "$se ftp_proxy$eq$PIA_URL\n" if $ftp;
     print "$us no_proxy \n";
 }
+
 
 if (! $quiet && !$exit) {
     print "Starting agency: <URL: http://$PIA_HOST:$PIA_PORT/>\n";
