@@ -14,7 +14,7 @@
 <h3>Photos without captions</h3>
 <set entity name="entries"><read file=".catalog"></set>
 <ul foreach list=&entries;>
-<li> <a href="/Photos/&li;">&li;</a>
+<li> <a href="/Photos/&li;/">&li;</a>
 </ul>
 
 <hr><get agent name="banner">
