@@ -9,8 +9,10 @@
 <h2>Alternatives</h2>
 <h3>OS Alternatives:</h3>
 <ul>
-  <li> VxWorks
-  <li> <a href="http://www.cygnus.com/ecos/">ECOS</a>
+  <li> VxWorks -- already in use.
+  <li> <a href="http://www.cygnus.com/ecos/">ECOS</a> -- attractive, but
+       requires C++ for some components; hasn't been ported to many processors
+       yet. 
 </ul>
 
 <h3>Language Alternatives:</h3>
@@ -34,9 +36,9 @@
        likely to be slow and bulky.
 </ul>
 
-Note that <a href="http://egcs.cygnus.com/">EGCS</a> now supports the SH4
-processor; this comes from Cygnus's <a
-href="http://www.cygnus.com/gnupro/">GNUPro</a>. 
+Note that the <a href="http://egcs.cygnus.com/">EGCS</a> compilers now
+supports the SH4 processor; this comes from Cygnus's <a
+href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
 
 <h2>C Porting Considerations</h2>
 
@@ -58,12 +60,17 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.
 	 <li> Garbage collection.  Hard unless you can find a pre-packaged
 	      version. 
        </ol>
+  <li> In some cases, it can be <em>guaranteed</em> that certain objects are
+       only referenced in one place.  For example, the variable-sized portion
+       of growable buffers or arrays.  These are easily managed with a
+       compacting garbage-collector. 
+  <li> Fixed-size nodes can be allocated off a free list. 
 </ul>
 
 <h3>Available Resources</h3>
 <ul>
   <li> Mozilla<br>
-       Almost certainly has a DOM in C, along with XML and HTML parsers.
+       Almost certainly has a DOM in C or C++, along with XML and HTML parsers.
   <li> Other XML parsers exist.
        <ul>
 	 <li> An XML parser would have to be extended slightly to handle tags
@@ -71,7 +78,7 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.
 	      "/" delimiter or an end tag.  These can occur in HTML, but not
 	      in XML.
 
-	 <li> An XML parser would also want to handle missing end tags (for
+	 <li> An HTML parser would also want to handle missing end tags (for
 	      example, on list items).  This is not essential in an embedded
 	      application, because you can ensure that all end tags are
 	      supplied where needed.  If necessary, you could use a working
@@ -106,7 +113,8 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.
 	 <li> Translate (active) XML into C procedures.  A ``document'' would
 	      simply be a procedure that outputs (probably to an Output object
 	      rather than to a stream) the result of expanding the document
-	      with the DPS.
+	      with the DPS.  This is essentially the same process that a
+	      parser-generator goes through.
        </ol>
 </ul>
 
@@ -120,11 +128,16 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.
        out of them.  In particular, <code>List</code> and <code>Table</code>
        are <em>almost essential</em>.
   <li> You will probably have to add a string datatype. 
+  <li> The basic server classes: <code>crc.pia.Acceptor</code>,
+       <code>crc.pia.Transaction</code>, the <code>crc.pia.Content</code>
+       interface and at least some of its implementations. 
   <li> The <code>crc.pia.Agent</code> interface and its implementations
        <code>crc.pia.GenericAgent</code>, <code>crc.pia.agent.Agency</code>,
        and <code>crc.pia.agent.Dofs</code>.
        These are essential for actually serving pages, no matter how they are
        eventually implemented.
+  <li> The DOM objects.  In embedded applications, it should be possible to
+       pre-parse all the documents and convert them to C data structures.
   <li> The Document Processing System, in the <code>crc.dps</code> package.  
 </ul>
 
