@@ -5,6 +5,6 @@
 re="${1-[^=]===[^=]|unimplemented|eventually}"
 
 find . '(' -name '*.java' -o -name '*htm?' -o -name '*.if' -o -name '*.tex' \
-        -o -name '*.p[lm]' -o -name '*.inc' -o -name '*akefile' ')' -type f  \
+        -o -name '*.p[lm]' -o -name '*.inc' ')' -type f  \
 	\! -path '*JavaDoc*' \! -path '*/other/*' \
     -exec egrep -i -n -s "$re" {} xxx \; 
