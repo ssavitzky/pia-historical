@@ -6,8 +6,16 @@ package crc.ds;
 public class Table extends java.util.Hashtable implements Stuff {
 
   /************************************************************************
-  ** Components:
+  ** Constructors:
   ************************************************************************/
+
+  public Table() {
+    super();
+  }
+
+  public Table(int initialCapacity) {
+    super(initialCapacity);
+  }
 
   /************************************************************************
   ** Stuff interface:
@@ -53,7 +61,7 @@ public class Table extends java.util.Hashtable implements Stuff {
 
   /** Access a named attribute */
   public Object at(String a) {
-    return get(a);
+    return (a == null)? a : get(a);
   }
 
   /** Add or replace an attribute */
