@@ -1,0 +1,124 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>The &AGENT:name; agent home page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Home Page</header>
+<sub-head page=home >
+    <tr><th><td><a href="/~History">/~History</a> /
+		<a href="/~History/&year;">&year;</a> /
+		<a href="/~History/&year;/&month;">&month;</a> /
+		<a href="/~History/&year;/&month;/&day;.html">&day;</a>
+</sub-head>
+
+<if><agent-running name=History>
+  <else>see the <a href="/Agency/installers#History">installation page</a>
+        or <br>
+        <form method=POST action="/Agency/install_agent">
+		<input name="agent" value="History" size=30>
+		<input type="submit" value="Install Now">
+        </form>
+  </else>
+</if>
+<p>
+
+<hr>
+<a href="/Agency">PIA</a> | <a href="/">agents</a> | <a href="/cia">CIA</a> |
+<a href="/fbi">FBI</a> | <a href="/History">History</a> |
+<a href="/~History/">/~History</a>
+		<a href="/~History/&year;">&year;</a> /
+		<a href="/~History/&year;/&month;">&month;</a> /
+		<a href="/~History/&year;/&month;/&day;.html">&day;</a>
+<hr>
+
+The <code>&agentName;</code> agent puts information into the history database,
+which is located in <a href="/My/history">/My/history</a>.  The <a
+href="/cia/">cia</a> and <a href="/fbi/">fbi</a> agents put a small control
+bar at the top of each page that refers to the history database.<p>
+
+The History control bar looks like this:<br>
+<dl>
+  <dt> <expand><get agent=History name=controls></expand>
+  <dd> 
+       <dl compact>
+	 <dt> Hist
+	 <dd> -&gt; <a href="/History">/History</a>, the History Agent's home
+	      page  
+	 <dt> *
+	 <dd> -&gt; <a href="/~History">/~History</a>, the History Agent's
+	      data directory.
+	 <dt> &year; / &month; /
+	 <dd> -&gt; the directories for this year and month.
+	 <dt> &day;
+	 <dd> -&gt; <a href="/~History/&year;/&month;/&day;.html"
+	      >/~History/&year;/&month;/&day;.html</a>, the history file for
+	      today. 
+	 <dt> &time;
+	 <dd> -&gt; <a href="/~History/last.html">/~History/last.html</a>, the
+	      headers and other information for the most-recently-viewed page.
+       </dl>
+</dl>
+
+<h3>Files:</h3>
+<ul>
+  <li>History directory: <a href="/~History">/~History</a>
+  <li>Page info: <a href="/~History/last.html">/~History/last.html</a>
+  <li>Last link: <a  href="/~History/last.link">/~History/last.link</a>
+</ul>
+
+The ``last link'' file is particularly useful; the following Emacs code lets
+you define a key that inserts a link to the last page you visited:
+
+<blockquote><pre><!-- listing doesn't work for some reason -->
+(global-set-key "\C-Cy"   'generic-insert-last-link)
+(defun generic-insert-last-link ()
+  "Insert a link to the last page visited into the buffer"
+  (interactive)
+  (insert-file-contents "~/.pia/History/last.link") )
+</pre></blockquote>
+
+(Windows users will have to change the file in the last line to
+ <code>&usrDIR;/History/last.link</code>).
+
+<h3>Directory Format</h3>
+
+The History agent uses a directory hierarchy of the form:
+
+<dl>
+  <dt> yyyy/
+  <dd> 
+       <dl>
+	 <dt> mm/
+	 <dd> 
+	      <dl>
+		<dt> dd.html
+		<dd> 
+	      </dl>
+       </dl>
+</dl>
+
+The year is always four digits; month and day are always two.  This makes
+sorting files by date very easy.  <p>
+
+Older versions of the PIA used <code>yymmdd.html</code> as the filename.  A
+PERL program, <code><read interform info=path file="fixup.pl"></code>, is
+provided for fixing old History directories.<p>
+
+
+<h3>Agent Act-On Hook</h3>
+
+<blockquote><em>
+  This is the source code for the hook that writes data into the history
+  files.  It is slightly contorted due to the desire not to write extra
+  newlines or spaces into the file.<p>
+
+  It can be customized by making an edited copy of the &agentName;
+  initialization InterForm, <a href="/PIA/Agents/&agentName;/initialize"
+  >/PIA/Agents/&agentName/initialize</a>, and putting it in your personal
+  InterForm directory as <code>~/.pia/Agents/&agentName;/initialize</code>
+</em></blockquote>
+
+<pre><protect result markup>&AGENT:act-on;</protect>
+</pre>
+
+<footer cvsid="$Id$">
+</body></html>

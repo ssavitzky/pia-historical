@@ -11,8 +11,7 @@
     expect to see a little bit of junk at the end of this paragraph: (
 <!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
 <!-- See mail.conferences:102 -->
-<set name=DOC:hh>380</set><!-- Tweak size for printing -->
-			  <!-- horizontal scrollbar eats into height... -->
+<set name=DOC:hh>440</set><!-- 380 for printing; 440 for screen. -->
 <set name=DOC:logo><img src="Images/pent24.gif"></set>
 )
 </hide>
@@ -128,7 +127,6 @@
 </slide>
 
 <slide><h2>What is our system?</h2>
-<p>&nbsp;
 <div align=center>
   <strong>A Document-Processing Engine for the Web</strong>
 </div>
@@ -151,7 +149,6 @@
 	 <li> web-based information appliances
        </ul>
 </ul>
-<p>&nbsp;
 <div align=center>
    ``<strong>Like a spreadsheet for documents</strong>''
 </div>
@@ -194,8 +191,7 @@
 </ul>
 </slide>
 <hr><set name=subCaption>Information Applications</set>
-<slide><h2>InfoWare, not software</h2>
-<!-- replace InfoWare with Infoware -->
+<slide><h2>Infoware, not software</h2>
 
 <p><em>``A killer application is no longer a desktop productivity application
 or even a back-office enterprise software system, but an entirely new breed,
@@ -216,36 +212,8 @@ support.)''  </em>
 </slide>
 
 
-<slide><h2>The New Killer Application</h2>
-<!-- delete this slide -- say as prelude to previous -->
-<p> <em>Killer application:</em> n. An application that makes someone want to
-    go out and buy a computer.
 
-<table>
-  <tr> <th> Apple II
-	<td> VisiCalc
-
-  <tr> <th> IBM PC
-	<td> Lotus 123, WordPerfect
-
-  <tr> <th> Windows
-	<td> Microsoft Office
-
-  <tr> <th> Linux
-	<td> Apache (&gt;50% of web sites in Europe) <br>
-	<th> <td> Samba for intranets
-
-  <tr> <td colspan=2>&nbsp;
-
-  <tr> <th> The Web
-	<td> <code>amazon.com</code>
-
-</table>
-</slide>
-
-
-
-<slide><h2>Aspects of InfoWare</h2>
+<slide><h2>Aspects of Infoware</h2>
 <ul>
   <li> <strong>Information is Everything</strong>
        <ul>
@@ -267,48 +235,29 @@ support.)''  </em>
 	 <li> No secret algorithms
        </ul>
 
-  <li> <strong>Processing is distributed:</strong>
-<!-- what is the point here? -->       <ul>
-	 <li> every group has its procedures
+  <li> <strong>Processing is pervasive:</strong>
+       <ul>
 	 <li> <em>The user must be able to do processing, too!</em>
        </ul>
 </ul>
 </slide>
 
 
-<slide><h2>Infoware in the Organization</h2>
-<!-- delete this slide -->
-<ul>
-  <li> Large organizations can afford a large IT staff
-       <ul>
-	 <li> search specialists
-	 <li> database designers
-	 <li> website weavers
-	 <li> network managers
-	 <li> computer operators
-	 <li> in-house programmers for one-off tasks
-       </ul>
-  <li> Individuals and small organizations can't.
-  <li> <strong>What to do?</strong>
-       <ul>
-	 <li> We need to bring document processing to everyone.
-       </ul>
-</ul>
-</slide>
-
 <slide><h2>Document-Oriented Computing</h2>
-<p><strong>InfoWare needs...</strong>
+<p><strong>Infoware needs...</strong>
 <ul>
   <li> A whole new way of looking at computation
        <ul>
-	 <li> variables contain documents
+	 <li> <em>documents</em> get passed between nodes
+	 <li> documents are first-class values<br>
+	      (variables contain documents)
 	 <li> content and behavior are separate
        </ul>
   <li> A new <em>location</em> for computation
        <ul>
-	 <li> <em>documents</em> get passed between nodes
 	 <li> not just clients and servers
 	 <li> peers and proxies as well
+	 <li> personal and workgroup processing
        </ul>
 </ul>
 <p> We call it <em>Document-Oriented Computing</em>
@@ -364,9 +313,9 @@ support.)''  </em>
 
 <hr><set name=subCaption>Document Processing</set>
 <slide><h2>What Are Documents?</h2>
-<!-- combine with next slide -->
+
 <ul>
-  <li> A document is a <em>tree-structured collection of text</em>
+  <li> A document is <em>a tree-structured text</em>
   <li> Document = content (text) + structure (markup tags)
   <li> Documents may have
        <ul>
@@ -376,13 +325,10 @@ support.)''  </em>
 	 <li> multiple uses (source code / manual / online help / ...)
        </ul>
 </ul>
-</slide>
 
-
-<slide><h2>A Document is not an Object</h2>
+<strong>Documents are not Objects:</strong>
 <ul>
-  <li> Documents <em>separate</em> content from processing<br>
-       Objects <em>combine</em> content and behavior
+  <li> Documents <em>separate</em> content (data) from processing (methods)
        
   <li> Therefore, documents...
        <ul>
@@ -423,6 +369,7 @@ support.)''  </em>
 <ul>
   <li> Input: <a href="lw99.html">a document</a>
        <pre>
+       &lt;set name=DOC:hh&gt;380&lt;/set&gt;&lt;!-- set height --&gt;
        &lt;slide&gt; &lt;h2&gt;Document Processing&lt;/h2&gt;
           &lt;ul&gt;
              &lt;li&gt; Input: a document
@@ -431,7 +378,7 @@ support.)''  </em>
        </pre>
   <li> ... processing using a ``<a href="Images/slides.ts">tagset</a>''
        <ul>
-	 <li> A ``spreadsheet'' for documents
+	 <li> Describes the structure of the document
 	 <li> Describes what to do with each tag
        </ul>
   <li> <code>process -tagset slides lw99.html &gt; lw99.slides.html</code>
@@ -452,7 +399,9 @@ support.)''  </em>
        a DTD with formatting commands. 
   <li> ... also represented in XML.
   <li> ... extended with standard programming constructs (XXML)
-<!-- make clear still XML docs -->  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> ... embedded in it, as XML (e.g., <code>&lt;slide&gt;</code> and
+       <code>&lt;set&gt;</code>) 
   <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
 </ul>
 </slide>
@@ -470,12 +419,15 @@ support.)''  </em>
   <li> ... processing using a different tagset
   <li> <code>process -tagset tsdoc slides.ts &gt; slides.html</code>
   <li> Output: <a href="Images/slides.html">documentation</a>.
+  <li> Same document can be viewed many ways:
+       see <a href="Images/View.html">this form</a>
+       (<a href="/View">live</a>)
 </ul>
 </slide>
 
 
 <slide><h2>What's Going On?</h2>
-<!-- need better example than slide formatting -- does not show differences
+<!-- === need better example than slide formatting -- does not show differences
 with regular SGML -- at least make clear agent interface for viewing slides -->
 <ul>
   <li> Documents contain only content and markup (structure)
