@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.DataOutputStream;
 import crc.util.regexp.RegExp;
@@ -66,25 +67,24 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
   public static synchronized void writeTo( String fileName, String str )throws IOException{
     File f;
     FileOutputStream fileStream;
-    DataOutputStream destination = null;
+    PrintStream destination = null;
+    
 
     if(str == null) return;
 
     try{
       f = new File(fileName);
       fileStream = new FileOutputStream( f );
-      destination = new DataOutputStream( fileStream );
-      destination.writeChars( str );
+      destination = new PrintStream( fileStream );
+      
+      destination.print( str );
+      destination.flush();
     }catch(IOException e1){
       //either from writeChars or Fileoutputstream creation
       throw e1;
     }finally{
       if(destination!=null)
-	try {
 	destination.close();
-      }catch(IOException e2){
-	throw e2;
-      }
     }
   }
 
@@ -96,12 +96,15 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
     RandomAccessFile f = null;
 
     if(str==null) return;
+    byte huge[] = new byte[str.length()];
 
     try{
-      f = new RandomAccessFile(fileName, "w");
+      f = new RandomAccessFile(fileName, "rw");
       long length = f.length();
       f.seek( length );
-      f.writeChars( str );
+
+      str.getBytes(0, str.length(), huge, 0);
+      f.write( huge, 0, str.length() );
     }catch(NullPointerException e1){
       // bad file name
       throw e1;
@@ -180,6 +183,16 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
 	}
 	return sbuf.toString() ;
     }
+
+  public static void main(String[] args){
+    String fn = args[0];
+    try{
+      Utilities.writeTo( fn, "Hello world." );
+      Utilities.appendTo( fn, " Baguette." );
+    }catch(Exception e){
+      System.out.println( e.toString() );
+    }
+  }
 
 
 }
