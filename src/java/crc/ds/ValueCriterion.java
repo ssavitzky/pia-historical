@@ -19,15 +19,15 @@ public class ValueCriterion extends Criterion {
 
   /** Convert to a string. */
   public String toString() {
-    return (value == null)? "!" + name() : name()+"=="+value;
+    return super.toString() + "=" + ((value == null) ? value : "");
   }
 
   /** Match the feature's value.  The default is to match if the
    *	feature has a non-null value that exactly matches.  A null value
    *	will match any object for which Features.test returns false. */
   public boolean match(Object s) {
-    if (value == null) return !Features.test(s);
-    else return (s != null) && s.equals(value);
+    if (value == null) return !Features.test(s) ^ negate;
+    else return ((s != null) && s.equals(value)) ^ negate;
   }
 
   /************************************************************************
@@ -38,4 +38,5 @@ public class ValueCriterion extends Criterion {
     super(nm);
     value = v;
   }
+
 }

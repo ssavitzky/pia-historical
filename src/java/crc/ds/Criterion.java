@@ -12,7 +12,8 @@ import crc.ds.HasFeatures;
  */
 public class Criterion implements java.io.Serializable {
 
-  String name;
+  String 	name;
+  boolean 	negate = false;
 
   /** Return the feature that this criterion matches. */
   public final String name() {
@@ -20,7 +21,7 @@ public class Criterion implements java.io.Serializable {
   }
 
   public String toString() {
-    return name;
+    return negate? name+"-" : name;
   }
 
   /************************************************************************
@@ -30,7 +31,7 @@ public class Criterion implements java.io.Serializable {
   /** Match the feature's value.  The default is to match if the
    *	feature's value is anything but False, "", or null. */
   public boolean match(Object s) {
-    return Features.test(s);
+    return Features.test(s) ^ negate;
   }
 
   /** Match the given features, using a parent object to compute them 
@@ -47,6 +48,12 @@ public class Criterion implements java.io.Serializable {
   ************************************************************************/
 
   public Criterion(String nm) {
+    if (nm.endsWith("-")) {
+      nm = nm.substring(0, nm.length()-1);
+      negate = true;
+    } else {
+      negate = false;
+    }
     name = Features.cannonicalName(nm);
   }
 
@@ -59,6 +66,7 @@ public class Criterion implements java.io.Serializable {
   public static Criterion toMatch(String s) {
     int i = s.indexOf('=');
     if (i < 0) return new Criterion(s);
+
     String value = (i == s.length()-1) ? null : s.substring(i+1);
     if (! Features.test(value)) value = null;
     return new ValueCriterion(s.substring(0, i), value);

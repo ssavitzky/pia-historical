@@ -44,4 +44,15 @@ public class Criteria extends List {
       else if (o instanceof Criterion) push(o);
     }
   }
+
+  /** Convert to a space-separated list of name=value pairs. */
+  public String toString() {
+    String s = "";
+    java.util.Enumeration e = elements();
+    while (e.hasMoreElements()) {
+      s += e.nextElement().toString();
+      if (e.hasMoreElements()) s += " ";
+    }
+    return s;
+  }
 }
