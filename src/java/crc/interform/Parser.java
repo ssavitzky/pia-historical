@@ -43,9 +43,7 @@ import java.util.BitSet;
  *	the appropriate control variables, which are ignored in other
  *	types of input. <p>
  *
- *	@see http:/PIA/src/lib/perl/IFParser.pm <p>
- *
- * Nomenclature: Methods with names starting in <code>eat</code>
+ * <b>Nomenclature:</b> Methods with names starting in <code>eat</code>
  *	attempt to consume a lexical token from the input stream, and
  *	return <code>true</code> if they are successful.  If they
  *	fail, they leave the input stream unchanged.  Methods with
@@ -53,13 +51,16 @@ import java.util.BitSet;
  *	complex construct, and leave their rejected input in
  *	<code>buf</code> if they fail. <p>
  *
- * NOTE: The Parser is currently unable to correctly handle SGML
+ * <b>NOTE:</b> The Parser is currently unable to correctly handle SGML
  *	comments that contain the string "-->" internally.  <p>
  *
- * NOTE: We are NOT using a StreamTokenizer at this point.  The reason
+ * <b>NOTE:</b> We are NOT using a StreamTokenizer at this point.  The reason
  *	is that we need all characters to be significant and
  *	``ordinary'' outside of tags, so the StreamTokenizer would
- *	simply add an extra layer of overhead for very little effect. <p> */
+ *	simply add an extra layer of overhead for very little effect. <p>
+ *
+ *	@see http:/PIA/src/perl/IFParser.pm <p>
+ */
 public class Parser extends Input {
 
   /************************************************************************
