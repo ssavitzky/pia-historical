@@ -164,8 +164,8 @@ public class GenericHandler extends BasicHandler {
 	  ? Expand.getProcessedContent(in, aContext)
 	  : Expand.getContent(in, aContext);
       }
-      aContext.debug("     -> '" + content.toString() + "' "
-		     + content.getLength() + " nodes\n");
+      aContext.debug("     -> "+ content.getLength() + " nodes >"
+		     + content.toString() + "< \n");
     }
     String tag = in.getTagName();
     aContext.debug("   Performing action for <" + tag + ">\n");
