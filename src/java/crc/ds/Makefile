@@ -7,12 +7,18 @@ TOPDIR=../../..
 
 FILES = \
 	Features.java \
+	List.java \
 	Queue.java \
+	Stuff.java \
+	Table.java \
 	Thing.java \
 	UnaryFunctor.java \
 	TernFunc.java
 
 include $(TOPDIR)/makefiles/file.make
 
+List.class: Stuff.class
 
+Table.class: Stuff.class
 
+Thing.class: Stuff.class

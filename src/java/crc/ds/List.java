@@ -1,16 +1,18 @@
-// Thing.java
+// List.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.ds;
 
-public class Thing implements Stuff {
+import java.util.Vector;
+
+public class List implements Stuff {
 
   /************************************************************************
   ** Components:
   ************************************************************************/
 
-  Stuff items;
-  Stuff attrs;
+  /** The actual items. */
+  Vector items = new Vector();
 
   /************************************************************************
   ** Stuff interface:
@@ -21,86 +23,105 @@ public class Thing implements Stuff {
    *	list with no attributes.
    */
   public Stuff content() {
-    return items;
+    return this;
   }
 
   /** The number of indexed items. */
   public int nItems() {
-    return items == null? 0 : items.nItems();
+    return items == null? 0 : items.size();
   }
 
   /** Access an individual item */
   public Object at(int i) {
-    return (items == null)? null : items.at(i);
+    if (i >= items.size()) { return null; }
+    return items.elementAt(i);
   }
 
   /** Replace an individual item <em>i</em> with value <em>v</em>. */
-  public void at(int i, Object v) {
-    if (items == null) {
-      items = new List();
+  public Stuff at(int i, Object v) {
+    if (i > items.size()) {
+      // === not clear what to do here ===
+    } else if (i == items.size()) {
+      items.addElement(v);
+    } else {
+      items.setElementAt(v, i);
     }
-    items.at(i, v);
+    return this;
   }
+
 
   /** Remove and return the last item. */
   public Object pop() {
-    return (items == null)? null : items.pop(i);
+    if (items.size() == 0) { return null; }
+    Object t = items.lastElement();
+    items.removeElementAt(items.size()-1);
+    return t;
   }
 
   /** Remove and return the first item. */
   public Object shift() {
-    return (items == null)? null : items.shift(i);
+    if (items.size() == 0) { return null; }
+    Object t = items.firstElement();
+    items.removeElementAt(0);
+    return t;
   }
+
 
   /** Append a new value <em>v</em>.  
    *	Returns the modified Stuff, to simplify chaining. */
   public Stuff push(Object v) {
-    if (items == null) {
-      items = new List();
-    }
-    items.push(i, v);
+    items.addElement(v);
+    return this;
   }
 
   /** Prepend a new value <em>v</em>.  
    *	Returns the modified Stuff, to simplify chaining. */
   public Stuff unshift(Object v) {
-    if (items == null) {
-      items = new List();
-    }
-    items.unshift(i, v);
+    items.insertElementAt(v, 0);
+    return this;
   }
+
 
   /** Access a named attribute */
   public Object at(String a) {
-    return (attrs == null)? null : attrs.at(a);
+    return null;
   }
 
   /** Add or replace an attribute */
-  public Stuff at(String a, Object v){
-    if (attrs == null) {
-      atrrs = new Table();
-    }
-    items.at(a, v);
+  public Stuff at(String a, Object v) {
+    push(a);
+    return push(v);
   }
 
   /** Return an array of all the attribute keys. */
   public String[] keyList() {
-    return  (attrs == null)? null : attrs.keyList(a);
+    return null;
   }
 
-
-  /** Return true if the Stuff is a pure hash table, with no items */
-  public boolean isEmpty() {
-    return items == null || items.isEmpty();
+  /** Return true if the Stuff is a pure hash table, with no items. */
+  public boolean isTable() {
+    return false;
   }
+
   /** Return true if the Stuff is a pure list, with no attributes. */
   public boolean isList() {
-    return attrs == null;
+    return true;
+  }
+
+  /** Return true if the Stuff is an empty list. */
+  public boolean isEmpty() {
+    return nItems() == 0;
   }
 
   /** Return true if the Stuff is pure text, equivalent to a 
    * 	singleton list containing a String. */
   public boolean isText() {
+    return nItems() == 1 && isText(at(0));
+  }
+
+  /** Return true if o is a String or StringBuffer. */
+  public boolean isText(Object o) {
     return false;
   }
+
 }
