@@ -126,7 +126,7 @@ public class GenericAgent implements Agent {
   /**
    * Create a new request given method, url
    */
-  private Transaction createRequest(String method, String url){
+  private void createRequest(String method, String url){
     Transaction request =  new HTTPRequest();
     request.toMachine( Pia.instance().thisMachine() );
     request.setMethod( method );
