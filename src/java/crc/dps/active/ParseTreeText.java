@@ -98,6 +98,16 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
     this(String.valueOf(data));
   }
 
+  /** Construct a node with an integer value. */
+  public ParseTreeText(long data) {
+    this(String.valueOf(data), false, false);
+  }
+
+  /** Construct a node with a floating-point value. */
+  public ParseTreeText(double data) {
+    this(String.valueOf(data), false, false);
+  }
+
   /** Construct a node with given data and handler. */
   public ParseTreeText(String data, Handler handler) {
     this(data);
@@ -124,6 +134,7 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
     this(data);
     setIsIgnorableWhitespace(isIgnorable);
   }
+
 
 
   /************************************************************************
