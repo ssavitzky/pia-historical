@@ -42,6 +42,7 @@ public class HTML_ts extends BasicTagset {
   static String formTags 	= "input select option textarea";
   static String notInParagraph 	= "h1 h2 h3 h4 h5 h6 pre textarea";
   static String notInList 	= "h1 h2 h3 h4 h5 h6";
+  static String literal		= "script style";
 
   public void initializeHTML(boolean emptyParagraphTags) {
     emptyP = emptyParagraphTags;
@@ -58,6 +59,7 @@ public class HTML_ts extends BasicTagset {
     defTags("tr", tableTags, NORMAL);
     defTags("p", phraseTags + " p " + notInParagraph, 0);
     defTags(dataTags, "", NORMAL);
+    defTags(literal, "", LITERAL);
     if (! emptyP) defTags(notInParagraph, "p", 0);
 
     // defined actors to create data structures

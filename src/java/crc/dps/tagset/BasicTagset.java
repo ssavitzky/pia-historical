@@ -62,6 +62,8 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   public final static int NORMAL  = Syntax.NORMAL;
   /** Syntax for a quoted element:  contents are parsed but not expanded. */
   public final static int QUOTED  = Syntax.QUOTED;
+  /** Syntax for a literal element: no parsing in context. */
+  public final static int LITERAL = Syntax.LITERAL;
 
   /************************************************************************
   ** Data:
