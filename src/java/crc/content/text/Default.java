@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-
-
 import java.io.OutputStreamWriter;
-
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.InputStreamReader;
+
+import java.util.Hashtable;
+import java.util.Enumeration;
 
 // converter used in OutputStreamWriter === warning specific to Sun VM? ==
 // using here to avoid double buffering of
@@ -60,6 +60,7 @@ public class Default extends StreamingContent {
   protected Reader cReader;
 
   protected OutputStreamWriter cWriter ;
+  protected Hashtable fileWriters = new Hashtable();
 
   /************************************************************
   ** constructors:
@@ -144,20 +145,27 @@ public class Default extends StreamingContent {
   /**
    * convert stream to appropriate writer
    */
-  protected OutputStreamWriter  streamToWriter( OutputStream out){
-    if( out == null) return null;
-    OutputStreamWriter writer = null;
-    if(encoding != null){
-      try{
-        writer = new  OutputStreamWriter( out, encoding);
-      } catch(UnsupportedEncodingException e) {
-	// encoding not supported?? 
-	// punt for now and use defaults
-	
+  protected OutputStreamWriter streamToWriter( OutputStream out){
+    if( out == null) {
+      return null;
+    }
+    OutputStreamWriter writer = (OutputStreamWriter)fileWriters.get(out);
+    if(writer == null) {
+      if(encoding != null){
+	try{
+	  writer = new OutputStreamWriter( out, encoding);
+	} catch(UnsupportedEncodingException e) {
+	  System.err.println("streamToWriter error: " +e.getMessage());
+	  // encoding not supported?? 
+	  // punt for now and use defaults
+	}
       } 
     }
     if(writer == null)
-	writer = new  OutputStreamWriter(out);
+      writer = new  OutputStreamWriter(out);
+
+    // Needs to be closed eventually
+    fileWriters.put(out, writer);
 
     return writer;
   }
@@ -170,10 +178,11 @@ public class Default extends StreamingContent {
    /**
     * set sink for output operations
     * subclass may want to change class or manipulate sink
+    * The sink is associated with data output, but not taps
     */
    protected void setSink(OutputStream stream){
       sink = stream;
-      cWriter =  streamToWriter(stream);
+      cWriter = streamToWriter(stream);
    }
 
    /**
@@ -186,6 +195,32 @@ public class Default extends StreamingContent {
      sink = null;
      cWriter = null;
    }
+
+  // Close OutputStreamWriters associated with taps
+  protected void closeTaps() {
+
+    Enumeration wrEnum = fileWriters.keys();
+
+    while(wrEnum.hasMoreElements()) {
+      OutputStreamWriter ow = (OutputStreamWriter)fileWriters.get(wrEnum.nextElement());
+
+      try {
+	ow.flush();
+      }
+      catch(IOException e) {
+	e.printStackTrace();
+      }
+      try {
+	ow.close();
+      }
+      catch(IOException e) {
+	e.printStackTrace();
+      }
+
+    }
+    fileWriters.clear();
+  }
+
 
    /**
     *  write outgoing data
@@ -205,16 +240,21 @@ public class Default extends StreamingContent {
   /**
    * method for sending data out taps.... inefficient but not used often
    */
-
    protected int writeData(OutputStream out, int start,int length) throws IOException{
      OutputStreamWriter w = streamToWriter(out);
+
      // do the actual work
-     w.write(buf, start, length);
+     try {
+       w.write(buf, start, length);
+     }
+     catch(IOException e) {
+       System.err.println(e.getMessage());
+     }
+
      //  exception could be caught here
      return length;
    }
 
-      
 
    /**
     * read data from input source (Reader) into character buffer.
