@@ -10,9 +10,9 @@
 <set agent hook name="act-on"><protect>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-<a href="&pia;/"><img src="&pia/fbi/Logo/pia24.gif" height=24 width=43
-			border=0></a>
-<a href="&pia;/My/">[~]</a>
+<a href="&pia;/" target="_top"><img src="&pia/fbi/Logo/pia24.gif"
+			 height=24 width=43 border=0></a>
+<expand><get agent=Spy name=controls></expand>
 <expand><get agent=History name=controls></expand>
 ( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
@@ -28,7 +28,4 @@
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>

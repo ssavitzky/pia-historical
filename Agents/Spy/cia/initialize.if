@@ -12,11 +12,12 @@
 <set agent hook name="act-on"><protect>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-<a href="&pia;/"><img src="&pia;/cia/Logo/pent24.gif" height=24 width=24
-			border=0></a>
-<a href="&pia;/My/">[~]</a>
+<a href="&pia;/" target="_top"><img src="&pia;/cia/Logo/pent24.gif"
+			 	    height=24 width=24 border=0></a>
+<expand><get agent=Spy name=controls></expand>
 <expand><get agent=History name=controls></expand>
-<a href="&url;">&lt;URL:&url;&gt;</a>
+<!-- making this a link is actually useful: it gets you out of a frame. -->
+<a href="&url;" target="_top">&lt;URL:&url;&gt;</a>
 <hr>
 </trans-control>
 </protect></set>
