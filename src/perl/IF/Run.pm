@@ -13,6 +13,7 @@ use IF::II;
 use IF::IA;
 use IF::IT;
 use IF::Actors;
+use IF::Tagset;
 
 
 #############################################################################
@@ -27,9 +28,13 @@ use IF::Actors;
 	     'streaming' => 0,	# output is a tree
 	     'parsing' => 1,	# push completed tags onto their parent.
 	     'passing' => 0,
-	     'syntax' => $IF::IT::syntax,
-	     'passive_actors' => [],
-	     'actors' => {},
+	     'tagset' => 'HTML',
+	     );
+
+@if_defaults = (
+	     'streaming' => 1,	# output is a string
+	     'passing' => 1,	# pass completed tags to the output.
+	     'tagset' => 'Standard',
 	     );
 
 local $entities;
@@ -52,7 +57,7 @@ sub run_file {
     print "\nrunning file $file\n" if $main::debugging;
 
     if (!defined $interp) {
-	$interp = IF::II->new(@IF::Actors::if_defaults);
+	$interp = IF::II->new(@if_defaults);
 	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
@@ -70,7 +75,7 @@ sub run_string {
     ##	  The result is a string.
 
     if (!defined $interp) {
-	$interp = IF::II->new(@IF::Actors::if_defaults);
+	$interp = IF::II->new(@if_defaults);
 	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
@@ -88,7 +93,7 @@ sub run_tree {
     ##	  The result is a string.
 
     if (!defined $interp) {
-	$interp = IF::II->new(@IF::Actors::if_defaults);
+	$interp = IF::II->new(@if_defaults);
 	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;

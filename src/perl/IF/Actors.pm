@@ -17,29 +17,9 @@ package IF::Actors; ###### Standard actors for InterForms
 ###	value	v	value associated with a name
 
 
+use IF::Tagset;
 use IF::Semantics;
 use PIA::Utilities;
-
-#############################################################################
-###
-### Standard Interform Actors:
-###
-
-$syntax = {
-
-};
-
-$actors = {};
-$passive_actors = [];
-
-@if_defaults = (
-	     'streaming' => 1,	# output is a string
-	     'passing' => 1,	# pass completed tags to the output.
-	     'syntax' => $syntax,
-	     'passive_actors' => $passive_actors,
-	     'actors' => $actors,
-	     );
-
 
 #############################################################################
 ###
@@ -53,20 +33,8 @@ sub define_actor {
     ##	  Optionally takes a name and attribute-list.
 
     $actor = IF::IA->new($actor, 'handle'=>1, @attrs) unless ref($actor);
-
-    my $name = $actor->attr('name');
-    my $tag = $actor->attr('tag');
-
-    push(@$passive_actors, $actor) unless $tag;
-    $actors->{$name} = $actor;
-    print "Defined IF actor " . $actor->starttag . "\n" if $main::debugging; 
+    $tagset->define_actor($actor);
 }
-
-
-#############################################################################
-###
-### Matching routines:
-###
 
 #############################################################################
 ###
@@ -99,6 +67,22 @@ sub generic_handle {
 #define_actor('-foo2-', 'package' => IF::Run, 'handle' => 'frobozz');
 #define_actor('-foo3-', 'package' => IF::Run, 'handle' => 'eval_perl');
 #define_actor('-foo4-', 'package' => PIA::Agent, 'handle' => 'new');
+
+#############################################################################
+###
+### Standard HTML:
+###
+
+$tagset = IF::Tagset->new('HTML');
+
+#############################################################################
+###
+### Standard Interform Actors:
+###
+
+$tagset = IF::Tagset->new('Standard');
+$tagset->include('HTML');
+
 
 #############################################################################
 ###
@@ -175,14 +159,11 @@ sub actor_handle {
 
 ### submit
 ###	Submits $it or every form in its contents.  Used during initialization. 
+###	The following InterForm code makes <form> active:
+###		<actor name=form handle="submit_forms"></actor>
 
 define_actor('submit-forms', 
 	     'dscr' => "Submit a form ELEMENT or every form in CONTENT");
-if (0) {
-    ## Use this to activate forms.
-    define_actor('form', _handle => \&submit_forms_handle,
-		 'dscr' => "Submit a form ELEMENT");
-}
 
 sub submit_forms_handle {
     my ($self, $it, $ii) = @_;
@@ -191,12 +172,12 @@ sub submit_forms_handle {
 	my $url = $it->attr('action');
 	my $method = $it->attr('method');
 	my $agent = IF::Run::agent();
-	$agent->submit($agent->create_request($method,$url,$it));
+	$IF::Run::resolver->unshift($agent->create_request($method,$url,$it));
     } else {
 	$it->traverse(sub {
 			  my($elt, $start, $depth) = @_;
 			  return 1 unless $start;
-			  submit_handle($self, $elt, $ii) 
+			  submit_forms_handle($self, $elt, $ii) 
 			      if $elt->tag eq 'form';
 			  return 1;
 		      }, 'ignoretext');
@@ -227,7 +208,6 @@ optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.
 If FILE or HREF specified, functions as read.");
 
 ### === EXPAND/PROTECT ?===
-### === it's probably safe to let this be empty now ===
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
@@ -237,6 +217,7 @@ sub get_handle {
     }
 
     my $name = $it->attr('name');
+    my $result;
 
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
@@ -245,29 +226,37 @@ sub get_handle {
 	my $status = $agent->run_code("$name", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
-	$ii->replace_it($status);
+	$result = ($status);
     } elsif ($it->attr('env')) {
-	$ii->replace_it($ENV{$name});
+	$result = ($ENV{$name});
     } elsif ($it->attr('form')) {
 	my $hash = IF::Run::request()->parameters;
-	$ii->replace_it($$hash{$name});
+	$result = ($$hash{$name});
     } elsif ($it->attr('agent')) {
 	local $agent = IF::Run::agent();
-	$ii->replace_it($agent->option($name)) if defined $agent;
+	$result = ($agent->option($name)) if defined $agent;
     } elsif ($it->attr('trans')) {
 	local $trans = IF::Run::transaction();
         if ($it->attr('feature')) {
-	    $ii->replace_it($trans->get_feature($name)) if defined $trans;
+	    $result = ($trans->get_feature($name)) if defined $trans;
+	} elsif ($it->attr('headers')) {
+	    if ($it->attr('request')) {
+		$result = $trans->is_request? $trans->request->headers_as_string
+		    : $trans->response_to->request->headers_as_string;
+	    } else {
+	        $result = $trans->message->headers_as_string;
+	    }
 	} else {
-	    $ii->replace_it($trans->attr($name)) if defined $trans;
+	    $result = ($trans->attr($name)) if defined $trans;
 	}
     } elsif ($it->attr('entity')) {
-	$ii->replace_it($ii->entities->{$name});
+	$result = ($ii->entities->{$name});
     } elsif ($it->attr('element')) {
-	$ii->replace_it($ii->in_token->attr($name));
+	$result = ($ii->in_token->attr($name));
     } else {
-        $ii->replace_it($ii->getvar($name));
+        $result = ($ii->getvar($name));
     }
+    $ii->replace_it($result);
 }
 
 ### <set name="name" value="value">
@@ -817,6 +806,9 @@ sub file_lookup {
 
     ## Look up a file.
 
+    my $file = $it->attr('file');
+    my $base = $it->attr('base');
+
     if ($it->attr('interform')) {
 	$file = IF::Run::agent()->find_interform($file);
 	$base = '';
@@ -887,11 +879,13 @@ sub read_handle {
 	    elsif ($info =~ /^r/i) { $content = $r? 'r' : '' }
 	    elsif ($info =~ /^w/i) { $content = $w? 'w' : '' }
 	    elsif ($info =~ /^x/i) { $content = $x? 'x' : '' }
+	    elsif ($info =~ /^p/i) { $content = $fn }
 	    else {
 		$content = $isdir? 'd' : '-';
 		$content .= $r? 'r' : '-';
 		$content .= $w? 'w' : '-';
 		$content .= $x? 'x' : '-';
+		$content .= " $fn";
 	    }
 	    ## === use stat stuff if ALL ===
 	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
@@ -932,6 +926,12 @@ sub read_handle {
 	    } else {
 		$content = join(' ', @names);
 	    } 
+	} elsif ($it->attr('process')) {
+	    ## Really just want to push the input stream.
+	    ## Requires an input stack that can handle streams.
+	    print "processing $fn\n" unless $main::quiet;
+	    $content = IF::Run::parse_html_file($fn);
+#	    $content = IF::Run::run_file($fn, $ii);
 	} else {
 	    $content = readFrom($fn);
 	}
@@ -946,9 +946,10 @@ sub read_handle {
     }
 
     if ($it->attr('process')) {
-	print "=== can't process input yet ===\n";
+	$ii->push_into($content);
+    } else {
+	$ii->replace_it($content);
     }
-    $ii->replace_it($content);
 }
 
 ### <write [file="name" | href="url"] [base="path"] [tagset="name"]

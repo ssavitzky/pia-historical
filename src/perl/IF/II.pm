@@ -16,6 +16,7 @@ use IF::IT;
 use IF::IA;
 use DS::Tokens;
 use IF::Semantics qw(is_list);
+use IF::Tagset;
 
 push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 				#     the problem is that HTML::Parser
@@ -63,6 +64,8 @@ push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 ###	processed and so are ready to be sent to the user.  It is in
 ###	the form of an anonymous token for easy processing.
 
+%kludge = ('tagset'=>1);	# state vbls we need to set directly
+
 sub new {
     my ($class, @attrs) = @_;
     my $self = IF::Parser->new;
@@ -78,7 +81,11 @@ sub new {
     my $attr, $val;
     while (($attr, $val) = splice(@attrs, 0, 2)) {
 	$val = 1 unless defined $val;
-	$self->{_state}->{"_$attr"} = $val;
+	if ($kludge{$attr}) {
+	    $self->$attr($val);
+	} else {
+	    $self->{_state}->{"_$attr"} = $val;
+	}
 	print "  $attr = $val\n" if $main::debugging > 1;
     }
 
@@ -151,42 +158,6 @@ sub handlers {
 
     $self->state->{'_handlers'} = $v if defined($v);
     return $self->state->{'_handlers'};
-}
-
-sub actors {
-    my ($self, $v) = @_;
-
-    ## actors
-    ##	  Should be a reference to a hash table of Interform Actors, 
-    ##	  keyed by name.  Basically a symbol table.  Actors whose names
-    ##	  match tags are invoked directly.
-
-    $self->state->{'_actors'} = $v if defined($v);
-    $self->state->{'_actors'};
-}
-
-sub passive_actors {
-    my ($self, $v) = @_;
-
-    ## passive_actors:
-    ##	Should be a reference to an array of actors that have to be matched
-    ##	against attributes or other features of incoming tokens.  Must have 
-    ##  names that cannot match tags; for most tagsets this means names 
-    ##  starting with '-'.
-
-    $self->state->{'_passive_actors'} = $v if defined($v);
-    $self->state->{'_passive_actors'};
-}
-
-sub syntax {
-    my ($self, $v) = @_;
-
-    ## syntax table:
-    ##	  A hash table that contains the various tables that control
-    ##	  the SGML parser.
-
-    $self->state->{'_syntax'} = $v if defined($v);
-    $self->state->{'_syntax'};
 }
 
 sub variables {
@@ -275,6 +246,45 @@ sub has_local_tagset {
 
     $self->state->{'_has_local_tagset'} = $v if defined($v);
     $self->state->{'_has_local_tagset'};
+}
+
+sub tagset {
+    my ($self, $v) = @_;
+
+    ## syntax table:
+    ##	  A hash table that contains the various tables that control
+    ##	  the SGML parser.
+
+    if (defined $v) {
+	$v = IF::Tagset::tagset($v) unless ref $v;
+	$self->state->{'_tagset'} = $v;
+    } 
+    $self->state->{'_tagset'};
+}
+
+### Tagset components:
+
+sub actors {
+    my ($self) = @_;
+
+    ## actors
+    ##	  Reference to a hash table of Interform Actors, 
+    ##	  keyed by name.  Basically a symbol table.  Actors whose names
+    ##	  match tags are invoked directly.
+
+    $self->tagset->actors;
+}
+
+sub passive_actors {
+    my ($self) = @_;
+
+    ## passive_actors:
+    ##	Reference to an array of actors that have to be matched
+    ##	against attributes or other features of incoming tokens.  Must have 
+    ##  names that cannot match tags; for most tagsets this means names 
+    ##  starting with '-'.
+
+    $self->tagset->passive;
 }
 
 #############################################################################
@@ -984,20 +994,18 @@ sub delete_it {
 ### === The following should really be in a Tagset module.
 
 sub open_actor_context {
-    my ($self, $actors, $passive) = @_;
+    my ($self, $tagset) = @_;
 
     ## Start using a new set of actors.
-    ##	  The old set are copied unless $actors and $passive are
-    ##	  supplied.
+    ##	  The old set is cloned unless a new one is supplied
 
-    $actors = $self->actors unless defined $actors;
-    $passive = $self->passive_actors unless defined $passive;
-
-    my @newpassive = @$passive;	# copy the passive actor list
-    $self->state->{_passive_actors} = (\@newpassive);
-
-    my %newactors = %$actors;	# copy the actor name table
-    $self->state->{_actors} = (\%newactors); # make a new actor symbol table
+    if ($tagset) {
+	$self->tagset($tagset);
+	$self->has_local_tagset(0);
+    } else {
+	$self->tagset($self->tagset->clone);
+	$self->has_local_tagset(1);
+    }
 }
 
 
@@ -1026,17 +1034,7 @@ sub define_actor {
     ##	  Exactly what to do with names and tags is unsettled so far.
 
     $self->open_actor_context unless $self->has_local_tagset;
-    $self->has_local_tagset(1);
-
-    if (! ref($actor)) {
-      $actor = IF::IA->new($actor, @attrs)
-    }
-
-    my $name = $actor->attr('name');
-    my $tag = $actor->attr('tag');
-
-    push(@{$self->passive_actors}, $actor) unless $tag;
-    $self->actors->{$name} = $actor;
+    $self->tagset->define_actor($actor, @attrs);
 }
 
 
