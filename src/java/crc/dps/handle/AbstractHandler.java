@@ -113,6 +113,62 @@ implements Handler {
     return false;
   }
 
+  /** Called to construct a node for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.  
+   *	May perform additional dispatching on <code>name</code> 
+   *	or <code>data</code>
+   *
+   * @param nodeType the node type
+   * @param name an optional node name
+   * @param data optional string data
+   * @return a new ActiveNode having <code>this</code> as its Syntax. 
+   */
+  public ActiveNode createNode(int nodeType, String name, String data) {
+    ActiveNode n = Create.createActiveNode(nodeType, name, data);
+    n.setHandler(this);
+    n.setAction(getActionForNode(n));
+    return n;
+  }
+
+  /** Called to construct a node for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.  
+   *	May perform additional dispatching on <code>name</code> 
+   *	or <code>data</code>
+   *
+   * @param nodeType the node type
+   * @param name an optional node name
+   * @param value optional value
+   * @return a new ActiveNode having <code>this</code> as its Syntax. 
+   */
+  public ActiveNode createNode(int nodeType, String name, NodeList value) {
+    ActiveNode n = Create.createActiveNode(nodeType, name, value);
+    n.setHandler(this);
+    n.setAction(getActionForNode(n));
+    return n;
+  }
+
+  /** Called to construct an element for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.
+   *	May perform additional dispatching on <code>tagname</code> or
+   *	<code>attributes</code>.
+   *
+   * @param tagname the Element's tag name.
+   * @param attributes the Element's attributes.
+   * @param hasEmptyDelim the XML empty-node delimiter is present.
+   * @return a new ActiveElement having <code>this</code> as its Syntax. 
+   */
+  public ActiveElement createElement(String tagname, AttributeList attributes,
+				     boolean hasEmptyDelim) {
+    ActiveElement e = new ParseTreeElement(tagname, attributes, this);
+    if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
+    e.setIsEmptyElement(hasEmptyDelim || e.getSyntax().isEmptyElement(e));
+    e.setAction(getActionForNode(e));
+    return e;
+  }
+
   /** Called to determine the correct Action for a given Token.
    *	The default action is to return <code>this</code>, but it is
    *	possible to do additional dispatching based on the Node's 
@@ -128,7 +184,7 @@ implements Handler {
    *	a period-separated suffix of its tagname.
    */
   public boolean dispatch(ActiveElement e, String name) {
-    return e.hasTrueAttribute(name)
+    return (e.getAttribute(name) != null)
       || e.getTagName().endsWith("."+name);
   }
 
