@@ -17,11 +17,52 @@ push(@ISA,IF::IT);
 ### Creation:
 ###
 
-sub new
-{
-    my ($class, $tag, @attrs) = @_;
-    my $self = IF::IT->new($tag, @attrs);
+sub new {
+    my ($class, $name, @attrs) = @_;
+    my $self = IF::IT->new('_agent_', @attrs);
     bless $self, $class;
+    $self->initialize($name);
+}
+
+sub recruit {
+    my ($class, $self) = @_;
+
+    ## Recruit a new agent:
+    ##	  Re-bless and properly initialize an InterForm Token.
+
+    bless $self, $class;
+    $self->initialize;
+}
+
+
+sub initialize {
+    my ($self, $name, $active) = @_;
+
+    ## Initialize an agent.
+    ##	  Force the agent to obey the standard conventions:
+    ##	    force name lowercase to match tag if active
+    ##	    'active' attribute if active.
+
+    $name = $self->attr('name') unless defined $name;
+    $active = $self->attr('active') unless defined $active;
+
+    $self->hook(_act_on, \&act_on_quoted) if $self->attr('quoted');
+
+    if ($active) {
+	$name = lc $name;
+	$self->attr('tag', $name);
+	$self->attr('active', 'active');
+    } else {
+	$self->attr('name', $name);
+    }
+
+    $self;
+}
+
+sub name {
+    my ($self, $v) = @_;
+
+    defined $v?  $self->attr('name', $v) : $self->attr('name');
 }
 
 
@@ -33,7 +74,8 @@ sub new
 sub hook {
     my ($self, $name, $code) = @_;
 
-    
+    $self->{$name} = $code if defined $code;
+    $self->{$name};
 }
 
 #############################################################################
@@ -86,7 +128,9 @@ sub is_active {
 sub act {
     my ($self, $ii, $incomplete) = @_;
 
-    ## Perform the associated action routine.
+    ## Perform the action routine associated associated with this token.
+    ##	  Called if some passive agent marks the token ``active'' by
+    ##	  re-blessing it as an agent.
 
     my $code = $self->{_act};
     return &$code($self, $ii, $incomplete) if (ref($code) eq 'CODE');
@@ -101,6 +145,18 @@ sub act_on {
     ##	  parse stack will already have been pushed.
 
     my $code = $self->{_act_on};
+    return unless defined $code;
+    return &$code($self, $it, $ii, $incomplete) if (ref($code) eq 'CODE');
+}
+
+sub act_for {
+    my ($self, $it, $ii, $incomplete) = @_;
+
+    ## Act ``for'' a token.  
+    ##	  This is called for ``active'' agents that match the tag of the
+    ##	  token being evaluated.
+
+    my $code = $self->{_act_for};
     return unless defined $code;
     return &$code($self, $it, $ii, $incomplete) if (ref($code) eq 'CODE');
 }
@@ -137,19 +193,22 @@ $passive_agents = [];
 ###
 
 sub define_agent {
-    my ($agent, $name, $active) = @_;
-    
+    my ($agent, @attrs) = @_;
+
+    ## Define a new agent, globally.
+    ##	  Optionally takes a name and attribute-list.
+
+    if (! ref($agent)) {
+      $agent = IF::IA->new($agent, @attrs)
+    }
+
+    my $name = $agent->attr('name');
+    my $active = $agent->attr('active');
+
     if ($active) {
-	$name = lc $name;
-	$agent->tag($name);
-	$agent->attr('active', 'active');
 	$active_agents->{$name} = $agent;
     } else {
-	$name = uc $name;
-	$agent->attr('name', $name);
 	push(@$passive_agents, $agent);
-	print "  passive: " . @$passive_agents . 
-	    " in $passive_agents\n" if $main::debugging;
     }
     $agents->{$name} = $agent;
     print "Defined IF agent " . $agent->starttag . "\n" if $main::debugging; 
@@ -158,9 +217,41 @@ sub define_agent {
 
 #############################################################################
 ###
+### Action routines shared by many agents:
+###
+###	These are picked up by $agent->initialize according to the various
+###	attributes of the new agent:
+###
+
+sub act_on_parsed {
+    my ($self, $it, $ii, $incomplete) = @_;
+
+    ## parsed:
+    ##	  Tell the interpretor to parse (and evaluate) the contents.
+
+    return 0 if $incomplete <= 0;
+    $ii->add_handler($self);
+    $ii->parse_it;
+}
+
+sub act_on_quoted {
+    my ($self, $it, $ii, $incomplete) = @_;
+
+    ## quoted:
+    ##	  Tell the interpretor to parse the contents without evaluating.
+
+    return 0 if $incomplete <= 0;
+    $ii->add_handler($self);
+    $ii->quote_it;
+}
+
+
+#############################################################################
+###
 ### Action routines for standard agents:
 ###
 
+### Eval_PERL
 
 sub eval_perl_handle {
     my ($self, $it, $ii) = @_;
@@ -173,18 +264,41 @@ sub eval_perl_match {
 
     return 0 if $incomplete <= 0;
     return 0 if ! ref($it);
-    if (lc $it->attr('language') eq 'perl') {
-	## should really be in act_on...
-	$ii->add_handler($self);
-	$ii->quote_it;
-	return 1;
-    }
+    return 1 if (lc $it->attr('language') eq 'perl');
     return 0;
 }
 
-define_agent(IF::IA->new('eval_perl', 
+define_agent(IF::IA->new('Eval-PERL',
+			 'quoted' => 1,
 			 _match => \&eval_perl_match,
-			 _handle => \&eval_perl_handle),
-	     'EVAL_PERL', 0);
+			 _handle => \&eval_perl_handle));
+
+
+### agent-:  active, quoted.
+###	Defines a new agent.
+
+sub agent_handle {
+    my ($self, $it, $ii) = @_;
+    $ii->define_agent($it);
+}
+define_agent('agent-', 'active' => 1, 'quoted' => 1,
+	     _handle => \&agent_handle);
+
+### get-:  active, empty.
+###	Gets the value of a variable.
+
+### === need syntax tables after all, or a syntax agent.
+
+sub get_handle {
+    my ($self, $it, $ii) = @_;
+    $ii->define_agent($it);
+}
+define_agent('get-', 'active' => 1, 'empty' => 1,
+	     _handle => \&get_handle);
 
 1;
+
+
+
+
+

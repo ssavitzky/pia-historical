@@ -108,18 +108,6 @@ sub in_queue {
     return $self->{_in_queue};
 }
 
-sub agents {
-    my ($self, $v) = @_;
-
-    ## agents
-    ##	  Should be a reference to a hash table of Interform Agent, 
-    ##	  keyed by name.  Basically a symbol table.  
-
-
-    $self->{'_agents'} = $v if defined($v);
-    $self->{'_agents'};
-}
-
 sub state {
     my ($self, $v) = @_;
 
@@ -162,6 +150,18 @@ sub handlers {
 
     $self->state->{'_handlers'} = $v if defined($v);
     return $self->state->{'_handlers'};
+}
+
+sub agents {
+    my ($self, $v) = @_;
+
+    ## agents
+    ##	  Should be a reference to a hash table of Interform Agent, 
+    ##	  keyed by name.  Basically a symbol table.  This is not  
+    ##	  defined until we start defining local agents. 
+
+    $self->state->{'_agents'} = $v if defined($v);
+    $self->state->{'_agents'};
 }
 
 sub active_agents {
@@ -613,6 +613,9 @@ sub resolve {
 ###	appropriate place. 
 ###
 
+### === This would be a lot cleaner if the output queue was always an array.
+###	We should consolidate text tokens the same way an IT does.
+
 sub output {
     my ($self, $str) = @_;
 
@@ -686,8 +689,13 @@ sub check_for_interest {
     foreach $a (@$passive_agents) {
 	if ($a->matches($it, $self, $incomplete)) {
 	    $a->act_on($it, $self, $incomplete);
-	    print "    agent ".$a->tag." is interested\n" if $main::debugging>1;
+	    print "    agent ".$a->name." is interested\n" if $main::debugging>1;
 	}
+    }
+    my $t = ref($it)? $it->tag : '';
+    if (defined($a = $self->active_agents->{$t})) {
+	$a->act_for($it, $self, $incomplete);
+	print "    agent ".$a->name." acted for it\n" if $main::debugging>1;
     }
     return unless ref($it);
     if ($it->is_active) {
@@ -720,19 +728,43 @@ sub add_handler {
     push(@$handlers, $agent);
 }
 
+sub open_agent_context {
+    my ($self, $active, $passive) = @_;
+
+    ## Start using a new set of agents.
+    ##	  The old set are copied unless $active and $passive are
+    ##	  supplied.
+
+    $active = $self->active_agents unless defined $active;
+    $passive = $self->passive_agents unless defined $passive;
+
+    my %newactive = %$active;	# copy the active agent table
+    $self->state->{_active_agents} = (\%newactive);
+
+    my @newpassive = @$passive;	# copy the passive agent list
+    $self->state->{_passive_agents} = (\@newpassive);
+
+    $self->state->{_agents} = {}; # make a new agent symbol table
+}
+
+
 sub define_agent {
-    my ($self, $agent, $name, $active) = @_;
+    my ($self, $agent, @attrs) = @_;
 
     ## Define an agent local to the current interpretor.
     ##	  Exactly what to do with names and tags is unsettled so far.
 
+    $self->open_agent_context unless defined $self->agents;
+    if (! ref($agent)) {
+      $agent = IF::IA->new($agent, @attrs)
+    }
+
+    my $name = $agent->attr('name');
+    my $active = $agent->attr('active');
+
     if ($active) {
-	$name = lc $name;
-	$agent->tag($name);
 	$self->active_agents->{$name} = $agent;
     } else {
-	$name = uc $name;
-	$agent->attr('name', $name);
 	$self->passive_agents->push($agent);
     }
     $self->agents->{$name} = $agent;

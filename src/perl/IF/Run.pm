@@ -24,7 +24,6 @@ use IF::IT;
 	     'streaming' => 1,	# output is a string
 	     'passing' => 1,	# pass completed tags to the output.
 	     'syntax' => $IF::IA::syntax,
-	     'agents' => $IF::IA::agents,
 	     'active_agents' => $IF::IA::active_agents,
 	     'passive_agents' => $IF::IA::passive_agents,
 	     );

@@ -69,7 +69,7 @@ sub attr
 
     my $attr = lc $attr;
     my $old = $self->{$attr};
-    if ($val) {
+    if (defined $val) {
 	my $list = $self->{_list};
 	$self->{$attr} = $val;
 	push(@$list, $attr) unless defined $old;
