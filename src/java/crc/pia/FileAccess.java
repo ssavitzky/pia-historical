@@ -54,17 +54,15 @@ public class FileAccess {
       Transaction response =  null;
 
       if ( !myfile.exists() ){
-	response =  new HTTPResponse( request, false );
-	response.setStatus( HTTP.NOT_FOUND );
-	response.setReason( "File " + path + " does not exist" );
-	response.startThread();
+	request.errorResponse( HTTP.NOT_FOUND, 
+			       "File " + path + " does not exist" );
+	return;
       }
 
       if ( !myfile.canRead() ){
-	response =  new HTTPResponse( request, false );
-	response.setStatus( HTTP.FORBIDDEN );
-	response.setReason( "User does not have read permission" );
-	response.startThread();
+	request.errorResponse( HTTP.FORBIDDEN,
+			       "User does not have read permission" );
+	return;
       }
 
       //check if-modified-since
@@ -77,6 +75,7 @@ public class FileAccess {
 	  response =  new HTTPResponse( request, false );
 	  response.setStatus( HTTP.NOT_MODIFIED );
 	  response.startThread();
+	  return;
 	}
       } catch (java.lang.IllegalArgumentException e) {
 	// Sometimes Netscape produces a date Java can't handle.
@@ -90,6 +89,7 @@ public class FileAccess {
       String filepath = null;
       String head = null;
 
+      String entry;
       SortTree entries = new SortTree();
 
       RegExp re = null;
@@ -122,24 +122,26 @@ public class FileAccess {
 	f = new File(myfile, zfile);
 	filepath = f.getPath();
 
-	try{
-	  re = new RegExp("^HEADER.*$");
-	  mi = re.match( zfile );
-	}catch(Exception e){;}
-	if( mi != null && !zfile.endsWith("~") ) {
+	if (zfile.toLowerCase().startsWith("header.") 
+	    && ! zfile.endsWith("~")) {
 	  head = suckBody(filepath);
 	  if (!all) continue;
 	}
 
 	if (all || !ignoreFile(zfile, filepath)) {
-	  String entry =  "<LI> <a href=\"" + mybase+zfile + "\">"
-			  + zfile + "</a>" ;
+	  entry = "<LI> <a href=\"" + mybase+zfile + "\">" + zfile + "</a>" ;
 	  if ( f.isDirectory() )
 	    entry += " <a href=\"" + mybase+zfile + "/\">" + " / " + "</a>";
 
 	  entries.insert(Association.associate(entry, zfile));
 	}
       }
+
+      /* Java doesn't list "..", so include it here. */
+
+      entry = "<LI> <a href=\"" + mybase+".." + "\">" + ".." + "</a>";
+      entry += " <a href=\"" + mybase+ ".." + "/\">" + " / " + "</a>";
+      entries.insert(Association.associate(entry, ".."));
 
       if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
 
@@ -279,20 +281,16 @@ public class FileAccess {
     
   /**
    * Decide whether to ignore a file, based on its name.
+   *	This should really be done by a filter.
+   *	@see java.io.FilenameFilter
    */
   public static boolean ignoreFile( String filename, String path ){
-    RegExp re = null;
-    MatchInfo mi = null; 
-    try{
-      re = new RegExp("~$");
-      mi = re.match( filename );
-    }catch(Exception e){;}
-
-    if( mi != null )                 return true;
-    if ( filename.startsWith("^#") ) return true;
-    if ( filename == "./" )          return true;
-    if ( filename == "CVS/" )        return true;
-    if ( filename == "RCS/" )        return true;
+    if ( filename.startsWith("#") ) 	return true;
+    if ( filename.startsWith(".#") ) 	return true;
+    if ( filename.endsWith("~") )	return true;
+    if ( filename.equals(".") )		return true;
+    if ( filename.equals("CVS") )	return true;
+    if ( filename.equals("RCS") )	return true;
     return false;
   }
    
