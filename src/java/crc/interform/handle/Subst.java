@@ -42,7 +42,8 @@ public class Subst extends crc.interform.Handler {
     String text = it.contentString();
     try {
       RegExp re = new RegExp(match);
-      text = re.substitute(text, repl, true);
+      text = re.substitute(text + (char)0, repl, true);
+      text = text.substring(0, text.length()-1);
     } catch (Exception e) {
       ii.error(ia, "Exception in regexp: "+e.toString());
     }
