@@ -3,7 +3,7 @@
 # COPYRIGHT 1997, Ricoh California Research Center
 # Portions COPYRIGHT 1997, Sun Microsystems
 
-# This makefile should be included inre the files to be compiled.
+# This makefile should be included in the Makefile of each package directory
 # For example, if you have a package 'foo' containing 'a.java' and 'b.java'
 # your Makefile should look like this:
 # ----------
@@ -17,8 +17,8 @@
 # all:	 to build the class files from the java files.
 # clean: to clean all sub packages
 # doc:   to build the appropriate documentation files from the source
-# The 'doc' target uses DESTDIR variable that should point to the absolute 
-# path of the target directory (in which doc files will be created).
+#   	 This target operates recursively, and so should be avoided due
+#	 to bugs in javadoc.  Use "make alldocs" in TOPDIR instead.
 
 # <steve@rsv.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
@@ -26,28 +26,28 @@
 
 CLASSDIR= $(TOPDIR)
 
-#piahome/lib/java/*.zip   
-#zip files added in file.make...could determine automatically...
 PIADIR=$(TOPDIR)/../..
 LIBDIR=$(PIADIR)/lib/java
 BINDIR=$(PIADIR)/bin
 DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 
-
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
-#JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
-#sun 1.0.2 location
-JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
+JAVACLASSES= /usr/local/java/lib/classes.zip
+JAVASOURCE=  /usr/local/java/src
 
+BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
+
+## Set this on the command line to see warnings about deprecated API's
+# JAVAFLAGS=-deprecation
 
 .SUFFIXES: .java .class
 
 .java.class:
 #	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
-	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -g $<
+	javac -d $(CLASSDIR) -classpath $(BUILDCLASSES) -g $(JAVAFLAGS) $<
 
 all:: $(FILES:.java=.class)
 
@@ -58,7 +58,7 @@ $(DOCDIR):
 	mkdir $(DOCDIR)
 
 doc::
-	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) $(PACKAGE)
+	javadoc -d $(DOCDIR) -classpath $(BUILDCLASSES) $(PACKAGE)
 
 clean::
 	@@rm -rf *~ *.class

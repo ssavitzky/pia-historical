@@ -30,36 +30,14 @@ CLASSDIR= $(TOPDIR)
 PIADIR  = $(TOPDIR)/../..
 LIBDIR=$(PIADIR)/lib/java
 BINDIR=$(PIADIR)/bin
-DOCDIR  = $(TOPDIR)/Doc
-ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
 
-#LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
-
-##javac wrapper should find these  .. specify explicitly if problem
- #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
-## === the following will need to be changed
-JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
-JAVASOURCE=  /usr/local/src/www/java-SDK/jdk1.1.1/src
-
-
+# all -- descend into PACKAGES and do a make there.
 all::
 	for p in `ls -d $(PACKAGES)`; do \
 		echo 'building ' $(PACKAGE).$$p; \
-		(cd $$p; make TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
+		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
 	done
 
-JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR)$(CLASSPATH):$(JAVASOURCE)
-
-# non-recursive doc.
-alldoc::
-	-$(JAVADOC_CMD) $(PACKAGENAMES)
-
-piadoc::
-	-$(JAVADOC_CMD) $(PIAPACKAGENAMES)
-
-sundoc::
-	-$(JAVADOC_CMD) $(SUNPACKAGENAMES)
 
 # Recursive doc -- generates all the class files but damages the indexes
 doc::
