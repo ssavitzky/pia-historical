@@ -26,10 +26,14 @@ anyone, and don't have a personal copy in your home directory, give the
 command:
 
 <pre>
-   pia&amp;
+   pia
 </pre>
 
-in an <code>xterm</code> window.  If you're using <code>telnet</code> to
+in an <code>xterm</code> window.  (If the pia's binary directory is not in
+your path, you will need to preceed this command with
+<code><em>&lt;install-dir&gt;</em>/pia/bin/</code>.)<p>
+
+If you're using <code>telnet</code> to
 connect to a shared server, use
 
 <pre>
@@ -49,12 +53,18 @@ Take note of the host name and port number the PIA prints out when it starts
 up. <p>
 
 
-<h3>Running a Browser</h3>
+<h3>Setting Proxies</h3>
+
+For demonstration purposes and browsing the documentation, it is sufficient to
+simply point your browser at the URL of a running PIA.  To actually
+<em>use</em> a personal Agency (for a permanent history list and
+other useful features) you will need to set your browser's HTTP proxy so that
+all of your requests go through the PIA.<p>
 
 If you're using Netscape, go to the ``proxies'' tab under ``network options.''
 Click on ``manual proxy configuration'' and ``view'', and set the host name
-and port to the ones the PIA printed out when it started.  Browse to the
-Agency's home page:
+and port of the HTTP proxy to the ones the PIA printed out when it started.
+Browse to the Agency's home page:
 <code>&lt;<a href="http://Agency/">http://Agency/</a></code>&gt;.
 <p>
 
@@ -66,7 +76,7 @@ environment variables.  In this case you can have the PIA start your browser:
 </pre>
 
 <blockquote><em>
-  This feature may not be available in the Release 0.9.
+  This feature may not be available in Release 0.9.
 </em></blockquote>
 
 The host ``<code>Agency</code>'' is shorthand for the hostname and port number
@@ -76,15 +86,6 @@ automatically tell your browser what the <em>real</em> host and port are.  If
 it didn't, things would get very confused if you decided to look at someone
 else's, or a printer's, PIA. <p>
 
-
-<h2>Normal Operation</h2>
-
-<h3>What's it Doing?</h3>
-
-
-<h3>The PIA as Proxy</h3>
-
-<h3>The PIA as Server</h3>
 
 
 <h2>Command-Line Options</h2>
@@ -137,6 +138,9 @@ else's, or a printer's, PIA. <p>
   <dd> Define a global property (name-value pair).
 </dl>
 
+<!-- === really need an overview here of what a PIA _does_ === -->
+
+<hr>
 <h2>Agents</h2>
 
 By convention, most ``agents'' that have lowercase names are Document-Oriented
@@ -158,13 +162,25 @@ links to the the agent's home page, options form, and so on.  The home page is
 where you go to find out about the agent's functions and control its
 operations.<p>
 
-The PIA as a whole <em>also</em> has a home page.<p>
+The PIA as a whole <em>also</em> has a home page.  This is often customized,
+for example for a specific appliance or server.  It is usually very much like
+the home page of most web sites; designed more to welcome a newcomer than to
+be useful for an experienced user.  Experienced users will normally go
+directly to the agents they need. <p>
 
 It is usually possible to use an agent from ``outside'' an agency, by simply
 giving its url.  You can send someone a link to one of your agents' pages, for
-example a page in your history, in order to share information.  Agents that
-write files or control the Agency's operation are written so as to only work
-when the Agency is being used as a proxy. <p>
+example a page in your history, in order to share information.
+Agents like <code><a href="/cia">cia</a></code> that add information to pages
+being retrieved through the PIA will of course have no effect if the PIA is
+not serving as a proxy.<p>
+
+
+Agents that write files or control the Agency's operation will eventually be
+written so as to only work when the Agency is being used as a proxy or by a
+trusted user. <em>(This feature is not available in Release 0.9.)</em> <p>
+
+
 
 <h3>Agency</h3>
 
@@ -263,6 +279,30 @@ lists every URL you visit outside the Agency itself, together with the time
 you went there.<p>
 
 
+<h3>Logo</h3>
+
+The <code><a href="/Logo">Logo</a></code> agent is responsible for making
+those cute little pentagon-based logos you see all over the Agency's pages.
+It has many options (detailed on its <a href="/Logo">home page</a>), but
+basically it pretends to have a lot of files called
+<code><em>tttthh</em>.gif</code>, where <code><em>tttt</em></code> is a
+``type'' like <code>pia</code> or <code>pent</code>, and
+<code><em>hh</em></code> is a height, in pixels.  The width is calculated
+automatically.  Anything with gets a 1-pixel-wide border.  Anything with
+<em>height = 0</em> gets a default height specified as one of the Logo agent's
+options. <p>
+
+<blockquote>
+  By the way, it's perfectly acceptable for an agent's directory to contain
+  ordinary HTML files, images, data, and even programs as well as
+  InterForms. For example, the <code><a href="/Printer">Printer</a></code>
+  agent's printer icon, and the <code><a href="/Hotlist">Hotlist</a></code>
+  agent's ``postit-note'' icon, are both ordinary <code>.gif</code> files in
+  the agent's directories.
+</blockquote>
+
+<!-- === -->
+
 <h3>Cache</h3>
 
 <dl>
@@ -325,29 +365,6 @@ Agency.  Of course you may want to have two agencies, say at home and at work;
 it will also be possible to automatically e-mail hotlist entries to your
 ``other'' Agency.<p>
 
-
-<h3>Logo</h3>
-
-The <code><a href="/Logo">Logo</a></code> agent is responsible for making
-those cute little pentagon-based logos you see all over the Agency's pages.
-It has many options (detailed on its <a href="/Logo">home page</a>), but
-basically it pretends to have a lot of files called
-<code><em>tttthh</em>.gif</code>, where <code><em>tttt</em></code> is a
-``type'' like <code>pia</code> or <code>pent</code>, and
-<code><em>hh</em></code> is a height, in pixels.  The width is calculated
-automatically.  Anything with  <em>height &gt; 20</em> gets a 1-pixel-wide
-border. <p>
-
-<blockquote>
-  By the way, it's perfectly acceptable for an agent's directory to contain
-  ordinary HTML files, images, data, and even programs as well as
-  InterForms. For example, the <code><a href="/Printer">Printer</a></code>
-  agent's printer icon, and the <code><a href="/Hotlist">Hotlist</a></code>
-  agent's ``postit-note'' icon, are both ordinary <code>.gif</code> files in
-  the agent's directories.
-</blockquote>
-
-<!-- === -->
 
 <hr>
 <h2>Customization</h2>
@@ -451,7 +468,7 @@ be a <code><a href="/Proxy">Proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Aug  1 00:22:15 1997
+Last modified: Fri Aug  1 14:46:50 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
