@@ -117,8 +117,8 @@ sub send_response{
 ##Temporary because hooks don't work
 	if ($control && $content =~ m/\<body[^>]*\>/is) {
 	    $content =~ s/(\<body[^>]*\>)/$1$control/is;
-	} elsif ($control && $content =~ m/\<noframes[^>]*\>/is) {
-	    $content =~ s/(\<noframes[^>]*\>)/$1$control/is;
+	} elsif ($control && $content =~ m/\<noframe[^>]*\>/is) {
+	    $content =~ s/(\<noframe[^>]*\>)/$1$control/is;
 	} else {
 	    ## === if they're stupid enough to put in frames without 
 	    ##     a noframes tag, we're probably hosed for now. ===
