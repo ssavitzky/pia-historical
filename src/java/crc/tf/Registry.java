@@ -10,14 +10,14 @@
 package crc.tf;
 
 import crc.tf.UnknownNameException;
-import java.util.Hashtable;
 import crc.ds.UnaryFunctor;
+import crc.ds.Table;
 
 public class Registry{
   /**
    * Store previously created feature calculators
    */
-  protected static Hashtable calcTable = new Hashtable();
+  protected static Table calcTable = new Table();
 
   protected static String packagePrefix = "crc.tf.";
 
