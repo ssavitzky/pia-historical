@@ -135,5 +135,6 @@ pia_cdrom::	pia_bin_src
 	cp pia_bin.tgz $(CDROMDIR); cp pia_src.tgz $(CDROMDIR)
 	cp Doc/Release/readme.txt $(CDROMDIR)
 	cp bin/autorun.inf $(CDROMDIR)
+	cp bin/pia.pif $(CDROMDIR)
 
 
