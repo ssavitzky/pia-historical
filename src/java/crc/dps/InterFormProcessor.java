@@ -1,4 +1,4 @@
-////// InterFormProcessor.java: Top-InterForm Processor for PIA
+////// InterFormProcessor.java: Top Processor for PIA InterForms
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -40,7 +40,8 @@ public class InterFormProcessor extends DocumentProcessor {
   ************************************************************************/
 
   protected Agent 	agent 		= null;
-  protected Transaction	transaction 	= null;
+  protected Transaction	request 	= null;
+  protected Transaction	response 	= null;
   protected Resolver 	resolver 	= null;
 
   /************************************************************************
@@ -77,7 +78,7 @@ public class InterFormProcessor extends DocumentProcessor {
   }    
 
   public Transaction getTransaction() {
-    return transaction;
+    return (response == null)? request : response;
   }
 
   /************************************************************************
@@ -91,6 +92,7 @@ public class InterFormProcessor extends DocumentProcessor {
   }
 
   public void initializeLegacyEntities() {
+    Transaction transaction = getTransaction();
     if (transaction != null) {
       URL url = transaction.requestURL();
       if (url != null) {
@@ -155,12 +157,22 @@ public class InterFormProcessor extends DocumentProcessor {
   ** Construction:
   ************************************************************************/
 
-  InterFormProcessor() {
+  public InterFormProcessor() {
     super(false);
     initializeEntities();
   }
 
-  InterFormProcessor(boolean defaultEntities) {
+  public InterFormProcessor(Agent a, Transaction req, Transaction resp,
+			    Resolver res) {
+    super(false);
+    agent = a;
+    request = req;
+    response = resp;
+    resolver = res;
+    initializeEntities();
+  }
+
+  public InterFormProcessor(boolean defaultEntities) {
     super(false);
     if (defaultEntities) initializeEntities();
   }
