@@ -4,7 +4,7 @@
 
 <body bgcolor="#ffffff">
 
-<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="../feedbackbutton.gif"></a></center><p>
 
 <h1>Purchase Requisition</h1>
 

@@ -4,7 +4,7 @@
 
 <body bgcolor="#ffffff">
 
-<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="../feedbackbutton.gif"></a></center><p>
 
 <center><h1>Expense Report</h1></center>
 
@@ -22,13 +22,14 @@ Departure/Destination: <input name=dd2 size=35>
 # Miles: <input name=miles2 value=0 size=5><hr>
 
 <center><h1>Hotel</h1></center>
-Nightly Rate with Tax: <input name=rate size=10>
-Number of Nights: <input name=nights1 value=0 size=2>
-Hotel: <input name=hotel1 size=15><br><hr>
+<repeat list="1 2 3">
+Nightly Rate with Tax: <input name="rate&li;" size=10>
+Number of Nights: <input name="nights&li;" value=0 size=2>
+Hotel: <input name="hotel&li;" size=15><br></repeat><hr>
 
 <center><h1>Per Diem</h1></center>
-Number of Days: <input name=days value=0 size=5>
-Destination: <select name=dest1><option>Domestic US<option>Japan <option>Other International</select><br>
+Number of Days: <input name=perdays1 value=0 size=5>
+Destination: <select name=perdest1><option>Domestic US<option>Japan <option>Other International</select><br>
 Number of Days: <input name=perdays2 value=0 size=5>
 Destination: <select name=perdest2><option>Domestic US<option>Japan <option>Other International</select><hr>
 

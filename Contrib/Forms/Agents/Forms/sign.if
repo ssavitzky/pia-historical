@@ -1,7 +1,7 @@
 <title>&FORM.dir; Signature Result</title>
 <body bgcolor="#ffffff">
 
-<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><p>
 
 <h2>&FORM.dir; Signature Result</h2><p>
 
@@ -24,7 +24,7 @@
                   <write append file="&FORM.filepath;"><b><get name="nameobject.&FORM.name;"></b> &dateString;<br></write>
                   Your signature has been appended to the document.<br>
 
-                 <read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi?username=&FORM.name;&amp;src_url=http://&piaHOST;:&piaPORT;/My/Forms/&FORM.filepath;">
+                 <read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi" query="username=&FORM.name;?src_url=http://&piaHOST;:&piaPORT;/My/Forms/&FORM.filepath;">
 
                   <if><test exact match="NULL">&nextperson;</test><then>
                   This document requires no additional electronic signatures.

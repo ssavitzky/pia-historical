@@ -39,7 +39,7 @@
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>&manager;<dt>&manager;<dd>FrontOffice<dt>FrontOffice<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set> 
-<write file="&dir;/&year;/&month;/&timesec;.html">
+<write file="&dir;/&year;/&month;/&day;/&timesec;.html">
 <body bgcolor="#ffffff">
 Estimate of Costs: (this estimate is preliminary and will not neccessarily be used)<br>
 <ul><li>Per Diem Est ($): &perdiem; <li>Hotel Est ($): &htotal; <li>Air Fare Est ($): &fcost; <li>Other Trans Est ($): &ctotal; </ul>

@@ -4,7 +4,7 @@
 
 <body bgcolor="#ffffff">
 
-<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="userbutton.gif"></a><img src="reports.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="userbutton.gif"></a><img src="reports.gif"></a><a href="/Forms/feedback/feedback.if"><img src="feedbackbutton.gif"></a></center><p>
 
 <form method=POST action="reports_process.if">
 

@@ -8,32 +8,21 @@
 <set entity name=departmentobject><read file="usertodept.dat" process></set>
 <set entity name=acctobject><read file="acct_codes.dat" process></set>
 
-<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Date:</b><dd><u>&date;</u><p><h2>Personal Auto</h2><dt><b>Auto Date 1:</b><dd><u>&FORM.autodate1;</u><dt><b>Departure/destination:</b><dd><u>&FORM.dd1;</u><dt><b># miles:</b><dd><u>&FORM.miles1;</u><p><dt><b>Auto Date 2:</b><dd><u>&FORM.autodate2;</u><dt><b>Departure/destination:</b><dd><u>&FORM.dd2;</u><dt><b># miles:</b><dd><u>&FORM.miles2;</u><p><h2>Hotel</h2><dt><b>Hotel:</b><dd><u>&FORM.hotel1;</u><dt><b>Nightly rate:</b><dd><u>&FORM.rate;</u><dt><b>Num nights:</b><dd><u>&FORM.nights1;</u><p><h2>Per Diem</h2><dt><b>Per diem days:</b><dd><u>&FORM.days;</u><dt><b>Destination:</b><dd><u>&FORM.dest1;</u><p>
-<dt><b>Per diem days:</b><dd><u>&FORM.perdays2;</u><dt><b>Destination:</b><dd><u>&FORM.perdest2;</u><p><h2>Business Meals</h2><dt><b>Business meal guests:</b><dd><u>&FORM.guests1;</u><dt><b>Purpose:</b><dd><u>&FORM.purpose1;</u><dt><b>Cost:</b><dd><u>&FORM.cost1;</u><p><dt><b>Business meal guests:</b><dd><u>&FORM.guests2;</u><dt><b>Purpose:</b><dd><u>&FORM.purpose2;</u><dt><b>Cost:</b><dd><u>&FORM.cost2;</u><p><dt><b>Business meal guests:</b><dd><u>&FORM.guests3;</u><dt><b>Purpose:</b><dd><u>&FORM.purpose3;</u><dt><b>Cost:</b><dd><u>&FORM.cost3;</u></dl><p>
-<table border><caption><h2>Other</h2></caption>
-<th>Description <th>Type/Account # <th>Amount <tr>
-<td>&FORM.description1; <td>&FORM.account1;/<get name="acctobject.&FORM.account1;"> <td>&FORM.amount1; <tr>
-<td>&FORM.description2; <td>&FORM.account2;/<get name="acctobject.&FORM.account2;"> <td>&FORM.amount2; <tr>
-<td>&FORM.description3; <td>&FORM.account3;/<get name="acctobject.&FORM.account3;"> <td>&FORM.amount3; <tr>
-<td>&FORM.description4; <td>&FORM.account4;/<get name="acctobject.&FORM.account4;"> <td>&FORM.amount4; <tr>
-<td>&FORM.description5; <td>&FORM.account5;/<get name="acctobject.&FORM.account5;"> <td>&FORM.amount5; <tr>
-<td>&FORM.description6; <td>&FORM.account6;/<get name="acctobject.&FORM.account6;"> <td>&FORM.amount6; <tr>
-<td>&FORM.description7; <td>&FORM.account7;/<get name="acctobject.&FORM.account7;"> <td>&FORM.amount7; <tr>
-<td>&FORM.description8; <td>&FORM.account8;/<get name="acctobject.&FORM.account8;"> <td>&FORM.amount8; <tr>
-<td>&FORM.description9; <td>&FORM.account9;/<get name="acctobject.&FORM.account9;"> <td>&FORM.amount9; <tr>
-<td>&FORM.description10; <td>&FORM.account10;/<get name="acctobject.&FORM.account10;"> <td>&FORM.amount10; <tr>
-</table><p></set>
+<!-- some calculations repeated here and below --  should do only once -->
 
 <set entity name=atotal><sum><product>&FORM.miles1; 0.28</product> <product>&FORM.miles2; 0.28</product></sum></set>
 
-<set entity name=htotal><product>&FORM.nights1; &FORM.rate;</product></set>
+<set entity name=htotal><sum><product>&FORM.nights1; &FORM.rate1;</product>
+<product>&FORM.nights2; &FORM.rate2;</product>
+<product>&FORM.nights3; &FORM.rate3;</product>
+</sum></set>
 
-<if><test match="Domestic US">&FORM.dest1;</test>
-<then><set entity name=perdiem><product>&FORM.days; 34</product></set></if>
-<if><test match="Japan">&FORM.dest1;</test>
-<then><set entity name=perdiem><product>&FORM.days; 60</product></set></if>
-<if><test match="Other International">&FORM.dest1;</test>
-<then><set entity name=perdiem><product>&FORM.days; 47</product></set></if>
+<if><test match="Domestic US">&FORM.perdest1;</test>
+<then><set entity name=perdiem1><product>&FORM.perdays1; 34</product></set></if>
+<if><test match="Japan">&FORM.perdest1;</test>
+<then><set entity name=perdiem1><product>&FORM.perdays1; 60</product></set></if>
+<if><test match="Other International">&FORM.perdest1;</test>
+<then><set entity name=perdiem1><product>&FORM.perdays1; 47</product></set></if>
         
 <if><test match="Domestic US">&FORM.perdest2;</test>
 <then><set entity name=perdiem2><product>&FORM.perdays2; 34</product></set></if>
@@ -42,7 +31,7 @@
 <if><test match="Other International">&FORM.perdest2;</test>
 <then><set entity name=perdiem2><product>&FORM.perdays2; 47</product></set></if>
 
-<set entity name=ptotal><sum>&perdiem; &perdiem2;</sum></set>
+<set entity name=ptotal><sum>&perdiem1; &perdiem2;</sum></set>
 <set entity name=mtotal><sum>&FORM.cost1; &FORM.cost2; &FORM.cost3;</sum></set>
 
 <set entity name=ototal><sum>&FORM.amount1; &FORM.amount2; &FORM.amount3; &FORM.amount4; &FORM.amount5; &FORM.amount6; &FORM.amount7; &FORM.amount8; &FORM.amount9; &FORM.amount10;</sum></set>
@@ -51,14 +40,60 @@
 
 <set entity name=grandtotal><sum>&atotal; &htotal; &ptotal; &mtotal; &ototal; </sum></set>
 
+
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Date:</b><dd><u>&date;</u></dl>
+<p>
+<table border><caption><h2>Personal Auto</h2></caption>
+<tr><th>Date <th>Destination <th>Miles<th> Cost</tr>
+<repeat list="1 2 3"><if><get form name="autodate&li;"><then><TR><TD><get form name="autodate&li;"><TD><get form name="dd&li;"><TD><get form name="miles&li;"><TD><product><get form name="miles&li;"> 0.28</product></tr></repeat></then></if>
+<TR><TH align=center colspan=3> Total <TD> &atotal;</table>
+<p>
+<table border><caption><h2>Hotel</h2></caption>
+<tr><th>Hotel <th> Rate <th>Nights <th> Cost</tr>
+<repeat list="1 2 3"><if><get form name="hotel&li;"><then><TR><TD><get form name="hotel&li;"><TD><get form name="rate&li;"><TD><get form name="nights&li;"><TD><product><get form name="rate&li;"> <get form name="nights&li;"></product></tr></repeat></then></if>
+<TR><TH align=center colspan=3> Total <TD>&htotal;</table>
+<p>
+<table border><caption><h2>Per Diem</h2></caption>
+<tr><th>Days<th>Location<TH>Cost</tr>
+<repeat list="1 2 3"><if><test positive><get form name="perdays&li;"></test><then><TR><TD><get form name="perdays&li;"><TD><get form name="perdest&li;"> <TD><get name="perdiem&li;"></tr></repeat></then></if>
+<TR><TH align=center colspan=2> Total <TD>&ptotal;</table>
+<p>
+<table border><caption><h2>Business Meals</h2></caption>
+<tr><th>Guests <th> Purpose<th> Cost</tr>
+<repeat list="1 2 3"><if><test positive><get form name="cost&li;"></test><then><TR><TD><get form name="guests&li;"><TD><get form name="purpose&li;"><TD><get form name="cost&li;"></TR></then></if></repeat>
+<TR><TH align=center colspan=2> Total <TD>&mtotal;</table>
+<p>
+<table border><caption><h2>Other</h2></caption>
+<tr><th>Description <th>Type/Account # <th>Amount </tr>
+<repeat list="1 2 3 4 5 6 7 8 9 10"><if><test positive><get form name="amount&li;"></test><then><set name="acct"><get form name="account&li;"></set>
+<TR><td><get form name="description&li;"> <td>&acct;/<get name="acctobject.&acct;"> <td><get form name="amount&li;"> <tr></then></if></repeat>
+<TR><TH align=center colspan=2> Total <TD>&ototal;</TR></table>
+<p></set>
+
 <set entity name=mlist><read file="mgr.dat" process></set>    
 <set entity name=manager><get name="mlist.&FORM.name;"></set>
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>NULL</dl></set>
 
-<set entity name=timesec>&time;:&second;</set> 
-<write file="&dir;/&year;/&month;/&timesec;.html">
+<set entity name=timesec>&time;:&second;</set>
+<!-- insert at beginning of response but not in file-->
 <body bgcolor="#ffffff">
-<b><blink>Please print this document, attach all receipts, then submit to the auditor</blink></b><p>
+<b>Please print this form, attach all receipts and give to the auditor (Front Desk)</b><br>
+<form action="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi" method=GET>
+<input type="hidden" name="src_url" value="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&day;/&timesec;.html">
+<input type="hidden" name="username"  value="&FORM.name;">
+<input type="SUBMIT" value="Print using IMP">
+on: <select name="printer">
+ <option>ps3
+ <option>ps4
+ <option>ps5
+ <option>ps6
+ <option>ps2
+ <option>ps1
+ <option>psfile
+</select>
+</form>
+<p>
+<write file="&dir;/&year;/&month;/&day;/&timesec;.html">
 Summary of Expenses for <b>&FORM.name;</b>:<br>
 <ul><li>Personal Auto ($): &atotal; <li>Hotel Est ($): &htotal; <li>Per Diem ($): &ptotal; ---------------> subtotal account 6210 = $&firstthree;<li>Business Meals ($): &mtotal; ---------------> account 6415 = $&mtotal;<li>Other ($): &ototal; </ul>
 <strong>Total Cost Est ($):</strong> &grandtotal;<p><hr>

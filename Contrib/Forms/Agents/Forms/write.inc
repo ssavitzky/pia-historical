@@ -1,18 +1,16 @@
-<write file="&dir;/&year;/&month;/&timesec;.route.html">&routeobject;</write> 
-   
-<write append file="&dir;/&year;/&month;/&timesec;.html">
+<write file="&dir;/&year;/&month;/&day;/&timesec;.route.html">&routeobject;</write> 
+<set name=path>&dir;/&year;/&month;/&day;/&timesec;</set>
+<write append file="&path;.html">
    <body bgcolor="#ffffff">
-   <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><br>
+   <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><br>
    Please sign the following document.<p>
    <h2>&dir; form</h2><p>
    &dataobject;<p>
    <form method=POST action="/Forms/sign.if">
-   <input type=hidden name=routepath value="&dir;/&year;/&month;/&timesec;.route.html">
-   <input type=hidden name=filepath value="&dir;/&year;/&month;/&timesec;.html">
+   <input type=hidden name=routepath value="&path;.route.html">
+   <input type=hidden name=filepath value="&path;.html">
    <input type=hidden name=dir value="&dir;">
-   <input type=hidden name=dataobject value="&dataobject;">
    <input type=hidden name=manager value="&manager;">
-
    <set name=temp>&FORM.name;</set> 
    Username: <select name="name"><option>&temp;
   <if><test match="NULL"><get name="routeobject.&temp;"></test><then>
@@ -26,16 +24,16 @@
 </write>
 
 <write append file="users/&FORM.name;.html">
-<li><a href="../&dir;/&year;/&month;/&timesec;.html">
+<li><a href="../&path;.html">
 &dir; form --- &FORM.name; &dateString;</a><br></write>
 
-<write append line file="&dir;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&path;.html">
 &FORM.name; &dateString;</a><br></write>
       
-<write append line file="&dir;/&year;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&year;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&path;.html">
 &FORM.name; &dateString;</a><br></write>   
       
-<write append line file="&dir;/&year;/&month;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&year;/&month;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&path;.html">
 &FORM.name; &dateString;</a><br></write> 
 
-<read file="&dir;/&year;/&month;/&timesec;.html" process>
+<read file="&path;.html" process>
