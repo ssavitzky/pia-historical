@@ -12,6 +12,7 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
+import crc.util.regexp.RegExp;
 
 /** Handler class for &lt;test&gt tag 
  * <dl>
@@ -63,7 +64,17 @@ public class Test extends crc.interform.Handler {
       if (exact) result = csens? match.equals(test.toString())
 		               : match.equalsIgnoreCase(test.toString());
       else {
-	ii.error(ia, "regexp match unimplemented");
+	String str = test.toString();
+	if (! csens) {
+	  str = str.toLowerCase();
+	  match = match.toLowerCase();
+	}
+	try {
+	  RegExp re = new RegExp(match);
+	  result = (re.match(str) != null);
+	} catch (Exception e) {
+	  ii.error(ia, "Exception in regexp: "+e.toString());
+	}
       }
     } else {
       result = ! test.isEmpty();
