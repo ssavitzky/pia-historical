@@ -8,16 +8,27 @@
 <dl>
   <dt> /etc/pcmcia/fixed.opts
   <dd> uncomment  <code> DO_MOUNT</code> and <code> MOUNTPT</code> 
-        add <code>RUN_COMMAND="y" </code> variable and <code> COMMAND="~pia/pia/bin/copy_j6i $MOUNTPT ~pia/.pia/Photo_Album"</code>.
+        add
+<pre>
+RUN_COMMAND="y"
+USER="pia"
+COMMAND="~pia/pia/bin/copy_j6i $MOUNTPT ~pia/.pia/Photo_Album"
+</pre>       
   <dt> /etc/pcmcia/fixed
   <dd>  add
-<pre>  if [ !  $FAIL && "$RUN_COMMAND" = "y" ] ; then
-          $COMMAND || FAIL=1
-       fi
+<pre>
+if [ ! $FAIL -a "y$RUN_COMMAND" = "yy" ] ; then
+    if [ "x$USER" = x ] ; then
+        $COMMAND || FAIL=1
+    else
+        su $USER -c "$COMMAND" || FAIL=1
+<!-- doesn't seem to work with su; possibly perl is being careful -->
+    fi
+fi
        </pre>
 
   <dt> ~pia/pia/bin/copy_j6i
-  <dd>  should exist and the suid pia
+  <dd>  should exist and be suid pia
   <dt> pbm utilities installed
   <dd> djpeg, cjpeg, pnmscale, pnmtogif are used
 </dl>
@@ -25,7 +36,7 @@
 <h2>installation form</h2>
 <dl>
 
-<dt>Photo album  <if><agent-running name=Photo_Album><then><em>installed</em></then>
+<dt>Photo album  <if><agent-running name="Photo_Album"><then><em>installed</em></then>
        <else>
 <dd><form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="Photo_Album">
@@ -41,7 +52,7 @@
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Sun Apr 13 10:26:04 1997
+Last modified: Mon Apr 14 19:13:32 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

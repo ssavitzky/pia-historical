@@ -146,7 +146,25 @@ add a default start-up form to this file.  <p>
 <h3><a name="exp">Experimental</a></h3>
 
 <dl>
-  <dt> CD-R/RW
+  <dt> <a name="Photo_Album">Photo Album</a>
+       <if><agent-running name="Photo_Album"><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photo_Album"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form></if>
+  <dt> Photos
+       <if><agent-running name="Photos"><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photos">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia/Photo_Album/">
+       <input type="submit" value="Install">
+       </form></if>
+       
+  <dt> <a name="CDRW">CD-R/RW</a>
        <if><agent-running name=CDRW><then><em>installed</em></then>
        <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
@@ -168,7 +186,7 @@ add a default start-up form to this file.  <p>
        </form></if>       
 </dl>
 <hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b> $Id$</b><br>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
