@@ -232,8 +232,10 @@ public class FormContent extends Properties implements Content {
       int j=0;
       while (j >= 0){
 	 j = read(myBuffer);
-         output.write(myBuffer,0,j);
-	 written += j;
+	 if ( j > 0 ){
+	   output.write(myBuffer,0,j);
+	   written += j;
+	 }
       }
       
       return written;
