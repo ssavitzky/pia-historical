@@ -480,7 +480,7 @@ name=AuthenticatedUser></set></else></if>
   <option>ps6
   <option>ps2
   <option>ps1
-  <option>psfile
+  <option>imfile
      <option>DownloadPostscript
  </select>
 (Other printer: <input name="otherprinter" size="20">)
