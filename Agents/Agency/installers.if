@@ -132,20 +132,31 @@ add a default start-up form to this file.  <p>
 
 </dl>
 
-<h3>Probably Obsolete</h3>
+<h3> experimental</h3>
 
 <dl>
-  <dt> Proxy agent (probably not needed anymore)
+  <dt>  CD-R/RW
   <dd> <form action="/Agency/install_agent.if" method="POST">
-       name:<input name="agent" value="Proxy"><br>
-       network:<input name="network" value="installed">
-       (use 'none' if no network available)<br> 
+       name:<input name="agent" value="CDRW"><br>
+       type:<input name="type" value="CDRW"><br>
+       Samba Name: (for mounting under windows) <input name="sambaName"
+       value="user_files"><br>
+       SambaConfigFile: <input name="sambaConfig" value="/etc/sbm.conf">
+       root: (relative to agent directory)<input name="rootDir" value="user_files"><br>
        <input type="submit" value="Install"><br>
        </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="user_files">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/user_files">
+       <input type="submit" value="Install">
+       </form>
+       
 </dl>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
-<b>$Id$</b><br>
+<b> $Id$</b><br>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
          >steve@crc.ricoh.com</a>&gt;</address>
