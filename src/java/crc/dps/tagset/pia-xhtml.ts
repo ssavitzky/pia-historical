@@ -40,6 +40,16 @@ Note that we only need these inside the PIA.
 
 <h2>Legacy Tags</h2>
 
+<note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
+   following definitions.  This is expedient (i.e. a temporary hack), but all
+   such definitions will eventually be replaced.
+</note>
+
+<define element=agent-list handler=legacy:agent-list empty>
+  <doc> List agents, possibly those with a given type.
+  </doc>
+</define>
+
 <define element=agent-running empty handler=legacy:agent-running>
    <doc> Determine whether a given agent is currently running (installed in
 	 the PIA).
@@ -54,11 +64,6 @@ Note that we only need these inside the PIA.
 
 <define element=user-message handler=legacy:user-message>
   <doc> Output a message to the user.
-  </doc>
-</define>
-
-<define element=agent-list handler=legacy:agent-list empty>
-  <doc> List agents, possibly those with a given type.
   </doc>
 </define>
 

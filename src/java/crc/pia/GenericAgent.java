@@ -835,8 +835,9 @@ public class GenericAgent implements Agent, Registered, Serializable {
     // === This should be a Hook instead of an ActiveDoc ===
     // === it only works with the xhtml tagset
     ActiveDoc proc = new ActiveDoc(this, req, resp, res);
-    Tagset ts = loadTagset(proc, "xhtml");
+    proc.setVerbosity((Pia.verbose()? 1 : 0) + (Pia.debug()? 2 : 0));
 
+    Tagset ts = loadTagset(proc, "xhtml");
     if (ts == null) {
       // sendErrorResponse(trans, 500, "cannot load tagset " +tsn);
       return null;
@@ -1343,6 +1344,8 @@ public class GenericAgent implements Agent, Registered, Serializable {
     Transaction response = new HTTPResponse( trans, false );
     String tsn = tagsetName(file);
     ActiveDoc proc = new ActiveDoc(this, trans, response, res);
+    proc.setVerbosity((Pia.verbose()? 1 : 0) + (Pia.debug()? 2 : 0));
+
     Tagset ts  = loadTagset(proc, tsn);
 
     if (ts == null) {

@@ -67,9 +67,7 @@ DOC_TS = tsdoc.ts
 
 DOC_CMD= $(BINDIR)/pia_wrapper crc.dps.Filter
 
-# For some reason making docs with tsdoc.tso fails.  Not good.
-
-doc:: count ts-doc
+doc:: count ts-tsos ts-doc
 
 ts-doc:: $(TAGSET_DOCS)
 	cp $? $(TSDOCDIR)

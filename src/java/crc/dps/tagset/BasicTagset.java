@@ -551,17 +551,17 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    *	It's a safe assumption as long as <code>defTags</code> is used to
    *	initialize the entire table. <p>
    *
-   * @param tags a String of blank-separated tag names.
-   * @param notIn a String of blank-separated tag names representing the
-   *	elements that will be ended if the tag being defined is found
-   *	inside them.
+   * @param tags an array of tag names.
+   * @param notIn an array of tag names representing the elements that will
+   *	be ended if the tag being defined is found inside them.
    * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    */
-  protected void defTags(String tags, String notIn, int syntax) {
-    Enumeration e  = new java.util.StringTokenizer(tags);
-    while (e.hasMoreElements()) {
-      String tag = e.nextElement().toString();
-      defTag(tag, notIn, syntax);
+  protected void defTags(String tags[], String notIn[], int syntax) {
+    for (int i = 0; i < tags.length; ++i) {
+      BasicHandler h = defTag(tags[i], null, syntax);
+      if (notIn != null)
+	for (int j = 0; j < notIn.length; ++j) 
+	  h.setImplicitlyEnds(notIn[j]);
     }
   }
 
@@ -574,11 +574,12 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    *	inside them.
    * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    */
-  protected void defActive(String tags, String notIn, int syntax) {
-    Enumeration e  = new java.util.StringTokenizer(tags);
-    while (e.hasMoreElements()) {
-      String tag = e.nextElement().toString();
-      defTag(tag, notIn, syntax, "");
+  protected void defActive(String[] tags, String notIn[], int syntax) {
+    for (int i = 0; i < tags.length; ++i) {
+      BasicHandler h = defTag(tags[i], null, syntax, "");
+      if (notIn != null)
+	for (int j = 0; j < notIn.length; ++j) 
+	  h.setImplicitlyEnds(notIn[j]);
     }
   }
 

@@ -112,6 +112,7 @@ public class Loader {
   /** Load a named Tagset.  Files loaded relative to a TopContext. */
   public static Tagset loadTagset(String name, TopContext cxt) {
     Tagset ts = null;
+    if (cxt != null) setVerbosity(cxt.getVerbosity());
 
     if (name.indexOf("/") >= 0
 	|| name.endsWith(".ts")
@@ -123,11 +124,17 @@ public class Loader {
       // Definitely a resource or class
       return loadTagsetFromResource(name);
     }
-    ts = loadTagsetSubclass(name);
-    if (ts != null) return ts;
+    // Always check for a file, because that's relative to a context.
     ts = loadTagsetFile(name, cxt);
-    if (ts != null) return ts;
+    if (ts != null) { return ts; }
+
+    // Other names can be cached. 
+    ts = (Tagset) tagsets.at(name);
+    if (ts != null) { return ts; }
+    ts = loadTagsetSubclass(name);
+    if (ts != null) { tagsets.at(name, ts); return ts; }
     ts = loadTagsetFromResource(name);
+    if (ts != null) { tagsets.at(name, ts); }
     return ts;
   }
 
@@ -249,8 +256,8 @@ public class Loader {
     URLConnection tsoUC = loadResource(name, ".tso");
     URLConnection tssUC = loadResource(name, ".tss");
 
-    if (tsoUC != null && tsUC != null
-	&& lastModified(tsoUC) >= lastModified(tsUC)) {
+    if (tsoUC != null
+	&& (tsUC == null || lastModified(tsoUC) >= lastModified(tsUC))) {
       try {
 	ts = (Tagset)crc.util.Utilities.readObjectFrom(tsoUC.getInputStream());
       } catch (Exception ex) {
@@ -268,8 +275,8 @@ public class Loader {
 	return ts;
       }
     }
-    if (tssUC != null && tsUC != null
-	&& lastModified(tssUC) >= lastModified(tsUC)) {
+    if (tssUC != null
+	&& (tsUC == null ||  lastModified(tssUC) >= lastModified(tsUC))) {
       try { s = tssUC.getInputStream(); } catch (IOException ex) {
 	ex.printStackTrace(log);
 	s = null;
@@ -288,6 +295,8 @@ public class Loader {
       log.println("Tagset loaded from resource " + name
 		  + (boot? ".tss" : ".ts"));
     }
+    checkedResource.at(name, ((ts == null)
+			      ? (Object)"not-a-class" : (Object)ts));
     return ts;
   }
 

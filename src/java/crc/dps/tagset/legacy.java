@@ -22,29 +22,37 @@ public class legacy extends HTML_ts {
   /** Call this to force the tagset to be loaded at link time. */
   public static void preload() {}
 
-  static String emptyActors = "actor-attrs actor-dscr actor-doc actor-syntax"
-  + " get tagset-exists tagset-load tagset-include element actor-names"
-  + " calendar"
-  /* from standalone */
-  + " file read authenticate"
-  /* from standard */
-  + " agent-criteria agent-home agent-list agent-options agent-running"
-  + " agent-remove agent-set-criterion agent-restore agent-save"
-  + " pia-exit get.agent get.form get.pia get.trans";
-  static String parsedActors = "add-markup difference equal expand if"
-  + " pad product protect-result quotient set sort sorted subst sum"
-  + " test text trim user-message calendar-day form"
-  /* from standalone */
-  + " os-command os-command-output set.env write write.file write.href"
-  + " password-file-entry"
-  /* from Standard */
-  + " agent-set-criteria agent-set-options agent-install" 
-  + " submit-forms trans-control set.agent set.form set.pia set.trans";
+  static String emptyActors[] = {
+    "actor-attrs", "actor-dscr", "actor-doc", "actor-syntax",
+    " get", "tagset-exists", "tagset-load", "tagset-include",
+    "element", "actor-names", " calendar",
+    /* from standalone */
+    " file", "read", "authenticate",
+    /* from standard */
+    " agent-criteria", "agent-home", "agent-list", "agent-options",
+    "agent-running",
+    " agent-remove", "agent-set-criterion", "agent-restore", "agent-save",
+    " pia-exit", "get.agent", "get.form", "get.pia", "get.trans" };
 
-  static String quotedActors = "protect repeat foreach actor process";
+  static String parsedActors[] = {
+    "add-markup", "difference", "equal", "expand", "if", " pad", "product",
+    "protect-result", "quotient", "set", "sort", "sorted", "subst", "sum",
+    " test", "text", "trim", "user-message", "calendar-day", "form",
+    /* from standalone */
+    " os-command", "os-command-output", "set.env", "write",
+    "write.file", "write.href", " password-file-entry",
+    /* from Standard */
+    " agent-set-criteria", "agent-set-options", "agent-install" ,
+    " submit-forms", "trans-control", "set.agent", "set.form",
+    "set.pia", "set.trans"};
+
+  static String quotedActors[] = {
+    "protect", "repeat", "foreach", "actor", "process"};
+
+  static String thenelse[] = { "then", "else" };
 
   public legacy() {
-    this("Legacy", true);
+    this("legacy", true);
   }
 
   legacy(String name, boolean emptyParagraphTags) {
@@ -62,7 +70,7 @@ public class legacy extends HTML_ts {
     //define(a);
 
     // ... or could do defActors("then else", "quoted", true);
-    defActive("then else", "then else", QUOTED);
+    defActive(thenelse, thenelse, QUOTED);
   }
 
   /************************************************************************

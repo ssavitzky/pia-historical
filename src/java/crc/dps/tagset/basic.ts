@@ -220,21 +220,14 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   </define>
   <define attribute=mode optional>
     <doc> This specifies the read-write status of an external entity: one of
-	  <code>read-only</code> (default), <code>read-write</code>,
-	  <code>write</code>, or <code>append</code>. 
+	  <code>read</code> (default), <code>write</code>, 
+	  <code>create</code>, <code>update</code>, or <code>append</code>.
     </doc>
   </define>
   <define attribute=method optional>
     <doc> This specifies the HTTP request method to make when requesting an
 	  external entity from a remote server.  Note that the PUT and POST
 	  requests use the specified <tag>value</tag> as their content.
-    </doc>
-  </define>
-  <define attribute=write-mode optional>
-    <doc> This specifies handling of writes if the specified file does or does
-	  not exist.  Values are <code>create</code> or <code>rewrite</code>;
-	  the default is to create a file if it does not exist, and rewrite it
-	  if it does exist.
     </doc>
   </define>
   <define attribute=NDATA optional><!-- unimplemented -->
@@ -1482,15 +1475,8 @@ open-ended; tagset authors are free to define new ones as needed.
   </define>
   <define attribute=mode optional>
     <doc> This specifies the read-write status of an external entity: one of
-	  <code>read-only</code> (default), <code>read-write</code>,
-	  <code>write</code>, or <code>append</code>. 
-    </doc>
-  </define>
-  <define attribute=write-mode optional>
-    <doc> This specifies handling of writes if the specified file does or does
-	  not exist.  Values are <code>create</code> or <code>rewrite</code>;
-	  the default is to create a file if it does not exist, and rewrite it
-	  if it does exist.
+	  <code>read</code> (default), <code>write</code>, 
+	  <code>create</code>, <code>update</code>, or <code>append</code>.
     </doc>
   </define>
   <define attribute=tagset optional>
