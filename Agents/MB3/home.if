@@ -5,25 +5,32 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>Home Page</set>
+<!-- put up the header at the top of the page -->
 <read interform file="heading.inc" process>
-<!-- === should be done in template === -->
-<if><read info=p interform file="althead.inc">
-    <then><read interform file="althead.inc" process>
-    <else><read interform file="subhead.inc" process>
-</if>
+
+<!-- put up the events for today and navigation buttons -->
+<read interform file="subhead.inc" process>
+
+<!-- load tags specific to this agent (just in case not already loaded) -->
 <tagset-load name=MB3-actors>
 <hr>
 
+<!-- show the calendar for the current month -->
 <calendar-for month=&month;>
 
 
-<!-- See whether there's an "about" file for this agent. -->
-<read interform file="about.inc" quiet process>
 <p>
+<!-- generic agent information -->
+<read interform file="about.inc" quiet process>
+
 
 
 <hr>
-<if>on<then><expand><get agent name=navbar></expand></if>
+
+<!-- shows/process the navigation bar -->
+<expand><get agent name=navbar></expand>
+
+ <!-- copyright and cvs source control information -->
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+<!-- $Id$ --><br>
 </body></html>

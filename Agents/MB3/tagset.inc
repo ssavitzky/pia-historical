@@ -36,13 +36,16 @@
    </repeat>
   </repeat>
 <!-- add any events to the calendar -->
-  <set name=events local> <read file=events/&myyear;/&mymonth; directory></set>
-  <repeat list=&events; entity=m>
-   <set name=event local><read file=events/&myyear;/&mymonth;/&m;
+  <set name=files local> <read file=events/&myyear;/&mymonth; directory></set>
+  <repeat list=&files; entity=m>
+   <set name=file local><read file=events/&myyear;/&mymonth;/&m;
     process></set>
-    <calendar-insert calendar=&calendar; day=&event.date.day;> <a event=&event.eventfile;
-    href=view_event.if?event=&event.eventfile;>&event.eventtitle; </a>
+   <set name=myevents local><dummy><get name=file findall=event></dummy></set>
+ <repeat list=&myevents; entity=event>
+  <calendar-insert calendar=&calendar; day=&event.date.day.text;>
+   <view-event-link event=&event;>
   </calendar-insert>
+ </repeat>
 </repeat>
 
 <set name=calendars agent key=&mymonth;&myyear;><get name=calendar></set>
@@ -62,7 +65,7 @@
  </repeat>
 </actor>
 
-<actor tag=events-for desc="List of events for DAY MONTH YEAR">
+<actor tag=events-for empty desc="List of events for DAY MONTH YEAR">
 <set name=mymonth local><get element name=month></set>
  <set name=myyear local><get element name=year></set>
  <set name=myyear local><get element name=day></set>
@@ -73,22 +76,71 @@
  <if> <get name=myday> <else><set name=myday local><get
   name=day></set></else> </if>
 
- <!-- use calendars for some efficiency -->
- <set name=calendar local><calendar-for month=&mymonth; year=&myyear;</set>
- <set name=days local><get name=calendar findall=td></set>
- <repeat list=&days; entity=d>
-  <if><test match=&myday; exact><get index=d.b.a.text></test> <then>
-    <repeat list=&d.a; entity=a>
-     <if> <get name=a attr=event> <then>
-      <set name=file><get name=a attr=event></set>
-       <read file=&file; process>
-     </then>
-     </if> 
-    </repeat>
-  </then> </if>
+ <set name=myfile>&myyear;/&mymonth;/&myday;</set>
+ <read file=&myfile;>
+</actor>
+
+ <!-- load options and from content into agent name space -->
+ <actor tag=load-options desc="load options and from content into agent name
+ space ">
+ <set name=options local><dummy><get name=content
+ findall=agentoption></dummy></set>
+ <repeat list=&options; entity=myoption>
+ <set agent name=&myoption.optionname;><get index=myoption.optionvalue></set>
  </repeat>
 </actor>
 
+<actor tag=view-day-link desc="insert a link tag to view this DAY MONTH YEAR">
+  <set name=qsm>month=<get element name=month></set>
+  <set name=qsy>year=<get element name=year></set>
+  <set name=qsd>day=<get element name=day></set>
+ <a href=/&agentName;/view_day.if?&qsd;&&qsm;&&qsy;> &content;</a>
+</actor>
+
+<actor tag=view-event-link empty desc="insert a link tag to view this EVENT">
+  <set name=myevent local><get element name=event></set>
+  <set name=qsf local>file=<get index=event.eventfile.text></set>
+  <set name=qsi local>eid=<get index=event attr=id></set>
+ <a href=/&agentName;/view_event.if?&qsf;&&qsi;> <get index=event.eventtitle</a>
+</actor>
+
+
+ <actor tag=retrieve-event  empty desc="Retrieve event specified by ID from FILE">
+ <set name=file local><get element name=file></set>
+ <set name=id local><get element name=id></set>
+ <set name=events><read file=&file; process></set>
+ <set name=events><get name=events findall=event></set>
+ <repeat list=&events; entity=e>
+ <if><test match=&id; exact><get name=e attr=id></test> <then>
+  <get name=e>
+ </then> </if>
+ </repeat>
+ </actor>
+
+
+<!-- object store should eventually take care of this... for now file manip -->
+ <actor tag=save-event  empty desc="Save EVENT -- overwrite existing event of
+ same id">
+ <set name=event local><get element name=event></set>
+ <set name=file local><get index=event.eventfile.text></set>
+ <set name=id local><get name=event attr=id></set>
+ <if> <read file=&file; info> <then>
+  <set name=events><read file=&file; process></set>
+  <set name=events><get name=events findall=event></set>
+  <!-- remove existing entries -->
+  <write file=&file;> </write>
+  <repeat list=&events; entity=e>
+  <if><test match=&id; exact><get name=e attr=id></test> <then>
+      </then>
+      <else> <!-- add to file -->
+      <write file=&file; append><get name=e>
+      </write>
+      </else>
+   </if>
+  </repeat>
+ </then></if>
+ <write file=&file; append><get name=event></write>
+ </actor>
 
 
 <!-- needed a way to convert relative URL's to base URL's -->

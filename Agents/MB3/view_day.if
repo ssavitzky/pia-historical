@@ -19,40 +19,41 @@
 
 <process copy>
 
- <!-- annoying stuff to make sure we get a unique filename -->
+ 
  <set name=dir><get name=year form>/<get name=month form></set>
  <set name=file><get name=day form></set>
- <set name=files><read file=&dir; directory match="^&file;"></set>
- <set name=try><get name=files size></set>
  <set name=file>&dir;/&file;</set>
- <repeat start=0 stop=&try; entity=i>
- <if><read file=&file; info> <then><set name=file>&dir;/&file;.&i;</set></then> </if>
- </repeat>
-</else> </if>
+ <set name=nextid><sum digits=0><get agent name=idcounter> 1></set>
+ <set name=idcounter agent>&nextid;</set>
+ <write file=eventcount.dat>&nextid;</write>
 
  <set name=event>
-<event>
-<eventtitle><get name=title form></eventtitle>
-<eventfile><get name=file></eventfile>
-<date> <month><get form name=month></month>
+ <event id=&nextid;>
+ <eventtitle><get name=title form></eventtitle>
+ <eventfile><get name=file></eventfile>
+ <date> <month><get form name=month></month>
  <year><get form name=year></year>
  <day><get form name=day></day>
-</date>
-<eventstart><get name=start form></eventstart>
-<eventdescription><get name=desc form> </eventdescription>
-<eventlinks><ol> </ol></eventlinks>
-<eventauthor><get name=author form>  </eventauthor>
-</event>
+ </date>
+ <eventstart><get name=start form></eventstart>
+ <eventdescription><get name=desc form> </eventdescription>
+ <eventlinks><ol> </ol></eventlinks>
+ <eventauthor><get name=author form></eventauthor>
+ </event>
  </set>
 
-  <write file=&file;><get name=event></write>
+ <write file=&file; append><get name=event></write>
+ 
  <if> <get name=calendars agent key=&FORM.month;&FORM.year;> <then>
  <set name=calendar><get name=calendars agent key=&FORM.month;&FORM.year;></set>
- <calendar-insert calendar=&calendar; day=&event.date.day;> <a href=view_event.if?event=&event.eventfile;>&event.eventtitle; </a>
+ <calendar-insert calendar=&calendar; day=&event.date.day.text;>
+  <view-event-link event=&event;>
+ </calendar-insert>
  </then> </if>
 
-Added event  <a href=view_event.if?event=&event.eventfile;>&event.eventtitle;
-(click here to view/modify this event) </a>, click <a href=/view_day.if?d=&myday;&month=&mymonth;&year=&myyear;>here</a> to
+Added event  <view-event-link event=&event;>
+(click title to view/modify event), click <view-day-link day=&myday;
+month=&mymonth; year=&myyear;>here</view-day-link> to
 view updated events for &mymonth;/&myday;/&myyear;.
 <hr>
 </process>
@@ -77,20 +78,36 @@ view updated events for &mymonth;/&myday;/&myyear;.
  </else> </if>
 
   <table>
-    <tr><th valign=top align=left> Day
-        <td><input size=3 name="day" value=&event.date.day;>
-        <th valign=top align=left> Month
-        <td><input size=4 name="month" value=&event.date.month;>
-        <th valign=top align=left> Year
-        <td><input size=4 name="year" value=&event.date.year;>
-        <th valign=top align=left> Start time
-        <td><input name=start value="&event.eventstart;" size=6>
-        <th valign=top align=center> Name
-	<td><input name=title value="&event.eventtitle;" size=12>
-        <th valign=top align=center> Description
-	<td><textarea name=desc><get index=event.eventdescription></textarea>
+   <tr><th valign=top align=left> Day
+        <td><select name="day">
+            <option> <get index=event.date.day.text></option>
+            <repeat list="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+		    16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31">
+            <option>&li; </option></repeat></select>
+    <tr><th valign=top align=left> Month
+        <td><select name="month">
+            <option><get index=event.date.month.text></option>
+            <repeat list="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+		    16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31">
+            <option>&li; </option></repeat></select>
+<tr>    <th valign=top align=left> Year
+        <td><select name="year">
+            <option><get index=event.date.year.text></option>
+            <repeat list="1997 1998 1999 2000 2001">
+            <option>&li; </option></repeat></select>
+<tr>    <th valign=top align=left> Start time
+        <td><select name="start">
+            <option><get index=event.eventstart.text></option>
+            <repeat list="8:00 8:30 9:00 9:30 10:00 10:30 11:00 11:30 12:00
+            12:30 1:00 1:30 2:00 2:30 3:00 3:30 4:00 4:30 5:00 5:30">
+           <option>&li; </option></repeat></select>
+<tr>    <th valign=top align=left> Title
+	<td><input name=title value="&event.eventtitle.text;" size=12>
+<tr>    <th valign=top align=left> Host/Presenter
+	<td><input name=author value="&event.eventauthor.text;" size=12>
+<tr>    <th valign=top align=left> Description
+	<td><textarea name=desc><get index=event.eventdescription.text></textarea>
 <tr>
-
     <tr><th><th valign=top align=right><input type=submit value="AddEvent">
   </table>
 </form>

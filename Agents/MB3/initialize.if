@@ -15,7 +15,7 @@
 <!-- Load and initialize the actors specific to this agent -->
 <read file=tagset.inc interform process>
 
- <!-- initialize the cache and for calendars --> 
+ <!-- initialize the cache for calendars --> 
  <set name=calendars agent><dl> </dl></set>
 
 <set agent hook name="navbar"><protect>
@@ -39,7 +39,14 @@
 
 <hr></protect></set>
 
+<!-- if the options file nonexistent, create it from the defaults -->
+ <if> <read file=options.dat info> <else>
+ <write file=options.dat> <read interform file=options.dat></write></else> </if>
+<!-- now load any options -->
+ <load-options> <read file=options.dat process> </load-options>
 
+ <!-- load the event counter -->
+ <set name=idcounter agent><read file=eventcount.dat></set>
  
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>

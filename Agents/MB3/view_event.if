@@ -2,8 +2,10 @@
 <html><head>
 <title>MB3: Event</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
- <if> <get form name=event> <then> <set name=event><read file=&FORM.event;
-      process></set></then> <else><b> Error, no event specified</b></else></if>
+ <if> <get form name=eid> <then>
+      <set name=event><retrieve-event id=&FORM.eid; file=&FORM.file;> </set>
+      </then>
+      <else><b> Error, no event specified</b></else></if>
 <set entity name=title><get index=event.eventtitle></set>
 <read interform file="heading.inc" process>
 <!-- read interform file="subhead.inc" process -->
@@ -28,29 +30,58 @@
       </a>
      </li>
  </set>
+ <set name=saveflag>true</set>
  </then> </if>
 
-<get index=event.eventlinks> 
- 
- <if><test positive> <get index=event.eventlinks.ol size> </test> <then>
-<a href="bundle_presentation.if?event=&event.eventid;">View All on One
-      page</a> (for printing) </then> <else></else> </if>
+ <!-- main presentation links -->
 
- <hr>
+      <table border=1 align=center>
+      <caption>Presentation links </caption>
+<tr><th>Web Pages </th> <th>Local files </th><th>History </th> </tr>
+<tr> <td> <get index=event.eventlinks> </td>
+      <td>Users can make shortcuts (links) to other types of documents, for
+      example PowerPoint files.  First mount (map) the MB3 disk: <code><get
+      agent name=shareDIR> </code>,  then copy the file(s) to that directory,
+      then enter the filename and an identifier below.  (Eventually, we should
+      automate this.)</td>
+      <td>If the proxy is enabled on the MB3, then any web documents which are
+      viewed during a presentation on the MB3 will be stored by the  <a
+      href=/History/home.if>History agent </a>
+      (Eventually we should automatically add those links here.)</td>
+      </tr>
+<tr><td>
+      <form method=POST action="&url;">
+      
+      <input name="eid"  value="&FORM.eid;"  type=hidden>
+      <input name="file"  value="&FORM.file;"  type=hidden>
+      <input type=submit value="AddURL:">
+      <input name=newurl value="http://" size=40><br>
+      Description: <input name=desc  size=30>
+      </form>
+      </td>
+      <td><form method=POST action="&url;">
+      
+      <input name="eid"  value="&FORM.eid;"  type=hidden>
+      <input name="file"  value="&FORM.file;"  type=hidden>
+      <input type=submit value="AddFILE:">
+      <input name=newurl value="file://&AGENT.shareDIR;" size=40><br>
+      Description: <input name=desc  size=30>
+      </form> </td>
 
- <h3> Add Link to this presentation</h3>
-<form method=POST action="&url;">
-<input name="event"  value="&event.eventid;"  type=hidden>
- <input name="day"  value="&event.date.day;"  type=hidden>
-  <table>
-    <tr><th valign=top align=left>URL
-	<td><input name=newurl value="http://" size=40>
-    <tr><th valign=top align=left>Description
-	<td><input name=desc  size=35>
-    <tr><th valign=top align=right><input type=submit value="AddUrl">
-  </table>
+      <td> Annotations (on screen drawings) saved to <code><get
+	   name=annotationDIR agent></code> would also show up here. </td>
+      </tr>
+ </table>
+      
+<hr>
+  <!-- controls for manipulating presentation -->
+      <if><test positive> <get index=event.eventlinks.ol size> </test> <then>
+      Controls for reviewing and manipulating the presentation.<br>
+      <a href="bundle_presentation.if?event=&event.eventid;">Print presentation
+      (retrieves/prints all links)</a>
 
-</form>
+      </then>  </if>
+
 
 <hr>
 <if>on<then><expand><get agent name=navbar></expand></if>

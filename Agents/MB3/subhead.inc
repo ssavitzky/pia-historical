@@ -1,4 +1,7 @@
 <!-- Copyright &copy; 1997 Ricoh Silicon Valley -->
+<!--  Load the tagset -->
+<tagset-load name=MB3-actors>
+
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
 <if><test exact match="&agentType">&agentName;</test>
     <then><set name=agentPath>&agentName;</set></then>
@@ -17,27 +20,24 @@
         <td><br>
     <tr><th align=right>
 		<if><test match=home.if>&fileName;</test>
-		    <test match=index.if>&fileName;</test>
 		    <test match=help.if>&fileName;</test>
 		    <then><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*"></if>
 	    <td><if><test match=home.if>&fileName;</test>
 		    <then><b href="home.if">Home</b>
 		    <else><a href="home.if">Home</a></if>
-    		<if><test match=index.if>&fileName;</test>
-		    <then><b href="index.if">Index</b>
-		    <else><a href="index.if">Index</a></if>
     		<if><test match=help.if>&fileName;</test>
 		    <then><b href="help.if">Help</b>
 		    <else><a href="help.if">Help</a></if>
-<if><read info interform file="initialize.if"><then>
-    <tr><th><td><a href="options.if">Options</a>
-	    	<a href="initialize.if">[re-initialize]</a></then>
-</if>
-    <tr><th><td><a href="http://internal/cgi-bin/people/CRC/WebEvent/WebEvent">CRC calendar</a>
-	        
+
+    <tr><th><td><a href="options.if">Configuration</a>
+
+    <if> <get name=calendarURL agent> <then>
+    <tr><th><td><a href="&AGENT.calendarURL;">Group calendar</a>
+    </then> </if>     
+
     <tr><th align=right>
-		<if><test match=form.if>&fileName;</test>
+		<if><test match=view_day.if>&fileName;</test>
 		    <then><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*"></if>
 	    <td><a href="view_day.if">View Day</a>
@@ -48,7 +48,7 @@
 	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
                 <else>&agentType;/</else></if>
         <td><repeat list="&subs;">
-               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+               <get name=li> <b> / </b>
            </repeat></then></if>
     </table>
 </table>
