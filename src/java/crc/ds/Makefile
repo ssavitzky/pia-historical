@@ -11,6 +11,7 @@ FILES = \
 	ValueCriterion.java \
 	Features.java \
 	HasFeatures.java \
+	Index.java \
 	List.java \
 	Queue.java \
 	Table.java \
