@@ -30,7 +30,7 @@
       <th valign=top align=right>
       <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
     <tr><th valign=top align=right width=170>
-	    <a href="/Agency/home"><b>Agency:</b></a>
+	    <a href="/Agency/home"><b>Agency:</b></a>&nbsp;
 	<td valign=top>
 	    <a href="/Agency/agents">list</a> /
 	    <a href="/Agency/installers">install</a> / 
@@ -39,17 +39,17 @@
 	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
     <tr><if><test exact match='pia'>&piaUSER;</test>
       <then>
-	<th valign=top align=right><b>Agent:</b>
+	<th valign=top align=right><b>Agent:</b>&nbsp;
 	<td valign=top><!-- need a ``topAgent'' entity. -->
 	    <if><agent-running name="Photo_Album"><then>
-		<a href="/Photo_Album/home.if">Photo Album</a></then>
+		<a href="/Photo_Album/home">Photo Album</a></then>
 	    <else><if><agent-running name="CDRW"><then>
-		<a href="/CDRW/home.if">CDRW</a></then>
+		<a href="/CDRW/home">CDRW</a></then>
 	    <else><if><agent-running name="Printer"><then>
-		<a href="/Printer/home.if">Printer</a></then>
+		<a href="/Printer/home">Printer</a></then>
 	    <else>???</if></if></if></then>
       <else>
-	<th valign=top align=right><b>Files:</b>
+	<th valign=top align=right><a href="/PIA/"><b>Files:</b></a>&nbsp;
 	<td valign=top> <a href="/PIA/Agents/">Agents</a>
 	    <a href="/My/Agents/">(custom)</a>
 	    <a href="/PIA/Doc/">Doc</a>
@@ -57,8 +57,8 @@
       </if><br></tr>
     <if><agent-running name=History><then>
     <tr>
-	<th valign=top align=right><b>History:</b>
-	<td valign=top> <a href="/History">Agent</a>
+	<th valign=top align=right><a href="/History"><b>History:</b></a>&nbsp;
+	<td valign=top> 
 	    [<a href="/My/History">All</a> | 
 	     <a href="/My/History/&year;/">&year;</a>/<a
 		href="/My/History/&year;/&month;/">&month;</a>/<a
