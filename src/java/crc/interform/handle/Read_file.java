@@ -30,7 +30,7 @@ public class Read_file extends Get {
   static String syntaxStr=
     "<read.file file=\"name\" [interform [agent=\"agentName\"]] [quiet]\n" +
     "[info|head|directory [links] [tag=tag] [all|match=\"regexp\"]] \n" +
-    "[base=\"path\"] [process [tagset=\"name\"]] >\n" +
+    "[base=\"path\"] [[process|parse] [tagset=\"name\"]] >\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -38,7 +38,7 @@ public class Read_file extends Get {
     "up as an INTERFORM in current or other AGENT.  Optionally read\n" +
     "only INFO or HEAD.  For DIRECTORY, read names or LINKS, and\n" +
     "return TAG or ul.  DIRECTORY can read ALL names or those that\n" +
-    "MATCH; default is all but backups.  Optionally PROCESS with\n" +
+    "MATCH; default is all but backups.  Optionally PROCESS or PARSE with\n" +
     "optional TAGSET and optionally SKIP results.  Optionally be  \n" +
     "QUIET if file does not exist. \n" +
 "";
@@ -161,11 +161,12 @@ public class Read_file extends Get {
 	
       }
       
-    } else if (it.hasAttr("process")) {
+    } else if (it.hasAttr("process") || it.hasAttr("parse")) {
       String tsname = it.attrString("tagset");
       if (tsname != null) 
 	ii.useTagset(tsname);
       if (it.hasAttr("skip")) ii.setSkipping();
+      if (it.hasAttr("parse")) ii.quoteIt(false);
       try {
 	java.io.FileReader in = new java.io.FileReader(name);
 	ii.pushInput(new crc.interform.Parser(in, null));
