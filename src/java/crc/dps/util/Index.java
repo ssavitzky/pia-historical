@@ -81,6 +81,7 @@ public class Index {
     ActiveNode b = ns.getBinding(name);
     if (b == null) return null;
     if (b.asEntity() != null) return b.asEntity().getValueNodes(c);
+    else if (b.asAttribute() != null) return b.asAttribute().getValue();
     return new ParseNodeList(b);
   }
 
@@ -99,10 +100,11 @@ public class Index {
     ActiveNode b = ns.getBinding(name);
     if (b == null) {
       ns.setBinding(name, new ParseTreeEntity(name, value));
-    } else {
+    } else if (b.asEntity() != null) {
       b.asEntity().setValueNodes(c, value);
+    } else if (b.asAttribute() != null) {
+      b.asAttribute().setValue(value);
     }
-
   }
 
 }

@@ -207,9 +207,7 @@ public class Expand {
   /** Expand a single entity, putting the expansion to an Output. */
   public static void expandEntity(Context c, Entity n, Output dst) {
     String name = n.getName();
-    NodeList value = (name.indexOf(':') >= 0)
-      ? Index.getIndexValue(c, name)
-      : c.getEntityValue(name, false);
+    NodeList value = Index.getIndexValue(c, name);
     if (value == null) {
       dst.putNode(n);
     } else {
