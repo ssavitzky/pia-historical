@@ -49,19 +49,34 @@ sub html2latex{
     $imagenum = 1;		# 
 #    $ua=new LWP::UserAgent unless ref($ua) eq 'LWP::UserAgent';
     $ua=$main::resolver;
+    local @image_elements;
+				# get image links
+    $html->traverse(sub{
+	my ($tag,$start)=@_;
+	return unless $start;
+	push(@image_elements,$tag) if $tag->tag  eq 'img';
+	return 1;
+    },1);
+    
 
-    for (@{ $html->extract_links(qw(img)) }) {
-	my ($url, $element) = @$_;
+## extract_links removed for some reason...
+#    for (@{ $html->extract_links(qw(img)) }) {
+#	my ($url, $element) = @$_;
+    my $element;
+    for $element (@image_elements){
+	$url=$element->attr('src');
 	# parse and get absolute url
 	my $url = new URI::URL ($url,$base_url);
-        my $request=new HTTP::Request('GET',$url);
+#        my $request=new HTTP::Request('GET',$url);
+#	print "getting image " . $url->abs->as_string ."base ". $base_url->as_string . "\n";
+        my $request=PIA::Agent::create_request($agent,'GET',$url);
 
 	$imagefile = "$GWtempdir/htmlIMG.$imagenum.gif";
 	$imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
 
 	## There is no need for a Transaction at all here.
-	my $response=$ua->request($request,$imagefile);
-#	my $response=$ua->simple_request($request,$imagefile);
+#	my $response=$ua->request($request,$imagefile);
+	my $response=$ua->simple_request($request,$imagefile);
 	my $image_type=$response->content_type;
 
 	system("rm $imagefile.pnm") if -f $imagefile.pnm ; 
