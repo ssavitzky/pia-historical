@@ -168,6 +168,16 @@ public class Handler implements java.io.Serializable {
     return true;
   }
 
+  /** Legacy action: report as omitted. 
+   *	This usually marks an actor which is meaningless or unimplementable
+   *	in the new DPS.
+   */
+  protected boolean omittedLegacyAction(crc.dps.Context aContext, String tag,
+					crc.dps.active.ActiveAttrList atts) {
+    notify(aContext, tag, atts, "omitted legacy actor -- not implemented");
+    return true;
+  }
+
   /** Legacy action: report a warning.  Usually this is for an incompletely-
    *	superceded actor, and indicates that more work has to be done 
    *	somewhere, possibly in the InterForm code.
