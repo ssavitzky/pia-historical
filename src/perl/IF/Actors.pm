@@ -71,6 +71,18 @@ sub define_actor {
 
 #############################################################################
 ###
+### shared handles:
+###
+
+sub null_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## Just pass the tag and its contents.  Take no action
+
+}
+
+#############################################################################
+###
 ### Passive actors:
 ###
 
@@ -191,6 +203,7 @@ sub get_handle {
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
 	local $request = IF::Run::request();
+	$name = '$' . $name unless $name =~ /^\$/;
 	my $status = $agent->run_code("$name", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
@@ -230,6 +243,7 @@ sub set_handle {
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
 	local $request = IF::Run::request();
+	$name = '$' . $name unless $name =~ /^\$/;
 	my $status = $agent->run_code("$name='$value';", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
@@ -256,9 +270,9 @@ sub set_handle {
 
 define_actor('if', 'active' => 1, 'parsed' => 1, _handle => \&if_handle,
 	     'dscr' => "if TEST non-null, expand THEN, else ELSE.");
-define_actor('then', 'active' => 1, 'quoted' => 1,
+define_actor('then', 'active' => 1, 'quoted' => 1, _handle => \&null_handle,
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
-define_actor('else', 'active' => 1, 'quoted' => 1,
+define_actor('else', 'active' => 1, 'quoted' => 1, _handle => \&null_handle,
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
 
 sub if_handle {
@@ -267,16 +281,16 @@ sub if_handle {
     ## The right way to do this would be to parse the condition, then activate 
     ##	  appropriate actors for <then> and <else>.
 
-    my $it = &analyze($it->content, ['cond', 'then', 'else'], 1);
-    my $test = remove_spaces($it->{'cond'});
+    my $parts = &analyze($it->content, ['cond', 'then', 'else'], 1);
+    my $test = remove_spaces($parts->{'cond'});
     $test = scalar @$test if ref($test);
 
     if ($test) {
 	print "<if >$test<then>...\n" if $main::debugging > 1;
-	$ii->push_into($it->{'then'});
+	$ii->push_into($parts->{'then'});
     } else {
 	print "<if >$test<else>...\n" if $main::debugging > 1;
-	$ii->push_into($it->{'else'});
+	$ii->push_into($parts->{'else'});
     }
     $ii->delete_it;
 }
@@ -356,7 +370,7 @@ sub repeat_end_input {
 ###	text
 ###
 ###  Other Options:
-###	iftrue="..."	string to return if result is true
+###	iftrue="..."	string to return if result is true->content
 ###	iffalse="..."	string to return if result is false
 ###
 define_actor('test', 'active' => 1, 'content' => 'value', 'parsed'=>1,
