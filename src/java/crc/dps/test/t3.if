@@ -75,8 +75,14 @@ should be '': '<test text> <em> </em> </test>' text( <em> </em> )
 should be '1': '<test text> not blanks </test>' text( not blanks )
 should be '1': '<test text> <em>nb</em> </test>' text( <em>nb</em> )
 
+should be '1': '<test numeric> 0 </test>' numeric( 0 )
+should be '': '<test numeric>  </test>' numeric(  )
+should be '': '<test numeric> xxx </test>' numeric( xxx )
+should be '1': '<test numeric> 100 </test>' numeric( 100 )
+should be '1': '<test numeric> -100 </test>' numeric( -100 )
+should be '1': '<test zero>  </test>' zero(  )
 should be '1': '<test zero> 0 </test>' zero( 0 )
-should be '1': '<test zero> xxx </test>' zero( xxx )
+should be '': '<test zero> xxx </test>' zero( xxx )
 should be '': '<test zero> 100 </test>' zero( 100 )
 should be '': '<test zero> -100 </test>' zero( -100 )
 should be '': '<test positive> 0 </test>' positive( 0 )
@@ -88,11 +94,11 @@ should be '1': '<test negative> -100 </test>' negative( -100 )
 
 should be '': '<test match="foo"> test match something  </test>' match
 should be '1': '<test match="foo"> test match foo something  </test>' match
-should be '': '<test exact match="foo"> test match foo something  </test>'
-should be '1': '<test exact match="foo">foo</test>'
-should be '1': '<test match=foo>this FOO stuff</test>'
-should be '': '<test case match=foo>this FOO stuff</test>'
-should be '1': '<test case match=FOO>this FOO stuff</test>'
+should be '': '<test exact match="foo"> test match foo something  </test>' exact
+should be '1': '<test exact match="foo">foo</test>' exact
+should be '1': '<test match=foo>this FOO stuff</test>' case-insens
+should be '': '<test case match=foo>this FOO stuff</test>' case-sens
+should be '1': '<test case match=FOO>this FOO stuff</test>' case-sens
 
 should be '1': '<test null></test>' null(completely empty)
 should be '': '<test null> </test>' null(space)
@@ -115,14 +121,14 @@ h2>Test problems with empty quotes inside quotes</h2>
 
 <h2>Test arithmetic</h2>
 
-should be 6: <sum>1 2 3</sum>
-should be 6: <sum><ul><li>1 <li> 2<li>3</ul></sum>
+should be 6: <sum>1 2 3</sum> sum
+should be 6: <sum><ul><li>1 <li> 2<li>3</ul></sum> sum of list items
 
-should be 6: <product>1 2 3</product>
-should be 6: <product><ul><li>1 <li> 2<li>3</ul></product>
+should be 6: <product>1 2 3</product> product
+should be 6: <product><ul><li>1 <li> 2<li>3</ul></product> product of list items
 
-should be 6: <difference> 8 2</difference>
-should be 6: <quotient>12 2</quotient>
+should be 6: <difference> 8 2</difference> difference
+should be 6: <quotient>12 2</quotient> quotient
 
 <h2>Test set, get entities</h2>
 
