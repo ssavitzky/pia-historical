@@ -4,8 +4,10 @@
 
 package crc.dps.output;
 
-import crc.dps.*;
 import crc.dom.*;
+import crc.dps.*;
+import crc.dps.aux.Log;
+
 import java.io.PrintStream;
 
 /**
@@ -30,6 +32,8 @@ public class OutputTrace implements Output {
   public Output getTarget() { return target; }
   public void setTarget(Output theTarget) { target = theTarget; }
 
+  public void setLog(PrintStream s) { log = s; }
+
   public void debug(String message) {
     log.print(message);
   }
@@ -41,40 +45,8 @@ public class OutputTrace implements Output {
     log.print(s);
   }
 
-  public String logNode(Node aNode) {
-    switch (aNode.getNodeType()) {
-    case crc.dom.NodeType.ELEMENT:
-      Element e = (Element)aNode;
-      AttributeList atts = e.getAttributes();
-      return "<" + e.getTagName()
-	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
-	+ ">";
-
-    case crc.dom.NodeType.TEXT: 
-      Text t = (Text)aNode;
-      return t.getIsIgnorableWhitespace()
-	? "space"
-	: ("text: '" + logString(t.getData()) + "'");
-
-    default: 
-      return aNode.toString();      
-    }
-  }
-
-  public String logString(String s) {
-    if (s == null) return "null";
-    String o = "";
-    int i = 0;
-    for ( ; i < s.length() && i < 15; ++i) {
-      char c = s.charAt(i);
-      switch (c) {
-      case '\n': o += "\\n"; break;
-      default: o += c;
-      }
-    }
-    if (i < s.length()) o += "..."; 
-    return o;
-  }
+  public String logNode(Node aNode) { return Log.node(aNode); }
+  public String logString(String s) { return Log.string(s); }
 
   /************************************************************************
   ** Operations:

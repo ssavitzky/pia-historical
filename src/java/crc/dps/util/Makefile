@@ -16,6 +16,7 @@ CLASSES = \
 UTILITIES = \
 	Copy.java \
 	Expand.java \
+	Log.java \
 	Test.java
 
 include $(TOPDIR)/makefiles/file.make

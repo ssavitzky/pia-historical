@@ -20,6 +20,7 @@ FILES = \
 	BasicEntityTable.java \
 	BasicProcessor.java \
 	Context.java \
+	DocumentProcessor.java \
 	EntityTable.java \
 	Filter.java \
 	Handler.java \
@@ -30,7 +31,8 @@ FILES = \
 	Processor.java \
 	ProcessorInput.java \
 	Syntax.java \
-	Tagset.java 
+	Tagset.java \
+	TopContext.java
 
 # === Potential renames:
 #	ParseStack -> BasicContext

@@ -7,6 +7,8 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Element;
 
+import java.io.PrintStream;
+
 /**
  * The interface for a document parsing or processing context stack. <p>
  *
@@ -68,14 +70,8 @@ public interface Context {
   /** Obtain the current input. */
   public Input getInput();
 
-  /** Set the current input. */
-  public void setInput(Input in);
-
   /** Obtain the current output. */
   public Output getOutput();
-
-  /** Set the current output. */
-  public void setOutput(Output out);
 
   /************************************************************************
   ** Bindings:
@@ -96,8 +92,18 @@ public interface Context {
   ** Context Stack:
   ************************************************************************/
 
-  /** Return the depth of the process stack. */
+  /** Return the depth of the context stack. */
   public int getDepth();
+
+  /** Return the previous context on the context stack. */
+  public Context getPreviousContext();
+
+  /** Return the current top context. */
+  public TopContext getTopContext();
+
+  /************************************************************************
+  ** Sub-processing:
+  ************************************************************************/
 
   /** Construct a new Context linked to this one.  <p>
    *
@@ -106,22 +112,43 @@ public interface Context {
    */
   public Context newContext();
 
-  /** Construct a new Context linked to this one.  <p>
+  /** Create a sub-processor with a given input and output. */
+  public Processor subProcess(Input in, Output out);
+
+  /** Create a sub-processor with a given input, output, and entities.
    *
-   *	Recursive operations like <code>expand</code> use this to create a new
-   *	evaluation stack frame when descending into an Element.
+   *	Commonly used to obtain an expanded version of the attributes
+   *	and content of the parent's current node.
    */
-  public Context newContext(Input in, Output out);
+  public Processor subProcess(Input in, Output out, EntityTable entities);
 
   /************************************************************************
-  ** Reporting:
+  ** Message Reporting:
   ************************************************************************/
+
+  /** Return a PrintStream suitable for error reporting. */
+  public PrintStream getLog();
 
   /** Obtain the current verbosity level */
   public int getVerbosity();
   public void setVerbosity(int value);
 
+  /** Report a message on the log, preceeded by indentation, provided
+   *	the current <code>verbosity</code> exceeds the given level. <p>
+   *
+   *	The message is terminated by a newline if <code>endline</code> is
+   *	<code>true</code>. 
+   */
+  public void message(int level, String text, int indent, boolean endline);
+
+  /** Report an error message on the log file, provided the verbosity level
+   *	is DEBUG (2) or higher.
+   *
+   *	Note that the message is <em>not</em> terminated by a newline. 
+   */
   public void debug(String message);
+
+  /** Report an error message on the log file, preceeded by indentation. */
   public void debug(String message, int indent);
 
 }

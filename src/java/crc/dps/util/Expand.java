@@ -46,7 +46,7 @@ public class Expand {
   /** Get the processed content of the current node as a string. */
   public static String getProcessedContentString(Input in, Context c) {
     ToString out = new ToString();
-    new BasicProcessor(in, c, out).processChildren();
+    c.subProcess(in, out).processChildren();
     return out.getString();
   }
 
@@ -68,7 +68,7 @@ public class Expand {
   public static ParseNodeList processNodes(NodeList nl, Context c) {
     Input in = new FromParseNodes(nl);
     ToNodeList out = new ToNodeList();
-    new BasicProcessor(in, c, out).processChildren();
+    c.subProcess(in, out).run();
     return out.getList();
   }
 
@@ -76,14 +76,14 @@ public class Expand {
   public static ParseNodeList processChildren(ActiveNode aNode, Context c) {
     Input in = new FromParseTree(aNode);
     ToNodeList out = new ToNodeList();
-    new BasicProcessor(in, c, out).processChildren();
+    c.subProcess(in, out).processChildren();
     return out.getList();
   }
 
   /** Process the children of a Node and return the result. */
   public static void processChildren(ActiveNode aNode, Context c, Output out) {
     Input in = new crc.dps.input.FromParseTree(aNode);
-    new BasicProcessor(in, c, out).processChildren();
+    c.subProcess(in, out).processChildren();
   }
 
 

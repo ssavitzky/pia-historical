@@ -39,12 +39,24 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
 <h3>Interfaces</h3>
 
 <dl>
+  <dt> <a href="Context.java">Context</a>
+  <dd> An environment in which processing is done.  Contains an Input, an
+       Output, and an EntityTable.
   <dt> <a href="Processor.java">Processor</a>
-  <dd> A document processor.  Both a consumer and producer of Token objects.
+  <dd> A document processor.  Both a consumer and producer of Nodes
+  <dt> <a href="TopContext.java">TopContext</a>
+  <dd> A top-level context.  (An implementation of TopContext is normally a
+       Processor as well.) 
        <p>
+  <dt> <a href="Action.java">Action</a>
+  <dd> Semantic handlers for active nodes. 
+  <dt> <a href="Active.java">Active</a>
+  <dd> Interface for ``active'' objects (i.e. objects with an <a
+       href="Action.java">Action</a>).
+  <dt> <a href="Syntax.java">Syntax</a>
+  <dd> Interface for node syntax handlers. 
   <dt> <a href="Handler.java">Handler</a>
-  <dd> The object that tells the Processor what to do with a Token, and also
-       tells a Parser how to parse it.
+  <dd> Combination of Syntax and Action handlers.
        <p>
   <dt> <a href="EntityTable.java">EntityTable</a>
   <dd> A lookup table for Entity values.  Supports context chaining.
@@ -55,16 +67,11 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dd> An interface that allows anything with a ``current node'' to be handled
        efficiently.  The parent for Input and Output.
   <dt> <a href="Input.java">Input</a>
-  <dd> A Token source or stream.
+  <dd> A source of nodes, essentially a tree traverser.
   <dt> <a href="Parser.java">Parser</a>
-  <dd> An Input that parses Token's from a character stream.
+  <dd> An Input that parses nodes from a character stream.
   <dt> <a href="Output.java">Output</a>
-  <dd> 
-       <p>
-  <dt> <a href="InputStack.java">InputStack</a>
-  <dd> A stack of Input objects.
-  <dt> <a href="InputStackFrame.java">InputStackFrame</a>
-  <dd> An Input that can be linked onto a linked-list InputStack.
+  <dd> A tree constructor.
 </dl>
 
 <h3>Classes</h3>
@@ -73,23 +80,13 @@ with full but perhaps limited functionality.
 <p>
 
 <dl>
-  <dt> <a href="AbstractInput.java">AbstractInput</a>
-  <dd> 
-  <dt> <a href="AbstractInputFrame.java">AbstractInputFrame</a>
-  <dd> 
-  <dt> <a href="BasicInputFrame.java">BasicInputFrame</a>
-  <dd> Wraps an arbitrary Input as an InputStackFrame.  Most other Input
-       implementations are <em>not</em> derived from BasicInputFrame.
+  <dt> <a href="DocumentProcessor.java">DocumentProcessor</a>
+  <dd> The basic implementation of TopContext.
   <dt> <a href="BasicProcessor.java">BasicProcessor</a>
-  <dd> 
-  <dt> <a href="BasicToken.java">BasicToken</a>
-  <dd> 
-  <dt> <a href="ParseStack.java">ParseStack</a>
-  <dd> A Processor's parse stack frame implemented using a linked list.
-  <dt> <a href="StackFrame.java">StackFrame</a>
-  <dd> 
-  <dt> <a href="Util.java">Util</a>
-  <dd> 
+  <dd> The basic implementation of Processor.
+  <dt> <a href="Filter.java">Filter</a>
+  <dd> A main-program wrapper that allows a DocumentProcessor to be used as a
+       filter for (<em>gasp!</em>) processing documents. 
 </dl>
 
 <hr>

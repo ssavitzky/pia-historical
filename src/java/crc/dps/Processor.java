@@ -57,17 +57,9 @@ public interface Processor extends Context {
   ** Input and Output
   ************************************************************************/
 
-  /** Get the Processor's Input object.
-   */
-  public Input getInput();
-
   /** Registers an Input object for the Processor.  
    */
   public void setInput(Input anInput);
-
-  /** Get the Processor's Output object.
-   */
-  public Output getOutput();
 
   /** Registers an Output object for the Processor.  
    */
@@ -89,17 +81,10 @@ public interface Processor extends Context {
   /** Turn off the Processor's ''running'' flag. */
   public void stop();
 
-  /************************************************************************
-  ** SubProcessing:
-  ************************************************************************/
+  /** Process the current Node */
+  public void processNode();
 
-  /** Create a sub-processor with a given input and output. */
-  public Processor subProcess(Input in, Output out);
+  /** Process the children of the current Node */
+  public void processChildren();
 
-  /** Create a sub-processor with a given output. 
-   *
-   *	Commonly used to obtain an expanded version of the attributes
-   *	and content of the parent's current node.
-   */
-  public Processor subProcess(Output out);
 }

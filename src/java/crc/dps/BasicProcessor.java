@@ -64,6 +64,16 @@ public class BasicProcessor extends ContextStack implements Processor {
     }
   }
 
+  /** Process the children of the current Node */
+  public void processChildren() {
+    for (Node node = input.toFirstChild() ;
+	 node != null;
+	 node = input.toNextSibling()) {
+      processNode();
+    }
+    input.toParent();
+  }
+
   /** Perform any additional action requested by the action routine. */
   protected final void additionalAction(int flag) {
     debug("   -> " + Action.actionNames[flag+1] + " (" + flag + ")\n");
@@ -138,16 +148,6 @@ public class BasicProcessor extends ContextStack implements Processor {
     }
   }
 
-  /** Process the children of the current Node */
-  public void processChildren() {
-    for (Node node = input.toFirstChild() ;
-	 node != null;
-	 node = input.toNextSibling()) {
-      processNode();
-    }
-    input.toParent();
-  }
-
   /** Copy the children of the current Node */
   public void copyChildren() {
     for (Node node = input.toFirstChild() ;
@@ -217,7 +217,7 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   public BasicProcessor(Input in, Context prev, Output out,
 			EntityTable ents) {
-    super(prev, in, out, ents);
+    super(in, prev, out, ents);
   }
 
   public BasicProcessor(Input in, Context prev, Output out) {
@@ -232,17 +232,4 @@ public class BasicProcessor extends ContextStack implements Processor {
     stack = p;
   }
 
-  /** Create a sub-processor with a given input and output. */
-  public Processor subProcess(Input in, Output out) {
-    return new BasicProcessor(in, this, out, entities);
-  }
-
-  /** Create a sub-processor with a given output. 
-   *
-   *	Commonly used to obtain an expanded version of the attributes
-   *	and content of the parent's current node.
-   */
-  public Processor subProcess(Output out) {
-    return new BasicProcessor(input, this, out, entities);
-  }
 }

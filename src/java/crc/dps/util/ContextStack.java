@@ -4,6 +4,8 @@
 
 package crc.dps.aux;
 
+import java.io.PrintStream;
+
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Element;
@@ -24,19 +26,22 @@ import crc.dps.active.*;
  * 
  * @see crc.dps.Cursor
  */
-
 public class ContextStack  implements Context {
 
   /************************************************************************
-  ** Context interface:
+  ** Sub-processing:
   ************************************************************************/
 
   public Context newContext() {
-    return new ContextStack(this, input, output, entities);
+    return new ContextStack(input, this, output, entities);
   }
 
-  public Context newContext(Input in, Output out) {
-    return new ContextStack(this, in, out, entities);
+  public Processor subProcess(Input in, Output out) {
+    return new BasicProcessor(in, this, out, entities);
+  }
+
+  public Processor subProcess(Input in, Output out, EntityTable entities) {
+    return new BasicProcessor(in, this, out, entities);
   }
 
   /************************************************************************
@@ -49,6 +54,8 @@ public class ContextStack  implements Context {
   protected Input input;
   protected Output output;
   protected int verbosity = 0;
+  protected TopContext top = null;
+  protected PrintStream log = System.err;
 
 
  /************************************************************************
@@ -65,6 +72,9 @@ public class ContextStack  implements Context {
   public void  setOutput(Output out) { output = out; }
 
   public int getDepth() { return depth; }
+  public Context getPreviousContext() { return stack; }
+  public TopContext getTopContext() { return top; }
+
 
   /************************************************************************
   ** Bindings:
@@ -93,61 +103,33 @@ public class ContextStack  implements Context {
   **	This is a subset of crc.util.Report.
   ************************************************************************/
 
-  public int getVerbosity() { return verbosity; }
-  public void setVerbosity(int value) { verbosity = value; }
+  public int 	getVerbosity() 		{ return verbosity; }
+  public void 	setVerbosity(int value) { verbosity = value; }
+  public PrintStream getLog() 		{ return log; }
+  public void 	setLog(PrintStream stream) { log = stream; }
 
-  public void debug(String message) {
-    if (verbosity >= 2) System.err.print(message);
+  public void message(int level, String text, int indent, boolean endline) {
+    if (verbosity < level) return;
+    String s = "";
+    for (int i = 0; i < indent; ++i) s += " ";
+    s += text;
+    if (endline) log.println(s); else log.print(s);
   }
 
-  public void debug(String message, int indent) {
+  public final void debug(String message) {
+    if (verbosity >= 2) log.print(message);
+  }
+
+  public final void debug(String message, int indent) {
     if (verbosity < 2) return;
     String s = "";
     for (int i = 0; i < indent; ++i) s += " ";
     s += message;
-    System.err.print(s);
+    log.print(s);
   }
 
-  public String logNode(Node aNode) {
-    switch (aNode.getNodeType()) {
-    case crc.dom.NodeType.ELEMENT:
-      Element e = (Element)aNode;
-      AttributeList atts = e.getAttributes();
-      return "<" + e.getTagName()
-	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
-	+ ">";
-
-    case crc.dom.NodeType.TEXT: 
-      Text t = (Text)aNode;
-      return t.getIsIgnorableWhitespace()
-	? "space"
-	: ("text: '" + logString(t.getData()) + "'");
-
-    default: 
-      return aNode.toString();      
-    }
-  }
-
-  public String logString(String s) {
-    if (s == null) return "null";
-    String o = "";
-    int i = 0;
-    for ( ; i < s.length() && i < 15; ++i) {
-      char c = s.charAt(i);
-      switch (c) {
-      case '\n': o += "\\n"; break;
-      default: o += c;
-      }
-    }
-    if (i < s.length()) o += "..."; 
-    return o;
-  }
-
-
-  public void setDebug() 	{ verbosity = 2; }
-  public void setVerbose() 	{ verbosity = 1; }
-  public void setNormal() 	{ verbosity = 0; }
-  public void setQuiet() 	{ verbosity = -1; }
+  public String logNode(Node aNode) { return Log.node(aNode); }
+  public String logString(String s) { return Log.string(s); }
 
 
   /************************************************************************
@@ -155,22 +137,26 @@ public class ContextStack  implements Context {
   ************************************************************************/
 
   protected void copy(ContextStack old) {
-    input = old.input;
-    output = old.output;
-    entities = old.entities;
-    stack = old.stack;
-    verbosity = old.verbosity;
+    input 	= old.input;
+    output 	= old.output;
+    entities 	= old.entities;
+    stack 	= old.stack;
+    verbosity 	= old.verbosity;
+    top 	= old.top;
+    log 	= old.log;
   }
 
   public ContextStack() {}
 
-  public ContextStack(Context prev, Input in, Output out, EntityTable ents) {
-    stack    = prev;
-    input    = in;
-    output   = out;
-    entities = ents;
-    verbosity = prev.getVerbosity();
-    depth    = prev.getDepth() + 1;
+  public ContextStack(Input in, Context prev, Output out, EntityTable ents) {
+    stack    	= prev;
+    input    	= in;
+    output   	= out;
+    entities 	= ents;
+    top	     	= prev.getTopContext();
+    verbosity 	= prev.getVerbosity();
+    log	      	= prev.getLog();
+    depth    	= prev.getDepth() + 1;
   }
 
 

@@ -34,10 +34,9 @@ public class Filter {
   static String propfile = null;
   static String tsname = "Basic";
   static boolean tree = false;
-  static boolean debug = false;
   static boolean entities = true;
-  static boolean verbose = false;
   static boolean parsing = false;
+  static int verbosity = 0;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -48,6 +47,9 @@ public class Filter {
       usage();
       System.exit(-1);		// return an error
     }
+
+    boolean verbose = verbosity > 0;
+    boolean debug   = verbosity > 1;
 
     /* Open the input and output files. */
 
@@ -66,7 +68,7 @@ public class Filter {
     }
     OutputStreamWriter out = new OutputStreamWriter(outs);
 
-    if (verbose) {
+    if (verbosity > 2) {
       java.util.Properties env = System.getProperties();
       java.util.Enumeration names = env.propertyNames();
       while (names.hasMoreElements()) {
@@ -74,10 +76,11 @@ public class Filter {
 	System.err.println(name+" = " + env.getProperty(name));
       }
     }
+
     if (verbose) {
       System.err.println("infile = " + infile );
       System.err.println("outfile= " + outfile);
-      System.err.println("propfile= " + propfile);
+      // System.err.println("propfile= " + propfile); === unused.
     }
 
     /* Initialize and run the interpretor */
@@ -110,8 +113,9 @@ public class Filter {
     p.setReader(new InputStreamReader(in));
 
     /* Finally, create a Processor and set it up. */
-    BasicProcessor ii = new BasicProcessor();
+    TopContext ii = new DocumentProcessor();
     ii.setInput(p);
+    ii.setTagset(ts);
 
     ToParseTree outputTree = null;
     Output output = null;
@@ -125,9 +129,9 @@ public class Filter {
 
     if (debug) output = new OutputTrace(output);
     ii.setOutput(output);
+    ii.setVerbosity(verbosity);
 
     //if (entities) new Environment(infile).use(ii);
-    if (debug) ii.setDebug();
 
     /* Run the Processor. */
     ii.run();
@@ -152,6 +156,8 @@ public class Filter {
     o.println("        -o file	specify output file");
     o.println("	       -p	build parse tree");
     o.println("        -t ts	specify tagset name");
+    o.println("	       -s	silent");
+    o.println("	       -q	quiet");
     o.println("	       -v	verbose");
     o.println("        -d	debug");
   }
@@ -169,7 +175,7 @@ public class Filter {
       } else if (args[i].equals("-tree")) {
 	tree = true;
       } else if (args[i].equals("-d")) {
-	debug = true;
+	verbosity += 2;
       } else if (args[i].equals("-e")) {
 	entities = false;
       } else if (args[i].equals("-o")) {
@@ -177,11 +183,15 @@ public class Filter {
 	outfile = args[++i];
       } else if (args[i].equals("-p")) {
 	parsing = true;
+      } else if (args[i].equals("-q")) {
+	verbosity = -1;
+      } else if (args[i].equals("-s")) {
+	verbosity = -2;
       } else if (args[i].equals("-t")) {
 	if (i == args.length - 1) return false;
 	tsname = args[++i];
       } else if (args[i].equals("-v")) {
-	verbose = true;
+	verbosity += 1;
       } else if (args[i].charAt(0) != '-') {
 	if (infile != null) return false;
 	infile = args[i];

@@ -8,7 +8,9 @@ import crc.dom.NodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.BasicAttribute;
-import crc.dom.BasicElement;
+
+import crc.dps.active.ParseTreeElement;
+
 import java.util.Enumeration;
 
 /**
@@ -16,6 +18,8 @@ import java.util.Enumeration;
  *
  *	This implementation is represented as an Element; the bindings
  *	are kept in its attribute list.  <p>
+ *
+ * ===	The implementation is crude, and will probably want to be revisited. ===
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -27,7 +31,7 @@ import java.util.Enumeration;
  * @see crc.dom.Attribute
  */
 
-public class BasicEntityTable extends BasicElement implements EntityTable {
+public class BasicEntityTable extends ParseTreeElement implements EntityTable {
 
   /************************************************************************
   ** Context:

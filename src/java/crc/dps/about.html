@@ -30,9 +30,7 @@ There are several problems with this:
 <ol>
   <li> In some cases the InterForm is represented as a stream (file), and we
        want to expand it ``on the fly''.
-  <li> In other cases, we want the result to be another parse tree.  The
-       biggest problem here is that <code>Node</code> doesn't have an
-       <code>eval</code> method.
+  <li> In other cases, we want the result to be another parse tree. 
   <li> In yet other cases, we want the result to be something else altogether,
        for example nothing (evaluation for side effects), a bitmap (rendering
        on the screen or for print), or a totally transformed document.
@@ -46,7 +44,15 @@ There are several problems with this:
 Instead, we prefer to view an InterForm as a ParseTree Document composed of
 Nodes (some of) which implement the ActiveNode interface.  <em>Active</em>
 nodes simply expand into more nodes (specifically,
-<code><em>node</em>.expand(<em>context</em>)</code> yields a NodeList).
+<code><em>node</em>.expand(<em>context</em>)</code> yields a NodeList). <p>
+
+The efficient way to accomplish this kind of processing is to use a parse tree
+<em>traverser</em> as an <code>Input</code>, and a <em>constructor</em> of
+some sort for an <code>Output</code>.  This avoids actually constructing nodes
+or nodelists until they are really needed.  (Attribute lists, in particular,
+will usually have to be constructed, but the attributes themselves can be
+shared so the overhead is small.  Nodes in child lists <em>cannot</em> be
+shared, but we use traversal to avoid constructing them in most cases. <p>
 
 
 <h3>Local Transformations</h3>
@@ -69,23 +75,28 @@ in a single depth-first, left-to-right traversal.
 <ul>
   <li> The current major implementation holes are:
        <ol>
-	 <li> Handlers
+	 <li> Handlers (legacy and new)
 	 <li> getIndexValue, setIndexValue, ...
-	 <li> Entity-table initialization
-	 <li> Global context (i.e. PIA environment).  Context should have a
-	      getTop() operation; maybe a GlobalContext subclass.
+	 <li> Entity-table initialization in global context.
        </ol>
 
   <li> Nothing is careful about cannonical attribute and tag names yet.
 
-  <li> deepCopy should use a method in the abstract parent to copy the children.
+  <li> Named nodes should have defined, assigned and default values. Only
+       defined value should be the children; it would be used for the
+       <em>definition</em> of a name.  Want to be able to share assigned
+       values; the NodeList of an assigned value would be a copy (just like we
+       presently do for attribute lists, and for the same reason). 
 
   <li> Fairly soon we will want to expand ParseTree* to a full DOM
-       implementation. 
+       implementation, and make it completely independent from the
+       implementations in <code>crc.dom</code>. 
 
-  <li> It will probably be necessary to add Tagset to Context, so we can have
-       &lt;read&gt; (for example) use the same tagset.  It might be desirable
-       to have the Tagset refer to the external (PIA) context.
+  <li> <code>deepCopy</code> should use a method in the abstract parent to
+       copy the children.  The reason it doesn't now is that the existing
+       method meant for that purpose is in <code>crc.dom.AbstractNode</code>,
+       and doesn't constructive active nodes.  It uses <code>clone</code>, and
+       it's broken.
 
   <li> Currently Parser does not check syntax of current node to see whether
        to look for entities or elements in the content.  
@@ -108,20 +119,29 @@ in a single depth-first, left-to-right traversal.
   <li> Rename ParseTree* -&gt; Tree*  (A*??) and move to a separate subdir (?)
 
   <li> Eventually there should be a ParseTreeGenericNode, basically Token, so
-       that we can build trees with arbitrary node types.  
+       that we can build trees with arbitrary node types.
 
-  <li> We probably need a Continuation interface as well as a Context.
-       It is probably possible for an ActiveNode to function as a
-       Continuation as well as, perhaps, a Handler.  Action may do.
+  <li> BasicEntityTable, BasicTagset should be moved to <code>aux/</code>. 
 
-  <li> It's not impossible that a Processor might be functional as both an
-       Input and an Output, so it might be able to do process-in-place.
-
-  <li> Alternatively, some way of attaching processing information to either
-       the Input or Output might work.
 </ul>
 
-<h3>Description</h3>
+<h3>Structure Sharing and Copying</h3>
+
+Because of the way the DOM works, with nodes linked to their parent and
+siblings, it is essentially impossible to share structure.  If a node is part
+of an existing document tree and needs to be added to a new one, it has to be
+recursively copied.  This is inefficient, so the DPS only copies nodes when it
+is actually building structure.<p>
+
+The main exception to this at present is attribute lists -- these are
+represented as instances of <code>ParseTreeAttrs</code>, which is essentially
+an array.  Hence attributes can be shared.  Attribute <em>lists</em>, however,
+have to be copied in order to prevent changes made to the attributes of one
+element from being reflected in those of its copies.  Fortunately, attribute
+lists are fairly light-weight.  <p>
+
+
+<h3>Processing Algorithm</h3>
 
 The fundamental implementation is to <em>traverse</em> an active document
 (ParseTree) using a <code>ParseTreeIterator</code> or <code>Input</code> (An
@@ -253,7 +273,7 @@ Some advantages over the old approach:
        right thing on the way up the tree. 
   <li> We no longer need a ``passing'' flag, either:  we're always just
        passing nodes to an Output. 
-  <li> All of the different places where one does expansions or iterates over
+  <li> All of the different places where one does expansions Or iterates over
        children (Util, Token, etc.) go away.  There may still be places where
        we want this, but it's basically a matter of creating a suitable
        Context and turning it loose.
