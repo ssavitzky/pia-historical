@@ -1,0 +1,28 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; editor</title>
+</head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<tagset-load name=Kiosk-agent-actors>
+
+<!-- put up the header at the top of the page -->
+<page-header title="&agentName; home">
+</page-header>
+<table width="100%">
+<tr><td valign=center rowspan=4>
+    This page allows you to edit the information displayed on the &AGENT.mb;.
+    At any time you can use the control buttons on the right to view/modify the
+    information as it appears on the &AGENT.mb;.
+<th> <control-button action=main verbose=true>View Kiosk</control-button>
+</tr>
+<tr><th><control-button action=edit_page desc verbose=true>Edit page</control-button></th></tr>   
+<tr><th><control-button action=edit_departments verbose=true >Edit Dept</control-button></th></tr>   
+<tr><th><control-button action=change_style verbose=true >Change Style</control-button></th></tr>   
+<tr><td>Please begin by <a href="edit_departments.if">editing your department information</a> </td> </tr>
+</table>
+
+
+<page-footer />
+</body>
+</html>

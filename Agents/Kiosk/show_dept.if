@@ -1,0 +1,32 @@
+<set name="dept"><get name="departments" agent key=&FORM.dept;></set>
+<tagset-load name=Kiosk-agent-actors>
+<if><get name=dept>
+<then><!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title><info attr=name><get name=dept></info></title>
+</head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<table width="100%">
+<tr>
+<td width=20% bgcolor="#aaffcc" rowspan=2> 
+<show-department dept=&FORM.dept; full=1>
+</td>
+<td>
+Directions to <info attr=name><get name=dept></info>: 
+<get name=directions key=&FORM.dept; agent></info>
+ </td>
+</tr>
+<tr>
+<td >
+<dept-map dept=&FORM.dept;>
+</td>
+ </tr>
+
+</table>
+
+</body>
+</html>
+</then> 
+
+<else><read interform file=main.if process> </else></if>

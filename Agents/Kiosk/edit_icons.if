@@ -1,0 +1,69 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; editor</title>
+</head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<tagset-load name=Kiosk-agent-actors>
+
+<!-- put up the header at the top of the page -->
+<page-header title="&agentName; icon editor">
+</page-header>
+
+<set name="icons"><dummy><read file=icons directory
+match="\.gif"></dummy></set>
+<set name=icons><dummy><repeat list=&icons;>&li;</repeat></dummy></set>
+<!-- get name=icons tree -->
+<create-icon-table icons=&icons; cols=5>
+
+<set name="dkeys"><dummy><get name="departments" keys
+agent></dummy></set>
+
+<form action="&url;" method="post" process copy>
+
+<process copy>
+<set name="icons" agent><dl> </dl></set>
+<set name="directions" agent><dl> </dl></set>
+<repeat start=1 stop=&FORM.maxc; entity=k>
+<set name="c">&k;</set>
+<if><get name="position&c;" form>
+ <then>
+  <set name="key"><get name=position&c; form></set>
+  <set name="icons" agent key=&key;><get name=icon&c; form></set>
+  <set name="directions" agent key=&key;><get name=directions&c; form></set>
+</then></if>
+</repeat>
+<save-data data=icons>
+<save-data data=directions>
+ </process>
+
+<table border="1">
+<tr><th>icon </th><th>department</th> <th> directions </th>
+ </tr>
+<set name="c">1</set>
+<repeat list="&dkeys;" entity=k>
+<tr>
+<td>
+<select name=icon&c;><option><get name="icons" agent key=&k;></option> 
+<repeat list="&icons;" entity=i><option>&i;</option></repeat>
+</select></td>
+<td><input name="position&c;" value="&k;" type=hidden>
+<show-department dept=&k;> <br>
+<a href="edit_map.if?dept=&k;">Show on map</a></td>
+<td>
+<textarea name="directions&c;" rows=3 cols=30><get name="directions" agent key=&k;></textarea>
+</td>
+
+ </tr>
+<set name="c"><sum digits=0> 1 &c; </sum></set>
+</repeat>
+
+</table>
+<input type="hidden" name="maxc" value="&maxc;">
+<input type="submit" value="Save Changes">
+</form>
+Next Step is To Be Determined  .... <a href=main.if>View Kiosk pages</a>.
+
+<page-footer />
+</body>
+</html>

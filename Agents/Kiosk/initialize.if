@@ -1,0 +1,24 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> initialization</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<hr>
+
+<read process quiet interform file=tagset.inc>
+
+<br>
+
+ Initializing departments
+<load-data data=departments>
+
+ Initializing icons (mapping between icon names and locations)
+<load-data data=icons>
+<load-data data=directions>
+
+<set agent name=mb>MediaBoard</set>
+
+
+<hr>
+<a href="home.if">begin here</a>
+<!-- $Id$ -->
+</body></html>
