@@ -62,15 +62,17 @@ while [ -n "$(echo $1 | grep '-')" ]; do
 	shift 
 done
 
-
-COMMAND=pia_wrapper
+PIAHOME=$(pwd)/..
+COMMAND='pia_wrapper crc.pia.Pia'
 
 if [ -n "$PORT" ] ; then
 COMMAND="$COMMAND -port $PORTVAL"
 fi
 
 if [ -n "$ROOT" ] ; then
-COMMAND="$COMMAND -root $ROOTVAL"
+    COMMAND="$COMMAND -root $ROOTVAL"
+else
+    COMMAND="$COMMAND -root $PIAHOME"
 fi
 
 if [ -n "$USRDIR" ] ; then
@@ -90,7 +92,7 @@ COMMAND="$COMMAND -v"
 fi
 
 echo $COMMAND
-
+exec $COMMAND
 
 
 
