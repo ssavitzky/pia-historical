@@ -57,10 +57,20 @@ public class Transaction extends Thing{
   protected Machine toMachine;
 
   /**
+   * Attribute index - first line -- can be request or response line
+   */
+  protected String firstLine;
+
+  /**
    * Attribute index - content obj of this transaction.
    *
    */
   protected Content contentObj;
+
+  /**
+   * Attribute index - header obj of this transaction.
+   */
+  protected Headers headerObj;
 
   /**
    * Attribute index - queue of handlers.
@@ -89,106 +99,111 @@ public class Transaction extends Thing{
   /**
    *  @returns the content length for this request, or -1 if not known. 
    */
-  public int contentLength(){} 
+  public int contentLength(){
+    int res = -1;
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().contentLength();
+    return res;
+  } 
 
   /**
    *  @returns the content type for this request, or null if not known. 
    *
    */
-  public String contentType(){}
-
-  /**
-   *  @returns the value of the nth header field, or null if there are fewer than n fields. 
-   *
-   */
-  public String header(int pos){}
+  public String contentType(){
+    String res = null;
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res =  c.headers().contentType();
+    return res;
+  }
 
   /**
    * @returns the value of a header field, or null if not known. 
    *
    */
-  public String header(String name){}
-
-  /**
-   * @returns the name of the nth header field, or null if there are fewer than n fields.  
-   *
-   */
-  public String headerName(int pos){}
+  public String header(String name){
+    String res = null;
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().header( name );
+    return res;
+  }
 
   /**
    * @returns all header information as string. Machine.java uses this.
-   * 
-   public String headerAsString(){}
-
-  /**
-   * @returns the value of an integer header field. 
-   * @parameters:
-   * name - the header field name 
-   * default - the value to return if the field is unset or invalid.
+   *
    */
-  public int intHeader(String name, int def) {}
+   public String headerAsString(){
+     String res = null;
+     Content c = contentObj();
+     if( c && c.headers() != null )
+       res = c.headers().toString();
+     return res;
+   }
 
   /**
    * @returns the request method. 
    */
-  public String method() {}
+  public String method() {
+    if(isResponse())
+      return null;
+
+    String m = null;
+    Object result =  is("Method");
+    if( result )
+      m = (String) result;
+
+    return m;   
+  }
 
   /**
    *   @returns the protocol of the request. 
    *
    */
-  public String protocol() {}
-  
-  /**
-   *     @returns the query string, or null if none. 
-   *
-   */
-  public String queryString(){} 
-  
-  /**
-   *   @returns the IP address of the remote agent, or null if not known. 
-   *
-   */
-  public String remoteAddr() {}
+  public String protocol() {
+    return "HTTP";
+  }
   
   /**
    *   @returns the host name of the remote agent, or null if not known. 
    *
    */
-  public String remoteHost() {}
-  
-  /**
-   * @returns the user name for this request, or null if not known. 
-   *
-   */
-  public String remoteUser() {}
+  public String remoteHost() {
+    String res = null;
 
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().getValue( "Host" );
+    return res;
+  }
+  
   /**
    *   @returns the full request URI. 
    *
    */    
   public URL requestURL(){
-      URL url = contentObj.requestURL();
-      return url;
+    if(isResponse())
+      return null;
+
+    URL myUrl = null;
+    Object result = is("Url");
+    if( result )
+      myUrl = (URL) result;
+
+    return myUrl;   
   }
 
-  /**
-   *      @returns the host on which this request was received. 
-   *
-   */
-  public String serverName() {}
-
-  /**
-   *    @returns the port on which this request was received. 
-   *
-   */
-  public int serverPort() {}
-  
   /**
    * Set header info.
    *
    */
-  public void setRequestProperty(String key, String value){}
+  public void setHeader(String key, String value){
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().setValue(key, value);
+   }
 
 
   /**
@@ -200,106 +215,114 @@ public class Transaction extends Thing{
    *   @returns the status code for this response. 
    *
    */
-  public int statusCode() {}
-  
-  /**
-   *   Writes an error response using the specified status code. 
-   * @Parameters: 
-   *       sc - the status code 
-   *  Throws: IOException 
-   *       If an I/O error has occurred.
-   */
-  public void sendError(int sc) throws IOException {}
-  
-  /**
-   *   Writes an error response using the specified status code and detail message. 
-   *   @Parameters: 
-   *       sc - the status code 
-   *       msg - the detail message 
-   *  Throws: IOException 
-   *       If an I/O error has occurred. 
-   */
-  public void sendError(int sc, String msg) throws IOException{} 
- 
-  /**
-   *     Sends a redirect response to the client using the specified redirect location. 
-   * @Parameters:
-   *  location - the redirect location URL 
-   *  Throws: IOException 
-   *       If an I/O error has occurred. 
-   */
-  public void sendRedirect(String location) throws IOException{}
+  public int statusCode(){
+    int s = -1;
+    if(isRequest())
+      return s;
 
+    Object result =  is("Statuscode");
+    if( result )
+      s = (int) result;
+
+    return s;
+  }
+  
   /**
    *   Sets the content length for this response. 
    *
    */
-  public void setContentLength(int len) {}
+  public void setContentLength(int len){
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().setContentLength( len );
+  }
   
   /**
    *   Sets the content type for this response. 
    *
    */
-  public void setContentType(String type) {}
-  
-  /**
-   *    Sets the value of a date header field. 
-   *Parameters: 
-   *       name - the header field name 
-   *       value - the header field value 
-   */
-  public void setDateHeader(String name, long value){} 
+  public void setContentType(String type){
+    Content c = contentObj();
+    if( c && c.headers() != null )
+      res = c.headers().setContentType( type ); 
+  }
 
+  // code from jigsaw
   /**
-   * Sets the value of a header field.
-   * Parameters: 
-   *       name - the header field name 
-   *       value - the header field value 
+   * Get the standard HTTP reason phrase for the given status code.
+   * @param status The given status code.
+   * @return A String giving the standard reason phrase, or
+   * <strong>null</strong> if the status doesn't match any knowned error.
    */
-  public void setHeader(String name, String value) {}
 
-  /**
-   * Sets the value of an integer header field. 
-   *Parameters: 
-   * name - the header field name 
-   *       value - the header field value 
-   *
-   */
-  public void setIntHeader(String name, int value) {}
+    public String standardReason(int status) {
+	int category = status / 100;
+	int catcode  = status % 100;
+	switch(category) {
+	  case 1:
+	      if ((catcode >= 0) && (catcode < msg_100.length))
+		  return HTTP.msg_100[catcode];
+	      break;
+	  case 2:
+	      if ((catcode >= 0) && (catcode < msg_200.length))
+		  return HTTP.msg_200[catcode];
+	      break;
+	  case 3:
+	      if ((catcode >= 0) && (catcode < msg_300.length))
+		  return HTTP.msg_300[catcode];
+	      break;
+	  case 4:
+	      if ((catcode >= 0) && (catcode < msg_400.length))
+		  return HTTP.msg_400[catcode];
+	      break;
+	  case 5:
+	      if ((catcode >= 0) && (catcode < msg_500.length))
+		  return HTTP.msg_500[catcode];
+	      break;
+	}
+	return null;
+    }
 
-  /**
-   * Sets the status code for this response with a default status message. 
-   * Parameters: 
-   *       sc - the status code 
-   */
-  public void setStatus(int sc) {}
 
-  /**
-   * Sets the status code and message for this response. 
-   *
-   */
-  public void setStatus(int sc, String msg){}
-     
-  /**
-   * @returns a default status message for the specified status code. 
-   *
-   */
-  protected String statusMsg(int sc) {}
+    /**
+     * Set this reply status code.
+     * This will also set the reply reason, to the default HTTP/1.1 reason
+     * phrase.
+     * @param status The status code for this reply.
+     */
 
-  /**
-   * @returns status message. Use in Machine.java
-   *
-   */
-  public String statusMsg() {}
-     
-  /**
-   * Unsets the value of a header field. 
-   *Parameters: 
-   *name - the header field name 
-   *
-   */
-  public void unsetHeader(String name){} 
-     
+    public void setStatus(int status) {
+	if ((statusCode() != this.status) || (reason() == null))
+	    assert("Reason", standardReason(status) );
+	assert("Statuscode", status );
+    }
+
+    /**
+     * Get the reason phrase for this reply.
+     * @return A String encoded reason phrase.
+     */
+
+    public String reason() {
+      if( isRequest() )
+	return null;
+
+      String s = null;
+      Object result =  is("Reason");
+      if( result )
+	s = (String) result;
+
+      return result;
+    }
+
+    /**
+     * Set the reason phrase of this reply.
+     * @param reason The reason phrase for this reply.
+     */
+
+    public void setReason(String reason) {
+	assert("Reason", reson);
+    }
+
 
   /**
    * @return requested transaction
@@ -315,12 +338,14 @@ public class Transaction extends Thing{
    * true if this transaction is a response
    */
   public boolean isResponse(){
+    return isResponse;
   }
 
   /**
    * true if this transaction is a request
    */
   public boolean isRequest(){
+    return isRequest;
   }
 
 
@@ -458,16 +483,37 @@ public class Transaction extends Thing{
     //content source set in fromMachine method
     contentObj = ct;
   }
+  /**
+   * parse the request line to get method, url, http's major and minor version numbers
+   */
+  protected void parseRequestLine(){
+    if( !isRequest() ) return;
+    StringTokenizer tokens = new StringTokenizer(firstLine, " ");
+    String zmethod = tokens.nextToken();
+    
+  }
 
   /**
    * temporary treatment of content objects
    * while transitioning to full objectIvity...
    * Append previous transaction's content to this trasaction content
    */
-  protected void initializeContent( ContentFactory cf ){
+  protected void initialize(HeaderFactory hf, ContentFactory cf ){
     //content source set in fromMachine method
+    InputStream in;
 
-    contentObj = cf.createContent( fromMachine().inputStream() );
+    try{
+      in = fromMachine().inputStream();
+
+      DataInputStream input = new DataInputStream( in );
+      firstLine = input.readLine();
+
+      headerObj  = hf.createHeader( in );
+      parseRequestLine();
+      parseResponseLine();
+      contentObj = cf.createContent( in );
+    }catch(IOException e){
+    }
   }
 
 
@@ -668,9 +714,10 @@ public class Transaction extends Thing{
    */
   public Transaction( Machine from ){
     handlers = new Queue();
+    HeaderFactory hf  = new HeaderFactory();
     ContentFactory cf = new ContentFactory();
     
-    initializeContent( cf );
+    initialize( hf, cf );
     isRequest = true ;
     fromMachine( from );
     toMachine( null );
