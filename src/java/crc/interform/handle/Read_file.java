@@ -22,14 +22,14 @@ import java.util.Date;
  * <dt>Syntax:<dd>
  *	&lt;read.file file="name" [interform [agent="agentName"]]
  *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
- *	      [base="path"] [process [tagset="name"]] &gt;
+ *	      [base="path"] [process [tagset="name"] skip] &gt;
  * <dt>Dscr:<dd>
  *	Input from FILE, with optional BASE path.  FILE may be looked
  *	up as an INTERFORM in current or other AGENT.  Optionally read
  *	only INFO or HEAD.  For DIRECTORY, read names or LINKS, and
  *	return TAG or ul.  DIRECTORY can read ALL names or those that
  *	MATCH; default is all but backups.  Optionally PROCESS with
- *	optional TAGSET.  
+ *	optional TAGSET and optionally SKIP results.  
  *  </dl>
  */
 public class Read_file extends crc.interform.Handler {
@@ -46,7 +46,7 @@ public class Read_file extends crc.interform.Handler {
     "only INFO or HEAD.  For DIRECTORY, read names or LINKS, and\n" +
     "return TAG or ul.  DIRECTORY can read ALL names or those that\n" +
     "MATCH; default is all but backups.  Optionally PROCESS with\n" +
-    "optional TAGSET.  \n" +
+    "optional TAGSET and optionally SKIP results.  \n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -142,6 +142,7 @@ public class Read_file extends crc.interform.Handler {
       String tsname = it.attrString("tagset");
       if (tsname != null) 
 	ii.useTagset(tsname);
+      if (it.hasAttr("skip")) ii.setSkipping();
       try {
 	java.io.FileInputStream in = new java.io.FileInputStream(name);
 	ii.pushInput(new crc.interform.Parser(in, null));
