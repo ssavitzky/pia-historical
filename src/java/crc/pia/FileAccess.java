@@ -28,6 +28,11 @@ import w3c.www.http.HTTP;
 
 import crc.ds.List;
 public class FileAccess {
+
+  /** If this flag is true, fix &lt;BASE&gt; tags in HTML files.  Expensive. */
+
+  public static boolean FIX_BASE = false;
+
   private static String filesep = System.getProperty("file.separator");
   /************************************************************************
   ** File handling:
@@ -97,20 +102,24 @@ public class FileAccess {
 	f = new File(f, zfile);
 
 	filepath = f.getPath();
-	if ( f.isDirectory() )
-	  filepath += f.separatorChar;
 
 	try{
 	  re = new RegExp("^HEADER.*$");
 	  mi = re.match( zfile );
 	}catch(Exception e){;}
-	if( mi != null && !zfile.endsWith("~") )
+	if( mi != null && !zfile.endsWith("~") ) {
 	  head = suckBody(filepath);
+	  if (!all) continue;
+	}
 
-	if (all || !ignoreFile(zfile, filepath))
-	  url.addElement( "<LI> <a href=\"" + mybase+zfile + "\">"
-			  + zfile + "</a>" );
-	  
+	if (all || !ignoreFile(zfile, filepath)) {
+	  String entry =  "<LI> <a href=\"" + mybase+zfile + "\">"
+			  + zfile + "</a>" ;
+	  if ( f.isDirectory() )
+	    entry += " <a href=\"" + mybase+zfile + "/\">" + " / " + "</a>";
+
+	  url.addElement( entry );
+	}
       }
 
       if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
@@ -122,9 +131,11 @@ public class FileAccess {
       }
 
       String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + mypath + "</TITLE>"
+	+ "<BASE href=\"" + mybase + "\">"
 	+ "</HEAD>\n<BODY>" + head
-	+ "<h3>local path: " + path + "</h3>"
-	+ "<h3>DOFS path: " + mypath + "</h3>"
+	+ "<h3><a href=\"/" + agent.type() + "/" + agent.name() + "\">/" 
+	  + agent.type() + "/" + agent.name() + ":</a> " + mypath + "</h3>"
+	+ "<h4><a href=\"file:" + path + "\">file:" + path + "</a></h4>"
 	+ "<UL>" + allurls + "</UL>" + "</BODY>\n</HTML>\n";
      
       InputStream in = new StringBufferInputStream( html );
@@ -163,9 +174,7 @@ public class FileAccess {
       
       File zfile = new File( filename );
       if ( ! zfile.exists()) {
-	String msg = "File <code>"+filename+"</code> not found by agent "
-+ agent.name();
-request.errorResponse(HTTP.NOT_FOUND, msg);
+	agent.respondNotFound(request, filename);
       } else if( zfile.isDirectory() ) {
 	retrieveDirectory( filename, request, agent );
       } else {
@@ -185,7 +194,7 @@ request.errorResponse(HTTP.NOT_FOUND, msg);
 	  data = new String ( fromFile,0,0, fromFile.length);
 	  
 	  String contentType = contentType( filename );
-	  if( contentType.indexOf("html") == -1 ){
+	  if( ! FIX_BASE || contentType.indexOf("html") == -1 ){
 	    
 	    InputStream newdata  = new ByteArrayInputStream( fromFile );
 	    Content finalContent = new ByteStreamContent( newdata );
