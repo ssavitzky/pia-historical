@@ -179,7 +179,7 @@ public class GenericHandler extends BasicHandler {
   }
 
   /** This routine does the work; it should be overridden in specialized
-   *	subclasses, and subclasses in which the current node is not an Element.
+   *	subclasses.
    *
    *	Note that the element we construct (in order to bind &amp;ELEMENT;) is
    *	empty, and the expanded content is kept in a separate NodeList, unless
@@ -189,8 +189,16 @@ public class GenericHandler extends BasicHandler {
    *	If the handler has no children, we simply copy the newly-constructed
    *	Element to the Output.  This should be equivalent to the default
    *	action obtained by returning Action.EXPAND_NODE as an action code.
+   *
+   * @param the Input, with the current node being the one to be processed.
+   * @param aContext the context in which to look up entity bindings
+   * @param out the Output to which to send results
+   * @param tag the element's tagname
+   * @param atts the (processed) attribute list.
+   * @param content the (possibly-processed) content.
+   * @param cstring the (possibly-processed) content as a string. 
    */
-  public void action(Input in, Context aContext, Output out, String tag, 
+  protected void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     //aContext.debug("in action for " + in.getNode());
     ActiveElement e = in.getActive().asElement();
@@ -211,6 +219,7 @@ public class GenericHandler extends BasicHandler {
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
       ents.setEntityValue("content", content, true);
       ents.setEntityValue("element", new ParseNodeList(element), true);
+      ents.setEntityValue("attributes", atts, true);
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
       Processor p = aContext.subProcess(def, out, ents);
