@@ -71,8 +71,19 @@ public class Loader {
    *	better be a subclass of Tagset, and create an instance of it
    *	(which had better have the right name). */
   public static Tagset loadTagset(String name) {
-    Tagset ts = loadTagsetFile(name);
-    return ts != null? ts : loadTagsetSubclass(name);
+    Tagset ts = null;
+
+    if (name.indexOf("/") >= 0) {
+      // Definitely a file. 
+
+    } else if (name.indexOf(".") >= 0) {
+      // Definitely a resource or class
+
+    }
+    ts = loadTagsetSubclass(name);
+    if (ts != null) return ts;
+    ts = loadTagsetFile(name);
+    return ts;
   }
 
 
