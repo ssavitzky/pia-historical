@@ -148,6 +148,12 @@ public class Logger {
 						, msg) ;
 	    }
 	    File flogdir = new File(root_dir, logdir) ;
+
+	    if ( flogdir != null )
+	      if( flogdir.exists() == false ){
+		Pia.debug("creating logs");
+		flogdir.mkdir();
+	      }
 	    return (new File(flogdir, def)).getAbsolutePath() ;
     }
 
