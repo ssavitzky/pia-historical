@@ -65,13 +65,13 @@ public class Calendar extends crc.interform.Handler {
       return;
     }
     
-    System.out.println("month: "+ Integer.toString(userMonth));
+    //System.out.println("month: "+ Integer.toString(userMonth));
 
     if ( getYear(it, ii) < 0 ){
       ii.replaceIt( new Text("Illegal year.") );
       return;
     }
-    System.out.println("year: "+ Integer.toString(userYear));
+    //System.out.println("year: "+ Integer.toString(userYear));
 
     Element tb = makeCalendarTable("2", Integer.toString(userMonth+1)+ "/" +Integer.toString(userYear));
     
@@ -254,7 +254,7 @@ public class Calendar extends crc.interform.Handler {
 
     firstDay = CalcFirstOfMonth();
 
-    System.out.println("February is-->"+ java.util.Calendar.FEBRUARY);
+    //System.out.println("February is-->"+ java.util.Calendar.FEBRUARY);
     // Non leap year February with 1st on Sunday: 4 rows. 
     if ((userMonth == java.util.Calendar.FEBRUARY) && (firstDay == 0) && !calendar.isLeapYear(userYear))
       return (4);
@@ -287,24 +287,24 @@ public class Calendar extends crc.interform.Handler {
     /* Get day of week for Jan 1 of given year. */
     DateFormat df = DateFormat.getDateInstance(DateFormat.LONG);
     Date dd = null;
-    System.out.println("before try");
+    //System.out.println("before try");
     // the long format is January 1, 1997
     String s = months[userMonth] + " 1, " + Integer.toString( userYear );
 
     try{
-      System.out.println(s);
+      //System.out.println(s);
       dd = df.parse( s );
     }catch(Exception e){
-      System.out.println("crash");
+      //System.out.println("crash");
       e.printStackTrace();
     }
     
     calendar.setTime( dd );
-    System.out.println("after set time");
+    //System.out.println("after set time");
 
     //firstDay = calendar.get((java.util.Calendar.DAY_OF_WEEK) - java.util.Calendar.SUNDAY + 7) % 7;
     firstDay = calendar.get(java.util.Calendar.DAY_OF_WEEK);
-    System.out.println("The first of the month is-->"+Integer.toString( firstDay ));
+    //System.out.println("The first of the month is-->"+Integer.toString( firstDay ));
     return firstDay - 1; 
     } // CalcFirstOfMonth
   
