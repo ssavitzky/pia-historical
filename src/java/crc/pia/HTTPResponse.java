@@ -108,12 +108,14 @@ public class  HTTPResponse extends Transaction {
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
     protocol = tokens.nextToken();
     if( protocol==null )
-      throw new IOException("Bad reply: '" + firstLine + "'");
+      throw new PiaRuntimeException(this, "parseInitializationString",
+				    "No Protocol: '" + firstLine + "'");
 
     Pia.debug(this, "The first response line" + firstLine);
 
     if (! protocol.toLowerCase().startsWith("http/")) 
-      throw new IOException("Bad reply: '" + firstLine + "'");
+      throw new PiaRuntimeException(this, "parseInitializationString",
+				    "Bad Protocol: '" + firstLine + "'");
     String majorMinor = protocol.substring("HTTP/".length());
     StringTokenizer mytokens = new StringTokenizer( majorMinor, "." );
     String zmajor = mytokens.nextToken();

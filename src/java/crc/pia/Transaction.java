@@ -645,17 +645,24 @@ public abstract class Transaction
     //content source set in fromMachine method
     InputStream in;
     String line;
-    String firstLine;
+    String firstLine = "";
 
     try{
       in = fromMachine().inputStream();
 
+      // The following is WRONG, because once we've started buffering,
+      // reads using the unbuffered stream will fail.
       java.io.DataInputStream input = new java.io.DataInputStream(in);
+      firstLine = input.readLine(); // the non-deprecated alternative fails.
 
       // The following is non-deprecated and supposedly correct, but it hangs.
       //BufferedReader input = new BufferedReader(new InputStreamReader(in));
 
-      firstLine = input.readLine(); // the non-deprecated alternative fails.
+      // ... and this times out.  Go figure.
+      //for (int c = in.read(); c >= 0 && c != '\n'; c = in.read()) 
+      // firstLine += (char)c;
+
+
       if( firstLine == null ){
 	String msg = "First line is null...\n";
 	throw new PiaRuntimeException (this
