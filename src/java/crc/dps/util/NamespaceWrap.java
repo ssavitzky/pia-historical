@@ -22,10 +22,11 @@ import crc.ds.Tabular;
 /**
  * Make a Tabular implementation look like a Namespace.
  *
- *	This could be simplified considerably if we just permitted strings
+ * ===	This could be simplified considerably if we just permitted strings,
  *	Tabular, and nodelists as values, and faked everything else.
  *
  * ===	The implementation is crude, and will probably want to be revisited. ===
+ * ===	We may want to insist that NamespaceWrap implement Entity.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -55,9 +56,10 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
   public ActiveNode wrap(Object o) {
     if (o == null) return null;
     if (o instanceof ActiveNode) return (ActiveNode)o;
+    if (o instanceof Tabular) return new NamespaceWrap(name, (Tabular)o);
     if (o instanceof NodeList) return new ParseTreeEntity(name, (NodeList)o);
 
-    // Have to make a wrapper.
+    // Have to make a wrapper. === should be EntityWrap
     ActiveNode n = new ParseTreeText(o.toString());
     return new ParseTreeEntity(name, new ParseNodeList(n));
   }
@@ -145,10 +147,9 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
   ************************************************************************/
 
   /** Returns the bindings defined in this table.
-   *	This is more-or-less meaningless for NamespaceWrap because
-   *	the underlying objects are not nodes. 
    */
   public NodeEnumerator getBindings() {
+    // === should implement this with a NodeEnumerator that wraps each value.
     return null;
   }
 
