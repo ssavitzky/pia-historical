@@ -11,7 +11,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.Token;
 import crc.dps.Handler;
-import crc.dps.Processor;
+import crc.dps.Context;
 
 /**
  * Basic implementation for a Node Handler. <p>
@@ -41,47 +41,28 @@ public class BasicHandler extends AbstractHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** Performs actions associated with an Element's start tag Token.  
-   *	Normally returns the original Token, but it may replace it with
-   *	a new one or return <code>null</code>.  Called only for a Token
-   *	that represents the start tag of an Element with content.
-   *	Called only if the Processor is expanding.
-   *
-   * @param t the Token for which actions are being performed.
-   * @param p the Processor operating on this Token.
-   * @return the original Token, a replacement, or  <code>null</code>.
+  /** The default action is simply to return the Token. */
+  public Node startAction(Token t, Context p) {
+    return t;
+  }
+
+  /** The default action is simply to return the Token. */
+  public Node endAction(Token t, Context p) {
+    return t;
+  }
+
+  /** The default action is simply to return the Token. */
+  public Node nodeAction(Token t, Context p) {
+    return t;
+  }
+
+  /** Returns the result of ``expanding'' the given Token. 
+   * @return a (possibly empty) NodeList of results.
    */
-  public Token startAction(Token t, Processor p) {
-    return t;
+  public NodeList expand(Token t, Context c) {
+    return t.expand(c);
   }
 
-  /** Performs actions associated with an Element's end tag Token.
-   *	Normally returns the original Token, but it may replace it
-   *	with a new one or return <code>null</code>.  Called only for a
-   *	Token that represents the end tag of an Element with content.
-   *	Called only if the Processor is expanding.
-   *
-   * @param t the Token for which actions are being performed.
-   * @param p the Processor operating on this Token.
-   * @return the original Token, a replacement, or <code>null</code>.  */
-  public Token endAction(Token t, Processor p) {
-    return t;
-  }
-
-  /** Performs actions associated with an complete Node's Token.
-   *	Normally returns the original Token, but it may replace it
-   *	with a new one or return <code>null</code>.  Called for empty
-   *	Elements, Text, Comments, PI's, and so on.  It is not called
-   *	by the Processor for parse trees associated with elements
-   *	having content, although <code>endAction</code> may call it in
-   *	that case.  Called only if the Processor is expanding.
-   *
-   * @param t the Token for which actions are being performed.
-   * @param p the Processor operating on this Token.
-   * @return the original Token, a replacement, or <code>null</code>.  */
-  public Token nodeAction(Token t, Processor p) {
-    return t;
-  }
 
   /** Returns a new, clean Node corresponding to the given Token.
    *	The new Node is suitable for incorporating into a new
