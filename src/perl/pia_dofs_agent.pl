@@ -154,7 +154,7 @@ sub retrieve_directory {
     my $html = join("\n",
 		    "<HTML>\n<HEAD>",
 		    "<TITLE>DOFS Directory $base</TITLE>",
-		    "<BASE HREF=\"$base\">",
+		 #   "<BASE HREF=\"$base\">",
 		    "</HEAD>\n<BODY>",
 		    $head || "<H1>Directory listing of $base</H1>",
 		    "<h3>local path: $path</h3>",

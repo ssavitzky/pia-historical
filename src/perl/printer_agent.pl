@@ -12,11 +12,18 @@ require HTML::FormatPS;
 #second deals with webfax
 
 #where the temporary files live
-$printer_root_directory=  "/home/wolff/www/printer/";
-$ps_file="/home/wolff/www/printer/preview.ps";
-$image_file="/home/wolff/www/printer/preview.gif";
-$image_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
-$ps_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
+#$printer_root_directory=  "/home/wolff/www/printer/";
+#$ps_file="/home/wolff/www/printer/preview.ps";
+#$image_file="/home/wolff/www/printer/preview.gif";
+#$image_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
+#$ps_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
+
+$printer_root_directory=  "/tmp/printer/";
+$ps_file="/tmp/printer/preview.ps";
+$image_file="/tmp/printer/preview.gif";
+$image_URL="file:/tmp/printer/preview.gif";
+$ps_URL="file:/tmp/printer/preview.ps";
+
 
 sub html_latex_ps{
 
@@ -65,7 +72,8 @@ sub create_preview{
     my $request=shift;
     my $response=create_postscript($request);
     
-    my $cmd="cat /dev/null | /usr/local/bin/gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
+#    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
+    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r72 -dNOPAUSE -q $ps_file | ppmtogif > $image_file";
 #    print $cmd;
     my $status=system ($cmd);
     #shouldgetstatushere & check for multiple pages...put %d in output filename
@@ -126,7 +134,7 @@ sub proc_tiff{
     $defaulturl = "http://internal.crc.ricoh.com/people/wolff/defaultfax.html";
     $length = 1055;
     $width = 1728;			  
-    $status = system("/usr/local/SunOS/bin/tiffinfo $filename > $tmp");
+    $status = system("tiffinfo $filename > $tmp");
     open(TMP,"<$tmp");
     while(<TMP>) {
 	if(/Image Width: (\d*) Image Length: (\d*)/) {
@@ -155,7 +163,7 @@ sub proc_tiff{
 #system("/usr/local/bin/tifftopnm $filename | /usr/local/bin/pnmcut 0 0	 $width $length > $filename.pbm");
 ##stupid fax machines creates tiffs with size 1 row too big
     
-#$status = system(" /usr/local/bin/pnmcrop $filename.pbm | /usr/local/bin/pnmmargin -white 1 | ./pbmfill >$filename.tmp.pbm ");
+#$status = system(" pnmcrop $filename.pbm | pnmmargin -white 1 | ./pbmfill >$filename.tmp.pbm ");
     
     $status = system( "/bin/cat $filename.tmp.pbm | ./bdecode | ./procCode.pl > $filename.urls");
     
@@ -171,7 +179,7 @@ sub proc_tiff{
     close(TMP);
     if(!numtosend) {
 	$status = system( "cat $filename.tmp.pbm |./bdecode >> $tmpcode");
-	$status = system(" /usr/local/bin/pnmflip -r180 $filename.tmp.pbm |./bdecode >> $tmpcode");
+	$status = system(" pnmflip -r180 $filename.tmp.pbm |./bdecode >> $tmpcode");
 	$status = system(" cat $tmpcode | ./procCode.pl >> $filename.urls");
     }
     

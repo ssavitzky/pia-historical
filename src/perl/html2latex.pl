@@ -3,14 +3,18 @@
 
 $home = $ENV{"HOME"};
 
-unshift(@INC,"/home/wolff/bin");
+unshift(@INC,"/usr/local/bin");
+unshift(@INC,"/usr/bin");
 
-$GWtempdir = "/home/wolff/tmp/URLS";
+
+$GWtempdir = "/tmp/URLS";
 
 $timeout = undef;
-$UNJPEG = "/color/bin/unjpeg -R ";
-$JPEG2PNM = "rasttopnm ";
-$DEFAULTIMG = "/home/wolff/tmp/wflogo.ps";#In case an image cant be found
+#$UNJPEG = "/color/bin/unjpeg -R ";
+#$UJPEG = "djpeg ";
+$JPEG2PNM = "djpeg ";
+$GIFTOPNM = "giftopnm ";
+$DEFAULTIMG = "/tmp/printer/wflogo.ps";#In case an image cant be found
      $GWfile = "URLGOT";
      $GWF ="$GWtempdir/$GWfile";
 
@@ -53,12 +57,12 @@ my $url = new URI::URL ($1,$base_url);
 				# Set scale so size appears similar to screen
      if($isjpgfile) {
 
-      system("unset noclobber ;$UNJPEG < $imagefile |$JPEG2PNM >$imagefile.pnm");
+      system("unset noclobber ;$JPEG2PNM < $imagefile  >$imagefile.pnm");
   } else { #default for gifs
 
-      system("unset noclobber ;/usr/local/bin/giftopnm $imagefile >$imagefile.pnm");
+      system("unset noclobber ;$GIFTOPNM $imagefile >$imagefile.pnm");
   }
-$size = `/usr/local/bin/pnmfile $imagefile.pnm`;
+$size = `pnmfile $imagefile.pnm`;
 $size =~ /(\d*) by (\d*)/;
 $w = $1;
 if(($w/72) > 7) {
@@ -66,7 +70,7 @@ if(($w/72) > 7) {
 } else {
     $scale = 1;
 }
-      $statimg = system("unset noclobber ;/usr/local/bin/pnmtops -noturn -scale $scale $imagefile.pnm > $imagefileps");
+      $statimg = system("unset noclobber ;pnmtops -noturn -scale $scale $imagefile.pnm > $imagefileps");
      if($statimg) {
 	 system("cp $DEFAULTIMG $imagefileps");
      }
@@ -83,7 +87,7 @@ print MYFILE $page;
 close MYFILE;
 
 
-system("unset noclobber ; cd $GWtempdir ; /home/wolff/bin/html2latex -o '[psfig]{article} $latexheading' $idCode $GWfile ; echo q | /usr/local/SunOS/bin/latex $GWfile ; /usr/local/SunOS/bin/dvips -o $psfile $GWfile");
+system("unset noclobber ; cd $GWtempdir ; html2latex -o '[psfig]{article} $latexheading' $idCode $GWfile ; echo q | latex $GWfile ; dvips -o $psfile $GWfile");
 
 }
 1;
