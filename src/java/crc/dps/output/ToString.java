@@ -7,6 +7,8 @@ package crc.dps.output;
 import crc.dps.*;
 import crc.dps.aux.*;
 import crc.dom.*;
+import crc.dps.NodeType;
+import crc.dps.active.ActiveEntity;
 
 import java.util.NoSuchElementException;
 
@@ -26,6 +28,8 @@ public class ToString extends CursorStack implements Output {
   ************************************************************************/
 
   protected String destination = "";
+  protected boolean expandEntities = false;
+  protected EntityTable entityTable = null;
 
   public final String getString() { return destination; }
 
@@ -46,7 +50,15 @@ public class ToString extends CursorStack implements Output {
   ************************************************************************/
 
   public void putNode(Node aNode) { 
-    write(aNode.toString());
+    if (aNode.getNodeType() == NodeType.ENTITY && expandEntities) {
+      ActiveEntity e = (ActiveEntity)aNode;
+      // === Should really check value in the entity itself as well ===
+      NodeList value = entityTable.getEntityValue(e.getName(), false);
+      if (value != null) write(value.toString());
+      else write(aNode.toString());
+    } else {
+      write(aNode.toString());
+    }
   }
   public void startNode(Node aNode) { 
     pushInPlace();
@@ -93,4 +105,10 @@ public class ToString extends CursorStack implements Output {
 
   /** Construct an Output. */
   public ToString() {}
+
+  /** Construct an Output, specifying an entity table for expansion. */
+  public ToString(EntityTable ents) {
+    entityTable = ents;
+    expandEntities = true;
+  }
 }
