@@ -11,8 +11,10 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.DOM;
-import w3c.dom.DOMFactory;
+
+
+
+
 
 public class CRCDOM implements DOM {
 
@@ -23,6 +25,55 @@ public class CRCDOM implements DOM {
 
   public DOMFactory getFactory(){ return null; }
 
+  /** Return the CRCDOM's only instance.  */
+  public static CRCDOM instance() {
+    if( instance != null )
+      return instance;
+    else{
+      String[] args = new String[1];
+      args[0] = HTML;
+      makeInstance(args);
+      return instance;
+    }
+  }
+
+  /** Create the CRCDOM's single instance. */ 
+  private CRCDOM() {
+    instance = this;
+  }
+
+  /** Make a new instance */
+  private static void makeInstance(String[] args){
+    String docType = null;
+
+    /* Create a CRCDOM instance */
+
+    CRCDOM crcdom = new CRCDOM();
+    crcdom.commandLine = args;
+    docType = args[0];
+
+    if( docType.equalsIgnoreCase(HTML) ){
+      factory = new CRCDOMFactory();
+    }else{
+      System.out.println("Can not create factory because of unkown document type.");
+      System.exit(1);
+    }
+  }
+
+  /** The command-line options passed to Java on startup.
+   */
+  private String[] commandLine;
+
+  /* reference to instance */
+  private static CRCDOM    instance	= null;
+
+  /* reference to instance of dom factory */
+  private static AbstractDOMFactory factory = null;
+
+  /* kind of factory needed */
+  private static String HTML = "HTML";
+
+  
 }
 
 
