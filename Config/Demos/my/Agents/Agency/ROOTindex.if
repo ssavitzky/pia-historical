@@ -1,0 +1,110 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>PIA Demonstration Agency on &piaHOST;</title>
+<link rev="made" href="mailto:pia@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<table cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48 alt="R I C O H"></a>
+    <th width=170 nowrap>
+<tr height=2><td colspan=2 bgcolor="#000000" nowrap nobr
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=340></td></tr>
+<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
+	border=0 width=170 height=21 align=top></a>
+    <th align=right width=170>
+    <th align=left nowrap nobr valign=center><font face=helvetica>
+        <a href="/"><img width=85 height=45 border=0 alt=PIA
+	    	         src="/Agency/Icons/pia45.gif"></a></font></th></tr>
+<tr><th><th valign=top align=right width=170><font face=helvetica>
+	<th align=left valign=top><font face=helvetica>
+        PIA Group / Demonstration Agency
+	<br>
+	 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+        </font></th>
+<tr><th><br>
+</table>
+<dt><dt><dd> <img src="/PIA/Doc/Graphics/ball-glass-violet.gif">    <img src="/PIA/Doc/Graphics/ball-glass-cyan.gif"><br>
+<img src="/PIA/Doc/Graphics/ball-glass.gif"><br>
+	<dt>The PIA group at CRC is developing an
+	"Information Agency", a kind of web server that enables a
+	new way of building and using the web applications.  
+<p>
+ Each Agent running on a server provides in a service to one or several
+ users. Demonstration agents currently running on this server include:
+<read file=demos.inc process interform>
+<p>	     
+	     
+<img src="/PIA/Doc/Graphics/ball-glass-yellow.gif"><b>Documentation Overview</b>
+<table border=1 align=center cellspacing=2 cellpadding=5>
+  <tr>
+	<th align=LEFT><b>Release 0.9:</b></th>
+        <td><a href="/PIA/Doc/intended.html">Intended Audience</a><br>
+        <td><a href="/PIA/README">README</a><br>
+        <td><a href="/PIA/INSTALL">INSTALL</a><br>
+        <td><a href="/PIA/Doc/FAQs/">FAQs</a><br>
+	<td><a href="/PIA/Doc/bugfix.html">Bug fixes</a><br>
+	</tr>
+  <tr>
+	<th align=LEFT><b>Getting Started:</b></th>
+	<td><a href="/PIA/Doc/Tutorial/index.html">Tutorial</a></td>
+	<td><a href=""></a></td>
+	<td><a href=""></a></td>
+	<td><a href="/PIA/Doc/Papers/BuildingNOA/BuildingNOA">Building NOA's</a></td>
+	
+	</tr>
+  <tr>
+	<th align=LEFT><b>Manuals:</b></th>
+	<td><a href="/PIA/Doc/Manuals/User/index.html">User</a></td>
+	<td><a href="/PIA/Doc/Manuals/InterForm/index.html">Interforms</a> </td>
+	<td><a href="/PIA/Doc/Manuals/Author/index.html">Agent authoring</a> </td>
+	<td><a href="/PIA/Doc/Manuals/Api/index.html">API</a>  </td>
+	
+	</tr>
+
+  <tr>
+	<th align=LEFT><b> Presentations:</b></th>
+	<td><a href="/PIA/Doc/vision.html">Vision</a></td>
+	<td><a href="/PIA/Doc/intro.html">Introduction</a></td>
+	<td><a href="/PIA/Doc/pia_group.html">PIA group</a></td>
+	<td><a href=""></a> </td>
+	
+	</tr>
+
+  <tr>
+	<th align=LEFT><b> Demonstrations:</b></th>
+	<td><a href="/Agency/demos.html">Local Agents</a></td>
+	<td><a href="/PIA/Doc/demos.html">Appliances at CRC</a></td>	     
+  </tr>
+</table>
+
+<hr>
+<table>
+  <tr><td align=left width=340>
+    <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
+<repeat list="&agentNames;"
+	   ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+	   >	<agent-home link name="&li;">
+</repeat></pre>
+
+    <td valign=center align=left>
+    <if><agent-running name=Logo>
+	<then><img src="/Logo/pia120.gif"
+		   height=120 width=235></then></if>
+</table>
+<hr>
+<b>URL:</b>
+&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+
+
+

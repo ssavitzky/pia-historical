@@ -1,0 +1,19 @@
+!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Demonstrations Index</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Demos Index</set>
+<read file="heading.inc" process interform>
+
+These agents are running locally on this machine.  Note that in this
+demonstration, not all features will be available.
+
+<read interform process file=demos.inc>
+
+<hr>
+<center> <a href=http://&piaHOST;:&piaPORT;/>PIA Demonstration home page </a></center>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+</body></html>

@@ -1,0 +1,87 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<title>Agency start up file</title>
+</head><body>
+<h1>Demonstration Agency start up file</h1>
+
+Any links found in this file will be requested by the agency at start-up.
+Most useful for doing things like initializing agents and the like.  Note
+that the agency currently makes no attempt to save state across sessions.
+
+<h2>Start up agents</h2>
+<dl> 
+  <dt> DOFS agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="DOFS">
+       </form>
+</dl>
+<h3>And Document-Oriented File Systems</h3>
+
+<dl>
+  <dt> dofs/My
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="My">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia">
+       </form>
+  <dt> dofs/PIA
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="PIA">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="&piaDIR;">
+       </form>
+</dl>
+
+<set name=demos agent><dl>
+  <dt>Photo_Album</dt>
+  <dd>Captures images from digital cameras or the Web to create electronic
+  photo ablum</dd>
+  <dt>Forms</dt>
+  <dd>Electronic filing, routing, and signing of forms</dd>
+  <dt>PIA</dt>
+  <dd>Standard file server for all the PIA project materials</dd>
+  <dt>Template</dt>
+  <dd>Quickly creates new agents for prototyping and development </dd>         </dl>
+</set>
+
+<h2> Demonstration Agents </h2>
+<dl>
+  <dt> <a name="Photo_Album">Photo Album</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photo_Album"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form>
+
+
+  <dt> <a name="Forms">Forms</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Forms"><br>
+       type:<input name="type" value="Workflow"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form>
+
+  <dt> <a name="InterForm">InterForm Demonstration and Test agent</a>
+       <if><agent-running name="InterForm"><then><em>installed</em></then><else>
+  <dd> <FORM ACTION="/Agency/install_agent.if" METHOD="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="InterForm">
+       </form></if>
+
+  <dt> <a name="Template">Template agent</a>
+       <if><agent-running name="Template"><then><em>installed</em></then><else>
+  <dd> <FORM ACTION="/Agency/install_agent.if" METHOD="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="Template">
+       </form></if>              
+       
+</dl>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+
+</body></html>
+

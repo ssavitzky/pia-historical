@@ -1,0 +1,22 @@
+<dl> <dt>demo</dt><dd><user>
+<userid>demo</userid>
+<username> Demonstration User</username>
+<usermanager>demomgr</usermanager>
+<userdept>RSV</userdept>
+<userext>xxx</userext>
+</user></dd>
+<dt>demo</dt><dd><user>
+<userid>demomgr</userid>
+<username> Demonstration Manager</username>
+<usermanager>demomgr</usermanager>
+<userdept>RSV</userdept>
+<userext>xxx</userext>
+</user></dd>
+<dt>joe</dt><dd><user>
+<userid>joe</userid>
+<username> Joe User</username>
+<usermanager>demomgr</usermanager>
+<userdept>RSV</userdept>
+<userext>xxx</userext>
+</user></dd>
+</dl>
