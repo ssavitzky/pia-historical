@@ -3,16 +3,20 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 
 
-/**
- * Implements w3c's dom Element interface.  This object
- * stores element tag name and attribute list
- */
-
 package crc.dom;
 
 import java.io.*;
 
+/**
+ * Implements w3c's dom Element interface.  This object
+ * stores element tag name and attribute list
+ */
 public class BasicElement extends AbstractNode implements Element {
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   public BasicElement(){
     setParent( null );
     setPrevious( null );
@@ -55,6 +59,10 @@ public class BasicElement extends AbstractNode implements Element {
     return n;
   }
 
+  /************************************************************************
+  ** Element interface:
+  ************************************************************************/
+
   /**
    * implementing Element methods
    */
@@ -83,30 +91,33 @@ public class BasicElement extends AbstractNode implements Element {
   }
 
   /**
-   * @return return all attributes.
+   * @return all attributes.
    */
   public AttributeList getAttributes(){ return attrList; }
   
 
   /**
-   * Adds a new attribute/value pair to an Element node object. If an attribute by
-   * that name is already present in the element, it's value is changed to be that
-   * of the Attribute instance.
+   * Adds a new attribute/value pair to an Element node object. 
+   *
+   * If an attribute by that name is already present in the element, it's
+   * value is changed to be that of the Attribute instance. 
+   *
    * @param newAttr attribute/value pair.
    */
   public void setAttribute(Attribute newAttr)
   {
     //Report.debug(this, "setAttribute");
     if( newAttr == null ) return;
+    if (attrList == null) attrList = new AttrList();
     //Report.debug(this, newAttr.getName());
     attrList.setAttribute( newAttr.getName(), newAttr );
   }
 
-  /**
-   *Produces an enumerator which iterates over all of the Element nodes that are
-   *descendants of the current node whose tagName matches the given name. The
-   *iteration order is a depth first enumeration of the elements as they occurred
-   *in the original document. 
+  /** 
+   * Produces an enumerator which iterates over all of the Element nodes that
+   * are descendants of the current node whose tagName matches the given
+   * name. The iteration order is a depth first enumeration of the elements as
+   * they occurred in the original document.
    */
   public NodeEnumerator getElementsByTagName(String name)
   {
@@ -121,11 +132,107 @@ public class BasicElement extends AbstractNode implements Element {
   }
 
 
+  /************************************************************************
+  ** Additional Semantic Operations:
+  ************************************************************************/
+
+  /** Convenience function: get an Attribute by name. */
+  public Attribute getAttribute(String name) {
+    if (attrList == null || name == null) return null;
+    return attrList.getAttribute(name);
+  }
+
+  /** Convenience function: get an Attribute by name and return its value. */
+  public NodeList getAttributeValue(String name) {
+    Attribute attr = getAttribute(name);
+    return (attr == null)? null : attr.getValue();
+  }
+
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a String.
+   */
+  public String getAttributeString(String name) {
+    NodeList v = getAttributeValue(name);
+    return (v == null) ? null : v.toString();
+  }
+
+  /** Convenience function: Set an attribute's value to a NodeList. */
+  public void setAttribute(String name, NodeList value) {
+    Attribute attr = getAttribute(name);
+    if (attr != null) attr.setValue(value);
+    else setAttribute(new BasicAttribute(name, value));
+  }
+
+  /** Convenience function: Set an attribute's value to a Node. */
+  public void setAttribute(String name, Node value) {
+    setAttribute(name, new ArrayNodeList(value));
+  }
+
+  /** Convenience function: Set an attribute's value to a String. */
+  public void setAttribute(String name, String value) {
+    setAttribute(name, new BasicText(value));
+  }
+
+  /************************************************************************
+  ** Additional Syntactic Operations:
+  ************************************************************************/
+
+  protected boolean isEmptyElement = false;
+  protected boolean hasEmptyDelim = false;
+  protected boolean implicitEnd = false;
+
+  /** Returns <code>true</code> if the Element has no content. 
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care
+   *	of the common case where the DTD is unknown or incomplete.  Also
+   *	it can greatly speed up many operations that would otherwise require
+   *	knowledge of the DTD.
+   */
+  public boolean isEmptyElement() { return isEmptyElement; }
+
+  /** Sets the internal flag corresponding to isEmptyElement. */
+  public void setIsEmptyElement(boolean value) { isEmptyElement = value; }
+
+  /** Returns <code>true</code> if the Element has an XML-style 
+   *	``<code>/</code>'' denoting an empty element.
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care of
+   *	the common case where the DTD is unknown or incomplete; for example,
+   *	where XML extensions are mixed in with HTML.  Also it can greatly
+   *	speed up many operations that would otherwise require knowledge of the
+   *	DTD.
+   */
+  public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
+
+  /** Sets the internal flag corresponding to hasEmptyDelim. */
+  public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
+
+  /** Returns true if the Token corresponds to an Element which has content
+   *	but no end tag, because the end tag can be deduced from context.
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care
+   *	of the common case where the DTD is unknown or incomplete, or where
+   *	an effort needs to be made to preserve exact input formatting in
+   *	the parse tree. <p>
+   *
+   * === Strictly speaking it has to be turned off if a Text node is inserted
+   *	 following this Element.
+   */
+  public boolean implicitEnd() 		   { return implicitEnd; }
+
+  /** Sets the internal flag corresponding to implicitEnd. */
+  public void setImplicitEnd(boolean flag) { implicitEnd = flag; }
+
+
+  /************************************************************************
+  ** Presentation Operations:
+  ************************************************************************/
+
   /**
    * return start tag + content string + end tag
    * 
    */ 
-  public String toString(){
+  public String toString() {
     return startString() + contentString() + endString();
   }
 
@@ -134,14 +241,15 @@ public class BasicElement extends AbstractNode implements Element {
    * Return a string of the form "<" <code>getTagName()</code> ">".
    *
    */
-  public String startString(){
-    return "<" + getTagName() + printAttributes() + ">";;
+  public String startString() {
+    return "<" + getTagName() + printAttributes()
+      +  (hasEmptyDelimiter() ? "/>" : ">");
   }
 
   /** Return the String equivalent of all children concatenated
    *  in string form.
    */
-  public String contentString(){
+  public String contentString() {
     StringBuffer sb = new StringBuffer();
     long len = 0;
 
@@ -166,7 +274,8 @@ public class BasicElement extends AbstractNode implements Element {
    *	
    */
   public String endString(){
-    return "</" + getTagName() + ">";
+    return (implicitEnd() || isEmptyElement()) ? ""
+      : "</" + (getTagName() == null ? "" : getTagName()) + ">";
   }
 
   protected String printAttributes(){
