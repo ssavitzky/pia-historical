@@ -153,12 +153,12 @@ public class TopProcessor extends BasicProcessor implements TopContext
   ** Construction:
   ************************************************************************/
 
-  TopProcessor() {
+  public TopProcessor() {
     initializeEntities();
     top = this;
   }
 
-  TopProcessor(boolean defaultEntities) {
+  public TopProcessor(boolean defaultEntities) {
     if (defaultEntities) initializeEntities();
     top = this;
   }
