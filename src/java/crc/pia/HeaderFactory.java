@@ -58,13 +58,20 @@ public class HeaderFactory
     
   }
 
+  private static void usage(){
+    System.out.println("Test the creation of a header.  Use headerstest.txt for input.");
+    System.out.println("java crc.pia.HeaderFactory headerstest.txt");
+  }
+
   /**
   * For testing.
   * 
   */ 
   public static void main(String[] args){
-    if( args.length == 0 )
-      Pia.instance().debug("Need file header filename.");
+    if( args.length == 0 ){
+      usage();
+      System.exit( 1 );
+    }
 
     String filename = args[0];
 
@@ -78,6 +85,8 @@ public class HeaderFactory
       Pia.instance().debug( h.toString() );
     }catch(Exception e ){
       Pia.instance().debug( e.toString() );
+    }finally{
+      System.exit( 0 );
     }
   }
 }
