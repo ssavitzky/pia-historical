@@ -153,7 +153,6 @@ public class BasicElement extends AbstractNode implements Element {
       for(int i = 0;  i < len; i++){ 
 	a = cl.item( i );
 	sb.append( a.toString() );
-	sb.append("\n");
       }
     }catch(Exception ee){
     }
