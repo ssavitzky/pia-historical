@@ -1,0 +1,2 @@
+gen_dofsgetdir
+java crc.test.pia.agent.T_dofs -2 input/dofsgetdir.txt
