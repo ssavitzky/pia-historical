@@ -211,8 +211,11 @@ which is only useful for agents which have no options.
        <input type="submit" value="Install">
        name: <input name="agent" value="WebPrinter">
        type: <input name="type" value="printer">
-       </form>
+       class: <input name="class" value="PIA::Agent::Printer">
+       </form></else></if>
   <dt>  spool
+       <if><agent-running name=spool><then><em>installed</em></then>
+       <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="spool">
        type:<input name="type" value="DOFS"><br>
