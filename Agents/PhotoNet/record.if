@@ -12,12 +12,9 @@
 
 <set name="View">&FORM.View;</set>
 
-<set name="Duration">3000</set>
+<set name="Output1"></set>
 
-<set name="Output1">
-</set>
-<set name="Output2">
-</set>
+<set name="Output2"></set>
 
 <set name="Count">0</set>
 
@@ -42,15 +39,11 @@
 
 <set name="PUrl"><get index="photodata.localthumbnailurl.Text"></set>
 
-<set name="Output1">
-&Output1;
-<PARAM NAME="ImageURL&Count;" VALUE="&PUrl;">
-</set>
+<set name="Output1">&Output1;
+<PARAM NAME="ImageURL&Count;" VALUE="&PUrl;"></set>
 
-<set name="Output2">
-&Output1;
-ImageURL&Count;="&PUrl;"
-</set>
+<set name="Output2">&Output2;
+ImageURL&Count;="&PUrl;"</set>
 
 
 </then>
@@ -59,26 +52,31 @@ ImageURL&Count;="&PUrl;"
 </if>
 </repeat>
 
-<!--
+<protect-result>
+<set name="Output3">
 <OBJECT classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
-     width="400" height="300" align="baseline"
+     width="550" height="300" align="baseline"
      codebase="http://java.sun.com/products/plugin/1.2/jinstall-12-win32.cab#Version=1,2,0,0">
- <PARAM NAME="code" VALUE="crc.story.ui.PhotoStoryApplet">
- <PARAM NAME="archive" VALUE="crc.story.jar">
- <PARAM NAME="type" VALUE="application/x-java-applet;version=1.2">
+ <PARAM NAME="code" VALUE="crc.story.ui.PhotoStoryApplet"></PARAM>
+ <PARAM NAME="archive" VALUE="crc.story.jar"></PARAM>
+ <PARAM NAME="type" VALUE="application/x-java-applet;version=1.2"></PARAM>
  &Output1;
 <COMMENT>
-     <EMBED type="application/x-java-applet;version=1.2" width="400"
-        height="300" align="baseline" code="crc.story.ui.PhotoStoryApplet"
-        archive="crc.story.jar"
-        &Output2;
-        pluginspage="http://java.sun.com/products/plugin/1.2/plugin-install.html">
-     <NOEMBED>
-     </COMMENT>
-            No JDK 1.2 support for APPLET!!
-     </NOEMBED></EMBED>
- </OBJECT>
--->
+<embed type = "application/x-java-applet;version=1.2"
+     width = "550" height = "300" align = "baseline"
+     code = "crc.story.ui.PhotoStoryApplet"
+     archive = "crc.story.jar"
+ &Output2;
+ pluginspage = "http://java.sun.com/products/plugin/1.2/plugin-install.html">
+ <NOEMBED>
+  No JDK 1.2 support for APPLET!!
+ </NOEMBED>
+</embed>
+</COMMENT>
+</OBJECT>
+</set>
+</protect-result>
 
+&Output3;
 
 </body></html>
