@@ -5,6 +5,7 @@
 package crc.pia;
 import java.io.StreamTokenizer;
 import java.io.IOException;
+import crc.util.regexp.RegExp;
 
 public class Utilities{
 
@@ -117,35 +118,13 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
    */
   public StringBuffer protect_markup(String str){
     if( str ){
-      StringBuffer s = new StringBuffer( str );
-      substitute( s, '&', "&amp", 'g' );
-      substitute( s, '<', "&lt", 'g' );
-      substitute( s, '>', "&gt", 'g' );
-      return s;
+      RegExp re = new RegExp();
+      String amp = re.substitute("&","&amp", true);
+      String ampLeft = re.substiture("<", "&lt", true);
+      String ampLeftRight = re.substiture(">", "&gt", true);
+      return ampLeftRight;
     }else return new StringBuffer("");
     
-  }
-  
-  public void substitue(StringBuffer str, char replaceCh, String replaceWith, char modifier){
-    boolean DONE   = false;
-    boolean GLOBAL = false;
-    int index = -1;
-    String orgString;
-
-    if( modifier == 'g' ) GLOBAL = true;
-
-    if (str){
-      while( !DONE ){
-	orgString = new String( str );
-	index= orgString.indexOf(replaceCh, index+1);
-	if (index == -1){
-	  DONE = true;
-	  next;
-	}
-	str.insert(index, replaceWith);
-	if( !GLOBAL ) DONE = true;
-      }
-    }
   }
 
 }
