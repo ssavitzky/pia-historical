@@ -14,5 +14,4 @@ package crc.dps;
 
 public class NodeType extends crc.dom.NodeType {
   public static final int TOKENLIST = -1;
-  public static final int ENTITYREF = -2;
 }
