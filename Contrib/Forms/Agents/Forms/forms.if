@@ -2,7 +2,7 @@
 <html><head>
 <title>Forms home page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<set entity name=title>Form home page</set>
+<set entity name=title>List of Forms</set>
 <read interform file="heading.inc" process>
 <read process quiet interform file=tagset.inc>
 <tagset-load name=Form-agent-actors>
