@@ -12,7 +12,6 @@ BASE_CLASSES = \
 	EntityHandler.java \
 	GenericHandler.java \
 	IgnorableHandler.java \
-	LegacyHandler.java \
 	SkippableHandler.java \
 	TextNodeHandler.java \
 	TypicalHandler.java
