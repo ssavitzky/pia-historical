@@ -66,16 +66,20 @@ attr=name></text></repeat></set>
 
 <form action="&url;" method=post process copy>
  <process copy>
+ 
  <if-in-group group=admin reporterrors=true>
  <file name=&routefile; dst=&routefile;.bak rename></file>
  <!-- process route changes -->
  <set name=newroute><route> </route></set>
  <set name=steps><dummy><get name=route findall=routestep></dummy></set>
 <!-- process deletes -->
+ <set name=maxid>0</set>
  <repeat list=&steps; entity=step>
  <set name=rid><get index=step.routeid.Text></set>
  <if><get form name=delete&rid;><then></then> <else>
  <set name="newroute" insert=-1><get name=step></set>
+ <if><test numeric positive> <difference> &rid; &maxid;</difference>
+   <then> <set name=maxid><get name=rid></set></then></if>
  </else></if></repeat>
 
  <set name=steps><dummy><get name=newroute findall=routestep><dummy></set>
@@ -94,6 +98,7 @@ attr=name></text></repeat></set>
  </repeat>	    
 
  <if> <get form name=addsteps> <then>
+ <set name="rid"><get name=maxid></set>
  <repeat start=1 stop=&FORM.addsteps;>
  <set name="rid"><sum digits=0> &rid; 1 </sum></set>
  <set index=newroute insert=-1>
