@@ -43,7 +43,7 @@ public class Agent_home extends crc.interform.Handler {
     String home = (type.equals(name))? name : type + "/" + name;
     if (link) {
       Element t = new Element("a");
-      t.attr("href", "/" + home + "/home.if");
+      t.attr("href", "/" + home + "/home");
       t.append(home);
       ii.replaceIt(t);
     } else {
@@ -65,7 +65,7 @@ public class Agent_home extends crc.interform.Handler {
     String home = (type.equals(name))? name : type + "/" + name;
     if (link) {
       crc.dps.active.ActiveElement t = newElement("a");
-      t.setAttributeValue("href", "/" + home + "/home.if");
+      t.setAttributeValue("href", "/" + home + "/home");
       t.addChild(new crc.dps.active.ParseTreeText(home));
       out.putNode(t);
     } else {
