@@ -558,6 +558,11 @@ public class Pia{
 
   }
 
+  protected void finalize() throws IOException{
+    //tell logger to close files
+    //close port
+  }
+
   public static void main(String[] args){
         Integer cmdport      = null ;
 	String  cmdroot      = null ;
