@@ -12,7 +12,7 @@ FILES = \
 	UnaryFunctor.java \
 	TernFunc.java
 
-include $(MAKEDIR)/file.make
+include $(TOPDIR)/makefiles/file.make
 
 
 
