@@ -146,6 +146,33 @@ public class Piaproperties extends Properties {
     }
 
     /**
+     * Set this property value, as a string
+     * @param name The name of the property to be defined.
+     * @param def The value to define.
+     */
+    public void setProperty(String name, String def) {
+      put(name, def);
+    }
+
+    /**
+     * Set this property value, as a boolean.
+     * @param name The name of the property to be defined.
+     * @param def The value to define.
+     */
+    public void setBoolean(String name, boolean def) {
+      setProperty(name, def? "true" : "false");
+    }
+
+    /**
+     * Set this property value, as an integer.
+     * @param name The name of the property to be defined.
+     * @param def The value to define.
+     */
+    public void setInteger(String name, int def) {
+      setProperty(name, "" + def);
+    }
+
+    /**
      * Build an Piaproperties instance from a Properties instance.
      * @param props The Properties instance.
      */
