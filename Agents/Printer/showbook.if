@@ -13,7 +13,8 @@ my $contents=$book->table_of_contents;
 return $contents;
 </code>
 <hr>
-<a href="show_book_ps.if"> Preview postscript version of book </a> 
+<a href="show_book_ps.if"> Preview postscript version of book </a> <br>
+<a href="savebook.if"> save current version of book </a> 
 
 <hr>
 

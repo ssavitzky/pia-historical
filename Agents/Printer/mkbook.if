@@ -17,7 +17,9 @@ return $form;
 my %form_parameters=%{$current_request->parameters()};
 my $url=$form_parameters{URL};
 
-return $current_self->make_book($url) if $url;
+my $result=$current_self->make_book($url) if $url;
+print "submitted book\n";
+return $result;
     
 </code>
  

@@ -3,7 +3,7 @@
 <title> PIA printer agent preview</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1><img src="/logo/pia24">`<a href="home.if">&agentName;</a>' on &piaHOST
+<h1><a href="/agency/home.if"><img src="/logo/pia24"></a>`<a href="home.if">&agentName;</a>' on &piaHOST
 </h1>
 You are Previewing <code language=perl>
 my $url= ${$current_request->parameters()}{URL};

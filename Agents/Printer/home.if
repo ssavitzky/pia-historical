@@ -4,31 +4,32 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
 <h1><img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/printer.gif" align=center>`&agentName;' on &piaHOST; </h1>
-Welcome to the <img src="http://&piaHOST;:&piaPORT;/logo/pia24"> printer.    To preview a document, enter
-the URL and click "Preview":
+Welcome to the <img src="http://&piaHOST;:&piaPORT;/logo/pia24"> printer.    To preview<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/preview.gif"> document, enter
+ URL and click "Preview":<br>
+
 <code language=perl>
 my $url=$current_request->header(Referer);
 my $name=$current_self->name;
 my $form=make_form("/$name/preview.if",({name => 'URL',size =>
- 50, value => $url},{type => 'submit',value => 'Preview'}));
+ 40, value => $url},{type => 'submit',value => 'Preview'}));
 return $form;
 </code>
-<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/preview.gif">
- To create a book, enter a starting  URL and click Makebook<code language=perl> 
+
+ To create a book<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/bookmark.gif">
+, enter a starting  URL and click Makebook<code language=perl> 
 my %form_parameters=%{$current_request->parameters()};
 my $name=$current_self->name;
 my $form=make_form("/$name/mkbook.if",({name => 'URL',size => 50,value =>
 $form_parameters{URL}},{type => 'submit',value => 'Makebook'}));
 return $form;
 </code>
-<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/bookmark.gif">
 <p>
 
   <table>
 <TR>
  <TD>Printer Controls<TD><a href=options.if> options</a>
-    <TD><a
- href=status.if> status </a>
+    <TD><a href=status.if> status </a>
+    <TD><a href=entries.if> old jobs </a>
 <TR>
     <TD> Page Controls: <TD> <a href=add_preview_button.if> add </a>  <TD> <a
 	href=remove_preview_button.if>remove</a>

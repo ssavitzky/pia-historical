@@ -1,0 +1,40 @@
+<html> <head>
+<title>PIA Preview Document</title>
+</head>
+
+<body>
+<h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a> previewing document`<a href="home.if">&agentName;</a>'</h1>
+<code language=perl>
+my $dir=$current_self->option('printer_root_directory');
+my $imgfile= ${$current_request->parameters()}{imgfile};
+$imgfile =~ /(preview\d+)\.(\d+)\.gif/;
+my $psfile = $dir . $1 . ".ps";
+my $next = $2 + 1;
+my $next = $1 . "." . $next . ".gif";
+my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;
+my $print=URI::URL->new("http://$machine/printer/print.if");
+$print->query_form('spoolfile'  => $psfile);
+my $a=IF::IT->new('p');
+my $b=IF::IT->new('a', 'href' => $print->as_string);
+my $img=IF::IT->new('img', src => "http://$machine/printer/printer.gif",height
+=> 27);
+
+$a->push($b);
+$b->push($img);
+if(-e "$dir$next"){
+	my $print=URI::URL->new("http://$machine/printer/cached_preview.if");
+	$print->query_form('imgfile'  => $next);
+	my $b=IF::IT->new('a', 'href' => $print->as_string);
+	$b->push('NextImg');
+	$a->push($b);
+}
+$a->push(IF::IT->new('br'));
+my $spfile="http://$machine/printer/spool/" . $imgfile;
+my $img=IF::IT->new('img', 'src' => $spfile);
+$a->push($img);
+return $a;
+
+</code>
+
+
+</body>
