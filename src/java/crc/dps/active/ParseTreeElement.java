@@ -224,7 +224,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   protected String tagName;
 
   /* attribute list */
-  protected AttributeList attrList = new ParseTreeAttrs();
+  protected AttributeList attrList = null;
 
   protected ElementDefinition definition = null;
 
@@ -256,6 +256,14 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
     setTagName( tag );
     if (atts != null) 	 setAttributes( new ParseTreeAttrs(atts) );
     if (content != null) copyContent(content);
+  }
+
+  public ParseTreeElement( String tag, AttributeList atts, NodeList content,
+			   Handler handler){
+    setTagName( tag );
+    if (atts != null) 	 setAttributes( new ParseTreeAttrs(atts) );
+    if (content != null) copyContent(content);
+    setHandler(handler);
   }
 
   public ParseTreeElement(Element e, AttributeList atts, NodeList content) {
