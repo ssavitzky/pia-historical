@@ -21,8 +21,6 @@ configuration directory.
  <process copy>
 <!-- Replace  option values with values in form -->
  <repeat list=&options; entity=myoption>
-Replacing <get index=myoption.optionvalue> with <get form
- name=&myoption.optionname.Text;>
  <set index=myoption.optionvalue insert=0 replace><get form
  name=&myoption.optionname.Text;></set>
  </repeat>
