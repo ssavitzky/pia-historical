@@ -354,6 +354,11 @@ public class Tokens extends List implements SGML {
     }
   }
 
+  public Tokens(String sep) {
+    this();
+    itemSeparator = sep;
+  }
+
   public Tokens(Object[] sa) {
     this();
     for (int i = 0; i < sa.length; ++i) push(Util.toSGML(sa[i]));
