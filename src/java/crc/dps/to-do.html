@@ -17,8 +17,40 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Impr:</b> Move Processor implementations to subdir. <br>
-       (1998-07-08) <br>
+  <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <p>
+       Not clear at this point exactly what use to make of this.
+       (1998-07-16)<br>
+
+  <li> <b>Hole:</b> PI comments <br>
+       Comments of the form <code>&lt;?-- text ?&gt;</code> should be discarded
+       by the processor rather than being copied.
+       (1998-07-15)<br>
+
+  <li> <b>Hole:</b> PI and declaration actions <br>
+       Need to assign separate actions to PI's and declarations by name.
+       As a desirable side effect, this will allow loading tagsets and
+       interpreting DTD's.  Strictly speaking the name is the name of an
+       application, not of an operation.
+       (1998-07-15)<br>
+       <p>
+
+  <li> <b>Bug:</b> PI's need to end in `<code>?&gt;</code>' <br>
+       present parser ends them with `<code>&gt;</code>'.
+       (1998-07-16)<br>
+
+  <li> <b>Bug:</b> XML names include extra characters. <br>
+       XML names may contain `<code>"." | "-" | "_" | ":"</code>' in addition
+       to anything Unicode defines as a letter, combining character, or
+       extender.  Colon is the namespace delimiter, and the prefix "xml" is
+       reserved. 
+       (1998-07-16)<br>
+
+  <li> <b>Bug:</b> Node construction <em>must</em> set handler. <br>
+       All new nodes have to have their handler set properly; this means
+       replacing almost all <code>new ParseTree<em>Whatever</em></code> with
+       <code>create<em>Whatever</em></code> operations on the current
+       Tagset. Easily enforced by eliminating constructors without handlers.
+       (1998-07-10) <br>
 
   <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
        Neither does its predecessor, InterFormContent.

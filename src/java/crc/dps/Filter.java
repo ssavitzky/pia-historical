@@ -19,8 +19,9 @@ import java.io.ObjectOutputStream;
 import crc.dps.Parser;
 import crc.dps.Input;
 import crc.dps.Processor;
-import crc.dps.BasicProcessor;
 import crc.dps.Tagset;
+
+import crc.dps.process.TopProcessor;
 import crc.dps.output.*;
 import crc.dps.active.*;
 import crc.dps.handle.GenericHandler;
@@ -125,7 +126,7 @@ public class Filter {
     p.setReader(new InputStreamReader(in));
 
     /* Finally, create a Processor and set it up. */
-    TopContext ii = new DocumentProcessor();
+    TopContext ii = new TopProcessor();
     ii.setInput(p);
     ii.setTagset(ts);
 

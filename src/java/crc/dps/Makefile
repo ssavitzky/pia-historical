@@ -17,10 +17,7 @@ PACKAGES = \
 FILES = \
 	Action.java \
 	Active.java \
-	BasicProcessor.java \
 	Context.java \
-	DocumentProcessor.java \
-	InterFormProcessor.java \
 	EntityTable.java \
 	Filter.java \
 	Handler.java \

@@ -71,8 +71,11 @@ public interface Processor extends Context {
 
   /** Run the Processor, obtaining nodes from its Input and performing
    *	their actions, usually involving copying to the Output.
+   *
+   * @return <code>true</code> if processing ran to completion, 
+   *	<code>false</code> if <code>stop()</code> was called.
    */
-  public void run();
+  public boolean run();
 
   /** Test whether the Processor is ``running''.
    */
@@ -87,10 +90,15 @@ public interface Processor extends Context {
   /** Process the current Node */
   public void processNode();
 
-  /** Process the current Node */
+  /** Process the current Node by expanding its attributes,
+   *	then processing its children. */
   public void expandCurrentNode();
 
-  /** Process the children of the current Node */
-  public void processChildren();
+  /** Process the children of the current Node.
+   *
+   * @return <code>true</code> if processing ran to completion, 
+   *	<code>false</code> if <code>stop()</code> was called.
+   */
+  public boolean processChildren();
 
 }

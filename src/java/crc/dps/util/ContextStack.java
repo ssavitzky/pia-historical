@@ -15,6 +15,7 @@ import crc.dom.Text;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.process.BasicProcessor;
 
 /**
  * A stack frame for a linked-list stack of current nodes. 
