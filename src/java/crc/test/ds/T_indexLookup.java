@@ -329,6 +329,12 @@ public class T_indexLookup{
     System.out.println("original foo-->"+foo.toString());
     try{
       System.out.println("\n\n--------------------------------");
+      System.out.println("Testing first broken case ul-1-1.li-0");
+      result = Index.get("ul.li-0", foo);
+      System.out.println("Here is the result-->"+result.toString());
+      System.out.println("--------------------------------");
+
+      System.out.println("\n\n--------------------------------");
       System.out.println("Testing xxx");
       result = Index.get("ul", foo);
       System.out.println("Here is the result-->"+result.toString());
@@ -404,6 +410,7 @@ public class T_indexLookup{
       System.out.println("Here is the result-->"+result.toString());
       System.out.println("--------------------------------");
     }catch(Exception e){
+      System.out.println(e.toString());
       e.printStackTrace();
     }
   }
