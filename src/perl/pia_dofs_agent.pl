@@ -28,7 +28,7 @@ sub initialize{
 
 sub root {
     my ($self, $value) = @_;
-    return $self->file_attribute('root', $value);
+    $self->file_attribute('root', $value);
 }
 
 sub path {

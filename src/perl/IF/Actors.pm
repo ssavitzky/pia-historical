@@ -153,10 +153,21 @@ sub actor_handle {
     $ii->define_actor($it);
 }
 
+### ===	it's not clear that we want entities and variables to be different ===
+
 ### <get [name="n"] [pia] [entity]>name</get->
 ###	Gets the value of a variable named in the 'name' attribute or content.
 ###	if the 'pia' attribute is set, uses the pia (PERL) context,
 ###	if the 'entity' attribute is set, uses the entity table.
+###
+### Namespace options:
+###	namespace="whatever", or one of the following:
+###	local	current element 
+###	attr	attributes of the current element
+###	form	this InterForm's outer context
+###	pia	pia (PERL) context
+###	agent	attributes of the current PIA agent
+###	
 
 define_actor('get', 'active' => 1, 'content' => 'name',
 	     _handle => \&get_handle,
@@ -187,8 +198,15 @@ sub get_handle {
 ### <set name="name">value</set>
 ###	sets the value of a variable named in the 'name' attribute
 ###	to the value in the 'value' attribute.
-###	if the 'local' attribute is set, uses the current context.
-###	if the 'pia' attribute is set, uses the pia (PERL) context
+###
+### Namespace options:
+###	namespace="whatever", or one ore more of the following:
+###	entity	the current entity namespace
+###	local	current element 
+###	attr	attributes of the current element
+###	form	this InterForm's outer context
+###	pia	pia (PERL) context
+###	agent	attributes of the current PIA agent
 
 define_actor('set', 'active' => 1, 'content' => 'value',
 	     _handle => \&set_handle,
@@ -297,8 +315,44 @@ sub repeat_end_input {
     return $undefined;
 }
 
+###### Tests:
+
+### <test [options]>string</test>
+###	Inside an <if>...</if> element, returns with empty or non-empty 
+###	content, as appropriate.  Outside, returns only the test results.
+###
+###  Condition Options:
+###	zero
+###	positive
+###	negative
+###	match="pattern"
+###
+###  Modifiers:
+###	not
+###	case-sensitive
+###
+###  Other Options:
+###	iftrue="..."	string to return if result is true
+###	iffalse="..."	string to return if result is false
+###
+
+
+###### Number Processing:
+
+### <eval>expression</eval>
+###
+
+
+###### List Processing:
+
+### <list tag="ul">items separated by whitespace</list>
+
+
 ###### String Processing:
 
+### <text>content</text>
+
+### 
 ### <pad width=N align=[left|right|center] [spaces]>string</pad>
 ###	If the "spaces" attribute is present, only the spaces are 
 ###	returned.  This lets you pad the contents of a link (for
@@ -403,7 +457,7 @@ sub actor_attrs_handle {
 
 ###### PIA Information Actors:
 
-### <agent-home>name</pia-agent-home>
+### <agent-home>name</agent-home>
 ###	expands to the agent's home interForm name.
 ###	Makes a link if the "link" attribute is present.
 

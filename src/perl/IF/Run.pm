@@ -69,6 +69,7 @@ sub run_string {
 
     if (!defined $interp) {
 	$interp = IF::II->new(@IF::Actors::if_defaults);
+	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
 	$interp = IF::II->new(@_);
@@ -86,6 +87,7 @@ sub run_tree {
 
     if (!defined $interp) {
 	$interp = IF::II->new(@IF::Actors::if_defaults);
+	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
 	$interp = IF::II->new(@_);
@@ -98,6 +100,28 @@ sub run_tree {
 sub run_stream {
 
 
+}
+
+sub parse_init_file {
+    my ($file, $interp) = @_;
+
+    ## Run the interpretor parser over a file in ``parser mode''.
+    ##	  The result is a parse tree.  No actors are used, but the InterForm 
+    ##	  entity table is enabled.  Eventually we should use an appropriate
+    ##	  set of actors. ===
+
+    print "\parsing file $file\n" if $main::debugging;
+    local $entities = if_entities($agent, $file, $request);
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@html_defaults);
+	$interp->entities($entities) if defined $entities;
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->parse_file($file);
+    return $interp->run;
 }
 
 sub parse_html_file {
@@ -201,6 +225,7 @@ sub if_entities {
 	'piaHOME'	=> $ENV{'HOME'},
 	'piaHOST'	=> $main::PIA_HOST,
 	'piaPORT'	=> $main::PIA_PORT,
+	'piaDIR'	=> $main::PIA_DIR,
 
 	'agentNames'	=> $agentNames,
 	'entityNames'   => '',

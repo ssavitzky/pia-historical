@@ -874,7 +874,7 @@ sub run_init_file {
     } else {
 	my $file = $find? $file = $self->find_interform($fn) : $fn;
 	return unless -e $file;
-	$html = IF::Run::parse_html_file($file);
+	$html = IF::Run::parse_init_file($file);
     }
     for (@{ $html->extract_links(qw(a form)) }) {
 	my ($url, $element) = @$_;
