@@ -990,7 +990,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
       process = rt.exec( file, envp );
 
-      if( request.method() == "POST" ){
+      if( request.method().equalsIgnoreCase( "POST" ) ){
 	out = new PrintStream( process.getOutputStream() );
 	out.print( request.queryString() );
 	out.flush();
@@ -1017,7 +1017,7 @@ public class GenericAgent extends AttrBase implements Agent {
     envp[0]="CONTENT_TYPE=";
     envp[1]="CONTENT_LENGTH=";
     
-    if( req.method() == "POST" ){
+    if( req.method().equalsIgnoreCase( "POST" ) ){
       envp[0] += req.contentType();
       envp[1] += req.contentLength();
     }
@@ -1028,7 +1028,7 @@ public class GenericAgent extends AttrBase implements Agent {
     envp[6]="REMOTE_ADDR=";
     envp[7]="QUERY_STRING=";
     
-    if( req.method() == "GET" )
+    if( req.method().equalsIgnoreCase( "GET" ) )
       envp[7] += req.queryString();
     
     envp[8]="PATH_INFO="	+ path;
