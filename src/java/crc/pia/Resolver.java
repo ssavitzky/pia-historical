@@ -111,10 +111,8 @@ public class Resolver extends Thread {
    * Given agent and its name, store it.
    */
   protected void agent( String name, Agent agent ){
-    String zname = null;
     if( name != null && agent != null ){
-      zname = name.toLowerCase();
-      agentCollection.put( zname, agent );
+      agentCollection.put( name, agent );
     }
   }
 
@@ -187,8 +185,7 @@ public class Resolver extends Thread {
    * @return agent according to name
    */
   public Agent agent( String name ){
-    String zname = name.toLowerCase();
-    Object o = agentCollection.get( zname );
+    Object o = agentCollection.get( name );
     if( o != null )
       return (Agent)o;
     else
