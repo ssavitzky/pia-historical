@@ -34,13 +34,14 @@ DOCDIR  = $(TOPDIR)/Doc
 ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
  #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 ## === the following will need to be changed
 JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
 JAVASOURCE=  /usr/local/src/www/java-SDK/jdk1.1.1/src
+
 
 all::
 	for p in `ls -d $(PACKAGES)`; do \
@@ -72,4 +73,13 @@ clean::
 		echo 'cleaning ' $(PACKAGE).$$p; \
 		(cd $$p ; make TOPDIR=../$(TOPDIR) clean) ; \
 	done
+
+
+
+
+
+
+
+
+
 

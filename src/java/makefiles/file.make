@@ -35,12 +35,13 @@ DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
 #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 #sun 1.0.2 location
-JAVACLASSES= /usr/local/java/lib/classes.zip
+JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
+
 
 .SUFFIXES: .java .class
 
