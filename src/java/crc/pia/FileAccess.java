@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.Date;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -403,6 +405,78 @@ public class FileAccess {
       contentType = (String) map.get( fileExt );
     
     return contentType;
+  }
+
+  private static void sendReply(int code, String reason, Transaction request,
+				Agent agent ){
+    Transaction reply = null;
+    
+    reply = new HTTPResponse( request, false );
+    reply.setStatus( code );
+    reply.setReason( reason );
+    reply.setHeader( "Version", agent.version() );
+    Content c = new crc.content.text.StringContent(
+						   "Your file has been written.");
+    reply.setContentType( "text/plain" );
+    reply.setContentObj( c );
+    reply.startThread();
+  }
+
+    /** 
+     * Write a file and respond to the given request.
+     */
+    public static void writeFile ( String filename, Transaction request,
+				      Agent agent )
+      throws PiaRuntimeException {
+      FileOutputStream destination = null;
+      
+      if( filename == null ){
+	String msg = "No file specified.\n";
+	throw new PiaRuntimeException (agent, "writeFile" , msg) ;
+      }
+      
+      File destFile = new File( filename );
+      File parentDir = parent( destFile );
+
+      if( parentDir == null || !parentDir.exists() ){
+	String msg = "Directory does not exist:"+filename;
+	throw new PiaRuntimeException(null, "writeFile", msg);
+      }
+
+      if( !parentDir.canWrite() ){
+	String msg = "Directory is unwritable:"+filename;
+	throw new PiaRuntimeException(null, "writeFile", msg);
+      }
+      
+      try{
+	Content putcontent = request.contentObj();
+
+	destination = new FileOutputStream( filename );
+	if( putcontent != null && destination !=null ){
+	  putcontent.writeTo( destination );
+	  destination.flush();
+	}
+
+	sendReply(200,"OK", request, agent);
+
+      }catch(IOException e){
+	e.printStackTrace();
+	String msg = e.getMessage();
+	throw new PiaRuntimeException (agent, "writeFile", msg) ;
+      }catch(crc.pia.ContentOperationUnavailable ee){
+	ee.printStackTrace();
+	String msg = ee.getMessage();
+	throw new PiaRuntimeException (agent, "writeFile", msg) ;
+      }finally{
+	if( destination!=null )
+	  try{ destination.close(); 
+	}catch(IOException e){}
+      }
+    }
+
+  private static File parent(File f){
+    String dirname = f.getParent();
+    return new File(dirname);
   }
 
 }
