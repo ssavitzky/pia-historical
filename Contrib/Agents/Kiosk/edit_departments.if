@@ -1,0 +1,84 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; editor</title>
+</head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<tagset-load name=Kiosk-agent-actors>
+
+<!-- put up the header at the top of the page -->
+<page-header title="&agentName; department editor">
+</page-header>
+
+<!-- displays a table allowing the user to modify any entries for the
+departments -->
+<set name="dkeys"><dummy><get name="departments" keys
+agent></dummy></set>
+
+<set name="first"><get agent name="departments" key=&dkeys.1;></set>
+<set name="headers"><repeat list="&first;" entity=h><get name=h attr=name></set>
+
+<form action="&url;" method="post" process copy>
+<i>Removing the position number removes the entry -- this will be more automatic/intuitive in
+the future</i>
+<process copy>
+<set name="departments" agent><dl> </dl></set>
+<repeat start=1 stop=&FORM.maxc; entity=k>
+<set name="c">&k;</set>
+<if><get name="position&c;" form>
+ <then>
+  <set name="key"><get name=position&c; form></set>
+  <set name="departments" agent key=&key;><repeat list="&headers;"
+  entity=h><deptinfo name=&h;><get name=&h;&c; form></deptinfo></repeat></set> </then> 
+ <else> </else></if>
+</repeat>
+<save-data data=departments>
+ </process>
+
+<table border="1">
+<tr><th>position </th>
+<repeat list="&headers;" entity=h>
+<th><get name=h></th>
+</repeat>
+ </tr>
+<set name="c">1</set>
+<repeat list="&dkeys;" entity=k>
+<tr>
+<td><input name="position&c;" value="&k;" size="4"> </td>
+<set name="child"><get name="departments" key=&k; agent></set>
+<repeat list="&headers;" entity=h>
+<set name="value"><info attr=&h; index="child.&h;.Text"><get name=child></info></set>
+<td><input type=text name=&h;&c; value="&value;">
+</td>
+</repeat>
+ </tr>
+ 
+<set name="c"><sum digits=0> 1 &c; </sum></set>
+</repeat>
+
+<set name="maxc"><sum digits=0> 5 &c; </sum></set>
+<repeat start=&c; stop=&maxc; entity=k>
+<set name="c">&k;</set>
+<tr>
+<td><input name="position&c;" value="" size="4"> </td>
+<set name="child"><get name="departments" key=&k;></set>
+<repeat list="&headers;" entity=h>
+<td><input type=text name=&h;&c; value="">
+</td>
+</repeat>
+ </tr>
+
+</repeat>
+
+
+
+</table>
+<input type="hidden" name="maxc" value="&maxc;">
+<input type="submit" value="Save Changes">
+</form>
+Next Step is to <a href=edit_icons.if>edit the icons</a>associated with each
+department.
+
+<page-footer />
+</body>
+</html>

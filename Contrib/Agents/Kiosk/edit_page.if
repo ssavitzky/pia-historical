@@ -1,0 +1,37 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; editor</title>
+</head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<tagset-load name=Kiosk-agent-actors>
+
+<if><get name="filename" form>
+   <then><set name="file"><get name="filename" form></set> </then>
+   </if>
+
+<!-- put up the header at the top of the page -->
+<page-header title="&agentName; editor">
+<a href=&file;> Click here to view pages as it appears on &AGENT.mb;</a>
+</page-header>
+<if><get name="file" >
+ <then> <form action="&url;" method="post" process copy>
+ <process copy>
+ <set name="myfile"><get name="file"></set>
+ <!-- replace all of the variable values with the values specified in
+ the form -- use a tag set which does appropriate substitution -->
+ <set name="page"><read file="&myfile;" tagset="process-form-page"></set>
+ <write name=&myfile;><get name="page"></write>
+ </process>
+<input type="hidden" name="filename" value="&FORM.filename;">
+<read file="&myfile;" tagset="create-form-page">
+<br>
+<input type="submit" value="Save Changes and update" align=center>
+</form>
+
+</then> 
+ <else>no file specified to edit </else></if>
+
+<page-footer />
+</body>
+</html>

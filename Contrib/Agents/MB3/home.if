@@ -1,0 +1,36 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; Home Page</title>
+<!-- base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if" -->
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Home Page</set>
+<!-- put up the header at the top of the page -->
+<read interform file="heading.inc" process>
+
+<!-- put up the events for today and navigation buttons -->
+<read interform file="subhead.inc" process>
+
+<!-- load tags specific to this agent (just in case not already loaded) -->
+<tagset-load name=MB3-actors>
+<hr>
+
+<!-- show the calendar for the current month -->
+<calendar-for month=&month;>
+
+
+<p>
+<!-- generic agent information -->
+<read interform file="about.inc" quiet process>
+
+
+
+<hr>
+
+<!-- shows/process the navigation bar -->
+<expand><get agent name=navbar></expand>
+
+ <!-- copyright and cvs source control information -->
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ --><br>
+</body></html>

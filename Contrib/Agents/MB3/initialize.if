@@ -1,0 +1,60 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the &agentName; agent</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
+</head><body>
+<h1>Initialize the <a href=/&agentName;/home.if>&agentName; agent</a></h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+<set name=criteria></set>
+<if><get name=criteria>
+    <then><agent-set-criteria>&criteria;</agent-set-criteria>
+          <user-message>&agentName; criteria: <agent-criteria></user-message>
+</if>
+
+<!-- Load and initialize the actors specific to this agent -->
+<read file=tagset.inc interform process>
+
+ <!-- initialize the cache for calendars --> 
+ <set name=calendars agent><dl> </dl></set>
+
+<set agent hook name="navbar"><protect>
+&agentName; <a href="/&agentName;/home">home</a>||
+	  <a href="/&agentName;/">index</a>||
+	  <a href="/&agentName;/help">help</a>||
+	  <a href="/&agentName;/options">options</a>||
+           <form action="/&agentName;/show_month.if">
+<input type="SUBMIT" value="ShowMonth:">
+            <select name="month"> <option>&month; </option>
+<option>01</option> <option>02</option> <option>03</option>
+<option>04</option> <option>05</option> <option>06</option>
+<option>07</option> <option>08</option> <option>09</option>
+<option>10</option> <option>11</option> <option>12</option>
+           </select>
+ year:<select name="year"> <option>&year; </option>
+<option> 1997 </option><option> 1998 </option><option> 1999 </option><option>
+	 2000 </option>
+</form>
+
+
+<hr></protect></set>
+
+<!-- if the options file nonexistent, create it from the defaults -->
+ <if> <read file=options.dat info> <else>
+ <write file=options.dat> <read interform file=options.dat></write></else> </if>
+
+ <!-- for some recent, the file separator is not working properly so forced to use native -->
+ <if> <test match="\\">&filePath;</test> 
+<then><set name=fseparator agent>\</set></then> 
+<else><set name=fseparator agent>/</set></else> </if>
+
+<!-- now load any options -->
+ <load-options> <read file=options.dat process> </load-options>
+
+ <!-- load the event counter -->
+ <set name=idcounter agent><read file=eventcount.dat></set>
+ 
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

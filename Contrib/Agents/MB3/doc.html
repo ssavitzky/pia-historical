@@ -1,0 +1,48 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> Documentation for MB3</title>
+</head><body>
+<h1> Documentation for MB3</h1>
+
+<blockquote>
+  This agent is used for scheduling and controlling 
+the Ricoh MB-3 Media Board.  See <a href=/PIA/Config/MB3/>
+configuration files </a> for instructions on how to download and run a local
+version. 
+</blockquote>
+<h3> Notes on the MB3 device</h3>
+<dl>
+  <dt> Touchscreen
+  <dd>  The touch screen currently works.  Tapping emulates a mouse click
+	(accompanied by a beep).
+  <dt>  Mouse
+  <dd>  A normal mouse attached to the computer (open the top
+	drawer).
+  <dt> Screen
+  <dd>  The screen operates at 640x480 resolution.
+  <dt> DVD
+  <dd>  The DVD drive will read digital video disks or normal CD's.
+	<strong>It will NOT read CD-R disks</strong> (CD-RW disks are OK.)
+       
+</dl>
+<h3>Notes on the MB3 agent / PIA </h3>
+<dl>
+  <dt> Proxy
+  <dd> Browsers on the MB3 device should have the PIA
+       <code>&piaHOST;:&piaPORT; </code> set as their proxy.  This allows the
+       <a href=/History> history agent </a> to keep track of all Web pages
+       visited during a presentation, and the <a href=/CIA> CIA agent </a> to
+       add navigation bars to the visited pages.
+  <dt> Events
+  <dd>   Events are stored in a file corresponding to the day of the event.
+	 These files are located in <code>&usrDIR;/&agentName;/YYYY/MM/DD
+	 </code> (YYYY=year, MM=month, DD=day).
+  <dt>  Annotations
+  <dd>  The plan is to have screen annotations (drawings) to be automatically
+	saved to to a directory.  These annotations would then be converted to
+	gif or jpg files and viewable as part of the presentation.
+</dl>
+<hr>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
