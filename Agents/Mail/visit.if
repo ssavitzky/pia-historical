@@ -1,4 +1,5 @@
 <set name=ds><dl></dl></set>
+<set name=mybaseurl><get agent name=baseurl></set>
 <set name=myurl><get agent name=visiturl></set>
 <set name=links><read.href href=&myurl; process></set>
 
