@@ -26,8 +26,14 @@
 
   <if><get name=latest><then>
     <TR><TD align=right width=170>
-    <td><a href="/&agentName;/latest.if">
-          <img src="/~&agentName;/&latest;/r0100001.small.gif"
+    <td><a href="/&agentName;/show_roll.if">
+    <!-- Find name of a thumbnail from the latest pictures directory -->
+    <!-- Note that file names from RDC-2 and RDC-4300 cameras are not the same -->
+    <set name=NewThumbs><read directory file="&usrDIR;/&agentName;/&latest;/" match="\.small.gif$"></set>
+    <if><get name=NewThumbs><then>
+    <repeat list=&NewThumbs; entity=thumb><set name=AThumb>&thumb;</set></repeat>
+    </then></if>
+          <img src="/~&agentName;/&latest;/&AThumb;"
                height=32 width=32 border=0 alt="Photo Album"></a>
 	<a href="/&agentName;/show_roll.if">Newest Photos</a><br>
   </then></if>
@@ -40,7 +46,7 @@
 
     <TR><TD align=right>
 	<td>
-        <a href="/&agentName;/catalog.if">
+        <a href="/&agentNaimport_picturesalog.if">
           <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
 	<a href="import_pictures.if">Import Pictures (from web) </a><br>
 
