@@ -1,4 +1,11 @@
-#machine models
+###### Class MACHINE -- Machine Model.
+###	$Id$
+###
+###	Ideally these should be persistent so that we can keep track of what
+###	kind of browser or server we're talking to, but at the moment we
+###	don't do that.
+###
+
 package MACHINE;
 
 sub new{
@@ -26,10 +33,14 @@ sub close_stream{
 
 sub send_response{
     my($self,$reply)=@_;
-    print "sending response to $self\n"  if  $main::debugging;
+    print "sending response to $self\n" if  $main::debugging;
     my $output=$self->stream();
-    warn("nowhere to send") unless defined    $output;
-    return unless defined    $output;
+
+    if (! defined $output) {
+	warn("nowhere to send") if $main::debugging;
+	print $reply->content if $main::debugging;
+	return;
+    }
     
     my $string="HTTP/1.0 ";
     $string.=$reply->code;
