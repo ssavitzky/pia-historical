@@ -851,7 +851,9 @@ public abstract class Transaction extends AttrBase
       code = 400;
       msg = "Malformed URL: " + e.getMessage();
     } else if (e instanceof IOException) {
-      msg = "IO error: " + e.toString();
+      msg = "IO error: " + e.toString() + e.getMessage();
+    } else {
+      msg = "<pre>" + crc.util.Utilities.reportString(e) + "</pre>";
     }
 
     errorResponse(code, msg);
