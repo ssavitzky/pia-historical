@@ -6,6 +6,12 @@
 
 <set entity name=title>&agentName; agent <br>Home Page</set>
 <read interform file="heading.inc" process>
+
+<table>
+<tr><th><td>
+<read href="/My/Buss/lastcard.html" process>
+
+<tr><th><td>
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
 <tr><th><td> <a href="index.if">Index Page</a>
@@ -14,6 +20,7 @@
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 	     <a href="/My/Agents/&agentName;/">(Customized)</a>
+</table>
 </table>
 
 <if><agent-running name=Buss>
@@ -52,7 +59,7 @@
      <a href="/My/Buss/&li;"><font size=4 face=times>&li;</font></a> /
 </ol>
 
-<read href="/My/Buss/lastcard.html" process>
+
 <hr>
 
 <font size=4 face=times>
