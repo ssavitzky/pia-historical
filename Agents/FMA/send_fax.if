@@ -48,8 +48,12 @@
 <input type="SUBMIT" value="Send">
 Document:<input type="URL" name="src" size="60">
 <br>
+
+<!-- set user=username ? unknown -->
+<set name="user"><if><get name="user" form><then>&FORM.user;</then><else>unknown</else></if></set>
+
 From: <select name="user">  <option>&user;</option>
- <repeat list="&AGENT.users;"> <option>&li;</option></repeat>
+ <repeat list="&AGENT.users.li.Text;"> <option>&li;</repeat>
 </select><br>
 To: <select name="to">  <option> (type in)</option>
  <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat>

@@ -21,7 +21,8 @@
 <!-- search form/ sorting -->
 <form action="&url;" method=POST>
 <input type="SUBMIT" value="Show">
-Faxes for: <select name="user"> <option>&user;</option> &userlist; </select>
+<!-- Faxes for: <select name="user"> <option>&user;</option> &userlist; </select>-->
+Faxes for: <select name="user"><option>&user;</option><repeat list="&userlist.li.Text;"><option>&li;</repeat></select>
 
 Sent by: <select name="from">  <option>&sender; </option>
  <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat>

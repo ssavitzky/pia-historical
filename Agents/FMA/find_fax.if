@@ -6,7 +6,8 @@
 
 <!-- set user=username ? unknown -->
 <set name="user"><if><get name="user" form><then>&FORM.user;</then><else>unknown</else></if></set>
-<set name="user"><if><get name="sender" form><then>&FORM.sender;</then><else>unknown</else></if></set>
+<set name="sender"><if><get name="sender" form><then>&FORM.sender;</then><else>unknown</else></if></set>
+
 
 <!-- include the standard head banner -->
 
@@ -17,10 +18,10 @@
 <form action="&url;" method=POST>
 <input type="SUBMIT" value="Show">
 Faxes To/From: <select name="user">  <option>&user;</option>
- <repeat list="&AGENT.users;"> <option>&li;</option></repeat>
+ <repeat list="&AGENT.users.li.Text;"> <option>&li;</option></repeat>
 </select>
 Sent To/By: <select name="from">  <option>&sender; </option>
- <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat>
+ <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat></select><br>
 Sort by: <select name="from">  <option>date</option>
  <option>sender</option>
  <option>versions</option>
@@ -31,12 +32,15 @@ Sort by: <select name="from">  <option>date</option>
 <!-- search form/ accounts -->
 <form action="&url;" method=POST>
 <input type="SUBMIT" value="Show">
-Type: <select name="Type">  <option&FORM.type;</option>
- <repeat list="&AGENT.types;"> <option>&li;</option></repeat>
+
+<set name="formtype"><if>&FORM.sender;<then>&FORM.sender;</then><else>unknown</else></if></set>
+
+Type: <select name="Type">  <option>&formtype;</option>
+ <repeat list="&AGENT.types.li.Text;"> <option>&li;</option></repeat>
 </select>
 Version: <select name="version">  <option>Latest </option>
  <option>all</option>
- <option>last3</option>
+ <option>last3</option></select>
 Sort by: <select name="from">  <option>type</option>
 <option>date</option>
  <option>sender</option>
