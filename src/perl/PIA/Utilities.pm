@@ -5,7 +5,8 @@ package PIA::Utilities; ###### Utilities for the PIA
 use Exporter;
 @ISA = qw(Exporter);
 
-@EXPORT = qw(writeTo appendTo readFrom asHTML make_form make_list);
+@EXPORT = qw(writeTo appendTo readFrom asHTML make_form make_list
+	     run_init_file submit);
 
 
 ############################################################################
@@ -52,6 +53,63 @@ sub readFrom {
 ###
 ### Code Files:
 ###
+
+############################################################################
+###
+### Initialization Files:
+###
+###	Initialization files are looked up like InterForms, but instead
+###	of containing code to evaluate, they just contain forms to
+###	submit.  Every link is fetched, and every form is submitted.
+###
+
+sub submit {
+    my($self, $request)=@_;
+
+    ## put request on stack for resolution
+    ##	 used only in PIA::Agent::initialize and run_init_file.
+
+    $request=PIA::Transaction->new($request,$main::this_machine)
+	unless ref($request) eq 'PIA::Transaction';
+
+    ## Unshift the request so they get popped in sequence.
+
+    $main::resolver->unshift($request);
+}
+
+sub run_init_file {
+    my($self,$fn,$find)=@_;
+
+    ## Submit each form and get each link in $fn.
+    ##    Look up $fn as an interform if $find is positive.
+    ##    Treat $fn as a string if $find is negative.
+
+    my $html;
+    my $count=0;
+    my $request;
+
+    if ($find < 0) {
+	$html = IF::Run::parse_html_string($fn);
+    } else {
+	my $file = $find? $file = $self->find_interform($fn) : $fn;
+	return unless -e $file;
+	$html = IF::Run::parse_init_file($file);
+    }
+    for (@{ $html->extract_links(qw(a form)) }) {
+	my ($url, $element) = @$_;
+	if ($element->tag =~ /form/i) {
+	    $method=$element->attr('method');
+	    $request=$self->create_request($method,$url,$element);
+	} else {
+	    ## A name= link would probably cause confusion.
+	    $request=$self->create_request('GET',$url,$element);
+	}
+	my $status=$self->submit($request);
+	$count+=1;
+    }
+    ## $html->delete;
+    return $count;
+}
 
 ############################################################################
 ###

@@ -135,7 +135,7 @@ sub resolve {
 	## get the next request off the queue.
 	##    It's an open question whether this should be a stack or a queue. 
 
-	my $transaction= pop @$queue;
+	my $transaction = pop @$queue;
 	$numb=@$queue;
 	my $u=$transaction->url;
 	print "resolve: trans. $count ($numb left): $u\n" if $main::debugging;
@@ -143,7 +143,7 @@ sub resolve {
 	## Look for matches.
 	##    Matching agents have their act_on method called with both the
 	##    transaction and the resolver as arguments; they can either push
-	##    transactions onto the resolver, push handlers onto the
+	##    transactions onto the resolver, push satisfiers onto the
 	##    transaction, or directly modify the transaction.
 
 	$self->match($transaction);
@@ -190,9 +190,9 @@ sub simple_request{
     my($self,$transaction,$file)=@_;
 
     ## Return a response to a caller.
-    ##	 === is this ever used? ===
+    ##	  This lets the resolver serve as a user agent in place of LWP.
 
-    print "gettting simpleton ...\n";
+    print "gettting simpleton ...\n" if $main::debugging;
     $self->match($transaction);
     $transaction->satisfy($self);
 

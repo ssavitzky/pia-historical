@@ -72,7 +72,11 @@ sub read_chunk{
 
 
 sub send_response{
-    my($self,$reply)=@_;
+    my($self, $reply, $resolver)=@_;
+
+    ## Send a response to whatever this machine refers to.
+    ##	  $resolver is unused; it's here for subclasses (i.e. agents)
+
     print "sending response to $self\n" if  $main::debugging;
     my $output=$self->stream();
 
@@ -119,7 +123,7 @@ sub send_response{
 }
 
 # TBD accommodate multiple schemes in cached value
-sub proxy{
+sub proxy {
     my($self,$scheme,$proxy)=@_;
     #isaproxy necessary for talking to me?
     $$self{_proxy}=$proxy if $proxy;
@@ -131,9 +135,12 @@ sub proxy{
     
 }
 
-sub get_request{
-    my($self,$request)=@_;
-    
+sub get_request {
+    my($self, $request, $resolver)=@_;
+
+    ## Pass a request on to whatever this machine refers to.
+    ##	  $resolver is unused; it's here for subclasses (i.e. agents)
+
     if(!$ua) {
 	$ua = new LWP::UserAgent;
 

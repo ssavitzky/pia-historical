@@ -20,7 +20,7 @@ sub initialize{
 
     my $url="/$type/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
-    $self->request($request);
+    $self->submit($request);
 }
 
 sub root {
@@ -173,17 +173,13 @@ sub retrieve_directory {
 }
 
 
-###### DOFS -> handle($transaction, $resolver)
-###
-###	Handle a DOFS request.  
-###
-
-###  this is for dealing with direct agent requests
-###   use super class to deal with actual interform requests
-###   indirect handles are done by super class default method...
-
 sub  respond_to_interform{
     my($self, $request)=@_;
+
+    ## Respond to a DOFS request. 
+    ##	 Figure out whether it's for a file or an interform, and whether it's 
+    ##	 to a sub-agent or to /dofs/ itself.
+
     return 0 unless $request -> is_request();
 
     my $url = $request->url;
@@ -202,12 +198,12 @@ sub  respond_to_interform{
 	return $self->retrieve_file($url, $request);
     } elsif ($name ne $type && $path =~ m:^/$name$:) {
 	$path = "/$name/home.if";
-    } elsif ($path =~ m:^/$name/([^/]+)/:) {
-	$type = $1;
+    } elsif ($path =~ m:^/$type/([^/]+)/:) {
+	$name = $1;
 
 ####  Resolver no longer gets passed in
 ####  this is not a perfect way to get the type, but will work for now
-	my $agent = $main::resolver->agent($type);
+	my $agent = $main::resolver->agent($name);
 	$path =~ s:^/$type:: if defined $agent;
 	$self = $agent if defined $agent;
     }

@@ -6,6 +6,9 @@ package PIA::Agent::cache; #######################################
 
 push(@ISA,PIA::Agent);
 use FileHandle;
+
+### === spool directory really needs to be agent_directory/$protocol
+
 sub url_to_filename{
     my($self,$url)=@_;
 
@@ -27,7 +30,6 @@ sub filename_to_url{
     $header =~ /^(\w*)\s+(.*)/;
     close HEADER;
     return $2;
-    
 }
 
 
@@ -39,9 +41,11 @@ sub quick_filename_to_url{
     
 }
 
-##maintain hash of directories that we know  about
-# maybe should use url as key, not  directory name
-## also should check modified date
+
+############################################################################
+###
+### Maintaining the cache:
+###
 
 ### === Since the key is the directory, maybe the value should be the 
 ### === modified date. 
@@ -106,9 +110,9 @@ sub build_database{
     autoflush DATABASE 1;
     
     $self->option('database',*DATABASE) if $status;
-    
 }
-sub create_directories{
+
+sub create_directories {
     my($self,$name)=@_;
 
     ## Create directory $name, plus any directories missing in the path to it.
@@ -123,6 +127,12 @@ sub create_directories{
     return $path;
 }
 
+
+############################################################################
+###
+### Satisfying transactions:
+###
+
 sub handle_response{
     my($self,$response)=@_;
 
@@ -131,24 +141,30 @@ sub handle_response{
 
     return unless $response->code eq '200';
     my $request=$response->request;
-    return unless ref($request) eq 'TRANSACTION';
+    return unless ref($request) eq 'PIA::Transaction';
     my $url=$request->url;
     return unless $url;
     my $directory=$self->url_to_filename($url);
     return unless $directory;
     return unless $self->create_directories($directory);
 
+    ## Get the content.
+    ##	  Insist on its being non-empty.
+
+    my $content = $response->content;
+    return unless $content;
+
     ## Cache the header.
 
-    open(HEADER,">$directory/.header");
-    print HEADER $response->headers_as_string;
-    close HEADER;
+    open(FILE,">$directory/.header");
+    print FILE $response->headers_as_string;
+    close FILE;
 
     ## Cache the content.
 
-    open(HEADER,">$directory/.content");
-    print HEADER $response->content;
-    close HEADER;
+    open(FILE,">$directory/.content");
+    print FILE $content;
+    close FILE;
 
     ## Make an entry in the hash table so we can find it next time.
 
@@ -159,15 +175,15 @@ sub handle_response{
     ##	 === at some point we may need to see whether it's different.
     ##	 some servers give different results for different browsers.
 
-    open(HEADER,">$directory/.request-header");
-    print HEADER $request->method . " " . $url->as_string . "\n";
-    print HEADER $request->headers_as_string;
-    close HEADER;
+    open(FILE,">$directory/.request-header");
+    print FILE $request->method . " " . $url->as_string . "\n";
+    print FILE $request->headers_as_string;
+    close FILE;
     if($request->test('has_parameters')){
 	my $form=$response->parameters;
-	open(HEADER,">$directory/.request-parameters");
-	for (keys(%{$form})) {print HEADER $_ . "=" . $$form{$_} . "\n";}
-	close HEADER;
+	open(FILE,">$directory/.request-parameters");
+	for (keys(%{$form})) {print FILE $_ . "=" . $$form{$_} . "\n";}
+	close FILE;
     }
 
     $request->header('Cache-Location',$directory);
@@ -178,12 +194,13 @@ sub handle_request{
     my($self,$request,$resolver)=@_;
 
     ## This is a request -- see if the cache directory exists.
+
     my $directory=$self->url_to_filename($request->url);
     print "cache handling request $directory "  if $main::debugging;
     return unless -e "$directory/.content";
 
     ## If there is a query string attached, give up.
-    ##	  Should really check $directory/.request-parameters and see
+    ##	  Should really check $directory/.request-parameters and see ===
     ##	  if it's the same as the last time.  Better yet, save all queries.
     return if $request->test('has_parameters');
 
@@ -192,16 +209,16 @@ sub handle_request{
     my $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
     $response->request($request);
     
-    open(HEADER,"<$directory/.header");
-    while (<HEADER>){
+    open(FILE,"<$directory/.header");
+    while (<FILE>){
 	/^([^:]*): (.*)$/;
 	($key,$value) = ($1,$2);
 	$response->header($key,$value);
     }
-    close HEADER;
+    close FILE;
 
     if(! ($self->option("check_frequency") eq 'never')){
-	$request->assert('cache_response');
+	$response->assert('cache_response');
 	my $date = $response->header('Last-Modified');
 	$date = $response->header('Date') unless $date;
 	$date = $response->header('Client-Date') unless $date;
@@ -212,7 +229,7 @@ sub handle_request{
 	    $date=HTTP::Date::time2str($mtime);
 	}
 	$request->header('If-Modified-Since',$date);
-	my $newresponse=$main::main_resolver->simple_request($request);
+	my $newresponse=$main::resolver->simple_request($request);
 	if($newresponse->code eq '200'){
 	    $resolver->push($newresponse);
 	    return 1; ##request is satisfied
@@ -228,21 +245,22 @@ sub handle_request{
 	$atime,$mtime,$ctime,$blksize,$blocks)
 	= stat $content;
     $response->content_length($size) unless $response->content_length;
-    my $machine=AGENT_MACHINE->new($self);
+    my $machine=PIA::Agent::Machine->new($self);
     $machine->stream($content);
 #    input_record_separator CONTENT undef;
 #    my $string=<CONTENT>;
 #    print $string;
 #    $response->add_content($string);
 
-    my $transaction=TRANSACTION->new($response,$machine,$request->from_machine);
+    my $transaction=PIA::Transaction->new($response,$machine,
+					  $request->from_machine);
     $transaction->assert('cache_response');
     $resolver->push($transaction);
     return 1; ##request is satisfied
 
 }
 
-sub handle{
+sub handle {
     my($self,$transaction,$resolver)=@_;
 
     ## Dispatch request or response to the right handler.
@@ -255,20 +273,21 @@ sub handle{
     return ;# should never get here
 }
 
-sub act_on{
+sub act_on {
     my($self,$transaction)=@_;
 
     ## Act on a transaction we've matched.
 
     if ($transaction->is_request) {
 	## We only handle a request if we have a cache entry for it.
-	print "looking for" . $transaction->url ." in cache\n" if $main::debugging;
+	print "looking for" . $transaction->url ." in cache\n" 
+	    if $main::debugging;
 	if ($self->entry($transaction->url)){
 	    $transaction->push($self) ;
-	    print "retrieving from cache\n";
+	    print "retrieving from cache\n" if $main::debugging;
 	}
     } elsif ($transaction->is_response) {
-	## Responses are _always_ handled, by caching.
+	## Responses are _always_ handled (but never satisfied), by caching.
 	$transaction->push($self);
     }
     return;

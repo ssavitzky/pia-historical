@@ -24,30 +24,36 @@ sub agent {
 
 sub callback{
     my($self,$callback)=@_;
-    #registera callback for responses
+
+    #register a callback for responses
+
     $$self{_callback}=$callback if $callback;
     return $$self{_callback};
     
 }
 
 
-## a transaction has come back  for the agent
-## use the agent call back, or just dump it
-sub send_response{
-    my($self,$response)=@_;
+sub send_response {
+    my($self, $response, $resolver)=@_;
+
+    ## Send a response using a predefined callback
+
     print "\n response for agent " if $main::debugging;
     my $callback=$self->callback;
     if(ref($callback) eq 'CODE'){
-	&$callback($self->agent,$response);
+	&$callback($self->agent, $response, $resolver);
     }
-#otherwise just drop it
+    # otherwise just drop it
 
 }
 
 #somebody asking for something
 # agency should treat as interform request
-sub get_request{
-    my($self,$request)=@_;
+sub get_request {
+    my($self, $request, $resolver)=@_;
+
+    ## Handle a direct request to an agent.
+
     my $agent=$self->agent;
     my $response=$agent->respond_to_interform($request) if $agent;
     return $response;

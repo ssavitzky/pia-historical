@@ -170,7 +170,7 @@ sub machine_callback{
 # 	$response->request($request);
 #     }
 
-    $main::main_resolver->push($response);
+    $main::resolver->push($response);
     
     return $response;
     

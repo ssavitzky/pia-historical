@@ -48,7 +48,7 @@ sub initialize {
     
     my $url="/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
-    $self->request($request);
+    $self->submit($request);
 }
 
 ############################################################################
@@ -231,6 +231,9 @@ sub machine {
 ###
 ### Handle transactions:
 ###
+###	These are normally overridden by subclasses; they can also be 
+###	handled by code or InterForm hooks.
+###
 
 sub act_on {
     my($self, $transaction, $resolver)=@_;
@@ -241,18 +244,15 @@ sub act_on {
     return $self->run_hook('act_on', $transaction, $resolver);
 }
 
-sub handle{
+sub handle {
     my($self, $request, $resolver)=@_;
 
-    ## Handle a request directed AT an agent.  
-    ##	  The default is to use an interform; subclasses or instances
-    ##	  should override this or install methods if different
-    ##	  behavior is required. 
+    ## Handle a transaction matched by an act_on method.  
+    ##	  Requests directly _to_ an agent are handled by its Machine;
+    ##	  the "handle" method is used only by agents like "cache" that
+    ##	  may want to intercept a transaction meant for somewhere else.
 
     return $self->run_hook('handle', $transaction, $resolver);
-
-    ## no longer needed, agent machine should call
-    ##    my $response = $self->respond_to_interform($request);
 }
 
 
@@ -669,7 +669,6 @@ sub respond_to_interform {
     }
     $url = $request->url unless defined $url;
     my $file=$self->find_interform($url);
-    my $name = $self->name();
 
     local $response;		# available for interforms.
     my $string;
@@ -744,65 +743,6 @@ sub respond_to_interform_put{
 print ".if not found\n";
 return $self->respond_to_interform($request,$url);
 
-}
-
-############################################################################
-###
-### Initialization Files:
-###
-###	Initialization files are looked up like InterForms, but instead
-###	of containing code to evaluate, they just contain forms to
-###	submit.  Every link is fetched, and every form is submitted.
-###
-
-sub request{
-    my($self,$request)=@_;
-
-    ## put request on stack for resolution
-
-    $request=PIA::Transaction->new($request,$main::this_machine)
-	unless ref($request) eq 'PIA::Transaction';
-
-    ## Unshift the request so they get popped in sequence.
-
-    $main::resolver->unshift($request);
-}
-
-sub run_init_file {
-    my($self,$fn,$find)=@_;
-
-    ## Submit each form and get each link in $fn.
-    ##    Look up $fn as an interform if $find is positive.
-    ##    Treat $fn as a string if $find is negative.
-    ##
-    ##    This is done for initialization, and is similar enough to 
-    ##    interform processing to be put with it.
-
-    my $html;
-    my $count=0;
-    my $request;
-
-    if ($find < 0) {
-	$html = IF::Run::parse_html_string($fn);
-    } else {
-	my $file = $find? $file = $self->find_interform($fn) : $fn;
-	return unless -e $file;
-	$html = IF::Run::parse_init_file($file);
-    }
-    for (@{ $html->extract_links(qw(a form)) }) {
-	my ($url, $element) = @$_;
-	if ($element->tag =~ /form/i) {
-	    $method=$element->attr('method');
-	    $request=$self->create_request($method,$url,$element);
-	} else {
-	    ## A name= link would probably cause confusion.
-	    $request=$self->create_request('GET',$url,$element);
-	}
-	my $status=$self->request($request);
-	$count+=1;
-    }
-    ## $html->delete;
-    return $count;
 }
 
 ###############====================================################
