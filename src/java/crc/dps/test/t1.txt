@@ -1,0 +1,56 @@
+<h1>This is a trivial test of the parser</h1>
+<h2>First let's try some syntax</h2>
+0<y>1<z>2<w>3</w>2</z>1</y>0
+0<y>1<z>2<w>321</y>0
+<b><p><test>: should be ended by the next end tag:</p></b>
+<element tag=hr empty>[hr: empty]
+<p><hr></p>
+<!-- wonder if comments work? -- <bar> -->
+<!decl some additional junk for declarations... >
+
+<foo a='a' a a=a b="b" c='c'></foo>
+
+<h2>Let's try some actors</h2>
+<foo>contents of foo before it's defined</foo>
+<actor tag=foo parsed>(contents of actor foo)</actor>[foo: parsed]
+<foo>contents of foo should not be visible</foo>
+<actor tag=bar empty>contents of actor bar</actor>[bar: empty]
+<bar>
+<actor tag=baz empty passed>(contents of actor baz)</actor>[baz: empty passed]
+<baz>
+<actor tag=foo1>(contents of actor foo1)</actor>[foo1: default]
+<foo1>contents of foo1 should not be visible</foo1>
+<actor tag=foo2 passed>(contents of actor foo2)</actor>[foo2: passed]
+<foo2>should be visible</foo2>
+<foo2>foo2 ended by empty end tag</>
+<foo2>with instance of foo <foo>contents of foo</foo></foo2>
+
+<!-- Tags nested in parsed actor bodies: -->
+
+<actor tag=bar0 empty>abc<bar>xyz</actor>
+<bar0>
+<actor tag=bar1 empty>a<x>b</x>y</actor>
+<bar1>
+<actor tag=bar2 empty>q<x><y>r</y></x></actor>
+<bar2>
+<actor tag=bar3 empty>z<n><m>w</actor>
+<bar3>
+
+<h2>Now some entities</h2>
+
+a &random; undefined entity.
+a &random undefined entity with no semicolon.
+<actor tag=foo3>foo3 contains &random; entity.</actor>[foo3: with undef.]
+<foo3>this is some content</foo3>
+<actor tag=foo4>foo4 content: '&content;'</actor>[foo4: with content.]
+<foo4>this is some content</foo4>
+
+
+<!-- Literals don't work yet. -->
+<literal><x><y>: end tag because literal not defined yet</literal>
+<element tag=literal literal>[literal: literal]
+<literal><x><y>: end tags present </y></x></literal>
+<literal><x><y>: no end tags because not parsed</literal>
+<x><y>: should be ended by the next tag:</x>
+
+last line.

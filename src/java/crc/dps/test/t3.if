@@ -1,0 +1,127 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>t3.if</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>InterForm test file t3.if</h1>
+
+<if>test
+    <then>if true is working</then>
+    <else>if true is FAILING</else>
+</if>
+<if>
+    <then>if false is FAILING</then>
+    <else>if false is working</else>
+</if>
+
+<h2>Test &lt;test&gt; operation</h2>
+
+should be '': '<test></test>' (completely empty)
+should be '': '<test> </test>' (space)
+should be '1': '<test> not blanks </test>' ( not blanks )
+should be '': '<test text> </test>' text( )
+should be '1': '<test text> not blanks </test>' text( not blanks )
+should be '1': '<test zero> 0 </test>' zero( 0 )
+should be '1': '<test zero> xxx </test>' zero( xxx )
+should be '': '<test zero> 100 </test>' zero( 100 )
+should be '': '<test zero> -100 </test>' zero( -100 )
+should be '': '<test positive> 0 </test>' positive( 0 )
+should be '1': '<test positive> 100 </test>' positive( 100 )
+should be '': '<test positive> -100 </test>' positive( -100 )
+should be '': '<test negative> 0 </test>' negative( 0 )
+should be '': '<test negative> 100 </test>' negative( 100 )
+should be '1': '<test negative> -100 </test>' negative( -100 )
+should be '': '<test match="foo"> test match something  </test>' match
+should be '1': '<test match="foo"> test match foo something  </test>' match
+should be '': '<test exact match="foo"> test match foo something  </test>'
+should be '1': '<test exact match="foo">foo</test>'
+should be '1': '<test match=foo>this FOO stuff</test>'
+should be '': '<test case match=foo>this FOO stuff</test>'
+should be '1': '<test case match=FOO>this FOO stuff</test>'
+
+<h2>Subst</h2>
+
+should be 'this did work': '<subst match=may result=did>this may work</subst>'
+should be 'this did nothing': '<subst match=may result=did>this did nothing</subst>'
+
+h2>Test problems with empty quotes inside quotes</h2>
+<blockquote>
+ should be 'xxyyzz': '<if>1<then>xx<protect>yy</protect>zz</then></if>'
+ should be 'xxzz': '<if>1<then>xx<protect></protect>zz</then></if>'
+ should be 'aabbcc': '<actor tag=xx>bb</actor>aa<xx></xx>cc'
+ should be 'aabb': '<actor tag=xxx></actor>aaa<xxx></xxx>bbb'
+ should be 'xxxyyyzzz': '<if>1<then>xxx<actor tag=bar empty>zzz</actor>yyy</then></if><bar>'
+ should be 'xxxyyy..': '<if>1<then>xxx<actor tag=bar empty></actor>yyy</then></if><bar>..'
+</blockquote>
+
+<h2>Test arithmetic</h2>
+
+should be 6: <sum>1 2 3</sum>
+should be 6: <sum><ul><li>1 <li> 2<li>3</ul></sum>
+
+should be 6: <product>1 2 3</product>
+should be 6: <product><ul><li>1 <li> 2<li>3</ul></product>
+
+should be 6: <difference> 8 2</difference>
+should be 6: <quotient>12 2</quotient>
+
+<h2>Test set, get entities</h2>
+
+foo set to "<set name=foo copy>value of foo</set>"
+get: "<get name=foo>"
+entity: "&foo;"
+<!-- need to use test here to keep variable stuff out of output: -->
+date: <test exact match="&date"><get name=date></test>
+fileName: "&fileName;" should be "t3.if"
+filePath: "&filePath;" should be "./t3.if"
+
+<h2>Test loops</h2>
+
+Simple: <repeat list="a b c">&li </repeat><br>
+&amp;li; outside repeat: &li;<br>
+Empty: <repeat list="">&li; </repeat><br>
+Nested: <repeat list="a b c">&li <repeat list="x y">&li; </repeat></repeat><br>
+value of entity at end: '&li'
+
+Foreach: <em foreach list="a b c">&li; </em><br>
+Foreach: <ol foreach list="a b c"><li>&li; </ol><br>
+
+
+<h2>Parsed entities</h2>
+
+set bar: <set name=bar>foo</set>
+bar: should be 'foo': '&bar;'
+<!-- at one point, entity values were getting appended to: -->
+Should be 1: '<test>&bar;</test>'
+Should be 'foo': '&bar;'
+Should be 1: '<test>xxx&bar;</test>'
+Should be 'foo': '&bar;'
+Should be 1: '<test>&bar;yyy</test>'
+Should be 'foo': '&bar;'
+
+Entity used as list for repeat; expanded in attribute:
+<set name=names>foo bar baz</set>
+<repeat list=&names;>&li; <foo bar=&li;>...</foo>
+</repeat>
+
+
+<h2>Text processing</h2>
+
+<add-markup>THIS is a _test_ *of* add="markup"</add-markup>
+
+<h2>Actor information</h2>
+
+attrs: <actor-attrs name=get><br>
+syntax: <actor-syntax name=get><br>
+dscr: <actor-dscr name=get><br>
+...  <add-markup><actor-dscr name=get></add-markup>
+
+attrs: <actor-attrs name=set><br>
+syntax: <actor-syntax name=set><br>
+dscr: <actor-dscr name=set><br>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<!-- the following conditional keeps the id out of the results --><if>
+<then><b>$Id$</b><br></then></if>
+</body></html>
