@@ -41,6 +41,8 @@ LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 JAVACLASSES= /usr/local/java/lib/classes.zip
 JAVASOURCE=  /usr/local/java/src
 
+CLASSPATH=$(JAVACLASSES)
+
 BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 
 ## Set this on the command line to see warnings about deprecated API's
