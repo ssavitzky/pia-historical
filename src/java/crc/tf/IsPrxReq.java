@@ -17,9 +17,10 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
-import crc.pia.ds.UnaryFunctor;
+import crc.ds.UnaryFunctor;
+import java.net.URL;
 
 public final class IsPrxReq implements UnaryFunctor{
 
@@ -29,7 +30,71 @@ public final class IsPrxReq implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
+      Object zfalse = new Boolean( false );
+      Object ztrue  = new Boolean( true );
+
+      if( !trans.isRequest() ) return zfalse;
+      URL url = trans.getRequestURL();
+      if( !url ) return zfalse;
       
+      String host = url.getHost();
+      if( host ) 
+	String lhost = host.toLowerCase();
+      else
+	lhost = "";
+      String lport = url.getPort().toString();
+      
+      if( lhost.startsWith("agency") || lhost == "" )
+	return zfalse;
+      
+      if( Pia.getInstance().getPort() == lport && Pia.getInstance().getHost().startsWith( lhost ) )
+	return zfalse;
+
+      return ztrue;
+
+      /*
+      boolean expected = false;
+      String path = url.getFile();
+      if( path ) 
+	String lpath = path.toLowerCase();
+      expected = lpath.startsWith("/http://");
+
+      if( !expected ) return zfalse;
+      StreamParser sp = new StreamParser( new StringBufferInputStream( lpath.substring(7) ) );
+
+      try{
+	Object o = sp.nextToken();  // whatever comes after /http://
+	if( o instanceof String )
+	  String zhost = ((String)o).toLowerCase();
+	String zport = "80";
+	
+	if( lpath.startsWith("http://"+zhost+":") ){
+	  int lstcolon = lpath.lastIndexOf(":");
+	  String sport = lpath.substring(lstcolon+1);
+	  try{
+	    int portnum = Integer.parseInt( sport );
+	    zport = sport;
+	  }catch(NumberFormatException e){
+	  }
+	}
+
+	if( zhost.startsWith("agency") || zhost == "" )
+	  return zfalse;
+	if( Pia.getInstance().getPort() == zport && Pia.getInstance().getHost().startsWith( zhost ) )
+	  return zfalse;
+
+	if( zhost ) return ztrue;
+	return zfalse;
+
+      }catch(IOException e1){
+	  e.printStackTrace();
+	  return zfalse;
+      }catch(NoSuchElementException e2){
+	return zfalse;
+      }
+      */
+
+
     }
 }
 

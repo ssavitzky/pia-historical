@@ -17,9 +17,10 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
-import crc.pia.ds.UnaryFunctor;
+import crc.ds.UnaryFunctor;
+import java.net.URL;
 
 public final class IsAgReq implements UnaryFunctor{
 
@@ -29,7 +30,27 @@ public final class IsAgReq implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
+      Object zfalse = new Boolean( false );
+      Object ztrue  = new Boolean( true );
+
+      if( !trans.isRequest() ) return zfalse;
+      URL url = trans.getRequestURL();
+      if( !url ) return zfalse;
+
+      String host = url.getHost();
+      if( host ) 
+	String lhost = host.toLowerCase();
+      else
+	lhost = "";
+      String lport = url.getPort().toString();
+
+      if( lhost.startsWith("agency") || lhost == "" )
+	return ztrue;
+
+      if( Pia.getInstance().getPort() == lport && Pia.getInstance().getHost().startsWith( lhost ) )
+	return ztrue;
       
+      return zfalse;
     }
 }
 

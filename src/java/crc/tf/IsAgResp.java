@@ -19,7 +19,8 @@
    */
 package crc.tf;
 
-import crc.pia.ds.UnaryFunctor;
+import crc.ds.UnaryFunctor;
+import java.net.URL;
 
 public final class IsAgResp implements UnaryFunctor{
 

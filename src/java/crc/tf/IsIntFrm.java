@@ -17,10 +17,10 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
 import java.net.URL;
-import crc.pia.ds.UnaryFunctor;
+import crc.ds.UnaryFunctor;
 
 public final class IsIntFrm implements UnaryFunctor{
 
