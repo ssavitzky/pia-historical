@@ -445,7 +445,7 @@ public class Parser extends Input {
 	  list.append(next);
 	}
       }
-      next = list.simplify();
+      next = list.nItems() == 1? list.itemAt(0) : list;
       //eatUntil(quote, false);
       //next = new Text(buf);	// === need to check for entities
       last = 0;
@@ -471,7 +471,8 @@ public class Parser extends Input {
 	  list.append(next);
 	} else break;
       }
-      next = list.simplify();
+      // === using next=list.simplify() here drops pieces.
+      next = list.nItems() == 1? list.itemAt(0) : list;
       debug("=" + (list.isText()? ".." : ".&."));
       buf = tmp;
       return true;
