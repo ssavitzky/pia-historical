@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.DataOutputStream;
-import gnu.regexp.RegExp;
+import crc.util.regexp.RegExp;
 
 public class Utilities{
 

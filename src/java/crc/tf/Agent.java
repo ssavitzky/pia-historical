@@ -6,8 +6,8 @@ package crc.tf;
 
 import crc.ds.UnaryFunctor;
 import java.net.URL;
-import gnu.regexp.MatchInfo;
-import gnu.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
 import crc.pia.Transaction;
 
 
