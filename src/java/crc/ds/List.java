@@ -1,6 +1,7 @@
 // List.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
+
 package crc.ds;
 
 import java.util.Vector;
@@ -92,6 +93,21 @@ public class List implements Stuff {
       if (o == it || (o != null && o.equals(it))) return i;
     } 
     return -1;
+  }
+
+  /**
+   * Remove all occurrences of object o
+   * @return number of occurrences removed
+   */
+  public int remove(Object o){
+    int removed = 0;
+    int index = indexOf(o);
+    while(index >= 0){
+       items.removeElementAt(index);
+       removed++;
+       index = indexOf(o);
+    }
+    return removed;
   }
 
   /** Remove and return the last item. */
