@@ -17,8 +17,8 @@ return $form;
    <li> change printer <a href=options.if> options</a>
    <li> see the current <a
  href=status.if> status </a>
-   <li> <a href=initialize.if> add </a> or <a
-	href=uninitialize.if>remove</a> preview button to every page.
+   <li> <a href=add_preview_button.if> add </a> or <a
+	href=remove_preview_button.if>remove</a> preview button to every page.
 </ul>
 
   For more information see <a
@@ -28,6 +28,6 @@ return $form;
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jul 18 18:26:11 1996
+Last modified: Wed Jul 24 13:41:24 1996
 <!-- hhmts end -->
 </body></html>
