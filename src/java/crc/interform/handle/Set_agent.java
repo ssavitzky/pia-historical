@@ -11,6 +11,7 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
+import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;set.agent&gt tag 
@@ -39,7 +40,7 @@ public class Set_agent extends crc.interform.Handler {
     String aname= Util.getString(it, "agent", Run.getAgentName(ii));
 
     Run env = Run.environment(ii);
-    SGML value = it.content().simplify();
+    SGML value = (it.content() == null)? Tokens.nil : it.content().simplify();
 
     crc.pia.Agent a = env.getAgent(aname);
 
