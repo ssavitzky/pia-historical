@@ -109,9 +109,7 @@ public class ParseTreeDecl extends ParseTreeNamed implements ActiveDeclaration {
   }
 
 
-  /** Convert the Token to a String using the Handler's
-   *	<code>convertToString</code> method, if there is one.
-   *	Otherwise it uses  <code>basicToString</code>.
+  /** Convert the Token to a String.
    */
   public String toString() {
     return startString() + contentString() + endString();

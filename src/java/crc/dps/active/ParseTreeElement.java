@@ -389,14 +389,10 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   }
 
 
-  /** Convert the Token to a String using the Handler's
-   *	<code>convertToString</code> method, if there is one.
-   *	Otherwise it uses  <code>basicToString</code>.
+  /** Convert the elment to a String in external form..
    */
   public String toString() {
-    return (handler != null)
-      ? handler.convertToString(this)
-      : startString() + contentString() + endString(); 
+    return startString() + contentString() + endString(); 
   }
 
   /************************************************************************
