@@ -5,8 +5,8 @@
 package crc.content.text;
 
 import crc.pia.Transaction;
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 
 /**
  * class for html which is not parsed. only difference with plain text is
