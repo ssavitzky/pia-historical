@@ -1,7 +1,7 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>&agentName; Home Page</title>
-<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+<!-- base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if" -->
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <!-- load tags specific to this agent (just in case not already loaded) -->
