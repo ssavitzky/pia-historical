@@ -6,28 +6,19 @@
 This directory contains three kinds of configuration information:
 
 <ol>
-  <li> configuration files for various kinds of web-enabled appliances.  Each
+  <li> <a href="#app">Appliance</a> configurations.  Each
        appliance's configuration is in a directory with the name of the
        appliance's top-level agent.
-  <li> configuration files for various operating systems and environments.
-  <li> makefiles and other configuration files for the standard ``Software
-       Development Kit''. 
+  <li> <a href="#env">Environment</a> configurations, for various operating
+       systems and environments. 
+  <li> the ``<a href="#sdk">Software Development Kit</a>'', consisting of
+       makefiles and other configuration files. 
 </ol>
-Files under this directory contain <p>
-
-In general, directories with capitalized or uppercase names belong to specific
-appliances, while directories with lowercase names are more generic.  In all
-cases a ``<code>pia</code>'' subdirectory contains the appliance-specific
-contents of the ``<code>~pia</code>'' directory, and ``<code>pia/my</code>''
-the contents of the ``<code>~pia/.pia</code>'' directory--the names are
-changed to avoid having special characters in the names.<p>
-
-Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
 
 
 <h2>Annotated Contents</h2>
 
-<h3>Appliances</h3>
+<h3><a name="app">Appliances</a></h3>
 <dl>
   <dt> <a href="Demos/">Demos/</a>
   <dd> Configuration files for a PIA Demonstration appliance.
@@ -43,7 +34,7 @@ Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
   <dd> Configuration files for a ``generic'' web appliance.
 </dl>
 
-<h3>Operating Systems &amp; Environments</h3>
+<h3><a name="env">Operating Systems &amp; Environments</a></h3>
 <dl>
   <dt> <a href="cdrom/">cdrom/</a>
   <dd> Content and Makefile for various CD-ROM release formats.
@@ -54,7 +45,7 @@ Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
   <dd> 
 </dl>
 
-<h3>Software Development Kit</h3>
+<h3><a name="sdk">Software Development Kit</a></h3>
 <dl>
   <dt> <a href="makefiles/">makefiles/</a>
   <dd> Templates to be included in Makefile's.
@@ -63,6 +54,17 @@ Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
   <dt> <a href="filemap.props">filemap.props</a>
   <dd> Default filemap (extension to MIME type) file.
 </dl>
+
+<h2>Conventions</h2>
+
+In general, directories with capitalized or uppercase names belong to specific
+appliances, while directories with lowercase names are more generic.  In all
+cases a ``<code>pia</code>'' subdirectory contains the appliance-specific
+contents of the ``<code>~pia</code>'' directory, and ``<code>pia/my</code>''
+the contents of the ``<code>~pia/.pia</code>'' directory--the names are
+changed to avoid having special characters in the names.<p>
+
+Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
