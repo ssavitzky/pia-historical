@@ -92,7 +92,9 @@ public class Authenticate extends crc.interform.Handler {
     }
 
     // === should really get password file path from a property ===
-    String file = Util.getString(it, "file", "/etc/passwd");
+    String file = Util.getFileName(it, ii, false);
+    if (file == null) file = "/etc/passwd";
+
     Reader pwfile = null;
 
     try {
