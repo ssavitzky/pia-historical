@@ -162,8 +162,6 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
    * @param s The string to be unescaped
    * @return the unescaped string.
    */
-
-
   public static synchronized String unescape (String s) {
 
     crc.pia.Pia.debug( "The input string-->"+s);
@@ -172,29 +170,25 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
 	int hb = -1;
 	int lb = -1;
 	StringBuffer sbuf = new StringBuffer () ;
-	int l  = s.length() ;
-	crc.pia.Pia.debug( "The string len is-->"+ Integer.toString( l ));
+	int len  = s.length() ;
+	crc.pia.Pia.debug( "The string len is-->"+ Integer.toString( len ));
 	int ch = -1 ;
 
-	for (int i = 0 ; i < l ; i++) {
+	for (int i = 0 ; i < len ; i++) {
 	  
 	  digitBuf = new StringBuffer();
 	  switch (ch = s.charAt(i)) {
 	  case '%':
-	      int j = i;
-	      int k = i+1; 
-	      int kk = i+2;
-	      if( k < l-1 && kk < l-1 ){
-		ch = s.charAt (++i) ;
-		digitBuf.append( (char)ch );
-		
-		ch = s.charAt (++i) ;
-		digitBuf.append( (char)ch );
+	      if( i <= len - 3 ){
+		digitBuf.append( s.charAt(++i) );
+		digitBuf.append( s.charAt(++i) );
 		
 		if( digitBuf.length() > 0 ){
 		  int foo = Integer.parseInt( new String( digitBuf ), 16 );
 		  sbuf.append( (char)foo );
 		}
+	      } else {
+		sbuf.append((char)ch);
 	      }
 	      break ;
 	  case '+':
