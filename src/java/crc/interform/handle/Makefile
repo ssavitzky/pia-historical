@@ -72,10 +72,12 @@ PIA_ACTORS= \
 	Agent_set_criterion.java \
 	Agent_install.java \
 	Agent_remove.java \
+	Authenticate.java \
 	Get_agent.java \
 	Get_form.java \
 	Get_pia.java \
 	Get_trans.java \
+	Password_file_entry.java \
 	Pia_exit.java \
 	Set_agent.java \
 	Set_pia.java \
