@@ -7,17 +7,12 @@ unshift(@INC,"/usr/local/bin");
 unshift(@INC,"/usr/bin");
 
 
-$GWtempdir = "/tmp/URLS";
-system("mkdir $GWtempdir") unless -d $GWtempdir;
-
 $timeout = undef;
 #$UNJPEG = "/color/bin/unjpeg -R ";
 #$UJPEG = "djpeg ";
 $JPEG2PNM = "djpeg ";
 $GIFTOPNM = "giftopnm ";
 $DEFAULTIMG = "/tmp/printer/wflogo.ps";#In case an image cant be found
-     $GWfile = "URLGOT";
-     $GWF ="$GWtempdir/$GWfile";
 
 $latexheading = "\\batchmode\\pagestyle{myheadings}\\setlength{\\parskip4ex plus1ex minus1ex} \\setlength{\\parindent0em} \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\addtolength{\\headsep}{0.3cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
 $latexparams = "\\\\addtolength{\\\\baselineskip}{.75mm}\\\\footnotetext{$newurl}\\\\fboxrule 2.5pt ";
@@ -30,65 +25,84 @@ sub html2latex{
     my $psfile=shift;
     my $base_url=shift;
     my $docId=shift;
+    $GWtempdir = shift;
 
-system("rm -f $GWtempdir/*");
+    $GWtempdir = "/tmp/URLS" unless $GWtempdir;
+    print "using temporary directory $GWtempdir"  if $main::debugging;
+    system("mkdir $GWtempdir") unless -d $GWtempdir;
+    $GWfile = "URLGOT";
+    $GWF ="$GWtempdir/$GWfile";
 
 
-     $imagenum = 1;		# 
-     @hrefs = split(/<IMG/i,$page);
+    system("rm -f $GWtempdir/*");
+
+
+    $imagenum = 1;		# 
+    @hrefs = split(/<IMG/i,$page);
     $n = $[;
     while (++$n <= $#hrefs) {
-	 # parse and get absolute url
-	$hrefs[$n] =~ m|src\s*=\s*"?([^">]*)|i ;
-my $url = new URI::URL ($1,$base_url);
+	# parse and get absolute url
+	$hrefs[$n] =~ m|src\s*=\s*"?([^""<>]*)|i ; #for emacs"   
+	my $url = new URI::URL ($1,$base_url);
         my $request=new HTTP::Request('GET',$url);
 #  ($protocol, $host, $port, $rest1, $rest2, $rest3) = &url'parse_url($1);
 #  $page = &http'get($host,$port,$rest1,$version);
 				# now open the image file
-     $isjpgfile = ($1 =~ /\.jpg$|\.jpeg$/i);
-      $imagefile = "$GWtempdir/htmlIMG.$imagenum.gif";
-      $imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
+	$isjpgfile = ($1 =~ /\.jpg$|\.jpeg$/i); #nolonger needed,check content
+	$imagefile = "$GWtempdir/htmlIMG.$imagenum.gif";
+	$imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
 
-    my $ua=new LWP::UserAgent;
-    my $response=$ua->request($request,$imagefile);
+	my $ua=new LWP::UserAgent;
+	my $response=$ua->request($request,$imagefile);
+	my $image_type=$response->content_type;
+
 #print $response->as_string;
 #      open(IMAGEF,">$imagefile");				# 
 #      print IMAGEF $page ;
 #      close(IMAGEF);
+	
+
+	system("rm $imagefile.pnm") if -f $imagefile.pnm ; 
+
 				# Set scale so size appears similar to screen
-     if($isjpgfile) {
-
-      system("unset noclobber ;$JPEG2PNM < $imagefile  >$imagefile.pnm");
-  } else { #default for gifs
-
-      system("unset noclobber ;$GIFTOPNM $imagefile >$imagefile.pnm");
-  }
-$size = `pnmfile $imagefile.pnm`;
-$size =~ /(\d*) by (\d*)/;
-$w = $1;
-if(($w/72) > 7) {
-    $scale = (7 * 72) / $w;
-} else {
-    $scale = 1;
-}
-      $statimg = system("unset noclobber ;pnmtops -noturn -scale $scale $imagefile.pnm > $imagefileps");
-     if($statimg) {
-	 system("cp $DEFAULTIMG $imagefileps");
+     if($image_type !~ m:image/(gif|jpeg):) {
+	 #failed to get image
+## this done later	 system("cp $DEFAULTIMG $imagefile.pnm");
+     } else {
+	 $image_type=$1;
+	 if($image_type=~/jpeg/){
+	     system("unset noclobber ;$JPEG2PNM < $imagefile  >$imagefile.pnm");
+	 } else { #default for gifs
+	     system("unset noclobber ;$GIFTOPNM $imagefile >$imagefile.pnm");
+	 }
      }
-      $imagenum++;
-  }				# Now latexify it
+	$size = `pnmfile $imagefile.pnm`;
+	$size =~ /(\d*) by (\d*)/;
+	$w = $1;
+	if(($w/72) > 7) {
+	    $scale = (7 * 72) / $w;
+	} else {
+	    $scale = 1;
+	}
+	$statimg = system("unset noclobber ;pnmtops -noturn -scale $scale $imagefile.pnm > $imagefileps");
+	if($statimg) {
+	    system("cp $DEFAULTIMG $imagefileps");
+	}
+	$imagenum++;
+    }				# Now latexify it
 				# Add in doc id if we have one
-if($docId){
-    $idCode = "-h \"$latexparams\\\\newsavebox{\\\\ebox}\\\\sbox{\\\\ebox}{\\\\encode{$docId}{Ricoh CRC WebDoc$docId}}\\\\markright{\\\\fbox{\\\\hspace{1cm}\\\\usebox{\\\\ebox} $header}}\\\\vspace*{-2.25cm}\\\\fbox{\\\\hspace{1cm}\\\\usebox{\\\\ebox} $header}\\\\par\\\\vspace{1.75cm} \" ";
-} else {
-    $idCode = "-h \"$latexparams\\\\markright{\\\\fbox{$header}}\\\\vspace*{-2.25cm}\\\\fbox{$header}\\\\par\\\\vspace{1.75cm} \" ";
-}
-open(MYFILE,">$GWF");
-print MYFILE $page;
-close MYFILE;
+    if($docId){
+	$idCode = "-h \"$latexparams\\\\newsavebox{\\\\ebox}\\\\sbox{\\\\ebox}{\\\\encode{$docId}{Ricoh CRC WebDoc$docId}}\\\\markright{\\\\fbox{\\\\hspace{1cm}\\\\usebox{\\\\ebox} $header}}\\\\vspace*{-2.25cm}\\\\fbox{\\\\hspace{1cm}\\\\usebox{\\\\ebox} $header}\\\\par\\\\vspace{1.75cm} \" ";
+    } else {
+	$idCode = "-h \"$latexparams\\\\markright{\\\\fbox{$header}}\\\\vspace*{-2.25cm}\\\\fbox{$header}\\\\par\\\\vspace{1.75cm} \" ";
+    }
+    open(MYFILE,">$GWF");
+    print MYFILE $page;
+    close MYFILE;
 
 
-system("unset noclobber ; cd $GWtempdir ; html2latex -o '[psfig]{article} $latexheading' $idCode $GWfile ; echo q | latex $GWfile ; dvips -o $psfile $GWfile");
-
+    print("unset noclobber ; cd $GWtempdir ; html2latex -o '[psfig]{article} $latexheading' $idCode $GWfile ; echo q | latex $GWfile ; dvips -o $psfile $GWfile \n")  if $main::debugging;
+    system("unset noclobber ; cd $GWtempdir ; html2latex -o '[psfig]{article} $latexheading' $idCode $GWfile ; echo q | latex $GWfile ; dvips -o $psfile $GWfile");
+    
 }
 1;

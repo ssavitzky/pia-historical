@@ -160,7 +160,7 @@ sub agent_directory{
     push(@possibilities,$root) if $root;
 ## not clear if we want to append agent name to if_root, for now we assume that
 ##  someone else did the right thing
-    my $main=$self->name;
+    my $name=$self->name;
     my $type=$self->type;
 
     push(@possibilities,$main::USR_ROOT . "/$name/");

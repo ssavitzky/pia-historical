@@ -11,12 +11,18 @@ require HTML::FormatPS;
 # first deals with retrieving and converting URL's to postscript & previews
 #second deals with webfax
 
+##hack to find device
+$GS = "gs";
+my $dev=`$GS -h`;
+if ($dev =~ /gif8/) {
+    $GSDEVICE="gif8";
+    $GS2GIF="";
+} else {
+    $GSDEVICE="ppm";
+    $GS2GIF=" | ppmquant 256 | ppmtogif ";
+}
+
 #where the temporary files live
-#$printer_root_directory=  "/home/wolff/www/printer/";
-#$ps_file="/home/wolff/www/printer/preview.ps";
-#$image_file="/home/wolff/www/printer/preview.gif";
-#$image_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
-#$ps_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
 
 ### setup of filenames and DOFS agent done in initialize.if
 #$printer_root_directory=  "/tmp/printer/";
@@ -25,9 +31,9 @@ require HTML::FormatPS;
 #$ps_URL="file:/tmp/printer/preview.ps";
 
 
-sub image_file_name{
+sub file_names{
     $self=shift;
-    my $image_file="/preview";
+    my $image_file="preview";
 
     my $num=$self->option('preview_number');
     my $string = "$printer_root_directory$image_file$num.gif";
@@ -37,22 +43,29 @@ sub image_file_name{
     $ps_URL="$printer_base_url$image_file$num.ps";
     $num+=1;
     $self->option('preview_number',$num);
-    return $string;
+    return ($string,$ps_file,$image_URL,$ps_URL);
+
+    #return $string;
 }
 
 sub html_latex_ps{
 
     require "html2latex.pl";
-    
+
+    my $self=shift;
     my $response=shift;
     my $request=shift;
     my $docId=shift;
-    my $status=html2latex($response->content,$ps_file,$request->url,$docId);
+    my $directory=$self->option('tempdirectory');
+    $directory=$self->agent_directory . "temp/" unless $directory;
+    
+    my $status=html2latex($response->content,$ps_file,$request->url,$docId,$directory);
     print "latex status is $status \n" if $main::debugging;
 }
 
 sub html_ps{
-
+    my $self=shift;
+    
     my $response=shift;
 
     open(PSFILE,">$ps_file");
@@ -65,19 +78,21 @@ sub html_ps{
 }
 
 sub create_postscript{
+    my $self=shift;
+    
     my $request=shift;
     my $docId=shift;
 
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($request); 
 
-    my $render=$current_self->option("render_method");
-    
+    my $render=$self->option("render_method");
+    $docId = "010" unless $docId;
 
     if($render eq "latex"){
-	html_latex_ps($response,$request,$docId);
+	html_latex_ps($self,$response,$request,$docId);
     }else{
-	html_ps($response,$request,$docId);
+	html_ps($self,$response,$request,$docId);
     }
 return $response;    
     
@@ -86,12 +101,23 @@ return $response;
 sub create_preview{
     my $self=shift;
     my $request=shift;
-    my $response=create_postscript($request);
-    my $image_file=image_file_name($self);
-
+    my @files=file_names($self);
+    my $image_file=shift @files;
+    $ps_file=shift @files;
+    
+    my $response=create_postscript($self,$request);
+    my $thumbsize=$self->option('thumbsize');
+    
 #    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
-    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r72 -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
+#    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r$thumbsize -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
+    my $cmd="cat /dev/null | $GS -sOutputFile=- -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
+    $cmd.="$GS2GIF";
+    $cmd.=" > $image_file";
+    
+    
 #    print $cmd;
+    print $cmd  if $main::debugging;
+    
     my $status=system ($cmd);
     #shouldgetstatushere & check for multiple pages...put %d in output filename
     print "Status is $status\n" if $main::debugging;
