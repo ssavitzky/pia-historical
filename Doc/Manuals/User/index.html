@@ -10,7 +10,7 @@
   an active document, written on the assumption that it is being viewed
   through a PIA.  If you're reading this online and don't have a PIA running,
   see the first section, ``Getting Started,'' and browse to
-  &lt;http://agency/Doc/Manuals/User&gt;, otherwise many of the example links
+  &lt;http://Agency/Doc/Manuals/User&gt;, otherwise many of the example links
   won't work.<p>
 
   If you have no idea why you would want a PIA in the first place, see this
@@ -52,16 +52,16 @@ If you're using Netscape, go to the ``proxies'' tab under ``network options.''
 Click on ``manual proxy configuration'' and ``view'', and set the host name
 and port to the ones the PIA printed out when it started.  Browse to the
 Agency's home page:
-<code>&lt;<a href="http://agency/">http://agency/</a></code>&gt;.<p> 
+<code>&lt;<a href="http://Agency/">http://Agency/</a></code>&gt;.<p> 
 
 Many Unix browsers, such as Chimera and Arena, take their proxies from
 environment variables.  In this case you can have the PIA start your browser:
 
 <pre>
-  pia -c "chimera http://agency/"&amp;
+  pia -c "chimera http://Agency/"&amp;
 </pre>
 
-The host ``<code>agency</code>'' is shorthand for the hostname and port number
+The host ``<code>Agency</code>'' is shorthand for the hostname and port number
 of the agency your browser is using as a proxy.  It lets you refer to your
 PIA in documents, no matter what computer you're using.  The PIA will
 automatically tell your browser what the <em>real</em> host and port are.  If
@@ -126,9 +126,9 @@ File Systems that contain ordinary documents; agents with lowercase names are
 
 Agents have both a ``home page'' (which you get to via a URL that doesn't
 end in a ``<code>/</code>'' character, like this: <code><a
-href="/agency">/agency</a></code>), and an ``index page''(which you get to via
+href="/Agency">/Agency</a></code>), and an ``index page''(which you get to via
 a URL ending in ``<code>/</code>'', like this: <code><a
-href="/agency">/agency/</a></code>).  Usually the index will just tell you
+href="/Agency">/Agency/</a></code>).  Usually the index will just tell you
 what ``sub-agents,'' if any, are available, and the home page is where you go
 to find out about the agent's functions and control its operations.<p>
 
@@ -142,39 +142,39 @@ when the Agency is being used as a proxy. <p>
 
 <h3>Agency</h3>
 
-The <code><a href="/agency">agency</a></code> agent, as you might expect, is
+The <code><a href="/Agency">Agency</a></code> agent, as you might expect, is
 the agent that you use to control the Agency itself--it lets you install and
 delete agents, restart or shut down the Agency, even shut down your 
 computer.  It is used <em>inside</em> the Agency for many purposes, including
 installing and removing agents.  It contains many useful InterForms:<p>
 
 <ul>
-  <li> <a href="/agency/agents.if">list running agents</a>
-  <li> <a href="/agency/installers.if">install new agents</a>
-  <li> <a href="/agency/entities.if">list defined entities</a>
-  <li> <a href="/agency/options.if">view/change options</a>
-  <li> <a href="/agency/debug.if">toggle debugging</a> (currently 
+  <li> <a href="/Agency/agents.if">list running agents</a>
+  <li> <a href="/Agency/installers.if">install new agents</a>
+  <li> <a href="/Agency/entities.if">list defined entities</a>
+  <li> <a href="/Agency/options.if">view/change options</a>
+  <li> <a href="/Agency/debug.if">toggle debugging</a> (currently 
        <code>off</code> );
-  <li> <a href="/agency/remove_agent.if"> remove agent</a>
-  <li> <a href="/agency/shutdown.if">Shut down the computer</a>
+  <li> <a href="/Agency/remove_agent.if"> remove agent</a>
+  <li> <a href="/Agency/shutdown.if">Shut down the computer</a>
 </ul>
 
-The <a href="/agency/installers.if">install new agents</a> form is
+The <a href="/Agency/installers.if">install new agents</a> form is
 particularly useful if you want to try out unfamiliar agents.  At the moment
 the only way to get up-to-date documentation on an agent is from its home
 page, which is only useable after you install it.<p>
 
 
-The Agency's top-level home page is located inside the <code>agency</code>
+The Agency's top-level home page is located inside the <code>Agency</code>
 agent, in the file <code><a
-href="/agency/ROOTindex.if">/agency/ROOTindex.if</a></code>. <p>
+href="/Agency/ROOTindex.if">/Agency/ROOTindex.if</a></code>. <p>
 
 <h3>DOFS</h3>
 
-The <code><a href="/dofs">dofs</a></code> agent contains the InterForms for
+The <code><a href="/DOFS">DOFS</a></code> agent contains the InterForms for
 managing the various Document-Oriented File System agents.  Its <a
-href="/dofs/">index page</a> gives you a list of all installed DOFS's, while
-its <a href="/dofs">home page</a> contains a form for installing a new DOFS.<p>
+href="/DOFS/">index page</a> gives you a list of all installed DOFS's, while
+its <a href="/DOFS">home page</a> contains a form for installing a new DOFS.<p>
 
 Document-Oriented File Systems are very much like ordinary Web server document
 directories.  The main difference is that the <code>index.html</code> file, if
@@ -194,8 +194,8 @@ the source code for an InterForm.<p>
 
 <h3>Spies</h3>
 
-There are two major ``spy'' agents: the <code><a href="/cia">cia</a></code>
-and the <code><a href="/fbi">fbi</a></code>.  (These correspond to two of the
+There are two major ``spy'' agents: the <code><a href="/Cia">Cia</a></code>
+and the <code><a href="/Fbi">Fbi</a></code>.  (These correspond to two of the
 major espionage agencies of the US federal government; at some point we might
 add an NSA as well.  Of course in the PIA we have to call them agents rather
 than agencies.  Oh, well.)<p>
@@ -225,11 +225,11 @@ example checking your history and hotlist, without losing your place.<p>
 
 <h3>History</h3>
 
-Eventually the <code><a href="/history">history</a></code> agent will let you
+Eventually the <code><a href="/History">History</a></code> agent will let you
 do searches in your history list, view it in various ways, and so on.  For the
 moment it just keeps a file for every day (the name is
-<code>/My/history/<em>yymmdd</em>.html</code>; it really ought to be
-<code>/My/history/<em>yyyy</em>/<em>mmdd</em>.html</code>) that lists every
+<code>/My/History/<em>yymmdd</em>.html</code>; it really ought to be
+<code>/My/History/<em>yyyy</em>/<em>mmdd</em>.html</code>) that lists every
 URL you visit outside the Agency itself, together with the time you went
 there.<p>
 
@@ -242,7 +242,7 @@ there.<p>
        operate exactly as described here.
 </dl>
 
-The <code><a href="/cache">cache</a></code> agent keeps a copy of every page
+The <code><a href="/Cache">Cache</a></code> agent keeps a copy of every page
 you browse to.  (You will eventually be able to tell it not to keep a copy of
 pages on your local system, and how long to retain the pages it <em>does</em>
 keep.)  From then on, whenever you browse to a page you've been to before you
@@ -276,7 +276,7 @@ instead of the ``C''.<p>
        agent doesn't exist at all, <em>yet!</em>)
 </dl>
 
-The <code><a href="/hotlist">hotlist</a></code> agent is really more than
+The <code><a href="/Hotlist">Hotlist</a></code> agent is really more than
 that--it lets you attach keywords and a short description to a page, locate
 pages by both keyword and description, and gather annotated links into new
 documents which you can then export to, for example, your public Web pages.
@@ -300,9 +300,9 @@ it will also be possible to automatically e-mail hotlist entries to your
 
 <h3>Logo</h3>
 
-The <code><a href="/logo">logo</a></code> agent is responsible for making
+The <code><a href="/Logo">Logo</a></code> agent is responsible for making
 those cute little pentagon-based logos you see all over the Agency's pages.
-It has many options (detailed on its <a href="/logo">home page</a>), but
+It has many options (detailed on its <a href="/Logo">home page</a>), but
 basically it pretends to have a lot of files called
 <code><em>tttthh</em>.gif</code>, where <code><em>tttt</em></code> is a
 ``type'' like <code>pia</code> or <code>pent</code>, and
@@ -313,8 +313,8 @@ border. <p>
 <blockquote>
   By the way, it's perfectly acceptable for an agent's directory to contain
   ordinary HTML files, images, data, and even programs as well as
-  InterForms. For example, the <code><a href="/printer">printer</a></code>
-  agent's printer icon, and the <code><a href="/hotlist">hotlist</a></code>
+  InterForms. For example, the <code><a href="/Printer">Printer</a></code>
+  agent's printer icon, and the <code><a href="/Hotlist">Hotlist</a></code>
   agent's ``postit-note'' icon, are both ordinary <code>.gif</code> files in
   the agent's directories.
 </blockquote>
@@ -333,7 +333,7 @@ and history files, and so on.  It is accessible as the DOFS agent
 
 This directory contains a subdirectory for every agent that needs to store
 personal data.  Your history, for example, is in <code><a
-href="/My/history/">/My/history/</a></code>. Any sub-directory called
+href="/My/History/">/My/History/</a></code>. Any sub-directory called
 ``<code>spool</code>'' is being used for temporary files, and it's safe to
 clean it out every so often if you start running out of memory.<p>
 
@@ -362,28 +362,28 @@ InterForm, that copies it to your private InterForm directory.<p>
 
 <h3>Your Personal Startup File</h3>
 
-The file <code><a href="/PIA/Agents/agency/START-UP.html"
->/PIA/Agents/agency/START-UP.html</a></code>, and your personal version in
-<code><a href="/My/Agents/agency/START-UP.html"
->/My/Agents/agency/START-UP.html</a></code>, are used (not surprisingly) when
+The file <code><a href="/PIA/Agents/Agency/START-UP.html"
+>/PIA/Agents/Agency/START-UP.html</a></code>, and your personal version in
+<code><a href="/My/Agents/Agency/START-UP.html"
+>/My/Agents/Agency/START-UP.html</a></code>, are used (not surprisingly) when
 the agency starts up, to install an initial set of agents.  It consists of a
 set of HTML &lt;form&gt; tags; when the agency starts, each form is
 automatically submitted.<p>
 
 You can write this file automatically by clicking a link on the <code><a
-href="/agency">agency</a></code> agent's home page; it will save your current
+href="/Agency">Agency</a></code> agent's home page; it will save your current
 agent configuration.  Some people like to start up with the same configuration
 each time and install additional agents as needed.  You can find installation
 forms for most agents in <code><a
-href="/agency/installers.if">/agency/installers.if</a></code>, which is
-accessible from the <code><a href="/agency">agency</a></code> agent's home
+href="/Agency/installers.if">/Agency/installers.if</a></code>, which is
+accessible from the <code><a href="/Agency">Agency</a></code> agent's home
 page.<p>
 
 Configuring an agent, especially someone else's, is rather tricky, so the best
-way to create your <code><a href="/My/Agents/agency/START-UP.html"
+way to create your <code><a href="/My/Agents/Agency/START-UP.html"
 >START-UP.html</a></code> file is by saving a configuration you like.  You can
 add to it later by copying forms out of <code><a
-href="/agency/installers.if">/agency/installers.if</a></code>.<p>
+href="/Agency/installers.if">/Agency/installers.if</a></code>.<p>
 
 At some point we will make a collection of people's personal startup
 configurations and customizations (as much as they feel like making public),
@@ -405,7 +405,7 @@ up. <p>
 
 <blockquote>
   Many peripheral agents, for example the <code><a
-  href="/printer">printer</a></code> agent, can be installed on your personal
+  href="/Printer">Printer</a></code> agent, can be installed on your personal
   agency and configured to use devices attached to your PC or available over
   the network.  We're <em>not</em> talking about that here.
 </blockquote>
@@ -413,7 +413,7 @@ up. <p>
 
 At the moment, you have to re-set your browser's HTTP proxy in order to use
 most features of a peripheral agency.  In the near future, though, there will
-be a <code><a href="/proxy">proxy</a></code> agent that lets you change your
+be a <code><a href="/Proxy">Proxy</a></code> agent that lets you change your
 <em>personal agency's</em> proxy.<p>
 
 
@@ -423,7 +423,7 @@ be a <code><a href="/proxy">proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Jul 22 15:28:06 1997
+Last modified: Wed Jul 23 14:17:07 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
