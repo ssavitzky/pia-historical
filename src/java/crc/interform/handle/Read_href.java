@@ -16,6 +16,7 @@ import crc.sgml.SGML;
 import crc.sgml.Element;
 
 import crc.interform.Run;
+import crc.interform.Environment;
 
 import crc.interform.Tagset;
 import crc.ds.TernFunc;
@@ -25,8 +26,10 @@ import crc.pia.Transaction;
 import crc.content.text.ParsedContent;
 import crc.util.NullOutputStream;
 
+
 import java.net.URL;
-import java.io.ByteArrayOutputStream;
+import java.io.PipedOutputStream;
+import java.io.PipedInputStream;
 
 /** Handler class for &lt;read-href&gt tag 
  * <dl>
@@ -71,8 +74,8 @@ public class Read_href extends Get {
     // this will hold the resulting data as determine by the callback
     // however by the time result is populated, it may be too late
     // callback should notify us when it is ready in case we are waiting
-    Element result = new Element();
-    
+    SGML result = new Element();
+    result.attr("href",it.attr("href"));  //save some attributes
     String method;
     
     if(it.hasAttr("method")){
@@ -85,11 +88,11 @@ public class Read_href extends Get {
     tsname = it.attrString("tagset");
     if (tsname == null) {
 	tsname = "HTML";  // default tagset for processing
-      }
-    if (it.hasAttr("process") ||it.hasAttr("tagset") || it.hasAttr("findall") || it.hasAttr("name") ) {
+    }
+    if (it.hasAttr("process") ||it.hasAttr("tagset") || isComplex(it) ) {
       process= true;
-     }
-
+    }
+    
 
     // should we wait for the result?
     long waitTime = 0;
@@ -100,14 +103,14 @@ public class Read_href extends Get {
 	if(time != null) try {
 	  waitTime = Long.parseLong(time) * 1000;
 	} catch( Exception e) {
-	  // number format  bad use default
+	  // number format  bad use default 10 min
 	  waitTime = 600 * 1000;
 	}
     }
 	
     // also some tags imply waiting
-    if(waitTime == 0 && isComplex(it)){
-      waitTime = 30 * 1000;// wait 60 seconds by default
+    if(waitTime == 0 && process){
+      waitTime = 30 * 1000;// wait 30 seconds by default
     }
 
 
@@ -117,8 +120,18 @@ public class Read_href extends Get {
     Agent agent =env.agent;
     AgentMachine m = new AgentMachine(agent);
 
+    // set up pipes to get the resulting stream back to us
+    PipedOutputStream pipeOut = new PipedOutputStream();
+    PipedInputStream pipeIn = new PipedInputStream();
+    try{
+      pipeOut.connect(pipeIn);
+      // pipeIn.connect(pipeOut);
+    } catch (Exception e){
+      System.out.println(" piping problem ");
+      crc.pia.Pia.debug(this, " failed to connect pipes");
+    }
     // callback which will notify us when result has been populated with content
-    ContentToSGMLConverter cb =  new ContentToSGMLConverter(result, ii, process, tsname);
+    ContentToSGMLConverter cb =  new ContentToSGMLConverter(result, ii, process, tsname, pipeOut);
     m.setCallback(cb);
     
     // set query string if any -- null is OK
@@ -142,6 +155,10 @@ public class Read_href extends Get {
       catch( Exception e){
 	//interrupted... in any case just continue
       }
+      // process our results
+      if(process)
+	result = processInputStream(pipeIn, result,tsname);
+
     }
 
     SGML  results = result;
@@ -153,6 +170,21 @@ public class Read_href extends Get {
     ii.replaceIt(results);
       
 
+  }
+
+  /**
+   * do any needed parsing to convert this thing into something useful.
+   * the callback may process the input instead -- if so result should have
+   * a completed attribute and the proper contents
+   */
+
+  protected SGML processInputStream(PipedInputStream in, SGML result, String tsname){
+     if( result.hasAttr("completed")) return result;
+     Environment env = new Environment();
+     crc.sgml.Tokens tree = env.parseStream(in,tsname);
+     result.append(tree);
+     debug(this, " processed " + tree.nItems() + " from href");
+     return result;
   }
 }
 
@@ -169,14 +201,16 @@ class ContentToSGMLConverter  implements TernFunc
   
   Interp ii;  boolean process; String tsname;
   Tagset tags;
-  
-// constructor
-  ContentToSGMLConverter(SGML result, Interp ii,  boolean process, String tsname)
+  PipedOutputStream pipeOut; // the stream to write the contents onto
+
+  // constructor
+  ContentToSGMLConverter(SGML result, Interp ii,  boolean process, String tsname,PipedOutputStream pipeOut)
   {
     this.result = result;
     this.ii =ii;
     this.process = process;
     this.tsname = tsname;
+    this.pipeOut = pipeOut;
     if(process && tsname != null) tags = Tagset.tagset(tsname);
   }
   
@@ -190,18 +224,30 @@ public Object execute  (Object content, Object transaction, Object agent)
    return result;
   }
   
+
+  /**
+   * given the content, transaction, and agent objects
+   *  convert the content into an SGML or just notify the sender
+   * and send the data out the pipe
+   */
+
  SGML convert(Content c, Transaction t, Agent a)
   {
+    // should handle redirections and errors here
+    int code = t.statusCode();
+    result.attr("responsecode",t.statusCode());
+
     if(process && (c  instanceof ParsedContent )){
       ParsedContent p = (ParsedContent) c;
       p.setTagset(tags);
       result.append(p.getParseTree());
+      result.attr("completed"); // no more processing needs to be done
       return result;
       
     } else {
        // convert to  string or just set a image tag
       String type=t.contentType();
-      if( type.indexOf("text") < 0){
+      if(type == null || type.indexOf("text") < 0){
 	// insert as image tag
 	URL u = t.requestURL();
 	if(u != null){
@@ -209,18 +255,26 @@ public Object execute  (Object content, Object transaction, Object agent)
 	  img.attr("href",u.toString());
 	  result.append(img);
 	} 
+	result.attr("completed"); // no more processing needs to be done
       } else {
-	// insert as text
-	  ByteArrayOutputStream b =  new ByteArrayOutputStream();
+	// wake up our listener
+	synchronized(ii){ii.notify();}
+	// sent to pipe for caller to process
 	  try{
-	    c.writeTo(b);
-	  } catch ( Exception e){}
-	  // add string to result
-	   result.append(b.toString());
+	    c.writeTo(pipeOut);
+	  } catch ( Exception e){
+	    // write to pipe failed for some reason
+	  }
+	  
       }
       
     }
-    
+    try{
+      pipeOut.flush();
+      pipeOut.close();
+    } catch (Exception e){
+      crc.pia.Pia.debug(this," problem closing output pipe");
+    }
     return result;
   }
   
