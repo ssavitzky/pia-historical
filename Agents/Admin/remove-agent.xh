@@ -22,7 +22,7 @@
 
 <form action="remove-agent" method="POST">
 Name:<select name="agent">
-   <repeat list="&agentNames;" ><if><test not exact match="&AGENT:name;>&li;</test>
+   <repeat list="&agentNames;" ><if><test not exact match="&AGENT:name;">&li;</test>
      <then><option>&li;</option></then></if></repeat>
      </select>
 <input type="submit" value="Remove Agent">
