@@ -12,6 +12,12 @@
 <set name="AGENT:groupName">""</set>
 
 
+<set name="AGENT:all-concepts">
+	<connect src="/RHServer/pia_concepts.xml" entity=datacon></connect>
+</set>
+
+<set name="AGENT:group-concepts"></set>
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

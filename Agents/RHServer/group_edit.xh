@@ -4,52 +4,88 @@
 </head>
 
 <body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Readers' Helper Group Editor</header>
+<sub-head page=group_edit />
+
+
+
 <h1>Readers' Helper Group Editor</h1>
 
 &urlQuery;
 
-<FORM METHOD="POST" ACTION="/RHServer/group_edit">
+SELECTED GROUP: &AGENT:groupName;
 
-<p>
-<b>Group Name: </b><input size=40 name="GroupName" value="">
+<if>&FORM:DeleteGroup;<then>
+	<if>&FORM:gmenu;<then>
+		You have selected &FORM:gmenu; for deletion. It will now
+		be deleted from the groups.  I will ask for confirmation
+		before deleting, when I figure out how to do that.
+	</if>
 
+<else>
+	<FORM METHOD="POST" ACTION="/RHServer/group_edit">
+	<if>&FORM:gmenu;</then>
+		<set name="AGENT:groupName">&FORM:gmenu;</set>
+	</if>
 
-<TABLE BORDER=1 CELLSPACING=5 CELLPADDING=2 COLS=3 WIDTH="75%" HEIGHT="33%" NOSAVE >
-<TR>
-<TH>All Concepts</TH>
-<TH></TH>
-<TH>Group Concepts</TH>
-</TR>
+	<if>&FORM:AddGroup;<then>
+		<!--Add a group name input -->
+		Group name: <input type=text name="addgroupname" size=40>
+	</if>
 
-<TR> 
-<TD>
-<!-- Add list of groups -->
-<SELECT NAME="allconcepts" SIZE=10>
-	<concepts path="/RHServer/simple.xml"></concepts>
-</SELECT>
-
-</TD>
-<TD VALIGN=middle ALIGN=center ROWSPAN=2>
-	<input type="submit" name=" Add " value="Add >>"> 
-	<input type="submit" name=" Remove" value=" << Remove"> 
-</TD>
-
-<TD><SELECT NAME="groupconcepts" SIZE=10>
-	<OPTION>-- No concepts selected yet --
-</select>
-</TD>
-</TR>
-</TABLE>
-
-<p>
-
-<!-- Add group command buttons -->
-<input type="submit" name="GroupSubmit" value="Submit"> 
-<input type="submit" name="GroupReset" value="Reset"> 
-
-</form>
-
-
+	<h2> Selected Group: &AGENT:groupName;</h2>
+	<!-- EditGroup was selected. Fill in group name window plus -->
+	<!-- Group Concepts window -->
+	<CENTER>
+	<TABLE CELLSPACING=5 CELLPADDING=2 COLS=3 WIDTH="65%" HEIGHT="33%" NOSAVE >
+	<TR>
+	<TH>All Concepts</TH>
+	<TH></TH>
+	<TH>Group Concepts</TH>
+	</TR>
+	<TR> 
+	<TD>
+	<!-- Add list of groups -->
+	<SELECT NAME="allconcepts" SIZE=10>
+		<get-all-concepts></get-all-concepts>
+	</SELECT>
+	</TD>
+	<TD>
+		<TABLE COLS=1 ROWS=2 WIDTH=40>
+			<TR><TD ALIGN=CENTER><input type="submit" name="Add" value="Add >>"></TD> </TR>
+			<TR><TD ALIGN=CENTER><input type="submit" name="Remove" value=" << Remove"></TD></TR>
+		</TABLE>
+	</TD>
+	<TD><SELECT NAME="AGENT:gconceptmenu" SIZE=10>
+		<if>&FORM:EditGroup;<then>
+			<get-all-group-concepts group=&AGENT:groupName;></get-all-group-concepts>
+		</if>
+		<if>&FORM:Remove;<then>
+			<remove-concept-group concept="Expert Systems" group=Work></remove-concept-group>
+			<get-all-group-concepts group=Work></get-all-group-concepts>
+		</if>
+	</SELECT>
+	</TD>
+	</TR>
+	</TABLE>
+	<p>
+	<!-- Add group command buttons -->
+	<input type="submit" name="GroupSubmit" value="Submit"> 
+	<input type="submit" name="GroupReset" value="Reset"> 
+	</CENTER>
+	<!-- Add concept to group button selected -->
+	<if>&FORM:Add;<then>
+		<!-- Add the allconcepts selection to the group-concepts list -->
+		<SELECT>
+			<select>&AGENT:group-concepts;<content></select>
+				<OPTION>&FORM:allconcepts;
+		</SELECT>
+	</if>
+	</form>
+</else>
+</if>
 <footer />
 </BODY>
 </HTML>
+
+

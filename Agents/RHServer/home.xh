@@ -12,9 +12,12 @@
 <!-- =================================================================== -->
 <header show-date=yes>Readers' Helper Server</header>
 
-<sub-head page=profiles />
+<sub-head page=home />
+
+
 
 <h1>Readers' Helper Server</h1>
+
 
 Readers' Helper Server gives access to:
 
