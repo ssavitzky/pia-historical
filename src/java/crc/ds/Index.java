@@ -65,9 +65,7 @@ public class Index {
   ************************************************************************/
 
   public Index( String path) {
-
     items = Util.split(path,'.');
-    
   }
 
   public Index(List l) {
@@ -83,7 +81,10 @@ public class Index {
 
 public SGML lookup(SGML datum)
   {
-    while(currentItem < size() && datum != null){
+
+     while(currentItem < size() && datum != null){
+       debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() );
+       
       datum = datum.attr(this);  //delegate to SGML
       next();  // shift counter up
       
@@ -93,6 +94,10 @@ public SGML lookup(SGML datum)
 
 public SGML lookup(Table datum)
   {
+    if(datum == null){
+      return null;
+    }
+    
     SGML data = (SGML)datum.at((String)items.shift());
     return lookup(data);
   }
