@@ -228,9 +228,9 @@ sub simple_request{
 
     my $response=$self->pop;
     ###bad things happen if this is not a response
-    print "something wrong with simple request" if $response->to_machine;
+    #print "something wrong with simple request" if !defined $response->request;
     if($file){
-    print "simple request into $file \n";
+    print "simple request into $file \n" if $main::debugging;
 	open(F,">$file");
 	print F $response->content;
 	close F;
