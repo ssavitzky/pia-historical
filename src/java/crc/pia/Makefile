@@ -28,7 +28,8 @@ FILES = \
 	Headers.java \
 	ThreadPool.java \
 	HTTPRequest.java \
-	HTTPResponse.java
+	HTTPResponse.java \
+	FileAccess.java
 
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
