@@ -1,4 +1,4 @@
-package PIA::TF::Factory; ###### Factory for Transaction Features.
+package PIA::TF::Registry; ###### Registry for Transaction Features.
 ###	$Id$
 ###
 ###	This is the factory and repository for the objects that compute 

@@ -14,7 +14,7 @@ package PIA::Transaction; ###### HTTP Transactions
 use HTTP::Request;
 use HTTP::Response;
 
-use PIA::TF::Factory;
+use PIA::TF::Registry;
 use PIA::Content;
 
 use DS::Thing;
@@ -225,7 +225,7 @@ sub feature_computers {
     ##	 with the functions that compute them. 
 
     ## All transactions share the same feature computers...
-    return PIA::TF::Factory::computers();
+    return PIA::TF::Registry::computers();
 }
 
 sub init_features {
