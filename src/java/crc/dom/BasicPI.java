@@ -12,6 +12,26 @@ public class BasicPI extends AbstractNode implements PI {
     name = "";
     data = "";
   }
+
+  public BasicPI(BasicPI bpi)
+  {
+    if( bpi != null ){
+      setParent( null );
+      setPrevious( null );
+      setNext( null );
+      setName( bpi.getName() );
+      setData( bpi.getData() );
+      copyChildren( bpi );
+    }
+  }
+
+  public Object clone(){
+    BasicPI n = (BasicPI)super.clone();
+    n.setName( getName() );
+    n.setData( getData() );
+    n.copyChildren( this );
+    return n;
+  }
   
   public void setName(String name){ this.name = name; }
   public String getName(){return name;}

@@ -23,6 +23,38 @@ public class BasicDocument extends AbstractDocument implements Document {
     setDocumentElement( null );
   }
 
+  public BasicDocument(BasicDocument bd)
+  {
+    if( bd != null ){
+      setParent( null );
+      setPrevious( null );
+      setNext( null );
+
+      //only refers to DTD here
+      setDocumentType( bd.getDocumentType() );
+      Element rootDoc = bd.getDocumentElement();
+      if( rootDoc instanceof AbstractNode ){
+	Object cloneroot = ((AbstractNode)rootDoc).clone();
+	setDocumentElement( (Element)cloneroot );
+      }
+      else
+	setDocumentElement( rootDoc );
+    }
+  }
+
+
+  public Object clone(){
+    BasicDocument n = (BasicDocument)super.clone();
+    //only refers to DTD here
+    setDocumentType( getDocumentType() );
+    Element rootDoc = getDocumentElement();
+    Object cloneroot = ((AbstractNode)rootDoc).clone();
+    setDocumentElement( (Element)cloneroot );
+
+    return n;
+  }
+
+
   public void setDocumentType(Node documentType){ this.documentType = documentType; }
   public Node getDocumentType(){ return documentType; }
 
@@ -35,26 +67,13 @@ public class BasicDocument extends AbstractDocument implements Document {
    *  order is a depth first enumeration of the elements as they occurred in the
    *  original document. 
    */
-  public NodeEnumerator getElementsByTagName(String name){ return null; }
-
-  /* implementing Node interface */
-  public int getNodeType(){ return NodeType.DOCUMENT; }
-  public Node getParentNode(){ return null; }
-  public NodeList getChildren(){ return null; }
-  public boolean hasChildren(){ return false; }
-  public Node     getFirstChild(){ return null; }
-  public Node     getPreviousSibling(){ return null; }
-  public Node     getNextSibling(){ return null; }
-
-  public void insertBefore(Node newChild, Node refChild)
-       throws NotMyChildException{}
-
-  public Node replaceChild(Node oldChild, Node newChild)
-       throws NotMyChildException{ return null; }
-
-  public Node removeChild(Node oldChild)
-       throws NotMyChildException{ return null; }
-
+  public NodeEnumerator getElementsByTagName(String name)
+  {
+    if( documentElement != null && name != null )
+      return documentElement.getElementsByTagName( name );
+    else
+      return null;
+  }
 
   /**
    * document DTD.  This could be null for html document 

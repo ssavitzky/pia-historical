@@ -12,6 +12,26 @@ public class BasicText extends AbstractNode implements Text {
     data = "";
     ignoreWhiteSpc = false;
   }
+
+  public BasicText(BasicText bt)
+  {
+    if( bt != null ){
+      setParent( null );
+      setPrevious( null );
+      setNext( null );
+      setIsIgnorableWhitespace( false );
+      setData( bt.getData() );
+      copyChildren( bt );
+    }
+  }
+
+  public Object clone(){
+    BasicText n = (BasicText)super.clone();
+    n.setIsIgnorableWhitespace( false );
+    n.setData( getData() );
+    n.copyChildren( this );
+    return n;
+  }
   
   public void setData(String data){ this.data = data; }
   public String getData(){ return data; }
