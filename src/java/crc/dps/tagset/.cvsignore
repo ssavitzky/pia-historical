@@ -3,6 +3,7 @@
 *.foo.*
 *.tss *.tso
 basic.html
+slides.html
 standalone.html
 standard.html
 tagset.html
