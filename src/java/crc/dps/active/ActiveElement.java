@@ -46,6 +46,11 @@ public interface ActiveElement extends Element, ActiveNode {
    */
   public String getAttributeString(String name);
 
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a boolean
+   */
+  public boolean hasTrueAttribute(String name);
+
   /** Convenience function: Set an attribute's value to a NodeList. */
   public void setAttributeValue(String name, NodeList value);
 

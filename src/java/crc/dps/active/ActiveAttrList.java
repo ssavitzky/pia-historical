@@ -37,6 +37,11 @@ public interface ActiveAttrList extends AttributeList {
    */
   public String getAttributeString(String name);
 
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a boolean
+   */
+  public boolean hasTrueAttribute(String name);
+
   /** Convenience function: Set an attribute's value to a Node. */
   public void setAttributeValue(String name, Node value);
 

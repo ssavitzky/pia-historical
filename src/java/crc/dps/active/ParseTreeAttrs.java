@@ -151,6 +151,13 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
     return (value == null)? null : value.toString();
   }
 	 
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a boolean
+   */
+  public boolean hasTrueAttribute(String name) {
+    return crc.dps.aux.Test.trueValue(getAttribute(name));
+  }
+
   public void setAttributeValue(String aname, NodeList value) {
     Attribute attr = new ParseTreeAttribute(aname, value);
     attr.setSpecified(value != null);

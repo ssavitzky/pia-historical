@@ -95,6 +95,10 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     //			 + " value= " + attr.getChildren());
   }
 
+  public boolean hasTrueAttribute(String name) {
+    return crc.dps.aux.Test.trueValue(getAttribute(name));
+  }
+
   public void setAttributeValue(String name, NodeList value) {
     setAttribute(new ParseTreeAttribute(name, value));
   }
