@@ -10,3 +10,8 @@ include $(MF_DIR)/file.make
 include $(MF_DIR)/graphics.make
 include $(MF_DIR)/text.make
 
+FIGFILES = $(wildcard *.fig)
+FIG2GIF = $(FIGFILES:fig=gif)
+FILES= $(FIG2GIF)
+
+all:: $(FILES)
