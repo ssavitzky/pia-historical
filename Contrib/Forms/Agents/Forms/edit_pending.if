@@ -11,7 +11,7 @@
  
 <tagset-load name=Form-agent-actors>
 
- <if> <test match=&user; exact><get trans name=AuthenticatedUser></test> <then>
+ <if> <test match=&user;><get trans name=AuthenticatedUser></test> <then>
  <set name=allow>true</set></then></if>
 <if-in-group group=&user;><set name=allow>true</set></if-in-group>
 <if-in-group group=admin><set name=allow>true</set></if-in-group>
