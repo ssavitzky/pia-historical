@@ -24,9 +24,9 @@ PIA_ACTORS= \
 
 TAGSETS = \
 	HTML_ts.java \
-	Basic_ts.java \
-	StandAlone_ts.java \
-	Standard_ts.java
+	basic.java \
+	standalone.java \
+	standard.java
 
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
 
@@ -46,14 +46,14 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 
 DOC_CMD= $(BINDIR)/pia_wrapper crc.dps.Filter
 
-Basic-tagset.html::	 $(BASIC_ACTORS) Basic_ts.java
+Basic-tagset.html::	 $(BASIC_ACTORS) Basic.java
 	$(DOC_CMD) -t Basic actor-doc.if > Basic-tagset.html
 
-StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) StandAlone_ts.java
+StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) standalone.java
 	$(DOC_CMD) -t StandAlone actor-doc.if > StandAlone-tagset.html
 
 Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
-	Standard_ts.java
+	standard.java
 	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
 
 #doc:: actor-doc report
@@ -65,8 +65,7 @@ actor-doc:	$(TAGSET_DOCS)
 	cp $(TAGSET_DOCS) $(TSDOCDIR)
 
 
-Basic_ts.class: BasicTagset.java
 HTML_ts.class: BasicTagset.java
-Basic_ts.class: BasicTagset.java HTML_ts.java
-StandAlone_ts.class: BasicTagset.java HTML_ts.java
-Standard_ts.class: BasicTagset.java HTML_ts.java
+basic.class: BasicTagset.java HTML_ts.java
+standalone.class: BasicTagset.java HTML_ts.java
+standard.class: BasicTagset.java HTML_ts.java
