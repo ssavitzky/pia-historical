@@ -125,7 +125,7 @@ public class BasicAttribute extends AbstractNode implements Attribute {
    * references will have been replaced with their values in the returned string. 
    */
   public String toString(){
-    if( value == null) return null;
+    if( value == null) return "";
 
     long len = value.getLength();
     StringBuffer sb = new StringBuffer();
@@ -134,7 +134,10 @@ public class BasicAttribute extends AbstractNode implements Attribute {
     for( long i = 0; i < len; i++ ){
       try{
 	n = value.item( i );
-	sb.append( " " + n );
+	if(n != null)
+	  sb.append( " " + n );
+	else
+	  sb.append("");
       }catch(NoSuchNodeException e){
       }
     }
