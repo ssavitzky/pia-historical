@@ -417,13 +417,14 @@ sub expand_entities {
     ##	current entity table.  #digit is *not* expanded.
 
     ##  === Entities must expand as strings.  Use <get-> for tokens. ===
+    ##  === can use asString($ents->{$2}) ===
 
-    my $entities = $ii->entities;
-    $entities = \%entity2char unless defined $entities;
+    my $ents = $ii->entities;
+    $ents = \%entity2char unless defined $ents;
 
     for (@_) {
 #	s/(&\#(\d+);?)/$2 < 256 ? chr($2) : $1/eg;
-	s/(&(\w+);?)/$entities->{$2} || $1/eg;
+	s/(&(\w+);?)/(exists $ents->{$2})? $ents->{$2} : $1/eg;
     }
     $_[0];
 }
