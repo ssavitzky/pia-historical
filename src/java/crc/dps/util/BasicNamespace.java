@@ -90,11 +90,11 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
       itemsByName.at(name, binding); // ... in hash table.  Name stays.
       replaceChild(old, binding);    // ... in children
       // adjust namespaceItems if necessary:
-      if (old instanceof Namespace) {
-	if (binding == null || !(binding instanceof Namespace))
+      if (old.asNamespace() != null) {
+	if (binding == null || !(binding.asNamespace() != null))
 	  namespaceItems --;
       } else {
-	if (binding != null && binding instanceof Namespace) 
+	if (binding != null && binding.asNamespace() != null) 
 	  namespaceItems ++;
       }
     } catch (Exception ex) {
@@ -123,7 +123,7 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
     itemsByName.at(name, binding);
     itemNames.push(name);
     addChild(binding);
-    if (binding instanceof Namespace) namespaceItems ++;
+    if (binding.asNamespace() != null) namespaceItems ++;
   }
 
   /************************************************************************
