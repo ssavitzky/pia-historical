@@ -221,7 +221,7 @@ sub if_entities {
 	'urlQuery'	=> $query,
 	'urlPath'	=> $path,
 
-	'piaUSER'	=> $ENV{'USER'},
+	'piaUSER'	=> $ENV{'USER'} || getlogin,
 	'piaHOME'	=> $ENV{'HOME'},
 	'piaHOST'	=> $main::PIA_HOST,
 	'piaPORT'	=> $main::PIA_PORT,
