@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.DataInputStream;
 import java.io.StringBufferInputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.IOException;
 
 import java.net.URL;
@@ -59,16 +60,25 @@ public class Logo extends GenericAgent {
 
     String path   = url.getFile();
 
-    /* === extreme hack!! Redirect to a local PERL PIA === */
-    String redirUrlString = "http://gelion:8001"+path;
-    String msg = "Extreme kludge: see "+redirUrlString;
-    Content ct = new ByteStreamContent( new StringBufferInputStream(msg));
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine(),
-					     request.fromMachine(), ct, false);
-    response.setHeader("Location", redirUrlString);
-    response.setStatus(HTTP.MOVED_PERMANENTLY);
-    response.setContentLength( msg.length() );
-    response.startThread();
+    if (true) {
+      /* === extreme hack!! call a PERL program! === */
+      String cgi = findInterform("Logo.cgi");
+      execProgram(request, cgi+" -cgi "+path);
+      
+    } else {
+      /* === EVEN MORE extreme hack!! Redirect to PERL PIA!!! === */
+
+      String redirUrlString = "http://gelion:8001"+path;
+      String msg = "Extreme kludge: see "+redirUrlString;
+      Content ct = new ByteStreamContent( new StringBufferInputStream(msg));
+      Transaction response = new HTTPResponse( Pia.instance().thisMachine(),
+					       request.fromMachine(),
+					       ct, false);
+      response.setHeader("Location", redirUrlString);
+      response.setStatus(HTTP.MOVED_PERMANENTLY);
+      response.setContentLength( msg.length() );
+      response.startThread();
+    }
   }
     
 
@@ -81,6 +91,24 @@ public class Logo extends GenericAgent {
    */
   public Logo(){
     super();
+  }
+
+  private void execProgram(Transaction request, String cmd) { 
+    Runtime rt = Runtime.getRuntime();
+    Process process = null;
+    InputStream in;
+    PrintStream out;
+
+    try{
+      process = rt.exec( cmd );
+      in = process.getInputStream();
+
+      Transaction response = new HTTPResponse( request, new Machine(in));
+      
+    }catch(Exception ee){
+      String msg = "can not exec :"+cmd;
+      throw new PiaRuntimeException (this, "execProgram", msg) ;
+    }
   }
 
 }
