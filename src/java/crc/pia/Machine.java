@@ -125,7 +125,7 @@ public class Machine {
    * getRequest string.
    * @returns the number of bytes read. 
    */
-  public Content getRequest(Transaction request, Resolver resolver) {
+  public Transaction getRequest(Transaction request, Resolver resolver) {
     String proxy;
     Transaction reply;
     InputStream in;
@@ -140,7 +140,7 @@ public class Machine {
 	agent.setRequestProperty("proxy", proxy);
       */
 
-      return new Content( URLConnection );
+      return new Transaction(request, Content( URLConnection ) );
     }catch(IOException e){
     }
   }
