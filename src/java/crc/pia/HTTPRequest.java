@@ -477,11 +477,9 @@ public class  HTTPRequest extends Transaction {
   }
   
   /**
-   * errorResponse -- Return a "not found" error along with reason.
-   *
-   *
+   * Construct and return an error response.
    */
-  protected void errorResponse(int code, String msg){
+  public void errorResponse(int code, String msg){
     int mycode = code;
     String reason = standardReason(mycode);
     Pia.instance().debug(this, "This is the err msg :"+msg);

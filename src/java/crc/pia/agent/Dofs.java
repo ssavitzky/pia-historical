@@ -66,19 +66,19 @@ public class Dofs extends GenericAgent {
     if( url == null )
       return;
 
-    String path   = url.getFile().toLowerCase();
-    String myname = name().toLowerCase();
-    String mytype = type().toLowerCase();
+    String path   = url.getFile();
+    String myname = name();
+    String mytype = type();
     crc.pia.Pia.instance().debug(this, "path-->"+path);
     crc.pia.Pia.instance().debug(this, "myname-->"+myname);
     crc.pia.Pia.instance().debug(this, "mytype-->"+mytype);
 
     /*
-      Examine the path to see what we have:
-      myname/path   -- this is a real file request.
-      myname        -- home page InterForm
-      mytype/myname -- Interforms for myname
-      mytype/path   -- Interforms for DOFS
+     * Examine the path to see what we have:
+     *	 myname/path   -- this is a real file request.
+     *	 myname        -- home page InterForm === should really be index.html
+     *	 mytype/myname -- Interforms for myname
+     *	 mytype/path   -- Interforms for DOFS
      */
 
     Agent agnt = this;
@@ -136,21 +136,13 @@ public class Dofs extends GenericAgent {
 	  myurl = new URL(url.getProtocol(), myname, url.getPort(), path);
 	}catch(MalformedURLException e){}
 
-	replyString = agnt.respondToInterform( request, myurl, res );
-	InputStream in = null;
-	
-	if( replyString == null )
-	  throw new PiaRuntimeException(this, "respond", "No InterForm file found for "+url.toExternalForm());
-	else{
-	  if( replyString!= null )
-	    in = new StringBufferInputStream( replyString );
-	  ByteStreamContent c = new ByteStreamContent( in );
-	  
-	  new HTTPResponse( request, c );
+	if (! agnt.respondToInterform( request, myurl, res )) {
+	  throw new PiaRuntimeException(this, "respond",
+					"No InterForm file found for "+
+					url.toExternalForm());
 	}
       }
     }
-
   }
     
   /**
@@ -211,11 +203,17 @@ public class Dofs extends GenericAgent {
    * interform directory that corresponds to the DOFS agent.
    */
 
+  /************************************************************************
+  ** File handling:
+  **	These utilities are static, and really belong in their own class.
+  **	They can be used by other agents for retrieving non-interform files.
+  ************************************************************************/
 
   /**
    * generate the HTML for a local directory.
    */
-    protected void retrieveDirectory( String path, Transaction request ){
+    protected static void retrieveDirectory( String path, Transaction request,
+					     Agent agent ){
       File myfile = new File( path );
       Transaction response =  null;
 
@@ -257,7 +255,7 @@ public class Dofs extends GenericAgent {
       RegExp re = null;
       MatchInfo mi = null;
 
-      boolean all = optionAsBoolean("all");
+      boolean all = agent.optionAsBoolean("all");
 
       // Ensure that the base URL is "/" terminated
       URL myurl = request.requestURL();
@@ -313,7 +311,7 @@ public class Dofs extends GenericAgent {
       response.setHeader( "Last-Modified", mDate.toGMTString() ); 
       response.setContentType("text/html");
       response.setContentLength( html.length() );
-      response.setHeader("Version", version());
+      response.setHeader("Version", agent.version());
       response.startThread();
     }
 
@@ -321,7 +319,7 @@ public class Dofs extends GenericAgent {
   /**
    * content type mapping
    */
-  protected String contentType( String fn ){
+  protected static String contentType( String fn ){
     String lfilename = fn.toLowerCase();
 
     String fileExt     = null;
@@ -344,47 +342,54 @@ public class Dofs extends GenericAgent {
   /**
    * Retrieve the file at $url in order to satisfy $request.
    */
-  protected void retrieveFile ( URL url, Transaction request ) throws PiaRuntimeException{
+  protected void retrieveFile ( URL url, Transaction request ) {
+    String filename = urlToFilename( url );
+
+    retrieveFile(urlToFilename(url), request, this);
+  }
+
+  /** 
+   * Retrieve a file or directory and respond to the given request with it.
+   */
+  public static void retrieveFile ( String filename, Transaction request,
+				    Agent agent )
+       throws PiaRuntimeException {
+
     Transaction reply = null;
-    File zfile = null;
+
     URL u = null;
     URL myurl = null;
 
-    int index = -1;
     RegExp re = null;
     MatchInfo mi = null;
 
-    String filename = urlToFilename( url );
-
     if( filename == null ){
-      String msg = "Can not locate request file.\n";
-      throw new PiaRuntimeException (this
-				     , "retrieveFile"
-				     , msg) ;
+      String msg = "No file specified.\n";
+      throw new PiaRuntimeException (agent, "retrieveFile" , msg) ;
     }
 
-    zfile = new File( filename );
-    if( zfile.isDirectory() )
-      retrieveDirectory( filename, request );
-    else{
+    File zfile = new File( filename );
+    if ( ! zfile.exists()) {
+      String msg = "File <code>"+filename+"</code> not found by agent "
+	+ agent.name();
+      request.errorResponse(HTTP.NOT_FOUND, msg);
+    } else if( zfile.isDirectory() ) {
+      retrieveDirectory( filename, request, agent );
+    } else {
 
       reply = new HTTPResponse( request, false );
       reply.setStatus( 200 );
       reply.setReason( "OK" );
-      reply.setHeader("Version", version());
+      reply.setHeader("Version", agent.version());
 
       try{
-	Pia.instance().debug(this, "Going to get the following file :"+ filename );
+	Pia.instance().debug(agent, "Retrieving file :"+ filename );
 	String data = null;
 	byte[] fromFile = null;
 
 
 	fromFile = Utilities.readFrom( filename );
 	data = new String ( fromFile,0,0, fromFile.length);
-	if( DEBUG ){
-	  System.out.println("Here is the output from the file found :");
-	  System.out.println(data);
-	}
 
 	String contentType = contentType( filename );
 	if( contentType.indexOf("html") == -1 ){
@@ -399,12 +404,16 @@ public class Dofs extends GenericAgent {
 	}else{
 
 	  // yes I am a html file
+
+	  // Fixing <base> wastes time === probably best not to do it.
+
 	  String base = "<BASE HREF";
 	  String baseRefBegin = null;
 	  String afterBaseRef = null;
 	  String search = null;
 	  StringBuffer tmp = new StringBuffer( data );
 	  
+	  int index;
 	  if( (index = data.indexOf( base )) != -1 ){
 	    baseRefBegin = "<BASE HREF=\"";
 	    
@@ -426,7 +435,7 @@ public class Dofs extends GenericAgent {
 	    tmp.append( myurl.toExternalForm()+ "\">" );
 	    tmp.append( data.substring( afterindex ) );
 	  }
-	  Pia.instance().debug(this, "before creating reply" );
+	  Pia.instance().debug(agent, "before creating reply" );
 	  InputStream newdata  = new StringBufferInputStream( new String(tmp) );
 	  Content finalContent = new ByteStreamContent( newdata );
 	  
@@ -439,23 +448,13 @@ public class Dofs extends GenericAgent {
 
       }catch(NullPointerException e1){
 	String msg = "Bad file name.\n";
-	throw new PiaRuntimeException (this
-				       , "retrieveFile"
-				       , msg) ;
+	throw new PiaRuntimeException (agent, "retrieveFile", msg) ;
       }catch(FileNotFoundException e2){
 	String msg = "File not found.\n";
-	throw new PiaRuntimeException (this
-				       , "retrieveFile"
-				       , msg) ;
+	throw new PiaRuntimeException (agent, "retrieveFile", msg) ;
       }catch(IOException e2){
-	if( DEBUG )
-	  System.out.println( e2.toString() );
-	throw new PiaRuntimeException (this
-				       , "retrieveFile"
-				       , e2.toString()) ;
+	throw new PiaRuntimeException (agent, "retrieveFile", e2.toString()) ;
       }catch(Exception e3){
-	if( DEBUG )
-	  System.out.println( e3.toString() );
       }
     }
 
@@ -485,9 +484,9 @@ public class Dofs extends GenericAgent {
 
 
   /**
-   *
+   * Suck in the body part of an HTML file, as a string.
    */
-  protected String suckBody( String filename ){
+  protected static String suckBody( String filename ){
     StringBuffer data = new StringBuffer();
 
     try{
@@ -508,16 +507,14 @@ public class Dofs extends GenericAgent {
 
       return zfinal;
     }catch(Exception e ){
-      if( DEBUG )
-	System.out.println( e.toString() );
       return null;
     }
   }
 
   /**
-   *
+   * Decide whether to ignore a file, based on its name.
    */
-  public boolean ignoreFile( String filename, String path ){
+  public static boolean ignoreFile( String filename, String path ){
     RegExp re = null;
     MatchInfo mi = null; 
     try{

@@ -144,11 +144,11 @@ public class  HTTPResponse extends Transaction {
   }
 
   /**
-   * errorResponse -- Return a "not found" error for a request with no destination.
-   *
-   *
+   * Construct and return an error response.
+   *	This is a new transaction, sent to <em>this</em> transaction's
+   *	toMachine, in effect replacing this one.
    */
-  protected void errorResponse(int code, String msg){
+  public void errorResponse(int code, String msg){
     int mycode = code;
     StringBufferInputStream foo = null;
     String masterMsg = "Agency is unable to process " + requestURL() + ": ";
@@ -167,8 +167,8 @@ public class  HTTPResponse extends Transaction {
     }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, toMachine(), ct, false);
-    
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine,
+					     toMachine(), ct, false);
     response.setStatus( mycode );
     response.setContentType( "text/plain" );
     response.setContentLength( masterMsg.length() );

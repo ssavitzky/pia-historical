@@ -2,11 +2,10 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.pia;
-import java.util.Vector;
+
 import crc.tf.UnknownNameException;
 import java.io.File;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 
 import java.net.URL;
 
@@ -33,17 +32,17 @@ import crc.sgml.AttrBase;
 import crc.sgml.AttrTable;
 import crc.sgml.Text;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
 import java.util.Enumeration;
 import crc.interform.Run;
 import w3c.www.http.HTTP;
 
 /** The minimum concrete implementation of the Agent interface.  A
  *	GenericAgent is used if no specialized class can be loaded for
- *	an agent.
+ *	an agent; it also serves as the base class for all known Agent
+ *	implementations.
  *
- *	@see crc.pia.Agent */
+ *	@see crc.pia.Agent
+ */
 public class GenericAgent extends AttrBase implements Agent {
   
   private String filesep = System.getProperty("file.separator");
@@ -87,13 +86,14 @@ public class GenericAgent extends AttrBase implements Agent {
 
 
   /**
-   * A list of match criteria.
+   * A list of match criteria.  These are matched against the
+   * Features of every Transaction to see if this Agent's actOn method
+   * should be called.
    */
   protected Criteria criteria;
 
   /**
    * Attribute index - virtual Machine to which local requests are directed.
-   *
    */
   protected AgentMachine virtualMachine;
 
@@ -124,16 +124,20 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
-   * Create a new request given method, url
+   * Create a new request given method, url, query.  The results are tossed
+   * on the floor.
    */
   public void createRequest(String method, String url, String queryString){
     Transaction request = null;
 
-    if( queryString == null ){
+    if( queryString == null ) {
       request =  new HTTPRequest();
       request.fromMachine( machine() );
-
-    }else{
+    } else if ("GET".equalsIgnoreCase(method)) {
+      request =  new HTTPRequest();
+      request.fromMachine(machine());
+      url += queryString;
+    } else {
       FormContent c = new FormContent( queryString );
       request = new HTTPRequest( machine(), c, false );
 
@@ -151,16 +155,20 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
-   * Create a new request given method, url
+   * Create a new request given destination machine, method, url, queryString.
    */
-  public void createRequest(Machine m, String method, String url, String queryString){
+  public void createRequest(Machine m, String method, String url,
+			    String queryString) {
     Transaction request = null;
 
     if( queryString == null ){
       request =  new HTTPRequest();
       request.fromMachine( m );
-
-    }else{
+    } else if ("GET".equalsIgnoreCase(method)) {
+      request =  new HTTPRequest();
+      request.fromMachine( m );
+      url += queryString;
+    } else {
       FormContent c = new FormContent( queryString );
       request = new HTTPRequest( m, c, false );
       request.setContentLength( queryString.length() );
@@ -173,8 +181,10 @@ public class GenericAgent extends AttrBase implements Agent {
     request.startThread();
   }
  
+  /************************************************************************
+  ** Access to fields:
+  ************************************************************************/
 
- 
   /**
    * @return name of agent
    */
@@ -225,6 +235,12 @@ public class GenericAgent extends AttrBase implements Agent {
     if( version != null)
       this.version = version;
   }
+
+  /************************************************************************
+  ** File attributes:
+  ************************************************************************/
+
+  // === file attributes don't seem to be used at all ===
 
   /**
    * set a file attribute
@@ -293,7 +309,7 @@ public class GenericAgent extends AttrBase implements Agent {
       res = (List)dirTable.get(key);
     if( res== null ){
       v = optionAsString( key );
-      if ( v!=null && v.startsWith("~/") ){
+      if ( v!=null && v.startsWith("~"+filesep) ) {
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
 	  value = new StringBuffer( v.substring(1) );
@@ -327,12 +343,14 @@ public class GenericAgent extends AttrBase implements Agent {
     if( directories!=null && directories.nItems() > 0)
       return (String)directories.at(0);
 
-    String[] possibilities = { Pia.instance().piaUsrRoot() + filesep + name() + filesep,
-			       Pia.instance().piaUsrRoot() + filesep + type() + filesep,
-			       filesep + "tmp" + filesep + name() + filesep };
     String name = name();
     String type = type();
-    
+    String root = Pia.instance().piaUsrRoot();
+
+    String[] possibilities = { root + filesep + name() + filesep,
+			       root + filesep + type() + filesep,
+			       filesep + "tmp" + filesep + name() + filesep };
+
     for(int i = 0; i < possibilities.length; i++){
       String dir = possibilities[i];
 
@@ -365,6 +383,10 @@ public class GenericAgent extends AttrBase implements Agent {
 
     return url;
   }
+
+  /************************************************************************
+  ** Matching Features:
+  ************************************************************************/
 
   /**
    * Agents maintain a list of feature names and expected values;
@@ -406,6 +428,11 @@ public class GenericAgent extends AttrBase implements Agent {
     matchCriterion(Criterion.toMatch(match));
   }
 
+
+  /************************************************************************
+  ** Machine: 
+  ************************************************************************/
+
   /**
    * agents are associated with a virtual machine which is an
    * interface for actually getting and sending transactions.  Posts
@@ -437,6 +464,10 @@ public class GenericAgent extends AttrBase implements Agent {
       virtualMachine = machine;
   }
 
+  /************************************************************************
+  ** Actions and Hooks:
+  ************************************************************************/
+
   /**
    * Act on a transaction that we have matched.  
    *
@@ -463,21 +494,10 @@ public class GenericAgent extends AttrBase implements Agent {
        throws PiaRuntimeException{
     URL zurl = trans.requestURL();
 
-    String reply = respondToInterform( trans, zurl, res );
-    InputStream in = null;
-    if( reply != null  ){
-      in = new StringBufferInputStream( reply );
-      ByteStreamContent c = new ByteStreamContent( in );
-
-      Transaction response = new HTTPResponse( trans, false );
-      response.setStatus( 200 ); 
-      response.setContentType( "text/html" );
-      response.setContentObj( c );
-      response.startThread();
-    }else{
-      //interformErr( request, url );
-      throw new PiaRuntimeException(this, "respond",
-				    "No InterForm file found for "+trans.url());
+    if (! respondToInterform( trans, zurl, res ) ){
+      interformErr( trans, zurl );
+      //throw new PiaRuntimeException(this, "respond",
+      //			    "No InterForm file found for "+trans.url());
     }
   }
 
@@ -510,7 +530,9 @@ public class GenericAgent extends AttrBase implements Agent {
   public synchronized void attr(String name, SGML value) {
     attributes.attr(name, value);
   }
-  
+
+  // === option, optionAsXXX are now unnecessary.
+
   /**
    * Options are strings stored in attributes.  Options may have
    * corresponding features derived from them, which we compute on demand.
@@ -564,6 +586,10 @@ public class GenericAgent extends AttrBase implements Agent {
       }
   }
 
+  /************************************************************************
+  ** Finding and Executing InterForms:
+  ************************************************************************/
+
   /**
    * Find an interform, using a simple search path and a crude kind
    * of inheritance.  Allow for the fact that the user may be trying
@@ -571,51 +597,64 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public String findInterform( URL url, boolean noDefault ){
     if( url == null ) return null;
-    Vector pathVector = new Vector();
-    int index = -1;
-    String zform = null;
 
-
+    /* === this is totally bogus!  host must be hostname, not agent name...
     String host =  url.getHost();
     if( host!= null && !host.equalsIgnoreCase( name() ))
 	return null;
+    === */
 
-    String urlString = url.toExternalForm();
-    String path = urlString.toLowerCase();
-    
-    String myname = name().toLowerCase();
-    String mytype = type().toLowerCase();
+    String path = url.getFile();
+    return findInterform(url.getFile(), noDefault);
+  }
+
+  /**
+   * Find an interform starting with a string pathname.
+   */
+  public String findInterform( String path, boolean noDefault ){
+    if ( path == null ) return null;
+
+    // === path, name, and typed were all getting lowercased.  Wrong!
+
+    String myname = name();
+    String mytype = type();
     
     // Find interform name in URL.
     
+    // === This is wrong.  We should use redirect instead. ===
+
     if ( noDefault ){
       // are v doing defaults? no no
     }
     else { // default to index.if
-      RegExp re = null;
-      MatchInfo mi = null;
-      
-      try{
-	re = new RegExp(myname + "/" + ".*$");
-	mi = re.match(path);
-      }catch(Exception e){;}
-      if( mi != null ){
-	// default to index.if
-	index = path.indexOf(myname + "/"); 
-	zform  = path.substring( index + (myname+"/").length() );
-	if( zform.length() == 0 )
-	  zform = "index.if";
-      }else if( path.endsWith( myname ) ){  // default to home.if
-	zform = "home.if";
-      }else if( path == "/" || path.length() == 0 ){
-	zform = "ROOTindex.if";
+      if (path.equals("/")) {
+	path = "/ROOTindex.if";
+      } else if (path.equals("/" + myname)) {
+	path += "/home.if";
+      } else if (path.equals("/" + myname + "/")) {
+	path += "index.if";
       }
     }
+
+    Pia.instance().debug(this, "Looking for -->"+ path);
+
+    /* Remove a leading /type or /name or /type/name from the path. */
+
+    if (path.startsWith("/" + mytype + "/")) 
+      path = path.substring(mytype.length() + 1);
     
+    if (path.startsWith("/" + myname + "/")) 
+      path = path.substring(myname.length() + 1);
+    
+
     List if_path = dirAttribute( "if_path" );
-    if( if_path == null ){
+    if ( if_path == null ) {
+      if_path = new List();
+
       /*
        * If the path isn't already defined, set it up now.
+       *
+       * === Should also try .../type/name/...
        *
        *  the path puts any  defined if_root first 
        *   (if_root/myname, if_root/mytype, if_root),
@@ -641,37 +680,26 @@ public class GenericAgent extends AttrBase implements Agent {
       List roots = dirAttribute( "if_root" );
       String root;
       if ( roots!= null && roots.nItems() > 0 ){
-	// handle a user-defined root first:
+
+	// handle a user-defined root first:  Trim a trailing /name or /type
+	// because it gets automatically added below.
 	
 	root = (String)roots.at(0);
 	if ( !root.endsWith( filesep ) ) { root = root + filesep; }
 	if ( root.endsWith( filesep + myname + filesep )) {
-	  try{
-	    RegExp re = new RegExp( filesep + myname + filesep + "$" );
-	    re.substitute( root, filesep, true );
-	  }catch(Exception e){;}
+	  root = root.substring(0, root.length() - myname.length() -
+				filesep.length());
+	} else if ( root.endsWith( filesep + mytype + filesep )) {
+	  root = root.substring(0, root.length() - mytype.length() -
+				filesep.length());
 	}
-	
-	if ( root.endsWith( filesep + mytype + filesep )) {
-	  try{
-	    RegExp re = new RegExp( filesep + mytype + filesep + "$" );
-	    re.substitute( root, filesep, true );
-	  }catch(Exception e){;}
-	}
-	
 
-	pathVector.addElement( root+myname+filesep );
+	if_path.push( root+myname+filesep );
 	if( myname != mytype )
-	  pathVector.addElement( root+mytype+filesep );
-	pathVector.addElement( root );
-
-	for(int j=0; j<pathVector.size(); j++){
-	  if( DEBUG )
-	    System.out.println("GenericAgent findInterform [if-root]-->" + (String) pathVector.elementAt(j) );
-	}
-
-
+	 if_path.push( root+mytype+filesep );
+	if_path.push( root );
       }	
+
       /*
        * Then see whether the user has overridden the form.
        *    It's possible that one of these will be a duplicate.
@@ -680,35 +708,37 @@ public class GenericAgent extends AttrBase implements Agent {
       
       root = Pia.instance().piaUsrAgents();
       if ( !root.endsWith( filesep ) ) { root = root + filesep; }
-      pathVector.addElement( root+myname+filesep );
+      if_path.push( root+myname+filesep );
 
       if ( myname != mytype )
-	pathVector.addElement( root+mytype+filesep );
+	if_path.push( root+mytype+filesep );
 
-      pathVector.addElement( home+myname+filesep );
+      if_path.push( home+myname+filesep );
 
       if( myname != mytype )
-	pathVector.addElement( home+ mytype+filesep );
+	if_path.push( home+ mytype+filesep );
 
-      pathVector.addElement( root );
-      pathVector.addElement( home );
+      if_path.push( root );
+      if_path.push( home );
       
       
-      List list = new List();
-      for(int i=0; i<pathVector.size(); i++){
-	String onePath = (String)pathVector.elementAt(i);
-	list.push( onePath );
-	if( DEBUG )
-	  System.out.println("GenericAgent findInterform-->" + (String)onePath );
-      }
-      dirAttribute("if_path", list );
-      
+      if( DEBUG )
+	for(int i=0; i < if_path.nItems(); i++){
+	  String onePath = if_path.at(i).toString();
+	  System.out.println("GenericAgent findInterform-->"+(String)onePath );
+	}
+
+      // Now cache the lookup path list as a dirAttribute
+
+      dirAttribute("if_path", if_path );
     }
+
     File f;
-    Enumeration e = pathVector.elements();
+    Enumeration e = if_path.elements();
     while( e.hasMoreElements() ){
       String zpath = (String)e.nextElement();
-      String wholepath = zpath + zform;
+      String wholepath = zpath + path;
+      Pia.instance().debug(this, "  Trying -->"+ wholepath);
       f = new File( wholepath );
       if( f.exists() ) return wholepath;
     }
@@ -721,74 +751,68 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   private void interformErr( Transaction req, URL url){
     String msg = "No InterForm file found for "+url.toExternalForm();
-    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
-    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
-					 req.fromMachine(), ct, false);
-    abort.setStatus(HTTP.NOT_FOUND);
-    abort.setContentType( "text/html" );
-    abort.setContentLength( msg.length() );
-    abort.startThread();
+    req.errorResponse(HTTP.NOT_FOUND, msg);
+  }
+
+  /**
+   * Respond to a transaction with a stream of HTML.
+   */
+  public void sendStreamResponse ( Transaction trans, InputStream in ) {
+
+    ByteStreamContent c = new ByteStreamContent( in );
+
+    Transaction response = new HTTPResponse( trans, false );
+    response.setStatus( 200 ); 
+    response.setContentType( "text/html" );
+    response.setContentObj( c );
+    response.startThread();
   }
 
   /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.  It can pass a full
-   * URL.
+   * need to modify the URL in the request.
+   *
+   * @return false if the file cannot be found.
    */
-  public String respondToInterform(Transaction request, URL url, Resolver res){
-    Pia.instance().debug(this, "respondToInterform url version");
-    URL myurl;
-    String file;
+  public boolean respondToInterform(Transaction request, URL url, Resolver res){
+
+    if (url == null) url = request.requestURL();
     String interformOutput = null;
 
-    if(request.method().equalsIgnoreCase("PUT") && url == null){
-      //return respondToInterformPut( request );
-    }
+    Pia.instance().debug(this, "respondToInterform: url is -->" +
+			 url.getFile());
 
-    if( url != null )
-      myurl = url;
-    else
-      myurl = request.requestURL();
-    file = findInterform( myurl, false );
+    String file = findInterform( url, false );
     Pia.instance().debug(this, "The path of interform is -->"+file);
 
-    if( file == null )
-      //send error response
-      return null;
-    else{
-      String lfile = file.toLowerCase();
+    if( file == null ) {    //send error response
+      return false;
+    } 
 
-      if( lfile.endsWith(".if") ){
-	// If find_interform substituted .../home.if for .../ 
-	// we have to tell what follows that it's an interform.
-	request.assert("interform");
-      }
-      if( request.test("interform") ){
-	interformOutput = Run.interformFile(this, file, request, res);
-	return interformOutput;
-      }
-      
-      if( lfile.endsWith(".cgi") ){
-	//what to do here
-      }
-
-      return null;
-      
+    if( file.endsWith(".if") ){
+      // If find_interform substituted .../home.if for .../ 
+      // we have to tell what follows that it's an interform.
+      request.assert("interform");
     }
-    
+    if( request.test("interform") ){
+      InputStream in =  Run.interformFile(this, file, request, res);
+      sendStreamResponse(request, in);
+    } else if( file.endsWith(".cgi") ){
+      // === CGI should be executed with the right stuff in the environment.
+      String msg = "cgi invocation unimplemented.";
+      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+    } else {
+      crc.pia.agent.Dofs.retrieveFile(file, request, this);
+    }
+
+    return true;
   }
   
 
-  /**
-   * Respond to a request directed at one of an agent's interforms.
-   * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.  It can pass either a full
-   * URL or a path.
-   */
-    public String respondToInterformPut(){
-      return "";
-    }
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
   /* name and type should be set latter */
   public GenericAgent(){
@@ -822,13 +846,6 @@ public class GenericAgent extends AttrBase implements Agent {
  }
 
 }
-
-
-
-
-
-
-
 
 
 

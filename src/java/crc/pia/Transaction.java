@@ -823,10 +823,9 @@ public abstract class Transaction extends AttrBase implements Runnable {
   }
   
   /** 
-   * errorResponse -- Return a "not found" error for a request with
-   * no destination.
+   * errorResponse -- Construct and return an error response transaction.
    */
-  protected void errorResponse(int code, String msg){
+  public void errorResponse(int code, String msg){
   }
 
   /**

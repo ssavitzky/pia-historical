@@ -159,24 +159,34 @@ public interface Agent extends Attrs {
    */
   public void parseOptions(Table hash);
 
+  /**
+   * Find an interform, using a simple search path and a crude kind
+   * of inheritance.  Allow for the fact that the user may be trying
+   * to override the interform by putting it in piaUsrAgentsStr/name/.
+   */
+  public String findInterform( URL url, boolean noDefault );
+
+  /**
+   * Find an interform starting with a string pathname.
+   */
+  public String findInterform( String path, boolean noDefault );
 
   /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.  It can pass a URL.
+   * need to modify the URL in the request.
+   *
+   * @return false if file not found.
    */
-  public String respondToInterform(Transaction t, URL path, Resolver res);
-
+  public boolean respondToInterform(Transaction t, URL path, Resolver res);
 
 
   /**
-   * Respond to a request directed at one of an agent's interforms.
+   * Respond to a request directed at an agent.
    * The InterForm's url may be passed separately, since the agent may
    * need to modify the URL in the request.  It can pass either a full
    * URL or a path.
    */
-  public String respondToInterformPut();
-
   public void respond(Transaction trans, Resolver res) throws PiaRuntimeException;
 
   public Object computeFeature(String featureName) throws UnknownNameException;
