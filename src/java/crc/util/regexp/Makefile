@@ -1,4 +1,5 @@
 PACKAGE=crc.util.regexp
+TOPDIR=../../../..
 
 FILES = \
 	Chars.java \
@@ -20,7 +21,7 @@ FILES = \
 
 
 
-include $(MAKEDIR)/file.make
+include $(TOPDIR)/makefiles/file.make
 
 
 
