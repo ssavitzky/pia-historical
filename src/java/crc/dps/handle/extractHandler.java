@@ -871,7 +871,7 @@ class appendHandler extends extract_subHandler {
 	  Copy.appendNodes(content, parent);	
 	  // out.putNode(parent);
       } else {
-	(ActiveNode) p = (ActiveNode)item.getParentNode();
+	ActiveNode p = (ActiveNode)item.getParentNode();
 	  if (p != null && p != parent) {
 	    parent = p;
 	    Copy.appendNodes(content, parent);
