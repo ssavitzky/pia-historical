@@ -1,27 +1,26 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Generic Home Page for &agentName;</title>
+<title>&agentName; Index</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>&agentName; agent <br>Home Page</set>
+<set entity name=title>&agentName; agent <br>Index Page</set>
 <read interform file="heading.inc" process>
-<table cellspacing=0 cellpadding=0>
+<table>
 <tr><th width=340><td><br>
-<tr><th><td> <a href="index.if">Index Page</a>
-<tr><th align=right><a href="home.if">&agentName;</a>:<td> Home Page</a>
+<tr><th align=right><a href="home.if">&agentName;</a>:<td>Index Page
+<tr><th align=right><td> <a href="home.if">Home Page</a>
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
-<tr><th align=right><td>  
-       <form action="/Agency/remove_agent.if" method="POST">
-	Remove agent:<br>
-       <input name="agent" value="&agentName;" type=hidden>
-       <input type="submit" value="Remove &agentName;">
-       </form>
 </table>
 
+<dl>
+  <dt> Note:
+  <dd> This page does not have an option for removing the
+       <a href="home.if">&agentName;</a> agent.  It is required for the proper
+       functioning of this appliance.
+</dl>
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
 <a href="/&agentName;/home.if">&agentName;</a>:
@@ -31,3 +30,4 @@
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 </body></html>
+

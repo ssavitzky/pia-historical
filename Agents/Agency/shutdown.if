@@ -2,8 +2,11 @@
 <html><head>
 <title>Shut Down</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
-</head><body>
-<h1>Shut Down</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Shut Down</set>
+<read interform file="heading.inc" process>
+
+<h2>Shut Down</h2>
 
 <if><get form name="function">
     <then>

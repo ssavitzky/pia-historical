@@ -1,29 +1,44 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Generic Options Page</title>
+<title>Generic Options Page for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
-<h1>Options for the ``&agentName;'' Agent </h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>&agentName; agent <br>Options Page</set>
+<read interform file="heading.inc" process>
 
-<ul>
-  <li> <a href="/&agentName;/">Index</a>
-  <li> <a href="/&agentName;/home.if">Home</a>
-</ul>
+<table cellspacing=0 cellpadding=0>
+<tr><th width=340><td><br>
+<tr><th><td> <a href="index.if">Index Page</a>
+<tr><th><td> <a href="home.if">Home Page</a>
+<tr><th align=right><a href="home.if">&agentName;</a>: <td> Options
+<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+<tr><th align=right><td>  
+       <form action="/Agency/remove_agent.if" method="POST">
+	Remove agent:<br>
+       <input name="agent" value="&agentName;" type=hidden>
+       <input type="submit" value="Remove &agentName;">
+       </form>
+</table>
 
 <agent-set-options></agent-set-options>
 
 <set entity name=opts><agent-options></set>
 <form method=POST action="&url;"><table>
+  <tr> <th><input type=submit value="Change Options"></th></tr>
   <repeat list="&opts;" entity=opt><tr>
     <th align=right>&opt;:</th>
     <td><set entity name=v><get agent name="&opt;"></set>
         <input name="&opt;" value="&v;" size=50></td><p></tr>
   </repeat>
-  <tr> <th><input type=submit value="Change Options"></th></tr>
 </table></form>
 
 <hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/&agentName;/home.if">&agentName;</a>:
+<a href="&agentName;/">index</a>
+<a href="&agentName;/options.if">options</a>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 </body></html>

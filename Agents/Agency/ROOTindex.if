@@ -4,7 +4,7 @@
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<table align=center cellspacing=0 cellpadding=0 border=0>
+<table cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a>
@@ -18,70 +18,82 @@
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
     <th>
-    <th align=left><font face=helvetica>Root Index</font>
-for
-<if><test exact  match='pia'><get env name="USER"></test>
-    <then> this </then>
-    <else> &piaUSER;'s</else></if>
-<tr><th><th><th align=left>
-<if><test exact match='pia'><get env name="USER"></test>
-    <then>Peripheral Interface </then>
-    <else>Personal Information </else></if> Agency
-<td>
-<tr><th width=170 rowspan=5>
-	<if><read info interform file="/Agency/insert.if">
-	    <then><read interform file="/Agency/insert.if" process></then>
-	</if>
-    <td><br>
-<tr>
-    <th valign=top align=right><a href="/Agency/home.if"><b>Agency:</b></a>
-    <td valign=top> <a href="/Agency/agents.if">list</a> /
-	<a href="/Agency/installers.if">install</a> / 
- 	<a href="/Agency/remove_agent.if">remove</a>
- 	agents.<br>
+    <th align=left><font face=helvetica>Root Index for
+	<if><test exact  match='pia'><get env name="USER"></test>
+	    <then> this </then>
+	    <else> &piaUSER;'s</else></if>
+	<tr><th><th><th align=left>
 	<if><test exact match='pia'><get env name="USER"></test>
-	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
-<tr><if><test exact match='pia'><get env name="USER"></test>
-  <then>
-    <th valign=top align=right><b>Agent:</b>
-    <td valign=top>
-	<if><agent-running name="Photo_Album"><then>
-            <a href="/Photo_Album/home.if">Photo Album</a></then>
-        <else><if><agent-running name="CDRW"><then>
-            <a href="/CDRW/home.if">CDRW</a></then>
-        <else>???</if></if></then>
-  <else>
-    <th valign=top align=right><b>Files:</b>
-    <td valign=top> <a href="/PIA/Agents/">Agents</a>
-	<a href="/My/Agents/">(custom)</a>
-	<a href="/PIA/Doc/">Doc</a>
-	<a href="/PIA/src/">src</a>
-  </if><br>
-<if><agent-running name=History><then>
-<tr>
-    <th valign=top align=right><a href="/History"><b>History:</b></a>
-    <td valign=top> <a href="/My/History">All</a>
-        <a href="/My/History/&date;.html">[&date;]</a><br></then>
-</if>
-<tr><th align=left><br><!-- in case history isn't running -->
-<tr><th align=left><br>
-
-<tr><td align=left colspan=2>
-<pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
-<repeat list="&agentNames;"
-       ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
-       >	<agent-home link name="&li;">
-</repeat></pre>
-
-<th valign=center>
-<if><agent-running name=Logo>
-    <then><img src="/Logo/pia120.gif"
-               height=120 width=222></then></if>
-<pre>
-</pre>
-
+	    <then>Peripheral Interface </then>
+	    <else>Personal Information </else></if> Agency </font> <br>
 </table>
 
+<table cellspacing=0 cellpadding=0 border=0>
+<tr>
+  <th width=170 valign=center>
+    <table cellspacing=0 cellpadding=0 border=0>
+      <tr><th>
+	<if><read info interform file="/Agency/insert.if">
+	    <then><read interform file="/Agency/insert.if" process></then>
+	</if><br></tr>
+    </table>
+  <td valign=top>
+    <table cellspacing=0 cellpadding=0 border=0>
+    <tr><th valign=top align=right width=170>
+	    <a href="/Agency/home.if"><b>Agency:</b></a>
+	<td valign=top>
+	    <a href="/Agency/agents.if">list</a> /
+	    <a href="/Agency/installers.if">install</a> / 
+	    <a href="/Agency/remove_agent.if">remove</a>
+	    agents.<br>
+	    <if><test exact match='pia'><get env name="USER"></test>
+	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
+    <tr><if><test exact match='pia'><get env name="USER"></test>
+      <then>
+	<th valign=top align=right><b>Agent:</b>
+	<td valign=top>
+	    <if><agent-running name="Photo_Album"><then>
+		<a href="/Photo_Album/home.if">Photo Album</a></then>
+	    <else><if><agent-running name="CDRW"><then>
+		<a href="/CDRW/home.if">CDRW</a></then>
+	    <else><if><agent-running name="Printer"><then>
+		<a href="/Printer/home.if">Printer</a></then>
+	    <else>???</if></if></if></then>
+      <else>
+	<th valign=top align=right><b>Files:</b>
+	<td valign=top> <a href="/PIA/Agents/">Agents</a>
+	    <a href="/My/Agents/">(custom)</a>
+	    <a href="/PIA/Doc/">Doc</a>
+	    <a href="/PIA/src/">src</a>
+      </if><br>
+    <if><agent-running name=History><then>
+    <tr>
+	<th valign=top align=right><b>History:</b>
+	<td valign=top> <a href="/History">Agent</a>
+	    [<a href="/My/History">All</a> | 
+	    <a href="/My/History/&date;.html">&date;</a>]
+	    <br></then>
+    </if>
+    <tr><th><br>
+  </table>
+</table>
+<p>
+<table>
+  <tr><td align=left width=340>
+    <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
+<repeat list="&agentNames;"
+	   ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+	   >	<agent-home link name="&li;">
+</repeat></pre>
+
+    <td valign=center align=left>
+    <if><agent-running name=Logo>
+	<then><img src="/Logo/pia120.gif"
+		   height=120 width=222></then></if>
+    <pre>
+    </pre>
+
+</table>
 <hr>
 <b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
 <b>URL:</b>

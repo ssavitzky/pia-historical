@@ -2,13 +2,20 @@
 <html><head>
 <title>Agent Installers</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
-</head><body>
-<h1>Agent Installers</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<set entity name=title>Agent Installers</set>
+<read interform file="heading.inc" process>
+
+<table cellspacing=0 cellpadding=0>
+<tr><th width=340><td><br>
+<tr><th align=right>&agentName;:
+	<td> Install / <a href="/Agency/remove_agent.if">remove</a> agents
+<tr><th><td> <a href="home.if">Home Page</a>
+<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+	     (<a href="/My/Agents/&agentName;/">Customized</a>)
+</table>
+
 <hr>
  
 This file, whch can also be used as a start-up file, contains ``canned''
@@ -16,11 +23,15 @@ install forms for various agents.  You are encouraged to paste sections out of
 this file into your own start-up file.  When you design a new agent, please
 add a default start-up form to this file.  <p>
 
+There is also a <a href="install_agent.if">generic agent installation form</a>
+which is only useful for agents which have no options.
+
 <h3>Contents:</h3>
 
 <ul>
   <li> <a href="#agents">Agents</a>
   <li> <a href="#DOFS">Document-Oriented File Systems</a>
+  <li> <a href="#app">Appliances</a>
   <li> <a href="#exp">Experimental</a>
 </ul>
 
@@ -50,14 +61,6 @@ add a default start-up form to this file.  <p>
   <dd> <form action="/Agency/install_agent.if" METHOD="POST">
        <input type="submit" value="Install">
        name: <INPUT NAME="agent" value="Logo">
-       </form></if>
-  <dt> <a name="Thumbnail">Thumbnail agent</a> (creates thumbnail gifs of html
-       pages) 
-       <if><agent-running name=Thumbnail><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
-       <input type="submit" value="Install">
-       name:<input name="agent" value="Thumbnail">
-       type:<input name="type" value="Graphics">
        </form></if>
   <dt> <a name="Cache">Cache agent</a> (keeps a copy of every external doc...)
        <if><agent-running name=Cache><then><em>installed</em></then><else>
@@ -137,7 +140,7 @@ add a default start-up form to this file.  <p>
 </dl>
 
 <hr>
-<h3><a name="exp">Experimental</a></h3>
+<h3><a name="app">Appliances</a></h3>
 
 <dl>
   <dt> <a name="Photo_Album">Photo Album</a>
@@ -158,7 +161,9 @@ add a default start-up form to this file.  <p>
        <input type="submit" value="Install">
        </form></if>
 
-        <dt>  CD-R/RW
+       <p>
+
+  <dt>  CD-R/RW
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
@@ -197,18 +202,7 @@ add a default start-up form to this file.  <p>
        <input type="submit" value="Install">
        </form>
 
-  <dt> Photo album  <if><agent-running name="Photo_Album"><then><em>installed</em></then>
-       <else>
-<dd><form action="/Agency/install_agent.if" method="POST">
-       name:<input name="agent" value="Photo_Album">
-    </form>
-<dt> Photos
-  <dd> <form action="/Agency/install_agent.if" method="POST">
-       name:<input name="agent" value="Photos">
-       type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="~/.pia/Photo_Album/">
-       <input type="submit" value="Install">
-       </form></if>
+       <p>
 
   <dt> <a name="Printer">Printer agent</a>
        <if><agent-running name=WebPrinter><then><em>installed</em></then>
@@ -218,19 +212,37 @@ add a default start-up form to this file.  <p>
        name: <input name="agent" value="WebPrinter">
        type: <input name="type" value="Printer">
        </form>
-<dt>  spool
+  <dt>  spool
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="spool">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="~/.pia/WebPrinter/spool/">
        <input type="submit" value="Install">
        </form></else></if>
+</dl>
 
+<hr>
+<h3><a name="exp">Experimental</a></h3>
+
+<dl>
+  <dt> <a name="Thumbnail">Thumbnail agent</a> (creates thumbnail gifs of html
+       pages) 
+       <if><agent-running name=Thumbnail><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Thumbnail">
+       type:<input name="type" value="Graphics">
+       </form></if>
 </dl>
 <hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<hr>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
+<a href="&agentName;/">index</a>
+<a href="&agentName;/options.if">options</a>
+<hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b> $Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
+<b>$Id$</b><br>
 </body></html>

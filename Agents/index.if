@@ -2,28 +2,33 @@
 <html><head>
 <title>Generic Index for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
-<h1>Generic index for the &agentName; agent</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<ul>
-  <li> <a href="home.if">Home Page </a>
-  <li> <a href="options.if">Options</a>
-  <li> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-  <li> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
-  <li> <a href="/Agency/remove_agent.if?agent=&agentName;">Remove &agentName
-       agent</a>, or use this button:
+<set entity name=title>&agentName; agent <br>Index Page</set>
+<read interform file="heading.inc" process>
+
+<table cellspacing=0 cellpadding=0>
+<tr><th width=340><td><br>
+<tr><th align=right><a href="home.if">&agentName;</a>: <td>Index Page
+<tr><th align=right><td> <a href="home.if">Home Page</a>
+<tr><th><td> <a href="options.if">Options</a>
+<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+<tr><th align=right><td>  
        <form action="/Agency/remove_agent.if" method="POST">
+	Remove agent:<br>
        <input name="agent" value="&agentName;" type=hidden>
        <input type="submit" value="Remove &agentName;">
        </form>
-
-</ul>
+</table>
 
 <hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/&agentName;/home.if">&agentName;</a>:
+<a href="&agentName;/">index</a>
+<a href="&agentName;/options.if">options</a>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>
 

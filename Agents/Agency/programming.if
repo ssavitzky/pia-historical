@@ -2,8 +2,12 @@
 <html><head>
 <title>Programming Information</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
-</head><body>
-<h1>Programming Information</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Programming Information</set>
+<read interform file="heading.inc" process>
+
+<p>
+<hr>
 
 <dl>
   <dt> <b>Note:</b>
@@ -70,16 +74,14 @@
 </ul>
 
 <hr>
-<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
-<b>URL:</b>
-&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<br>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 <b>File:</b> <a href="file:&filePath;">&filePath;</a>
 <hr>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
+<a href="&agentName;/">index</a>
+<a href="&agentName;/options.if">options</a>
+<hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="http://rsv.ricoh.com/~steve/"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
 </body></html>
