@@ -848,7 +848,7 @@ example).
          <doc> Contains a name (identifier).  All nodes in the current set
 	       that have the given name are selected.  Attributes and entities
 	       are matched by name; elements are matched by their tagname.
-	       Text nodes and comments are ignored.  If the name starts with a
+	       Text and comments are ignored.  If the name starts with a
 	       pound sign (<code>#</code>) it represents a node type.
          </doc>
          <define attribute=case optional>
@@ -878,11 +878,17 @@ example).
          <doc> Contains a ``key'' (string) which is matched against nodes in
 	       the current set.  Attributes and entities are matched by name;
 	       elements are matched by the text in their content.  Text nodes
-	       are ignored. 
+	       are matched by their content.
          </doc>
          <define attribute=case optional>
            <doc> Causes the name matching to be case-sensitive, even if the
 		 nodes are part of a namespace that is not case-sensitive.
+           </doc>
+         </define>
+         <define attribute=sep optional>
+           <doc> Contains a delimiter string that marks the end of the key
+		 in a node's text.  If specified, nodes that lack the
+		 delimiter will be ignored.
            </doc>
          </define>
        </define>
@@ -1267,11 +1273,19 @@ example).
   <doc> Strips passive markup (assumed to be decorative) from the text in the
 	content to convert it to a single string.  Character and other
 	entities are expanded.  Runs of consecutive whitespace characters are
-	converted to single spaces.
+	converted to single spaces, and leading and trailing whitespace are
+	trimmed. 
 
-	<p>If no other operation is specified in an attribute, special
-	characters [<code>&amp;&lt;&gt;</code>] are replaced with entities,
-	and line breaks are inserted to limit line lengths to 72 characters.
+	<p>If no other operation is specified in an attribute, the text is
+	parsed using the current tagset.
+
+	<p>In general the result of parsing the text is a (possibly empty)
+	sequence of name=value pairs, plus a (possibly empty) ``remainder left
+	over.  (For example, the <code>entities</code> format returns no
+	pairs, and the <code>query</code> format returns no remainder.)
+
+	<p>In some tagsets it might be reasonable to rename this operation as
+	<tag>decode</tag>, or to make it an attribute of <tag>text</tag>.
   </doc>
   <define attribute=usenet optional>
     <doc> Markup is added according to the conventions of Usenet mail and news
@@ -1282,13 +1296,65 @@ example).
 	  sign are italicized.  
     </doc>
   </define>
-  <define attribute= optional>
-    <doc> 
+  <define attribute=header optional>
+    <doc> The input text is parsed as a mail or HTML header. 
+    </doc>
+  </define>
+  <define attribute=entities optional>
+    <doc> Special characters are replaced by their corresponding entities, but
+	  no other parsing is done.
+    </doc>
+  </define>
+  <define attribute=url optional>
+    <doc> The text is parsed as a URL.  Characters escaped by
+	  <code>%<em>nn</em></code> are decoded. 
+    </doc>
+  </define>
+  <define attribute=query optional>
+    <doc> The text is parsed as a query string.  Characters escaped by
+	  <code>%<em>nn</em></code> are decoded. 
+    </doc>
+  </define>
+
+  <h4>Format specifiers</h4>
+  <doc> The various format specifier attributes specify the output format of
+	the <tag>parse</tag> element, and the corresponding input format of
+	the <tag>to-text</tag> element.  The latter, however, is usually able
+	to guess the input format.
+  </doc>
+
+  <define attribute=element optional>
+    <doc> The result is produced as a single element, with attribute-value
+	  pairs in its attributes.  The content of the resulting element will
+	  be any component of the input ``left over'' after the parsing
+	  process, i.e. the body of a message parsed with the
+	  <code>header</code> format.  The value of this attribute is the
+	  tagname of the element. 
+    </doc>
+  </define>
+  <define attribute=elements optional>
+    <doc> The result is produced as a sequence of elements, with attribute-value
+	  pairs in its attributes.  The value of this attribute is the tagname
+	  of the element to be used; the name is the value of the
+	  <code>name</code> attribute  unless the <code>attr</code> attribute
+	  is present.
+    </doc>
+  </define>
+  <define attribute=attr optional>
+    <doc> Specifies the name of the attribute to be used for names, if the
+	  <code>elements</code> format is specified.
+    </doc>
+  </define>
+  <define attribute=pairs optional>
+    <doc> The value of this attribute is a space-separated list of 
+	  two element tagnames.  The first is the element that will be used
+	  for names, the second the element that will be used values.  The
+	  default value is <code>"dt dd"</code>.
     </doc>
   </define>
 </define>
 
-The set of attributes used in <tag>to-markup</tag> and <tag>to-string</tag> is
+The set of attributes used in <tag>parse</tag> and <tag>to-text</tag> is
 open-ended; tagset authors are free to define new ones as needed.
 
 <h3>To-text</h3>
@@ -1296,9 +1362,147 @@ open-ended; tagset authors are free to define new ones as needed.
   <doc> Converts the marked-up content into one or more Text nodes (strings).
 	If no other operation is specified in an attribute, the marked-up
 	content is simply converted to its external representation.
+
+	<p>In some tagsets it might be reasonable to rename this operation as
+	<tag>encode</tag>, or to make it an attribute of <tag>text</tag>.
   </doc>
-  <define attribute= optional>
-    <doc> 
+  <define attribute=entities optional>
+    <doc> <em>All</em> defined entities in the content are expanded.
+    </doc>
+  </define>
+  <define attribute=url optional>
+    <doc> The content is rendered as a URL (including URL-encoding and entity
+	  encoding).
+    </doc>
+  </define>
+  <define attribute=query optional>
+    <doc> The text is rendered as a query string, including URL-encoding.
+    </doc>
+  </define>
+</define>
+
+<h2>External Resources</h2>
+
+<blockquote><em>
+  External ``resources'' include both documents local to the system on which
+  the document processor resides (i.e. files), and remote resources (specified
+  with complete URL's).
+</em></blockquote>
+
+
+<h3>Include</h3>
+<define element=include empty handler >
+  <doc> Request a remote or local resource, and insert its content into the
+	input stream just as if it had been defined as an external entity and
+	then referenced.  Essentially a convenience function that replaces a
+	<tag>define entity</tag> followed by an entity reference enclosed in a
+	<tag>process</tag> element.
+  </doc>
+  <define attribute=src required>
+    <doc> Specifies the URL (or path relative to the current document or its
+	  server's document root) of the document to be included.
+    </doc>
+  </define>
+  <define attribute=tagset optional>
+    <doc> The tagset with which to process the result of the request.  The
+	  default is the current tagset.  An <em>empty</em> value results in
+	  the document being included as a single Text node.
+    </doc>
+  </define>
+  <define attribute=entity optional>
+    <doc> Specifies the name of an entity to be defined, effectively caching
+	  the resource.  If not specified, no entity will be defined and the
+	  resource will not be cached.  If the entity is already defined, that
+	  definition will be used.
+    </doc>
+  </define>
+</define>
+
+<h3>Connect</h3>
+<define element=connect handler >
+  <doc> Perform an HTTP request to connect to a remote or local resource.  The
+	content of the element becomes the data content of a <code>PUT</code>
+	(write) or <code>POST</code> (append) request.
+
+	<p>If a <tag>URL</tag> and/or <tag>headers</tag> element appear before
+	any nonblank content, they are used for the connection. 
+  </doc>
+  <define attribute=method optional>
+    <doc> The request ``method''.  Default is <code>GET</code>.  Any valid HTTP
+	  request method is allowed.  When operating on a local (file)
+	  resource, <code>POST</code> specifies an ``append'' operation, while
+	  <code>PUT</code> specifies a ``write''.
+    </doc>
+  </define>
+  <define attribute=src optional>
+    <doc> The URL of the resource to which the connection is being made.
+    </doc>
+  </define>
+  <define attribute=tagset optional>
+    <doc> The tagset with which to process the result of the request.  The
+	  default is the current tagset.  An <em>empty</em> value results in
+	  the entire document being read as a single text node.
+    </doc>
+  </define>
+  <define attribute=entity optional>
+    <doc> Specifies the name of an entity to be defined, effectively caching
+	  the resource.  If not specified, no entity will be defined and the
+	  resource will not be cached.
+    </doc>
+  </define>
+</define>
+
+<h3>Headers and its components</h3>
+<define element=headers handler>
+  <doc> Contains a standard e-mail header string consisting of
+	<code><em>key</em>:<em>value</em></code> pairs.  Each pair in its
+	content is a separate Text node.  Lines can be selected using
+	<tag>key sep=':'</tag>.
+  </doc>
+  <note author=steve> === Not at all clear what the content of a headers
+	node should be.  Sub-elements?
+  </note>
+</define>
+
+
+<h3>URL and its components</h3>
+<define element=URL handler>
+  <doc> Represents a URL or, more generally, a URI.  When expanded, its
+	content and attributes are ``synchronized'' so that all attributes
+	corresponding to portions of the complete URL are set correctly, and
+	the content is replaced by a text node containing the external
+	representation of the complete URL.
+
+	<p>URL decoding is done when setting the attributes, and encoding is
+	done when setting the content, so that <code>%</code>-escaped
+	characters in the content of the <tag>URL</tag> element are
+	represented in the attributes by their corresponding actual
+	characters.
+  </doc>
+  <define attribute=protocol optional>
+    <doc> The protocol (scheme) portion of the URL.
+    </doc>
+  </define>
+  <define attribute=host optional>
+    <doc> The host name portion of the URL.  Note that not all protocols have
+	  a host portion (for example, <code>mailto:</code> and
+	  <code>file:</code>).
+    </doc>
+  </define>
+  <define attribute=port optional>
+    <doc> The port name of the URL.
+    </doc>
+  </define>
+  <define attribute=path optional>
+    <doc> The path portion of the URL.
+    </doc>
+  </define>
+  <define attribute=reference optional>
+    <doc> The reference (fragment) portion of the URL.
+    </doc>
+  </define>
+  <define attribute=query optional>
+    <doc> The query portion of the URL.
     </doc>
   </define>
 </define>
@@ -1314,6 +1518,7 @@ open-ended; tagset authors are free to define new ones as needed.
   representation that is a <em>subclass</em> of the representation of an
   ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
 </em></blockquote>
+
 
 <!--template 
 <h3>Xxx and its components</h3>
@@ -1333,7 +1538,7 @@ open-ended; tagset authors are free to define new ones as needed.
          </doc>
        </define>
 </ul>
- --/template -->
+</template -->
 
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
