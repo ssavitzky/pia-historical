@@ -11,11 +11,11 @@
 package crc.pia.agent;
 import java.util.NoSuchElementException;
 
-import crc.pia.GenAgent;
+import crc.pia.GenericAgent;
 import crc.pia.Resolver;
 
 
-public class Agency extends GenAgent {
+public class Agency extends GenericAgent {
 
   public Agency(String name, String type){
     super(name, type);
