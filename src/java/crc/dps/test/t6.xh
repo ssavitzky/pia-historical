@@ -212,6 +212,24 @@ em: <select><from><i> xx <em>xx yy zz</em> zzz</i></from>
 	    <child></child></select>
 em: <select><from>xx <em>yy</em> zz</from><child>0</child><parent></select>
 
+<h3>Recursive select</h3>
+
+<set name=foo>
+<ol>
+  <li> foo
+  <li> bar, <ol><li>Bar,</ol>
+  <li> <ol>
+	 <li> baz
+       </ol>
+</ol>
+</set>
+
+<protect>&foo;  <select>&foo;<name recursive>li</select></protect>
+
+name rec: <select>&foo;<name recursive>li</select>
+name all: <select>&foo;<name all>li</select>
+key rec: <select>&foo;<key recursive sep=",">bar</select>
+key all: <select>&foo;<key all sep=",">bar</select>
 
 <h2>Parsed entities</h2>
 
