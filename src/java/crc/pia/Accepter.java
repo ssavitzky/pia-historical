@@ -18,7 +18,6 @@ import crc.pia.Pia;
 import crc.pia.HTTPRequest;
 
 public class Accepter extends Thread {
-  public boolean DEBUG = false;
   /**
    * The default port number if none is given.
    */
@@ -50,18 +49,13 @@ public class Accepter extends Thread {
    * Shutdown socket
    */
   protected void cleanup(boolean restart){
-    if( DEBUG )
-      System.out.println("cleaning started....");
-
     try {
       listenSocket.close();
       listenSocket = null;
       finish = false;
     }catch(IOException ex){
-      if( DEBUG )
-	System.out.println("[cleanup]: IOException while closing server socket.");
-      else
-	Pia.instance().errLog ("[cleanup]: IOException while closing server socket.");
+      Pia.debug(this, "[cleanup]: IOException while closing server socket.");
+      Pia.errLog ("[cleanup]: IOException while closing server socket.");
     }
   }
 
@@ -85,72 +79,27 @@ public class Accepter extends Thread {
 	}
       }
     }catch(IOException e){
-      if (DEBUG)
-	System.out.println("There is an exception while listening for connection.");
-      else
-       Pia.instance().errSys(e, "There is an exception while listening for connection.");
+      Pia.debug(this, "There is an exception while listening for connection.");
+      Pia.errSys(e, "There is an exception while listening for connection.");
     }
     cleanup(false);
   }
 
   /**
-  * This gets called by accepter whenever a new request is received.
-  * A transaction is created, and it automatically places itself onto the resolver.
-  */ 
+   * This gets called by accepter whenever a new request is received.
+   * A transaction is created, and it automatically places itself onto the resolver.
+   */ 
   protected void handleConnection(Socket clientSocket) {
    
     InetAddress iaddr = clientSocket.getInetAddress();
     int         port  = clientSocket.getPort();
 
-
-
     String hostName = iaddr.getHostName();
-    if ( DEBUG ){
-	  PrintStream clientSend = null;
-	  DataInputStream clientReceive = null;
-	  String nextLine;
 
-	System.out.println("connection from : "+ hostName + " at: " + String.valueOf( port ));
-	try{
-	  clientSend = new PrintStream( clientSocket.getOutputStream() );
-	  clientReceive = new DataInputStream( clientSocket.getInputStream() );
-	  clientSend.println("Hello from Accepter");
-	  clientSend.flush();
-
-	  while( true ) {
-	    nextLine = clientReceive.readLine();
-	    System.out.println( nextLine );
-
-	    if (nextLine == null) break;
-
-	    nextLine = nextLine.toLowerCase();
-	    if( nextLine.indexOf("quit") == 0) 
-	      break;
-
-	    clientSend.println( nextLine );
-	  }
-	    clientSend.println("bye");
-	    clientSend.flush();
-	 }catch(IOException e){
-	    System.err.println("Failed I/O: " + e);
-	  }finally{
-	    try{
-	      if (clientSend != null) clientSend.close();
-	      if (clientReceive != null) clientReceive.close();
-	      if (clientSocket != null) clientSocket.close();
-	      finish = true;
-	    }catch(IOException ee){
-	      System.err.println("Failed I/O: " + ee);
-	    }
-	  }
-
-    }
-    else{
-      Pia.instance().debug( this, "connection from : "+ hostName + " at: " + String.valueOf( port ) );
-      Pia.instance().log( "connection from : "+ hostName + " at: " + String.valueOf( port ) );
-
-      createRequestTransaction(hostName, port, clientSocket);
-    }
+    Pia.debug( this, "connection from : "+ hostName + " at: " + String.valueOf( port ) );
+    Pia.log( "connection from : "+ hostName + " at: " + String.valueOf( port ) );
+    
+    createRequestTransaction(hostName, port, clientSocket);
 
   }
 
@@ -172,14 +121,11 @@ public class Accepter extends Thread {
     try {
       listenSocket = new ServerSocket( port );
     }catch(IOException e){
-      if( DEBUG )
-	System.out.println("There is an exception creating accepter's socket.");
-      else
-	Pia.instance().errSys(e, "There is an exception creating accepter's socket.");
+      Pia.debug(this, "There is an exception creating accepter's socket.");
+      Pia.errSys(e, "There is an exception creating accepter's socket.");
     }
-    if( DEBUG )
-      System.out.println("Accepter: listening on port" + port);
-     this.start();
+    Pia.debug(this, "Accepter: listening on port" + port);
+    this.start();
   }
 
   /**
@@ -200,44 +146,6 @@ public class Accepter extends Thread {
     }
 
     this.start();
-  }
-
-
-  /**
-   * usage
-   */
-  private static void usage(){
-    System.out.println("This test program is used in conjunction with a client app in the test directory.");
-    System.out.println("The Accepter accepts data from a client, echoes it, and sends it back to the client.");
-    System.out.println("To run the test case, type java crc.pia.Accepter 8888 or any other port #. ");
-
-  }
-  
-  /**
-   * Create Accepter for debugging.
-   * 
-   */ 
-  public static void main(String[] args){
-    int port = 0;
-    Accepter accepter = null;
-    
-    if(args.length == 0){
-      usage();
-      System.exit(1);
-    }
-    
-    if(args.length ==1){
-      try {
-	port = Integer.parseInt(args[0]);
-      } catch(NumberFormatException e){
-	port = 0;
-      }
-    }
-    try{
-      accepter = new Accepter(port);
-      accepter.DEBUG = true;
-    }catch(IOException e){;}
-    
   }
 
 }
