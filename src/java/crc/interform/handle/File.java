@@ -46,7 +46,7 @@ public class File extends crc.interform.Handler {
 
     if (! file.exists()) {
       ii.error(ia, "File " + name + " does not exist");
-      ii.deleteIt();
+      ii.replaceIt("File " + name + " does not exist");
       return;
     }
 
@@ -56,16 +56,16 @@ public class File extends crc.interform.Handler {
 	file.delete();
       } else if (it.hasAttr("rename")) {
 	String newname = it.attrString("dst");
-	if (! newname.startsWith(file.pathSeparator)) {
-	  newname = file.getParent()+file.pathSeparator+newname;
+	if (! newname.startsWith(file.separator)) {
+	  newname = file.getParent()+file.separator+newname;
 	}
 	dst = new java.io.File(newname);
 	op = "rename to "+newname;
 	file.renameTo(dst);
       } else if (it.hasAttr("copy")) {
 	String newname = it.attrString("dst");
-	if (! newname.startsWith(file.pathSeparator)) {
-	  newname = file.getParent()+file.pathSeparator+newname;
+	if (! newname.startsWith(file.separator)) {
+	  newname = file.getParent()+file.separator+newname;
 	}
 	dst = new java.io.File(newname);
 	op = "copy to "+newname;
@@ -84,9 +84,11 @@ public class File extends crc.interform.Handler {
       } else {
 	errmsg = "No operation specified for " + name;
       }
-
+    } catch (java.io.IOException e) {
+      errmsg = name + ": cannot " + op + ": " + e.toString();
     } catch (Exception e) {
-      errmsg = name + ": cannot " + op;
+      errmsg = name + ": cannot " + op + ": " + e.toString();
+      e.printStackTrace();
     }
 
     if (errmsg != null) {
