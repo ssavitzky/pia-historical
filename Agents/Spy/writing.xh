@@ -29,10 +29,10 @@
 
 In order to <em>customize</em> a <a href="/&agentType;">&agentType;</a> agent,
 all you have to do is create an personal copy of the
-<code>initialize.if</code> InterForm file.  The original can be found in
+<code>initialize.xh</code> InterForm file.  The original can be found in
 
 <pre>
- .../pia/Agents/&agentType;/<em>agentName</em>/initialize.if
+ .../pia/Agents/&agentType;/<em>agentName</em>/initialize.xh
 </pre>
 
 (where <code>.../pia</code> is the PIA's installation directory).<p>
@@ -40,7 +40,7 @@ all you have to do is create an personal copy of the
 You need to install this in your personal agent customization directory:
 
 <pre>
- ~/.pia/Agents/&agentType;/<em>agentName</em>/initialize.if
+ ~/.pia/Agents/&agentType;/<em>agentName</em>/initialize.xh
 </pre>
 
 (On a non-Unix machine this may be something other than <code>~/.pia</code>).
@@ -48,7 +48,7 @@ You need to install this in your personal agent customization directory:
 
 <h3>Customizing the Banner</h3>
 
-In the <code>initialize.if</code> file, you will find a block of InterForm
+In the <code>initialize.xh</code> file, you will find a block of InterForm
 code that starts out:
 <pre>
   &lt;set agent hook name="act-on"&gt;&lt;protect&gt;
@@ -91,7 +91,7 @@ for that matter) is to copy an existing one.
 <ol>
   <li> Make a new subdirectory of your personal &agentType; directory,
        i.e. <code>~/.pia/Agents/&agentType;/<em>foo</em></code>.
-  <li> Copy in an existing &agentType; agent's <code>initialize.if</code> and
+  <li> Copy in an existing &agentType; agent's <code>initialize.xh</code> and
        <code>about.inc</code> files.
   <li> Edit them.
   <li> Install the new agent.

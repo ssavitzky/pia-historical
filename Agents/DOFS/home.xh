@@ -22,7 +22,7 @@
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
-	        <then><a href="/&agentType;/home.if">&agentType;</a></then>
+	        <then><a href="/&agentType;/home">&agentType;</a></then>
                 <else>&agentType;</else></if>
         <td><repeat list="&subs;">
 		<a href="/&agentType;/&li;">~/</a><a
@@ -60,7 +60,7 @@ This is the home page for the
        </form>
 <h2>Current options:</h2>
        <set entity name=opts><agent-options></set>
-       <form method=POST action="options.if"><table>
+       <form method=POST action="options"><table>
          <repeat list="&opts;" entity=opt><tr>
            <th align=right>&opt;:</th>
            <td><set entity name=v><get agent name="&opt;"></set>
@@ -72,7 +72,7 @@ This is the home page for the
 <hr>
 <a href="/">PIA</a> | <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
-	        <then><a href="/&agentType;/home.if">&agentType;</a></then>
+	        <then><a href="/&agentType;/home">&agentType;</a></then>
                 <else>&agentType;</else></if>
 <repeat list="&subs;"><a href="/&agentType;/&li;">~/</a><a
 		         href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a> |

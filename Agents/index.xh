@@ -11,7 +11,9 @@
 </if>
 
 <sub-head page=index>
-  <if><read info interform file="initialize.if"><then>
+  <if>=== <!-- ~/ doesn't work yet  -->
+      <status src="~/initialize.xh" item=exists>
+  <then>
     <tr><th><td><a href="options">Options</a>
 	    	      <a href="initialize">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
@@ -23,7 +25,7 @@
   </if>
   <if>&AGENT:do-not-remove;<then></then><else>
     <tr><th align=right>
-        <td><form action="/Admin/remove-agent.if" method="POST">
+        <td><form action="/Admin/remove-agent" method="POST">
               <input name="agent" value="&agentName;" type=hidden>
               <input type="submit" value="Remove &agentName;">
             </form>
@@ -31,7 +33,7 @@
   <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
-	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
+	        <then><a href="/&agentType;/home">&agentType;/</a></then>
                 <else>&agentType;/</else></if>
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>

@@ -19,10 +19,10 @@
  <set name=calendars agent><dl> </dl></set>
 
 <set agent hook name="navbar"><protect>
-&agentName; <a href="/&agentName;/home.if">home</a>||
+&agentName; <a href="/&agentName;/home">home</a>||
 	  <a href="/&agentName;/">index</a>||
-	  <a href="/&agentName;/help.if">help</a>||
-	  <a href="/&agentName;/options.if">options</a>||
+	  <a href="/&agentName;/help">help</a>||
+	  <a href="/&agentName;/options">options</a>||
            <form action="/&agentName;/show_month.if">
 <input type="SUBMIT" value="ShowMonth:">
             <select name="month"> <option>&month; </option>

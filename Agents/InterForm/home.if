@@ -16,13 +16,13 @@
 	                   width=170 height=1></th><td><br>
     <tr><th align=right><img src="/Icon/dot-blue.gif"
 			     height=20 width=20 alt="*">
-	    <td> <b href="home.if">Home</b>
-    		 <a href="index.if">Index</a>
-    		 <a href="help.if">Help</a>
+	    <td> <b href="home">Home</b>
+    		 <a href="index">Index</a>
+    		 <a href="help">Help</a>
 <if><read info interform file="initialize.if"><then>
-    <tr><th><td><a href="options.if">Options</a>
-	    	      <a href="initialize.if">[re-initialize]</a></then></if>
-    <tr><th><td> <a href=actors.if>Actors</a>
+    <tr><th><td><a href="options">Options</a>
+	    	      <a href="initialize">[re-initialize]</a></then></if>
+    <tr><th><td> <a href=actors>Actors</a>
 		 <a href=entities>Entities</a>
 		 <a href="/Admin/list-agents">Agents</a>
     <tr><th align=right>

@@ -58,9 +58,9 @@
 
     <tr><TD align=right>
 	<td>
-	    <a href="/&agentName;/help.if">
+	    <a href="/&agentName;/help">
               <img src="/Photo_Album/help.gif"  height=32 width=63 border=0></a>
-	    <a href="/&agentName;/help.if">Help</a><br>
+	    <a href="/&agentName;/help">Help</a><br>
 <if><get agent name=CDwriter><then>
     <tr><td align=right>
 	<td>

@@ -306,7 +306,7 @@
           <a href="/&agentType;/&agentName;/help">help</a>
 	  <a href="/&agentType;/&agentName;/options">options</a>
 	  <a href="/&agentType;/&agentName;/tagload">tags</a>
-    <else><a href="/&agentName;/home.if">&agentName;</a>:
+    <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
 	  <a href="/&agentName;/help">help</a>
 	  <a href="/&agentName;/options">options</a>

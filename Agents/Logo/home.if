@@ -12,9 +12,9 @@ For the <img src="height=72&type=pia" align=top>
 
 <if><agent-running name=Logo>
   <then>is installed and running.
-        <a href="initialize.if">[re-initialize]</a></then>
+        <a href="initialize">[re-initialize]</a></then>
   <else>is not currently installed.
-        <form method=POST action="/Admin/install-agent.if">
+        <form method=POST action="/Admin/install-agent">
 		<input name="agent" value="Logo" size=30>
 		<input type="submit" value="Install Now">
         </form>

@@ -32,7 +32,7 @@
 	    <a href="/Admin/installers">install</a> / 
 	    <a href="/Admin/remove-agent">remove</a> agents.<br>
 	    <if><test exact match='pia'>&piaUSER;</test>
-	      <then><a href="/Admin/shutdown.if">shut down</a> appliance<br>
+	      <then><a href="/Admin/shutdown">shut down</a> appliance<br>
 	    </if>
     <tr><if><test exact match='pia'>&piaUSER;</test>
       <then>
