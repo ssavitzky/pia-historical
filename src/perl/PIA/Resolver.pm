@@ -58,6 +58,50 @@ sub pop {
     return pop(@{$self->queue()});
 }
 
+
+############################################################
+###
+### Timed requests:
+###
+
+@events = ();			# entries [ m h d m w repeat transaction ]
+$last_run = 0;			# Time lf last run
+
+sub timed_submission {
+    my ($self, $trans, $attrs) = @_;
+
+    ## Submit a request at a given time, optionally repeating.
+    ##	 it is not at all clear what to do if the PIA dies 
+    ##   or if the time is in the past. 
+
+    my $repeat = $$attrs{'repeat'};
+    my $cancel = $$attrs{'cancel'};
+
+    my $minute = $$attrs{'minute'};
+    my $hour = $$attrs{'hour'};
+    my $day = $$attrs{'day'};
+    my $month = $$attrs{'month'};
+    my $weekday = $$attrs{'weekday'};
+
+    $minute = 0 unless defined $minute;	# Minute cannot be wildcard.
+    my $entry = [ $minute, $hour, $day, $month, $weekday, $repeat, $trans ];
+
+    
+}
+
+sub do_timed_submits {
+    my ($self) = @_;
+
+    ## Go through the events and do anything that needs doing.
+    ##	  This should be called every few minutes.
+
+    my $ev;
+    foreach $ev (@events) {
+	
+    }
+}
+
+
 ############################################################
 ###
 ### utility functions to maintain agent array:

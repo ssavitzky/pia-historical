@@ -189,7 +189,11 @@ sub tagset_include_handle {
 ###		<actor name=form handle="submit_forms"></actor>
 
 define_actor('submit-forms', 
-	     'dscr' => "Submit a form ELEMENT or every form in CONTENT");
+	     'dscr' => "Submit a form or link ELEMENT
+ or every form (not links) in CONTENT.  
+ Optionally submit at HOUR, MINUTE, DAY, MONTH, WEEKDAY. 
+ Optionally REPEAT (missing hour, day, month, weekday are wildcards).  
+ Optionally CANCEL a previous submission, matched by url and form data. ");
 
 sub submit_forms_handle {
     my ($self, $it, $ii) = @_;
@@ -198,7 +202,14 @@ sub submit_forms_handle {
 	my $url = $it->attr('action');
 	my $method = $it->attr('method');
 	my $agent = IF::Run::agent();
-	$IF::Run::resolver->unshift($agent->create_request($method,$url,$it));
+	my $request = $agent->create_request($method,$url,$it);
+	timed_submission($it, $request) ||
+	    $IF::Run::resolver->unshift($request);
+    } elsif ($it->attr('href')) {
+	my $url = $it->attr('href');
+	my $request = $agent->create_request('GET', $url);
+	timed_submission($it, $request) ||
+	    $IF::Run::resolver->unshift($request);
     } else {
 	$it->traverse(sub {
 			  my($elt, $start, $depth) = @_;
@@ -208,6 +219,31 @@ sub submit_forms_handle {
 			  return 1;
 		      }, 'ignoretext');
     }
+}
+
+@time_attrs = qw( repeat hour minute day month weekday cancel );
+
+sub timed_submission {
+    my ($it, $request) = @_;
+
+    ## Submit $request if $it has any timing attributes,
+    ##	otherwise return false
+
+    my $timed = 0;
+    my %attrs;
+    my ($a, $v);
+
+    foreach $a (@time_attrs) {
+	if (($v = $it->attr($a))) {
+	    $attrs{$a} = $v;
+	    $timed ++;
+	}
+    }
+    return 0 unless $timed;
+
+    print "timed submit \n";
+    $IF::Run::resolver->timed_submission($request, \%attrs);
+   
 }
 
 ### ===	it's not clear that we want entities and variables to be different ===
