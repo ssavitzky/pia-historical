@@ -10,16 +10,17 @@
 
 <h1>Readers' Helper Groups</h1>
 
-<if>&FORM:DeleteGroup;<then>
-	<FORM METHOD="POST" ACTION="/RHServer/groups">
-	<remove-group group=&FORM:deletegroup;></remove-group>
-	</FORM>
+urlQuery: &urlQuery;<br>
+Group name: &AGENT:groupName;
+
+<!-- Call came from group_edit delete button -->
+<if>&FORM:rem_group;<then>
+	<remove-group group=&FORM:hidden_group;></remove-group>
+
 </if>
 
 <if>&FORM:addgroupname;<then>
-	<FORM METHOD="POST" ACTION="/RHServer/groups">
-		<add-concept-group concept=&FORM:alladdconcepts; group=&FORM:addgroupname></add-concept-group>
-	</FORM>
+		<add-concept-group concept=&FORM:alladdconcepts; group=&FORM:addgroupname;></add-concept-group>
 </if>
 
 <FORM METHOD="POST" ACTION="/RHServer/group_edit">
@@ -33,9 +34,8 @@
 <TD>
 <!-- Add list of groups -->
 <SELECT NAME="gmenu" SIZE=10 WIDTH=160>
-	<select><from><group-list /> </from>
 	<get-all-groups></get-all-groups>
-</select>
+</SELECT>
 </TD>
 </TR>
 <TR>

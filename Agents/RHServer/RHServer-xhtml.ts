@@ -242,21 +242,21 @@
 <h2>Layout and Appearance Tags</h2>
 
 <define entity=blue-dot>
-  <value><img src="/Agency/Icons/dot-blue.gif"
+  <value><img src="/ROOT/Icon/dot-blue.gif"
 		height=20 width=20 alt="*"></value>
 </define>
 
 <define entity=blank-170x1>
-  <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
+  <value><img src="/ROOT/Icon/white170x1.gif" width=170 height=1
 		alt=" "></value>
 </define>
 
 <define entity=A100>
   <doc> Large pentagonal A, which serves as an identifying logo for the 
-	Agency agent.
+	ROOT agent.
   </doc>
   <value><img src="Logo/A100.gif" height=100 width=111 
-		alt="AGENCY"></value>
+		alt="ROOT"></value>
 </define>
 
 
@@ -354,7 +354,7 @@
 		</set>
 		<extract><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
 			<child>-1</child>
-				<append><protect markup><rhconcept-group>&attributes:group;</rhconcept-group></protect></append>
+				<append><rhconcept-group>&attributes:group;</rhconcept-group></append>
 		</extract>
 	</action>
 </define>
@@ -366,18 +366,18 @@
 	</doc>
 	<define attribute=name required></define>
 	<action>
-		<connect src="persist.out" method=put>
+		<output dst="persist.out">
 			&attributes:name;
-		</connect>
+		</output>
 	</action>
 </define>
 
 <define element=get-group-name>
 	<doc>Gets the group name saved to file.
 	</doc>
-	<define attribute=name required></define>
+	<define attribute=filepath required></define>
 	<action>
-		<connect src="persist.out" entity=AGENT:groupName>
+		<connect src=&attributes:filepath; entity=AGENT:groupName>
 		</connect>
 	</action>
 </define>

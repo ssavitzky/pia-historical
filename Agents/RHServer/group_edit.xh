@@ -9,12 +9,15 @@
 
 <h1>Readers' Helper Group Editor</h1>
 
-&urlQuery;
+urlQuery: &urlQuery;<br>
+Group name: &AGENT:groupName;
 
 <if>&FORM:DeleteGroup;<then>
 	<FORM METHOD="POST" ACTION="/RHServer/groups">
 	<if>&FORM:gmenu;<then>
-		<b>Group to be deleted is:  &FORM:gmenu; </b><input type="submit" name=deletegroup value="Delete">
+		<b>Group to be deleted is:  &FORM:gmenu; </b><input type="submit" name=rem_group value="Delete">
+		<input type="hidden" name=hidden_group value=&FORM:gmenu;>
+
 	</then>
 	<else>
 		<b>No group was selected for deletion</b>
@@ -48,13 +51,14 @@
 	</then>
 	<else> 
 		<FORM METHOD="POST" ACTION="/RHServer/group_edit">
-		<if>&FORM:EditGroup;<then>
-			<if>&FORM:gmenu;</then>
-				<save-group-name>&FORM:gmenu;</save-group-name>
-				<set name="AGENT:groupName"><get-group-name /></set>
+		<if><logical or>&FORM:EditGroup; &FORM:Add; &FORM:Remove;</logical><then>
+			<if>&FORM:gmenu;<then>
+				<set name="AGENT:groupName">
+					&FORM:gmenu;
+				</set>
 			</then>
 			</if>
-	
+
 			<h2> Selected Group: &AGENT:groupName;</h2>
 			<!-- EditGroup was selected. Fill in group name window plus -->
 			<!-- Group Concepts window -->
@@ -79,18 +83,18 @@
 				</TABLE>
 			</TD>
 			<TD>
-			<SELECT NAME="AGENT:gconceptmenu" SIZE=10>
+			<SELECT NAME="gconceptmenu" SIZE=10>
 				<if>&FORM:EditGroup;<then>
 					<get-all-group-concepts group=&AGENT:groupName;></get-all-group-concepts>
 				</then>
 				</if>
 				<if>&FORM:Remove;<then>
-					<remove-concept-group concept=&FORM:gconceptmenu; group=&AGENT:groupName;></remove-concept-group>
+					<remove-concept-group concept=&AGENT:groupName; group=&FORM:gconceptmenu;></remove-concept-group>
 					<get-all-group-concepts group=&AGENT:groupName;></get-all-group-concepts>
 				</then>
 				</if>
 				<if>&FORM:Add;<then>
-					<add-concept-group concept=&AGENT:allconcepts; group=&AGENT:groupName;></add-concept-group>
+					<add-concept-group concept=&FORM:allconcepts; group=&AGENT:groupName;></add-concept-group>
 					<get-all-group-concepts group=&AGENT:groupName;></get-all-group-concepts>
 				</then>
 				</if>
@@ -109,6 +113,7 @@
 </if>
 </else>
 </if>
+<get-concept-by-name name=&FORM:gconceptmenu;></get-concept-by-name>
 
 <footer />
 </BODY>
