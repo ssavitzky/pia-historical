@@ -35,6 +35,7 @@ FILES = \
 	AbstractNamedList.java \
         AbstractNode.java  \
 	BasicDocument.java \
+	BasicNamedNode.java \
 	BasicNamedNodeList.java \
 	BasicPI.java \
 	BasicText.java \

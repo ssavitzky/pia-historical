@@ -165,7 +165,12 @@ public class BasicElement extends AbstractNode implements Element {
 
   /** Convenience function: Set an attribute's value to a Node. */
   public void setAttribute(String name, Node value) {
-    setAttribute(name, new ArrayNodeList(value));
+    if (value.getNodeType() == NodeType.ATTRIBUTE) {
+      Attribute attr = (Attribute)value;
+      attr.setName(name);
+      setAttribute((Attribute)value);
+    } else
+      setAttribute(name, new ArrayNodeList(value));
   }
 
   /** Convenience function: Set an attribute's value to a String. */

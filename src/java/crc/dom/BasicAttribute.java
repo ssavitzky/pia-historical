@@ -6,13 +6,15 @@ package crc.dom;
 
 import java.io.*;
 
-public class BasicAttribute extends AbstractNode implements Attribute {
+/** Basic implementation of Attribute.  <p>
+ *
+ *	Implementation note:  the Attribute's value is implemented as its
+ *	children. Shallow copy will do the wrong thing.
+ */	
+public class BasicAttribute extends BasicNamedNode implements Attribute {
 
-  public BasicAttribute(String n, NodeList v){
-    setParent( null );
-    setPrevious( null );
-    setNext( null );
-    setName( n );
+  public BasicAttribute(String n, NodeList v) {
+    super(n);
     if( v != null )
       setValue( v );
     else
@@ -24,26 +26,16 @@ public class BasicAttribute extends AbstractNode implements Attribute {
   }
 
   public BasicAttribute(Node myParent){
-    if( myParent != null )
-      setParent( (AbstractNode)myParent );
-    else
-      setParent( null );
-    setPrevious( null );
-    setNext( null );
-    setName( "" );
-    setValue( null );
-    setSpecified( false );
+    super(myParent, "");
+    setValue(null);
+    setSpecified(false);
   }
 
   /**
    * Deep copy constructor.
    */
   public BasicAttribute(BasicAttribute attr){
-    setPrevious( null );
-    setNext( null );
-    setName( attr.getName() );
-    setValue( new ChildNodeList( attr.getValue() ) );
-    copyChildren( attr );
+    super(attr);
     setSpecified( attr.getSpecified() );
     setIsAssigned( attr.getIsAssigned() );
   }
@@ -54,7 +46,6 @@ public class BasicAttribute extends AbstractNode implements Attribute {
   public Object clone(){
     BasicAttribute n = (BasicAttribute)super.clone();
     n.setName( getName() );
-    n.setValue( new ChildNodeList( getValue() ));
     n.copyChildren( this );
     n.setSpecified( getSpecified() );
     n.setIsAssigned( getIsAssigned() );
@@ -98,7 +89,7 @@ public class BasicAttribute extends AbstractNode implements Attribute {
     if( value == null )
       setNullValue();
     else
-      this.value = value; 
+      super.setValue(value);
   }
   
   /**
@@ -150,14 +141,6 @@ public class BasicAttribute extends AbstractNode implements Attribute {
     }
   }
 
-   protected void setIsAssigned(boolean what){
-     isAssigned = what;
-   }
-
-   protected boolean getIsAssigned(){
-     return isAssigned;
-   }
-
   /* attribute name */
   protected String name;
 
@@ -167,8 +150,6 @@ public class BasicAttribute extends AbstractNode implements Attribute {
   /* whether value is specified in the original document */
   protected boolean specified;
 
-  /* whether value is assigned explicitly */
-  protected boolean isAssigned = false;
 }
 
 
