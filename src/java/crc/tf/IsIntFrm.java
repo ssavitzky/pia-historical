@@ -32,6 +32,7 @@ public final class IsIntFrm implements UnaryFunctor{
     public Object execute( Object trans ){
       URL url = trans.getRequestURL();
       String path = url.getFile();
+      String lpath = path.toLowerCase();
       if( path.endsWith(".if") )
 	return new Boolean( true );
       else
