@@ -1,5 +1,15 @@
 #!/bin/sh
-# Pia launcher
+#	$Id$
+# Pia launcher.  Also handles other classes in the PIA hierarchy.
+#	Always tacks on -p propertyFile, which may be a misfeature.
+#
+# Usage: 
+#	pia_wrapper [-v] [class [arg]... ]
+
+if [ "$1" = "-v" ] ; then
+    VERBOSE=1
+    shift
+fi
 
 #find out where java is, ya
 PRG=`type -p java` >/dev/null 2>&1
@@ -14,23 +24,46 @@ fi
 JAVA_BIN=$JAVA_HOME/bin/java
 export JAVA_BIN
 
+#where pia lives, ya
+PIA_HOME="${PIA_HOME-$HOME/pia}"
+export PIA_HOME
+PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+
 #where zjigsaw lives, ya
-JIGSAW_HOME="${JIGSAW_HOME-usr/local/Jigsaw}"
+if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
+    JIGSAW_HOME=${JIGSAW_HOME-$PIA_HOME/lib/java/jigsaw.zip}
+else
+    JIGSAW_HOME="${JIGSAW_HOME-usr/local/Jigsaw}"
+fi
 export JIGSAW_HOME
-JIGSAW_CLASSES=$JIGSAW_HOME/src/classes
+if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
+    JIGSAW_CLASSES=${JIGSAW_CLASSES-$PIA_HOME/lib/java/jigsaw.zip}
+else
+    JIGSAW_CLASSES=$JIGSAW_HOME/src/classes
+fi
 
 #where jgl lives, ya
 JGL_HOME="${JGL_HOME-usr/local}"
 export JGL_HOME
-JGL_CLASSES=$JGL_HOME/jgl_1_1
+if [ -f $PIA_HOME/lib/java/jgl1.1.zip ] ; then
+    JGL_CLASSES=${JGL_CLASSES-$PIA_HOME/lib/java/jgl1.1.zip}
+else
+    JGL_CLASSES=$JGL_HOME/jgl_1_1
+fi
 
-#where pia lives, ya
-PIA_HOME="${PIA_HOME-/home/rithy/pia}"
-export PIA_HOME
-PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+if [ -z $1 ] ; then
+    PIA_BIN=crc.pia.Pia
+else
+    PIA_BIN=$1
+    shift
+fi
 
-PIA_BIN=crc.pia.Pia
-PIA_CONFIGFILE=/home/rithy/pia/config/pia.props
+if [ -f $home/.pia/pia.props ] ; then
+    # This suggests that a Config agent may eventually exist:
+    PIA_CONFIGFILE=$HOME/.pia/Config/pia.props
+else
+    PIA_CONFIGFILE=$HOME/pia/Config/pia.props
+fi
 
 CLASSPATH="${CLASSPATH-.}"
 if [ -z "${CLASSPATH}" ] ; then
@@ -38,7 +71,7 @@ if [ -z "${CLASSPATH}" ] ; then
 else
     CLASSPATH="$CLASSPATH:$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$JGL_CLASSES:$PIA_CLASSES"
 fi
-
-echo $CLASSPATH
-echo "$JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE"
-exec $JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE
+export CLASSPATH
+[ -z $VERBOSE ] || echo $CLASSPATH
+[ -z $VERBOSE ] || echo "$JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*"
+exec $JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*
