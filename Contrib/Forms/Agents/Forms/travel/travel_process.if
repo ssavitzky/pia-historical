@@ -8,7 +8,17 @@
 <set entity name=departmentobject><read file="usertodept.dat" process></set>
 <set entity name=extobject><read file="usertoext.dat" process></set>
 
-<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Extension:</b><dd><u><get name="extobject.&FORM.name;"></u><dt><b>Purpose:</b><dd><u>&FORM.purpose;</u><p><h2>Air</h2><dt><b>Destination:</b><dd><u>&FORM.dest1;</u><dt><b>Air date:</b><dd><u>&FORM.airdate1;</u><dt><b>Depart time:</b><dd><u>&FORM.depart1;</u><dt><b>Arrive time:</b><dd><u>&FORM.arrive1;</u><dt><b>From:</b><dd><u>SF/San Jose</u><dt><b>To:</b><dd><u>&FORM.to1;</u><dt><b>Airline:</b><dd><u>&FORM.airline1;</u><p><h2>Rent-a-Car</h2><dt><b>Car Rental company:</b><dd><u>&FORM.company1;</u><dt><b>Size:</b><dd><u>&FORM.size1;</u><dt><b>Num days with car:</b><dd><u>&FORM.cdays;</u><p><dt><b>Pick-up date:</b><dd><u>&FORM.pickdate1;</u><dt><b>Pick-up time:</b><dd><u>&FORM.picktime1;</u><dt><b>Pick-up place:</b><dd><u>&FORM.pickplace1;</u><p><dt><b>Drop-off date:</b><dd><u>&FORM.dropdate1;</u><dt><b>Drop-off time:</b><dd><u>&FORM.droptime1;</u><dt><b>Drop-off place:</b><dd><u>&FORM.dropplace1;</u><p><dt><b>Remarks</b><dd><u>&FORM.remarks1;</u><p><h2>Hotel</h2><dt><b>Hotel:</b><dd><u>&FORM.hotel1;</u><dt><b>Nightly rate:</b><dd><u>&FORM.rate;</u><dt><b>Room type:</b><dd><u>&FORM.type1;</u><dt><b>Date in:</b><dd><u>&FORM.datein1;</u><dt><b>Date out:</b><dd><u>&FORM.dateout1;</u><dt><b>Num nights:</b><dd><u>&FORM.nights1;</u><dt><b>Remarks:</b><dd><u>&FORM.remarks3;</u></dl></set>
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Extension:</b><dd><u><get name="extobject.&FORM.name;"></u><dt><b>Purpose:</b><dd><u>&FORM.purpose;</u><p>
+
+<table border=1><caption> Air Travel <get form name=airline1></caption>
+     <TR><TH>Date:<TH align=center>Depart<TH align=center>Arrive</tr>
+     <repeat list="1 2 3"><if><get form name="airdate&li;"><then>
+     <TR><TD align=left><get form name="airdate&li;"> <TD align=center><get form name="from&li;"><if><get form name="depart&li;"><then> at <get form name="depart&li;"></then></if></TD>
+     <TD align=center><get form name="to&li;"><if><get form name="arrive&li;"><then> at <get form name="arrive&li;"></then></if></TD></TR></then></if>
+     </repeat>
+     </table>
+
+     <h2>Rent-a-Car</h2><dt><b>Car Rental company:</b><dd><u>&FORM.company1;</u><dt><b>Size:</b><dd><u>&FORM.size1;</u><dt><b>Num days with car:</b><dd><u>&FORM.cdays;</u><p><dt><b>Pick-up date:</b><dd><u>&FORM.pickdate1;</u><dt><b>Pick-up time:</b><dd><u>&FORM.picktime1;</u><dt><b>Pick-up place:</b><dd><u>&FORM.pickplace1;</u><p><dt><b>Drop-off date:</b><dd><u>&FORM.dropdate1;</u><dt><b>Drop-off time:</b><dd><u>&FORM.droptime1;</u><dt><b>Drop-off place:</b><dd><u>&FORM.dropplace1;</u><p><dt><b>Remarks</b><dd><u>&FORM.remarks1;</u><p><h2>Hotel</h2><dt><b>Hotel:</b><dd><u>&FORM.hotel1;</u><dt><b>Nightly rate:</b><dd><u>&FORM.rate;</u><dt><b>Room type:</b><dd><u>&FORM.type1;</u><dt><b>Date in:</b><dd><u>&FORM.datein1;</u><dt><b>Date out:</b><dd><u>&FORM.dateout1;</u><dt><b>Num nights:</b><dd><u>&FORM.nights1;</u><dt><b>Remarks:</b><dd><u>&FORM.remarks3;</u></dl></set>
 
 <if><test match="East Coast">&FORM.dest1;</test>
 <then><set entity name=fcost>700</set>

@@ -16,12 +16,20 @@ Username:
 Purpose: <textarea name=purpose rows=2 cols=70></textarea><br><hr>
 
 <center><h1>Air</h1></center>
-<center>Destination: <select name=dest1><option>- <option>East Coast <option>Mid West <option>West Coast <option>Japan <option>Other International</select><br></center>
-Air Date: <input name=airdate1 size=8>
-Depart Time : <input name=depart1 size=5>
-Arrive Time : <input name=arrive1 size=5><br>
-<strong>From:</strong> SFO/San Jose  
-<strong>To:</strong> <input name=to1 size=15>
+Destination: <select name=dest1><option>- <option>East Coast <option>Mid West <option>West Coast <option>Japan <option>Other International</select><br>
+Air Date: <input name=airdate1 size=5>
+<strong>From:</strong> <input name=from1 value="SFO/SJC" size=11> Depart: <input name=depart1 size=4>
+<strong>To:</strong> <input name=to1 size=11> Arrive: <input name=arrive1 size=4><br>
+
+Air Date: <input name=airdate2 size=5>
+<strong>From:</strong> <input name=from2 size=11> Depart: <input name=depart2 size=4>
+<strong>To:</strong> <input name=to2 size=11> Arrive: <input name=arrive2 size=4><br>
+
+Return Date: <input name=airdate3 size=5>
+<strong>From:</strong> <input name=from3 size=11> Depart: <input name=depart3 size=4>
+<strong>To:</strong> <input name=to3 value="SFO/SJC" size=11> Arrive: <input name=arrive3 size=4>
+<br>
+
 Airline: <input name=airline1 size=15><br><hr>
 
 
