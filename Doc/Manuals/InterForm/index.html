@@ -7,10 +7,11 @@
 
 <blockquote><em>
   This document is a user's manual for the Platform for Information
-  Appliances' InterForm (Interactive/Interpreted Form) markup language.  It is
+  Appliances' InterForm (Interactive/Interpreted.Interface Form) markup
+  language.  It is 
   an ordinary HTML document, but if you are viewing it through a PIA you will
   be able to use links to an <em>active</em> document, the <a
-  href="/if_demo/home.if">InterForm Demonstration Agent</a>.  Other
+  href="/InterForm/home.if">InterForm Demonstration Agent</a>.  Other
   information of interest to Agent authors can be found in the <a
   href="../Author/index.html">Agent Author's Manual</a>.
 </em></blockquote>
@@ -24,8 +25,8 @@
        <p>
   <li> <a href="/InterForm/home.if">InterForm Demonstration Agent</a> (from PIA
        only) (
-       <a href="/InterForm/demo.if">Examples</a>,
-       <a href="/InterForm/tag_man.if">Standard Tagset Manual</a> )
+       <a href="/InterForm/tag_man.if">Standard Tagset Manual</a> and
+       <a href="/InterForm/demo.if">Examples</a> )
   <li> <a href="/Agency/entities.if">Entities</a> (from PIA only)
   <li> <a href="/Agency/actors.if">Actors</a> (from PIA only)
 </ul>
@@ -35,8 +36,10 @@
 <ul>
   <li> <a href="#intro">Introduction</a>
   <li> <a href="#interp">The InterForm Interpretor</a>
-  <li> <a href="#tagsets">Tagsets</a>
-  <li> <a href="#invoke">Invocation</a>
+  <li> <a href="#tagsets">Tagsets</a> (
+       <a href="tag_man.html">Standard Tagset Manual</a> and
+       <a href="examples.html">Examples</a> )
+  <li> <a href="#invoke">Program Invocation</a>
 </ul>
 
 <hr>
@@ -608,17 +611,49 @@ submitting or updating forms, or formatting.  It is the base from which the
 
 
 <hr>
-<h2><a name="invoke">Invocation</a></h2>
+<h2><a name="invoke">Program Invocation</a></h2>
 
 The InterForm Interpretor is invoked either stand-alone as a CGI or filter
-(formatter), or as part of the PIA.
+(formatter), or as part of the PIA.  The command for invoking the InterForm
+interpretor as a filter is: 
+
+<pre>
+  iffilter <em>[option]...</em> <em>input_filename</em>
+</pre>
+
+The command-line options are:
+
+<dl compact>
+  <dt> <code>-e</code>
+  <dd> Do not define standard entities.
+  <dt> <code>-h</code>
+  <dd> print a help string.
+  <dt> <code>-o <em>filename</em></code>
+  <dd> specify output file
+  <dt> <code>-t <em>tagset-name</em></code>
+  <dd> specify tagset
+  <dt> <code>-v</code>
+  <dd> verbose messages
+  <dt> <code>-d</code>
+  <dd> debugging
+</dl>
+
+The CGI version of the InterForm interpretor is:
+
+<pre>
+  interform.cgi
+</pre>
+
+and information is passed to it according to the <a
+href="http://hoohoo.ncsa.uiuc.edu/cgi/">Common Gateway Interface</a>
+specification.  The <code>.cgi</code> extension allows some servers (when
+suitable configured) to recognize it as a CGI script even if placed in a
+user's document directory.<p>
+
 
 <hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<!-- hhmts start -->
-Last modified: Mon Aug  4 17:31:27 1997
-<!-- hhmts end -->
-<p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
          >steve@crc.ricoh.com</a>&gt;</address>

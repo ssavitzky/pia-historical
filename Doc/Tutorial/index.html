@@ -12,7 +12,7 @@
   <li>  <a href="#directories">Directory structure</a>
        
 </ol>
-<h2>  <a href="#agents">Agents & InterForms</a> </h2>
+<h2>  <a href="#agents">Agents &amp; InterForms</a> </h2>
 <ol>
   <li>   <a href="#InterForms">Customizing an agent (Introduction to InterForms)</a>
   <li>  <a href="#creating"> Creating a new agent -- "Hello World!"</a>
@@ -23,32 +23,42 @@
 
 
 <h2><a name="basics"> The Basics</a></h2>
-  <h3>   <a name="running">Running a Personal Information Agency</a></h3>
- <a href="#viewing">(Skip to the next section if you already have an agency
- running.)</a>
+<h3>   <a name="running">Running a Personal Information Agency</a></h3>
+
+<a href="#viewing">(Skip to the next section if you already have an agency
+ running.)</a><p>
+
 An <it> Information Agency</it> is a software program written in Java.  To run
 it, you need access to a Java "runtime" (e.g. "java" should be located in one
-of the directories on your  <code> PATH</code> -- for Sun users at CRC,
-/usr/local/src/www/java-SDK/java/bin should work) and a PIA home directory
-(you can either use /pia1/pia or <a
-href="http://pia.crc.ricoh.com:8888/PIA/INSTALL"> install </a> your own).
+of the directories on your  <code> PATH</code> -- usually either
+<code>/usr/local/java/bin</code>, as it is on the Suns at CRC, or
+<code>/usr/java/bin</code>, as it is on most Linux systems) and a PIA home
+directory (you can either use <code>/pia1/pia</code> or <a
+href="../../INSTALL"> install </a> your own).
 <p>
-To run the pia, execute the command  <code>PIA_HOME/bin/pia_wrapper</code>,
-where   <code> PIA_HOME</code> is the PIA home directory. Sun users can simply
-type  <code>pia</code> (/usr/local/bin/pia is a shell wrapper which executes
-pia_wrapper using /pia1/pia as the PIA directory).
+
+To run the pia, execute the command <code>PIA_HOME/bin/pia</code>, where
+<code> PIA_HOME</code> is the PIA home directory. Sun users at CRC can simply
+type <code>pia</code> (<code>/usr/local/bin/pia</code> is a shell wrapper
+which executes <code>pia</code> using <code>/pia1/pia</code> as the PIA
+directory).
 <p>
+
 Once you have an agency running, you should be able to view your agency's home
-page at  <a href="http://localhost:8888/">http://<it> YOUR HOST NAME
-HERE</it>:8888/</a> using any browser.
+page at
+<a href="http://localhost:8888/">http://<it>YOUR.HOST.NAME.HERE</it>:8888/</a>
+using any browser.
 <p>
  If you have trouble getting to this point, please contact the <a
- href="http://pia.crc.ricoh.com/8888"> PIA group </a>.
+ href="../pia_group.html"> PIA group </a>.
+<!-- http://pia.crc.ricoh.com:8888/PIA/Doc/pia_group.html -->
+<!-- === not clear which of these links to use for pia group... === -->
 
 <h3>   <a name="viewing">Viewing an agents home page</a></h3>
 We call our system an Information Agency because every document (or request
 for a document) is processed by one or more agents. Agents are software <b>
 objects with an attitude </b>.  Typically, they perform some specific task
+<em>on your behalf</em> (which is why they're called <em>agents</em>)
 while maintaining state and context information.  (This state maintenance
 along with the Agency framework allows agents to be more flexible, and much
 easier to generate and maintain than traditional web processes such as CGI
@@ -56,7 +66,7 @@ scripts.)
 <p>
 
 If you have not already done so, please open another browser window on your
- <a href="http://localhost:8888/"> agencies home page</a>.
+ <a href="http://localhost:8888/"> agency's home page</a>.
 
 <p>
 Notice the url for this page:
@@ -98,7 +108,8 @@ for that agent.  By default, the agency comes configured to start up with the fo
   <dt> <tt>CIA</tt>
   <dd> adds control menu to pages proxied through your agency
   <dt> <tt> InterForm</tt>
-  <dd> demonstrates features of the InterForm language (an extension of html)
+  <dd> demonstrates features of the InterForm language (the extension of HTML
+       in which agents are written)
   <dt> <tt> PIA</tt>
   <dd> serves files located in the PIA_HOME directory
   <dt> <tt>MY</tt>
@@ -130,21 +141,24 @@ similar menu).
  PIA_DATA/Agents/AGENT_NAME/FILENAME.if
 
 
-<h2>  <a name="agents">Agents & InterForms</a> </h2>
+<h2>  <a name="agents">Agents &amp; InterForms</a> </h2>
  Agents are persistent software objects running on the information agency.
  When they receive a request for a document, they look for a file (in
  PIA_xxxx/Agents/AGENT_NAME) which matches that request.  Once the file is
  found, they  interpret that file  and return the result.  To the end user,
- these files provide a forms based interface for interacting with the agent,
- hence they are called interforms (with .if as the conventional extension.) In
- addition to standard html tags, interforms can include several additional
+ these files provide a <em>form</em>-based <em>interface</em> for interacting
+ with the agent, 
+ hence they are called InterForms (with <code>.if</code> as the conventional
+ extension.) In 
+ addition to standard HTML tags, InterForms can include several additional
  tags or entities which the agent understands processes.  So, for example, if
- an interform for the History agent includes the text:
+ an InterForm for the History agent includes the text:
  <code>&amp;agentName;</code> (the &amp;xxx; denotes an "entity") the agent
  will substitute it's name for this entity,  so in the browser the user would
  see <code> History</code>.
 <p>
-For more examples, see the <a href="/InterForm"> InterForm</a> demo agent.
+For more examples, see the <a href="/InterForm"> InterForm</a> demo agent and
+the <a href="../Manuals/InterForm/index.html">InterForm Manual</a>.
 
 <h3>   <a name="InterForms">Customizing an agent</a></h3>
  To add  new function to the History agent, create a file,
@@ -237,7 +251,7 @@ href="/HelloWorld/home.if">HelloWorld agent</a>.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Aug  4 22:17:31 1997
+Last modified: Tue Aug  5 10:04:04 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
