@@ -55,3 +55,17 @@ all:: $(FILES:.html=.out)
 
 clean::
 	rm -f *.out *.diff *.log *.tmp*
+
+
+BIG_FILE=../../../../../Doc/Manuals/InterForm/tag_man.html
+OCLASS=crc.interform.Filter
+
+time_test::
+	@ls -l $(BIG_FILE)
+	time cat $(BIG_FILE) >/dev/null
+	time $(BINDIR)/pia_wrapper $(CLASS) -t HTML $(BIG_FILE) -n -p >/dev/null
+	time $(BINDIR)/pia_wrapper $(CLASS) -t HTML $(BIG_FILE) -n >/dev/null
+	time $(BINDIR)/pia_wrapper $(CLASS) -t HTML $(BIG_FILE) -p >/dev/null
+	time $(BINDIR)/pia_wrapper $(CLASS) -t HTML $(BIG_FILE) >/dev/null
+	time $(BINDIR)/pia_wrapper $(OCLASS) -t HTML $(BIG_FILE) >/dev/null
+
