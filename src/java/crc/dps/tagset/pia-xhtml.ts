@@ -6,23 +6,12 @@
 <doc> This the version of the XHTML tagset used by default in the PIA.
 </doc>
 
-<h2>Definition Tags</h2>
-
-<h2>Control Structure Tags</h2>
-
-
-<h2>Data Manipulation Tags</h2>
-
-
-<h2>Data Structure Tags</h2>
-
-
 <h2>Form-Processing Tags</h2>
 
 Note that we only need these inside the PIA.
 
 <h3>Submit</h3>
-<undefine element=submit handler >
+<define element=submit handler=legacy:submit-forms >
   <doc>
   </doc>
   <define attribute= optional>
@@ -52,10 +41,80 @@ Note that we only need these inside the PIA.
        </define>
 </ul>
 
-<h2>Headers and Footers</h2>
+<h2>Legacy Tags</h2>
+
+<define element=agent-running empty handler=legacy:agent-running>
+   <doc> Determine whether a given agent is currently running (installed in
+	 the PIA).
+   </doc>
+   <define attribute=name required>
+      <doc> specifies the name of the agent being queried.
+      </doc>
+      <note author=steve> Should almost certainly be changed to "agent".
+      </note>
+   </define>
+</define>
+
+
+<h2>Page Components</h2>
+
+<h3>Graphics</h3>
+
+<define entity=blank-170x1>
+  <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
+		alt=" "></value>
+</define>
+<define entity=blue-dot>
+  <value><img src="/Agency/Icons/dot-blue.gif"
+		height=20 width=20 alt="*"></value>
+</define>
+
+
+<h2>Page Components</h2>
+
+<h3>Utility tags for use in page components</h3>
+<define element=xa>
+  <doc> Either an anchor link or a bold name.  Used on lines that
+	contain links to any of several different pages.
+  <doc>
+  <define attribute=page>
+    <doc> the base name of the current page, matched against the URL (href
+	  attribute).
+    </doc>
+  </define>
+  <action><if><test match="&attributes:page;">&attributes:href; </test>
+		<then><b>&content;</b></then>
+		<else><a href="&attributes:href;">&content;</a></else>
+	  </if>
+  </action>
+</define> 
+
+<define element=xopt>
+  <doc> Output the content if the page attribute matches one of the
+	names listed in the pages attribute.  Used for an indicator
+	(e.g, a blue dot) on lines that contain links to several
+	different pages.
+  <doc>
+  <define attribute=page>
+    <doc> the base name of the current page, matched against the
+	  <code>pages</code> attribute.
+    </doc>
+  </define>
+  <define attribute=pages>
+    <doc> space-separated names of the pages represented on this line.
+    </doc>
+  </define>
+  <action><if><test match="&attributes:page;">&attributes:pages; </test>
+		<then>&content;</then>
+	  </if>
+  </action>
+</define> 
+
+<h3>Headers and Footers</h3>
 
 <define element=header>
-  <doc> This expands into a standard header.  The content is the title.  This
+  <doc> This expands into a standard header.  The content is the
+	title, and ends up assigned to the entity <code>title</code>.  This
 	element also initializes some common entities.
   </doc>
   <action>
@@ -78,7 +137,7 @@ Note that we only need these inside the PIA.
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a></th>
-    <th align=right valign=top width=170>&ltitle; </th>
+    <th align=right valign=top width=170>&ltitle;&nbsp; </th>
     <th align=left colspan=2><if><get entity name=title>
 	<then><get entity name=title></then>
 	<else>&fileName;</else></if></th></tr>
