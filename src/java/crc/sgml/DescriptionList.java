@@ -33,7 +33,7 @@ public class  DescriptionList extends crc.sgml.Element {
 
     List locations ;
     for (int i = 0; i < nItems(); ++i) {
-      String name =  itemAt(i).tag();
+      String name =  itemAt(i).tag().toLowerCase();
       //System.out.println("tagTable-->"+name);
       if(result.has(name)){
 	locations = (List) result.at(name);

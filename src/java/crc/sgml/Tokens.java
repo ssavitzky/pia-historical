@@ -366,7 +366,7 @@ public class Tokens extends List implements SGML {
     Enumeration elements = elements();
     List locations ;
     for (int i = 0; i < nItems(); ++i) {
-      String name =  itemAt(i).tag();
+      String name =  itemAt(i).tag().toLowerCase();
       if(result.has(name)){
 	locations = (List) result.at(name);
       } else {
