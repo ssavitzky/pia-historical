@@ -3,7 +3,7 @@
 <title>caption processing</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<h1>&agentName; captions</h1>
+
 <set entity name=mydirectory>&FORM.directory;</set>
 <set entity name=files>&FORM.files;</set>
 <if><test><get agent name="rowsize"></test><else><set agent name=rowsize>6</set></else></if>
@@ -40,9 +40,19 @@ src="&li;.small.gif"><br><get form name="&li;"></a>
 </table>
 </write>
 
-
+ <if> <test><read info file="&AGENT.master_list;"></test><then>
+</then><else><write file=&AGENT.master_list;>
+<h3>Created &dayName; &monthName; &day; by &piaUSER;</h3>
+<!-- this file  will have a set of table entries of captions -->
+<!--  need to figure out how to edit rather than just append -->
+<!-- for now, requires table wrapper around -->
+</write>
+</else></if>
 <write append file=&AGENT.master_list;>
-<a href="&mydirectory;/captions.html">&titleimg; "&FORM.captTitle;"</a> &date; <br>
+<TR><TD><a href="&mydirectory;/captions.html">&titleimg;</a><TD><a
+href="&mydirectory;/captions.html"> "&FORM.captTitle;"</a><TD>
+&dayName; &monthName; &day;
+</TR>
 </write>
 
 <repeat list="&files;">
@@ -53,9 +63,10 @@ src="&li;.small.gif"><br><get form name="&li;"></a>
 </then></if></repeat>
 
 <hr>
- <b>$Id$</b><br>
+<read interform file="banner.if">
+<b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Apr 17 13:00:52 1997
+Last modified: Fri Apr 18 07:55:46 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
