@@ -16,10 +16,7 @@
 
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170 valign=center>
-	<if><agent-running name="Logo">
-	    <then><img src="/Logo/A100.gif" height=100 width=111></then>
-	    <else>&agentName;</else>
-	</if>
+	<img src="Logo/A100.gif" height=100 width=111>
 <td>
   <table cellspacing=0 BORDER=0>
   <tr><td align=right width=170><br>
