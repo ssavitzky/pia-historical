@@ -3,12 +3,13 @@
 
 <h1>Tagset Documentation Tagset</h1>
 
-<doc> This file contains the XML definition for the a Tagset that can be used
+<doc> This file contains the XML definition for a Tagset that can be used
       for formatting Tagset files.
 </doc>
 
-Tagset definition files, their syntax, and their usual representation, are
-documented in <a href="tagset.html">tagset.html</a>.
+<doc> Tagset definition files, their syntax, and their usual representation,
+      are documented in <a href="tagset.html">tagset.html</a>.
+</doc>
 
 <h2>Definition Elements</h2>
 
@@ -30,7 +31,10 @@ documented in <a href="tagset.html">tagset.html</a>.
 </define>
 
 <define element=define>
-  <action> <strong>&lt;define</strong>
+  <action> <if>&attributes:element;
+	       <then><a name="&attributes:element;"><strong>&lt;define</strong></a></then>
+	       <else><strong>&lt;define</strong></else>
+           </if>
 	   <repeat list="&attributes;"> &li; </repeat><strong>&gt;</strong> <br>
 	<if>&content;<then><blockquote>&content;</blockquote></if>
 	<p>
@@ -64,7 +68,7 @@ documented in <a href="tagset.html">tagset.html</a>.
 </define>
 
 <define element=doc>
-  <action> <blockquote><em>&content;</em></blockquote> </action>
+  <action> &content; <p> </action>
 </define>
 
 <define element=note>

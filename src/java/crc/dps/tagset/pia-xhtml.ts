@@ -42,7 +42,10 @@ Note that we only need these inside the PIA.
 
 <note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
    following definitions.  This is expedient (i.e. a temporary hack), but all
-   such definitions will eventually be replaced.
+   such definitions will eventually be replaced.  The cannonical location for
+   agent-specific handlers is in the <code>crc.pia.agent</code> package.  The
+   best place for PIA-specific handlers is probably in
+   <code>crc.pia.handle</code>. 
 </note>
 
 <define element=agent-list handler=legacy:agent-list empty>
