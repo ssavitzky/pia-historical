@@ -7,6 +7,7 @@ TOPDIR=../..
 
 
 FILES = \
+	NameUtils.java \
 	Utilities.java \
 	NullOutputStream.java \
 	Timer.java
