@@ -159,7 +159,7 @@ add a default start-up form to this file.  <p>
        <input type="submit" value="Install"><br>
        </form></if>
   <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-       <if><agent-running name=CDRW><then><em>installed</em></then>
+       <if><agent-running name="user_files"><then><em>installed</em></then>
        <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="archive">
