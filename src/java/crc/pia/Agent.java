@@ -17,6 +17,7 @@ import crc.ds.Table;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
 import crc.ds.Registered;
+import crc.ds.Tabular;
 
 import crc.sgml.SGML;
 import crc.sgml.Attrs;
@@ -37,7 +38,7 @@ import crc.tf.UnknownNameException;
  * handle a transaction by putting itself on the transaction's list of
  * handlers --  which results in a call back to the agents handle method.
  */
-public interface Agent extends Attrs, Registered {
+public interface Agent extends Tabular {
 
   /**
    * Default initialization; implementors may override
@@ -74,11 +75,9 @@ public interface Agent extends Attrs, Registered {
    */
   public void version(String version);
 
-
   /************************************************************
   ** operations for working with resolver
   ************************************************************/
-
 
   /**
    * Agents maintain a list of feature names and expected values;
