@@ -1,3 +1,7 @@
+// ContentFactory.java
+// $Id$
+// COPYRIGHT 1997 Ricoh Silicon Valley.
+
 
 package crc.pia;
 
