@@ -33,7 +33,6 @@
 <hr>
 <slide><h2>Overview</h2>
 <p>&nbsp;
-<p>&nbsp;
 <ol>
   <li> Document Processing
   <li> Documents and the Web
@@ -44,6 +43,127 @@
 </slide>
 
 <hr><set name=subCaption>Document Processing</set>
+<slide><h2>What Are Documents?</h2>
+<ul>
+  <li> A document is a collection of <em>structured data</em>
+  <li> Document = content (text) + structure (markup tags)
+  <li> Documents may have
+       <ul>
+	 <li> multiple versions
+	 <li> multiple representations (styles / views)
+	 <li> multiple ``behaviors''
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>A Document is not an Object</h2>
+<ul>
+  <li> Documents <em>separate</em> content from behavior<br>
+       (objects <em>combine</em> content and behavior)
+       
+  <li> Therefore, documents...
+       <ul>
+	 <li> are <em>portable</em>
+	 <li> can be processed in many ways<br>
+	      [formatted, indexed, translated, ...]
+	 <li> are <em>robust</em> (unlike serialized Java objects)
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>Why Process Them?</h2>
+<ul>
+  <li> The ``traditional'' operations
+       <ul>
+	 <li> Creating / editing
+	 <li> Viewing
+	 <li> Printing (typesetting)
+	 <li> Indexing
+	 <li> Searching
+       </ul>
+  <li> But wait! There's more!
+       <ul>
+	 <li> Reformatting (applying styles)
+	 <li> Managing collections (e.g. web sites)
+	 <li> Translating / converting /compiling
+	 <li> Extracting information
+	 <li> Filtering
+	 <li> Form handling
+	 <li> Workflow / groupware
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What Can Our System Do?</h2>
+<ul>
+  <li> Short answer -- all of the above
+  <li> ... to any SGML document (including HTML and XML)
+  <li> ... any other document, as long as someone writes a parser
+  <li> On-the-fly or offline (command line)
+  <li> As server, client, or proxy
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What do we use it for?</h2>
+<ul>
+  <li> Permanent web history<br>
+       where / when / site structure
+  <li> Website maintenence <br>
+       link-checking / style consistency / 
+  <li> Form Handling<br>
+       a complete web application development environment<br>
+       all of RSV's forms are on the web -- 6 man-weeks.
+  <li> Automated documentation<br>
+       pretty-printing / comment extraction / indexing
+  <li> Prototyping<br>
+       interactive websites / networked appliances
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What's different?</h2>
+<ul>
+  <li> XML syntax for actions
+       <ul>
+	 <li> no CGI's or embedded Basic/Perl/Java/etc. code
+	 <li> easily edited with standard tools
+	 <li> ``programs'' can be processed as documents
+	 <li> programmers not required for most work<br>
+	      -- Technical writers can do it.
+       </ul>
+  <li> Generic SGML as well as XML and HTML
+  <li> Optional separation of behavior and content
+       <ul>
+	 <li> actions can be separate (tagset) or embedded<br>
+	      The syntax is the same in either case
+	 <li> documents can be processed with different sets of actions for
+	      the same tags (tagsets)
+       </ul>
+  <li> Dynamically-loaded handlers
+</ul>
+</slide>
+
+<hr>
+<slide><h2>Document-Oriented Computing</h2>
+<p>&nbsp;
+<ul>
+  <li> A whole new way of looking at computation
+       <ul>
+	 <li> variables contain documents
+	 <li> content and behavior are separate
+       </ul>
+  <li> A new <em>location</em> for computation
+       <ul>
+	 <li> not just clients and servers
+	 <li> peers and proxies as well
+       </ul>
+</ul>
+</slide>
+
 <slide><h2>A Simple Example</h2>
 <ul>
   <li> Input: <a href="lw99.html">a document</a>
@@ -165,28 +285,6 @@
 </slide>
 
 <hr>
-<slide><h2>A Document is not an Object</h2>
-<ul>
-  <li> Documents are <em>structured</em> data
-  <li> ... = text + markup
-  <li> Documents <em>separate</em> content from behavior
-  <li> Therefore, documents...
-       <ul>
-	 <li> are <em>portable</em>
-	 <li> can be processed in many ways<br>
-	      [formatted, indexed, translated, ...]
-	 <li> are <em>robust</em> (unlike serialized Java objects)
-       </ul>
-  <li> Documents may have
-       <ul>
-	 <li> multiple versions
-	 <li> multiple representations (styles)
-	 <li> multiple ``behaviors''
-       </ul>
-</ul>
-</slide>
-
-<hr>
 <slide><h2>Appliances</h2>
 <div align=center>
   <strong>The future of computing is <em>networked appliances</em></strong>
@@ -248,15 +346,18 @@
 <hr>
 <slide><h2></h2>
 </slide>
-<hr>
-<slide><h2></h2>
-</slide>
-<hr>
-<slide><h2></h2>
-</slide>
 
 <hr><set name=subCaption>Architecture and Implementation</set>
 <slide><h2>Architecture and Implementation</h2>
+<ul>
+  <li> === this needs three pictures:
+       <ol>
+	 <li> === agency in context (between client and server)
+	 <li> === Agency internal view (server, agents, pages)
+	 <li> === DPS internal view (input, processor, tagset, output)
+       </ol>
+</ul>
+
 </slide>
 
 <hr>
@@ -413,7 +514,7 @@
 <slide><h2>A better example...</h2>
 
 <em>It's really meant for web pages.</em>
-<!-- needs to go into demo agent === -->
+
 <pre>
 &lt;html&gt;
   &lt;head&gt;
@@ -421,11 +522,17 @@
   &lt;/head&gt;
   &lt;body&gt;
     &lt;header&gt; a classic example &lt;/header&gt;
+    &lt;hr&gt;
     Hello world!
-    &lt;footer&gt;
+    &lt;footer cvsid="$Id$"&gt;
   &lt;/body&gt;
 &lt;/html&gt;
 </pre>
+
+...which becomes <a href="/demo/hello-world">this page on the server</a>.<br>
+(<a href="Images/hello-world.html">local copy</a>)
+
+<!-- === need a version in Images for stand-alone === -->
 </slide>
 
 <hr>
@@ -439,7 +546,7 @@
   &lt;corps&gt;
     &lt;bienvenue&gt; une example classique &lt;/bienvenue&gt;
     Bonjour, toute le mond!
-    &lt;pied&gt;
+    &lt;pied cvsid="$Id$"&gt;
   &lt;/corps&gt;
 &lt;/html&gt;
 </pre>
@@ -484,7 +591,7 @@ The language is easily localized or abbreviated.</em>
 <hr>
 
 <hr><set name=subCaption>Open Source</set>
-<slide><h2>Why Open Source?</h2>
+<slide><h2>Why Open Source for Us?</h2>
 <ul>
   <li> Software is a cost for Ricoh
        <ul>
@@ -512,11 +619,31 @@ The language is easily localized or abbreviated.</em>
 </slide>
 
 <hr>
-<slide><h2></h2>
+<slide><h2>Why Open Source for Developers?</h2>
+<ul>
+  <li> Solid, peer-reviewed software
+  <li> Active developer community
+       <ul>
+	 <li> Mutual assistance
+	 <li> Fast bug fixes
+	 <li> Rapid evolution/improvement
+       </ul>
+  <li> No orphan products
+       <ul>
+	 <li> someone can always take over the project
+       </ul>
+</ul>
 </slide>
 
 <hr>
-<slide><h2></h2>
+<slide><h2>Open Standards for Document Processing</h2>
+<ul>
+  <li> We hope to do for document <em>processing</em>
+  <li> ... what HTML did for document representation
+  <li> ... and HTTP did for document communication
+       <p>
+  <li> Community-developed standards are best
+</ul>
 </slide>
 
 <hr>
