@@ -172,8 +172,9 @@ sub match {
 
     print "matching:" if $main::debugging;
     foreach $agent ($self->agents()){
-	if ($agent->matches($transaction)) {
-	    print "About to call $agent -> act_on\n" if $main::debugging;
+	print " " . $agent->name . "?" if  $main::debugging;
+	if ($transaction->features->matches($agent->criteria)) {
+	    print " matched\n" if $main::debugging;
 	    $agent->act_on($transaction, $self);
 	    ++ $matches;
 	}

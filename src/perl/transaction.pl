@@ -148,9 +148,16 @@ sub handle {
 ###### $transaction->satisfy($resolver)
 ###
 ###	Calls $agent->handle($self, $resolver) for every agent in its
-###	queue.  (If the agent is not a reference, it is taken as a
-###	boolean result; this allows an ``act-on'' agent to mark the
-###	transaction as satisfied by pushing a 1 onto it.
+###	queue.  $agent is usually a reference to an agent.  Other 
+###	possibilities include:
+###
+###	Transaction: `handle' simply pushes itself onto the resolver.
+###	   This lets ``act_on'' agents push a satisfying transaction.
+###
+###	boolean:  simply returned.  This allows an ``act_on'' agent to 
+###	   mark the transaction as satisfied by pushing a 1 onto it.
+###
+###	any other object with a ``handle'' method. 
 ###
 sub satisfy {
     my ($self, $resolver) = @_;

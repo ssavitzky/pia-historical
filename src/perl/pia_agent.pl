@@ -70,19 +70,13 @@ sub version{
     return $string;
 }
 
-sub criteria {
-    my ($self, $arg) = @_;
-    $$self{'criteria'} = $arg if defined $arg;
-    return $$self{'criteria'};
-}
-
 ############################################################################
 ###
 ### Attributes:
 ###	Attributes are stored as instance variables in the object's
 ###	hash.  They are set from the options if undefined.  This provides
-###	a very clean way to perform special processing (e.g. filename or
-###	list expansion) on attributes at the time they are first needed.
+###	a clean way to perform special processing (e.g. filename or list
+###	expansion) on attributes at the time they are first needed.
 
 sub attribute {
     ## Set or retrieve a named attribute
@@ -151,6 +145,12 @@ sub dir_attribute {
 ###	attached to each transaction.
 ###
 
+sub criteria {
+    my ($self, $arg) = @_;
+    $$self{'criteria'} = $arg if defined $arg;
+    return $$self{'criteria'};
+}
+
 sub match_criterion {
     my($self,$feature,$value,$code)=@_;
 
@@ -168,17 +168,6 @@ sub match_criterion {
     return $criteria;
 }
 
-sub matches {
-    my($self, $transaction)=@_;
-
-    ## Match the agent's criteria against the transaction's features. 
-    ##    There's really no reason for this to be here except that some
-    ##	  agent might want to get clever about what it matches.
-
-    my $criteria=$self->criteria();
-    print " " . $self->name . "(@$criteria)?" if  $main::debugging;
-    return $transaction->features->matches($criteria);
-}
 
 ############################################################################
 ###
@@ -410,6 +399,7 @@ sub create_request {
 ###
 ### Find Interforms for agent:
 ###
+###	The caller should map extension to file type if necessary.
 
 sub find_interform {
     my($self, $url, $noDefaults) = @_;
@@ -421,8 +411,6 @@ sub find_interform {
     ## The search path used is:
     ##		option(root)/name : option(root)
     ##		USR_ROOT/name : PIA_ROOT/name : USR_ROOT : PIA_ROOT
-
-    ## === We should really compute the path once and cache it. ===
 
     return unless $url;
     my $path = ref($url) ? $url->path() : $url;
@@ -490,14 +478,23 @@ sub find_interform {
 ############################################################################
 ############################################################################
 ###
-### interform processing:
+### Interform Processing:
 ###
-###	interforms must execute in the context of an agent; therefore we
-###	cannot create a new class for interforms
+###	Interforms must execute in the context of an agent; therefore we
+###	cannot create a new class for interforms.
+###
+### ===	It would be better to use something like <html language=perl> and
+###	have a new element type, e.g. <eval>, for code elements.  Another
+###	possibility would be to use the extension.  Knowing the language up
+###	front makes it possible to pass different languages off to an
+###	appropriate agency for evaluation.
+###
+### === We need to be able to handle CGI scripts and plain HTML
+###	eventually.  We need this for the DOFS, in particular.
 ###
 
-#this is  a callback for html traverse
-#TBD change for multi-threads
+### Environment in which the code is run:
+
 local $agent;			# The agent that owns the interform
 local $request;			# The request being handled
 #local $response;		# The response being constructed.
@@ -505,7 +502,8 @@ local $request;			# The request being handled
 local $current_self;		# old name for $agent
 local $current_request;		# old name for $request
 
-
+#this is  a callback for html traverse
+#TBD change for multi-threads
 sub execute_interform{
     my $element=shift;
     my $start=shift;
@@ -573,7 +571,8 @@ sub run_interform{
 
 sub parse_interform_string{
     my($self,$string,$request)=@_;
-    $HTML::PARSE::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IMPLICIT_TAGS = 0;
     my $html=parse_html($string);
     my $status=$self->run_interform($html,$request);
     my $string=$html->as_HTML;
@@ -583,7 +582,8 @@ sub parse_interform_string{
 
 sub parse_interform_file{
     my($self,$file,$request)=@_;
-    $HTML::PARSE::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IMPLICIT_TAGS = 0;
     my $html=parse_htmlfile($file);
     my $status=$self->run_interform($html,$request);
     my $string=$html->as_HTML;
@@ -593,6 +593,15 @@ sub parse_interform_file{
 
 sub respond_to_interform {
     my($self, $request, $url)=@_;
+
+    ## Respond to a request directed at an agent, by running an interform. 
+    ##	  The InterForm's url may be passed separately, since the agent may
+    ##	  need to modify the URL in the request.  It can pass either a full
+    ##	  URL or a path.
+
+    ## === At some point we're going to have to have a hash that maps
+    ##	  extensions into handlers, because not everything is an
+    ##	  interform.  We should allow plain HTML and CGI's.
 
     $url = $request->url unless defined $url;
     my $file=$self->find_interform($url);
@@ -608,7 +617,9 @@ sub respond_to_interform {
 	$response->header('Version',$self->version());
 	## === should really just return 0 ===
     } else {
-#TBD check for path parameters    
+#TBD check for path parameters  
+	## === TBD verify extension and file type.
+
 	my $string=$self->parse_interform_file($file,$request);
 	if (! defined $response) {
 	    $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");

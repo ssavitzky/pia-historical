@@ -147,6 +147,15 @@ sub register {
 ###
 ### Matching.
 ###
+###	The match criteria are a list (not a hash, because order might be
+###	significant), of name=>value pairs.  The value is considered to be
+###	a boolean.  A sublist in place of a pair is ORed.
+
+### === could allow x=>y where x is a reference to a subroutine and y is
+###	an argument list.
+
+### === could allow x=>y where x is a feature name and y a reference to a
+###	scalar variable to bind.
 
 sub matches {
     my($self, $criteria)=@_;
@@ -287,7 +296,7 @@ sub is_interform{
 ### Features with values:
 
 $computers{agent} = \&agent;
-sub agency {
+sub agent {
     my($request)=shift;
     my $path=$url->path;
     my $url=$request->url;
