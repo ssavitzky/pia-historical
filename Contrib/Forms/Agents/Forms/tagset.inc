@@ -281,6 +281,7 @@ AUTHLIST" empty>
   <if><get name=mysignas> <then> <set local name=lastsigner><get name=mysignas></set></then> <else><set local name=lastsigner><get name=myuser></set></else> </if>
   <!-- load the route  -->
 
+  <set name=myoriginalsigner><get name=myuser></set>
   <set name=myroute local><get element name=route></set>	     
   <if><get name=myroute>
     <else>
@@ -322,7 +323,7 @@ AUTHLIST" empty>
     
       <if> <get name=lastsigner>
 	<then>
-	  <remove-notify-user user=&myuser; signedas=&mysignas; form=&myform;>
+	  <remove-notify-user user=&myoriginalsigner; signedas=&mysignas; form=&myform;>
 	</then>
 	<else>  PROBLEM: no user identified ... no pending forms removed</else>
       </if>
@@ -508,7 +509,7 @@ name=AuthenticatedUser></set></else></if>
   <set agent name=notified delete key=&myuser;></set>
   <if> <get name=mysignas>
    <then>
-     <set agent name=notified delete key=&signedas;></set>
+     <set agent name=notified delete key=&mysignas;></set>
       <remove-inbox-entry inbox=&mysignas;.&myuser; form=&myform;>
       <remove-inbox-entry inbox=&mysignas; form=&myform;>
    </then>
