@@ -12,20 +12,22 @@ import java.io.OutputStream;
 
 /** Content
  *  is an abstract interface for those objects which can serve as the
- *  content of a transaction.    
- *  Content objects sit between a to and a from machine.
- *  They are generally created by the ContentFactory which first parses the stream
- *  headers to determine the type of object
- *  then creates the object.  They can also be generated directly by agents.
- *  note that content objects are generally streams and  processing should be
- *  delayed as long as possible.(If some cases such as video it may be impossible to
- *  create the full object.  In other cases, it is a matter of responsiveness.)
- *  Most content types provide appropriate editing methods
- */
+ *  content (data portion) of a transaction.    
+ *  Content objects sit between a to and a from machine. <p>
+ *
+ *  A Content is generally created by the ContentFactory which first
+ *  parses the stream headers to determine the type of object then
+ *  creates the object.  They can also be generated directly by
+ *  agents.   <p>
+ *
+ *  Note that content objects are generally streams, and that
+ *  processing should be delayed as long as possible. (In some cases
+ *  such as video it may be impossible to create the full object.  In
+ *  most other cases, it is simply a matter of wanting to start
+ *  feeding data to the client as early as possible.)  Most content
+ *  types provide appropriate editing methods.  */
 
-
-public interface Content
-{
+public interface Content {
 
  /**
   * @return Headers object

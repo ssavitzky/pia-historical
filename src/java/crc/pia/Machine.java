@@ -2,13 +2,14 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
-
-/**
- * This object represents machines that envolve in a communication transaction.
- * Ideally these should be persistent so that we can keep track of what
- * kind of browser or server we're talking to, but at the moment we
- * don't do that.
- */
+/** 
+ * The PIA end of an HTTP transaction.  The Machine serves as a
+ * source or sink for data being received from or sent to a client or
+ * server.  <p>
+ *
+ * Ideally these should be persistent so that we can keep track of
+ * what kind of browser or server we're talking to, but at the moment
+ * we don't do that.  */
 
 package crc.pia;
 
@@ -47,29 +48,13 @@ import w3c.www.http.HTTP;
 
 import crc.ds.UnaryFunctor;
 
-/** Timeout callback. */
-class zTimeout implements UnaryFunctor{
-  public Object execute( Object object ){
-    Transaction req = (Transaction) object;
-    Machine m = req.toMachine();
-    m.closeConnection();
-
-    String msg = "Request timed out.  Server may be down.";
-    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
-    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
-					 req.fromMachine(), ct, false);
-    abort.setStatus(HTTP.REQUEST_TIMEOUT);
-    abort.setContentType( "text/html" );
-    abort.setContentLength( msg.length() );
-    abort.startThread();
-
-    return object;
-  }
-
-}
-
 
 public class Machine {
+
+  /************************************************************************
+  ** Components:
+  ************************************************************************/
+
   /**
    * Attribute index - client hostName
    */
@@ -100,6 +85,11 @@ public class Machine {
    */
   protected OutputStream outputStream;
 
+
+  /************************************************************************
+  ** Access Functions:
+  ************************************************************************/
+
   /**
    * set inputStream -- use for debuggging
    */
@@ -115,7 +105,7 @@ public class Machine {
   }
 
   /**
-   * Return inputStream
+   * Return inputStream.  If it doesn't exist, create one from the socket. 
    */
   public InputStream inputStream() throws IOException{
     if( inputStream!= null )
@@ -136,7 +126,8 @@ public class Machine {
   }
 
   /**
-   * Return outputStream
+   * Return outputStream.  If it hasn't been initialized, create one from
+   *	the socket. 
    */
   public OutputStream outputStream() throws IOException{
     if( outputStream!=null ) 
@@ -172,9 +163,19 @@ public class Machine {
     }
   }
 
+  /************************************************************************
+  ** Sending Responses to Client:
+  ************************************************************************/
+
   /** 
-   * Sends a response through output stream, and if there are
-   * controls associated with this response they are added.
+   * Send a response through the output stream.  The data to be sent
+   * 	come from the Transaction's Content object.  If there are
+   * 	controls associated with this response they are added.  <p>
+   *
+   *	Note that controls are added by the Machine because it is in 
+   *	a position to know what client the response is destined for, 
+   *	and hence in what form to send the controls.  (Of course,
+   *	at the moment we are not taking advantage of this ability.)
    */
   public void sendResponse (Transaction reply, Resolver resolver)
        throws PiaRuntimeException {
@@ -195,6 +196,11 @@ public class Machine {
       // HTTP/1.0 200 OK
 
       String type = reply.contentType();
+
+      /* If the type is "text/html", see if there are controls that we
+       * can append.  From here on we use the presence of ctrlStrings
+       * to decide whether we need to do anything with the controls. */
+
       if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
       
 	isTextHtml = true;
@@ -215,7 +221,9 @@ public class Machine {
       }
       
       plainContent = content = reply.contentObj();
-      
+
+      // Increase content length by the size of the control string.
+
       if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
 	if( reply.contentLength() != -1 )
 	  // changing length
@@ -233,6 +241,11 @@ public class Machine {
 
       shipOutput( out, headers, false );
       
+      /* If the content is HTML, suck in the whole thing to see whether
+       * we can append the controls to it. */
+
+      // === very inefficient.  Should do it on the fly. ===
+
       if( content != null && isTextHtml  ){
 	contentString = content.toString();
 	try{
@@ -242,12 +255,21 @@ public class Machine {
 	}
       }
       
+      /* The control string is inserted after the &lt;body&gt; tag.
+       * This simpleminded test will be confused by the occasional 
+       * page that has its first body tag enclosed in a comment. */
+
       if( ctrlStrings != null && mi != null ){
 	String ms = mi.matchString();
 	StringBuffer buf = new StringBuffer( ms );
 	buf.append( ctrlStrings );
-	contentString   = re.substitute(contentString, new String( buf ), true);
+	contentString = re.substitute(contentString, new String(buf), true);
       } else if (ctrlStrings!= null){
+
+	/* === No body.  The right thing to do is put out the controls
+	 * === before the &lt;/html&gt; tag.  Putting them at the front
+	 * === will screw up pages with frames. */
+
 	shipOutput( out, new String( ctrlStrings ), true );
       }
       
@@ -284,22 +306,24 @@ public class Machine {
 
   }
 
+  /**
+   * Ship a string to the OutputStream.
+   */
   private void shipOutput(OutputStream out, String s, boolean withnewline)
        throws PiaRuntimeException{
     byte[] bytestring = null;
 
-      bytestring = getBytes( s );
-      try{
-	if( bytestring != null )
-	  out.write( bytestring, 0, bytestring.length  );
-	if( withnewline )
-	  out.write( '\n' );
-      }catch(IOException e){
-
-	Pia.debug(this, e.getClass().getName());
-	String msg = "Can not write...\n";
-	throw new PiaRuntimeException (this, "shipOutput", msg) ;
-      }
+    bytestring = getBytes( s );
+    try{
+      if( bytestring != null )
+	out.write( bytestring, 0, bytestring.length  );
+      if( withnewline )
+	out.write( '\n' );
+    } catch(IOException e) {
+      Pia.debug(this, e.getClass().getName());
+      String msg = "Can not write...\n";
+      throw new PiaRuntimeException (this, "shipOutput", msg) ;
+    }
   }
 
   private byte[] getBytes(String s){
@@ -331,8 +355,11 @@ public class Machine {
 				     , "sendImageContent"
 				     , msg) ;
     }
-}
+  }
 
+  /************************************************************************
+  ** Sending Requests, Receiving Responses from Server:
+  ************************************************************************/
 
   private byte[] suckData( InputStream input )throws IOException{
     byte[]buffer = new byte[1024];
@@ -444,29 +471,26 @@ public class Machine {
   }
 
   /**
-   * Set proxy string given protocol scheme and proxy string -- if proxy string is not
-   * define, the proxy string is retrieve from the Pia.
+   * Set proxy string given protocol scheme and proxy string.
+   *	If proxy string is not defined, retrieve it from the Pia.
    * @param scheme protocol scheme
    * @param proxyString a url string
    * @return url to proxy
    */
-  public URL setProxy (String scheme, String proxystring) throws MalformedURLException{
+  public URL setProxy (String scheme, String proxystring)
+       throws MalformedURLException {
     String p = null;
 
     if( proxystring!=null )
       p = proxystring;
 
-    if(p==null){
-      String mainproxy;
-
-      mainproxy= Pia.instance().agency().proxyFor(hostName, scheme);	
-      if ( mainproxy!= null )
-	p = mainproxy;
+    if (p==null) {
+      String mainproxy = Pia.instance().agency().proxyFor(hostName, scheme);
+      if ( mainproxy!= null ) p = mainproxy;
     }
 
-
-    if(p!=null){
-      try{
+    if (p!=null) {
+      try {
 	URL myproxy = new URL( p );
 	proxyTab.put(scheme, myproxy);
 	return myproxy;
@@ -474,15 +498,18 @@ public class Machine {
 	throw e;
       }
     }
-    
     return null;
-
   }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   /**
+   * Construct from a host name, port, and socket.
    * @param hostName a string representing host name. 
    * @param port port number
-   * @param socket socket receives from accepter's listening socket
+   * @param socket from accepter's listening socket
    */ 
   public Machine( String hostName, int port, Socket socket ){
     this.hostName = hostName;
@@ -491,6 +518,7 @@ public class Machine {
   }
 
   /**
+   * Construct from a host name and port.
    * @param hostName a string representing host name. 
    * @param port port number
    */ 
@@ -500,16 +528,26 @@ public class Machine {
     socket = null;
   }
 
-  /** Create a Machine from an InputStream.
-   * @param in an InputStream
+  /** 
+   * Construct from an InputStream.  This constructor is used when we 
+   *	are creating the Content for a response Transaction from an
+   *	InputStream (for example a file or the InterForm interpretor).
+   * @param anInputStream
    */ 
-  public Machine( InputStream in ){
-    this.inputStream = in;
+  public Machine( InputStream anInputStream ){
+    this.inputStream = anInputStream;
   }
 
-  // call from agent machine
+  /**
+   * Default constructor.  Typically called from a subclass.
+   */
   public Machine(){
   }
+
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
   /**
    * for debugging only
@@ -520,21 +558,35 @@ public class Machine {
     try{
       t.sleep( howlong );
     }catch(InterruptedException e){;}
-    
   }
-
 
 }
 
 
+/************************************************************************
+*************************************************************************
+** Auxiliary Classes:
+*************************************************************************
+************************************************************************/
 
 
+/** Timeout callback. */
+class zTimeout implements UnaryFunctor{
+  public Object execute( Object object ){
+    Transaction req = (Transaction) object;
+    Machine m = req.toMachine();
+    m.closeConnection();
 
+    String msg = "Request timed out.  Server may be down.";
+    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
+    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
+					 req.fromMachine(), ct, false);
+    abort.setStatus(HTTP.REQUEST_TIMEOUT);
+    abort.setContentType( "text/html" );
+    abort.setContentLength( msg.length() );
+    abort.startThread();
 
+    return object;
+  }
 
-
-
-
-
-
-
+}
