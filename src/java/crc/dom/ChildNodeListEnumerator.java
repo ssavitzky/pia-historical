@@ -19,7 +19,7 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
       throw new NullPointerException(err);
     }
     l = list;
-    cursor = l.header.getPrevious();
+    cursor = null;
   }
 
   /**
@@ -28,8 +28,13 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
    *enumeration, null is returned. 
    */
   public Node getFirst(){
-    cursor = l.header.getPrevious();
-    return cursor;
+    if( l.getLength() == 0 ) return null;
+    try{
+      cursor = l.item( 0 );
+      return cursor;
+    }catch( NoSuchNodeException e ){
+      return null;
+    }
   }
 
   /**
@@ -38,10 +43,9 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
    *pointer at the last node. 
    */
   public Node getNext(){ 
-    if( cursor == l.header.getNext() )
-      return null;
-
-    cursor = cursor.getNext();
+    // pass last element
+    if( cursor != null && cursor.getNextSibling() == null ) return null;
+    cursor = cursor.getNextSibling();
     return cursor;
   }
 
@@ -51,10 +55,10 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
    *leaves the current pointer at the first node. 
    */
   public Node getPrevious(){
-    if( cursor == l.header.getPrevious() )
+    if( cursor != null && cursor.getPreviousSibling() == null )
       return null;
 
-    cursor = cursor.getPrevious();
+    cursor = cursor.getPreviousSibling();
     return cursor;
   }
 
@@ -68,8 +72,13 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
     if( isEmpty() )
       return null;
 
-    cursor = l.header.getNext();
-    return cursor;
+    long last = l.getLength() - 1;
+    try{
+      cursor = l.item( last );
+      return cursor;
+    }catch(NoSuchNodeException e){
+      return null;
+    }
   }
 
   /**
@@ -79,6 +88,8 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
    * first node in the enumeration, or null if the enumeration is empty. 
    */
   public Node getCurrent(){
+    if(isEmpty()) return null;
+
     return cursor; 
   }
 
@@ -90,8 +101,11 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
    */
   public boolean atStart(){
     if( isEmpty() ) return true;
-
-    return cursor == l.header.getPrevious();
+    try{
+      return cursor == l.item( 0 );
+    }catch(NoSuchNodeException e){
+      return true;
+    }
   }
 
   /**
@@ -103,14 +117,18 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
 
   public boolean atEnd(){
     if ( isEmpty() ) return true;
-    return cursor == l.header.getNext();
+    try{
+      return cursor == l.item( l.getLength() - 1 );
+    }catch(NoSuchNodeException e){
+      return true;
+    }
   }
 
   protected boolean isEmpty(){ 
-    return l.header.getNext() == null && l.header.getPrevious() == null;
+    return l.getLength() == 0;
   }
 
-  protected AbstractNode cursor = null;
+  protected Node cursor = null;
   protected ChildNodeList l;
 }
 
