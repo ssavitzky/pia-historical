@@ -1,0 +1,125 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>The Naming of Names</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>The Naming of Names</h1>
+
+<h2>Agents</h2>
+
+<h3>Agency -&gt; Admin</h3>
+
+<p> It has been pointed out that our use of Agency is ambiguous.  We need to
+    change it; Admin has been proposed.  There is also a problem in that the
+    Agency agent is really doing four things:
+
+<ol>
+  <li> Administration.  Clearly <code>Admin</code>
+  <li> Handling the root pages.  Pretty clearly a new agent called
+       <code>Default</code>, <code>PIA</code>, or <code>ROOT</code>.
+  <li> Serving default icons, and so on.  Probably <code>Default</code>.
+  <li> Handling requests directed at agents (in its <code>actOn</code>
+       method).  Possibly this should be done in the Resolver, or possibly
+       <code>Default</code>. 
+</ol>
+
+<p> Both <code>Default</code> and <code>Admin</code> could be constructed by
+    copying the code for <code>Agency</code>.  Renaming a directory is a major
+    pain but it probably needs to be done.
+
+<p> <code>ROOT</code> seems to be preferred at the moment.  Note that it needs
+    to be possible to <em>register</em> the default (root) agent.  Note that
+    an appliance's main agent might typically do so.
+
+
+<h3>Spy -&gt; Tools</h3>
+
+<p>... or possibly <code>Toolbar</code>.  <code>cia</code> and
+    <code>fbi</code> would become <code>remoteTools</code> and
+    <code>localTools</code> respectively.
+
+
+<h3>PIA/Doc, etc.</h3>
+
+<p> <code>ROOT</code> should handle these.  It might actually have a suitable
+    <code>actOn</code> method in XHTML.
+
+<p> It seems possible that the <em>only</em> differences between a DOFS agent
+    and a regular one might end up being:
+<ol>
+  <li> how you get to the agent's control pages. 
+  <li> how it maps file extensions into mime types, and which ones are
+       active (and with which tagsets).  This could be done with a namespace. 
+</ol>
+
+<p> Under this scheme, an agent would have both a ``home'' directory and a
+    ``root'' directory, and also both a ``home'' and a ``root'' tagset.
+
+<h2>Mapping Agents to Directories</h2>
+
+<h3>Currently:</h3>
+
+<dl>
+  <dt> <code>/<em>name</em></code> 
+  <dd> an agent's ``root'' directory; normally the same as its ``home''
+       directory  unless it's a DOFS agent
+  <dt> <code>/<em>type</em>/<em>name</em></code>
+  <dd> an agent's home directory if <code><em>type</em></code> is not the same
+       as <code><em>name</em></code>
+  <dt> <code>/~<em>name</em></code>
+  <dd> an agent's data directory
+  <dt> <code>/My</code>
+  <dd> DOFS agent referring to the root of the data directories its home
+       directory is <code>/DOFS/~</code>
+</dl>
+
+<h3>Proposed:</h3>
+
+<dl>
+  <dt> <code>/<em>name</em></code> 
+  <dd> an agent's ``root'' directory; normally the same as its ``home''
+       directory unless redirected by setting <code>AGENT:root</code>
+  <dt> <code>/~<em>name</em></code>
+  <dd> an agent's home directory.  Normally
+       <code>.../Agents/<em>name</em></code> or 
+       <code>.../Agents/<em>type</em>/<em>name</em></code>, unless redirected
+       by setting <code>AGENT:home</code> 
+  <dt> <code>/~/<em>name</em></code>
+  <dd> an agent's data directory
+  <dt> <code>/~</code>
+  <dd> DOFS agent referring to the root of the data directories; its home
+       directory should be <code>/~~</code>
+</dl>
+
+<h3>Mounting:</h3>
+
+<p> It would be desirable to ``mount'' agents anywhere in the agent tree.  A
+    ``mounted'' agent would have:
+
+  <dt> <code>/<em>path</em>/<em>name</em></code> 
+  <dd> root directory
+  <dt> <code>/<em>path</em>/~<em>name</em></code>
+  <dd> home directory
+  <dt> <code>/~/<em>path</em>/<em>name</em></code>
+  <dd> data directory
+</dl>
+
+<p> Currently, an agent's ``name'' has to be unique.  Under this scheme, it
+    only has to be unique with the path prefix.  Another way of looking at
+    this is to say that the agent's name can include slashes.  This changes
+    <code>findInterform</code> somewhat.
+
+<h2>Tagsets</h2>
+
+
+<h2>The Agency</h2>
+
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
