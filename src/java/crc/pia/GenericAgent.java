@@ -974,7 +974,9 @@ public class GenericAgent extends AttrBase implements Agent {
    * Prepare environment variables for CGI
    */
   protected String[] setupEnvironment(Transaction req){
-    String[] envp = new String[8];
+    String path = req.requestURL().getFile();
+
+    String[] envp = new String[9];
     envp[0]="CONTENT_TYPE=";
     envp[1]="CONTENT_LENGTH=";
     
@@ -992,6 +994,8 @@ public class GenericAgent extends AttrBase implements Agent {
     if( req.method() == "GET" )
       envp[7] += req.queryString();
     
+    envp[8]="PATH_INFO="	+ path;
+
     for(int i = 0; i < envp.length; i++){
       Pia.debug(this, "The environment var -->" + envp[i]);
     }
