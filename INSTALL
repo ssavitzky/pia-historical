@@ -4,106 +4,165 @@ PIA Installation Manual, Alpha release 0.9
 	This manual describes how to install a Personal Information
 	Agency.
 
+CONTENTS:
+
+    I. Obtaining the Files
+       A. From Inside Ricoh
+       B. From Outside Ricoh
+       C. Also Needed
+
+    II. Installing the Files
+	A. At Your Site
+	B. In Your Home Directory
+	C. Under Source Control
+
+    III. Setup
+
+    IV. Running the PIA
+	A. Starting the Program
+	B. Using the PIA
+
+    V. Peripheral Agencies
+
+========================================================================
+
 I. Obtaining the Files
 
-From Inside Ricoh:
+   A. From Inside Ricoh
 
-	Telnet or dial in to CRC, and FTP the compressed sources from /pia1/pia.
-	There are two versions of the release:
+	Connect to CRC via the Internet or direct dialin, and FTP the
+	compressed sources from /pia1/pia.  There are two versions of
+	the release:
 
 	1)pia_bin.tar.gz, binary only
 	2)pia.tar.gz, binary and source
 	
-From Outside Ricoh:
+   B. From Outside Ricoh
 
-	(After the product is released, you will be able to) Obtain a copy of
-	the public files from ftp://pia.ricoh.com/pub/pia, or browse to the
-	public Agency at http://pia.ricoh.com/.
+	If and when the PIA is released to the public, it will be
+	obtainable from pia.ricoh.com.  The files mentioned above will
+	be accessible via FTP in <pia.ricoh.com:/pub/pia>, or HTTP
+	via the public Agency at <http://pia.ricoh.com/>.
 
-Also Needed
+   C. Also Needed
 
-	You will need Java JDKTM 1.0.2 and Jigsaw. The JDK can be obtained from
-	http://www.javasoft.com.  Jigsaw is already provided with the PIA library. 
+	You will need Java JDK(TM) 1.0.2 or the equivalent.  The JDK can
+	be obtained from <http://www.javasoft.com>.  All required code
+	outside the JDK is provided with the release.
 
-	You also need an operating system that supports sockets and long filenames.
-	At the moment we recommend Linux(Red Hat 4.2).
+	You also need an operating system that supports sockets and long
+	filenames.  We have tested the PIA on Linux(Red Hat 4.2) on the
+	Intel architecture, and Solaris on SPARC.
 
 	Unpacking the files requires tar and gunzip (or GNU tar).
 
+	Several utilities and Agents are written in PERL, and require
+	PERL version 5.003 or higher.  PERL can be obtained from the
+	CPAN archives at <http://www.perl.com/>
 
+========================================================================
 II. Installing the Files
 
-At Your Site
+    A. At Your Site
 
-	The files are supplied in the form of a gzip'ed tar file. Set your working
-	directory to wherever you want the parent directory to be (Let's call this PIA_DIR)
-	, and do
+	The files are supplied in the form of a gzip'ed tar file. Set
+	your working directory to wherever you want the parent directory
+	to be, for example /usr/local/src, and unpack the files:
 
-	gunzip pia.tar.gz
-	tar xf pia.tar
+	  cd /usr/local/src
+	  gunzip pia.tar.gz
+	  tar xf pia.tar
 
-In Your Home Directory
+	This will create a directory pia/ under the working directory.
 
-	If you have the binary version goto Setup
+    B. In Your Home Directory
 
-Source Control
+	  cd ~
+	  gunzip pia.tar.gz
+	  tar xf pia.tar
 
-	If you are planning to do work on the Agency, you should check out a working
-	copy into your home directory using CVS. Assuming that the CVS repository is
-	in the usual place, /pia1/CvsRoot/, use the following sequence of commands:
+	This will create a directory pia/ under your home directory.
 
-	cd ~
-	setenv CVSROOT /pia1/CvsRoot
-	cvs checkout pia
+    C. Under Source Control
 
-	(If you're using bash, use
+	If you are planning to do work on the Agency, you should check
+	out a working copy into your home directory using CVS. Assuming
+	that the CVS repository is in the usual place, /pia1/CvsRoot/,
+	use the following sequence of commands:
 
-	export CVSROOT=/pia1/CvsRoot
-
-	instead of the setenv).
-
-	You now have a working copy of the PIA. If all you wanted was the source
-	code, you can check out pia/src instead of pia.
-
-Setup
-	Please go to the pia/bin directory and execute makeconfig.  This creates a pia.props
-	(configuration file) for the PIA.  makeconfig will put the file in pia/Config
-
-	You will need a subdirectory of your home directory called "pia".  Within this 
-	directory the PIA will write Agents' data.  For example, one of the PIA's agents,
-	 History, writes data to a file located in YOUR_HOME_DIR/pia/History.
+	  cd ~
+	  cvs -d /pia1/CvsRoot checkout pia
 
 
-III. Running the PIA
- 
-	The executable, pia_wrapper, locates in PIA_DIR/pia/bin.  Its has options which
-	you might want to override.  Please read the User's Manual.
+========================================================================
+III. Setup
 
-	You will probably find it convenient to make a symbolic link called pia in
-	/usr/local/bin or wherever you keep your personal binaries. Assuming PIA_DIR
-	is /usr/local/pia, you can do this with:
+	No setup is required unless you need to change the default
+	settings of the PIA.  The defaults are contained in 
 
-	ln -s /usr/local/pia/bin/pia_wrapper /usr/local/bin/pia
+	  pia/Config/pia.props
+
+	You can create a customizable copy in your home directory under
+	~/.pia with the command
+
+	  pia/bin/makeconfig
+
+	You will also find it convenient to put the directory "pia/bin"
+	into your shell's search path.  
 
 
-	That's it. Now see the User's Manual to get started.
+========================================================================
+IV. Running the PIA
 
-----------------------------------------------------------------------------
+    A. Starting the program
 
-Peripheral Agencies
+	Run the pia with the command:
 
-If an Agency is started by the special user pia, it configures itself as a
-``Peripheral Interface Agency,'' on the assumption that it's being used to
-control some peripheral device such as a printer, and also that it might be
-being shared among more than one ``real'' user.
+	  pia/bin/pia
 
-Naturally, when Ricoh WebWorts and PIA-based appliances become available,
-they will come already configured, with an agency agent customized for
-system administration. Until that glorious time, however, you may find
-yourself called upon to configure one.
+	This is a one-line shell script that runs "pia_wrapper".  A
+	complete list of command-line options can be found by running
 
-----------------------------------------------------------------------------
+	  pia/bin/pia -h
+
+	The first time the PIA is run, it will create a directory under
+	your home directory:
+
+	  ~/.pia/
+
+	This is used for storing Agent data and customization files.
+
+    B. Using the PIA
+
+	The PIA is essentially a Web server.  Assuming you are running
+	a Web browser on the same host as the PIA, simply browse to
+
+	  http://localhost:8888/PIA/Doc
+
+	You will eventually want to set your browser's proxies to the
+	PIA as well.
+
+
+========================================================================
+V. Peripheral Agencies
+
+	If an Agency is started by the special user pia, it configures
+	itself as a ``Peripheral Interface Agency,'' on the assumption
+	that it's being used to control some peripheral device such as a
+	printer, and also that it might be being shared among more than
+	one ``real'' user.
+
+	Naturally, when Ricoh WebWorts and PIA-based appliances become
+	available, they will come already configured, with an agency
+	agent customized for system administration. Until that glorious
+	time, however, you may find yourself called upon to configure
+	one.
+
+	Each kind of peripheral is controlled by an Agent which has a
+	configuration information in a subdirectory of 
+
+	  pia/Config
+
+
+========================================================================
 $Id$
-Last modified: Mon Jul 14 16:41:31 1997
-
-Stephen R. Savitzky <steve@crc.ricoh.com>
