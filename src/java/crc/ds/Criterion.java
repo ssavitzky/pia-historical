@@ -4,6 +4,8 @@
 
 package crc.ds;
 
+import crc.ds.Features;
+
 /**
  *  A Criterion performs a matching operation on a named Feature.
  */
@@ -16,11 +18,28 @@ public class Criterion {
     return name;
   }
 
+  /************************************************************************
+  ** Matching:
+  ************************************************************************/
+
   /** Match the feature's value.  The default is to match if the
    *	feature's value is anything but False, "", or null. */
   public boolean match(Object s) {
     return Features.test(s);
   }
+
+  /** Match the given features, using a parent object to compute them 
+   *	if necessary.  This can be overridden for subclasses that match 
+   *	more than one feature.
+   */
+  public boolean match(Features features, Object parent) {
+    // crc.pia.Pia.instance().debug(this, "     feature "+name);
+    return match(features.getFeature(name, parent));
+  }
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
   public Criterion() {
     name = null;
@@ -29,6 +48,10 @@ public class Criterion {
   public Criterion(String nm) {
     name = nm;
   }
+
+  /************************************************************************
+  ** Factory Methods:
+  ************************************************************************/
 
   /** Return a Criterion subclass suitable for matching a String in the form
    *	<code>name</code> or <code>name=value</code> */
