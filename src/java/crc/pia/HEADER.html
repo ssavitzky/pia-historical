@@ -1,0 +1,76 @@
+<h1>PIA Server and Proxy</h1>
+
+<a href="../">[..]</a>
+<a href="#files">[files]</a>
+(
+  <a href="#Packages">Packages</a>
+  <a href="#Interfaces">Interfaces</a>
+  <a href="#Classes">Classes</a>
+  <a href="#Exceptions">Exceptions</a> ||
+  <a href="about.html">about</a>,
+  <a href="to-do.html">to-do</a>,
+  <a href="done.html">done</a>
+)
+
+<p> This directory contains the PIA's main program, and the classes that
+    implement the proxy server functions.
+
+<h2>Annotated Contents</h2>
+
+<h3><a name="Packages">Packages</a></h3>
+
+<dl>	
+  <dt> <a href="agent/">agent/</a>
+  <dd> Agent implementation classes and agent-specific tag-handlers.
+  <dt> <a href="handle/">handle/</a>
+  <dd> Handlers for PIA-specific tags in the <a href="../dps/">Document
+       Processing System</a> 
+</dl>
+
+<hr>
+<h3><a name="Interfaces">Interfaces</a></h3>
+
+<dl>	
+  <dt> <a href="Agent.java">Agent</a>
+  <dd> The interface for agents. 
+  <dt> <a href="Content.java">Content</a>
+  <dd> The interface for the content (document) portion of a Transaction.
+</dl>
+
+<hr>
+<h3><a name="Classes">Classes</a></h3>
+``Abstract'' in a name marks an abstract base class; ``Basic'' marks a class
+with full but perhaps limited functionality.
+<p>
+
+<dl>
+  <dt> <a href="GenericAgent.java">GenericAgent</a>
+  <dd> The basic implementation of the Agent interface.
+  <dt> <a href="Pia.java">Pia</a>
+  <dd> The main program.
+  <dt> <a href="Resolver.java">Resolver</a>
+  <dd> The class that associates Agents with Transactions.
+  <dt> <a href="Transaction.java">Transaction</a>
+  <dd> HTTP requests or responses.
+</dl>
+
+<hr>
+<h3><a name="Exceptions">Exceptions</a></h3>
+
+<dl>
+  <dt> <a href="PiaInitException.java">PiaInitException</a>
+  <dd> Exception during initialization.  Fatal.
+  <dt> <a href="PiaRuntimeException.java">PiaRuntimeException</a>
+  <dd> Exception while the PIA is running.  Caught, usually resulting in a
+       "Server Internal Error" (code 500) response.
+  <dt> <a href="BadMimeTypeException.java">BadMimeTypeException</a>
+  <dd> Results from an unparseable MIME type in a header.
+  <dt> <a href="ContentOperationUnavailable">ContentOperationUnavailable</a>
+  <dd> Generated when an attempt is made to perform an operation on a Content
+       that is not implemented in that particular implementation.
+</dl>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+<a name="files"><hr></a>

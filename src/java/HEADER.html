@@ -14,9 +14,13 @@ top-level class of an application).
 <h3>Directories</h3>
 <dl>
   <dt> <a href="crc/">crc/</a>
-  <dd> Classes developed at CRC
+  <dd> Classes developed at CRC.
   <dt> <a href="misc/">misc/</a>
   <dd> Classes developed elsewhere.
+  <dt> <a href="org/">org/</a>
+  <dd> Classes developed by organizations that have chosen to abide by Sun's
+       package naming convention (e.g. <code>org.w3c</code>...).  Eventually
+       we may join them.
   <dt> <a href="makefiles/">makefiles/</a>
   <dd> Makefiles
 </dl>
@@ -46,6 +50,14 @@ All log files can be regenerated with the command
 <pre>
   make logs
 </pre>
+
+<h2>Naming Conventions</h2>
+
+<p>Every effort has been made to reduce directory depth in order to accomodate
+Microsoft and ISO9660 restrictions.  In particular, the hierarchy extends only
+three more levels below this directory (e.g. <code>crc/dps/handle</code>).
+There is room for one more, so that when/if we achieve `<code>.org</code>'
+status we can add that level to the hierarchy.
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
