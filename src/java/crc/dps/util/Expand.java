@@ -23,8 +23,8 @@ import crc.dps.input.FromParseTree;
 /**
  * Node-expansion utilities (static methods) for a Document Processor. 
  *
- *	These are the utilities that expand defined entities <em>without</em>
- *	performing any of the actions associated with tags.
+ *	These utilities are primarily used in handlers for obtaining
+ *	processed content, expanding entities, and so on.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -39,7 +39,7 @@ public class Expand {
   /** Get the processed content of the current node. */
   public static ParseNodeList getProcessedContent(Input in, Context c) {
     ToNodeList out = new ToNodeList();
-    new BasicProcessor(in, c, out).processChildren();
+    c.subProcess(in, out).processChildren();
     return out.getList();
   }
 
@@ -67,7 +67,7 @@ public class Expand {
   /** Get the processed content of the current node. */
   public static ParseNodeList getProcessedText(Input in, Context c) {
     ToNodeList out = new ToNodeList();
-    new BasicProcessor(in, c, new FilterText(out)).processChildren();
+    c.subProcess(in, new FilterText(out)).processChildren();
     return out.getList();
   }
 
