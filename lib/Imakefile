@@ -1,0 +1,19 @@
+XCOMM $Id$
+
+#define PassCDebugFlags
+
+#include "pia.tmpl"
+
+all:: perl java
+	@echo "symlinks made"
+
+perl: 
+	test -d perl || ln -s ../src/lib/perl .
+
+java: 
+	test -d java || ln -s ../src/lib/java .
+
+
+
+
+

@@ -35,16 +35,7 @@ VERSION    = $(VENDOR_TAG)$(RELEASE).$(MAJOR).$(MINOR)$(SUFFIX)
 
 /*** Subdirectories ***/
 
-SUBDIRS 	=  Doc /* pub src */
-
-all::	bin lib
-	@echo "subdirs made"
-
-bin:
-	mkdir bin
-
-lib:
-	mkdir lib
+SUBDIRS 	=  Doc bin lib /* pub src */
 
 /*** Symbolic Links ***/
 
@@ -54,22 +45,6 @@ all::	Agents lib bin lib/perl bin/pia
 Agents: src/Agents
 	ln -s src/Agents .
 
-lib/perl: 
-	test -d lib/perl || (cd lib; ln -s ../src/lib/perl .)
-
-/*** Executables ***/
-
-/*
- * This actually constructs a shell script to run the PIA. 
- *	If there is no PIA_DIR in the environment, it overrides it.
- *	Eventually we'll have to have both perl and java versions.
- */
-bin/pia: bin Makefile lib
-	echo '#!/bin/sh' > bin/pia
-	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`/bin/pwd` >> bin/pia
-	echo export PIA_DIR >> bin/pia
-	echo perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> bin/pia
-	chmod +x bin/pia
 
 
 /*** Standard Imake stuff ***/

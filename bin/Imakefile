@@ -1,0 +1,27 @@
+XCOMM $Id$
+
+#define PassCDebugFlags
+
+#include "pia.tmpl"
+
+all:: pia
+	@echo "scripts made"
+
+/*** Executables ***/
+
+/*
+ * This actually constructs a shell script to run the PIA. 
+ *	If there is no PIA_DIR in the environment, it overrides it.
+ *	Eventually we'll have to have both perl and java versions.
+ */
+pia: Imakefile 
+	echo '#!/bin/sh' > pia
+	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`(cd ..; pwd)` >> pia
+	echo export PIA_DIR >> pia
+	echo perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> pia
+	chmod +x pia
+
+
+
+
+
