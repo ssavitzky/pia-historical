@@ -49,6 +49,9 @@ public interface SGML extends java.lang.Cloneable {
    *	A List is converted to a Token with a null tag. */
   Token toToken();
 
+  /** Convert to a single token if it's a singleton. */
+  public SGML simplify();
+
   /** The object's content.  This is the same as this if isList(); 
    *	it is null if isEmpty(). */
   Tokens content();

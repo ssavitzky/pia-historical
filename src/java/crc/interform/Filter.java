@@ -13,9 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
-import crc.interform.Actor;
-import crc.interform.Token;
-import crc.interform.Tokens;
+import crc.interform.Parser;
 import crc.interform.Input;
 import crc.interform.Interp;
 import crc.interform.Tagset;

@@ -45,6 +45,12 @@ public class Util {
     return l;
   }
 
+  /** Split a String on whitespace and make a table with a non-null entry
+   *	for each token. */
+  public static final Table tagTable(String s) {
+    return new Table(new java.util.StringTokenizer(s), true);
+  }
+
   /** Split a String into a Tokens list of Text and entity references. */
   public static final Tokens splitEntities(String s) {
     Tokens l = new Tokens();
@@ -128,5 +134,38 @@ public class Util {
     } catch (Exception e) { }
     return null;
   }
+
+  /* 
+sub file_lookup {
+    my ($self, $it, $ii, $write) = @_;
+
+    ## Look up a file.
+
+    my $file = $it->attr('file');
+    my $base = $it->attr('base');
+
+    if ($it->attr('interform')) {
+	$file = IF::Run::agent()->find_interform($file);
+	$base = '';
+				# file should be properly quantified
+	return $file;
+    }
+    if ($file =~ /^~/) {
+	$file =~ s/^~//;
+	$base = $ENV{'HOME'};
+    } elsif ($file =~ /^\//) {
+	$base = '';
+    } elsif ($base eq '') {
+	$base = IF::Run::agent()->agent_directory;
+    }
+    if ($base ne '' && $base !~ /\/$/) {
+	$base .= '/';
+    }
+    my $fn = "$base$file";
+    $fn =~ s://:/:g;
+
+    return $fn;
+}
+*/
 
 }

@@ -3,8 +3,12 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
+import crc.interform.Util;
+
 import crc.ds.Table;
 import crc.ds.List;
+
+import java.util.Enumeration;
 
 /** A Tagset is a collection of related Actors.  It is defined using a
  *	&lt;tagset name="..."&gt;...&lt;/tagset&gt element containing
@@ -193,7 +197,14 @@ public class Tagset extends Token {
       name = Util.javaName(name);
       Class c = Util.loadClass(name, "crc.interform.handle.");
       return (c != null)? (Tagset)c.newInstance() : null;
-    } catch (Exception e) { return null; }
+    } catch (Exception e) { 
+      return null;
+    }
+  }
+
+  /** Load a Tagset from a file. */
+  protected static Tagset loadTagsetFile(String name) {
+    return null;		// ===
   }
 
   /** Load a named Tagset.  First tries to load a file with a ".ts"
@@ -202,6 +213,46 @@ public class Tagset extends Token {
    *	(which had better have the right name). */
   protected static Tagset loadTagset(String name) {
     name += ".ts";
-    return loadTagsetSubclass(name);
+    Tagset ts = loadTagsetFile(name);
+    return ts != null? ts : loadTagsetSubclass(name);
   }
+
+  /** Define a set of empty syntax tags */
+  protected void defEmpty(String emptyTags) {
+    Enumeration e = Util.split(emptyTags).elements();
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      define(new Actor(tag, "empty"));
+    }
+  }
+
+  /** Define a set of Actors with the given syntax. */
+  protected void defActors(String tags, String syntax, boolean handled) {
+    Enumeration e = Util.split(tags).elements();
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      define(new Actor(tag, tag, syntax,
+		       handled? Util.javaName(tag) : null));
+    }
+  }
+
+  /** Define a set of syntax tags with a specified implicitlyEnds table.
+   *	If the tags are already defined (e.g. they are actors or empty),
+   *	simply append to the implicitlyEnds table. */
+  protected void defTags(String tags, String notIn) {
+    Enumeration e = Util.split(tags).elements();
+    Table t = Util.tagTable(notIn);
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      Actor a = forTag(tag);
+      if (a != null) {
+	System.err.println("Appending to "+tag);
+	a.implicitlyEnds(t);
+      } else {
+	define(new Actor(tag, null, t));
+      }
+    }
+  }
+
+
 }

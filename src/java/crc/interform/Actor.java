@@ -106,7 +106,13 @@ public class Actor extends Token {
 
   /** Return true if this kind of token implicitly ends the given one. */
   public boolean implicitEnd(String tag) {
-    return implicitlyEnds != null && implicitlyEnds.has(tag);
+    return implicitlyEnds != null && tag != null && implicitlyEnds.has(tag);
+  }
+
+  /** Set or append to the implicitlyEnds tag table */
+  public void implicitlyEnds(Table tt) {
+    if (implicitlyEnds == null) implicitlyEnds = new Table();
+    implicitlyEnds.append(tt);
   }
 
   /** List of elements this kind of token must occur inside of, from

@@ -333,7 +333,6 @@ class Parser extends Input {
   }
 
 
-
   /************************************************************************
   ** SGML Recognizers:
   ************************************************************************/
@@ -394,24 +393,28 @@ class Parser extends Input {
     last = in.read();
     if (last == '\'' || last == '"') {
       int quote = last;
-      last = 0;
-      debug("=" + (char)last + ".." + (char)last);
       StringBuffer tmp = buf;
       buf = new StringBuffer();
       Tokens list = new Tokens();
-      
-      for (last = 0; ; ) {
+      last = 0;
+      for ( ; ; ) {
 	if (eatUntil(quote, true)) {
-	  if (list.isEmpty() || ! (buf.length() == 0)) 
+	  if (list.isEmpty() || ! (buf.length() == 0)) {
 	    list.append(new Text(buf));
-	  last = 0;
-	  break;
-	}
+	    buf = new StringBuffer();
+	  }
+	  if (last == quote) break;
+	} else break;
 	if (getEntity()) {
 	  list.append(next);
-	} 
+	}
       }
-      next = list.isText()? (SGML)list.toText() : (SGML)list;
+      next = list.simplify();
+      //eatUntil(quote, false);
+      //next = new Text(buf);	// === need to check for entities
+      last = 0;
+      debug("=" + (char)quote + (list.isText()? ".." : ".&.") + (char)quote);
+      debug("=" + (char)quote + next.toString() + (char)quote);
       buf = tmp;
       return true;
     } else if (eatIdent()) {
@@ -419,7 +422,8 @@ class Parser extends Input {
       debug("="+ident);
       return true;
     } else {
-      return false;
+      next = new Text("");
+      return true;
     }
   }
 
@@ -444,7 +448,7 @@ class Parser extends Input {
       // Now go after the attributes.
       //    They have to be separated by spaces.
 
-      while (last >= ' ' && last != '>') {
+      while (last == 0 || last >= ' ' && last != '>') {
 	// === need to be appending the identifier in case we lose ===
 	eatSpaces();	
 	if (eatIdent()) {

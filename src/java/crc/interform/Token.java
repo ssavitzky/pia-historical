@@ -288,6 +288,16 @@ public class Token implements SGML {
     return this;
   }
 
+  /** Convert to a single token if it's a singleton. */
+  public SGML simplify() {
+    if (isList()) {
+      if (nItems() == 0) return empty;
+      else return content().simplify();
+    } else {
+      return this;
+    }
+  }
+
   /** Return a copy of the Token's start tag. */
   public Token startToken() {
     Token t = startTagFor(tag);
@@ -422,8 +432,10 @@ public class Token implements SGML {
 	t.append(attrNameAt(i));
 	SGML v = attrValueAt(i);
 	if (v != null && !(v.isList() && v.isEmpty())) {
-	  t.append("=");
+	  t.append("='");
+	  // === Should be more discriminating about quoting ===
 	  v.appendTextTo(t);
+	  t.append("'");
 	}
       }
       t.append(">");

@@ -99,6 +99,11 @@ public class Tokens extends List implements SGML {
     return (nItems() == 1) ? itemAt(0).toToken() : new Token(null, this);
   }
 
+  /** Convert to a single token if it's a singleton. */
+  public SGML simplify() {
+    return (nItems() == 1) ? itemAt(0) : this;
+  }
+
   /** The object's content.  This is the same as this if isList(); 
    *	it is null if isEmpty(). */
   public Tokens content() {

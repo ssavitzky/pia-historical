@@ -312,6 +312,7 @@ public class Interp extends State {
    *	as a handler, and <em>name</em>! for every handler called.<p>
    */
   public final void resolve(SGML token) {
+    Actor syntax;
 
     /* Get the next incoming token and make it current. */
     it = (token == null)? nextInput() : token;
@@ -327,6 +328,18 @@ public class Interp extends State {
        * is whatever it is nested inside of (the current element under
        * construction).  */
 
+      /* check for an implicit end tag.
+       *   Save the syntax to make checkForInterest more efficient. 
+       */
+      syntax = tagset().forTag(tag);
+      if (incomplete > 0 && syntax != null &&
+	  syntax.implicitEnd(elementTag())) {
+	/* We have an implicit end. */
+	pushInput(it);
+	tag = elementTag();
+	syntax = tagset().forTag(tag);
+	incomplete = -1;
+      }
       if (incomplete < 0) {
 	/* We just got an end tag. 
 	 *	Note that at this point, state.token is top-of-stack.
@@ -356,6 +369,8 @@ public class Interp extends State {
 	  if (it != null) {
 	    incomplete = (byte)(parsing? 0 : -1);
 	    it.incomplete(incomplete);
+	    tag = it.tag();
+	    syntax = tagset().forTag(tag);
 	  } else {
 	    debug("popped null\n");
 	  }
@@ -370,8 +385,6 @@ public class Interp extends State {
 	it = expandAttrs(it);
 	debug("expanded ");
       }
-
-      // === Not clear how to deal with implicit end ===
 
       if (it == null) {
 	debug("deleted\n");
@@ -389,7 +402,7 @@ public class Interp extends State {
 	 *	all the parsing flags have to be pushed before the
 	 *	syntactic action routines operate on them. */
 	pushState();
-	checkForInterest(it, incomplete);
+	checkForInterest(it, incomplete, syntax);
 
 	if (it == null) {	// Some actor has deleted the token.
 	  popState();
@@ -416,7 +429,7 @@ public class Interp extends State {
 	debug("depth="+depth+" ");
 	debug(it.incomplete()<0?"end " : "comp ");
 
-	checkForInterest(it, incomplete);
+	checkForInterest(it, incomplete, syntax);
 	if (!isQuoting()) checkForHandlers(it);
       }
 
@@ -451,9 +464,9 @@ public class Interp extends State {
    *	actOn method.  Possibly should go into Tagset.  Syntax should
    *	perhaps be different.
    */
-  final void checkForInterest(SGML it, byte incomplete) {
+  final void checkForInterest(SGML it, byte incomplete, Actor syntax) {
     Tagset ts 	  = tagset();
-    Actor a 	  = ts.forTag(it.tag());
+    Actor a 	  = (syntax != null)? syntax : ts.forTag(it.tag());
 
     /* Find the actor interested in this tag, if any */
     if (a != null) {

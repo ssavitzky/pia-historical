@@ -151,6 +151,11 @@ public class Text implements SGML {
     return new Token("", this);
   }
 
+  /** Convert to a single token if it's a singleton. */
+  public SGML simplify() {
+    return this;
+  }
+
 
   /************************************************************************
   ** Construction:
