@@ -4,22 +4,22 @@ XCOMM $Id$
 
 #include "pia.tmpl"
 
-all:: pia
+all:: ppia
 	@echo "scripts made"
 
 /*** Executables ***/
 
 /*
- * This actually constructs a shell script to run the PIA. 
+ * This actually constructs a shell script to run the PERL PIA. 
  *	If there is no PIA_DIR in the environment, it overrides it.
  *	Eventually we'll have to have both perl and java versions.
  */
-pia: Imakefile 
-	echo '#!/bin/sh' > pia
-	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`(cd ..; pwd)` >> pia
-	echo export PIA_DIR >> pia
-	echo exec perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> pia
-	chmod +x pia
+ppia: Imakefile 
+	echo '#!/bin/sh' 					   > ppia
+	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`(cd ..; pwd)` >> ppia
+	echo export PIA_DIR 					  >> ppia
+	echo exec perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' 	  >> ppia
+	chmod +x ppia
 
 
 
