@@ -51,5 +51,6 @@ public class FromParseNodes extends ActiveInput implements Input {
   public FromParseNodes(NodeList nodes) {
     list = nodes;
     enum = list.getEnumerator();
+    setNode(enum.getFirst());
   }
 }
