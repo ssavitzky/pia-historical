@@ -123,24 +123,27 @@ public class Tokens extends List implements SGML {
     size = nItems();
     
     if(size < 1) return this;
-    
     if(size == 1) return itemAt(0);
-    boolean skip0 = false;
-    boolean skipn = false;
+
+    SGML first = itemAt(0);
+    SGML last = itemAt(size - 1);
+
     int start=0;
     int stop=size;
 
-    if(Util.removeSpaces(itemAt(0)).isEmpty()) start=1;
-    if(Util.removeSpaces(itemAt(nItems()-1)).isEmpty()) stop=size - 1;
-    if(stop <= start) return this;  //an empty object?
+    // === One could argue that simplify should just removeSpaces ===
+
+    if(Util.removeSpaces(new Tokens(first)).isEmpty()) start=1;
+    if(Util.removeSpaces(new Tokens(last)).isEmpty())  stop=size - 1;
+
+    if(stop <= start) return new Tokens(); // 2 blank items.
     if(stop - start == 1) return  itemAt(start);
     if(stop != size || start != 0) return copy(start,stop);
     //default is this
     return this;
   }
 
-  /** The object's content.  This is the same as this if isList(); 
-   *	it is null if isEmpty(). */
+  /** The object's content.  The same as this, because this is a List. */
   public Tokens content() {
     return this;
   }
