@@ -16,8 +16,7 @@ import crc.dps.aux.*;
 /**
  * Handler for &lt;typical&gt;....&lt;/&gt;  <p>
  *
- *	This is a sample implementation of a specialized subclass of
- *	GenericHandler for the ``typical'' case.
+ *	
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -29,8 +28,8 @@ public class TypicalHandler extends GenericHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
+  /** Action for &lt;Typical&gt; node. */
+  public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     // Actually do the work. 
   }
@@ -43,10 +42,10 @@ public class TypicalHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    //if (dispatch(e, "")) 	 return Typical_.handle(e);
+    if (dispatch(e, "")) 	 return Typical_.handle(e);
     return this;
   }
-   
+
   /************************************************************************
   ** Constructor:
   ************************************************************************/
@@ -65,4 +64,18 @@ public class TypicalHandler extends GenericHandler {
     parseEntitiesInContent = true;	// false	recognize entities?
     syntaxCode = NORMAL;  		// EMPTY, QUOTED, 0 (check)
   }
+
+  TypicalHandler(ActiveElement e) {
+    this();
+    // customize for element.
+  }
+}
+
+class Typical_ extends TypicalHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    // do the work
+  }
+  public Typical_(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new Typical_(e); }
 }
