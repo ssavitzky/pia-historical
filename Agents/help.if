@@ -1,0 +1,90 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Generic Help Page for &agentName;</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Help Page</set>
+<read interform file="heading.inc" process>
+
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+<if><test exact match="&agentType">&agentName;</test>
+    <then><set name=agentPath>&agentName;</set></then>
+    <else><set name=agentPath>&agentType;/&agentName;</set></else>
+</if>
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+<table cellspacing=0 cellpadding=0>
+<tr>
+  <th width=170>
+    <!-- read quiet interform file="insert.if" process -->
+  <td>
+    <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+	                   width=170 height=1></th>
+        <td><br>
+    <tr><th><td><a href="home.if">Home Page</a>
+    <tr><th><td><a href="index.if">Index Page</a>
+    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*">
+	<td> <strong>Help Page</strong>
+    <tr><th>
+	<td><a href="options.if">Options</a>
+	    <if><read info interform file="initialize.if">
+	        <then><a href="initialize.if">[re-initialize]</a></then></if>
+    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
+	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <if>&subs;<then>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
+                <else>&agentType;/</else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat></then></if>
+    </table>
+</table>
+<hr>
+
+<dl>
+  <dt> Where am I?
+  <dd>  &lt;URL:&url;&gt; <br>
+       This is the 
+       <if><test not exact match="&agentType;">&agentName;</test>
+              <then><a href="/&agentType;/home.if">&agentType;</a>
+	            <a href="/&agentType;/"> / </a>
+	            <a href="/&agentType;/&agentName;">&agentName;</a>
+	      <else><a href="/&agentName;/home.if">&agentName;</a>
+       </if> agent of
+       <if><test exact match='pia'>&piaUSER;</test>
+		<then>An Information Appliance</then>
+		<else><a href="/My/">&piaUSER;'s</a>
+       			Personal Information Agency</else>
+       </if>
+</dl>
+<hr>
+<!-- See whether there's a "help" file for this agent. -->
+<read interform file="help.inc" quiet process>
+
+<hr>
+This online help page is automatically customized for every agent that makes a
+link to it; you can <em>always</em> find a link to it from an Agent's
+<a href="&agentPath;/">index page</a>.  
+<hr>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
