@@ -113,13 +113,13 @@ The purchasing agent needs the vendor's name and number:
 
 
 <slide><h2>The Problem</h2>
-<em>It all goes back to the nature of documents:</em>
+<em>It all goes back to the nature of documents on computers:</em>
 <ul>
-  <li> Software and documents are in separate files<br>
+  <li> Documents and software have different languages
       <ul>
-	 <li>  with different languages
+	 <li> usually in separate files
        </ul>
-  <li> Developing applications requires software<br>
+  <li> Developing applications requires software
        <ul>
 	 <li> <em>There's never a programmer around when you need one.</em>
        </ul>
@@ -131,24 +131,29 @@ Also,
        <ul>
 	 <li> programs must be maintained
 	 <li> documents must be updated
-	 <li> it's hard to keep them in sync.
+	 <li> <strong>it's hard to keep them in sync.</strong>
        </ul>
 </ul>
 </slide>
 
 <slide><h2>How <em>we</em> do it</h2>
-<p><em>(OK -- this is it!)</em>
-<p>&nbsp;
+<p><em>(OK -- this is the good stuff!)</em>
 
 <ul><!-- === needs a lot of work:  central -->
-  <li> <b>Everything needed for a form is in <em>one file</em> </b>
+  <li> <b>Documents have embedded processing instructions</b>
        <ul>
-	 <li> documents have embedded processing instructions
+	 <li> Everything needed for a form is in <em>one file</em> 
        </ul>
-  <li> <b>and <em>one language</em> (XML)</b>
+  <li> <b>But only <em>one language</em> (XML)</b>
        <ul>
 	 <li> In other words, we simply define <em>actions</em> for some of
 	      the tags.
+       </ul>
+  <li> <b>The meanings of tags can change</b>
+       <ul>
+	 <li> So a document can be used in several ways
+	 <li> One document (a <em>tagset</em>) can define tags for
+	      <em>another</em> document. 
        </ul>
 </ul>
 </slide>
@@ -181,14 +186,6 @@ Also,
 <!-- === needs a lot of work, along with "how we do it" === central === -->
 
 <table width='80%' cellspacing=0 border=0 align=center>
-  <tr><td colspan=2>
-<ul>
-  <li> The PIA makes an application into a web site
-       <ul>
-	 <li> most of it consists of ``<em>active documents</em>''
-       </ul>
-</ul>       
- 
   <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
   <tr> <th bgcolor=lightgreen>&nbsp;
        <td bgcolor=white>
@@ -202,7 +199,7 @@ Also,
        </ul>
 </ul>
        <th bgcolor=lightgreen>&nbsp;
-  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware Layer
+  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
@@ -215,24 +212,19 @@ Also,
        </ul>
 </ul>
        <th bgcolor=lightblue>&nbsp;
-  <tr> <td bgcolor=lightblue colspan=3 align=right>Software layer
+  <tr> <td bgcolor=lightblue colspan=3 align=right>Software
 
 </table>
 
 
-<p> <em>It's very much like a ``spreadsheet for documents.''</em>
-
 <p>You access a form through its URL:
 <table cellspacing=0 cellpadding=2 border=0 align=center>
-  <tr>  <td>&nbsp;
-	<th bgcolor=lightblue> Software layer
-	<th bgcolor=lightgreen colspan=2> Infoware layer
-	<td>&nbsp;
   <tr>	<th>&lt;</th>
 	<th bgcolor=lightblue>http://forms.crc.ricoh.com</th>
 	<th bgcolor=lightgreen>/Purchasing</th>
 	<th bgcolor=lightgreen>/check-approval</th>
 	<th>&gt;</th>
+  <tr> <tr>
   <tr>  <td>&nbsp;
 	<td bgcolor=lightblue> web server
 	<td bgcolor=lightgreen>directory
@@ -243,13 +235,17 @@ Also,
 	<td bgcolor=lightgreen><em>agent</em>
 	<td bgcolor=lightgreen><em>active document</em>
 	<td>&nbsp;
+  <tr>  <td>&nbsp;
+	<th bgcolor=lightblue align=right> Software
+	<th bgcolor=lightgreen colspan=2 align=right> Infoware
+	<td>&nbsp;
 </table>
 
 </slide>
 
 
 <slide><h2>The Infoware Layer</h2>
-<p>&nbsp;
+<p><em>This layer is mainly for information designers.</em>
 <table width='80%' cellspacing=0 border=0 align=center>
   <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
   <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
@@ -264,10 +260,10 @@ Also,
        </ul>
   <li> <b>Documents can have embedded action tags</b>
        <ul>
-	 <li> <em>everything</em> uses XML syntax.
-	 <li> only one language to learn.
-	 <li> some tags are macros, defined by document fragments
-	 <li> a few are ``primitive'' and defined by software.
+	 <li> <em>one language:</em> XML. 
+	 <li> some tags are macros, defined in a <em>tagset</em> document.
+	 <li> a few are ``<a href="appendices.slides.html#primitives"
+	      >primitive</a>,'' defined by software. 
        </ul>
 </ul>
        <th bgcolor=lightgreen>&nbsp;
@@ -275,11 +271,13 @@ Also,
   <tr>
   <tr> <th bgcolor=lightblue colspan=3> Software Layer
 </table>
+
+<p> <em>It's very much like a ``spreadsheet for documents.''</em>
 </slide>
 
 
 <slide><h2>The Software Layer</h2>
-<p>&nbsp;
+<p><em>This layer is mainly for software developers.</em>
 <table width='80%' border=0 cellspacing=0 align=center>
   <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
   <tr>
@@ -305,8 +303,8 @@ Also,
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
 <ul>
-  <li> Agent API for documents
-  <li> Action API for tags
+  <li> Agent API for special document handling
+  <li> Action API for task-specific tag processing
 </ul>  
        <th bgcolor=lightblue>&nbsp;
   <tr> <th bgcolor=lightblue colspan=3>&nbsp;
@@ -321,23 +319,23 @@ Also,
 
 <table width='90%' cellspacing=0 border=0 align=center>
   <tr><th bgcolor="#c40026"> PIA
-      <th> Platform for Information Applications
+      <th> Platform for Information Applications </th>
   <tr><th>&nbsp;
       <td>
 <table  width='100%'cellspacing=0 border=0>
-  <tr> <th bgcolor=lightgreen colspan=2> Infoware Layer
-  <tr> <th bgcolor=lightgreen> Agents:
+  <tr> <th bgcolor=lightgreen> Agents: </th>
        <td bgcolor=lightgreen> 
 	 Collections of active documents 
+  <tr> <th bgcolor=lightgreen colspan=2 align=right> Infoware
   <tr>
-  <tr> <th bgcolor=lightblue colspan=2> Software Layer
-  <tr> <th bgcolor=lightblue>Agency:
+  <tr> <th bgcolor=lightblue>Agency: </th>
        <td bgcolor=lightblue>
 	  Web server and Document processor
   <tr>
-  <tr> <th bgcolor=lightblue>hooks:
+  <tr> <th bgcolor=lightblue>hooks: </th>
        <td bgcolor=lightblue>
 	  Agent and tag API's
+  <tr> <th bgcolor=lightblue colspan=2 align=right> Software
 </table>
 </table>
 
@@ -356,7 +354,6 @@ Also,
 </ul>
 
 <table width='80%' cellspacing=0 border=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
   <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
   <tr> <th bgcolor=lightgreen>&nbsp;
        <td bgcolor=white>
@@ -365,9 +362,8 @@ Also,
   <li> ...because active documents are easy to write
 </ul>
        <th bgcolor=lightgreen>&nbsp;
-  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3 align=right> Infoware&nbsp;
   <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
@@ -376,7 +372,7 @@ Also,
   <li> ...and shared by all applications
 </ul>
        <th bgcolor=lightblue>&nbsp;
-  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+  <tr> <th bgcolor=lightblue colspan=3 align=right> Software &nbsp;
 </table>
 </slide>
 
@@ -409,12 +405,12 @@ Also,
 	 <li> perhaps 80% documents, 20% processing
        </ul>
   <li> In the PIA, most of that processing can be done <em>in the
-       documents</em> using tags
+       documents</em> using tags.
   <li> An application may need one or two task-specific tags
        <ul>
 	 <li> e.g. digital signatures in the form agent
        </ul>
-  <li> But with an open-source community, <em>someone</em> has probably had
+  <li> But with an open-source community, <em>someone</em> probably had
        the same need, and filled it.
 </ul>
 
