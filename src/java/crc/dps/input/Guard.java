@@ -7,6 +7,7 @@ import crc.dps.Token;
 import crc.dps.Input;
 import crc.dps.InputStack;
 import crc.dps.Processor;
+import crc.dps.ProcessorInput;
 
 import crc.dps.input.AbstractInputFrame;
 import crc.dps.BasicToken;
@@ -33,7 +34,7 @@ public class Guard extends AbstractInputFrame {
   ** Instance variables:
   ************************************************************************/
   
-  protected Processor guardedProcessor;
+  protected Processor processor;
   protected int	      guardedDepth;
 
   /************************************************************************
@@ -45,12 +46,12 @@ public class Guard extends AbstractInputFrame {
    *	tags, since they really needed to be there in the first place.
    */
   public Token nextToken() {
-    if (guardedProcessor.getDepth() <= guardedDepth) return null;
-    else return new BasicToken(guardedProcessor.elementTag(), 1, false);
+    if (processor.getDepth() <= guardedDepth) return null;
+    else return new BasicToken(processor.elementTag(), 1, false);
   }
 
   public boolean atEnd() {
-    return guardedProcessor.getDepth() <= guardedDepth;
+    return processor.getDepth() <= guardedDepth;
   }
 
   /************************************************************************
@@ -58,19 +59,19 @@ public class Guard extends AbstractInputFrame {
   ************************************************************************/
 
   public Guard(Processor aProcessor) {
-    guardedProcessor = aProcessor;
-    guardedDepth     = aProcessor.getDepth();
+    processor 	 = aProcessor;
+    guardedDepth = aProcessor.getDepth();
   }
 
   public Guard(Processor aProcessor, int depth) {
-    guardedProcessor = aProcessor;
-    guardedDepth     = depth;
+    processor	 = aProcessor;
+    guardedDepth = depth;
   }
 
   public Guard(Processor aProcessor, InputStack nextFrame) {
     super(nextFrame);
-    guardedProcessor = aProcessor;
-    guardedDepth     = aProcessor.getDepth();
+    processor	 = aProcessor;
+    guardedDepth = aProcessor.getDepth();
   }
 
 }
