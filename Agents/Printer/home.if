@@ -13,7 +13,7 @@ my $form=make_form("/$name/preview.if",({name => 'URL',size =>
  50, value => $url},{type => 'submit',value => 'Preview'}));
 return $form;
 </code>
-
+<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/preview.gif">
  To create a book, enter a starting  URL and click Makebook<code language=perl> 
 my %form_parameters=%{$current_request->parameters()};
 my $name=$current_self->name;
@@ -21,7 +21,7 @@ my $form=make_form("/$name/mkbook.if",({name => 'URL',size => 50,value =>
 $form_parameters{URL}},{type => 'submit',value => 'Makebook'}));
 return $form;
 </code>
-
+<img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/bookmark.gif">
 <p>
 
   <table>
@@ -41,6 +41,6 @@ return $form;
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Nov 21 20:54:50 1996
+Last modified: Fri Nov 22 17:05:15 1996
 <!-- hhmts end -->
 </body></html>
