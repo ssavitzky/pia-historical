@@ -8,6 +8,7 @@ import crc.dps.Parser;
 import crc.dps.Input;
 import crc.dps.Processor;
 import crc.dps.Tagset;
+import crc.dps.TopContext;
 
 import crc.dps.output.DiscardOutput;
 
@@ -108,11 +109,8 @@ public class Loader {
     return tagsets.at(name) != null;
   }
 
-  /** Load a named Tagset.  First tries to load a file with a ".ts"
-   *	extension.  If that fails, tries to load a class, which had
-   *	better be a subclass of Tagset, and create an instance of it
-   *	(which had better have the right name). */
-  public static Tagset loadTagset(String name) {
+  /** Load a named Tagset.  Files loaded relative to a TopContext. */
+  public static Tagset loadTagset(String name, TopContext cxt) {
     Tagset ts = null;
 
     if (name.indexOf("/") >= 0
@@ -120,7 +118,7 @@ public class Loader {
 	|| name.endsWith(".tss")
 	|| name.endsWith(".tso")) {
       // Definitely a file. 
-      loadTagsetFile(name);
+      loadTagsetFile(name, cxt);
     } else if (name.indexOf(".") >= 0) {
       // Definitely a resource or class
       loadTagsetFromResource(name);
@@ -129,6 +127,14 @@ public class Loader {
     if (ts != null) return ts;
     ts = loadTagsetFromResource(name);
     return ts;
+  }
+
+  /** Load a named Tagset.  First tries to load a file with a ".ts"
+   *	extension.  If that fails, tries to load a class, which had
+   *	better be a subclass of Tagset, and create an instance of it
+   *	(which had better have the right name). */
+  public static Tagset loadTagset(String name) {
+    return loadTagset(name, null);
   }
 
 
@@ -255,13 +261,21 @@ public class Loader {
     return ts;
   }
 
+  /** Attempt to locate a file relative to a TopContext. 
+   *	If the TopContext is null, just return a new File.
+   */
+  protected static File locateFile(String name, TopContext cxt) {
+    return (cxt == null)
+      ? new File(name) : cxt.locateSystemResource(name, false);
+  }
+
   /** Load a Tagset from a file.  
    *
    *	Tries ".tso", ".tss", and ".ts" in that order (but will not load a
    *	".tso" or ".tss" file older than the ".ts" file, since that is
    *	presumably the master copy.
    */
-  protected static Tagset loadTagsetFile(String name) {
+  protected static Tagset loadTagsetFile(String name, TopContext cxt) {
     boolean boot = false;
     Tagset ts = null;
 
@@ -270,9 +284,9 @@ public class Loader {
 	|| name.endsWith(".tso")) {
       // We know the extension already.
     } else {
-      File tsFile  = new File(name + ".ts");
-      File tsoFile = new File(name + ".tso");
-      File tssFile = new File(name + ".tss");
+      File tsFile  = locateFile(name + ".ts", cxt);
+      File tsoFile = locateFile(name + ".tso", cxt);
+      File tssFile = locateFile(name + ".tss", cxt);
 
       if (tsoFile.exists() && tsFile.exists()
 	  && tsoFile.lastModified() > tsFile.lastModified()) {

@@ -256,7 +256,8 @@ public class TopProcessor extends BasicProcessor implements TopContext
    * @param tsname the tagset name.  If null, returns the current tagset. 
    */
   public Tagset loadTagset(String tsname) {
-    return (tsname == null)? tagset : crc.dps.tagset.Loader.loadTagset(tsname);
+    if (tsname == null) return tagset;
+    else return crc.dps.tagset.Loader.loadTagset(tsname, this);
   }
 
   /** Process a new subdocument. 
