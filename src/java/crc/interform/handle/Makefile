@@ -64,7 +64,9 @@ SA_ACTORS = \
 PIA_ACTORS= \
 	Agent_home.java \
 	Agent_list.java \
+	Agent_restore.java \
 	Agent_running.java \
+	Agent_save.java \
 	Agent_set_options.java \
 	Agent_options.java \
 	Agent_criteria.java \

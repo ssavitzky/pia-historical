@@ -13,7 +13,9 @@ import crc.ds.Table;
  *	can be used to reify either the <code>handle</code> method or
  *	the <code>actOn</code> method; it is possible but unusual for
  *	both methods to be overridden in the same Handler subclass.  */
-public class Handler {
+public class Handler implements java.io.Serializable {
+
+  // === Handler should perhaps implement Registered ===
 
   /** Perform the actions associated with a completed token. 
    *	The parse stack will have been popped (or never pushed in the first

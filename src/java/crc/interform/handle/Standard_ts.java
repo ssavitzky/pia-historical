@@ -22,7 +22,7 @@ public class Standard_ts extends StandAlone_ts {
 
   static String emptyActors = "agent-criteria"
   + " agent-home agent-list agent-options agent-running agent-remove"
-  + " agent-set-criterion authenticate"
+  + " agent-set-criterion agent-restore agent-save authenticate"
   + " pia-exit get.agent get.form get.pia get.trans";
 
   static String parsedActors = "agent-set-criteria agent-set-options"
