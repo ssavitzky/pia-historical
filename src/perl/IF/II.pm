@@ -491,6 +491,8 @@ sub process_it {
 ###	stepping through the content of a token without excessive copying.
 ###	When the end of the token list is reached, the entire list is returned.
 ###
+###	"tag" might actually be a reference to an agent, and additional state
+###	can be provided.  The agent's end_input method is called.
 
 sub next_input {
     my ($self) = @_;
@@ -503,14 +505,15 @@ sub next_input {
     return $input unless ref($input) eq 'ARRAY';
 
     my ($tag, $pc, $tokens) = @$input;
-    print "bizarre content = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
+    print "??bad input = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
     return $input unless ref $tokens eq 'ARRAY';
     my $out = $tokens->[$pc++];
 
     return $input unless defined $out;
     
     $input->[1] = $pc;
-    push @$in_stack, [$tag, $pc, $tokens];
+    push @$in_stack, $input;
+    $self->expand_entities($out) unless ref($out);
     return $out;
 }
 
@@ -525,18 +528,27 @@ sub push_input {
 }
 
 sub push_into {
-    my ($self, $it) = @_;
+    my ($self, $it, $st) = @_;
 
     ## Push the content of a token onto the input stack
-    ##	  Return a copied start tag for the token.
+    ##	  Return a copied start tag for the token, or $st if present.
+    ##	  Attributes in the copy are entity-expanded in the current context
 
     my $in_stack = $self->in_stack;
     if (ref($it) eq 'ARRAY') {
 	push(@$in_stack, ['', 0, $it]);
-	return undef;
+	return $st;
     } else {
 	push (@$in_stack, [$it->tag, 0, $it->content]);
-	my $attrs = $it->attr_list;
+	return $st if defined $st;
+
+	my $attrs = [];
+	my $list = $it->attr_names;
+	for (@$list) {
+	    my $v = $it->{$_};
+	    push(@$attrs, $_);
+	    push(@$attrs, $self->expand_entities($v));
+	}
 	return IF::IT->new($it->tag, @$attrs);
     }
 }
@@ -753,19 +765,26 @@ sub resolve {
 
 	## get another token and figure out what it was.
 
-	$it = $self->next_input;
-	if (ref($it) eq 'ARRAY') {
-	    ## The end of some tag's content.
-	    $it = $it->[0];
-	    $incomplete = -1;
-	} elsif ($self->need_start_tag($it)) {
-	    ## Something that needs processing on its contents.
-	    $it = $self->push_into($it);
-	    $incomplete = 1;
-	} else {
-	    ## Complete token which is either empty or quoted
-	    $incomplete = 0;
-	}
+	do {
+	    $it = $self->next_input;
+	    return unless $it;
+	    if (ref($it) eq 'ARRAY') {
+		## The end of some tag's content.
+		if (ref $it->[0]) {
+		    $it = $it->[0]->end_input($it, $self);
+		} else {
+		    $it = $it->[0];
+		}
+		$incomplete = $it? -1 : 0;
+	    } elsif ($self->need_start_tag($it)) {
+		## Something that needs processing on its contents.
+		$it = $self->push_into($it);
+		$incomplete = 1;
+	    } else {
+		## Complete token which is either empty or quoted
+		$incomplete = 0;
+	    }
+	} until ($it);
     }
 }
 
@@ -917,9 +936,14 @@ sub open_entity_context {
     $entities = $self->entities unless defined $entities;
 
     my %newents = %$entities;	# copy the current set
-    $self->state->{_entities} = (\%newents);
+    $self->state->{_entities} = \%newents;
 }
 
+
+sub define_entity {
+    my ($self, $name, $value) = @_;
+    $self->state->{_entities}->{$name} = $value;
+}
 
 sub define_agent {
     my ($self, $agent, @attrs) = @_;

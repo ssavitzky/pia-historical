@@ -142,12 +142,12 @@ sub parse
 		    if ($$buf =~ s|(^=\s*([^\"\'>\s][^>\s]*)\s*)||) { #"
 			$eaten .= $1;
 			$val = $2;
-			$self->expand_entities($val);
+			$self->expand_entities($val) unless $self->quoting;
 		    # or quoted by " "or ' '
 		    } elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) { #"
 			$eaten .= $1;
 			$val = $3;
-			$self->expand_entities($val);
+			$self->expand_entities($val) unless $self->quoting;
                     # truncated just after the '=' or inside the attribute
 		    } elsif ($$buf =~ m|^(=\s*)$| or
 			     $$buf =~ m|^(=\s*[\"\'].*)|s) { #"

@@ -179,6 +179,19 @@ sub handle {
     my $code = $self->{_handle};
     return &$code($self, $it, $ii) if (ref($code) eq 'CODE');
 }
+sub end_input {
+    my ($self, $it, $ii) = @_;
+
+    ## Handle end of input
+    ##	  This is called when an agent has been pushed onto the 
+    ##	  interpretor's input stack, and the end of its associated
+    ##	  input has been reached.
+
+    ##	  The handler should return a string (end tag) or undefined.
+
+    my $code = $self->{_end_input};
+    return &$code($self, $it, $ii) if (ref($code) eq 'CODE');
+}
 
 #############################################################################
 ###
@@ -416,6 +429,11 @@ sub list_items {
 ###### Passive
 
 ### -eval_perl-
+###	matches attr: language=perl
+
+define_agent(IF::IA->new('-eval-perl-', 'quoted' => -1,
+			 _match => \&eval_perl_match,
+			 _handle => \&IF::Run::eval_perl));
 
 sub eval_perl_match {
     my ($self, $it, $ii, $incomplete) = @_;
@@ -426,11 +444,49 @@ sub eval_perl_match {
     return 0;
 }
 
-define_agent(IF::IA->new('-eval-perl-',
-			 'quoted' => -1,
-			 _match => \&eval_perl_match,
-			 _handle => \&IF::Run::eval_perl));
+### -foreach-
+###	matches attr: foreach
+###	Expects attr's list="..." or list1="..." ...
+###	Binds entities &li; &1; ... 
+###	Optional: entities="n1 ..."
 
+sub foreach_match {
+    my ($self, $it, $ii, $incomplete) = @_;
+
+    return 0 if $incomplete <= 0;
+    return 0 if ! ref($it);
+    return 1 if (defined $it->attr('foreach'));
+    return 0;
+}
+
+sub foreach_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## The right approach is to use pseudo-attributes _list and _expand,
+    ## where _expand is the original content.  If present we're repeating.  
+    ## Keep the handler.  If _list is non-empty, push again.  
+
+    ## The kludgy approach is to re-expand without the "foreach" attribute,
+    ## and with the original contents moved inside a <repeat-> element.
+
+    my $attrs = [];
+    my $each = [];
+    my $list = $it->attr_names;
+    for (@$list) {
+	my $v = $it->{$_};
+	push(@$attrs, $_, $v) unless ($_ eq 'foreach' || $_ =~ /^list/);
+	push(@$each, $_, $v) if ($_ =~ /^list/ || $_ eq 'entity');
+    }
+    $it = IF::IT->new($it->tag, @$attrs, 
+		      IF::IT->new('repeat-', @$each, $it->content));
+    $ii->push_input($it);
+    $ii->delete_it($it);
+}
+
+define_agent(IF::IA->new('-foreach-',
+			 'quoted' => 1,
+			 _match => \&foreach_match,
+			 _handle => \&foreach_handle));
 
 ###### Active
 
@@ -441,7 +497,7 @@ define_agent('agent-', 'active' => 1, 'quoted' => 1,
 	     _handle => \&agent_handle);
 sub agent_handle {
     my ($self, $it, $ii) = @_;
-    $ii->define_agent($it);
+    $ii->define_agent($it);handle
 }
 
 ### get-:  active, generic.
@@ -525,8 +581,7 @@ sub set_handle {
     $ii->replace_it('');
 }
 
-### if-: active, parsed
-###	<if->condition<then>...</then><else>...</else></if>
+### <if-><test>condition</test><then>...</then><else>...</else></if>
 ###	condition is false if it is empty or consists only of whitespace.
 ###
 
@@ -574,9 +629,75 @@ sub for_handle {
 
 }
 
+### <repeat- list="..." entity="name">...</repeat->
+###	
+define_agent('repeat-', 'active' => 1, 'quoted' => 1,
+	     _handle => \&repeat_handle, _end_input => \&repeat_end_input);
 
+sub repeat_handle {
+    my ($self, $it, $ii) = @_;
 
+    my $entity = $it->attr('entity') || 'li';
+    my $list = $it->attr('list');
+    my @list = split(/ /, $list);
+    print "repeating: $entity for (". join(' ', @list) . ")\n"
+	if $main::debugging > 1;
+    my $body = $it->content;
+    my $item = shift @list;
+    my $context = $ii->entities;
 
+    return unless defined $item;
+
+    $ii->open_entity_context;
+    $ii->define_entity($entity, $item);
+    $ii->push_input([$self, 0, $body, $entity, \@list, $context]);
+    $ii->delete_it;
+}
+
+sub repeat_end_input {
+    my ($self, $it, $ii) = @_;
+
+    my ($foo, $pc, $body, $entity, $list, $entities) = @$it;
+
+    print "repeat: $entity @$list \n" if $main::debugging > 1;
+
+    my $item = shift @$list;
+
+    if (defined $item) {
+	$ii->define_entity($entity, $item);
+	$it->[1] = 0;		# reset the pc
+	$ii->push_input($it);
+    } else {
+	$ii->entities($entities);
+    }
+    return $undefined;
+}
+
+###### PIA Information Agents:
+
+### <pia.agent.home->name</pia.agent.home>
+###	expands to the agent's home interForm name.
+###	Makes a link if the "link" attribute is present.
+
+###	This is incredibly kludgy, but it works!
+
+define_agent('pia.agent.home-', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&pia_agent_home_handle);
+
+sub pia_agent_home_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    $name = $it->content_string unless defined $name;
+    my $link = $it->attr('link');
+
+    my $a = IF::Run::resolver()->agent($name);
+    my $type = $a->type;
+    my $home = ($type ne $name)? "$type/$name" : "$name";
+
+    $home = IF::IT->new('a', 'href'=>"/$home/home.if", $home) if $link;
+    $ii->replace_it($home);
+}
 
 
 

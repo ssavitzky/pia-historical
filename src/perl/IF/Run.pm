@@ -148,10 +148,14 @@ sub parse_html_string {
 ### Evaluating Interforms on behalf of PIA agents:
 ###
 
-local $agent, $request;
+local $agent, $request, $resolver;
 
 sub interform_file {
-    local ($agent,$file,$request)=@_;
+    local ($agent,$file,$request, $resolver)=@_;
+
+    ## Run a standard PIA InterForm file.
+    ##	  The resolver is 
+    $resolver = $main::main_resolver unless defined($resolver);
 
     local $entities = if_entities($agent, $file, $request);
     my $string = run_file($file);
@@ -170,6 +174,9 @@ sub interform_file {
 sub if_entities {
     my ($agent, $file, $request) = @_;
 
+    ## Load a standard set of entity bindings.
+    ##	  === eventually this should be a set of separately-loaded packages
+
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time());
     my $date=sprintf("%d%02d%02d", $year, $mon+1, $mday);
     ## === should be $year + 1900, of course.
@@ -182,17 +189,23 @@ sub if_entities {
     }
     my $url = $request->url if defined $request;
     my $path = $url->path if defined $url;
+    my $query = $url->query if defined $url;
+
+    my $agentNames = join(' ', sort($resolver->agent_names));
 
     my $ents = {
 	'agentName' 	=> $agent->name,
 	'fileName' 	=> $file,
 	'url'		=> $url,
-	'path'		=> $path,
+	'urlQuery'	=> $query,
+	'urlPath'	=> $path,
 
 	'piaUSER'	=> $ENV{'USER'},
 	'piaHOME'	=> $ENV{'HOME'},
 	'piaHOST'	=> $main::PIA_HOST,
 	'piaPORT'	=> $main::PIA_PORT,
+
+	'agentNames'	=> $agentNames,
 
 	'second'	=> $sec,
 	'minute'	=> $min,
@@ -211,14 +224,16 @@ sub if_entities {
     $ents;
 }
 
-### These are used by eval_perl, which is really in II.pm
-### === they really need to be in Agent.
+### === These really ought to be in Agent.
 
 sub agent {
     return $agent;
 }
 sub request {
     return $request;
+}
+sub resolver {
+    return $resolver;
 }
 
 sub eval_perl {
@@ -228,15 +243,11 @@ sub eval_perl {
     ##	  The local variables $agent and $request will already have been
     ##	  set up by run_interform.
 
-    ## These aren't needed as long as we're inside IF::Run
-    ## local $agent = agent();
-    ## local $request = request();
-
     print "II Error: missing token\n" unless defined $it;
     print "II Error: $it not a token\n" unless ref($it);
     return unless ref($it);
 
-    my $status = $agent->run_code($it->content_string, $request);
+    my $status = $agent->run_code($it->content_string, $request, $resolver);
     print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
     print "code result is $status\n" if  $main::debugging;
 

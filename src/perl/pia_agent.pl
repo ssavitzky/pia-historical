@@ -770,7 +770,8 @@ sub respond_to_interform {
 	}
 
 	if($request->is('interform')) {
-	    $string=IF::Run::interform_file($self, $file, $request);
+	    $string=IF::Run::interform_file($self, $file, $request,
+					    $current_resolver);
 	} elsif ($file =~ /\.cgi$/i && -x $file) {
 	    print $self->name . " Executing $file \n" if $main::debugging;
 	    ## === not entirely clear what to do for CGI's ===
