@@ -60,5 +60,10 @@ Enter the name that will appear in the title of your home page.
 <input type="submit" name="submission" value="Submit"> 
 <input type="reset" value="Reset"> 
 </form> 
-<footer>
+<footer />
+
+<p>
+<code><A HREF="file:&piaDIR;/Agents/Swifty/edit_page.txt" TARGET=_blank>View source code</A></code>
+
 </body></html>
+

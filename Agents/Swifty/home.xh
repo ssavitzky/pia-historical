@@ -80,7 +80,9 @@
 <!-- pia-xhtml tagset. It provides the navigation bar at the bottom of 
 <!-- the page, along with a copyright notice.
 <!-- =================================================================== -->
-<footer>
+<footer />
+<p>
+<code><A HREF="file:&piaDIR;/Agents/Swifty/home.txt" TARGET=_blank>View source code</A></code>
 
 </BODY>
 </HTML>

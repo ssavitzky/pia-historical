@@ -66,15 +66,15 @@
 
   </doc>		
   <action>
-	<set entity name=weaURL><A HREF="http://www.nws.noaa.gov" 
+	<set name=weaURL><A HREF="http://www.nws.noaa.gov" 
 		TARGET=_blank>Weather</A></set>
-	<set entity name=sjmnURL><A HREF="http://www.sjmercury.com" 
+	<set name=sjmnURL><A HREF="http://www.sjmercury.com" 
 		TARGET=_blank>Silicon Valley News</A></set>
-	<set entity name=yahURL><A HREF="http://www.yahoo.com" 
+	<set name=yahURL><A HREF="http://www.yahoo.com" 
 		TARGET=_blank>Yahoo</A></set>
-	<set entity name=dejURL><A HREF="http://www.dejanews.com" 
+	<set name=dejURL><A HREF="http://www.dejanews.com" 
 		TARGET=_blank>DejaNews</A></set>
-	<set entity name=hisURL><a href="/History">History</a></set>
+	<set name=hisURL><a href="/History">History</a></set>
 
 	<ul>
 	<select>&AGENT:links; <content></select>
@@ -140,9 +140,9 @@
 		as an unordered list item. 
 	</doc>
 	<action>
-		<set entity name=doc><connect src=&attributes:url; result=content />
+		<set name=doc><connect src=&attributes:url; result=content />
 			</set>
-		<set entity name=selanchors><select>
+		<set name=selanchors><select>
 			<from>&doc;<content></from><name recursive>a</name>
 			</select></set>
 
