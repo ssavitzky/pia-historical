@@ -70,6 +70,7 @@ cross-referenced to the manual.">
 
 <h3>Index</h3>
 
+<set name=actorNames><actor-names></set>
 <alist>&actorNames;</alist>
   
 <hr>

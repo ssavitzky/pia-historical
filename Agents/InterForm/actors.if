@@ -6,6 +6,7 @@
 <h1>List of Defined InterForm Actors</h1>
 
 
+<set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">
   <dt> &lt;<strong>&li;</strong><actor-attrs name="&li;">&gt;
   <dd> <actor-dscr name="&li;">

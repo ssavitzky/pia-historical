@@ -79,6 +79,8 @@ cross-referenced to the manual.">
 </actor>
 
 <h3>Actor Index</h3>
+
+<set name=actorNames><actor-names></set>
 <alist>&actorNames;</alist>
   
 <h3>Format</h3>

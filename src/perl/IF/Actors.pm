@@ -957,6 +957,27 @@ sub actor_dscr_handle {
 }
 
 
+define_actor('actor-names', 'empty' => 'empty', 
+	     'dscr' => "get a list of all currently-defined actor names.");
+
+sub actor_names_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $actors = $ii->tagset->actor_names;
+    my $tag = $it->attr('tag');
+    if (defined $tag) {
+	my $list = IF::IT->new($tag);
+	my @actors = (split(' ', $actors));
+	foreach $a (@actors) {
+	    $list->push(IF::IT->new('li')->push($a));
+	}
+	$ii->replace_it($list);
+    } else {
+	$ii->replace_it($actors);
+    }
+}
+
+
 ### <actor-attrs name="name">
 ###	Get an actor's attributes in form suitable for documentation.
 ###	The "name", "tag",  and "dscr" attributes are not included.

@@ -249,7 +249,7 @@ sub if_entities {
 
 	    'agentNames'	=> $agentNames,
 	    'entityNames'   	=> '',
-	    'actorNames'	=> $tagset? $tagset->actor_names : '',
+	    ## 'actorNames'	=> $tagset? $tagset->actor_names : '',
 
 	    'second'		=> $sec,
 	    'minute'		=> $min,
