@@ -31,8 +31,7 @@
 </write>
 
 <write append file="users/&FORM.name;.html">
-<li><a href="../&path;.html">
-&dir; form --- &FORM.name; &dateString;</a><br></write>
+<li><a href="../&path;.html"> &dir; form --- &FORM.name; &dateString;</a></li></write>
 
 <write append line file="&dir;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&path;.html">
 &FORM.name; &dateString;</a><br></write>

@@ -23,7 +23,7 @@
                   <write file="&FORM.routepath;">&routeobject;</write>
                   <if><test exact match="NULL">&nextperson;</test><then>
                   <else><write append file="users/&nextperson;.html">
-                        <li><a href="../&FORM.filepath;">&FORM.dir; form --- &FORM.name; &dateString;</a><br></write>
+                        <li><a href="../&FORM.filepath;">&FORM.dir; form --- &FORM.name; &dateString;</a></li></write>
                   </else>
                   </if>
                   <write append file="&FORM.filepath;"><b><get index="nameobject.&FORM.name;"></b> &dateString;<br></write>

@@ -14,7 +14,7 @@
 
  <h2>Pending forms for &FORM.username;</h2>
 <set name=pending><read file="users/&FORM.username;.html" process></set>
- <ul foreach list="&pending;">&li;</ul>
+ <ul foreach list="&pending;"><get name=li></ul>
 <hr>
  <h3> Remove a form from this list</h3>
  <form action="&url;"><input name="username" type="hidden"
