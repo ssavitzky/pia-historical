@@ -2,8 +2,12 @@
 <html><head>
 <title>InterForm Actors</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body bgcolor="#ffffff">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <h1>List of Defined InterForm Actors</h1>
+
+
+<set entity name=title>Programming Information: <br>Actor List</set>
+<read interform file="heading.inc" process>
 
 <set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
 <hr>
@@ -19,10 +23,18 @@ Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
 
 <set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">
-  <dt> &lt;<strong><a href="&IFman;#&li;">&li;</a></strong><actor-attrs name="&li;">&gt;
-  <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+  <dt> <strong><a href="&IFman;#&li;">&li;</a></strong>
+       <actor-attrs name="&li;">&gt;
+  <dd> <if><actor-dscr name="&li;"><then>
+       <dl>
+	 <dt> <b>Syntax:</b>
+	 <dd> <add-markup><actor-syntax name="&li;"></add-markup>
+	 <dt> <b>Description:</b>
+	 <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+       </dl>
+       </then>
+       <else> (HTML tag) </if>
 </dl>
-
 <hr>
 
 <a href="/Agency">Agency home page</a>
@@ -34,7 +46,4 @@ Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>

@@ -2,7 +2,7 @@
 <html><head>
 <title>Agent Index</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body bgcolor="#ffffff">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Agent Index</set>
 <read file="heading.inc" process interform>
 
@@ -40,7 +40,14 @@
 </table>
 
 <hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<hr>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
+<a href="&agentName;/">index</a>
+<a href="&agentName;/options.if">options</a>
+<hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 </body></html>

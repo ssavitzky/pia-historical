@@ -13,7 +13,17 @@
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+  <tr>
+    <th valign=top align=right><b>Agents:</b>
+    <td valign=top> <repeat list="&agentNames;" entity="foo">
+      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+   </repeat><br>
 </table>
+<pre><i><pad align=right width=15>Index</pad>	Home</i>
+<repeat list="&agentNames;"
+       ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+       >	<agent-home link name="&li;">
+</repeat></pre>
 
 <dl>
   <dt> Note:
