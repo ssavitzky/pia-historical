@@ -94,9 +94,9 @@ cvs.tar::
  * Prepare release
  */
 rm_bin_tar:: 
-	rm pia_bin.tar
+	 rm -f pia_bin.tar.gz
 rm_pia_tar::
-	rm pia.tar
+	rm -f pia.tar.gz
 
 prep_rel:: 
 	cd $(SRCDIR); make clean ; make ; make doc
@@ -107,26 +107,23 @@ prep_rel::
  */
 
 pia_bin.toc:: rm_bin_tar prep_rel
-	find \! -type d -print \
+	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v src > pia_bin.toc 
+	    | grep -v src > pia/pia_bin.toc 
 
 pia_bin.tar:	pia_bin.toc
-	/usr/local/bin/tar cfT pia_bin.tar pia_bin.toc
-
+	cd ..; /usr/local/bin/tar cfT pia/pia_bin.tar pia/pia_bin.toc ;  /bin/gzip pia/pia_bin.tar
 
 /*
  * Source release
  */
 
 pia.toc:: rm_pia_tar prep_rel
-	find \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc > pia_bin.toc 
+	cd ..;	find pia \! -type d -print \
+	    | grep -v CVS | grep -v InternalDoc > pia/pia_bin.toc 
 
 pia.tar:	src.toc
-	/usr/local/bin/tar cfT pia.tar pia.toc
-
-
+	cd ..; /usr/local/bin/tar cfT pia/pia.tar pia/pia.toc ;	/bin/gzip pia/pia.tar
 
 
 
