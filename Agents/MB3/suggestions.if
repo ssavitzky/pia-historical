@@ -1,0 +1,52 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName;   Suggestions</title>
+<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Home Page</set>
+<read interform file="heading.inc" process>
+
+ <set name=suggestions><read file name=suggestions.xml process></set>
+ <if> <get name=suggestions> <else><set name=suggestions><dl><repeat
+      list="SmallChange DoAble Possible Research"><dt>&li;</dt> <dd> </dd></repeat> </dl></set></else> </if>
+<form method=POST action="&url;" process copy>
+<table>
+    <tr><th valign=top align=right>Who
+	<td><input name=who >
+     <tr><th valign=top align=right>Feasibility
+	<td><select name=when> <repeat list="SmallChange DoAble Possible Research"><option>&li;</option> </repeat> </select>
+    <tr><th valign=top align=right> Suggestion
+	<td><textarea name=what rows=5 cols=50> </textarea>
+
+    <tr><th valign=top align=right><input type=submit>
+  </table>
+
+<process copy>
+ <set name=idea><idea><ideaauthor> <get name=who form> </ideaauthor>
+ <ideafeasibility> <get name=when form> </ideafeasibility>
+ <ideatext> <get name=what form> </ideatext>
+ </set>
+  <set name=suggestions key=&FORM.when;><get name=idea>
+      <br><get name=suggestions key=&FORM.when;> </set>
+ <write file=suggestions.xml ><get name=suggestions> </write >
+      </process>
+      </form>
+      <h1>Suggestions </h1>
+See also <a href=thoughts.html>Greg's thoughts</a>.<Br>
+      <!--could use suggestion keys -->
+<repeat list="SmallChange DoAble Possible Research" entity=k>
+<h2>&k;</h2>
+      <set name=myideas><foo><get name=suggestions key=&k;></foo></set>
+      
+        <repeat list=&myideas;>
+      <b><get index=li.ideaauthor></b>
+      <get index=li.ideatext><p>
+      </repeat>
+</repeat>      
+
+      <hr>
+<if>on<then><expand><get agent name=navbar></expand></if>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

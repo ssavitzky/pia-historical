@@ -2,47 +2,101 @@
 <html><head>
 <title>MB3: Daily Agenda</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
- <if> <get form name=d> <then> <set name=myday>&FORM.d;</set></then> <else><set name=myday>&day;</set></else></if>
+ <if> <get form name=d> <then> <set name=myday>&FORM.d;</set></then>
+      <else><set name=myday>&day;</set></else></if>
+ <if> <get form name=month> <then> <set name=mymonth>&FORM.month;</set></then>
+      <else><set name=mymonth>&month;</set></else></if>
+ <if> <get form name=year> <then> <set name=myyear>&FORM.year;</set></then>
+      <else><set name=myyear>&year;</set></else></if>
+
 <set entity name=title>Agenda &month;/&myday;/&year;</set>
 <read interform file="heading.inc" process>
 <read interform file="subhead.inc" process>
+<tagset-load name=MB3-actors>
 <hr>
-<if>on<then><expand><get agent name=navbar></expand></if>
-
-
 <h3>Add event for MB3</h3>
 <form method=POST action="&url;" process copy>
 
 <process copy>
- <if> <get form name=theurl> <then> <set name=thisurl>&FORM.theurl;</set></then><else><set name=thisurl>/&agentName;/view_presentation.if?p=&FORM.myname;&d=&myday;</set></else></if>
- <set agent name=events key=&myday; insert=-1><tr>
-   <td><get form name=myname></dd>
-   <td><get form name=start></dd>
-   <td> <a href="&thisurl;"><get form name=desc></a></dd>
- </tr></set>
 
-  <calendar-day cal=&AGENT.currentmonth; day=&myday;> <a href="&thisurl;"><get form name=myname></a></calendar-day>
-  <write file="currentevents"><get agent name=events></write>
-   <write file="currentmonth"><get agent name=currentmonth></write>
+ <!-- annoying stuff to make sure we get a unique filename -->
+ <set name=dir><get name=year form>/<get name=month form></set>
+ <set name=file><get name=day form></set>
+ <set name=files><read file=&dir; directory match="^&file;"></set>
+ <set name=try><get name=files size></set>
+ <set name=file>&dir;/&file;</set>
+ <repeat start=0 stop=&try; entity=i>
+ <if><read file=&file; info> <then><set name=file>&dir;/&file;.&i;</set></then> </if>
+ </repeat>
+</else> </if>
+
+ <set name=event>
+<event>
+<eventtitle><get name=title form></eventtitle>
+<eventfile><get name=file></eventfile>
+<date> <month><get form name=month></month>
+ <year><get form name=year></year>
+ <day><get form name=day></day>
+</date>
+<eventstart><get name=start form></eventstart>
+<eventdescription><get name=desc form> </eventdescription>
+<eventlinks><ol> </ol></eventlinks>
+<eventauthor><get name=author form>  </eventauthor>
+</event>
+ </set>
+
+  <write file=&file;><get name=event></write>
+ <if> <get name=calendars agent key=&FORM.month;&FORM.year;> <then>
+ <set name=calendar><get name=calendars agent key=&FORM.month;&FORM.year;></set>
+ <calendar-insert calendar=&calendar; day=&event.date.day;> <a href=view_event.if?event=&event.eventfile;>&event.eventtitle; </a>
+ </then> </if>
+
+Added event  <a href=view_event.if?event=&event.eventfile;>&event.eventtitle;
+(click here to view/modify this event) </a>, click <a href=/view_day.if?d=&myday;&month=&mymonth;&year=&myyear;>here</a> to
+view updated events for &mymonth;/&myday;/&myyear;.
+<hr>
 </process>
-
-<!-- You will need to edit this, possibly with another template... -->
+ <if> <get name=event> <else>
+ <!-- default values -->
+<set name=event>
+<event>
+<eventtitle> Event Title</eventtitle>
+<date> <month><if><get form name=month><then><get form
+       name=month></then><else>&month;</else></if></month>
+ <year><if><get form name=year><then><get form
+       name=year></then><else>&year;</else></if></year>
+ <day><if><get form name=day><then><get form
+       name=day></then><else>&day;</else></if></day>
+</date>
+<eventstart>9am</eventstart>
+<eventdescription></eventdescription>
+<eventlinks><ol> </ol></eventlinks>
+<eventauthor> </eventauthor>
+</event>
+ </set>
+ </else> </if>
 
   <table>
     <tr><th valign=top align=left> Day
+        <td><input size=3 name="day" value=&event.date.day;>
+        <th valign=top align=left> Month
+        <td><input size=4 name="month" value=&event.date.month;>
+        <th valign=top align=left> Year
+        <td><input size=4 name="year" value=&event.date.year;>
         <th valign=top align=left> Start time
+        <td><input name=start value="&event.eventstart;" size=6>
         <th valign=top align=center> Name
+	<td><input name=title value="&event.eventtitle;" size=12>
         <th valign=top align=center> Description
+	<td><textarea name=desc><get index=event.eventdescription></textarea>
 <tr>
-<td><input size=3 name="d" value=&myday;>
-<td><input name=start value="&time;" size=6>
-	<td><input name=myname value="NoName" size=12>
-	<td><textarea name=desc> Review</textarea>
 
-
-    <tr><th valign=top align=right><input type=submit value="AddEvent">
+    <tr><th><th valign=top align=right><input type=submit value="AddEvent">
   </table>
 </form>
+
+
+
 
 <hr>
 <if>on<then><expand><get agent name=navbar></expand></if>

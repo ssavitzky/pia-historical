@@ -1,0 +1,59 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>MB3: Event</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+ <if> <get form name=event> <then> <set name=event><read file=&FORM.event;
+      process></set></then> <else><b> Error, no event specified</b></else></if>
+<set entity name=title><get index=event.eventtitle></set>
+<read interform file="heading.inc" process>
+<!-- read interform file="subhead.inc" process -->
+<tagset-load name=MB3-actors>
+
+<center>
+ Presented by: <get index=event.eventauthor> <br>
+ on:  <get index=event.date.month> <get index=event.date.day> <get index=event.date.year><br>
+</center>
+
+
+<get index=event.eventdescription>
+<p>
+
+<!-- update URL if any -->
+ <if> <get name=newurl form> <then>
+ <set index=event.eventlinks.ol insert=-1><li>
+      <a href=&FORM.newurl;> 
+       <if> <get form name=desc>
+       <then><get form name=desc></then>
+       <else><get name=newurl form></else> </if>
+      </a>
+     </li>
+ </set>
+ </then> </if>
+
+<get index=event.eventlinks> 
+ 
+ <if><test positive> <get index=event.eventlinks.ol size> </test> <then>
+<a href="bundle_presentation.if?event=&event.eventid;">View All on One
+      page</a> (for printing) </then> <else></else> </if>
+
+ <hr>
+
+ <h3> Add Link to this presentation</h3>
+<form method=POST action="&url;">
+<input name="event"  value="&event.eventid;"  type=hidden>
+ <input name="day"  value="&event.date.day;"  type=hidden>
+  <table>
+    <tr><th valign=top align=left>URL
+	<td><input name=newurl value="http://" size=40>
+    <tr><th valign=top align=left>Description
+	<td><input name=desc  size=35>
+    <tr><th valign=top align=right><input type=submit value="AddUrl">
+  </table>
+
+</form>
+
+<hr>
+<if>on<then><expand><get agent name=navbar></expand></if>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

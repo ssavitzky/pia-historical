@@ -1,4 +1,7 @@
 <!-- Copyright &copy; 1997 Ricoh Silicon Valley -->
+<!--  Load the tagset -->
+<tagset-load name=MB3-actors>
+
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
 <if><test exact match="&agentType">&agentName;</test>
     <then><set name=agentPath>&agentName;</set></then>
@@ -35,7 +38,7 @@
 </if>
     <tr><td><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
-	    <a href="sample.if">Sample Form</a>
+	    <a href="suggestions.if"> Suggestions Form</a>
 	<td><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
 	    <a href="doc.html">Documentation</a>

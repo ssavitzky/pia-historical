@@ -14,16 +14,11 @@
 <tagset-load name=MB3-actors>
 <hr>
 
-<calendar-for month=&month;>
-
-
-<!-- See whether there's an "about" file for this agent. -->
-<read interform file="about.inc" quiet process>
-<p>
-
+<calendar-for month=&FORM.month; year=&FORM.year;>
 
 <hr>
 <if>on<then><expand><get agent name=navbar></expand></if>
+
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 </body></html>
