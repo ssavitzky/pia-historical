@@ -240,30 +240,15 @@ public class Tokens extends List implements SGML {
   /** Retrieve an attribute by index.  
       but specifying number or range gets that item or list of items
       useful for get in interforms */
-  public SGML attr(Index name) {
-    if(name.isExpression()){
-      return attrExpression(name);
-    }
-    if(name.isRange()){
-      int[] indices=name.range(nItems());
-      if(indices.length == 2){
-        //start-stop
-//    System.out.println(" tokens getting" + indices.length);
+  public SGML attr(Index i) {
+    Tokens result = new Tokens();
+    SGML t = null;
     
-
-	return copy(indices[0],indices[1]);
-      } else{
-	//a-b-c
-//    System.out.println(" tokens getting" + indices.length);
-	return copy(indices);
-      }
+    for (int j = 0; j < nItems(); ++j) {
+      t = itemAt( j );
+      result.append( t.attr( i ) );
     }
-    if(name.isNumeric()){
-//    System.out.println(" tokens getting" + name.numeric());
-      return itemAt(name.numeric());
-    }
-    //otherwise null
-    return null;
+    return result;
   }
 
 /** return contents which meet expression
@@ -271,8 +256,9 @@ public class Tokens extends List implements SGML {
  */
   SGML attrExpression(Index expression)
   {
+    /*
     //look for keywords,tag matches,etc.
-    Enumeration keywords=expression.expression().elements();
+    //Enumeration keywords=expression.expression().elements();
     int[] indices;  // integer pointers to items that match expression
     Tokens  result =  new Tokens();
     
@@ -290,7 +276,8 @@ public class Tokens extends List implements SGML {
 	result.append(mytokens);
       }  
     }
-    return result;
+    */
+    return new Tokens();
     
   }
   
@@ -479,7 +466,18 @@ public class Tokens extends List implements SGML {
      return result;
    }
 
+ /** copy specified items into a new tokens */
+  public Tokens withTag( String ztag ){
+    Tokens result = new Tokens();
+    //int[] indices;
 
+    for (int i = 0; i < nItems(); ++i) {
+      String name =  itemAt(i).tag();
+      if( name.equalsIgnoreCase( ztag ) || (name==""&& ztag=="") )
+	result.append( itemAt( i ) );
+    }
+    return result;
+  }
   /** Return a new Tokens object with the same content.  Shallow copying 
    *	is used.  */
   public Object clone() {
