@@ -39,7 +39,7 @@ public class Foreach extends crc.interform.Handler {
     String entity = Util.getString(it, "entity", "li");
 
     ii.pushForeach(it.content(), entity, list);
-    ii.hoistParseFlags();
+    //ii.hoistParseFlags();
     ii.deleteIt();
   }
 }
