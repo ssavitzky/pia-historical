@@ -50,8 +50,10 @@ public class ToWriter extends CursorStack implements Output {
   ************************************************************************/
 
   public void putNode(Node aNode) { 
+    // === should probably use syntax if defined.
     write(aNode.toString());
   }
+
   public void startNode(Node aNode) { 
     pushInPlace();
     setNode(aNode);
@@ -89,19 +91,6 @@ public class ToWriter extends CursorStack implements Output {
     } else {
       return endNode();
     }
-  }
-
-  public void putAttribute(String name, NodeList value) {
-    if (value == null) {
-      write(name);
-    } else {
-      write(name + "=" + value.toString());
-    }
-  }
-  public void startAttribute(String name) {
-    write(name + "+");
-    pushInPlace();
-    setNode(null);
   }
 
   /************************************************************************

@@ -65,9 +65,9 @@ public class Util {
       return parentNode;
     }
     try {
-      // Different parent: re-parent it.
+      // Different parent: deep-copy it.
       if (aNode.getParentNode() != null) { 
-	aNode.getParentNode().removeChild(aNode);
+	aNode = ((ActiveNode)aNode).deepCopy();
       }
       parentNode.insertBefore(aNode, null);
     } catch (crc.dom.NotMyChildException e) {
@@ -253,38 +253,48 @@ public class Util {
   ** Expansion:
   ************************************************************************/
 
-  public static AttributeList expandAttrs(Context c, AttributeList nl) {
+  public static AttributeList expandAttrs(Context c, AttributeList atts) {
     ToAttributeList dst = new ToAttributeList();
-    expandNodes(c, nl, dst);
+    expandAttrs(c, atts, dst);
     return dst.getList();
   }
 
+  public static void expandAttrs(Context c, AttributeList atts, Output dst) {
+    for (int i = 0; i < atts.getLength(); i++) { 
+      try {
+	expandAttribute(c, (Attribute) atts.item(i), dst);
+      } catch (crc.dom.NoSuchNodeException ex) {}
+    }
+  }
+
+  public static void expandAttribute(Context c, Attribute att,  Output dst) {
+    dst.putNode(new ParseTreeAttribute(att.getName(),
+				       expandNodes(c, att.getValue())));
+  }
+
   public static NodeList expandNodes(Context c, NodeList nl) {
+    if (nl == null) return null;
     ToNodeList dst = new ToNodeList();
     expandNodes(c, nl, dst);
     return dst.getList();
   }
 
   public static void expandNodes(Context c, NodeList nl, Output dst) {
-    for (int i = 0; i < nl.getLength(); i++) { 
-      try {
-	Node n = nl.item(i);
-	if (n.getNodeType() == NodeType.ENTITY) {
-	  expandEntity(c, (Entity) n, dst);
-	} else {
-	  dst.putNode(n);
-	}
-      } catch (crc.dom.NoSuchNodeException ex) {}
+    NodeEnumerator e = nl.getEnumerator();
+    for (Node n = e.getFirst(); n != null; n = e.getNext()) {
+      if (n.getNodeType() == NodeType.ENTITY) {
+	expandEntity(c, (Entity) n, dst);
+      } else {
+	dst.putNode(n);
+      }
     }
   }
 
   /** Expand a single entity. */
   public static void expandEntity(Context c, Entity n, Output dst) {
     String name = n.getName();
-    NodeList value = null;
-    if (name.indexOf('.') >= 0) value = c.getIndexValue(name);
-    else 
-      value = c.getEntityValue(name);
+    NodeList value =
+      (name.indexOf('.') >= 0)? c.getIndexValue(name): c.getEntityValue(name);
     if (value == null) {
       dst.putNode(n);
     } else {

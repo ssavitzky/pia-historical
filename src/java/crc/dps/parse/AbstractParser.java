@@ -507,9 +507,6 @@ public abstract class AbstractParser extends CursorStack implements Parser
     if (nn != null) {		// There's a real sibling.  Go there.
       setNode(nn);
       return nn;
-    } else if (getNode().getParentNode() != null) {
-      // === The above test fails if we are building a tree!!!!! ===
-      return null;		// parent exists.  Just return null.
     } else {
       return advanceParser();	// No parent, just go.
     }
@@ -535,33 +532,6 @@ public abstract class AbstractParser extends CursorStack implements Parser
     }
   }
   
-  public Attribute toFirstAttribute() {
-    // We already have the whole attribute list.  Push.
-    crc.dom.AttributeList atts = element.getAttributes();
-    if ((atts == null) || (atts.getLength() == 0)) return null;
-    Node n;
-    try {
-      n = atts.item(0);
-    } catch (crc.dom.NoSuchNodeException e) {
-      return null;
-    }
-    pushInPlace();		// The critical step: push in place.
-    setNode(n);
-    atFirst = true;
-    return (Attribute)n;
-  }
-
-  public Attribute toNextAttribute() {
-    if (node != null && active == null) System.err.println("Null node");
-    if (active.getNodeType() != NodeType.ATTRIBUTE) return null;
-    else {
-      Node n = active.getNextSibling();
-      if (n == null) return null;
-      setNode(n);
-      return (Attribute)n;
-    }
-  }
-
   public boolean atLast() {
     return false;		// ===
   }

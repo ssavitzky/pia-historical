@@ -183,7 +183,7 @@ public class BasicParser extends AbstractParser {
 	  a = ident.toLowerCase();
 	  buf.append(ident);
 	  //debug(" "+a);
-	  it.addAttr(a, getValue());
+	  it.addAttribute(a, getValue());
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  it.setHasEmptyDelimiter(true);

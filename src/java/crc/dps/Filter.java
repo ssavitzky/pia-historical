@@ -21,6 +21,8 @@ import crc.dps.Processor;
 import crc.dps.BasicProcessor;
 import crc.dps.Tagset;
 import crc.dps.Util;
+import crc.dps.output.*;
+import crc.dps.active.*;
 
 /**
  * Interpret an input stream or file as an InterForm.  
@@ -56,12 +58,13 @@ public class Filter {
       System.err.println("Cannot open input file " + infile);
     }
       
-    OutputStream out = System.out;
+    OutputStream outs = System.out;
     try {
-      if (outfile != null) out = new FileOutputStream(outfile);
+      if (outfile != null) outs = new FileOutputStream(outfile);
     } catch (Exception e) {
       System.err.println("Cannot open output file " + outfile);
     }
+    OutputStreamWriter out = new OutputStreamWriter(outs);
 
     if (verbose) {
       java.util.Properties env = System.getProperties();
@@ -104,11 +107,17 @@ public class Filter {
     BasicProcessor ii = new BasicProcessor();
     ii.setInput(p);
 
-    Output output = (parsing)
-      ? (Output)new crc.dps.output.ToParseTree()
-      : (Output)new crc.dps.output.ToWriter(new OutputStreamWriter(out));
+    ToParseTree outputTree = null;
+    Output output = null;
+    if (parsing) {
+      outputTree = new ToParseTree();
+      outputTree.setRoot(new crc.dps.active.ParseTreeElement("Tree", null));
+      output = outputTree;
+    } else {
+      output = new ToWriter(out);
+    }
 
-    if (debug) output = new crc.dps.output.OutputTrace(output);
+    if (debug) output = new OutputTrace(output);
     ii.setOutput(output);
 
     //if (entities) new Environment(infile).use(ii);
@@ -119,8 +128,10 @@ public class Filter {
 
     if (parsing) { 
       System.err.println("\n\n========= parse tree: ==========\n");
-      // === System.err.println(ii.getOutput().getNode());
-    }
+      System.err.println(outputTree.getRoot());
+    } else try {
+      out.close();
+    } catch (java.io.IOException e){}
   }
 
   /** Print a usage string.

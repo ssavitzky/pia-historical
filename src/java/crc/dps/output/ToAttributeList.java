@@ -41,6 +41,36 @@ public class ToAttributeList extends ActiveOutput implements Output {
 
   public AttributeList getList() { return list; }
 
+  public void putNode(Node aNode) {
+    if (aNode.getNodeType() == NodeType.ATTRIBUTE && depth == 0) {
+      Attribute attr = (Attribute)aNode;
+      list.setAttribute(attr.getName(), attr);
+    } else {
+      super.putNode(aNode);
+    }
+  }
+
+  public void startNode(Node aNode) {
+    if (depth == 0) {
+      putNode(aNode);
+      descend();
+      setNode(aNode);
+      return;
+    }
+    Node p = aNode.getParentNode();
+    if (active == p && active != null) {	// already a child.  descend.
+      if (p != null) descend();
+      setNode(aNode);
+      return;
+    }
+    if (p != null || aNode.hasChildren()) {
+      aNode = Util.copyNodeAsActive(aNode);
+    }
+    appendNode(aNode, active);
+    descend();
+    setNode(aNode);
+  }
+
   public Node toParent() {
     if (depth != 1) return super.toParent();
     setNode((Node)null);

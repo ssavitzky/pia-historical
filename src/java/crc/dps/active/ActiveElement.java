@@ -48,16 +48,17 @@ public interface ActiveElement extends Element, ActiveNode {
   /** Convenience function: Set an attribute's value to a NodeList. */
   public void setAttribute(String name, NodeList value);
 
+  /** Convenience function: Set an attribute's value to a NodeList,
+   *	given the optimistic assumption that the attribute is currently
+   *	undefined.
+   */
+  public void addAttribute(String name, NodeList value);
+
   /** Convenience function: Set an attribute's value to a Node. */
   public void setAttribute(String name, Node value);
 
   /** Convenience function: Set an attribute's value to a String. */
   public void setAttribute(String name, String value);
-
-  /** Append a new attribute.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addAttr(String aname, NodeList value);
 
   /************************************************************************
   ** Syntax:  DTD entry:

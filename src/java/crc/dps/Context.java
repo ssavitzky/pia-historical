@@ -113,4 +113,15 @@ public interface Context {
    */
   public Context newContext(Input in, Output out);
 
+  /************************************************************************
+  ** Reporting:
+  ************************************************************************/
+
+  /** Obtain the current verbosity level */
+  public int getVerbosity();
+  public void setVerbosity(int value);
+
+  public void debug(String message);
+  public void debug(String message, int indent);
+
 }

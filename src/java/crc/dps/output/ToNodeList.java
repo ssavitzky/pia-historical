@@ -40,6 +40,29 @@ public class ToNodeList extends ActiveOutput implements Output {
 
   public ParseNodeList getList() { return list; }
 
+  public void putNode(Node aNode) {
+    if (depth == 0) {
+      list.append(aNode);
+    } else {
+      super.putNode(aNode);
+    }
+  }
+
+  public void startNode(Node aNode) {
+    Node p = aNode.getParentNode();
+    if (active == p && active != null) {	// already a child.  descend.
+      if (p != null) descend();
+      setNode(aNode);
+      return;
+    }
+    if (p != null || aNode.hasChildren()) {
+      aNode = Util.copyNodeAsActive(aNode);
+    }
+    appendNode(aNode, active);
+    descend();
+    setNode(aNode);
+  }
+
   public Node toParent() {
     if (depth != 1) return super.toParent();
     setNode((Node)null);

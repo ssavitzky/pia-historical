@@ -7,6 +7,7 @@ import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.BasicElement;
 import crc.dom.NodeList;
+import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 
@@ -51,7 +52,7 @@ implements Handler {
    */
   public void action(Input in, Context aContext, Output out) {
     BasicProcessor p = new BasicProcessor(in, aContext, out);
-    p.defaultProcessNode();
+    p.expandCurrentNode();
   }
 
   /** It's unlikely that this will be called, but allow for the possibility. */
@@ -204,5 +205,17 @@ implements Handler {
     return out.getString();
   }
 
-
+  /** Retrieve an attribute from an attribute list and return its value. */
+  public NodeList getAttributeValue(String name, AttributeList atts) {
+    Attribute attr = atts.getAttribute(name);
+    if (attr == null) return null;
+    return attr.getValue();
+  }
+  /** Retrieve an attribute from an attribute list and return it as a String */
+  public String getAttributeString(String name, AttributeList atts) {
+    Attribute attr = atts.getAttribute(name);
+    if (attr == null) return null;
+    NodeList value = attr.getValue();
+    return (value == null)? null : value.toString();
+  }
 }

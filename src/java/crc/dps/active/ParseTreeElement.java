@@ -84,18 +84,24 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
   ************************************************************************/
 
   /** Append a new attribute.
-   *	Can be more efficient than <code>insertBefore()</code>
+   *	Can be more efficient than setAttribute.
    */
-  public void addAttr(String aname, crc.dom.NodeList value) {
+  public void addAttribute(String aname, NodeList value) {
     crc.dom.Attribute attr = new ParseTreeAttribute(aname, value);
     attr.setSpecified(value != null);
     setAttribute(attr);
+    //System.err.println("***Added attribute " + attr.toString() 
+    //			 + " value= " + attr.getChildren());
   }
 
   public void setAttribute(String name, NodeList value) {
     Attribute attr = getAttribute(name);
     if (attr != null) attr.setValue(value);
     else setAttribute(new ParseTreeAttribute(name, value));
+  }
+
+  public void setAttribute(String name, Node value) {
+    setAttribute(name, new ArrayNodeList(value));
   }
 
   public void setAttribute(String name, String value) {
@@ -129,17 +135,29 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
   public ParseTreeElement() {
   }
 
-  public ParseTreeElement(ParseTreeElement e) {
-    super(e);
-    handler = e.handler;
-    action = e.action;
-    isEmptyElement = e.isEmptyElement;
-    hasEmptyDelim  = e.hasEmptyDelim;
-    implicitEnd = e.implicitEnd;
+  public ParseTreeElement(ActiveElement e) {
+    super((BasicElement)e);
+    setTagName(e.getTagName());
+    handler = (Handler)e.getSyntax();
+    action = e.getAction();
+    isEmptyElement = e.isEmptyElement();
+    hasEmptyDelim  = e.hasEmptyDelimiter();
+    implicitEnd = e.implicitEnd();
+  }
+
+  public ParseTreeElement(ActiveElement e, AttributeList atts) {
+    super((BasicElement)e, atts);
+    setTagName(e.getTagName());
+    handler = (Handler)e.getSyntax();
+    action = e.getAction();
+    isEmptyElement = e.isEmptyElement();
+    hasEmptyDelim  = e.hasEmptyDelimiter();
+    implicitEnd = e.implicitEnd();
   }
 
   public ParseTreeElement(Element e) {
     super(e);
+    setTagName(e.getTagName());
     if (e instanceof ParseTreeElement) {
       ParseTreeElement ee = (ParseTreeElement)e;
       handler = ee.handler;
@@ -233,7 +251,8 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreeElement(this);
+    ParseTreeElement e = new ParseTreeElement(this);
+    return e;
   }
 
   /** Return a deep copy of this Token.  Attributes and children are copied.

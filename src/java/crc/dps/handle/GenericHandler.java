@@ -126,15 +126,22 @@ public class GenericHandler extends BasicHandler {
    */
   public void action(Input in, Context aContext, Output out) {
     AttributeList atts = getExpandedAttrs(in, aContext);
+    if (atts != null) aContext.debug("   atts: " + atts.toString() + "\n");
     ParseNodeList content = null;
     String cstring = null;
-    if (stringContent) {
+    if (!in.hasChildren()) {
+      aContext.debug("   no children...\n");
+    } else if (stringContent) {
+      aContext.debug("   getting content as string\n");
       cstring = expandContent? getProcessedContentString(in, aContext)
 	: getContentString(in, aContext);
+      aContext.debug("     -> '" + cstring + "'\n");
     } else {
+      aContext.debug("   getting content as parse tree\n");
       content = expandContent
 	? getProcessedContent(in, aContext)
 	: getContent(in, aContext);
+      aContext.debug("     -> " + content.getLength() + " nodes\n");
     }
     ActiveElement e = in.getActive().asElement();
     action(e, aContext, out, e.getTagName(), atts, content, cstring);

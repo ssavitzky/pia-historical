@@ -40,37 +40,42 @@ public class BasicProcessor extends ContextStack implements Processor {
   public void processNode() {
     Action action = input.getAction();
     if (action != null) {
+      debug("!! calling action for " + logNode(input.getNode()) + "\n");
+      debug("   action class name: " + action.getClass().getName() + "\n");
       additionalAction(action.action(input, this));
     } else {
-      defaultProcessNode();
+      debug("!! default action for " + logNode(input.getNode()) + "\n");
+      expandCurrentNode();
     }
   }
 
   /** Perform any additional action requested by the action routine. */
   protected final void additionalAction(int flag) {
-    debug("!! action -> " + flag + " for " + lognode(input.getNode()) + "\n");
-
+    debug("   -> " + Action.actionNames[flag+1] + " (" + flag + ")\n");
     switch (flag) {
-    case -1: copyCurrentNode(); return;
-    case  0: return;
-    case  1: defaultProcessNode(); return;
+    case Action.COPY_NODE: copyCurrentNode(); return;
+    case Action.COMPLETED: return;
+    case Action.EXPAND_NODE: expandCurrentNode(); return;
     }
   }
 
   /** Process the current node in the default manner, expanding entities
    *	in its attributes and processing its children re-entrantly.
    */
-  public void defaultProcessNode() {
+  public void expandCurrentNode() {
     Node node = input.getNode();
     if (node.getNodeType() == NodeType.ENTITY) {
       expandEntity((Entity) node, output);
     } else if (input.hasChildren() || input.hasActiveAttributes()) {
       if (input.hasActiveAttributes()) {
-	ActiveElement e = new ParseTreeElement(input.getActive().asElement());
-	expandAttributesInto(e);
+	ActiveElement oe = input.getActive().asElement();
+	ActiveElement e = new ParseTreeElement(oe,
+					       expandAttrs(oe.getAttributes()));
+	//debug("Starting element" + logNode(e) + "\n");
 	output.startElement(e);
-	if (input.hasChildren()) processChildren();
+	if (input.hasChildren()) { debug("children\n"); processChildren(); }
 	output.endElement(e.isEmptyElement() || e.implicitEnd());
+	//debug("  done\n");
       } else {
 	output.startNode(node);
 	if (input.hasChildren()) processChildren();
@@ -124,14 +129,8 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   /** Expand entities in the attributes of the current Node.
    */
-  public void expandAttributesInto(ActiveElement e) {
-    Element elt =  input.getElement();
-    AttributeList atts = elt.getAttributes();
-    for (int i = 0; i < atts.getLength(); i++) { 
-      try {
-	expandAttribute((Attribute) atts.item(i), e);
-      } catch (crc.dom.NoSuchNodeException ex) {}
-    }
+  public AttributeList expandAttrs(AttributeList attrs) {
+    return Util.expandAttrs(this, attrs);
   }
 
   /** Expand entities in the value of a given attribute. */
@@ -141,6 +140,7 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   /** Expand nodes in a nodelist. */
   public NodeList expandNodes(NodeList nl) {
+    debug("*** Null value expanded\n");
     if (nl == null) return null;
     ToNodeList dst = new ToNodeList();
     expandNodes(nl, dst);
@@ -148,15 +148,13 @@ public class BasicProcessor extends ContextStack implements Processor {
   }
 
   public void expandNodes(NodeList nl, Output dst) {
-    for (int i = 0; i < nl.getLength(); i++) { 
-      try {
-	Node n = nl.item(i);
-	if (n.getNodeType() == NodeType.ENTITY) {
-	  expandEntity((Entity) n, dst);
-	} else {
-	  dst.putNode(n);
-	}
-      } catch (crc.dom.NoSuchNodeException ex) {}
+    crc.dom.NodeEnumerator e = nl.getEnumerator();
+    for (Node n = e.getFirst(); n != null; n = e.getNext()) {
+      if (n.getNodeType() == NodeType.ENTITY) {
+	expandEntity((Entity) n, dst);
+      } else {
+	dst.putNode(n);
+      }
     }
   }
 
@@ -178,7 +176,7 @@ public class BasicProcessor extends ContextStack implements Processor {
   ** Processing:
   ************************************************************************/
 
-  protected boolean running;
+  protected boolean running = false;
 
   public boolean isRunning() { return running; }
   public void stop() { running = false; }
@@ -192,52 +190,6 @@ public class BasicProcessor extends ContextStack implements Processor {
     processNode();
     while (running && input.toNextSibling() != null) processNode();
   }
-
-  /************************************************************************
-  ** Debugging:
-  **	This is a subset of crc.util.Report.
-  ************************************************************************/
-
-  protected int verbosity = 0;
-
-  public int getVerbosity() { return verbosity; }
-  public void setVerbosity(int value) { verbosity = value; }
-
-  public void debug(String message) {
-    if (verbosity >= 2) System.err.print(message);
-  }
-
-  public void debug(String message, int indent) {
-    if (verbosity < 2) return;
-    String s = "";
-    for (int i = 0; i < indent; ++i) s += " ";
-    s += message;
-    System.err.print(s);
-  }
-
-  public String lognode(Node aNode) {
-    switch (aNode.getNodeType()) {
-    case crc.dom.NodeType.ELEMENT:
-      Element e = (Element)aNode;
-      AttributeList atts = e.getAttributes();
-      return "<" + e.getTagName()
-	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
-	+ ">";
-
-    case crc.dom.NodeType.TEXT: 
-      Text t = (Text)aNode;
-      return t.getIsIgnorableWhitespace()? "space" : "text";
-
-    default: 
-      return aNode.toString();      
-    }
-  }
-
-
-  public void setDebug() 	{ verbosity = 2; }
-  public void setVerbose() 	{ verbosity = 1; }
-  public void setNormal() 	{ verbosity = 0; }
-  public void setQuiet() 	{ verbosity = -1; }
 
   /************************************************************************
   ** Construction:

@@ -56,6 +56,9 @@ public interface Action {
   public static final int EXPAND_NODE =  1;
   public static final int EXPAND_ATTS =  2;
 
+  public static final String actionNames[] = { 
+    "COPY_NODE", "COMPLETED", "EXPAND_NODE", "EXPAND_ATTS"};
+
   /** Performs the action associated with the current Node in a given Context. 
    */
   public void action(Input in, Context aContext, Output out);

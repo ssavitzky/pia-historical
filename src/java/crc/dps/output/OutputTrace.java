@@ -41,7 +41,7 @@ public class OutputTrace implements Output {
     log.print(s);
   }
 
-  public String lognode(Node aNode) {
+  public String logNode(Node aNode) {
     switch (aNode.getNodeType()) {
     case crc.dom.NodeType.ELEMENT:
       Element e = (Element)aNode;
@@ -52,11 +52,28 @@ public class OutputTrace implements Output {
 
     case crc.dom.NodeType.TEXT: 
       Text t = (Text)aNode;
-      return t.getIsIgnorableWhitespace()? "space" : "text";
+      return t.getIsIgnorableWhitespace()
+	? "space"
+	: ("text: '" + logString(t.getData()) + "'");
 
     default: 
       return aNode.toString();      
     }
+  }
+
+  public String logString(String s) {
+    if (s == null) return "null";
+    String o = "";
+    int i = 0;
+    for ( ; i < s.length() && i < 15; ++i) {
+      char c = s.charAt(i);
+      switch (c) {
+      case '\n': o += "\\n"; break;
+      default: o += c;
+      }
+    }
+    if (i < s.length()) o += "..."; 
+    return o;
   }
 
   /************************************************************************
@@ -64,11 +81,11 @@ public class OutputTrace implements Output {
   ************************************************************************/
 
   public void putNode(Node aNode) { 
-    debug("put " + lognode(aNode) + NL, depth);
+    debug("put " + logNode(aNode) + NL, depth);
     if (target != null) target.putNode(aNode);
   }
   public void startNode(Node aNode) { 
-    debug("start " + lognode(aNode) + NL, depth);
+    debug("start " + logNode(aNode) + NL, depth);
     depth++;
     if (target != null) target.startNode(aNode);
   }
@@ -78,7 +95,7 @@ public class OutputTrace implements Output {
     return (target != null)? target.endNode() : depth >= 0;;
   }
   public void startElement(Element anElement) {
-    debug("start " + lognode(anElement) + NL, depth);
+    debug("start " + logNode(anElement) + NL, depth);
     depth++;
     if (target != null) target.startElement(anElement);
   }

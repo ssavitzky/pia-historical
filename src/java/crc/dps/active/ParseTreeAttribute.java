@@ -73,7 +73,7 @@ public class ParseTreeAttribute extends BasicAttribute
   }
 
   public ParseTreeAttribute(ParseTreeAttribute e) {
-    super(e);
+    super((BasicAttribute)e);
     handler = e.handler;
     action = e.action;
   }
@@ -94,54 +94,32 @@ public class ParseTreeAttribute extends BasicAttribute
   ** Presentation:
   ************************************************************************/
 
-  /** Return the String equivalent of the Token's start tag (for an element)
-   *	or the part that comes before the <code>data()</code>.
-   */
   public String startString() {
-    return getName() + "=";
+    return getName() + ((! getSpecified() || getValue() == null)? "" : "=");
   }
 
-  /** Return the String equivalent of the Token's content or
-   *	<code>data()</code>.  Entities are substituted for characters
-   *	with special significance, such as ampersand.
-   */
   public String contentString() {
-    return (! getSpecified() || getChildren() == null)
+    return (! getSpecified() || getValue() == null)
       ? ""
-      : "'" + getChildren().toString() + "'";
+      : "'" + getValue().toString() + "'";
   }
 
-  /** Return the String equivalent of the Token's end tag (for an element)
-   *	or the part that comes after the <code>data()</code>.
-   */
   public String endString() {
     return "";
   }
 
 
-  /** Convert the Token to a String using the Handler's
-   *	<code>convertToString</code> method, if there is one.
-   *	Otherwise it uses  <code>basicToString</code>.
-   */
   public String toString() {
     return startString() + contentString() + endString();
   }
 
-  protected void setNullValue(){
-    try{
-      // === This implementation for setNullValue seems wrong. ===
-      Text al = new ParseTreeText("AttributeList");
-      al.insertBefore(new ParseTreeText(), null);
-      value = al.getChildren();
-    }catch(Exception e){
-    }
-  }
   /************************************************************************
   ** Copying:
   ************************************************************************/
 
-  /** Return a shallow copy of this Token.  Attributes, if any, are
-   *	copied, but children are not.
+  /** Return a shallow copy of this Token. 
+   *	Since an attribute's value is kept in its children, we actually
+   *	need to do a deep copy.
    */
   public ActiveNode shallowCopy() {
     return new ParseTreeAttribute(this);
@@ -150,14 +128,7 @@ public class ParseTreeAttribute extends BasicAttribute
   /** Return a deep copy of this Token.  Attributes and children are copied.
    */
   public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
-    }
-    return node;
+    return new ParseTreeAttribute(this);
   }
 
   /** Return new node corresponding to this Token, made using the given 

@@ -8,6 +8,8 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Element;
 import crc.dom.Attribute;
+import crc.dom.AttributeList;
+import crc.dom.Text;
 
 import crc.dps.*;
 import crc.dps.active.*;
@@ -46,6 +48,8 @@ public class ContextStack  implements Context {
   protected EntityTable entities;
   protected Input input;
   protected Output output;
+  protected int verbosity = 0;
+
 
  /************************************************************************
   ** Accessors:
@@ -85,6 +89,68 @@ public class ContextStack  implements Context {
 
 
   /************************************************************************
+  ** Debugging:
+  **	This is a subset of crc.util.Report.
+  ************************************************************************/
+
+  public int getVerbosity() { return verbosity; }
+  public void setVerbosity(int value) { verbosity = value; }
+
+  public void debug(String message) {
+    if (verbosity >= 2) System.err.print(message);
+  }
+
+  public void debug(String message, int indent) {
+    if (verbosity < 2) return;
+    String s = "";
+    for (int i = 0; i < indent; ++i) s += " ";
+    s += message;
+    System.err.print(s);
+  }
+
+  public String logNode(Node aNode) {
+    switch (aNode.getNodeType()) {
+    case crc.dom.NodeType.ELEMENT:
+      Element e = (Element)aNode;
+      AttributeList atts = e.getAttributes();
+      return "<" + e.getTagName()
+	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
+	+ ">";
+
+    case crc.dom.NodeType.TEXT: 
+      Text t = (Text)aNode;
+      return t.getIsIgnorableWhitespace()
+	? "space"
+	: ("text: '" + logString(t.getData()) + "'");
+
+    default: 
+      return aNode.toString();      
+    }
+  }
+
+  public String logString(String s) {
+    if (s == null) return "null";
+    String o = "";
+    int i = 0;
+    for ( ; i < s.length() && i < 15; ++i) {
+      char c = s.charAt(i);
+      switch (c) {
+      case '\n': o += "\\n"; break;
+      default: o += c;
+      }
+    }
+    if (i < s.length()) o += "..."; 
+    return o;
+  }
+
+
+  public void setDebug() 	{ verbosity = 2; }
+  public void setVerbose() 	{ verbosity = 1; }
+  public void setNormal() 	{ verbosity = 0; }
+  public void setQuiet() 	{ verbosity = -1; }
+
+
+  /************************************************************************
   ** Construction and Copying:
   ************************************************************************/
 
@@ -93,6 +159,7 @@ public class ContextStack  implements Context {
     output = old.output;
     entities = old.entities;
     stack = old.stack;
+    verbosity = old.verbosity;
   }
 
   public ContextStack() {}
@@ -102,6 +169,7 @@ public class ContextStack  implements Context {
     input    = in;
     output   = out;
     entities = ents;
+    verbosity = prev.getVerbosity();
     depth    = prev.getDepth() + 1;
   }
 

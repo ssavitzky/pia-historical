@@ -314,12 +314,16 @@ public class CurrentActive implements Cursor {
       if (p != null) return;	// already a child.  Nothing to do.
       else setNode(aNode);	// no current node: make it current
     } else if (p != null) {	// someone else's child: deep copy.
+      ActiveNode n = (ActiveNode)aNode;
+      appendNode(n.deepCopy(), active);
+      /* === this will fail for attributes and entities with values:
       startNode(aNode);
       for (Node n = aNode.getFirstChild();
 	   n != null;
 	   n = aNode.getNextSibling()) 
 	putNode(n);
       endNode();
+      */
     } else {
       appendNode(aNode, active);
     }
