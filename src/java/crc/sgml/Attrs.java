@@ -27,6 +27,12 @@ public interface Attrs {
   /** Retrieve an attribute by name, returning its value as a String. */
   String attrString(String name);
 
+  /** Retrieve an attribute by name, returning its value as a boolean.
+   *	Anything except a null string, the string "false", or the
+   *	string "0" is considered to be true.
+   */
+  boolean attrTrue(String name);
+
   /** Enumerate the defined attributes. */
   java.util.Enumeration attrs();
 

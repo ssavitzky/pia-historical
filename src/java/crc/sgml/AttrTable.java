@@ -53,6 +53,14 @@ public class AttrTable extends Table implements Attrs {
     return (o == null)? null : o.toString();
   }
 
+  /** Retrieve an attribute by name, returning its value as a boolean.
+   *	Anything except a null string, the string "false", or the
+   *	string "0" is considered to be true.
+   */
+    public boolean attrTrue(String name) {
+    return Util.valueIsTrue(attr(name));
+  }
+
   /** Add or replace an attribute.  Redefine the parent class's method
    *	to wrap the object in SGML. */
   public Stuff at(String a, Object v) {

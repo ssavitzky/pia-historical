@@ -151,6 +151,14 @@ public class Element extends Token implements Attrs {
     return (attr == null)? null : attr.toString();
   }
 
+  /** Retrieve an attribute by name, returning its value as a boolean.
+   *	Anything except a null string, the string "false", or the
+   *	string "0" is considered to be true.
+   */
+    public boolean attrTrue(String name) {
+    return Util.valueIsTrue(attr(name));
+  }
+
   /** Set an attribute's value, recording its name if it has not yet
    *	been defined.
    */
@@ -497,7 +505,7 @@ public class Element extends Token implements Attrs {
 	t.append(" ");
 	t.append(attrNameAt(i));
 	SGML v = attrValueAt(i);
-	if (v != null && !(v.isList() && v.isEmpty())) {
+	if (v != null && v != Token.empty && !(v.isList() && v.isEmpty())) {
 	  t.append("=\"");
 	  // === Should be more discriminating about quoting ===
 	  // === on the other hand some browsers are confused by ' ===

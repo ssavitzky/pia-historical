@@ -50,6 +50,14 @@ public abstract class AttrBase implements Attrs {
     return (s == null)? null : s.toString();
   }
 
+  /** Retrieve an attribute by name, returning its value as a boolean.
+   *	Anything except a null string, the string "false", or the
+   *	string "0" is considered to be true.
+   */
+  public boolean attrTrue(String name) {
+    return Util.valueIsTrue(attr(name));
+  }
+
   /** Set an attribute with a String value. */
   public void attr(String name, String value) {
     attr(name, new Text(value));

@@ -31,6 +31,19 @@ public class Util {
     }
   }
 
+  /** Test an SGML object for boolean truth.  Null, the null list, and
+   *	the strings "", "0", and "false" are false; anything else is true.
+   */
+  public static final boolean valueIsTrue(SGML o) {
+    if (o == null) return false;
+    if (o == Token.empty) return true;
+    if (o instanceof Tokens) return !o.isEmpty();
+    if (! o.isText()) return true;
+    String s = o.toString();
+    return !(s == null || "".equals(s) || "0".equals(s)
+	     || "false".equalsIgnoreCase(s));
+  }
+
   /************************************************************************
   ** Token List utilities:
   ************************************************************************/

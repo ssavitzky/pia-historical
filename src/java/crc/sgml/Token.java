@@ -81,7 +81,7 @@ public class Token implements SGML {
 
   /** Return true for an empty list or a token with no content. */
   public boolean isEmpty() {
-    return false;
+    return true;
   }
 
   /** Parser state:  0 for a complete element. */
@@ -196,7 +196,7 @@ public class Token implements SGML {
   }
 
   public String toString() {
-    return tag;
+    return "";
   }
 
   public void appendTextTo(SGML t) {
