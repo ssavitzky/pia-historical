@@ -402,6 +402,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
     }
     String tag = getTagName(depth-1);
     if (tag != null && e.getSyntax().implicitlyEnds(tag)) return 1;
+    if (tag != null && !e.getSyntax().isChildOf(tag)) return 1;
 
     return 0;			// === checkStartTag doesn't work yet.
   }
