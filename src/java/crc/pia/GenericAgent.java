@@ -6,7 +6,9 @@ package crc.pia;
 import crc.tf.UnknownNameException;
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileNotFoundException;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import crc.pia.Agent;
@@ -46,7 +48,7 @@ import w3c.www.http.HTTP;
 public class GenericAgent extends AttrBase implements Agent {
   
   private String filesep = System.getProperty("file.separator");
-  public boolean DEBUG = false;  
+  public static boolean DEBUG = false;  
 
  /**
    * Attribute table for storing options
@@ -126,6 +128,9 @@ public class GenericAgent extends AttrBase implements Agent {
    * on the floor.
    */
   public void createRequest(String method, String url, String queryString){
+    Pia.debug(this, "createRequest -- the method-->"+method);
+    Pia.debug(this, "createRequest -- the url   -->"+url);
+    Pia.debug(this, "createRequest -- the queryString  -->"+queryString);
     Transaction request = null;
 
     if( queryString == null ) {
@@ -281,7 +286,7 @@ public class GenericAgent extends AttrBase implements Agent {
     while( enum.hasMoreElements() ){
       try{
 	zpath = (String)enum.nextElement();
-	Pia.instance().debug(this, "file attribute-->"+ zpath);
+	Pia.debug(this, "file attribute-->"+ zpath);
       }catch(Exception e){}
     }
     return res;
@@ -363,7 +368,7 @@ public class GenericAgent extends AttrBase implements Agent {
       }
     }
 
-    Pia.instance().errLog( name()+ "could not find appropriate, writable directory");
+    Pia.errLog( name()+ "could not find appropriate, writable directory");
     return null;
   }
 
@@ -405,7 +410,7 @@ public class GenericAgent extends AttrBase implements Agent {
       }
     }
 
-    Pia.instance().errLog( name()+ "could not find appropriate, writable directory");
+    Pia.errLog( name()+ "could not find appropriate, writable directory");
     return null;
   }
 
@@ -484,10 +489,10 @@ public class GenericAgent extends AttrBase implements Agent {
    * @return virtual machine
    */
   public Machine machine(){
-    Pia.instance().debug(this, "Getting agent machine" );
+    Pia.debug(this, "Getting agent machine" );
     if( virtualMachine==null ){
       virtualMachine = new AgentMachine( (Agent)this );
-      Pia.instance().debug(this, "Creating virtual agent machine" );
+      Pia.debug(this, "Creating virtual agent machine" );
     }
     return virtualMachine;
   }
@@ -535,7 +540,7 @@ public class GenericAgent extends AttrBase implements Agent {
        throws PiaRuntimeException{
     URL zurl = trans.requestURL();
 
-    crc.pia.Pia.instance().debug(this, "Running interform...");
+    crc.pia.Pia.debug(this, "Running interform...");
     if (! respondToInterform( trans, zurl, res ) ){
       interformErr( trans, zurl );
       //throw new PiaRuntimeException(this, "respond",
@@ -645,34 +650,76 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
+   * Send redirection to client
+   */
+  protected boolean isRedirection( Transaction req, URL url ) throws FileNotFoundException,
+    MalformedURLException{
+    String originalPath = null;
+    URL redirUrl = null;
+    String redirUrlString = null;
+
+    if ( url == null ) url = req.requestURL();
+
+    String path = url.getFile();
+
+    if ( path == null ) return false;
+
+    Pia.debug(this, "  path on entry -->"+ path);
+    // === path, name, and typed were all getting lowercased.  Wrong!
+
+    String myname = name();
+    String mytype = type();
+
+    // default to index.if
+
+    originalPath = path;
+
+    if (path.equals("/")) {
+      path = "/ROOTindex.if";
+    } else if (path.equals("/" + myname)) {
+      path += "/home.if";
+    } else if (path.equals("/" + myname + "/")) {
+      path += "index.if";
+    }
+
+    if( originalPath == path ) // we don't have redirection
+      return false;
+
+    // check for existence
+    String wholePath = findInterform( path, false );
+    if( wholePath == null ){
+      throw new FileNotFoundException("File :" + path + "does not exist");
+    }
+    else{
+      try{
+	redirUrl = new URL(url, wholePath);
+	redirUrlString = redirUrl.toExternalForm();
+	Pia.debug(this, "The redirected url-->" + redirUrlString);
+      }catch(MalformedURLException e){
+	throw e;
+      }
+
+      Transaction response = new HTTPResponse( req, false );
+      response.setHeader("Location", redirUrlString);
+      response.errorResponse(301, "The new location is :" + redirUrlString);
+      return true;
+    }
+  }
+
+
+
+  /**
    * Find an interform starting with a string pathname.
    */
   public String findInterform( String path, boolean noDefault ){
     if ( path == null ) return null;
-    Pia.instance().debug(this, "  path on entry -->"+ path);
+    Pia.debug(this, "  path on entry -->"+ path);
     // === path, name, and typed were all getting lowercased.  Wrong!
 
     String myname = name();
     String mytype = type();
     
-    // Find interform name in URL.
-    
-    // === This is wrong.  We should use redirect instead. ===
-
-    if ( noDefault ){
-      // are v doing defaults? no no
-    }
-    else { // default to index.if
-      if (path.equals("/")) {
-	path = "/ROOTindex.if";
-      } else if (path.equals("/" + myname)) {
-	path += "/home.if";
-      } else if (path.equals("/" + myname + "/")) {
-	path += "index.if";
-      }
-    }
-
-    Pia.instance().debug(this, "Looking for -->"+ path);
+    Pia.debug(this, "Looking for -->"+ path);
 
     /* Remove a leading /type or /name or /type/name from the path. */
 
@@ -773,10 +820,12 @@ public class GenericAgent extends AttrBase implements Agent {
     Enumeration e = if_path.elements();
     while( e.hasMoreElements() ){
       String zpath = (String)e.nextElement();
+      if( path.startsWith("/") )
+	path = path.substring(1);
       String wholepath = zpath + path;
-      Pia.instance().debug(this, "  zpath -->"+ zpath);
-      Pia.instance().debug(this, "  path  -->"+ path);
-      Pia.instance().debug(this, "  Trying -->"+ wholepath);
+      Pia.debug(this, "  zpath -->"+ zpath);
+      Pia.debug(this, "  path  -->"+ path);
+      Pia.debug(this, "  Trying -->"+ wholepath);
       f = new File( wholepath );
       if( f.exists() ) return wholepath;
     }
@@ -806,6 +855,7 @@ public class GenericAgent extends AttrBase implements Agent {
     response.startThread();
   }
 
+
   /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
@@ -814,37 +864,50 @@ public class GenericAgent extends AttrBase implements Agent {
    * @return false if the file cannot be found.
    */
   public boolean respondToInterform(Transaction request, URL url, Resolver res){
+    boolean redirection = false;
 
     if (url == null) url = request.requestURL();
     String interformOutput = null;
 
-    Pia.instance().debug(this, "respondToInterform: url is -->" +
-			 url.getFile());
-
-    String file = findInterform( url, false );
-    Pia.instance().debug(this, "The path of interform is -->"+file);
-
-    if( file == null ) {    //send error response
+    if( url != null )
+      Pia.debug(this, "respondToInterform: url is -->" +
+		url.getFile());
+    
+    try{
+      redirection = isRedirection( request, url );
+    }catch(FileNotFoundException e1){
       return false;
-    } 
-
-    if( file.endsWith(".if") ){
-      // If find_interform substituted .../home.if for .../ 
-      // we have to tell what follows that it's an interform.
-      request.assert("interform");
-    }
-    if( request.test("interform") ){
-      InputStream in =  Run.interformFile(this, file, request, res);
-      sendStreamResponse(request, in);
-    } else if( file.endsWith(".cgi") ){
-      // === CGI should be executed with the right stuff in the environment.
-      String msg = "cgi invocation unimplemented.";
-      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
-    } else {
-      crc.pia.agent.Dofs.retrieveFile(file, request, this);
+    }catch(MalformedURLException e2){
+      return false;
     }
 
-    return true;
+    if( redirection ) return true;
+    else{
+      String file = findInterform( url, false );
+      if( file != null )
+	Pia.debug(this, "The path of interform is -->"+file);
+      
+      if( file == null ) {    //send error response
+	return false;
+      } 
+      
+      if( file.endsWith(".if") ){
+	// If find_interform substituted .../home.if for .../ 
+	// we have to tell what follows that it's an interform.
+	request.assert("interform");
+      }
+      if( request.test("interform") ){
+	InputStream in =  Run.interformFile(this, file, request, res);
+	sendStreamResponse(request, in);
+      } else if( file.endsWith(".cgi") ){
+	// === CGI should be executed with the right stuff in the environment.
+	String msg = "cgi invocation unimplemented.";
+	throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+      } else {
+	crc.pia.agent.Dofs.retrieveFile(file, request, this);
+      }
+      return true;
+    }
   }
   
 
