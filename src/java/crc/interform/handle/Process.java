@@ -48,7 +48,7 @@ public class Process extends Handler {
       String id = Form.getFormId(form, ii);
       Run env = Run.environment(ii);
       Table query = (env == null)? null : env.transaction.getParameters();
-      if (query != null && (id == null || query.at("id") != null)) {
+      if (query != null && (id == null || (query.at("id") != null && id.equals((String)query.at("id"))))) {
 	// The form is being processed.  Mark it.
 	form.attr("processed", Token.empty);
 	if (it.hasAttr("copy") && ! form.hasAttr("copy")) {
