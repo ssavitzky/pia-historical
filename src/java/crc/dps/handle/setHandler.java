@@ -39,30 +39,9 @@ public class setHandler extends GenericHandler {
   		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     String name = atts.getAttributeString("name");
-    aContext.setEntityValue(name, content, false);
+    Index.setIndexValue(aContext, name, content);
   }
 
-  /** This does the parse-time dispatching. <p>
-   *
-   *	Action is dispatched (delegated) to a subclass if the string
-   *	being passed to <code>dispatch</code> is either the name of an
-   *	attribute or a period-separated suffix of the tagname. <p>
-   */
-  public Action getActionForNode(ActiveNode n) {
-    ActiveElement e = n.asElement();
-    //if (dispatch(e, "element"))	 return set_element.handle(e);
-    //if (dispatch(e, "local"))	 return set_local.handle(e);
-    //if (dispatch(e, "global")) return set_global.handle(e);
-    //if (dispatch(e, "index"))	 return set_index.handle(e);
-
-    //if (dispatch(e, "pia"))	 return set_pia.handle(e);
-    //if (dispatch(e, "env"))	 return set_env.handle(e);
-    //if (dispatch(e, "agent"))	 return set_agent.handle(e);
-    //if (dispatch(e, "trans"))	 return set_trans.handle(e);
-    //if (dispatch(e, "form"))	 return set_form.handle(e);
-
-    return this;
-  }
    
   /************************************************************************
   ** Constructor:
