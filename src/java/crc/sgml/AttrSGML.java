@@ -156,7 +156,7 @@ public SGML attr(Index  path)
     if (sgml.isText()) appendText(sgml.toText());
     else if (isAttrs()) append((Attrs)sgml);
     else {
-      // unimplemented
+      attr(sgml.contentText().toString(), sgml);
     }
     return this;
   }

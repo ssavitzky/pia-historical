@@ -282,6 +282,38 @@ public SGML attr(Index name)
     return addAttr(name, new TextWrap(value));
   }
 
+  /** Add the contents of a list as attributes. */
+  public void addAttrs(Tokens t) {
+    t = Util.removeSpaces(t);
+    String k = null;
+    SGML v;
+    String tag;
+    for (int i = 0; i < t.nItems(); ++i) {
+      v = t.itemAt(i);
+      tag = v.tag();
+      if (tag == null) {
+	if (k != null) attr(k, v); else append(v);
+      } else if (v.isText()) {
+	if (k != null) attr(k, v); else append(v.toString());
+      } else if (tag.equals("li")) {
+	v = v.content();
+	if (v != null) v = v.simplify();
+	if (k != null) attr(k, v); else append(v);
+      } else if (tag.equals("dt")) {
+	if (i == t.nItems()-1 || "dt".equals(t.itemAt(i+1).tag())) {
+	  // missing dd : goes in as Token.empty
+	  attr(v.toString(), Token.empty);
+	} else {
+	  // otherwise just save the key for the next item.
+	  k = v.toString();
+	}
+      } else {
+	if (k != null) attr(k, v); else append(v);
+      }
+    }
+  }
+
+
   /** Return the number of recorded attributes */
   public int nAttrs() {
     return (attrNames == null)? 0 : attrNames.nItems();

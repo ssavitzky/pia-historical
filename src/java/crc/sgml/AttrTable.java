@@ -130,6 +130,19 @@ public class AttrTable extends Table implements Attrs {
     append(e, lowercase);
   }
 
+  /** Construct from an HTML query string. */
+  public AttrTable(String s) {
+    List l = Util.split(s, '&');
+
+    for (int i = 0; i < l.nItems(); ++i) 
+      append(l.at(i).toString());
+  }
+
+  /** Construct from a Tokens list. */
+  public AttrTable(Tokens t) {
+    addAttrs(t);
+  }
+
   /************************************************************************
   ** Copying:
   ************************************************************************/
@@ -163,5 +176,56 @@ public class AttrTable extends Table implements Attrs {
     }
   }
 
+  public void append(String s) {
+    int i = s.indexOf('=');
+    if (i < 0) {
+      addAttr(s, s);
+    } else {
+      String name = s.substring(0, i);
+      String value= (i == s.length()-1) ? "" : s.substring(i+1);
+      value = Util.urlDecode(value);
+      addAttr(name, value);
+    }
+  }
+
+  public void append(SGML s) {
+    String k = s.contentText().toString();
+    addAttr(k, s);
+  }
+
+
+  /** Add attrs from a Tokens list.  &lt;li&gt; items are quietly removed
+   *	if necessary, and associated with themselves.  &lt;dt&gt; and
+   *	&lt;dd&lt; items are associated in pairs; missing &lt;dd&gt;'s
+   *	go in as Token.empty. */
+  public void addAttrs(Tokens t) {
+    t = Util.removeSpaces(t);
+    String k = null;
+    SGML v;
+    String tag;
+    for (int i = 0; i < t.nItems(); ++i) {
+      v = t.itemAt(i);
+      tag = v.tag();
+      if (tag == null) {
+	if (k != null) attr(k, v); else append(v);
+      } else if (v.isText()) {
+	if (k != null) attr(k, v); else append(v.toString());
+      } else if (tag.equals("li")) {
+	v = v.content();
+	if (v != null) v = v.simplify();
+	if (k != null) attr(k, v); else append(v);
+      } else if (tag.equals("dt")) {
+	if (i == t.nItems()-1 || "dt".equals(t.itemAt(i+1).tag())) {
+	  // missing dd : goes in as Token.empty
+	  attr(v.toString(), Token.empty);
+	} else {
+	  // otherwise just save the key for the next item.
+	  k = v.toString();
+	}
+      } else {
+	if (k != null) attr(k, v); else append(v);
+      }
+    }
+  }
 
 }

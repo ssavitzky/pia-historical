@@ -50,5 +50,8 @@ public interface Attrs extends java.io.Serializable {
   /** Add an attribute with a String value. */
   Attrs addAttr(String name, String value);
 
+  /** Add the contents of a list as attributes. */
+  void addAttrs(Tokens t);
+
   /** === security -- unclear at this point === */
 }

@@ -77,17 +77,22 @@ public class Util {
     }
   }
 
-  /** Convert an SGML object into a List of Association objects.
-   *	whitespace.  Lists have spaces removed. */
+  /** Convert an SGML object into a List of corresponding Association
+   *	objects.  Text is split on whitespace.  Lists have spaces
+   *	removed. */
   public static final List assocItems(SGML it, boolean numeric,
-				     boolean casesens, boolean text) {
+				      boolean casesens, boolean text) {
     return listItems(it).associations(numeric, casesens, text);
   }
 
-  /** Pick an SGML object apart into attribute-value pairs.  Text is
-   *	parsed as a query string.  */
-  public static final Tokens listPairs(SGML it) {
-    return null;// === listPairs unimplemented
+  /** Pick an SGML object apart into attribute-value pairs, which are
+   *	returned as an AttrTable.  Text is parsed as
+   *	a query string.  &lt;DL&gt; elements are handled correctly. */
+  public static AttrTable attrPairs(SGML it) {
+    if (it == null) return new AttrTable();
+    it = it.simplify();
+    if (it.isText()) return new AttrTable(it.toString());
+    return new AttrTable(it.content());
   }
 
   /** Copy a list of Tokens (or the content of an object), with spaces
@@ -360,7 +365,7 @@ public class Util {
 	ss += c;
       }
     }
-    // === unimplemented
-    return s;
+    return ss;
   }
+
 }
