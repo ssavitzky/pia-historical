@@ -31,7 +31,7 @@ public class Get_agent extends crc.interform.Handler {
 
     crc.pia.Agent a = env.getAgent(aname);
     if (a != null) {
-      ii.replaceIt(a.optionAsString(name));
+      ii.replaceIt(a.attr(name));
     } else {
       ii.error(ia, "agent " + aname + " not running");
     }

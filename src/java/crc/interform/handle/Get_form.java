@@ -28,13 +28,13 @@ public class Get_form extends crc.interform.Handler {
     String name = Util.getString(it, "name", null);
 
     Run env = Run.environment(ii);
-    Table form = null; ii.unimplemented(ia); // === env.transaction.form();
+    Table form = env.transaction.getParameters();
     if (form == null) {
       ii.deleteIt();
       return;
     } else if (name == null || "".equals(name)) {
       // return the whole form
-      ii.replaceIt(new Element("dl", form)); 
+      ii.replaceIt(Util.queryResult(it, new crc.sgml.AttrTable(form))); 
     }
     ii.replaceIt(Util.toSGML(form.at(name)));
   }
