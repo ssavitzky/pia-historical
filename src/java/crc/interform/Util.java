@@ -298,8 +298,8 @@ public class Util extends crc.sgml.Util {
 	ii.environment.lookupFile(file, it, write) : null;
     }
     String base = getString(it, "base", "");
-    if (file.startsWith("~")) {
-      file = file.substring(1);
+    if (file.startsWith("~/")) {
+      file = file.substring(2);
       base = home;
     } else if (file.startsWith(fileSep)) {
       base = "";
