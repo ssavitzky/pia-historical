@@ -1,0 +1,140 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+<html><head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>
+</head>
+
+<h2>Text Handler Demo</h2>
+
+The text handler provides a number of ways to transform the textual content of document elements.
+The <a name="text_demo">text handler demo</a> shows how to use the following text
+handler attributes:  <a href="#sort">sort</a>, <a href="#split">split </a>, <a href="#join">join</a>,
+<a href="#pad">pad</a>, <a href="#trim">trim</a>,
+<a href="#eurl">url encode</a>, <a href="#durl">url decode</a>, <a href="b64enc">base64 encode</a>, 
+<a href="#b64dec">base64 decode</a>, <a href="#entenc">entity encode</a>, and
+<a href="#decent">entity decode</a>.
+<p>
+
+<hr>
+<a name="sort"><h3> Sort a List of Names </h3></a>
+<b> Description:</b> sorts the list, Tea Cocoa Coffee Espresso Mocha into alphabetical order.
+Markup is preserved.
+<p>
+<b> Input:  </b>&lt;ul&gt;&lt;text sort&gt;&lt;li&gt;Tea&lt;li&gt;Cocoa&lt;li&gt;Coffee&lt;li&gt;Espresso&lt;li&gt;Mocha&lt;/text&gt;&lt;/ul&gt;
+<p>
+<b> Result: </b><ul><text sort><li>Tea<li>Cocoa<li>Coffee<li>Espresso<li>Mocha</text></ul>
+<p>
+<hr>
+
+<h3> Case Sensitive Sort of a List of Names </h3>
+<b> Description:</b> preserves case sensitivity, while sorting the list: lion tiger Zebra elephant Gorilla in alphabetical order.
+<p>
+<b> Input: </b> &lt;ol&gt;&lt;text sort case&gt;&lt;li&gt;lion&lt;li&gt;tiger&lt;li&gt;Zebra&lt;li&gt;elephant&lt;li&gt;Gorilla&lt;/text&gt;&lt;/ol&gt;
+<p>
+<b>Result: </b><ol><text sort case><li>lion<li>tiger<li>Zebra<li>elephant<li>Gorilla</text></ol>
+<hr>
+
+<h3> Reverse Sort a List of Names </h3>
+<b> Description:</b> sorts the list: gummi bears, jelly beans, chocolate, peanut brittle, in reverse alphabetical order.
+<p>
+<b>Input: </b> &lt;ul&gt;&lt;text sort reverse&gt;&lt;li&gt;gummi bears&lt;li&gt;jelly beans&lt;li&gt;chocolate&lt;li&gt;peanut brittle&lt;/text&gt;&lt;/ul&gt;
+<p>
+<b>Result: </b><ul><text sort reverse><li>gummi bears<li>jelly beans<li>chocolate<li>peanut brittle</text></ul>
+<hr>
+
+<a name="split"><h3> Split Text and Marked Up Nodes</h3></a>
+<b> Description:</b> splits a list of words on whitespace, and also extracts any words that are within html markup.
+<p>
+<b>Input: </b>&lt;text split extract&gt;very very very &lt;em&gt;very&lt;/em&gt; good&lt;/text&gt;
+<p>
+<b>Result: </b><text split extract>very very very <em>very</em> good</text>
+<p>
+<hr>
+
+<a name="join"><h3> Join Path Elements with "/" as Separator </h3></a>
+<b> Description:</b> splits a list of words on whitespace and adds a "/" separator between each word.
+<p>
+<b>Input: </b> &lt;text join sep="/"&gt;/home pgage pia src java&lt;/text&gt;
+<p>
+<b>Result: </b> <text join sep="/">/home pgage pia src java</text>
+<p>
+<hr>
+
+<a name="pad"><h3>Pad and Align Right</h3></a>
+<b>Description: </b>Pad text on the left hand side so that it is right justified.
+<p>
+<b>Input: </b>&lt;text pad align left width=20&gt;cat&lt;/text&gt;
+<p>
+<b>Result: </b><text pad align left width=20>cat</text>
+<p>
+<hr>
+
+<a name="trim"><h3>Trim Spaces from Right and Left</h3></a>
+<b>Description: </b>Trim spaces from the right and left sides of a text string.
+<p>
+<b>Input: </b>&lt;text trim&gt;            &lt;em&gt;     rat    &lt;/em&gt;    &lt;/text&gt;
+<p>
+<b>Result: </b><text trim>            <em>     rat    </em>    </text><br>
+<p>
+<hr>
+
+<a name="eurl"><h3> Encode URL Special Symbols </h3></a>
+<b>Description: </b> Encode special symbols used in URLs, such as "/" and ":" using URL encoding.
+<p>
+<b>Input: </b> <text decode url>http://one;two?three:four@five&six=seven+eight</text>
+<p>
+<b>Result: </b> <text encode url>http://one;two?three:four@five&six=seven+eight</text>
+<p>
+<hr>
+
+<a name="durl"><h3> Decode URL Special Symbols</h3></a>
+<b>Input: </b><text encode url>http://www.dejanews.com/[ST_chan=art]/dnquery.xp?QRY=Faulkner&VW=arts.hum.lit.authors.d_e_f&noreg=1&maxhits=25&format=terse&showsort=score&ST=QS&LNG=ALL</text>
+<p>
+<b>Result: </b><text decode url>http:%2f%2fwww.dejanews.com%2f[ST_chan%3dart]%2fdnquery.xp%3fQRY%3dFaulkner%26VW%3darts.hum.lit.authors.d_e_f%26noreg%3d1%26maxhits%3d25%26format%3dterse%26showsort%3dscore%26ST%3dQS%26LNG%3dALL</text>
+<p>
+<b>Input: </b><text encode url>http%3A%2F%2Fone%3Btwo%3Fthree%3Afour%40five%26amp%3Bsix%3Dseven%2Beight </text>;
+<p>
+<b>Result: </b><text decode url>http%3A%2F%2Fone%3Btwo%3Fthree%3Afour%40five%26amp%3Bsix%3Dseven%2Beight </text>
+<hr>
+
+<a name="b64enc"><h3> base64 Encode Text and Special Symbols</h3></a>
+
+<b>Description: </b> use base64 encoding for text and special symbols: "/:;?@&=+".
+<p>
+<b>Input: </b>&lt;text encode base64&gt;http://one;two?three:four@five&six=seven+eight&lt;/text&gt;
+<p>
+<b>Result: </b><text encode base64>http://one;two?three:four@five&six=seven+eight</text>
+<p>
+<hr>
+
+<a name="b64dec"><h3> Decode base64 Text and Special Symbols</h3></a>
+
+<b>Description: </b>decode base64 encoded text which includes the special symbols: "/:;?@&=+".
+<p>
+<b>Input: </b>&lt;text decode base64&gt;aHR0cDovL29uZTt0d28/dGhyZWU6Zm91ckBmaXZlJnNpeD1zZXZlbitlaWdodA==&lt;/text&gt;
+<p>
+<b>Result: </b><text decode base64>aHR0cDovL29uZTt0d28/dGhyZWU6Zm91ckBmaXZlJnNpeD1zZXZlbitlaWdodA==</text>
+<p>
+<hr>
+
+<a name="entenc"><h3> Entity Encode </h3></a>
+<b>Description: </b>Use entity encoding to preserve an "&" as text in an XML document.
+<p>
+<b>Input: </b>&lt;text encode entity&gt;& Co.&lt;/text&gt;
+<p>
+<b>Result: </b><text encode entity>& Co.</text>
+<p>
+<hr>
+
+<a name="decent"><h3> Entity Decode</h3></a>
+<b>Description: </b>Use entity decoding to decode an "&" that has been preserved as text in an XML document.
+<p>
+<b>Input: </b>&lt;text decode entity&gt;&amp; Co. &lt;/text&gt;
+<p>
+<b>Result: </b><text decode entity>&amp; Co.</text>
+<p>
+<footer>
+
+</body></html>
+

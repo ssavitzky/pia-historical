@@ -1,0 +1,77 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html>
+<head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>
+</head>
+
+
+<h2>Define an Element and an Entity Demo</h2>
+The <a name="define_demo">define element handler</a> shows how to define a simple element and
+a simple entity.
+<p>
+
+<h3> Define and Use an Element </h3>
+<b> Description:</b> Create an element called co_name whose action prints a company name in full
+between two horizontal rules.
+<p>
+<b>Definition: </b> 
+<pre>
+&lt;define element=co_name&gt;
+  &lt;action&gt;
+	&lt;hr&gt;
+	&lt;text pad align center width=80&gt;Ricoh Silicon Valley, Inc.&lt;/text&gt;
+	&lt;hr&gt;
+  &lt;/action&gt;
+&lt;/define&gt;
+</pre>
+<p>
+
+<!-- Actual definition does not print -->
+<define element=co_name>
+  <action>
+	<hr>
+	<text pad align center width=80>Ricoh Silicon Valley, Inc.</text>
+	<hr>
+  </action>
+</define>
+<p>
+
+<b>Input: </b>&lt;co_name/&gt;
+<p>
+<b>Result: </b><co_name/>
+<p>
+<b>attrName: </b> &attributes:co_name;
+<p>
+
+<hr>
+
+<h3> Define and Use an Entity </h3>
+<b> Description:</b> Define the entity "tomorrow", and set it to the value "Saturday".  Show
+how it may be used in an XML document.
+<p>
+<b> Input: </b>&lt;define entity=tomorrow&gt;&lt;value&gt;Saturday&lt;/define&gt;
+<!-- Result is unseen -->
+<define entity=tomorrow><value>Saturday</define>
+<p>
+<b> Input: </b>Tomorrow is: &amptomorrow;
+<p>
+<b> Result:</b>Tomorrow is: &tomorrow;
+<p>
+
+
+<br>
+<br>
+<br>
+
+<footer>
+</body></html>
+
+
+
+
+
+
+
+
+

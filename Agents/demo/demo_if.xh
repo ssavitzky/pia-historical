@@ -1,0 +1,118 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+<html><head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>
+</head>
+<set entity name=title>Demo &amp; Test Agent</set>
+<read interform file="heading.inc" process>
+
+<h2>If Handler Examples:</h2>
+
+The <a name="if_demo">if handler demo</a> shows how to use the if handler.
+<p>
+
+<h3>Define an Entity and Test for its Existence</h3>
+
+<b> Description:</b> defines a variable "tomorrow", sets it to a value, then tests for its 
+existence.
+<p>
+<b>Input: </b> &lt;define entity=tomorrow&gt;&lt;value&gt;Saturday&lt;/define&gt;
+
+<define entity=tomorrow><value>Saturday</define>
+<p>
+<b>Input: </b>
+<pre>
+&lt;if&gt;tomorrow&lt;then&gt;
+	&tomorrow
+&lt;/then&gt;&lt;else&gt;
+	Tomorrow is another day
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+<if>tomorrow<then> 
+	&tomorrow;
+</then><else> 
+	Tomorrow is another day
+</else> 
+</if> 
+<p>
+<hr>
+
+<h3>Using if, elsf, and else</h3>
+
+<b>Description: </b> This gives an example of using if, elsf, and else clauses.  It defines the 
+variable "teeshirt", sets it to "large" then performs a series of tests on this value. The
+return value is the "then" statement associated with the successful test.
+<p>
+
+<b>Input: </b> &lt;define entity=teeshirt&gt;&lt;value&gt;large&lt;/define&gt;
+<p>
+
+<define entity=teeshirt><value>large</define>
+
+<b>Input: </b> 
+<pre>
+&lt;if&gt;&lt;test match="small"&gt; &teeshirt; &lt;/test&gt;
+	&lt;then&gt; Size is small&lt;/then&gt;
+
+&lt;elsf&gt;&lt;test match="medium"&gt; &teeshirt; &lt;/test&gt;
+	&lt;then&gt; Size is medium&lt;/then&gt;
+&lt;/elsf&gt;
+
+&lt;else&gt;
+	Size is large
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+
+<if><test match="small">&teeshirt;</test>
+	<then> Size is small</then>
+<elsf><test match="medium">&teeshirt;</test>
+	<then> Size is medium</then>
+</elsf>
+<else>
+	Size is large
+</else>
+</if>
+<p>
+<hr>
+
+
+<h3>An if Example that Fails</h3>
+
+<b>Description: </b> This example shows an if test that fails, and consequently returns nothing.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;if&gt;&lt;test match="xs"&gt; &teeshirt; &lt;/test&gt;
+	&lt;then&gt; Size is extra small&lt;/then&gt;
+
+&lt;else&gt;
+	&lt;if&gt; &lt;test match="xlarge"&gt; &teeshirt; &lt;/test&gt;
+	&lt;then&gt;Size is extra large&lt;/then&gt;
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+<b>Result: </b> 
+
+<if><test match="xs">&teeshirt;</test>
+	<then> Size is extra small</then>
+<else>
+	<if> <test match="xlarge">&teeshirt;</test>
+	<then>Size is extra large</then>
+</else> 
+</if> 
+<p>
+
+<footer>
+
+</body></html>
+

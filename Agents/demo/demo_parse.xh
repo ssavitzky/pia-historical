@@ -1,0 +1,48 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+<html><head>
+<title>Parse Handler Demo</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<h2>Parse Handler Examples:</h2>
+The <b><a name="parse_demo">parse demo</a></b> shows how to use the parse handler.
+<p>
+
+<h3> Parse Usenet Markup</h3>
+
+This example does not work.<br><br>
+
+<parse usenet>*bold* _italics_</parse>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<a href="/Agency">Agency home page</a>
+<b>URL:</b>
+&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<b>User:</b> &piaUSER;
+
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+<hr>
+<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<b>$Id$</b><br>
+
+</body></html>
+
+
+
+
+
+
+
+
+

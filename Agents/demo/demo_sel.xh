@@ -1,0 +1,115 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+<html><head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>
+</head>
+
+<h2>Select Handler Demo</h2>
+
+The <b><a name="sel_demo">select handler demo</a></b> shows how to use the following select handler attributes: ...
+<p>
+xxx, zzz, : <select sep=", "><from>xxx <em>xx yy zz</em> zzz</from> #text</select>
+<p>
+xxx, zzz, : <select sep=", "><from><b>what the heck</b> <em>xx yy zz</em> zzz</from><child>2</child></select>
+
+<p>
+
+<hr>
+<a name="sel_text"><h3> Select a Text Node </h3></a>
+<b> Description:</b> Returns all text nodes from the parse tree.  In the following example, there 
+is a single text node.  This example returns this node:  Single text node.
+<p>
+<b> Input:      </b>&lt;select&gt;&lt;from&gt;Single text node&lt;/from&gt; #text &lt;/select&gt;
+<p>
+<b> Result:     </b><select><from>Single text node</from> #text </select>
+<hr>
+
+<a name="sel_septext"><h3> Select a Split Text Node </h3></a>
+<b> Description:</b> Returns all text nodes from the parse tree.  In the following example, a 
+separator has been added to separate the nodes when printed out.  This example
+returns the two text nodes: text1 and text2.  It does not return the text from the marked up
+node bold1.
+three nodes:  Single text node.
+<p>
+<b> Input: </b>&lt;select sep=", "&gt;&lt;from&gt;text1 &lt;em&gt;bold1&lt;/em&gt; text2 &lt;/from&gt; #text &lt;/select&gt;
+<p>
+<b> Result:     </b><select sep=", "><from>text1 <em>bold1</em> text2 </from> #text </select>
+
+<hr>
+
+TEST EXAMPLE: <br>
+<b> Result: </b><select sep=", "><from>text1<em>bold1</em>text2</from><child>em</child></select>
+<p>
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<hr>
+
+
+<a name="sel"><h3> Select </h3></a>
+<b> Description:</b> <br>
+<br>
+<b> Input:      </b><br>
+<br>
+
+<b> Result:     </b><select><from></select>
+<footer>
+
+</body></html>
+
