@@ -13,10 +13,10 @@ PACKAGES = \
 	tf \
 	util
 
-PACKAGENAMES = \
+PACKAGENAMES= \
 	crc.ds \
 	crc.interform crc.interform.handle \
-	crc.pia crc.pia.actor \
+	crc.pia crc.pia.agent \
 	crc.sgml \
 	crc.tf \
 	crc.util
