@@ -71,8 +71,9 @@ sub act_on {
 
 	my $class = ref($agent);
 	print "  found agent $name class $class in $path\n" if $main::debugging;
-	
-	$transaction->push($agent);
+	# modified default now request is set to virtual agent machine
+	$transaction->to_machine($agent->machine);
+	#$transaction->push($agent);
     }
 }
 

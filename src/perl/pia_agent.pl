@@ -226,6 +226,25 @@ sub match_criterion {
     return $criteria;
 }
 
+############################################################################
+### machine: agents are associated with a virtual machine which is an
+###  interface for actually getting and sending requests
+### posts  explicitly to an agent get sent to the agents machine
+### ( then to the agent's interform_request method)
+###  other requests can be handled implicitly by the agent
+
+sub  machine{
+    my($self,$machine)=@_;
+    #anagent may use multiple virtual machines for different kind of requests
+    # this machine should be the canonical 1 that  explicit requests are directed to
+    if(! exists $$self{_machine}  && ! $machine){
+	$machine=AGENT_MACHINE->new($self);
+    }	
+    $$self{_machine}=$machine if $machine;
+    return $$self{_machine};
+}
+
+
 
 ############################################################################
 ###
@@ -258,7 +277,8 @@ sub handle{
     my($self, $request, $resolver)=@_;
     $current_resolver = $resolver;
 
-    my $response = $self->respond_to_interform($request);
+## no longer needed, agent machine should call
+##    my $response = $self->respond_to_interform($request);
     return 0 unless defined $response;
     $resolver->push($response);
     return 1;
@@ -555,7 +575,7 @@ sub make_form{
     foreach $widget (@widgets){
 	%attributes=%$widget;
 	$attributes{tag}='input' unless $attributes{tag};
-	$particle=IT::IT->new( $attributes{tag});
+	$particle=IF::IT->new( $attributes{tag});
 	delete $attributes{tag};
 	$particle->push_content($attributes{text}) if exists $attributes{text};
 	delete $attributes{text};
@@ -566,7 +586,7 @@ sub make_form{
 	    $last_hack->push_content($particle);
 	}else{
 	    my $txt=$attributes{'name'};
-	    $element->push_content("$attributes{'name'} :");
+	    $element->push_content("$attributes{'name'} :") unless ($attributes{'type'} eq 'hidden');
 	    $element->push_content($particle);
 	    $last_hack=$particle;
 	}

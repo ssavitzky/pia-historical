@@ -15,7 +15,7 @@ sub new{
     $$self{address}=$address;
     $$self{port}=$port;
     $self->stream($socket);
-    
+    $$self{_bytes_read}=0;
     return $self;
     
 }
@@ -30,6 +30,47 @@ sub close_stream{
     delete $$self{stream};
     
 }
+
+sub slength{
+    my($self,$argument)=@_;
+    $$self{_stream_length}=$argument if $argument;
+    print "stream length $argument"  if $main::debugging;
+    
+    return $$self{_stream_length};
+}
+
+sub has_more_data{
+    my($self,$argument)=@_;
+    return unless exists $$self{stream};
+    my $remaining=$$self{_stream_length} - $$self{_bytes_read};
+    
+    return $remaining;
+    
+}
+#getdata
+$chunksize=1; #defaulttoread
+sub read_chunk{
+    my($self,$content)=@_;
+    my $offset=0 unless $offset;
+   
+    my $foo;
+    my $input=$self->stream;
+    return unless $input;
+    ### eventually be more efficient in use of content string
+    my $max=$chunksize;
+    $max=$$self{_stream_length} - $$self{_bytes_read} if $$self{_stream_length};
+    my $bytes = read($input,$foo,$max,$offset);
+ 
+    $$self{_bytes_read} += $bytes;
+    print "read $bytes bytes\n" if $main::debugging;
+ 
+    $content->push($foo);
+    
+    return $bytes;
+    
+}
+
+
 
 sub send_response{
     my($self,$reply)=@_;
@@ -54,6 +95,12 @@ sub send_response{
 	print {$output} $string;
 	print {$output} $reply->headers_as_string();
 	print {$output} "\n";
+##Temporary
+
+	$control=join(" ",$reply->controls);
+	print {$output} $control;
+	print "sent controls $control";
+	##$reply->content_object->add_hook(sub { shift =~ s/<body>/$controls/i});
 	print {$output} $reply->content;
 	$self->close_stream;
     }

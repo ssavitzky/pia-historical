@@ -37,7 +37,7 @@ sub new {
     print "  type is $type\n"  if defined($type) && $main::debugging;    
     print "  code is $code\n"  if defined($code) && $main::debugging;    
     if(($type eq "POST" || $type eq "PUT") && $self->is_request()){
-	$self->read_content($type);
+##automatically done	$self->read_content($type);
 	$self->compute_form_parameters() if $type eq 'POST';
     }
 
@@ -54,6 +54,7 @@ sub new {
 
 sub initialize_content{
     my($self)=@_;
+    #content source set in from_machine method
     $$self{_content_object}=CONTENT->new;
     $self->content_object->string($$self{_content});
     
@@ -67,13 +68,19 @@ sub content_object{
 #these for backwards compatibility
 sub content{
     my($self,$string)=@_;
-    return $self->content_object->string($string);
+#    $self->read_content unless $self->content_object->is_at_end;
+    
+    return $self->content_object->as_string($string);
 }
 ### Access to components
 
 sub from_machine{
     my($self,$machine)=@_;
-    $$self{_from_machine}=$machine if defined $machine;
+    if( defined $machine){
+	$$self{_from_machine}=$machine;
+	$self->content_object->source($machine);
+	$machine->slength($self->content_length);
+    }
     return $$self{_from_machine};
 }
 
@@ -82,7 +89,7 @@ sub to_machine{
     $$self{_to_machine}=$machine if defined $machine;
 #if we are request, destination is given by url
     if(! $$self{_to_machine} && $self->is_request){
-	my $host=$self->url->host;
+	my $host=$self->url->host if $self->url;
 	$machine=MACHINE->new($host) if $host;
 	$$self{_to_machine}=$machine;
     }
@@ -277,29 +284,32 @@ sub error_response{
 ###	 o  Must handle the case where the content is in a file.
 ###	 o  Should be able to fetch only the <HEAD> of an html file
 ###	 o  Must work if content_length was not provided.
-###
+###      o   actual IO should be done by machine
 sub read_content{
     my($self,$type)=@_;
     
     my $bytes=$self->content_length;
-        
-    my $content;
+    my $flag=1 unless $bytes;
+    
+    my $content="";
     my $from=$self->from_machine();
     return unless defined $from;
+    my $max=1024;
+
+#add form proc hooks
     
-    my $input=$from->stream();
-    return unless defined $input;
     my $bytes_read=0;
-	while($bytes_read < $bytes){
-	    my $new_bytes=read($input,$content,$bytes-$bytes_read,$bytes_read);
+	while($flag || ($bytes_read < $bytes)){
+	    $max=$bytes-$bytes_read unless $flag;
+	    my $new_bytes=$from->read_chunk(\$content,$max);
+	    $self->content_object->push($content);
+	    
 	    $bytes_read+=$new_bytes;
 	
 	    last unless defined $new_bytes;
 	}
     print "number of bytes = $bytes_read \n" if $main::debugging;
     
-    $self->content($content);
-
     return $self;
 }    
 
@@ -318,9 +328,6 @@ sub title {
     return unless $type;
     return $ttl unless $type =~ m:text/html:;
 
-    $self->read_content();	# === hopefully this is idempotent!
-				# === really ought to just read header.
-
     my $page = $self->content();
 
     if ($page =~ m:<title>(.*)</title>:ig) { $ttl = $1; }
@@ -328,57 +335,28 @@ sub title {
     return $ttl;
 }
 
+### add controls (buttons,icons,etc.)for agents to this response
+# actual final form determine by machine
+sub add_control{
+    my($self,$text)=@_;
+    $$self{_controls}=[] unless exists $$self{_controls};
+    my $controls=$$self{_controls};
+    push(@{$controls},$text);
+}
+
+sub controls{
+    my($self,$argument)=@_;
+    return @{$$self{_controls}};
+    
+}
 ###### response->add_at_front($text)
 ###
 ###	Add $text at the front of an HTML page, just after <body>
-###
+### deprecated...use controls
 sub add_at_front {
-    my ($self, $text) = @_;
-    return unless $self->is_response();
-    my $flag = '<!-- PIA front -->';
-
-    my $type = $self->content_type();
-    return unless $type && $type =~ m:text/html:;
-
-    $self->read_content();	# === hopefully this is idempotent!
-    if ($self->{'_content'} !~ /$flag/) {
-	if ($self->{'_content'} =~ /<body[^>]*>/is) {
-	    $self->{'_content'} =~ s/(<body[^>]*>)/$1$flag/is;
-	} elsif ($self->{'_content'} !~ /<head/i) {
-	    $self->{'_content'} = $flag . $self->{'_content'};
-	} else {
-	    return;
-	}
-    }
-    $self->{'_content'} =~ s/$flag/$text$flag/;
+    my($self,$argument)=@_;
+    $self->add_control($argument);
 }
-
-
-###### response->add_at_end($text)
-###
-###	Add $text at the end of an HTML page, just before </body>
-###
-sub add_at_end {
-    my ($self, $text) = @_;
-    return unless $self->is_response();
-    my $flag = '<!-- PIA end -->';
-
-    my $type = $self->content_type();
-    return unless $type && $type =~ m:text/html:;
-
-    $self->read_content();	# === hopefully this is idempotent!
-    if ($self->{'_content'} !~ /$flag/) {
-	if ($self->{'_content'} =~ /(<\/body)/i) {
-	    $self->{'_content'} =~ s/(<\/body)/$flag$1/i;
-	} elsif ($self->{'_content'} !~ /<head/i) {
-	    $self->{'_content'} = $self->{'_content'} . $flag;
-	} else {
-	    return;
-	}
-    }
-    $self->{'_content'} =~ s/$flag/$text$flag/;
-}
-
 
 # utility function to turn post content into hash
 
