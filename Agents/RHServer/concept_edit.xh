@@ -10,12 +10,122 @@
 
 <h1>Readers' Helper Concept Editor</h1>
 
-To be continued ...
+&urlQuery;
 
+<FORM METHOD="POST" ACTION="/RHServer/concept_edit">
+<set name=cpt-name><get-concept-field name=&FORM:cmenu; field="rhconcept-name"></get-concept-field></set>
+<set name=cpt-id><get-concept-field name=&FORM:cmenu; field="rhconcept-id"></get-concept-field></set>
+<set name=cpt-shortname><get-concept-field name=&FORM:cmenu; field="rhconcept-shortname"></get-concept-field></set>
+<set name=cpt-prior><get-concept-field name=&FORM:cmenu; field="rhconcept-prior"></get-concept-field></set>
+<set name=cpt-active><get-concept-field name=&FORM:cmenu; field="rhconcept-active"></get-concept-field></set>
+
+<TABLE COLS=2 WIDTH="66%" NOSAVE>
+<TR>
+<TD ALIGN=right WIDTH=60>Name:</TD>
+<TD><input type=text name="c-name-input" value=&cpt-name; size=40></TD>
+</TR>
+
+<TR>
+<TD ALIGN=right WIDTH=60>ID:</TD>
+<TD><input type=text name="c-id-input" value=&cpt-id; size=40></TD>
+</TR>
+
+<TR>
+<TD ALIGN=right WIDTH=60>Short Name:</TD>
+<TD><input type=text name="c-short-input" value=&cpt-shortname; size=40></TD>
+</TR>
+
+<TR>
+<TD ALIGN=right WIDTH=60>Prior:</TD>
+<TD><input type=text name="c-prior-input" value=&cpt-prior; size=20></TD>
+</TR>
+
+<TR>
+<TD ALIGN=right WIDTH=60>Active:</TD>
+<TD><input type=text name="c-active-input" value=&cpt-active; size=20></TD>
+</TR>
+</TABLE>
 <p>
+<HR>
+<TABLE COLS=3 WIDTH="80%" NOSAVE>
+<TR>
+<TH ALIGN=left>Phrase</TH>
+<TH></TH>
+<TH ALIGN=left>Concept Phrases</TH>
+</TR>
+<TR>
+<TD VALIGN=top><input type=text name="c-phrase-input" size=20></TD>
+<TD>
+<TABLE COLS=1 WIDTH="100%" NOSAVE>
+<TR>
+<TD><input type="submit" name="c-addphrase" value=" Add >> "></TD>
+</TR>
+<TR>
+<TD><input type="submit" name="c-removephrase" value="<< Remove"></TD>
+</TR>
+</TABLE>
+</TD>
+<TD>
+<SELECT NAME="c-allphrases" SIZE=10 WIDTH=200>
+	<get-all-phrases concept=&FORM:cmenu;></get-all-phrases>
+</SELECT>
+</TD>
+</TR>
+</TABLE>
+
+<HR>
 <p>
+<!-- ADDED -->
+<TABLE CELLSPACING=5 CELLPADDING=2 COLS=3 WIDTH="80%" HEIGHT="33%" NOSAVE>
+<TR>
+<TH ALIGN=left>Existing Groups</TH>
+<TH></TH>
+<TH ALIGN=left>Add Concept to these Groups</TH>
+</TR>
+<TR> 
+<TD>
+<SELECT NAME="c-allgroups" SIZE=10 WIDTH=160>
+	<get-all-groups></get-all-groups>
+</SELECT>
+</TD>
+<TD>
+	<TABLE COLS=1 ROWS=2 WIDTH=40>
+		<TR><TD><input type="submit" name="c-addgroup" value=" Add >> "></TD> </TR>
+		<TR><TD><input type="submit" name="c-removegroup" value="<< Remove"></TD></TR>
+	</TABLE>
+</TD>
+<TD>
 
+<SELECT NAME="c-addgroups" SIZE=10 WIDTH=160>
+	<if>&FORM:ConceptEdit;<then>
+		<!-- empty -->
+	</then>
+	</if>
+	<if>&FORM:Remove;<then>
+		<remove-concept-group concept=&FORM:cmenu; group=&FORM:c-addgroups;></remove-concept-group>
+	</then>
+	</if>
+	<if>&FORM:Add;<then>
+		<add-concept-group concept=&FORM:cmenu; group=&FORM:c-allgroups;></add-concept-group>
 
+	</then>
+	</if>
+	<!-- This happens regardless -->
+	<get-all-concept-groups concept=&FORM:cmenu;></get-all-concept-groups>
+</SELECT>
+</TD>
+</TR>
+</TABLE>
+
+<!-- ADDED -->
+
+<HR>
+<CENTER>
+	<input type="submit" name="ConceptSubmit" value="Submit"> 
+	<input type="submit" name="ConceptReset" value="Reset"> 
+</CENTER>
+
+</FORM>
 <footer />
 </BODY>
 </HTML>

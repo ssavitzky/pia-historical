@@ -11,6 +11,8 @@
 
 <set name="AGENT:groupName">""</set>
 
+<set name="AGENT:conceptName">""</set>
+
 
 <set name="AGENT:all-concepts">
 	<connect src="/RHServer/pia_concepts.xml" entity=datacon></connect>

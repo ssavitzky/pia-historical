@@ -11,23 +11,43 @@
 
 &urlQuery;
 
-<FORM METHOD="POST" ACTION="/RHServer/group_edit">
-
 <if>&FORM:DeleteGroup;<then>
+	<FORM METHOD="POST" ACTION="/RHServer/groups">
 	<if>&FORM:gmenu;<then>
-		You have selected &FORM:gmenu; for deletion. It will now
-		be deleted from the groups.  I will ask for confirmation
-		before deleting, when I figure out how to do that.
+		<b>Group to be deleted is:  &FORM:gmenu; </b><input type="submit" name=deletegroup value="Delete">
 	</then>
+	<else>
+		<b>No group was selected for deletion</b>
+	</else>
 	</if>
+	</FORM>
 </then>
 <else>
 	<if>&FORM:AddGroup;<then>
-		<!-- Add a group name input -->
-		<input type="submit" name=addgroupname value="Group name:">
-		<input type=text name="addgroupname" size=40>
+		<FORM METHOD="POST" ACTION="/RHServer/groups">
+			<!-- Add a group name input -->
+			<TABLE CELLSPACING=5 CELLPADDING=2 COLS=1 ROWS=2  NOSAVE >
+			<TR>
+			<TH ALIGN=LEFT>Select a Concept</TH>
+			</TR>			
+			<TR>
+			<TD ALIGN=LEFT>
+			<SELECT NAME="alladdconcepts" SIZE=10>
+				<get-all-concepts></get-all-concepts>
+			</SELECT>
+			</TD>
+			</TR>
+			<TR>
+			<TD ALIGN=LEFT>
+			<input type="submit" name=addgroupname value="Add Group Name:"><input type=text name="addgroupname" size=40>
+			</TD>
+			</TR>
+
+			</TABLE>
+		</FORM>
 	</then>
 	<else> 
+		<FORM METHOD="POST" ACTION="/RHServer/group_edit">
 		<if>&FORM:EditGroup;<then>
 			<if>&FORM:gmenu;</then>
 				<save-group-name>&FORM:gmenu;</save-group-name>
@@ -84,11 +104,12 @@
 		<input type="submit" name="GroupReset" value="Reset"> 
 		</CENTER>
 </if>
-</else>
-</if>
-</else>
-</if>
 </form>
+</else>
+</if>
+</else>
+</if>
+
 <footer />
 </BODY>
 </HTML>
