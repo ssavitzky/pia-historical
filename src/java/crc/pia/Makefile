@@ -9,12 +9,11 @@ FILES = \
 	Agent.java \
 	ByteStreamContent.java \
 	ContentFactory.java \
-	GenAgent.java \
+	GenericAgent.java \
 	Logger.java \
 	Pia.java \
 	PiaInitException.java \
-	PiaProperties.java \
-	PiaRunEx.java \
+	PiaRuntimeException.java \
 	FormContent.java 
 
 include $(MAKEDIR)/file.make
