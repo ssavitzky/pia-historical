@@ -693,13 +693,17 @@ public class Pia {
 
     resolver.registerAgent( agency );
 
-    System.err.println("Created agency with url = <" + url + ">");
-
     try{
       accepter = new Accepter( port );
     }catch(IOException e){
-      errSys( e, "Can not create Accepter" );
+      System.out.println("Can not create Accepter: " + e.getMessage());
+      System.out.println(  "  Try using a different port number:\n" 
+			 + "    pia -port nnnn\n"
+			 + "  8000+your user ID is a good choice.");
+      System.exit(1);
     }
+
+    System.err.println("Created agency with url = <" + url + ">");
 
   }
 
