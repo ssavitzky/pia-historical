@@ -55,6 +55,7 @@ for($con=1;;$con++) {
 
 sub read{
  $_=<STDIN>;
+ print FIZZLE $_;
  ($method, $url, $proto) = split;
  if ($proto) {
      while (<STDIN>) {
