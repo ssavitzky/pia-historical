@@ -17,11 +17,25 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Hole:</b> Functional programming tools. <br>
+       See <a href="http://www.python.org/doc/tut/functional.html">Python</a>
+       (1998-08-05) <br>
+
+  <li> <b>Hole:</b> Namespace changes needed. <br>
+       Tagset wants to extend Namespace.  Index -&gt; namespace. 
+       (1998-08-05) <br>
+
+  <li> <b>Hole:</b> Major changes needed for new DOM. <br>
+       
+       (1998-08-05) <br>
+
+  <li> <b>Bug:</b> need to give an error on missing handlers. <br>
+       (1998-08-04) <br>
+
   <li> <b>Check:</b> entity-reference termination in InterForms <br>
        The old parser accepts entity references without a closing semicolon.
        The new one doesn't.
-       (1998-07-23) <br>
-       
+       (1998-07-23) <br>       
 
   <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <br>
        Not clear at this point exactly what use to make of this.
@@ -36,7 +50,8 @@ See also:
        Need to assign separate actions to PI's and declarations by name.
        As a desirable side effect, this will allow loading tagsets and
        interpreting DTD's.  Strictly speaking the name is the name of an
-       application, not of an operation.
+       application, not of an operation.  PI's have to be handled <em>even
+       when passively copying</em>!
        (1998-07-15)<br>
        <p>
 
