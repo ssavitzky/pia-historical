@@ -169,6 +169,35 @@ public class Actor extends Element {
 
 
   /************************************************************************
+  ** Documentation:
+  ************************************************************************/
+
+  /** A description in regular-expression notation of the syntax 
+   *	of an element that invokes the handled Actor. */
+  public String syntax() {
+    if (handler != null) return handler.syntax();
+    return attrString("syntax");
+  }
+
+  /** A brief narrative description of the semantics of the handled Actor. */
+  public String dscr() {
+    if (handler != null) return handler.dscr();
+    return attrString("dscr");
+  } 
+
+  /** Any note associated with the handled Actor. */
+  public String note() {
+    if (handler != null) return handler.note();
+    return attrString("note");
+  }
+
+  /** Any additional documentation text associated with the handled Actor. */
+  public String doc() {
+    if (handler != null) return handler.doc();
+    return attrString("doc");
+  }
+
+  /************************************************************************
   ** Semantic Handle:
   ************************************************************************/
 

@@ -189,6 +189,7 @@ public class Util extends crc.sgml.Util {
    *	attributes.
    */
   public static SGML attrsResult(SGML it, Attrs anAttrs) {
+    if (anAttrs == null) return null;
     java.util.Enumeration e = anAttrs.attrs();
 
     if (it.hasAttr("tag")) {

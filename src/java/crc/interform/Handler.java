@@ -71,6 +71,31 @@ public class Handler {
 
 
   /************************************************************************
+  ** Documentation:
+  ************************************************************************/
+
+  /** A description in regular-expression notation of the syntax 
+   *	of an element that invokes the handled Actor. */
+  public String syntax() {
+    return null;
+  }
+
+  /** A brief narrative description of the semantics of the handled Actor. */
+  public String dscr() {
+    return null;
+  } 
+
+  /** Any note associated with the handled Actor. */
+  public String note() {
+    return null;
+  }
+
+  /** Any additional documentation text associated with the handled Actor. */
+  public String doc() {
+    return null;
+  }
+
+  /************************************************************************
   ** Utilities:
   ************************************************************************/
 
