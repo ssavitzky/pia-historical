@@ -197,12 +197,6 @@ public class Interp extends State {
     }
   }
 
-  /** Push a token onto the parse stack. */
-  public final void stackToken(SGML t) {
-    it = t;
-    pushState();
-  }
-
   /************************************************************************
   ** Access to Variables (entities):
   ************************************************************************/
@@ -921,6 +915,12 @@ public class Interp extends State {
   public final void message(String message) {
     if (debug) message = "\n" + message;
     if (debug || ! quiet()) System.err.println(message);
+  }
+
+  /** Display a message to the user if we are being verbose. */
+  public final void verbose(String message) {
+    if (debug) message = "\n" + message;
+    if (debug || verbose()) System.err.println(message);
   }
 
   /** Generate an error message and display it to the user.  We need to know 
