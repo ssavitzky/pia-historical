@@ -20,7 +20,8 @@
 
 <if><get form name=agent>
 <then>
-  <h3><agent-remove><get form name=agent></agent-remove> removed<h3>
+  <set name=agent><get form name=agent></set>
+  <h3><agent-remove name="&agent;"> removed<h3>
 </then><else>
   <h2> Agent removal form</h2>
 </else></if>
