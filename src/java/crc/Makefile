@@ -16,11 +16,6 @@ PACKAGES = \
 
 include $(TOPDIR)/makefiles/package.make
 
-# === Is this necessary? (steve)
-javadoc::
-	rm -f ../../CRC/WWW/User/api/*.html
-	javadoc -d ../../CRC/WWW/User/api \
-		crc.pia 
 
 
 
