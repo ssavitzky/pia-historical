@@ -8,7 +8,7 @@ import java.io.*;
 
 /**
  * Mutable node collection.  This list could be used
- * to return accmulated links in a document.  Each node
+ * to return accumulated links in a document.  Each node
  * in this collection bears no relation to each other.
  */
 
@@ -16,15 +16,17 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
 
   public LinkedNodeList()
   {
-    nodeCollection = new LinkedList();
   }
+
+  /**
+   * Copy another NodeList
+   */
   public LinkedNodeList(NodeList list)throws NullPointerException
   {
     if( list == null ){
       String err = ("Illegal list.");
       throw new NullPointerException(err);
     }
-    nodeCollection = new LinkedList();
     initialize( list );
   }
 
@@ -37,11 +39,11 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
   public Node replace(long index,Node replacedNode) 
        throws NoSuchNodeException
   { 
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
-    return (Node)nodeCollection.setElementAt(replacedNode, (int)index);
+    return (Node)setElementAt(replacedNode, (int)index);
   }
 
 
@@ -56,13 +58,15 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
        throws NoSuchNodeException
   {
     if( index == 0 ){
-      nodeCollection.insertElementAt( newNode, 0 );
+      insertElementAt( newNode, 0 );
       return;
     }
-    if( index == nodeCollection.size() ){
-      nodeCollection.addElement( newNode );
+    if( index == size() ){
+      addElement( newNode );
       return;
     } 
+    
+    insertElementAt( newNode, (int)index );
   }
 
 
@@ -76,14 +80,17 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
   public Node remove(long index)
        throws NoSuchNodeException
   {
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
     
-    return (Node)nodeCollection.removeElementAt( (int)index );
+    return (Node)removeElementAt( (int)index );
   }
 
+  /**
+   * @return a LinkedNodeListEnumerator
+   */
   public NodeEnumerator getEnumerator()
   {
     return new LinkedNodeListEnumerator( this );
@@ -96,11 +103,11 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
   public Node item(long index)
        throws NoSuchNodeException
   {
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
-    return (Node)nodeCollection.elementAt( (int)index ); 
+    return (Node)elementAt( (int)index ); 
   }
 
 
@@ -109,17 +116,19 @@ public class LinkedNodeList extends LinkedList implements EditableNodeList {
    *node indices is 0 to getLength()-1 inclusive. 
    */
   public long getLength(){
-    return nodeCollection.size();
+    return size();
   }
 
-
+  /**
+   * Copy another node list.
+   */
   private void initialize( NodeList list ){
     NodeEnumerator e = list.getEnumerator();
 
     Node n = null;
     for(n=e.getFirst(); n != null; n=e.getNext())
-      nodeCollection.addElement( n );
+      addElement( n );
   }
   
-  protected LinkedList nodeCollection;
 }
+

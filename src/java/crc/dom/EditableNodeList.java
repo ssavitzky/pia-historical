@@ -3,6 +3,10 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 package crc.dom;
 
+/**
+ *EditableNodeList is a subtype of NodeList that adds operations that modify the list
+ *of nodes, such as adding, deleting and replacing Node instances in the list. 
+ */
 public interface EditableNodeList extends NodeList {
 
   /**

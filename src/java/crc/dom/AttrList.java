@@ -6,21 +6,41 @@ package crc.dom;
 
 import java.io.*;
 
+/**
+ * Implementing Attribute list.
+ *
+ */
 public class AttrList extends AbstractNamedList implements AttributeList {
 
   public AttrList(){
   }
+
+  /**
+   * Copy another Attribute list.
+   * Deep copy.
+   */
   public AttrList(AttributeList l){
     if( l != null )
       initialize( l );
   }
 
+  /**
+   * Returns the attribute specified by name.
+   * @return attribute if exists otherwise null.
+   */ 
   public Attribute getAttribute(String name)
   {
     Attribute n = (Attribute)getItem( name );
     return ( n != null ) ? (Attribute)n : null;
   }
 
+  /**
+   * Maps the name to the specified attribute.
+   * @param name Name associated with a given attribute.
+   * @param attr Attribute associated with the name.
+   * @Return The previous attribute of the specified name, or null if it did not
+   * have one.
+   */
   public Attribute setAttribute(String name, Attribute attr)
   { 
     if( name == null || attr == null ) return null;
@@ -28,6 +48,9 @@ public class AttrList extends AbstractNamedList implements AttributeList {
     return ( n != null ) ? (Attribute)n : null;
   }
   
+  /**
+   * Remove attribute specified by name.
+   */
   public Attribute remove(String name) 
        throws NoSuchNodeException
   {
@@ -39,6 +62,9 @@ public class AttrList extends AbstractNamedList implements AttributeList {
     }
   }
        
+  /**
+   * return attribute at the indicated index.
+   */
   public Node item(long index)
        throws NoSuchNodeException
   {
@@ -50,7 +76,12 @@ public class AttrList extends AbstractNamedList implements AttributeList {
     }
   }
   
-
+  
+  /**
+   * Deep copy of all attributes in the given list.
+   * If an attribute is foreign -- not in crc/dom, just
+   * refers to it.
+   */
   protected void initialize(AttributeList l){
     if( l == null ) return;
     long i = 0;
@@ -64,12 +95,16 @@ public class AttrList extends AbstractNamedList implements AttributeList {
 	else
 	  // If it is a foreign attribute, do nothing but refers to it
 	  setItem( attr.getName(), attr );
+
 	attr = (Attribute)l.item( ++i );  
       }
     }catch(NoSuchNodeException e){
     }
   }
 
+  /**
+   * Size of the attribute list.
+   */
   public long getLength(){ return getItemListLength();}
 }
 

@@ -15,6 +15,8 @@ public class BasicComment extends AbstractNode implements Comment {
 
   public BasicComment(){ comment = ""; }
 
+  public BasicComment(String c){ comment = c; }
+
   public BasicComment(BasicComment bc){
     if( bc != null ){
       setParent( null );
