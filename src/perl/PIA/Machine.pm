@@ -179,7 +179,7 @@ sub get_request {
     }
 
     $ua->agent($trans->request->user_agent .
-	       ' 9PIA/1.0; ' . $user_agent_id . ')');
+	       ' (PIA/1.0; ' . $user_agent_id . ')');
 
     ## Some excessively-clever servers notice that we're proxied.
     ##	 This may not be fixable.
