@@ -936,7 +936,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    * Set options with a hash table (typically a form).
    *	Ignore the <code>agent</code> option, which comes from the fact
    *	that most install forms use it in place of <code>name</code>.
-   *	The Agency will accept either.
+   *	=== eventually need agent= path+name ===
    */
   public void parseOptions(Table hash){
     if (hash == null) return;

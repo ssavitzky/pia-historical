@@ -25,7 +25,7 @@ public class Logger {
     protected RandomAccessFile  log      = null ;
     protected RandomAccessFile  errlog   = null ;
     protected RandomAccessFile  trace    = null ;
-    protected Pia               agency   = null ;
+    protected Pia               pia   = null ;
     protected String            logdir   = "logs" ;
   //  protected int               bufsize  = 8192;
     protected int               bufsize  = 52;
@@ -144,9 +144,9 @@ public class Logger {
      */
 
     protected String getFileName (String def) {
-	    File root_dir = agency.usrRootDir();
+	    File root_dir = pia.usrRootDir();
 	    if ( root_dir == null ) {
-		String msg = "unable to get the agency root directory\n";
+		String msg = "unable to get the pia root directory\n";
 		throw new PiaRuntimeException (this
 						, "getFileName"
 						, msg) ;
@@ -247,8 +247,8 @@ public class Logger {
      * @param server The server to which thiss logger should initialize.
      */
 
-    public void initialize (Pia agency) {
-	this.agency = agency ;
+    public void initialize (Pia pia) {
+	this.pia = pia ;
 	// Open the various logs:
 	openLogFile () ;
 	openErrorLogFile() ;

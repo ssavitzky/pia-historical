@@ -575,7 +575,7 @@ public class  HTTPRequest extends Transaction {
 
 
   /** 
-   * Serves a request not directed at the agency.
+   * Serves a request not directed at an agent
    */
   public void defaultHandle( Resolver resolver ){
     handleRequest(  resolver);

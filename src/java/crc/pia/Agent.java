@@ -28,7 +28,7 @@ import crc.tf.UnknownNameException;
  * An agent is an object which maintains state and context and corresponds
  *	to a URL in the PIA server. 
  *
- * <p> Agents can receive requests directly (http://Agency/AGENT_NAME/...);
+ * <p> Agents can receive requests directly (http://pia/AGENT_NAME/...);
  *	they can also operate on other transactions.  Direct requests are
  *	handled by the <code>respond</code> methods.  To operate on other
  *	transactions, Agents register with the resolver a set of criteria for
