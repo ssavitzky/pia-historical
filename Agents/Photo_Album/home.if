@@ -1,31 +1,64 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Photo Album </title>
+<title>Digital Photo Album </title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body>
-<h1>&agentName; home page</h1>
+</head><body bgcolor="#ffffff" link="#ff0000">
+
 <set entity  name=latest><read file=".latest"></set>
-<table align=center>
-<TR><TD><a href="http://&piaHOST;:&piaPORT;/&agentName;/latest.if">
-<if><agent-running name="Logo"><then><img src="/Photos/&latest;/r0100001.small.gif"  height=32 width=32 alt=new><br></then></if>
-Newest Photos</a>
-<TD>
-<a href="http://&piaHOST;:&piaPORT;/&agentName;/catalog.if">
-<if><agent-running name="Logo"><then><img src="/Logo/album.gif"  height=32 width=32 alt=album><br></then></if>
-Album</a>
-<TD>
-<a href="http://&piaHOST;:&piaPORT;/&agentName;/slide_show.if">
-<if><agent-running name="Logo"><then><img src="/Logo/slides.gif"  height=32 width=32 alt=slides><br></then></if>
-Slideshows</a>
-<TR><TD><TD><if><agent-running name="Logo"><then><img src="/Logo/camera.gif"  height=32 width=32 alt=camera><br></then></if>
-Digital Camera<br>
-Photo Album
-<TR><TD>
-<a href="/Photos/">All Photos</a>
-<!-- should test for CD-R/RW -->
-<TD><a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
-<TD><a href="http://&piaHOST;:&piaPORT;/&agentName;/help.if">
-<if><agent-running name="Logo"><then><img src="/Logo/help.gif"  height=32 width=32 alt=help><br></then></if>Help</a>
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48></a>
+<th width=170 nowrap>
+<th width=170 align=left nowrap nobr>
+    <if><agent-running name=Logo><then><img src="/Logo/pia45.gif"></then>
+    </if></tr>
+<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=510></tr>
+<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/silicon-valley.gif"
+	border=0 width=170 height=21></a>
+    <th>
+    <th align=left><font face=helvetica>Photo Album</font>
+<tr><th width=170>
+    <td>&nbsp;
+<TR><th>
+    <TD align=right height=32><td>
+        <a href="/&agentName;/latest.if">
+        <if><agent-running name="Photos">
+        <then><img src="/Photos/&latest;/r0100001.small.gif"
+                   height=32 width=32 border=0></then></if></a>
+    <xtd><a href="/&agentName;/latest.if">Newest Photos</a>
+<TR><th rowspan=3>
+        <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99 border=0>
+    <TD align=right><td>
+        <a href="/&agentName;/catalog.if">
+        <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
+    <xtd><a href="/&agentName;/catalog.if">Captioned Photos</a>
+
+<TR><TD align=right><td>
+        <a href="/&agentName;/catalog.if">
+        <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
+    <TxD><a href="/Photos/">All Photos</a>
+
+<TR>
+    <TD align=right><td>
+        <a href="/&agentName;/slide_show.if">
+        <img src="/Photo_Album/slides.gif"  height=32 width=32 border=0></a>
+    <xtd><a href="/&agentName;/slide_show.if">Slideshows</a>
+
+<tr><th>
+    <TD align=right><td>
+        <a href="/&agentName;/help.if">
+        <img src="/Photo_Album/help.gif"  height=32 width=32 border=0></a>
+    <xtd><a href="/&agentName;/help.if">Help</a>
+
+<tr><th>
+    <td align=right><td>
+        <a href="http://cdrw/CDRW/publish_photos.if">
+        <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
+    <!-- should test for CD-R/RW -->
+    <xTD><a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
 </table>  
 <p>
 <hr>
