@@ -110,7 +110,7 @@ public class Features{
    * @return the value associated with a named feature. 
    */
 
-  public Object getFeature( String featureName ){
+  public Object feature( String featureName ){
     Object val ;
 
     val = featureTable.get( feature );
