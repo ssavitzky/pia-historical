@@ -18,16 +18,18 @@ FILES = \
 
 include $(TOPDIR)/makefiles/file.make
 
-Actor.class: Token.class Tokens.class
+Actor.class: Token.java Tokens.java SGML.java
 
-Interp.java: Actor.class Input.class Token.class Tokens.class
+Interp.class: Actor.java Input.java Token.java Tokens.java SGML.java
 
-Tagset.class: Token.class
+Parser.class: Input.java Token.java Tokens.java SGML.java
 
-Text.class: Token.class
+Tagset.class: Token.java SGML.java
 
-Token.class: Tokens.class SGML.class ../ds/List.class ../ds/Table.class
+Text.class: Token.java SGML.java
 
-Tokens.class: SGML.class
+Token.class: Tokens.java SGML.java ../ds/List.java ../ds/Table.java
 
-Text.class: SGML.class
+Tokens.class: SGML.java 
+
+Text.class: SGML.java
