@@ -1,0 +1,17 @@
+server.pl &
+java crc.test.pia.T_machine -1 -noproxy input/get_machine.txt
+killserver.pl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
