@@ -87,7 +87,10 @@ public class Dofs extends GenericAgent {
 	return;
       }
       try {
-	FileAccess.retrieveFile(urlToFilename(url), request, this);
+	if( !request.method().equalsIgnoreCase("put") )
+	  FileAccess.retrieveFile(urlToFilename(url), request, this);
+	else
+	  FileAccess.writeFile(urlToFilename(url), request, this);
       }catch(PiaRuntimeException e){
 	throw e;
       }
