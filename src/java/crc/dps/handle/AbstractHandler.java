@@ -45,7 +45,8 @@ implements Handler {
    *	to process the node in the ``usual'' way.
    */
   public int action(Input in, Processor p) {
-    return (in.hasActiveChildren() || in.hasActiveAttributes())
+    return (in.hasActiveChildren() || in.hasActiveAttributes()
+	    || in.getNode().getNodeType() == NodeType.ENTITY)
       ? 1 : -1;
   }
 
@@ -115,6 +116,16 @@ implements Handler {
    */
   public Action getActionForNode(Node n) {
     return this;
+  }
+
+  /** Called from <code>getActionForNode</code> to determine whether
+   *	dispatching should be done.  It returns true if the given Element
+   *	has the given <code>name</code> as either an attribute name or
+   *	a period-separated suffix of its tagname.
+   */
+  protected boolean dispatch(ActiveElement e, String name) {
+    return e.hasTrueAttribute(name)
+      || e.getTagName().endsWith("."+name);
   }
 
   /** If <code>true</code>, the content is expanded.
