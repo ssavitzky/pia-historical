@@ -47,8 +47,8 @@ public class Util extends crc.sgml.Util {
         m += 9; y -= 1;
     }
     long c = y/100; long ya = y % 100;
-    return((146097L * c) / 4 + (1461L * ya) / 4 +
-             (153L * m + 2) / 5 + d + 1721119L);
+    return((146097L * c) / 4L + (1461L * ya) / 4L +
+             (153L * m + 2L) / 5L + d + 1721119L);
   }
 
   /** Compute Julian day from a Date object. */
@@ -59,7 +59,7 @@ public class Util extends crc.sgml.Util {
   /** Compute day of the week (Sunday = 0) from a Julian day. */
   public static int getWeekday(Date aDate) {
     // === should be +1; indicates an arithmetic problem in julianDay ===
-    return (int)(julianDay(aDate) -2) % 7;
+    return (int)((julianDay(aDate) +2L) % 7L);
   }
 
   /** Compute day of the month from a Julian day. */
