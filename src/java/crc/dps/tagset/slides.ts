@@ -1,20 +1,39 @@
 <!doctype tagset system "tagset.dtd">
 <tagset name=slides parent=xhtml recursive>
 <doc>
- 
-  Tags Defined:
+<p> This tagset is used for generating ``slide'' presentations from ordinary
+    HTML documents.  The original document contains &lt;slide&gt; elements,
+    each of which may contain an &lt;h2&gt; element as its caption along with
+    some text.  The document is readable as-is.
 
-	&lt;slide&gt;<h2>slide caption</h2> content &lt;/slide&gt;
+<p> This tagset reformats each ``slide'' as a table with suitable decoration,
+    making it look like a slide in a PowerPoint presentation.  Each slide
+    contains forward, backward, and table-of-contents links. 
+
+<p> Tags Defined:
+<ul>
+  <li> &lt;slide&gt;<h2>slide caption</h2> content &lt;/slide&gt;
 		The slide tag is designed so that the ``rough draft'' of
 		a presentation is still a valid, readable HTML file.
 
-	&lt;start&gt;text&lt;/start&gt;
+  <li> &lt;start&gt;text&lt;/start&gt;
 		A link to the first slide.  Use this to skip any unwanted
 		front matter and get things lined up right.
 
-	&lt;end&gt;text&lt;/end&gt;
+  <li> &lt;end&gt;text&lt;/end&gt;
 		An anchor for the last slide's ``next'' link.
+  <li> &lt;toc&gt;text&lt;/toc&gt;
+		Table of contents
+</ul>
 </doc>
+<note author=steve>
+<p> Things to do:
+<ul>
+  <li> &lt;slide&gt; needs an optional ID attribute.
+  <li> Next/Prev links would probably work better if they referenced the table
+       by a 1-pixel-high top row.  ID attr on the table doesn't work.
+</ul>
+</note>
 
 <h2>Entity Definitions</h2>
 
@@ -38,8 +57,8 @@
   <value><img src="/PIA/Doc/Graphics/pent16.gif" alt="&nbsp;"></define>
 <define entity=toPrev><value>&lt;&lt;</define>
 <define entity=toNext><value>&gt;&gt;</define>
-<define entity=noPrev><value>--</define>
-<define entity=noNext><value>--</define>
+<define entity=noPrev><value>&nbsp;&nbsp;</define>
+<define entity=noNext><value>&nbsp;&nbsp;</define>
 <define entity=toToc><value>^^</define>
 
 <h3>Default text</h3>
@@ -64,29 +83,33 @@
 	<then><a name="&label;">&nbsp;<get name=caption></a>
 	<else>&nbsp;<get name=caption></if>
    <th bgcolor="&topBg;" fgcolor="&topFg;" align=right nobreak><if>
-     </if><if>&next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if>
+        &prev;<then><a href="#&prev;">&toPrev;</a><else>&noPrev;</if><if>
+	<test zero>&slide;</test>
+              <then>&nbsp;<else><a href="#TOC">&nbsp;&slide;&nbsp;</a></if><if>
+        &next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if>
 <tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" height="&hh;" width=10
-         valign=top><if>
-	<test zero>&slide;</test><then>&nbsp;<else>&slide;</if></td>
+         valign=top>&nbsp;</td>
     <td bgcolor="&mainBg;" fgcolor="&mainFg;" valign=top colspan=2>
 &content;
 <tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" width=10>&nbsp;</td>
-  <td align=center valign=bottom bgcolor="&mainBg;" fgcolor="&mainFg"
+  <td align=left valign=bottom bgcolor="&mainBg;" fgcolor="&mainFg"
       width='100%'><em>&subCaption;</em>
   <td align=right bgcolor=white nobreak><if><!-- bogus if to avoid linebreak -->
      </if><if>&prev;<then><a href="#&prev;">&toPrev;</a><else>&noPrev;</if><if>
      </if><if><test exact match=TOC>&label;></test>
-	    <else><a href="#TOC">^^</a></if><if>
+	    <else><a href="#TOC">&nbsp;&slide;&nbsp;</a></if><if>
      </if><if>&next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if></td>
 </table>
-<p>
-<if><test zero>&slide;</test><then>
-<else><set entity name=slidelist><get entity name=slidelist>
+<p> <hide>
+    <if><test zero>&slide;</test><then>
+        <else><set entity name=slidelist><get entity name=slidelist>
 <li> <a href="#&slide;">&caption;</a></li></set></else></if>
-<set name=prev>&slide;</set>
-<set name=slide><numeric sum digits=0>1 &slide;</set>
-<set name=next><numeric sum digits=0>1 &slide;</set>
-<set name=label> </set>	  
+    <set name=prev>&slide;</set>
+    <set name=slide><numeric sum digits=0>1 &slide;</set>
+    <set name=next><numeric sum digits=0>1 &slide;</set>
+    <set name=label> </set>
+    <set name=caption> </set>
+</hide><!-- end slide -->
 </action>
 </define>
 
@@ -117,7 +140,7 @@
      
 <define element=h2><action><set name=DOC:caption>&content;</set></define>
 	  
-<define element=TOC><action>
+<define element=toc><action>
 <set name=label>TOC</set>
 <slide>
 <get name=content>
