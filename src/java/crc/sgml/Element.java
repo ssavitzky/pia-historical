@@ -141,7 +141,14 @@ public class Element extends Token implements Attrs {
 
   /** Retrieve an attribute by name. */
   public SGML attr(String name) {
-    return (attrs == null)? null : (SGML)attrs.at(name.toLowerCase());
+
+    SGML result = (attrs == null)? null : (SGML)attrs.at(name.toLowerCase());
+    // delegate numeric names to tokens     
+    if(result == null && content != null){
+      result =  content.attr(name);
+    }
+    return result;
+    
   }
 
   /** Retrieve an attribute by name, returning its value as a String. */

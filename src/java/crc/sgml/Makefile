@@ -11,9 +11,11 @@ FILES = \
 	AttrSGML.java \
 	AttrTable.java \
 	AttrWrap.java \
+	DescriptionList.java \
 	Element.java \
 	Entity.java \
 	SGML.java \
+	TableElement.java \
 	Text.java \
 	Token.java \
 	Tokens.java \

@@ -110,6 +110,12 @@ public class Token implements SGML {
     return null;
   }
 
+
+  /** Set an attribute by name. */
+  public void attr(String name, SGML value) {
+    return;
+  }
+
   /** Retrieve an attribute by name, returning its value as a String. */
   public String attrString(String name) {
     return null;

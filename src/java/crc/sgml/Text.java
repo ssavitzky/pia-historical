@@ -163,6 +163,10 @@ public class Text implements SGML {
   public SGML attr(String name) {
     return null;
   }
+  /** Set an attribute by name.  Text doesn't have any. should throw error*/
+  public void attr(String name, SGML value) {
+    return; //  should throw exception here
+  }
 
   /** Retrieve an attribute by name, returning its value as a String. */
   public String attrString(String name) {

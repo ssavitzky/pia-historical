@@ -79,8 +79,11 @@ public interface SGML extends java.lang.Cloneable {
   /** Append content to a Tokens list. */
   void appendContentTo(Tokens list);
 
-  /** Retrieve an attribute by name. */
+  /** Retrieve an attribute by name.  Semantics vary by SGML type*/
   SGML attr(String name);
+
+  /** Set an attribute by name. Semantics may vary by SGML type*/
+  void attr(String name, SGML value);
 
   /** Retrieve an attribute by name, returning its value as a String. */
   String attrString(String name);

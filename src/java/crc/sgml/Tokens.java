@@ -5,9 +5,13 @@
 package crc.sgml;
 
 import crc.ds.List;
+import crc.ds.Table;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
+
+import java.util.Enumeration;
+import java.lang.Integer;
 
 /**
  * A List (sequence) of SGML Token's.  
@@ -167,9 +171,53 @@ public class Tokens extends List implements SGML {
     }
   }
     
-  /** Retrieve an attribute by name.  Lists don't have any.*/
+  /** Retrieve an attribute by name.  Lists don't have any,
+      but specifying number or range gets that item or list of items
+      useful for get in interforms */
   public SGML attr(String name) {
-    return null;
+    List indices=Util.split(name,'-');
+    String sindex1 = (String) indices.shift();
+    int index1 = -1;
+     try {
+      index1=java.lang.Integer.valueOf(sindex1).intValue();
+    } catch (Exception e) {
+      return  null;
+    }
+    if(indices.isEmpty()){
+      return itemAt(index1);
+    }
+
+    //construct new tokens from specified
+    Tokens value =new Tokens();
+    while(!indices.isEmpty()){
+      String sindex2 =(String) indices.shift();
+      int index2;
+      
+      try {
+       index2=java.lang.Integer.valueOf(sindex2).intValue();
+      } catch (Exception e) {
+       return value;
+      }
+      for(int i=index1;i <= index2; i++){
+	value.addItem(itemAt(i));
+      }
+      index1=index2;
+    }
+    return value;
+  }
+
+  /**  set an attribute by name.  Lists don't have any names,so interpret
+        name as number to insert at.*/
+  public  void attr(String name, SGML value) {
+    int start;
+    
+     try {
+       start=java.lang.Integer.valueOf(name).intValue();
+      } catch (Exception e) {
+       start =0;
+      }
+      itemAt(start,value);
+      
   }
 
   /** Retrieve an attribute by name, returning its value as a String. */
@@ -177,9 +225,17 @@ public class Tokens extends List implements SGML {
     return null;
   }
 
-  /** Test whether an attribute exists.  It doesn't. */
+  /** Test whether an attribute exists.  It doesn't unless name is a number. */
   public boolean hasAttr(String name) {
-    return false;
+    //Should test for range specification like 2-4
+    int start = -1;
+    
+     try {
+       start=java.lang.Integer.valueOf(name).intValue();
+      } catch (Exception e) {
+       return false;
+      }
+      return 0 < start && start < nItems();
   }
 
 
@@ -232,6 +288,37 @@ public class Tokens extends List implements SGML {
     }
     return t;
   }
+
+  /** return a table with tag names as keys and locations as values
+   */
+  public Table tagLocations() {
+    Table result = new Table();
+    Enumeration elements = elements();
+    List locations ;
+    for (int i = 0; i < nItems(); ++i) {
+      String name =  itemAt(i).tag();
+      if(result.has(name)){
+	locations = (List) result.at(name);
+      } else {
+	locations = new List();
+        result.at(name,locations);
+	}
+      locations.push(new Integer(i));
+    }
+    return result;
+  }
+  
+  /**  return a list of the locations of a given tag type
+   */
+  public List tagLocations(String name) {
+    List result = (List) tagLocations().at(name);
+    if(result == null){
+      result = new List();
+    }
+    return result;
+  }
+  
+  
 
   /************************************************************************
   ** Construction:
