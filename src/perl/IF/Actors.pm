@@ -116,7 +116,7 @@ sub foreach_handle {
     ## Keep the handler.  If _list is non-empty, push again.  
 
     ## The kludgy approach is to re-expand without the "foreach" attribute,
-    ## and with the original contents moved inside a <repeat-> element.
+    ## and with the original contents moved inside a <repeat> element.
 
     my $attrs = [];
     my $each = [];
@@ -127,7 +127,7 @@ sub foreach_handle {
 	push(@$each, $_, $v) if ($_ =~ /^list/ || $_ eq 'entity');
     }
     $it = IF::IT->new($it->tag, @$attrs, 
-		      IF::IT->new('repeat-', @$each, $it->content));
+		      IF::IT->new('repeat', @$each, $it->content));
     $ii->push_input($it);
     $ii->delete_it($it);
 }
@@ -141,32 +141,27 @@ sub foreach_handle {
 
 ###### Bindings:
 
-### actor-:  active, quoted.
+### actor:  active, quoted.
 ###	Defines a new actor.
 
-define_actor('actor-', 'active' => 1, 'quoted' => 1,
+define_actor('actor', 'active' => 1, 'quoted' => 1,
 	     _handle => \&actor_handle,
-	     'dscr' => "define an actor");
+	     'dscr' => "define an InterForm actor");
 
 sub actor_handle {
     my ($self, $it, $ii) = @_;
     $ii->define_actor($it);
 }
 
-### <get- [name="n"] [pia] [entity]>name</get->
-### <get. name="n" [pia] [entity]>
-### <get.. [pia] [entity]>name</get..>
+### <get [name="n"] [pia] [entity]>name</get->
 ###	Gets the value of a variable named in the 'name' attribute or content.
 ###	if the 'pia' attribute is set, uses the pia (PERL) context,
 ###	if the 'entity' attribute is set, uses the entity table.
 
-define_actor('get-', 'active' => 1, 'content' => 'name',
+define_actor('get', 'active' => 1, 'content' => 'name',
 	     _handle => \&get_handle,
-	     'dscr' => "get value of NAME");
-define_actor('get.', 'active' => 1, 'empty' => 1, _handle => \&get_handle,
-	     'dscr' => "get value of NAME");
-define_actor('get..', 'active' => 1, 'parsed' => 1, _handle => \&get_handle,
-	     'dscr' => "get value of CONTENT");
+	     'dscr' => "Get value of NAME, 
+optionally in PIA or ENTITY context.");
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
@@ -188,23 +183,16 @@ sub get_handle {
     }
 }
 
-### set.:  active, empty.
+### <set name="name" value="value">
+### <set name="name">value</set>
 ###	sets the value of a variable named in the 'name' attribute
 ###	to the value in the 'value' attribute.
 ###	if the 'local' attribute is set, uses the current context.
 ###	if the 'pia' attribute is set, uses the pia (PERL) context
 
-define_actor('set.', 'active' => 1, 'empty' => 1, _handle => \&set_handle,
+define_actor('set', 'active' => 1, 'content' => 'value',
+	     _handle => \&set_handle,
 	     'dscr' => "set NAME to VALUE");
-
-### set..:  active, parsed.
-###	Sets the value of a variable named in the 'name' attribute
-###	to the value in the (parsed) contents.
-###	if the 'local' attribute is set, uses the current context.
-###	if the 'pia' attribute is set, uses the pia (PERL) context
-
-define_actor('set..', 'active' => 1, 'parsed' => 1, _handle => \&set_handle,
-	     'dscr' => "set NAME to CONTENT");
 
 sub set_handle {
     my ($self, $it, $ii) = @_;
@@ -230,10 +218,10 @@ sub set_handle {
 
 ###### Control Structure:
 
-### <if-><test>condition</test><then>...</then><else>...</else></if>
+### <if><test>condition</test><then>...</then><else>...</else></if>
 ###	condition is false if it is empty or consists only of whitespace.
 
-define_actor('if-', 'active' => 1, 'parsed' => 1, _handle => \&if_handle,
+define_actor('if', 'active' => 1, 'parsed' => 1, _handle => \&if_handle,
 	     'dscr' => "if TEST non-null, expand THEN, else ELSE.");
 define_actor('then', 'active' => 1, 'quoted' => 1,
 	     'dscr' => "expanded if TEST true in an &lt;if-&gt;");
@@ -254,19 +242,19 @@ sub if_handle {
     $test = @$test if ref($test);
 
     if ($test) {
-	print "<if- >$test<then>...\n" if $main::debugging > 1;
+	print "<if >$test<then>...\n" if $main::debugging > 1;
 	$ii->push_into($it->{'then'});
     } else {
-	print "<if- >$test<else>...\n" if $main::debugging > 1;
+	print "<if >$test<else>...\n" if $main::debugging > 1;
 	$ii->push_into($it->{'else'});
     }
     $ii->delete_it;
 }
 
 
-### <repeat- list="..." entity="name">...</repeat->
+### <repeat list="..." entity="name">...</repeat>
 ###	
-define_actor('repeat-', 'active' => 1, 'quoted' => 1,
+define_actor('repeat', 'active' => 1, 'quoted' => 1,
 	     _handle => \&repeat_handle, _end_input => \&repeat_end_input,
 	     'dscr' => "repeat CONTENT with ENTITY in LIST of words.");
 
@@ -311,13 +299,13 @@ sub repeat_end_input {
 
 ###### String Processing:
 
-### <pad- width=N align=[left|right|center] [spaces]>string</pad>
+### <pad width=N align=[left|right|center] [spaces]>string</pad>
 ###	If the "spaces" attribute is present, only the spaces are 
 ###	returned.  This lets you pad the contents of a link (for
 ###	example) without having to put the padding inside the link
 ###	where it will get underlined and look ugly.
 
-define_actor('pad-', 'active' => 1, 'parsed' => 1, 
+define_actor('pad', 'active' => 1, 'parsed' => 1, 
 	     _handle => \&pad_handle,
 	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment.
 Optionally just generate the SPACES");
@@ -353,12 +341,12 @@ sub pad_handle {
 ###### InterForm Actor information:
 
 ### === very kludgy -- should just use attributes ===
-### <if-actor-dscr- name="name">
-define_actor('if-actor-dscr-', 'active' => 1, 'parsed' => 1, 
-	     'content' => 'name', _handle => \&if_actor_dscr_handle,
-	     'dscr' => "get an actor's dscr attribute");
+### <actor-dscr name="name">
+define_actor('actor-dscr', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&actor_dscr_handle,
+	     'dscr' => "get an actor's DSCR attribute");
 
-sub if_actor_dscr_handle {
+sub actor_dscr_handle {
     my ($self, $it, $ii) = @_;
 
     my $name = $it->attr('name');
@@ -377,17 +365,17 @@ sub if_actor_dscr_handle {
 }
 
 
-### <if-actor-attrs- name="name">
+### <actor-attrs name="name">
 ###	Get an actor's attributes in form suitable for documentation.
 ###	The "name", "tag",  and "dscr" attributes are not included.
 
-define_actor('if-actor-attrs-', 'active' => 1, 'parsed' => 1, 
-	     'content' => 'name', _handle => \&if_actor_attrs_handle,
+define_actor('actor-attrs', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&actor_attrs_handle,
 	     'dscr' => "get an actor's attributes in documentation format");
 
 %no_show = ('dscr'=>1, 'tag'=>1, 'name'=>1);
 
-sub if_actor_attrs_handle {
+sub actor_attrs_handle {
     my ($self, $it, $ii) = @_;
 
     my $name = $it->attr('name');
@@ -421,10 +409,14 @@ sub if_actor_attrs_handle {
 
 ###	This is incredibly kludgy, but it works!
 
-define_actor('pia-agent-home-', 'active' => 1, 'parsed' => 1, 
+define_actor('pia-agent-home', 'active' => 1, 'parsed' => 1, 
 	     'content' => 'name', _handle => \&pia_agent_home_handle,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
+
+define_actor('pia-agent-home-', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&pia_agent_home_handle,
+	     'dscr' => "legacy version" );
 
 sub pia_agent_home_handle {
     my ($self, $it, $ii) = @_;
