@@ -13,8 +13,9 @@
 
  <set name=photos><read file=&capfile; process></set>
  <if> <get name=photos> <then>
-To view photos without controls <a href=show_roll.if?capfile=&capfile;>whole
-roll</a> or --<a href=show_captioned.if?capfile=&capfile;>just images with captions</a>
+You can view photos without controls <a href=show_roll.if?capfile=&capfile;>by
+the whole
+roll</a> or <a href=show_captioned.if?capfile=&capfile;>just photos with captions</a>
 
 <hr>
 <h3>Editing  roll dated &photos.photosdate; </h3>
