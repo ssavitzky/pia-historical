@@ -46,48 +46,6 @@ public class Report {
     debugToFile = onoff;
   } 
 
-  /************************************************************************
-  ** Error Reporting and Messages:
-  ************************************************************************/
-
-  /**
-   * Fatal system error -- print message and throw runtime exception.
-   * Do a stacktrace.
-   */
-  public static void errSys(Exception e, String msg){
-    System.err.println("Report: " + msg);
-    e.printStackTrace();
-    
-    throw new RuntimeException(msg);
-  }
-
-  /**
-   * Fatal system error -- print message and throw runtime exception
-   *
-   */
-  public static void errSys(String msg){
-    System.err.println("Report: " + msg);
-    throw new RuntimeException(msg);
-  }
-
-  /**
-   * Print warning message
-   *
-   */
-  public static void warningMsg( String msg ){
-    System.err.println( msg );
-  }
-
-  /**
-   * Print warning message
-   *
-   */
-  public static void warningMsg(Exception e, String msg ){
-    System.err.println( msg );
-    e.printStackTrace();
-    
-  }
-
   /** 
    * Display a message to the user if the "verbose" flag is set.
    */
@@ -102,10 +60,12 @@ public class Report {
    */
   public static void debug( String msg )
   {
+    // System.out.println("going to tracemsg"+logger.toString()+ (new Boolean(debugToFile)).toString());
     if (!debug) return;
-    if( logger != null && debugToFile )
-      ;
-      //logger.trace ( msg );
+    if( logger != null && debugToFile ){
+      //System.out.println("going to tracemsg"+logger.toString()+ (new Boolean(debugToFile)).toString());
+      logger.trace ( msg );
+    }
     else
       System.out.println( msg );
   }
@@ -117,8 +77,7 @@ public class Report {
   public static void debug(Object o, String msg) {
     if (!debug) return;
     if( logger != null && debugToFile )
-      ;
-      //logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
+      logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
     else
       System.out.println("[" +  o.getClass().getName() + "]-->" + msg );
   }
@@ -133,8 +92,7 @@ public class Report {
     if (verbose) msg = (msg == null)? vmsg : msg + vmsg;
     if (msg == null) return;
     if( logger != null && debugToFile )
-      ;
-      //logger.trace ( msg );
+      logger.trace ( msg );
     else
       System.out.println( msg );
   }
@@ -148,46 +106,12 @@ public class Report {
     if (verbose) msg = (msg == null)? vmsg : msg + vmsg;
     if (msg == null) return;
     if( logger != null && debugToFile )
-      ;
-      //logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
+      logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
     else
       System.out.println("[" +  o.getClass().getName() + "]-->" + msg );
   }
 
     
-  /**
-   * Output a message to the log.
-   *
-   */
-  public static void log( String msg )
-  {
-    if( logger != null )
-      ;
-      //logger.log ( msg );
-  }
-
-  /**
-   * error to log
-   *
-   */
-  public static void errLog( String msg )
-  {
-    if( logger != null )
-      ;
-      //logger.errlog ( msg );
-  }
-
-  /**
-   * error to log on behalf of an object
-   *
-   */
-  public static void errLog(Object o, String msg )
-  {
-    if( logger != null )
-      ;
-      //logger.errlog ("[" +  o.getClass().getName() + "]-->" + msg );
-  }
-
   /************************************************************************
   ** Initialization:
   ************************************************************************/
@@ -195,39 +119,43 @@ public class Report {
   /**
    * Initialize the server logger and the statistics object.
    */
-  // private void initializeLogger() throws ReportInitException {
-  //   if ( loggerClassName != null ) {
-  //try {
-  //  logger = (Logger) Class.forName(loggerClassName).newInstance() ;
-  //  logger.initialize (this) ;
-  //} catch (Exception ex) {
-  //  String err = ("Unable to create logger of class ["
-  //		+ loggerClassName +"]" + "\r\ndetails: \r\n"
-  //		+ ex.getMessage());
-  //  throw new ReportInitException(err);
-  //}
-  //  } else {
-  //warningMsg ("no logger specified, not logging.");
-  //  }
-  //}
+  private void initializeLogger(){
+    try {
+      logger = new Logger( traceFilePath );
+    } catch (ReportException ex) {
+      throw ex;
+    }
+  }
 
-  public boolean initialize() {
-    return true;
-    //try{
-    //  initializeLogger();
-    //}catch(Exception e){
-    //  System.out.println( e.toString() );
-    //  return false;
-    //}
+  private boolean initialize(String fp ) {
+    try{
+      traceFilePath = fp; 
+      initializeLogger();
+      return true;
+    }catch(Exception e){
+      System.out.println( e.toString() );
+      return false;
+    }
   }
 
   /************************************************************************
   ** Creating the Report instance:
   ************************************************************************/
 
-  /** Create the Report's single instance. */
-  private Report() {
-    instance = this;
+  /**
+   * set where to write to
+   */
+  public static void setDebugFilePath(String fp)
+  { 
+    instance().initialize( fp );
+  }
+
+  /**
+   * Close trace file
+   */
+  public static void closeTraceFile(){
+    if ( instance().logger != null )
+      logger.close();
   }
 
   /** Return the Report's only instance.  */
@@ -235,42 +163,30 @@ public class Report {
     if( instance != null )
       return instance;
     else{
-      String[] args = new String[1];
-      args[0] ="";
-      makeInstance(args);
+      makeInstance();
       return instance;
     }
   }
 
 
-  private static void makeInstance(String[] args){
+  /** Create the Report's single instance. */
+  private Report() {
+    instance = this;
+  }
+
+  private static void makeInstance(){
 
     /* Create a Report instance */
 
     Report report = new Report();
-    report.commandLine = args;
-    report.debug = true;
-    report.debugToFile = false;
+    //report.debug = true;
+    //report.setDebugFilePath(".");
+    //report.debugToFile = false;
 
     /** Initialize it from its properties. */
-    if (! report.initialize()) System.exit(1);
+    //if (! report.initialize()) System.exit(1);
 
   }
-
-  /**
-   * Property name of Report logger class
-   */
-  public static final String REPORT_LOGGER = "crc.dom.logger";
-
-  /************************************************************************
-  ** Protected fields:
-  ************************************************************************/
-
-  /** The name of the class that will perform logging.
-   *	@see crc.dom.Logger
-   */
-  protected String loggerClassName 	=  REPORT_LOGGER;
-  protected String[] commandLine;
 
   /************************************************************************
   ** Private fields:
@@ -286,27 +202,9 @@ public class Report {
 
   // file separator
   private String filesep  = System.getProperty("file.separator");
-  private String home     = System.getProperty("user.home");
-  private String userName = System.getProperty("user.name");
-
   static private Report instance;
-  /************************************************************************
-  ** Main Program:
-  ************************************************************************/
-
-  public static void main(String[] args){
-
-    Report report = new Report();
-    report.commandLine = args;
-    report.debug = false;
-    report.debugToFile = false;
-
-    /** Initialize it from its properties. */
-    if (! report.initialize()) System.exit(1);
-
-  }
-
-
-
-
+  
+  // trace file
+  private String traceFilePath="logfile";
 }
+
