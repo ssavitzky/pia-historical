@@ -27,7 +27,7 @@ sub initialize{
     $max_pages=20 unless $max_pages;
     $$self{_max_pages}=$max_pages;
     print "max pages " . $max_pages;
-    local $machine=AGENT_MACHINE->new($self);
+    local $machine=PIA::Agent::Machine->new($self);
     $machine->callback(\&bookmaker_callback);
 
     $$self{_machine}=$machine;
@@ -123,8 +123,7 @@ sub bookmaker_callback{
     if($type=~ /text\/html/){
 	$html= IF::Run::parse_html_string($response->content);
     } elsif($type=~ /text/){ 
-	$html=IF::IF('pre');
-	$html->push($response->content);
+	$html=IF::IT->new ('pre', $response->content);
     } else {
 	return 0; #for now only html
 	print "$type is not html\n";
@@ -186,10 +185,10 @@ print "getting page $link for book\n" if $main::debugging;
     push(@{$links},$key);
 
     my $req=new HTTP::Request('GET',$link);
-    my $request=TRANSACTION->new($req,$machine);
+    my $request=PIA::Transaction->new($req,$machine);
     $$request{_book_depth}=$depth;
     $$request{_book_reference}=$key;
-    $main::main_resolver->push($request);
+    $main::resolver->push($request);
     return ($key,$isnew);
     
 }

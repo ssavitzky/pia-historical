@@ -48,7 +48,7 @@ sub html2latex{
     }
     $imagenum = 1;		# 
 #    $ua=new LWP::UserAgent unless ref($ua) eq 'LWP::UserAgent';
-    $ua=$main::main_resolver;
+    $ua=$main::resolver;
 
     for (@{ $html->extract_links(qw(img)) }) {
 	my ($url, $element) = @$_;
@@ -60,7 +60,7 @@ sub html2latex{
 	$imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
 
 #	my $response=$ua->request($request,$imagefile);
-	my $response=$ua->simple_request(TRANSACTION->new($request),$imagefile);
+	my $response=$ua->simple_request(PIA::Transaction->new($request),$imagefile);
 	my $image_type=$response->content_type;
 	
 

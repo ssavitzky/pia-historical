@@ -342,10 +342,16 @@ sub repeat_end_input {
 ###	positive
 ###	negative
 ###	match="pattern"
+###	null	(stronger than the normal test in which false is nonblank)
+###	numeric
+###	length="n"
+###	defined [pia|env|entity|agent|actor] name="..."
+###	file [exists|writable|readable|directory] name="pathname"
 ###
 ###  Modifiers:
 ###	not
-###	case-sensitive
+###	case (sensitive)
+###	text
 ###
 ###  Other Options:
 ###	iftrue="..."	string to return if result is true
@@ -573,7 +579,6 @@ sub agent_running_handle {
 
     my $name = $it->attr('name');
     $name = $it->content_string unless defined $name;
-    my $link = $it->attr('link');
 
     my $a = IF::Run::resolver()->agent($name);
     if (ref $a) {

@@ -172,7 +172,7 @@ sub interform_file {
 
     ## Run a standard PIA InterForm file.
     ##	  The resolver is 
-    $resolver = $main::main_resolver unless defined($resolver);
+    $resolver = $main::resolver unless defined($resolver);
 
     local $entities = if_entities($agent, $file, $request);
     my $string = run_file($file);

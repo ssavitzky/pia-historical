@@ -760,7 +760,7 @@ sub implicit_end {
     my $in_it = $self->dstack->[-1];
     return unless defined $in_it;
     my $in = $in_it->tag;
-    print "implicit_end $tag in $in\n" if $main::debugging > 1;
+    print " implicit_end $tag in $in?\n" if $main::debugging > 1;
 
     ## This needs to be done with syntax, but for now we'll ad-hoc it.
 
