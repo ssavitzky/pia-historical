@@ -12,6 +12,10 @@
 	    <then>
 		<set entity name="home"><get env name="HOME"></set>
 		<if><test match="^.?.?.?x"><get info
+		     file="&home;/pia/bin/shutdown"></test>
+		    <then><os-command>&home;/pia/bin/shutdown</os-command>
+			  System shutdown in progress.
+		    </then><else><if><test match="^.?.?.?x"><get info
 		     file="&home;/bin/shutdown"></test>
 		    <then><os-command>&home;/bin/shutdown</os-command>
 			  System shutdown in progress.
