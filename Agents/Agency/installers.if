@@ -176,14 +176,28 @@ add a default start-up form to this file.  <p>
        <input type="submit" value="Install"><br>
        </form></if>
   <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-       <if><agent-running name="user_files"><then><em>installed</em></then>
+       <if><agent-running name="archive"><then><em>installed</em></then>
        <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="archive">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
        <input type="submit" value="Install">
-       </form></if>       
+       </form></if>
+
+  <dt> Photo album  <if><agent-running name="Photo_Album"><then><em>installed</em></then>
+       <else>
+<dd><form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photo_Album">
+    </form>
+<dt> Photos
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photos">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia/Photo_Album/">
+       <input type="submit" value="Install">
+       </form></if>
+
 </dl>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
