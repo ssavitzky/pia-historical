@@ -10,6 +10,7 @@ PACKAGES = \
 
 FILES = \
 	Athread.java \
+	HttpBuffer \
 	Accepter.java \
 	Transaction.java \
 	Machine.java \
@@ -32,7 +33,7 @@ FILES = \
 	ThreadPool.java \
 	HTTPRequest.java \
 	HTTPResponse.java \
-	FileAccess.java
+	FileAccess.java 
 
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
