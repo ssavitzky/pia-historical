@@ -77,7 +77,7 @@ sub define_actor {
 
 ### -eval_perl-		attr: language=perl
 
-define_actor('-eval-perl-', 'quoted' => -1,
+define_actor('-eval-perl-', 'quoted' => -1, 'unsafe' => 1,
 	     'attr' => 'language', 'value' => 'perl', 
 	     _match => \&eval_perl_match,
 	     _handle => \&IF::Run::eval_perl,
@@ -172,7 +172,7 @@ sub actor_handle {
 define_actor('get', 'active' => 1, 'content' => 'name',
 	     _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
-optionally in PIA or ENTITY context.");
+optionally in PIA, ENV, AGENT, ELEMENT, or ENTITY context.");
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
@@ -187,8 +187,15 @@ sub get_handle {
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
 	$ii->replace_it($status);
+    } elsif ($it->attr('env')) {
+	$ii->replace_it($ENV{$name});
+    } elsif ($it->attr('agent')) {
+	local $agent = IF::Run::agent();
+	$ii->replace_it($agent->option($name)) if defined $agent;
     } elsif ($it->attr('entity')) {
 	$ii->replace_it($ii->entities->{$name});
+    } elsif ($it->attr('element')) {
+	$ii->replace_it($ii->in_token->attr($name));
     } else {
         $ii->replace_it($ii->getvar($name));
     }
@@ -203,14 +210,16 @@ sub get_handle {
 ###	namespace="whatever", or one ore more of the following:
 ###	entity	the current entity namespace
 ###	local	current element 
-###	attr	attributes of the current element
+###	element	attributes of the containing element
 ###	form	this InterForm's outer context
 ###	pia	pia (PERL) context
-###	agent	attributes of the current PIA agent
+###	agent	options of the current PIA agent
+###	entity	entity
 
 define_actor('set', 'active' => 1, 'content' => 'value',
 	     _handle => \&set_handle,
-	     'dscr' => "set NAME to VALUE");
+	     'dscr' => "set NAME to VALUE, 
+optionally in PIA, AGENT, ELEMENT, or ENTITY context.");
 
 sub set_handle {
     my ($self, $it, $ii) = @_;
@@ -226,8 +235,15 @@ sub set_handle {
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
 	$ii->replace_it($status);
+    } elsif ($it->attr('agent')) {
+	local $agent = IF::Run::agent();
+	$agent->option($name, $value) if defined $agent;
     } elsif ($it->attr('local')) {
 	$ii->defvar($name, $value);
+    } elsif ($it->attr('entity')) {
+	$ii->entities->{$name} = $value;
+    } elsif ($it->attr('element')) {
+	$ii->in_token->attr($name, $value);
     } else {
 	$ii->setvar($name, $value);
     }
@@ -242,9 +258,9 @@ sub set_handle {
 define_actor('if', 'active' => 1, 'parsed' => 1, _handle => \&if_handle,
 	     'dscr' => "if TEST non-null, expand THEN, else ELSE.");
 define_actor('then', 'active' => 1, 'quoted' => 1,
-	     'dscr' => "expanded if TEST true in an &lt;if-&gt;");
+	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
 define_actor('else', 'active' => 1, 'quoted' => 1,
-	     'dscr' => "expanded if TEST true in an &lt;if-&gt;");
+	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
 
 sub if_handle {
     my ($self, $it, $ii) = @_;
@@ -335,7 +351,64 @@ sub repeat_end_input {
 ###	iftrue="..."	string to return if result is true
 ###	iffalse="..."	string to return if result is false
 ###
+define_actor('test', 'active' => 1, 'content' => 'value', 'parsed'=>1,
+	     _handle => \&test_handle,
+	     'dscr' => "test VALUE (content); return null if false, else '1'. 
+Tests include ZERO, POSITIVE, NEGATIVE, MATCH='pattern'.  
+Modifiers include NOT, CASE (sensitive), TEXT.  
+Others include IFTRUE, IFFALSE.");
 
+sub test_handle {
+    my ($self, $it, $ii) = @_;
+    my $result = '';
+    my $value = $it->attr('value');
+    my $match, $text;
+
+    if ($it->attr('text')) {
+	$text = $it->content_text unless defined $value;
+    } else {
+	$text = $it->content_string unless defined $value;
+    }
+
+    my $test = remove_spaces($value);
+    $test = @$test if ref($test);
+
+    if ($it->attr('zero')) {
+	$result = 1 if $text == 0;
+    } elsif ($it->attr('positive')) {
+	$result = 1 if $text > 0;
+    } elsif ($it->attr('negative')) {
+	$result = 1 if $text < 0;
+    } elsif (($match = $it->attr('match'))) {
+	if ($it->attr('case')) {
+	    $result = 1 if $text =~ /$match/;
+	} else {
+	    $result = 1 if $text =~ /$match/i;
+	}
+    } else {
+	$result = 1 unless $text =~ /^\s*$/;
+    }
+
+    ## handle NOT, IFTRUE, IFFALSE attrs.
+
+    $result = ! $result if $it->attr('not');
+    if ($result) {
+	my $res = $it->attr('iftrue');
+	$result = $res if defined $res;
+    } else {
+	my $res = $it->attr('iffalse');
+	$result = $res if defined $res;
+    }
+
+    ## Strip off <test> element unless inside an <if>.
+    if (0 && $ii->in_tag eq 'if') { # === doesn't seem to work ===
+	$it->content([$result]);
+    } elsif ($result) {
+	$ii->replace_it($result);
+    } else {
+	$ii->delete_it;
+    } 
+}
 
 ###### Number Processing:
 
@@ -392,7 +465,7 @@ sub pad_handle {
     }
 }
 
-###### InterForm Actor information:
+###### InterForm Actors:
 
 ### === very kludgy -- should just use attributes ===
 ### <actor-dscr name="name">
@@ -455,7 +528,7 @@ sub actor_attrs_handle {
 
 
 
-###### PIA Information Actors:
+###### PIA Actors:
 
 ### <agent-home>name</agent-home>
 ###	expands to the agent's home interForm name.
