@@ -8,11 +8,15 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
-import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
+import crc.interform.Run;
 
+import crc.sgml.SGML;
+import crc.sgml.Tokens;
+
+import crc.pia.Agent;
+import crc.pia.Resolver;
+
+import java.util.Enumeration;
 
 /** Handler class for &lt;agent-list&gt tag 
  * <dl>
@@ -33,29 +37,20 @@ public class Agent_list extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    Resolver resolver = Run.getResolver(ii);
+    String type = it.attrString("type");
+    boolean subs = it.hasAttr("subs");
 
-    ii.unimplemented(ia);
+    Tokens list = new Tokens(" ");
+
+    Enumeration names = resolver.agentNames();
+    while (names.hasMoreElements()) {
+      String name = names.nextElement().toString();
+      Agent agent = resolver.agent(name);
+      if (subs && name.equals(agent.type())) continue;
+      if (type == null || type.equals(agent.type())) list.push(name);
+    }
+
+    ii.replaceIt(list.toString());
   }
 }
-
-/* ====================================================================
-
-
-sub agent_list_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $type = get_text($it, 'type');
-    my $subs = $it->attr('subs');
-
-    my $resolver = IF::Run::resolver();
-    my @names = sort($resolver->agent_names);
-    my @list = ();
-
-    foreach $name (@names) {
-	my $agent = $resolver->agent($name);
-	next if ($subs && $agent->type eq $agent->name);
-	push (@list, $name) if $agent->type eq $type;
-    }
-    $ii->replace_it(join(' ', @list));
-}
-*/
