@@ -1,7 +1,3 @@
-<html>
-<head>
-<title>WhoWhere? E-mail Addresses</title>
-
 <!-- search form -->
 
 <FORM METHOD="GET" ACTION="http://query1.whowhere.com/jwz/name.wsrch">
@@ -46,6 +42,5 @@
 </font>
 
 <!-- end search form -->
-</body></html>
 <!--end BN substs-->
 
