@@ -17,7 +17,6 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
 import crc.dps.input.FromParseNodes;
-import crc.dps.tagset.Loader;
 
 /**
  * Handler for &lt;include&gt;....&lt;/&gt;  <p>
@@ -54,6 +53,12 @@ public class includeHandler extends GenericHandler {
 	proc.run();
 	return;
       }
+    }
+
+    // === at this point we should consider checking for file= and href=
+    if (url == null) {
+      reportError(in, cxt, "No SRC document specified.");
+      return;
     }
 
     // Try to open the stream.  Croak if it fails. 
