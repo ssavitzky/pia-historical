@@ -22,6 +22,10 @@ import crc.sgml.Text;
  *	Expand CONTENT and protect the result from further expansion.
  *	Optionally protect MARKUP by converting special characters to
  *	entities.
+ * <dt>Note:<dd>
+ *	The only reason for having &lt;protect&gt; and
+ *	&lt;protect-result&gt; in separate classes is so each can have
+ *	its own syntax description.
  *  </dl>
  */
 public class Protect_result extends Protect {
@@ -36,8 +40,11 @@ public class Protect_result extends Protect {
     "entities.\n" +
 "";
  
-  /** The only reason for having &lt;protect&gt; and
-   *	&lt;protect-result&gt; in separate classes is so each can have
-   *	its own syntax description. */
-  public void note() {};
+  public String note() { return noteStr; }
+  static String noteStr=
+     "The only reason for having &lt;protect&gt; and\n" +
+     "&lt;protect-result&gt; in separate classes is so each can have\n" +
+     "its own syntax description.\n" +
+"";
 }
+

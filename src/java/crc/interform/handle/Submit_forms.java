@@ -104,6 +104,7 @@ public class Submit_forms extends crc.interform.Handler {
     if ("input".equalsIgnoreCase(it.tag())) {
       // generate query string for input
       query = it.attrString(name);
+      if (query == null || "".equals(query)) return "";
       query += "=";
       query += java.net.URLEncoder.encode(it.attrString("value"));
       query += "&";		// in case there's a next one.

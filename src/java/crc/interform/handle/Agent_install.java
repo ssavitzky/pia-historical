@@ -34,20 +34,33 @@ public class Agent_install extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
-
-    String type = Util.getString(it, "type", name);
     Run env = Run.environment(ii);
+    crc.ds.Table form = env.transaction.getParameters();
+    if (form == null) {
+      ii.error(ia, "No form in transaction");
+      ii.replaceIt("No form in transaction");
+      return;
+    }
 
+    String name = form.has("agent")? form.at("agent").toString() : null;
+    if (name == null) 
+      name = form.has("name")? form.at("name").toString() : null;
+
+    if (name == null) {
+      ii.error(ia, "Name or Agent attribute must be supplied");
+      ii.replaceIt("name or agent attribute must be supplied");
+      return;
+    }
+    form.at("name", name);
+    form.at("agent", name);
     try {
       crc.pia.agent.Agency agency = (crc.pia.agent.Agency) env.agent;
-      agency.install(env.transaction.getParameters()); 
+      agency.install(form); 
     } catch (Exception e) {
       ii.error(ia, "only works in the Agency agent");
     }
 
-    ii.replaceIt(name);
+    ii.replaceIt(form.at("agent").toString());
   }
 }
 

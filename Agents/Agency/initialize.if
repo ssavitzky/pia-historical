@@ -22,7 +22,7 @@ code into it.
 	<user-message>Loading startup file <read interform info=path
 	file="/Agency/START-UP.html"></user-message> 
 	<!-- Define an actor to handle forms -->
-	<actor name=form handle="submit_forms"></actor>
+	<actor name=form tag=form handle="submit_forms"></actor>
 	<read file="/Agency/START-UP.html" interform process>
     </else>
 </if>
