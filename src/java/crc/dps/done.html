@@ -15,7 +15,7 @@ See also:
   <li> <a href="#end">Most Recent Entry</a> (at end.)
 </ul>
 
-<ul>
+<ol>
   <li> 1998-06-12 <b>Bug:</b>  true branch of &lt;if&gt; failing. <br>
        (1998-06-11) <br>
        -- This turned out to be due to the fact that, unlike
@@ -247,6 +247,9 @@ See also:
        <code>correctActiveElement</code> is evil.
        (1998-07-22)<br>
 
+  <li> 1998-07-31 <b>Hole:</b> need HookProcessor to run Agent hooks. <br>
+       (1998-07-08) <br>
+
   <li> 1998-08-10 <b>Bug:</b> need to give an error on missing handlers. <br>
        (1998-08-04) <br>
 
@@ -286,7 +289,87 @@ See also:
        not clear; ``optional'' is better. 
        (1998-08-12) <br>
 
-</ul>
+  <li> 1998-08-13 <b>Prop:</b> New InterForm extensions (?). <br>
+       (of course, one really obvious one is <code>.dpml</code> -- Document
+       Processing Markup Language. (6-29)
+       <dl>
+	 <dt> .xh (mh?)
+	 <dd> ``eXecutable HTML'' (``Meta-HTML'') -- resulting in a MIME type of
+	      <code>text/html</code> 
+	 <dt> .xx (mx?)
+	 <dd> ``eXecutable SML (``Meta-XML'') -- resulting in a MIME type
+	      appropriate for XML. 
+	 <dt> .xm (md?) [not done yet]
+	 <dd> ``eXecutable MIME'' (``Meta-Data'') -- the MIME header is
+	      returned as part of the document
+       </dl>
+       (1998-06-18) <br>
+
+  <li> 1998-08-13 <b>Hole:</b> Namespaces in Entities, Get, Set. <br>
+       Easy thing is to make an entity with a name ending in colon a namespace
+       entity.  Look them up as usual.  As long as a namespace implements
+       NamedNodeList we're cool (except that in fact AttributeList doesn't).
+       (1998-08-12)<br>
+       -- The code is written, but may be flaky.
+	  <code>crc.dps.Namespace</code> needed for clean implementation.
+
+  <li> 1998-08-13 <b>Hole:</b> Must define tags at parse time to cache trees. <br>
+       In order to parse correctly, you have to have the whole DTD in advance.
+       Yet another argument for the position that a tagset is a DTD.
+       (1998-06-25) <br>
+       -- This is handled by recursive tagsets. 
+
+  <li> 1998-08-13 ~ <b>Goal:</b> (8-1) Run Most Agents <br>
+       Be able to run all of the agents in (my) daily use (i.e. history, etc.,
+       but not the wacko stuff in the form server).
+       (1998-06-24) <br>
+       -- superceded by the push to revise the language rather than work on
+	  the legacy tagset, which may never be completed.
+
+  <li> 1998-08-?? <b>Bug:</b> Flag unimplemented legacy options. <br>
+       Unimplemented legacy options in &lt;get&gt; etc. have to be brought to
+       the user's attention with error messages.  Requires a mode flag or,
+       better, dispatching via the legacy handler first.
+       (1998-06-24)<br>
+       -- Note that static caching allows the correct handler class to be
+	  loaded without having to hack the search order in
+	  <code>loadHandler</code>. 
+
+  <li> 1998-08-?? <b>Bug:</b> replaceChild when redefining entity or handler<br>
+       BasicTagset and BasicEntityTable have to do a replaceChild when
+       replacing a binding.
+       (1998-06-26)<br>
+       -- There are problems with sharing. 
+
+  <li> 1998-08-13 ~ <b>Impr:</b> Character Entities should be defined in tagset <br>
+       Should have defined value; copy value into references to short-circuit
+       lookup.  <code>TextUtil.expandCharacterEntities</code> can then make
+       use of this.
+       (1998-06-22) <br>
+       -- Superceded by passive entities and the need to define entities in
+	  tagsets. 
+
+  <li> 1998-08-13 ~ <b>Impr:</b> Entities need to be initialized by the Tagset. <br>
+       The justification for this is that strictly speaking entities are
+       defined in the DTD.
+       (1998-06-18) <br>
+       -- Superceded by the need to define entities in tagsets. 
+
+  <li> 1998-08-13 <b>Hole:</b> Passive [character+] entity class, handler <br>
+       Having a separate node class and handler class for character entities
+       would simplify inserting and expanding them.  Would break some legacy
+       code, though.
+       (1998-06-19) <br>
+       -- Code present but may not be debugged.
+
+  <li> 1998-08-13 ~  <b>Wish:</b> <code>toNextNode</code>  <br>
+       Might want flag in Input's that tells whether the current node has been
+       processed yet.  (really relevant only for toNextNode, to keep track of
+       whether we've enumerated the children yet)
+       <br>
+       -- probably a bad idea.
+
+</ol>
 <a name="end">End of list.</a>
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>

@@ -17,41 +17,92 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Hole:</b> Namespaces in Entities, Get, Set. <br>
-       Easy thing is to make an entity with a name ending in colon a namespace
-       entity.  Look them up as usual.  As long as a namespace implements
-       NamedNodeList we're cool.
+  <li> <b>Hole:</b> PIA datatype transition. <br>
+       During the transition Agent and Transaction need to be able to
+       return both SGML and DOM data as needed.  Fortunately most of the
+       namespaces contain only strings; it's really only hooks that differ.
+       (1998-06-18) <br>
+       -- Make Agent and Transaction implement an interface with methods
+	  like <code>getObjectAt</code> and <code>getStringAt</code>,
+	  etc. instead of the Attr interface; sort it out in the handlers.
+
+  <li> <b>Bug:</b> Entities need work.  Tagset, passive entities. <br>
+       Passive entities (character entities) and some normal entities have to
+       be defined in the DTD.  Passive entities untested. 
+       (1998-08-13)<br>
+
+  <li> <b>Hole:</b> Parser work needed. <br>
+       Literals, CDATA sections, parent, content models, declaration and PI
+       parsing, optionally splitting text into tokens, optional case-munging.
+       <code>retainTree</code> unimplemented.
+       (1998-08-13)
+
+  <li> <b>Hole:</b> Attribute definitions. <br>
+       Attribute types, implied/fixed/etc., default values, handlers.
+       Dispatch table for attrs with handlers.  Lazy evaluation(?) 
+       (1998-08-13)
+
+  <li> <b>Impr:</b> Interface to push-mode parsers <br>
+       Most parsers operate in push mode -- they read their input and call a
+       semantic handler for each ``event''.  This requires running the
+       Processor in a separate thread.
+       (1998-08-13)<br>
+
+  <li> <b>Impr:</b> Should eliminate the ``7-argument'' action. <br>
+       At this point there is nothing using all of its arguments, so it's
+       wasteful.  Should have methods on BasicHandler to get attrs, content or
+       content string, etc.  Only substHandler and testHandler use cstring.
+       (1998-08-12)<br>
+
+  <li> <b>Hole:</b> Need a Namespace interface <br>
+       This will greatly simplify Index.  Also should have a method
+       <code>Context.getNamespace</code>.  It would look at not only the
+       entities in each context, but the name of the EntityTable nodes.
+       (1998-08-12)<br>
+       -- The interface exists, but is not used yet.
+
+  <li> <b>Hole:</b> Text Substitution<p>
+       Needs to be done using either &lt;select&gt; or its own &lt;select&gt;
+       element with appropriate sub-elements.
        (1998-08-12)<br>
 
   <li> <b>Bug:</b> Tagsets don't hack resource names correctly. <br>
-       Need to decide between Class and ClassLoader conventions.
-       (1998-08-12) <br>
+       Need to decide between Class and ClassLoader conventions.  ClassLoader
+       requires slashes; Class prepends module name.  Need the prepend, then
+       change dots to slashes (probably in <code>crc.util.NameUtils</code>).
+       (1998-08-12)<br>
 
   <li> <b>Bug:</b> Loading tagset from file should use resource. <br>
        <code>ClassLoader.getSystemResource</code> should do the right thing.
-       (1998-08-12) <br>
+       (1998-08-12)<br>
 
   <li> <b>Hole:</b> Sorting unimplemented. <br>
-       (1998-08-12) <br>
+       (1998-08-12)<br>
 
   <li> <b>Hole:</b> <code>isChildOf</code> unused in parser. <br>
-       (1998-08-12) <br>
+       (1998-08-12)<br>
 
   <li> <b>Hole:</b> &lt;select&gt; unimplemented. <br>
-       (1998-08-12) <br>
+       Needs to implement everything in XPointer spec, at least.
+       (1998-08-12)<br>
 
   <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>
        Best done with a predefined tagset (STRIP_ts). 
-       (1998-08-07) <br>
+       (1998-08-07)<br>
 
   <li> <b>Bug:</b> Can't <em>use</em> a tagset. <br>
        The &lt;tagset&gt; tag only really works in a tagset definition file.
-       (1998-08-11) <br>
-       -- may require separate useTagset handler.
+       (1998-08-11)<br>
+       -- Possibly best done using a separate useTagset handler.
 
-  <li> <b>Bug:</b> Rename TextHandler to avoid conflict. <br>
+  <li> <b>Bug:</b> Rename TextHandler to avoid case conflict. <br>
        Rename to TextNodeHandler to avoid Windows conflict with textHandler.
        (1998-08-07)<br>
+
+  <li> <b>Bug:</b> Handler class hierarchy problems. <br>
+       There are two many places where we assume that all real handlers
+       inherit from BasicHandler.  Fix one way or the other.
+       (1998-08-13)<br>
 
   <li> <b>Hole:</b> Functional programming tools. <br>
        See <a href="http://www.python.org/doc/tut/functional.html">Python</a>
@@ -87,7 +138,7 @@ See also:
        Need to assign separate actions to PI's and declarations by name.
        As a desirable side effect, this will allow loading tagsets and
        interpreting DTD's.  Strictly speaking the name is the name of an
-       application, not of an operation.  PI's have to be handled <em>even
+       application, not of an operation.  PI's may have to be handled <em>even
        when passively copying</em>!
        (1998-07-15)<br>
        <p>
@@ -104,9 +155,6 @@ See also:
        (1998-07-08) <br>
 
   <li> <b>Hole:</b> Need <code>lookupFile(fn, write)</code> in TopContext. <br>
-       (1998-07-08) <br>
-
-  <li> <b>Hole:</b> need HookProcessor to run Agent hooks. <br>
        (1998-07-08) <br>
 
   <li> <b>Impr:</b> Add ActiveNode operations to <code>Input</code>, etc. <br>
@@ -130,42 +178,11 @@ See also:
        <code>foo</code> undefined.  There must be an explanation...
        (1998-06-26) <br>
 
-  <li> <b>Bug:</b> must replaceChild when redefining entity or handler <br>
-       BasicTagset and BasicEntityTable have to do a replaceChild when
-       replacing a binding.
-       (1998-06-26) <br>
-
-  <li> <b>Hole:</b> Must define tags at parse time to cache trees. <br>
-       In order to parse correctly, you have to have the whole DTD in
-       advance.  Yet another argument for the position that a tagset is a
-       DTD. 
-       (1998-06-25) <br>
-
   <li> <b>Impr:</b> Upgrade <code>handle</code> methods. <br>
        The static <code>handle(<em>element</em>)</code> methods in handler
        subclasses should pick up a static instance if possible, rather than
        just calling <code>new</code>.  (See also ''Impr'' of 1998-06-15.)
        (1998-06-25) <br>
-
-  <li> <b>Goal:</b> (8-1) Run Most Agents <br>
-       Be able to run all of the agents in (my) daily use (i.e. history, etc.,
-       but not the wacko stuff in the form server).
-       (1998-06-24) <br>
-
-  <li> <b>Bug:</b> Flag unimplemented legacy options. <br>
-       Unimplemented legacy options in &lt;get&gt; etc. have to be brought to
-       the user's attention with error messages.  Requires a mode flag or,
-       better, dispatching via the legacy handler first.
-       (1998-06-24) <br>
-       -- Note that static caching allows the correct handler class to be
-	  loaded without having to hack the search order in
-	  <code>loadHandler</code>. 
-
-  <li> <b>Impr:</b> Character Entities should be defined in tagset <br>
-       Should have defined value; copy value into references to short-circuit
-       lookup.  <code>TextUtil.expandCharacterEntities</code> can then make
-       use of this.
-       (1998-06-22) <br>
 
   <li> <b>Hole:</b> <code>ToParseTree</code> should take a tagset <br>
        Tagset is needed to attach actions to constructed nodes.
@@ -173,12 +190,6 @@ See also:
 
   <li> <b>Impr:</b> Tagset should extend EntityTable, or reference one. <br>
        This will make it easier to define entities and tags in the same DTD.
-       (1998-06-19) <br>
-
-  <li> <b>Hole:</b> Character entity class, handler <br>
-       Having a separate node class and handler class for character entities
-       would simplify inserting and expanding them.  Would break some legacy
-       code, though.
        (1998-06-19) <br>
 
   <li> <b>Impr:</b> PUT_VALUE action code needed <br>
@@ -192,42 +203,12 @@ See also:
        ...are still unimplemented. 
        (1998-06-18) <br>
 
-  <li> <b>Hole:</b> PIA namespaces and data types <br>
-       During the transition Agent and Transaction need to be able to
-       return both SGML and DOM data as needed.  Fortunately many of the
-       namespaces contain only strings; it's really only hooks that differ.
-       (1998-06-18) <br>
-       -- Part of the solution is making Agent and Transaction implement an
-	  interface with methods like <code>getObjectAt</code> and
-	  <code>getStringAt</code>, etc. instead of the Attr interface.
-
-  <li> <b>Prop:</b> New InterForm extensions (?). <br>
-       (of course, the really obvious one is <code>.dpml</code> -- Document
-       Processing Markup Language. (6-29)
-       <dl compact>
-	 <dt> .mh (xh?)
-	 <dd> ``Meta-HTML'' -- resulting in a MIME type of
-	      <code>text/html</code> 
-	 <dt> .mx (xx?)
-	 <dd> ``Meta-XML'' -- resulting in a MIME type appropriate for XML.
-	 <dt> .md
-	 <dd> ``Meta-Data'' -- the MIME type is computed by the file
-	 <dt> .mt
-	 <dd> ``Meta-Transaction'' -- the entire headers are computed.
-       </dl>
-       (1998-06-18) <br>
-
   <li> <b>Impr:</b> ISO 8601 date representation (dashes) <br>
        See <a href="http://www.ft.uni-erlangen.de/~mskuhn/iso-time.html">this
        summary</a>.  The main things needing fixing are the entity table
        initialization, and dates as presented by the History agent's hook.
        (1998-06-18) <br>
        -- Should add timezone and UTC time/date as well.
-
-  <li> <b>Impr:</b> Entities need to be initialized by the Tagset. <br>
-       The justification for this is that strictly speaking entities are
-       defined in the DTD.
-       (1998-06-18) <br>
 
   <li> <b>Impr:</b> Caching for subProcess stack <br>
        ContextStack should have a <code>free</code> link to a free
@@ -244,12 +225,14 @@ See also:
   <li> <b>Impr:</b> <code>Filter</code> parse tree input <br> 
        Filter should  be able to read a serialized parse tree.
        (1998-06-15) <br>
-       -- It should do so if the input file ends in ``<code>.obj</code>''.
+       -- It should do so if the input file ends in ``<code>.xho</code>'' or
+          ``<code>.xxo</code>''.
        
   <li> <b>Hole:</b> Legacy Handlers <br>
        <code>cd <a href="../interform/handle">../interform/handle</a>;
        make dps-check </code> for report.
        (1998-06-15) <br>
+       -- now largely abandoned.
 
   <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
@@ -261,28 +244,12 @@ See also:
        values; the NodeList of an assigned value would be a copy (just like we
        presently do for attribute lists, and for the same reason). 
 
-  <li> <b>Hole:</b> <code>BasicParser</code>: content parse control <br>
-       Currently Parser does not check syntax of current node to see whether
-       to look for entities or elements in the content.
-       <br>
-
-  <li> <b>Hole:</b> <code>SGMLParser</code>: content models <br>
-       Currently Parsers and Tagsets do not have any notion of content model.
-       <br>
-
   <li> <b>Impr:</b> <code>ParseTreeElement</code> hasActiveAttributes <br>
        ParseTreeElement should keep information about whether any of its
        attributes contain entities that need to be expanded.  Should be much
-       faster, since most don't and it's known at parse time. <p>
-
+       faster, since most don't and it's known at parse time.
        The other possibility is lazy evaluation -- don't even look at them
-       until they're needed when converting an attribute's value to a string.<p>
-       <br>
-
-  <li> <b>Wish:</b> <code>toNextNode</code>  <br>
-       Might want flag in Input's that tells whether the current node has been
-       processed yet.  (really relevant only for toNextNode, to keep track of
-       whether we've enumerated the children yet)
+       until they're needed when converting an attribute's value to a string.
        <br>
 
   <li> <b>Wish:</b> <code>ParseTreeIterator</code> <br>
