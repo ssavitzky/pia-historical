@@ -9,17 +9,13 @@ import java.util.* ;
 import java.io.File ;
 
 /**
- * An enhanced property class that provides support to monitor changes.
  * This class extends the basic properties class of Java, by providing
- * monitoring support. It also provides more type conversion.
- * @see PropertyMonitoring
+ * more type conversion.
  */
 
 public class Piaproperties extends Properties {
     /**
-     * Update a property value.
-     * Assign a value to a property. If the property value has really changed
-     * notify our observers of the change.
+     * Assign a value to a property. 
      * @param name The name of the property to assign.
      * @param value The new value for this property, or <strong>null</strong>
      *    if the property setting is to be cancelled.

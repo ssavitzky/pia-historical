@@ -65,7 +65,8 @@ public class  HTTPResponse extends Transaction {
 
 
   /**
-   * @returns HTTP   statuscode  message
+   * Returns HTTP + statuscode + message
+   * @returns HTTP statuscode  message
    */
   public String protocolInitializationString(){
    //subclass should implement
@@ -96,12 +97,12 @@ public class  HTTPResponse extends Transaction {
   }
   
   
-/** 
- * defaultHandle --   do a proxy for request
- */
- public void defaultHandle( Resolver resolver ){
+  /** 
+   * Send a response back to requester
+   */
+  public void defaultHandle( Resolver resolver ){
     sendResponse( resolver );
- }
+  }
  
 
 
@@ -217,8 +218,8 @@ public class  HTTPResponse extends Transaction {
     }
 
   /**
-   *   @returns the status code for this response. 
-   *
+   * Returns status code for this response.
+   * @returns the status code for this response. 
    */
   public int statusCode(){
     return  code;
@@ -257,17 +258,15 @@ public class  HTTPResponse extends Transaction {
 
   /**
    * controls -- Add controls (buttons,icons,etc.) for agents to this response
-   * actual final form determined by machine
-   * NOTE: not implemented  // maybe move to content?
+   * @param aThing any control
    */
   public void addControl( Object aThing ){
     controls.addElement( aThing );
   }
 
   /**
-   * controls -- Add controls (buttons,icons,etc.) for agents to this response
-   * actual final form determined by machine
-   * NOTE: not implemented
+   * Return controls as an array of Objects.
+   * @return an array of Objects
    */
   public Object[] controls(){
     int size = 0;
@@ -285,7 +284,9 @@ public class  HTTPResponse extends Transaction {
 
 
   /**
-   *  constructors
+   * Header and content is created from the fromMachine.
+   * @param from where request is originated
+   * @param to where response is sent to
    */
   public HTTPResponse( Machine from, Machine to ){
     Pia.instance().debug(this, "Constructor-- [ machine from, machine to ] on duty...");
@@ -299,8 +300,9 @@ public class  HTTPResponse extends Transaction {
   }
  
   /**
-   * no header, content, and thread does not automatically start
-   * 
+   * A response to a request transaction -- a blank header is created.
+   * @param t request transaction
+   * @param doStart if false thread does not start automatically
    */
   public HTTPResponse(  Transaction t, boolean doStart  ){
     Pia.instance().debug(this, "Constructor-- [ transaction t, boolean startThread ] on duty...");
@@ -321,7 +323,8 @@ public class  HTTPResponse extends Transaction {
   
 
   /**
-   *  constructors
+   *  @param t request transaction
+   *  @param from source from which header and content are created
    */
   public HTTPResponse(Transaction t,  Machine from ){
     Pia.instance().debug(this, "Constructor-- [ Transaction t, machine from ] on duty...");
@@ -338,7 +341,11 @@ public class  HTTPResponse extends Transaction {
 
 
   /**
-   *  constructor use in error response.  Thread does not started automatically
+   * Use to create error response -- a blank header is created.
+   * @param from where request is originated
+   * @param to where to send response
+   * @param ct a define content
+   * @param doStart if false thread does not start -- allows user to set header information.
    */
   public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart ){
     Pia.instance().debug(this, "Constructor-- [ machine from, machine to, content ct ] on duty...");
@@ -363,7 +370,9 @@ public class  HTTPResponse extends Transaction {
 
 
   /**
-   * content is known, but no header
+   * Content is known and a blank header is created.
+   * @param t request transaction
+   * @param ct a define content
    */
   public HTTPResponse(  Transaction t, Content ct ){
     Pia.instance().debug(this, "Constructor-- [ transaction t, content ct ] on duty...");
@@ -384,7 +393,10 @@ public class  HTTPResponse extends Transaction {
   }
   
   /**
-   * content is known and a defined header
+   * Content and  header are known.
+   * @param t request transaction
+   * @param ct a defined content
+   * @param hd a defined header
    */
   public HTTPResponse(  Transaction t, Content ct, Headers hd ){
     Pia.instance().debug(this, "Constructor-- [ transaction t, content ct, headers hd ] on duty...");
@@ -406,8 +418,7 @@ public class  HTTPResponse extends Transaction {
   }
   
   /**
-   * 
-   * close connection on from machine 
+   *  Create a content object from the fromMachine.
    * 
    */
   protected void initializeContent(){
@@ -430,7 +441,7 @@ public class  HTTPResponse extends Transaction {
   }
 
   /**
-   * output protocolInitializationString, headers, and content if request.
+   * output protocolInitializationString, headers, and content.
    */
   public void printOn(OutputStream stream) throws IOException{
      PrintStream out = new PrintStream( stream );
@@ -778,7 +789,11 @@ public class  HTTPResponse extends Transaction {
   }
 
   /**
-   *  constructors
+   * Header and content is created from the fromMachine -- for debugging only.
+   * @param from where request is originated
+   * @param to where response is sent to
+   * @param debug set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
   public HTTPResponse( Machine from, Machine to, boolean debug ){
     DEBUG = debug;
@@ -791,9 +806,16 @@ public class  HTTPResponse extends Transaction {
     toMachine(  to );
 
   }
- 
+
+
   /**
-   *  constructor use in error response.  Thread does not started automatically -- for debugging only
+   * Use to create error response -- a blank header is created -- for debugging only.
+   * @param from where request is originated
+   * @param to where to send response
+   * @param ct a define content
+   * @param doStart if false thread does not start -- allows user to set header information.
+   * @param debug set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
   public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart, boolean debug ){
     DEBUG = debug;
@@ -813,9 +835,13 @@ public class  HTTPResponse extends Transaction {
     toMachine(  to );
     
   }
- 
+
   /**
-   * content is known, but no header -- for debugging only
+   * Content is known and a blank header is created -- for debugging only.
+   * @param t request transaction
+   * @param ct a define content
+   * @param debug set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
   public HTTPResponse(  Transaction t, Content ct, boolean debug ){
     DEBUG = debug;
@@ -836,8 +862,11 @@ public class  HTTPResponse extends Transaction {
   }
   
   /**
-   * no header, content, and thread does not automatically start
-   * 
+   * A response to a request transaction -- a blank header is created -- for debugging only.
+   * @param t request transaction
+   * @param doStart if false thread does not start automatically
+   * @param debug set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
   public HTTPResponse(  Transaction t, boolean doStart, boolean debug  ){
     DEBUG = debug;

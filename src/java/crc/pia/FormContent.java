@@ -105,9 +105,12 @@ public class FormContent extends Properties implements Content{
     return howmany;
   }
 
-
   /**
-   * read data into buffer
+   * Read data into buffer.  
+   * This gets called from a transaction that points to this content.
+   * When the transaction waits for itself to be resolved, it calls
+   * this method.
+   * @return false if there is no more data to process
    */
   public boolean processInput(){
     int len = -1;
@@ -129,9 +132,8 @@ public class FormContent extends Properties implements Content{
   }
 
  /** 
-  * Return as a string all existing header information for this
-  * object.
-  * @return String with HTTP style header <tt> name: value </tt><br>
+  * Return as header associated with this content.
+  * @return header associated w/ this content.
   */
   public Headers headers(){
     if( headers!= null )
@@ -140,11 +142,9 @@ public class FormContent extends Properties implements Content{
       return null;
   }
   
- /** 
-  * Return the  value of the given header or void if none.
-  * @param  field name of header field
-  * @return String value of a header attribute.
-  */
+  /** 
+   * Set a header associated with this content.
+   */
   public void setHeaders( Headers headers ){
     if( headers!= null )
       this.headers = headers;
@@ -168,7 +168,8 @@ public class FormContent extends Properties implements Content{
   }
 
   /**
-   * return source
+   * Return input stream
+   * @return input stream
    */
   public InputStream source(){
     return body;
@@ -177,14 +178,14 @@ public class FormContent extends Properties implements Content{
   /**
    * number of bytes available from buffer
    */
-  protected int available(){
+  private int available(){
     return zbuf.length() - pos;
   }
 
   /**
    * read from buffer
    */
-  protected int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
+  private int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
     int limit = 0;
     int len   = -1;
 
@@ -218,8 +219,11 @@ public class FormContent extends Properties implements Content{
     return limit;
   }
 
- /**  get the next chunk of data as bytes
-  *  @return number of bytes read -1 means EOF
+ /**  
+  * Get the next chunk of data as bytes and store in byte array passed in as parameter.
+  * If there is data in buffer, read from stream.
+  * @param buffer byte array to store read data.
+  * @return number of bytes read -1 means EOF.
   */
   public int read(byte buffer[]) throws IOException{
     int len = -1;
@@ -252,12 +256,13 @@ public class FormContent extends Properties implements Content{
       myheader.setContentLength( len );
   }
  
- 
- /**
-  * get the next chunk of data as bytes
+  /**
+  * Get the next chunk of data as bytes and store in byte array passed in as parameter.
+  * If there is data in buffer, read from stream.
+  * @param buffer place to store read data
   * @param offset position in buffer to start placing data
   * @param length number of bytes to read
-  * @return number of bytes read
+  *  @return number of bytes read
   */
   public int read(byte buffer[], int offset, int length) throws IOException{
     int len = -1;
@@ -309,8 +314,10 @@ public class FormContent extends Properties implements Content{
     source( in );
   }
 
- /**
-   * read from content object and return a string
+
+  /**
+   * Return a copy of this content's data as bytes.
+   * @return a copy of this content's data as bytes.
    */
   public byte[] toBytes(){
     byte[]buffer = new byte[1024];
@@ -331,9 +338,12 @@ public class FormContent extends Properties implements Content{
     return null;
   }
 
+
   /**
-   * read from content object and return a string
+   * Return this content's data as a string.
+   * @return this content's data as a string.
    */
+
   public String toString(){
     byte[]buffer = new byte[1024];
     int bytesRead;
@@ -360,6 +370,10 @@ public class FormContent extends Properties implements Content{
     return null;
   }
 
+  /**
+   * Split query string into key-value pairs and store them into
+   * property list.
+   */
   public void setParameters(String toSplit){
     StringTokenizer tokens = null;
     String token = null;
@@ -411,6 +425,7 @@ public class FormContent extends Properties implements Content{
   }
 
   /**
+   * Return parameter key words in the original order.
    * @return parameter key words in the original order
    */
   public String[]paramKeys(){
@@ -425,6 +440,7 @@ public class FormContent extends Properties implements Content{
   }
 
   /**
+   * Return original query string
    * @return original query string
    */
   public String queryString(){

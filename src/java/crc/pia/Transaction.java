@@ -9,14 +9,9 @@
  * transactions with the interested agents.
  *
  * A Transaction has a queue of ``handlers'', which are called
- * (from the $transaction->satisfy() method) after all agents
+ * (from the transaction.satisfy() method) after all agents
  * have acted on it.  At least one must return true, otherwise
  * the transaction will ``satisfy'' itself.
- *
- * In a proper implementation, Transaction would be a subclass of 
- * DS::Thing, and Response and Request would be subclasses of it.
- * It's done backwards here in order to re-use existing libraries.
- *
  */
 
 package crc.pia;
@@ -45,7 +40,7 @@ import crc.tf.UnknownNameException;
 public abstract class Transaction implements Runnable{ // implements Runnable added by Greg
   public boolean DEBUG = false;
   /**
-   * Attribute index - execution thread
+   * Attribute index - use to notify thread pool when this transaction is done
    */
   protected Athread executionThread;
 
@@ -79,7 +74,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   protected Content contentObj;
 
   /** 
-   *  class variable-- factory to generate  content objects
+   *  Attribute index - factory to generate  content objects
    */
   // subclasses probably want to use different factories
   static public ContentFactory cf = new ContentFactory();
@@ -128,7 +123,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   protected String minor = "0";
 
   /**
-   * Attribute index - store request URL string
+   * Attribute index - store a request transaction
    */
   protected Transaction requestTran;
 
@@ -166,6 +161,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
   /**
+   * Returns the value of a header field, or null if not known.
    * @returns the value of a header field, or null if not known. 
    *
    */
@@ -177,7 +173,8 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
   /**
-   * @returns all header information as string. Machine.java uses this.
+   * Returns all header information as string.
+   * @returns all header information as string.
    *
    */
    public String headersAsString(){
@@ -188,7 +185,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    }
 
  /**
-   * the initial protocol string (e.g. everything before the header)
+   * the initial protocol string -- everything before the header.
    */
  public String protocolInitializationString;
 
@@ -247,6 +244,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
   /**
+   * Returns url string
    * @return url string
    */
   public String url(){
@@ -489,7 +487,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
   /**
-   * assert a given feature with the given value default to Boolean true
+   * assert a given feature with the given value -- default to Boolean true
    */
   public void assert( String name ) {
     features.assert(name, new Boolean( true ) );
@@ -509,10 +507,19 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     features.deny(name);
   }
 
+  /**
+   * Test to see if the transaction has this feature
+   * @param name feature name
+   * @return true if it does
+   */
   public boolean has( String name ) {
     return features.has(name);
   }
 
+  /**
+   * Compute a feature by using transaction feature Registry
+   * @param featureName the name of the feature
+   */
   public Object computeFeature( String featureName ) throws UnknownNameException{
     UnaryFunctor c;
     try{
@@ -549,9 +556,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   */
 
   /**
-   * temporary treatment of content objects
-   * while transitioning to full objectIvity...
-   * Append previous transaction's content to this trasaction content
+   * Create header from fromMachine
    */
   protected void initializeHeader(){
     //content source set in fromMachine method
@@ -576,9 +581,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
   /**
-   * temporary treatment of content objects
-   * while transitioning to full objectIvity...
-   * Append previous transaction's content to this trasaction content
+   * Create source object from fromMachine
    */
   protected void initializeContent(){
     //content source set in fromMachine method
@@ -695,6 +698,11 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   protected void errorResponse(String msg){
   }
 
+  /**
+   * Test whether a criteria matches one of those of the features
+   * @param criteria a vector of criterias
+   * @return true if there is a match
+   */
   protected boolean matches(Vector criteria){
     return features().matches( criteria, this );
   } 
@@ -746,8 +754,6 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
 
   /**
    * controls -- Add controls (buttons,icons,etc.) for agents to this response
-   * actual final form determined by machine
-   * NOTE: not implemented  // maybe move to content?
    */
   public void addControl( Object aThing ){
   }
@@ -757,14 +763,16 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
  // initialization that requires IO
 
 /** run - process the transaction
- * THIS should be called  just after a transaction has been but,
+ * <pre>
+ * THIS should be called  just after a transaction has been created but,
  * created before resolution begins.(Resolution should wait until feature values are available).
  * This thread should live until the transaction has been satisfied.
  * each transaction goes through two logical steps.
- * first the content cones in from the FROM machine 
+ * first the content comes in from the FROM machine 
  * then content goes out to the TO machine.
  * for reasons of efficiency,  and interactions with the resolver,
  * the actual processing is not so clean.
+ * </pre>
  */
   public void run()
   {

@@ -152,8 +152,8 @@ public class Machine {
   }
 
   /**
-   * send_response sends a response to whatever this machine refers to.
-   * @returns the number of bytes read. 
+   * Sends a response through output stream, and if there are controls associated with
+   * this response they are added.
    */
   public void sendResponse (Transaction reply, Resolver resolver) throws IOException {
     PrintStream out = null;
@@ -255,7 +255,7 @@ public class Machine {
     closeConnection();
   }
 
-  protected byte[] suckData( InputStream input )throws IOException{
+  private byte[] suckData( InputStream input )throws IOException{
     byte[]buffer = new byte[1024];
     int bytesRead;
     HttpBuffer data = new HttpBuffer(); 
@@ -274,6 +274,9 @@ public class Machine {
 
     }
 
+  /**
+   * Get request through a proxy by opening the proxy socket
+   */
   protected void getReqThruProxy(URL proxy, Transaction request, Resolver resolver) throws PiaRuntimeException {
     int zport = 80;
     String zhost;
@@ -322,8 +325,7 @@ public class Machine {
   }
 
   /**
-   * getRequest string.
-   * @returns the number of bytes read. 
+   * Get request data and create a response with the data 
    */
   public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException  {
     URL proxy;
@@ -368,8 +370,8 @@ public class Machine {
 
 
   /**
-   * get proxy string.
-   * @returns the number of bytes read. 
+   * Get proxy url given protocol scheme 
+   * @returns the url of the proxy machine 
    */
   public URL proxy ( String scheme ) {
     URL myproxy = null;
@@ -388,8 +390,11 @@ public class Machine {
   }
 
   /**
-   * set proxy string.
-   *
+   * Set proxy string given protocol scheme and proxy string -- if proxy string is not
+   * define, the proxy string is retrieve from the Pia.
+   * @param scheme protocol scheme
+   * @param proxyString a url string
+   * @return url to proxy
    */
   public URL setProxy (String scheme, String proxystring) throws MalformedURLException{
     String p = null;
@@ -425,8 +430,9 @@ public class Machine {
   }
 
   /**
-   * Constructor 
-   * @returns nothing. 
+   * @param hostName a string representing host name. 
+   * @param port port number
+   * @param socket socket receives from accepter's listening socket
    */ 
   public Machine( String hostName, int port, Socket socket ){
     this.hostName = hostName;
@@ -434,6 +440,10 @@ public class Machine {
     this.socket = socket ;
   }
 
+  /**
+   * @param hostName a string representing host name. 
+   * @param port port number
+   */ 
   public Machine( String hostName, int port ){
     this.hostName = hostName;
     this.port = port;

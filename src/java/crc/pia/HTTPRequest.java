@@ -43,13 +43,14 @@ public class  HTTPRequest extends Transaction {
    */
   protected String method;
 
-  /**  url
-   * the url of this request
+  /**  
+   * the url string of this request
    */
   protected String url;
 
 
   /**
+   * Return url string associated with this request
    * @return url string
    */
   public String url(){
@@ -57,7 +58,7 @@ public class  HTTPRequest extends Transaction {
   }
 
   /** 
-   * query string associated w/ a GET method
+   * query string associated with this transaction
    */
   protected String queryString;
   
@@ -77,14 +78,14 @@ public class  HTTPRequest extends Transaction {
 
 
   /**
-   * @return method
+   * @return request method
    */
   public String method(){
     return method;
   }
 
   /**
-   * @return host
+   * @return host at which a request is directed 
    */
   public String host(){
     URL u = null;
@@ -102,7 +103,7 @@ public class  HTTPRequest extends Transaction {
   }
 
   /**
-   * @return protocol
+   * @return this request's protocol
    */
   public String protocol(){
     URL u = null;
@@ -195,7 +196,9 @@ public class  HTTPRequest extends Transaction {
       return null;
   }
 
-
+  /**
+   * Create a FormContent from fromMachine
+   */
   protected void initializeContent(){
     InputStream in;
     String test = null;
@@ -226,6 +229,7 @@ public class  HTTPRequest extends Transaction {
 
 
   /**
+   * Return original request's first line.
    * @returns HTTP method url
    */
   public String protocolInitializationString(){
@@ -377,7 +381,7 @@ public class  HTTPRequest extends Transaction {
 
 
   /**
-   * toMachine get toMachine-- the machine that is the target of the request.
+   * Return the machine that is the target of the request.
    * 
    */
   public Machine toMachine(){
@@ -403,12 +407,12 @@ public class  HTTPRequest extends Transaction {
   }
 
 
-/** 
- * defaultHandle --   do a proxy for request
- */
- public void defaultHandle( Resolver resolver ){
+  /** 
+   * Serves a request not directed at the agency.
+   */
+  public void defaultHandle( Resolver resolver ){
     handleRequest(  resolver);
- }
+  }
   
   /**
    * handleRequest -- Default handling for a request:
@@ -431,7 +435,7 @@ public class  HTTPRequest extends Transaction {
   }
   
   /**
-   * errorResponse -- Return a "not found" error for a request with no destination.
+   * errorResponse -- Return a "not found" error along with reason.
    *
    *
    */
@@ -461,8 +465,9 @@ public class  HTTPRequest extends Transaction {
   }
 
   /**
-   * A request transaction 
-   *  constructor
+   *  Take a machine as source of input for header and content.
+   *  @param from source of input for this transaction
+   *  
    */
   public HTTPRequest( Machine from ){
     Pia.instance().debug(this, "Constructor-- [ machine from ] -- on duty...");
@@ -479,7 +484,9 @@ public class  HTTPRequest extends Transaction {
 
 
   /**
-   * A Request transaction w/ default header
+   * A request transaction with default blank header and a define content.
+   * @param from originator of request -- later data will be sent to this machine.
+   * @param ct a define content.
    */
   public HTTPRequest( Machine from, Content ct ){
     Pia.instance().debug(this, "Constructor-- [ machine from, content ct ] on duty...");
@@ -499,7 +506,10 @@ public class  HTTPRequest extends Transaction {
   }
  
   /**
-   * A Request transaction w/ a defined header
+   * A request transaction with define header and content.
+   * @param from originator of request -- later data will be sent to this machine.
+   * @param ct a define content.
+   * @param hd a define header.
    */
   public HTTPRequest( Machine from, Content ct, Headers hd ){
     Pia.instance().debug(this, "Constructor-- [ machine from, content ct, headers hd ] -- on duty...");
@@ -742,7 +752,9 @@ public class  HTTPRequest extends Transaction {
     }catch(Exception e){;}
   }  
 
-
+  /**
+   * Here for debugging purpose -- if DEBUG flag is false call Transaction's run method()
+   */
   public void run(){
     if(!DEBUG)
       super.run();
@@ -774,8 +786,10 @@ public class  HTTPRequest extends Transaction {
   }
 
   /**
-   * A request transaction 
-   *  constructor           -- for debugging only
+   * Take machine as source of input -- this is a debugging constructor
+   * @param from source of input for header and content
+   * @param debugflag set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
   public HTTPRequest( Machine from, boolean debugflag ){
     DEBUG = debugflag;
@@ -791,8 +805,13 @@ public class  HTTPRequest extends Transaction {
   }
 
   /**
-   * A Request transaction w/ default header -- for debugging only
+   * A request transaction with default blank header and a define content -- debugging version.
+   * @param from originator of request -- later data will be sent to this machine.
+   * @param ct a define content.
+   * @param debugflag set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
    */
+
   public HTTPRequest( Machine from, Content ct, boolean debugflag ){
     DEBUG = debugflag;
 
@@ -809,10 +828,15 @@ public class  HTTPRequest extends Transaction {
     fromMachine( from );
     toMachine( null );
   }
- 
+
   /**
-   * A Request transaction w/ a defined header -- for debugging only
-   */
+   * A request transaction with define header and content -- debugging version.
+   * @param from originator of request -- later data will be sent to this machine.
+   * @param ct a define content.
+   * @param hd a define header.
+   * @param debug set DEBUG flag -- if true use local run method and thread does not start
+   * automatically
+   */ 
   public HTTPRequest( Machine from, Content ct, Headers hd, boolean debug ){
     DEBUG = debug;
 

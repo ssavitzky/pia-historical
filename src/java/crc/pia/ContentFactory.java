@@ -8,8 +8,8 @@ import w3c.www.mime.MimeType;
 
 
 /**  ContentFactory
- * creates an appropriate content object for an HTTP stream
- *  creates a hash table for the headers
+ * creates an appropriate content object for an HTTP stream.
+ * Currently, only creates either a FormContent or ByteStreamContent.
  */
 public class ContentFactory
 {
@@ -20,7 +20,9 @@ public class ContentFactory
   }
 
 
-  /** create a content object from the given stream
+  /** create a content object from the given stream.
+   * If the parameter contentType is "APPLICATION_X_WWW_FORM_URLENCODED", create
+   * a FormContent otherwise create a ByteStreamContent.
    */
   public Content createContent(String contentType, InputStream input)
   {

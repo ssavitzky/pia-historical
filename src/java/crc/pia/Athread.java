@@ -12,6 +12,10 @@ public class Athread implements UnaryFunctor{
   protected int status;
   protected Thread zthread;
 
+  /**
+   * Creates a thread to run a transaction.
+   * @param o a transaction as an object.
+   */
   public Object execute( Object o ){
     Transaction t = (Transaction) o;
     zthread = new Thread( t );

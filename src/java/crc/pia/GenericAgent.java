@@ -35,7 +35,7 @@ public class GenericAgent implements Agent {
 
 
   /**
-   * Attribute index - attribute table
+   * Attribute index - attribute table for storing options
    */
   protected Hashtable attributes = new Hashtable();
 
@@ -83,7 +83,7 @@ public class GenericAgent implements Agent {
   protected Vector criteria;
 
   /**
-   * Attribute index - virtual Machine to which explicit requests are directed.
+   * Attribute index - virtual Machine to which local requests are directed.
    *
    */
   protected AgentMachine virtualMachine;
@@ -127,7 +127,7 @@ public class GenericAgent implements Agent {
   /**
    * Create a new request given method, url
    */
-  public Transaction createRequest(String method, String url){
+  private Transaction createRequest(String method, String url){
     Transaction request =  new HTTPRequest(Pia.instance().thisMachine());
     request.setMethod( method );
     request.setRequestURL( url );
@@ -233,7 +233,7 @@ public class GenericAgent implements Agent {
   }
 
   /**
-   * retrieve a directory attribute.
+   * retrieve a directory attribute. 
    * Makes sure that it ends in a file separator character.
    */
   public String[] dirAttribute(String key){
@@ -266,7 +266,12 @@ public class GenericAgent implements Agent {
 
   /**
    *  returns a directory that we can write data into.
-   *  creates one if necessary, starts with agent_directory,
+   *  creates one if necessary, starts with the following directory in order:
+   *  piaUsrRoot/agentName/  --> example, ~/Joe/pia/myHistory/ ( ~/Joe/pia is piaUsrRoot ) 
+   *  piaUsrRoot/agentType/  --> example, ~/Joe/pia/History/   ( ~/Joe/pia is piaUsrRoot ) 
+   *  /tmp/myHistory/    
+   * @return the first qualified directory out of the possible three above.
+   * A directory is qualified if it can be writen into.
    */
   public String agentDirectory(){
     String[] directories = dirAttribute("agent_directory");
@@ -315,7 +320,7 @@ public class GenericAgent implements Agent {
   /**
    * Agents maintain a list of feature names and expected values;
    * the features themselves are maintained by a FEATURES object
-   * attached to each transaction.
+   * attached to each transaction.  Add either a feature name or its value.
    */
   public void criteria(Object element){
     if( element != null ){
@@ -380,7 +385,7 @@ public class GenericAgent implements Agent {
   }
 
   /**
-   *  They can also be handled by code or InterForm hooks.  
+   * Act on a transaction that we have matched.  
    *
    */
   public void actOn(Transaction ts, Resolver res){
@@ -409,15 +414,22 @@ public class GenericAgent implements Agent {
 
     String reply = respondToInterform( trans, url, res );
     InputStream in = null;
-    if( reply != null  )
+    if( reply != null  ){
       in = new StringBufferInputStream( reply );
-    ByteStreamContent c = new ByteStreamContent( in );
+      ByteStreamContent c = new ByteStreamContent( in );
 
-    new HTTPResponse( trans, c );
+      Transaction response = new HTTPResponse( trans, false );
+      response.setStatus( 200 ); 
+      response.setContentType( "text/html" );
+      response.setContentObj( c );
+      response.startThread();
+    }else{
+      throw new PiaRuntimeException(this, "respond", "Bad reply.");
+    }
   }
 
   /**
-   * Options are strings stored in features.  Options may have
+   * Options are strings stored in attributes.  Options may have
    * corresponding features derived from them, which we compute on demand.
    */
   public void option(String key, String value) throws NullPointerException{
@@ -476,10 +488,7 @@ public class GenericAgent implements Agent {
   /**
    * Find an interform, using a simple search path and a crude kind
    * of inheritance.  Allow for the fact that the user may be trying
-   * to override the interform by putting it in $USR_ROOT/$name/.
-   * The search path used is:
-   *     option(root)/name : option(root)
-   *     USR_ROOT/name : PIA_ROOT/name : USR_ROOT : PIA_ROOT
+   * to override the interform by putting it in piaUsrAgentsStr/name/.
    */
   public String findInterform(URL url, boolean noDefault){
     if(  url == null ) return null;
@@ -529,10 +538,22 @@ public class GenericAgent implements Agent {
        * If the path isn't already defined, set it up now.
        *
        *  the path puts any  defined if_root first 
-       *   (if_root/$myname, if_root/$mytype, if_root),
-       *  then USR_ROOT (USR_ROOT/$myname, USR_ROOT/$mytype)
-       *  then PIA_ROOT (PIA_ROOT/$myname, PIA_ROOT/$mytype)
-       *  then USR_ROOT, then PIA_ROOT (for inheriting forms)
+       *   (if_root/myname, if_root/mytype, if_root),
+       *
+       *  piaAgentsStr/agentName/  --> example, /pia/Agents/myHistory/ 
+       *  piaAgentsStr/agentType/  --> example, /pia/Agents/History/
+       *  piaAgentsStr/            --> example, /pia/Agents/    
+       *
+       * If the above is not define
+       * next :
+       *
+       *  piaUsrAgentsStr/agentName/  --> example, ~Joe/pia/Agents/myHistory/ 
+       *  piaUsrAgentsStr/agentType/  --> example, ~Joe/pia/Agents/History/
+       *  piaAgentsStr/agentName/     --> example, /pia/Agents/myHistory/
+       *  piaAgentsStr/agentType/     --> example, /pia/Agents/History/
+       *  piaUsrAgentsStr/            --> example, ~Joe/pia/Agents/
+       *  piaAgentsStr/               --> example, /pia/Agents
+       * 
        */
       String home = Pia.instance().piaAgents();
       if ( !home.endsWith( filesep ) ){ home = home + filesep; }
@@ -657,6 +678,10 @@ public class GenericAgent implements Agent {
     initialize();
   }
 
+  /**
+   * Compute a feature associated with this agent.
+   * @param featureName a feature name.
+   */
  public Object computeFeature( String featureName ) throws UnknownNameException{
     if( featureName == null )
       throw new UnknownNameException("bad feature name.");

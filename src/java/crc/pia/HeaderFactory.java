@@ -27,6 +27,9 @@ public class HeaderFactory
   {
   }
 
+  /**
+   * Creates a blank header.
+   */
   public Headers createHeader(){
       Headers headers = new Headers();
       return headers;

@@ -4,12 +4,12 @@
 
 
 /**
- *A Resolver (i.e. an instance of PIA::Resolve) acts like a stack of
+ * A Resolver (i.e. an instance of PIA.Resolver) acts like a stack of
  * Transaction objects.  A resolver also has a list of agents which have
  * registered their interest.  For each transaction in the list, the
  * resolver attempts to match its features against every agent, and each
- * agent that matches  is given the chance to act_on the transaction.  In
- * general agent->act_on will either push some new transactions, register
+ * agent that matches  is given the chance to actOn the transaction.  In
+ * general agent.actOn will either push some new transactions, register
  * a handler agent, or both.
  *
  * After each agent has had its chance to act_on the transaction, any
@@ -172,7 +172,7 @@ public class Resolver extends Thread{
   }
 
   /**
-   * agentNames 
+   * Agents' names 
    * @return agents' names
    */
   public Enumeration agentNames(){
@@ -180,6 +180,7 @@ public class Resolver extends Thread{
   }
 
   /**
+   * Return agent according to name
    * @return agent according to name
    */
   public Agent agent( String name ){
@@ -204,7 +205,7 @@ public class Resolver extends Thread{
   protected void cleanup(boolean restart){
     // off course should check number of transaction
     //pop each transaction and tells its machine to shutdown
-    finish = false;
+    finish = restart;
   }
 
   protected void finalize() throws IOException{
@@ -272,9 +273,9 @@ public class Resolver extends Thread{
   }
 
   /**
-   * Find all agents that match the given transaction.
-   * Each agent that matches gets its act_on method called.
-   * Returns the number of matches.
+   * Find all agents that match the given transaction ;
+   * each agent that matches gets its actOn method called.
+   * @Return the number of matches.
    */
 
   public int match( Transaction tran ){
