@@ -78,6 +78,11 @@ public class includeHandler extends GenericHandler {
       return;
     }
 
+    if (ts == null) {
+      out.putNode(new ParseTreeComment("Cannot open tagset " + tsname));
+      return;
+    }
+
     // Create a Parser and TopProcessor to process the stream.  
 
     Parser p  = ts.createParser();
