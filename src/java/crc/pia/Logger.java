@@ -138,7 +138,8 @@ public class Logger {
      */
 
     protected String getFileName (String def) {
-	    File root_dir = agency.rootDir();
+      //	    File root_dir = agency.rootDir();
+	    File root_dir = agency.piaUsrRootDir();
 	    if ( root_dir == null ) {
 		String msg = "unable to get the agency root directory\n";
 		throw new PiaRuntimeException (this
