@@ -11,7 +11,17 @@
 <set entity name=departmentobject><read file="usertodept.dat" process></set>
 <set entity name=acctobject><read file="acct_codes.dat" process></set>
 
-<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Purchase Request number:</b><dd><u>&pnum;</u><dt><b>Department #:</b><dd><u><get index="departmentobject.&FORM.name;"></u><dt><b>Expense type/Account #:</b><dd><u>&FORM.expensetype;/<get index="acctobject.&FORM.expensetype;"></u><dt><b>Supplier:</b><dd><u>&FORM.supplier;</u><dt><b>Cost:</b><dd><u>&FORM.cost;</u></dl><p>
+
+<set entity name=dataobject><dl>
+<dt><b>Name:</b><dd><u>&FORM.name;</u>
+<dt><b>Purchase Request number:</b><dd><u>&pnum;</u>
+<dt><b>Department #:</b><dd><u><get index="departmentobject.&FORM.name;"></u>
+<dt><b>Expense type/Account #:</b><dd><u>&FORM.expensetype;/<get index="acctobject.&FORM.expensetype;"></u>
+<dt><b>Supplier:</b><dd><u>&FORM.supplier;</u>
+<dt><b>Contact:</b><dd><u>&FORM.contact;</u>
+<dt><b>Cost:</b><dd><u>&FORM.cost;</u></dl><p>
+
+
 <table border><caption><h2>Item List</h2></caption>
 <th>Item <th>Quantity <tr>
 <td>&FORM.item1; <td>&FORM.quantity1; <tr>

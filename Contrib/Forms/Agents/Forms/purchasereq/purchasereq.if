@@ -16,8 +16,11 @@ Username:
 <set entity name=accountlist><read file="account_types.dat"></set>
 Expense Type: <select name=expensetype><repeat list="&accountlist;"><option>&li;</repeat></select><p>
 
-Suggested Supplier:
-<input name=supplier size=25><br>
+Suggested Supplier:<br>
+<input name=supplier size=60><br>
+
+Contact Information:<br>
+<input name=contact size=60><br>
 
 Estimated Total Cost ($):
 <input name=cost value=0><p>
@@ -25,7 +28,7 @@ Estimated Total Cost ($):
 Items to be purchased:<br>
 <set entity name=numlist><read file="numlist2.dat"></set><ol foreach list="&numlist;"><li> <input name=item&li; size=45> Qty: <input name=quantity&li; size=10><br></ol><p>
 
-Special Instructions (Contact numbers and additional info can be included here):<br>
+Special Instructions:<br>
 <textarea name=comments rows=2 cols=70></textarea><br>
 
 <input type=submit name=process value=Process>
