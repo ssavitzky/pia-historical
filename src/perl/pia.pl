@@ -152,8 +152,8 @@ require PIA::Resolver;
 require PIA::Machine;
 
 require PIA::Agent;
-require PIA::Agent::agency;
-require PIA::Agent::dofs;
+require PIA::Agent::Agency;
+require PIA::Agent::DOFS;
 require LWP::UserAgent;
 
 use HTTP::Date;
@@ -168,11 +168,11 @@ use HTTP::Date;
 $this_machine=PIA::Machine->new($PIA_PORT, $PIA_HOST);
 
 $main::resolver=new PIA::Resolver;
-$agency = new PIA::Agent::agency 'agency';
-#$agency->option(root,"$PIA_ROOT/agency/"); # where to look for interforms
-
+$agency = new PIA::Agent::Agency 'Agency';
 $main::resolver->register_agent($agency);
-$agency->resolver($main::resolver);
+$dofs = new PIA::Agent::DOFS 'DOFS';
+$main::resolver->register_agent($dofs);
+
 $main::resolver->resolve();	# handle any initialization requests...
 
 #########################################################################

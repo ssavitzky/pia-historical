@@ -363,69 +363,6 @@ sub dir_attribute {
 
 ############################################################################
 ###
-### Code Files:
-###
-
-local $agent;
-local $resolver;	
-local $context;
-local $request;
-local $response;
-local $url;
-local $path;
-
-### === no longer used ===
-sub load_file {
-    my ($self, $attr, $fn_attr, $default) = @_;
-
-    ## Read the file whose name is in attribute $fn_attr (or $default)
-    ##	  and stash it as one enormous string attribute in $attr.
-
-    my $name = $self->name;
-    my $fn = $self->file_attribute($fn_attr);
-    $fn = $default unless defined $fn && $fn ne '';
-    $fn = $self->find_interform($fn);
-
-    return unless defined $fn;
-
-    my $code = readFrom($fn);
-    print "  $name loaded $attr from $fn\n" unless $main::quiet;
-
-    $self->attribute($attr, $code);
-    return 1;
-}
-
-sub compile_file {
-    my ($self, $attr, $fn_attr, $default) = @_;
-
-    ## Read the file whose name is in attribute $fn_attr (or $default)
-    ##	  and make it into an anonymous subroutine in &$attr.  UCK!
-    ##	  Note that the code is compiled in PIA_AGENT and not in the
-    ##	  appropriate agent subclass.  Not too good.
-
-    my $name = $self->name;
-    my $fn = $self->file_attribute($fn_attr);
-    $fn = $default unless defined $fn && $fn ne '';
-    $fn = $self->find_interform($fn);
-
-    return unless defined $fn;
-
-    my $code = readFrom($fn);
-    $code = "\$subr = sub {\n" . $code . "\n};\n";
-
-    local $subr;
-    my $status = eval($code) if defined $code;
-    print "  $name: error in $fn: $@\n" if $@ ne '';
-    print "  $name compiled $attr from $fn\n" unless $main::quiet;
-
-    $self->attr("_$attr", $subr);
-    return 1;
-}
-
-
-
-############################################################################
-###
 ### Evaluating Code in Context:
 ###
 ### 	Execute some code in the context of the current agent.  
@@ -641,6 +578,8 @@ sub find_interform {
 	push @$if_path, ("$root$type/") if $name ne $type;
 	push @$if_path, ("$home$name/");
 	push @$if_path, ("$home$type/") if $name ne $type;
+	push @$if_path, ("$home" . lc $name . "/");
+	push @$if_path, ("$home" . lc $type . "/") if $name ne $type;
 	push @$if_path, ("$root","$home");
 
 	$self->dir_attribute(if_path,$if_path);
