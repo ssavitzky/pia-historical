@@ -65,7 +65,7 @@ public class TextUtil {
       return n.toString();
 
     ToString out = new ToString();
-    Copy.copyNode(n, FromParseTree(n), new FilterText(out));
+    Copy.copyNode(n, new FromParseTree(n), new FilterText(out));
     return out.getString();
   }
 
