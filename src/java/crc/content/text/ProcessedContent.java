@@ -14,6 +14,7 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.tagset.Loader;
 import crc.dps.output.ToWriter;
+import crc.dps.process.ActiveDoc;
 
 import java.io.Reader;
 import java.io.FileReader;
@@ -48,8 +49,8 @@ public class ProcessedContent extends  GenericContent {
   /** A path extension stripped from the input URL */
   String pathExtension = null;
 
-  /** The DocumentProcessor that actually does the work. */
-  InterFormProcessor processor;
+  /** The TopProcessor that actually does the work. */
+  ActiveDoc processor;
 
   /**
    * hold the tagset -- most editing operations affect this
@@ -115,7 +116,7 @@ public class ProcessedContent extends  GenericContent {
     pathExtension = path;
     tagsetName = tsname;
 
-    processor = new InterFormProcessor(a, req, resp, res);
+    processor = new ActiveDoc(a, req, resp, res);
     initializeTagset();
   }
 
