@@ -65,10 +65,12 @@ public class BasicTagset implements Tagset {
   protected List  allNames = null;
 
   protected int  MAX_TYPE = 10;
-  protected int  MIN_TYPE = -2;
+  protected int  MIN_TYPE = -3;
   protected Handler handlersByType[] = new Handler[MAX_TYPE - MIN_TYPE];
 
   protected boolean locked = false;
+
+  protected String paragraphElementTag = null;
 
   /** Syntax for an empty element. */
   public final static int EMPTY   = -1;
@@ -351,6 +353,11 @@ public class BasicTagset implements Tagset {
     return caseFoldAttributes? name.toLowerCase() : name;
   }
 
+  public String paragraphElementTag() { return paragraphElementTag; }
+  public void setParagraphElementTag(String tag) {
+    paragraphElementTag = tag;
+  }
+
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.
    */
@@ -436,20 +443,14 @@ public class BasicTagset implements Tagset {
     boolean parseEnts = syntax > 0 && (syntax & NO_ENTITIES) == 0;
     boolean parseElts = syntax > 0 && (syntax & NO_ELEMENTS) == 0;
     boolean expand    = syntax > 0 && (syntax & NO_EXPAND)   == 0;
-    try {
-      String name = (cname == null)? tag : cname;
-      Class c = NameUtils.loadClass(name, "crc.dps.handle.");
-      if (c == null) {
-	c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
-      }
-      if (c != null) h = (GenericHandler)c.newInstance();
+    h = loadHandler(tag, cname);
+    if (h != null) {
       h.setElementSyntax(syntax);
       h.setParseEntitiesInContent(parseEnts);
       h.setParseElementsInContent(parseElts);
       h.setExpandContent(expand);
-    } catch (Exception e) { 
-    }
-    if (h == null) {
+    } else {
+      // the following is redundant if loadHandler defaults properly:
       h = new GenericHandler(syntax, parseElts, parseEnts);
       h.setExpandContent(expand);
     }
@@ -460,6 +461,23 @@ public class BasicTagset implements Tagset {
       }
     }
     setHandlerForTag(tag, h);
+    return h;
+  }
+
+  /** Load an appropriate handler class and instantiate it. 
+   *	Subclasses (e.g. legacy) may need to override this.
+   */
+  protected GenericHandler loadHandler(String tag, String cname) {
+    GenericHandler h = null;
+    String name = (cname == null)? tag : cname;
+    Class c = NameUtils.loadClass(name, "crc.dps.handle.");
+    if (c == null) {
+      c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
+    }
+    try {
+      if (c != null) h = (GenericHandler)c.newInstance();
+    } catch (Exception e) {}
+    if (h == null) h = new GenericHandler();
     return h;
   }
 

@@ -4,6 +4,9 @@
 
 package crc.dps.tagset;
 
+import crc.util.*;
+import crc.dps.handle.*;
+
 /** The Legacy tagset.  This consists of the HTML syntax plus those
  *	actors that were used in old (legacy) InterForms. */
 public class legacy extends HTML_ts {
@@ -31,6 +34,31 @@ public class legacy extends HTML_ts {
 
   public legacy() {
     this("Legacy", true);
+  }
+
+  /** Load an appropriate handler class and instantiate it. 
+   *	Subclasses (e.g. legacyTagset) may need to override this.
+   */
+  protected GenericHandler loadHandler(String tag, String cname) {
+    GenericHandler h = null;
+    String name = (cname == null)? tag : cname;
+    // First shoot for a non-legacy handler that does the same thing.
+    Class c = NameUtils.loadClass(name, "crc.dps.handle.");
+    if (c == null) {
+      c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
+    }
+    try {
+      if (c == null) {
+	c = NameUtils.loadClass(NameUtils.javaName(name),
+				"crc.interform.handle.");
+	if (c != null) {
+	  h = new LegacyHandler((crc.interform.Handler)c.newInstance());
+	}
+      }
+      if (c != null) h = (GenericHandler)c.newInstance();
+    } catch (Exception e) {}
+    if (h == null) h = new GenericHandler();
+    return h;
   }
 
   legacy(String name, boolean emptyParagraphTags) {
