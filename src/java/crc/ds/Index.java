@@ -173,6 +173,21 @@ public class Index {
     return (String)items.at(currentItem);
   }
   
+  /**  returns the first string
+        usually the caller uses this to do the first level table lookup
+	*/
+ public String shift()
+  {
+    return (String)items.shift();
+    
+  }
+
+ public void unshift(String s)
+  {
+    items.unshift(s);
+    
+  }
+  
 
   /************************************************************************
   ** Construction and copying:
