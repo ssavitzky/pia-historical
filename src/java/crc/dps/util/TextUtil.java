@@ -60,9 +60,14 @@ public class TextUtil {
   /** Convert a node to a string, ignoring markup.
    */
   public static String getTextString(ActiveNode n) {
+    // First, see if n is a text node.  If it is, just convert it to a string.
     if (n.getNodeType() == NodeType.TEXT
 	|| n.getNodeType() == NodeType.ENTITY)
       return n.toString();
+
+    // If that doesn't work, we have to go through its entire contents and
+    // filter out the text.  We do it by cascading a FilterText (a kind of
+    // Output) into a ToString (another kind of Output).
 
     ToString out = new ToString();
     Copy.copyNode(n, new FromParseTree(n), new FilterText(out));
@@ -86,14 +91,14 @@ public class TextUtil {
    *	whitespace, but associates non-text markup with its concatenated text
    *	content.  Most useful for sorting nodes lexically.
    */
-  public static Enumeration getTextList(NodeList nl) {
+  public static List getTextList(NodeList nl) {
     List l = new List();
     Enumeration items = ListUtil.getListItems(nl);
     while (items.hasMoreElements()) {
       Association a = getTextAssociation((ActiveNode)items.nextElement());
       if (a != null) l.push(a);
     }
-    return l.elements();
+    return l;
   }
 
 
