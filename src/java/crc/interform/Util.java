@@ -221,6 +221,35 @@ public class Util extends crc.sgml.Util {
     return (v == null)? dflt : (int) v.numValue();
   }
 
+  /** return the string representation with digits after the .*/
+  public static String numberToString(double number, int digits)
+  {
+   if(digits < 0) return  java.lang.Double.toString(number);
+
+  // round it off
+     double factor = Math.pow(10,digits);
+     long val = Math.round(number * factor);
+     
+     String s =  java.lang.Long.toString(val);
+     while(s.length() < digits){
+       s = "0"+s;
+     }
+     String result;
+     
+     int l = s.length();
+     if(l>digits){
+       result = s.substring(0,l-digits);
+     }
+     else{
+       result = "0";
+     }
+     if(digits>0){
+       result += "." + s.substring(l-digits);
+     }
+     return result;
+  }
+
+
   /** Convert an SGML object to a Tokens list of &lt;dt&gt; and &lt;dd&gt;
    *	pairs.  The result is suitable for passing to, for example,
    *	Agent.addAttrs.

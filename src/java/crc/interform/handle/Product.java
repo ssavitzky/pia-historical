@@ -24,11 +24,12 @@ import crc.sgml.Tokens;
 public class Product extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<product>n1 n2 ... </product>\n" +
+    "<product [digits=D]>n1 n2 ... </product>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Return product of numbers in CONTENT\n" +
+    "Shows D digits after the decimal point.  (Default D=-1 which shows all digits.)" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -39,6 +40,6 @@ public class Product extends crc.interform.Handler {
     while (list.nItems() > 0) {
       result *= Util.numValue((SGML)list.shift());
     }    
-    ii.replaceIt(java.lang.Double.toString(result));
+    ii.replaceIt(Util.numberToString(result,Util.getInt(it,"digits",-1)));
   }
 }

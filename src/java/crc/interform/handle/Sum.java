@@ -24,11 +24,12 @@ import crc.sgml.Tokens;
 public class Sum extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<sum>n1 n2 ... </sum>\n" +
+    "<sum [digits=D]>n1 n2 ... </sum>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Return sum of numbers in CONTENT.\n" +
+    "Shows D digits after the decimal point.  (Default D=-1 which shows all digits.)" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -39,7 +40,8 @@ public class Sum extends crc.interform.Handler {
     for (int i = 0; i < list.nItems(); ++i) {
       result += Util.numValue(list.itemAt(i));
     }    
-    ii.replaceIt(java.lang.Double.toString(result));
+// Need a default for digits
+    ii.replaceIt(Util.numberToString(result,Util.getInt(it,"digits",-1)));
   }
 }
 

@@ -25,11 +25,12 @@ import crc.sgml.Text;
 public class Difference extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<difference>n1 n2 ... </difference>\n" +
+    "<difference [digits=D]>n1 n2 ... </difference>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Return difference of numbers in CONTENT\n" +
+    "Shows D digits after the decimal point.  (Default D=-1 which shows all digits.)" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -40,7 +41,7 @@ public class Difference extends crc.interform.Handler {
     while (list.nItems() > 0) {
       result -= Util.numValue((SGML)list.shift());
     }    
-    ii.replaceIt(new Text(java.lang.Double.toString(result)));
+    ii.replaceIt(Util.numberToString(result,Util.getInt(it,"digits",-1)));
   }
 }
 

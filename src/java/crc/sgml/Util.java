@@ -182,7 +182,7 @@ public class Util {
    *	Java doesn't handle generic numbers.
    */
   public static final double numValue(SGML it) {
-    if (it == null) return 0.0;
+    if (it == null  || it.contentText() == null) return 0.0;
     return it.contentText().numValue();
   }
 
