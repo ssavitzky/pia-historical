@@ -1509,6 +1509,12 @@ example).
 	  definition will be used.
     </doc>
   </define>
+  <define attribute=quoted boolean optional>
+    <doc> If present, specifies that the included document will be parsed but
+	  not processed.  This can be useful if, for example, the included
+	  document needs to access entities in the main document's namespace.
+    </doc>
+  </define>
 </define>
 
 <h3>Output</h3>

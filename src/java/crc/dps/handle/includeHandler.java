@@ -40,6 +40,8 @@ public class includeHandler extends GenericHandler {
     String     url  = atts.getAttributeString("src");
     String  tsname  = atts.getAttributeString("tagset");
     String entname  = atts.getAttributeString("entity");
+    boolean quoted  = atts.hasTrueAttribute("quoted");
+
     Tagset      ts  = top.loadTagset(tsname);	// correctly handles null
     TopContext proc = null;
     InputStream stm = null;
@@ -90,7 +92,7 @@ public class includeHandler extends GenericHandler {
     }
 
     // Crank away.
-    proc.run();
+    if (quoted) proc.copy(); else proc.run();
 
     if (ent != null) cxt.setEntityBinding(entname, ent, false);
   }
