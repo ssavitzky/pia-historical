@@ -35,6 +35,18 @@ public class TypicalHandler extends GenericHandler {
     // Actually do the work. 
   }
 
+  /** This does the parse-time dispatching. <p>
+   *
+   *	Action is dispatched (delegated) to a subclass if the string
+   *	being passed to <code>dispatch</code> is either the name of an
+   *	attribute or a period-separated suffix of the tagname. <p>
+   */
+  public Action getActionForNode(Node n) {
+    ActiveElement e = (ActiveElement)n;
+    //if (dispatch(e, "xxx")) 	 return new Typical_xxx(e);
+    return this;
+  }
+   
   /************************************************************************
   ** Constructor:
   ************************************************************************/
