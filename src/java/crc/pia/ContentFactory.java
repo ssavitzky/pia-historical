@@ -2,8 +2,10 @@
 // $Id$
 // COPYRIGHT 1997 Ricoh Silicon Valley.
 
-
 package crc.pia;
+
+import crc.content.*;	//  e.g. crc.content.text crc.content.ByteStreamContent
+import crc.content.ByteStreamContent;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -40,7 +42,10 @@ public class ContentFactory
       if( what == ztype.MATCH_SPECIFIC_SUBTYPE ){
 	c = new FormContent( input );
       }
-      else
+      else if(contentType.equalsIgnoreCase("text/html")){
+	c = new crc.content.text.html();
+	c.source(input);
+      } else
 	c = new ByteStreamContent( input );
 
       return c;

@@ -22,7 +22,7 @@ import crc.pia.HTTPResponse;
 import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
-import crc.pia.ByteStreamContent;
+import crc.content.ByteStreamContent;
 import crc.pia.Pia;
 
 import crc.ds.Features;
@@ -499,6 +499,22 @@ public class GenericAgent extends AttrBase implements Agent {
   public void matchCriterion(String match) {
     matchCriterion(Criterion.toMatch(match));
   }
+
+  /************************************************************************
+  **  Content interactions: 
+  ************************************************************************/
+
+ /** 
+  * agents can ask content objects to notify them of state changes.
+  * this is the callback method for that notification.
+  * @see Content notifyWhen
+  */
+
+  public void updateContent(Content c, String state, Object arg)
+  {
+    // do something based on state of content
+  }
+  
 
 
   /************************************************************************

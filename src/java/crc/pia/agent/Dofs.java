@@ -34,7 +34,6 @@ import crc.pia.Pia;
 import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.Content;
-import crc.pia.ByteStreamContent;
 import crc.pia.FileAccess;
 import crc.ds.Features;
 import crc.ds.Table;

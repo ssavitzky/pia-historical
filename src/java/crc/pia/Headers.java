@@ -71,7 +71,7 @@ public class Headers {
   /**
    * @return a header field value as a String.
    */
-  protected String header(String name){
+   public String header(String name){
     if( zheaders!= null )
       return zheaders.getValue( name );
     else

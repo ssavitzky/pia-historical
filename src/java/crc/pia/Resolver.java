@@ -74,7 +74,7 @@ public class Resolver extends Thread {
   public final synchronized int unshift( Transaction obj ){
     Pia.debug(this, "unshift()");
     int i = transactions.unshift( obj );
-    notify();
+    notifyAll();
     return i;
   }
 
@@ -85,7 +85,8 @@ public class Resolver extends Thread {
   public final synchronized int push( Transaction obj ){
     Pia.debug(this, "push()");
     int i = transactions.push( obj );
-    notify();
+    notifyAll();
+    //    Pia.debug(this, "current size" + size());
     return i;
   }
 
@@ -280,15 +281,19 @@ public class Resolver extends Thread {
     //	 Entered with some transactions in the input queue.
     //	 Returns total number of transactions processed.
     while( !finish ){
-
-      if( size() == 0 ) synchronized (this){
+      //      Pia.debug(this, "Pending items = " + size());
+      if( size() == 0 ) synchronized (this) {
 	try{
 	  // === should really wait for push to signal us. ===
 	  //Thread.currentThread().sleep(delay);
 	  wait(delay);
 	}catch(InterruptedException ex){;}
+	catch(Exception e){
+	  //	  Pia.debug(this,"exception caught in run");
+	  //	  e.printStackTrace();
+	}
       }
-      else{
+      else {
 	tran = pop();
 	count++;
 
@@ -318,6 +323,8 @@ public class Resolver extends Thread {
       }
       
     }
+    Pia.debug(this, "RUN thread EXITED");
+    //    System.out.println("RUN exited");
     cleanup(false);
     
   }

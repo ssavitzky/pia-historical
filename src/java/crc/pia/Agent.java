@@ -21,6 +21,23 @@ import crc.sgml.Attrs;
 
 import crc.tf.UnknownNameException;
 
+/**
+ * An agent is an object which maintains state and context  (which is
+ * why agents conform to the attribute interface). 
+ *  Agents can receive requests directly (http://Agency/AGENT_NAME/...), 
+ * they can also operate on other transactions.  Direct requests are handled
+ * by the respondToInterform methods.  To operate on other transactions,
+ * Agents register with the resolver a set of
+ * criteria for transactions they are interested in.  When the resolver
+ * finds a matching transaction, the agents act_on method is called (and
+ * the agent can modify the transaction.  The agent can completely
+ * handle a transaction by putting itself on the transaction's list of
+ * handlers --  which results in a call back to the agents handle method.
+
+
+ */
+
+
 public interface Agent extends Attrs {
   /**
    * Default initialization; implementors may override
@@ -57,27 +74,11 @@ public interface Agent extends Attrs {
    */
   public void version(String version);
 
-  /**
-   *  returns a path to a directory that we can write data into.
-   *  Creates one if necessary, starting with agent_directory,
-   *  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
-   */
-  public String agentDirectory();
 
-  /**
-   * returns a path to a directory that we can write InterForms into
-   * Creates one if necessary, starting with
-   * USR_ROOT/Agents/name, PIA_ROOT/Agents/type, /tmp/Agents/name
-   */
-  public String agentIfDir();
+  /************************************************************
+  ** operations for working with resolver
+  ************************************************************/
 
-
-  /**
-   * returns the base url (as string) for this agent
-   * optional path argument just for convenience--
-   * returns full url for accessing that file
-   */
-  //public StringBuffer agentUrl();
 
   /**
    * Agents maintain a list of feature names and expected values;
@@ -141,6 +142,36 @@ public interface Agent extends Attrs {
    *
    */
   public void parseOptions(Table hash);
+
+  /************************************************************
+  ** interform specific operations
+  ** these probably should move to generic agent, since agents
+  ** can be based on things other than interforms
+  ************************************************************/
+
+
+  /**
+   *  returns a path to a directory that we can write data into.
+   *  Creates one if necessary, starting with agent_directory,
+   *  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
+   */
+  public String agentDirectory();
+
+
+  /**
+   * returns a path to a directory that we can write InterForms into
+   * Creates one if necessary, starting with
+   * USR_ROOT/Agents/name, PIA_ROOT/Agents/type, /tmp/Agents/name
+   */
+  public String agentIfDir();
+
+
+  /**
+   * returns the base url (as string) for this agent
+   * optional path argument just for convenience--
+   * returns full url for accessing that file
+   */
+  //public StringBuffer agentUrl();
 
   /**
    * Find an interform, using a simple search path which allows for user
@@ -206,6 +237,18 @@ public interface Agent extends Attrs {
    * Respond to a transaction with a stream of HTML.
    */
   public void sendStreamResponse ( Transaction trans, InputStream in );
+
+  /************************************************************
+  ** interface to content objects
+  ************************************************************/
+  /**
+   *  agents can register interest in content objects
+   * (content.notifyWhen).  Content objects call the agent back using
+   * contentUpdate.
+   * @param object: arbitrary object specified by agent in original
+   *                notifyWhen call
+   */
+   public void updateContent(Content content, String state, Object object);
 
 }
 

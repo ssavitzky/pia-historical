@@ -12,6 +12,7 @@
  * we don't do that.  */
 
 package crc.pia;
+import crc.content.ByteStreamContent;
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -172,12 +173,116 @@ public class Machine {
    * 	come from the Transaction's Content object.  If there are
    * 	controls associated with this response they are added.  <p>
    *
-   *	Note that controls are added by the Machine because it is in 
+   *	Note that controls may be added by the Machine (makes request to content)  because the machine is in
    *	a position to know what client the response is destined for, 
    *	and hence in what form to send the controls.  (Of course,
    *	at the moment we are not taking advantage of this ability.)
    */
   public void sendResponse (Transaction reply, Resolver resolver)
+       throws PiaRuntimeException {
+    OutputStream out = null;
+    StringBuffer ctrlStrings = null;
+    Content content = null;
+    Content plainContent = null;
+    RegExp re = null;
+    MatchInfo mi = null;
+    boolean isTextHtml = false;
+    String contentString = null;
+
+    try{
+      out = outputStream();
+
+      String outputString =
+	"HTTP/1.0 " + reply.statusCode() + " " + reply.reason() + "\r";
+
+      String type = reply.contentType();
+
+      /* If the type is "text/html", see if there are controls that we
+       * can append.  From here on we use the presence of ctrlStrings
+       * to decide whether we need to do anything with the controls. */
+
+      if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
+      
+	isTextHtml = true;
+
+	Pia.debug(this, "Sucking controls...");
+	List c = reply.controls();
+	if( c != null ){
+	  ctrlStrings = new StringBuffer();
+	  Enumeration els = c.elements();
+	  while( els.hasMoreElements() ){
+	    try{
+	      Object o = els.nextElement();
+	      if( o instanceof String )
+		ctrlStrings.append( (String)o + " " );
+	    }catch(Exception e){}
+	  }
+	}
+      }
+      
+      plainContent = content = reply.contentObj();
+
+      // Increase content length by the size of the control string.
+      
+      if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
+	try{
+	   content.add( ctrlStrings, 0); // 0 = front, -1 =  at end
+	}catch(Exception e){
+	  Pia.debug(this, " CONTROLS did not make it");
+	}
+      }
+      
+      // dump header
+      Pia.debug(this, "Transmitting firstline and header...");
+     
+      shipOutput( out, outputString, false );
+
+      Pia.debug(this, outputString);
+      String headers = reply.headersAsString(); 
+      Pia.debug(this, headers);
+
+      shipOutput( out, headers, false );
+      
+      // send the content down the wire
+      content.writeTo(out);
+
+      Pia.debug(this, "Flushing...");
+      out.flush();
+      closeConnection();
+      
+    } catch (PiaRuntimeException e){
+      Pia.debug(this, " unknown PIA error...");
+      String msg = "Client closed connection...\n";
+      closeConnection();
+      throw new PiaRuntimeException (this, "sendResponse", msg) ;
+
+    } catch (ContentOperationUnavailable e1) {
+      Pia.debug(this, "  content will not send data to stream...");
+      String msg = " content got corrupted...\n";
+      closeConnection();
+      throw new PiaRuntimeException (this, "sendResponse", msg) ;
+
+    }catch(IOException e2){
+      Pia.debug(this, "Client close connection...");
+      String msg = "Client close connection...\n";
+      closeConnection();
+      // no REASON TO THROW EXCEPTION HERE -- CLIENT just bailed
+    }
+    
+
+  }
+
+  /** 
+   * Send a response through the output stream.  The data to be sent
+   * 	come from the Transaction's Content object.  If there are
+   * 	controls associated with this response they are added.  <p>
+   *
+   *	Note that controls are added by the Machine because it is in 
+   *	a position to know what client the response is destined for, 
+   *	and hence in what form to send the controls.  (Of course,
+   *	at the moment we are not taking advantage of this ability.)
+   */
+  public void sendResponseDeprecated (Transaction reply, Resolver resolver)
        throws PiaRuntimeException {
     OutputStream out = null;
     StringBuffer ctrlStrings = null;
@@ -346,13 +451,20 @@ public class Machine {
     int bytesRead;
     
     try{
-      while(true){
-	bytesRead = c.read( buffer, 0, 1024 );
-	if( bytesRead == -1 ) break;
-	out.write( buffer, 0, bytesRead );
+ //     while(true){
+//	bytesRead = c.read( buffer, 0, 1024 );
+//	if( bytesRead == -1 ) break;
+bytesRead=c.writeTo(out);
+//	out.write( buffer, 0, bytesRead );
 	Pia.debug(this, "the write length is---->"+Integer.toString(bytesRead));
-      }
+//      }
     }catch(IOException e){
+      Pia.debug(this, e.getClass().getName());
+      String msg = "Can not write...\n";
+      throw new PiaRuntimeException (this
+				     , "sendImageContent"
+				     , msg) ;
+      }catch(ContentOperationUnavailable e){
       Pia.debug(this, e.getClass().getName());
       String msg = "Can not write...\n";
       throw new PiaRuntimeException (this

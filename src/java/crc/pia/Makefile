@@ -17,8 +17,8 @@ FILES = \
 	Resolver.java \
 	Configuration.java \
 	Content.java \
+	ContentOperationUnavailable.java \
 	Agent.java \
-	ByteStreamContent.java \
 	ContentFactory.java \
 	GenericAgent.java \
 	Logger.java \
@@ -48,7 +48,7 @@ Agent.class: Transaction.java Machine.java Resolver.java Content.java Pia.java
 
 GenericAgent.class: Agent.java agent/AgentMachine.java Transaction.java \
 	HTTPRequest.java HTTPResponse.java Machine.java Resolver.java \
-	Content.java ByteStreamContent.java Pia.java \
+	Content.java ../content/ByteStreamContent.java Pia.java \
 	../ds/Criteria.java ../ds/Criterion.java \
 	../sgml/SGML.java ../sgml/Attrs.java \
 	../sgml/AttrBase.java ../sgml/AttrTable.java

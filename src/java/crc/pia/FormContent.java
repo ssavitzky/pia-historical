@@ -158,13 +158,17 @@ public class FormContent extends Properties implements Content{
       this.headers = headers;
   }
   
- /** 
-  * Access functions 
-  * machine objects read content as a stream
-  * two primary uses: acting as a source and sink for machines,
-  * and allowing processing by agents " in stream "
-  */
 
+  /************************************************************
+  ** Content producers:
+  ************************************************************/
+
+  /**
+   *  generic source throws exception
+   */
+  public void source(Object o)  throws ContentOperationUnavailable {
+    throw(new ContentOperationUnavailable(" cannot handle type as source"));
+  }
 
  /** 
   * set a source stream for this object
@@ -175,13 +179,54 @@ public class FormContent extends Properties implements Content{
       body = stream;
   }
 
+
   /**
-   * Return input stream
-   * @return input stream
+   * create form request from a string
    */
-  public InputStream source(){
-    return body;
+  public void source(String s){
+    if( s != null ){
+      setParameters(s);
+    }
   }
+
+  /**
+   * If the content object exists as a data structure in memory, then
+   * it is persistent. Otherwise, it is not persistent (streams are
+   * not persistent).
+   */
+
+ public boolean isPersistent() {
+   //  for get and post requests we create data structures
+   return true;
+  
+ }
+
+ /** 
+  * Access functions 
+  * machine objects read content as a stream
+  * two primary uses: acting as a source and sink for machines,
+  * and allowing processing by agents " in stream "
+  */
+
+
+  /**
+   * send all of data out the output stream
+   */
+
+  public int writeTo(OutputStream output)  throws ContentOperationUnavailable, IOException{
+     int written = 0;
+     // should use existing buffers -- temporary hack until rewrite
+      byte[] myBuffer = new byte[4096];
+      int j=0;
+      while (j >= 0){
+	 j = read(myBuffer);
+         output.write(myBuffer,0,j);
+	 written += j;
+      }
+      
+      return written;
+  }
+	   
 
   /**
    * number of bytes available from buffer
@@ -301,24 +346,44 @@ public class FormContent extends Properties implements Content{
     }
   }
 
+
+  /************************************************************
+  ** agent interactions:
+  ************************************************************/
   /** 
    * add an output stream to "tap" the data before it is written
    * any taps will get data during a read operation
    * before the data "goes out the door"
    */
-  public void addTap(InputStream tap){}
+  public void tapIn(OutputStream tap) throws ContentOperationUnavailable{
+    throw( new ContentOperationUnavailable("Tapping not implemented for FormContent"));
+  }
+  public void tapOut(OutputStream tap) throws ContentOperationUnavailable{
+    throw( new ContentOperationUnavailable("Tapping not implemented for FormContent"));
+  }
   
   /**  
    * specify an agent to be notified when a condition is satisfy  
    * for example the object is complete
    */
-  public void notifyWhen(Agent interested, Object condition){
+  public void notifyWhen(Agent interested, String state, Object condition) throws ContentOperationUnavailable{
     // Need a hash of (condition, vector of agents)
     // Given a condition, get the corresponding vector
     // if no the interested agent is not previously registered
     // register it
+    throw( new ContentOperationUnavailable("Notification not implemented for FormContent"));
   }
 
+public String[] states()
+  {
+    return null; //not  implemented
+  }
+  
+
+
+  /************************************************************
+  ** Constructors:
+  ************************************************************/
   public FormContent(){
       zbuf = new HttpBuffer();
   }
@@ -330,9 +395,7 @@ public class FormContent extends Properties implements Content{
 
   public FormContent(String s){
     Pia.debug( this, "string constructor..." + s );
-    if( s != null ){
-      setParameters(s);
-    }
+    source(s);
   }
 
 
@@ -577,6 +640,36 @@ public class FormContent extends Properties implements Content{
     }
     return out;
   }
+
+  /***********************************
+   * content interface operations --  Forms not support editing currently
+   ***********************************/
+
+  /**
+   * Add an object to the content
+   * if object is not a compatible type, throws exception
+   * @param  where: interpretation depend on content,  by convention 0 means at front
+   * -1 means at end, everything else is subject to interpretation
+   */
+   public void add(Object moreContent, int where) throws ContentOperationUnavailable {
+     throw(new ContentOperationUnavailable("adding " + moreContent.getClass().getName() + " not supported by " + this.getClass().getName()));
+   }
+  
+
+
+
+  /**
+   * replace target with replacement
+   * subject to interpretation.
+   * null  replacement implies removal of target
+   */
+   public void replace(Object target, Object replacement) throws ContentOperationUnavailable{
+     throw(new ContentOperationUnavailable("replacing " +  target.getClass().getName() + " not supported by " + this.getClass().getName()));
+    }
+  
+
+
+
 
 }
 

@@ -25,6 +25,8 @@ import crc.ds.List;
 
 import crc.sgml.Tokens;
 
+import crc.content.ByteStreamContent;
+
 import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
 import crc.util.Utilities;

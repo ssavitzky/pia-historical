@@ -700,7 +700,7 @@ public abstract class Transaction extends AttrBase
    * Create source object from fromMachine
    */
   protected void initializeContent()throws PiaRuntimeException{
-    //content source set in fromMachine method
+    // handled by sub classes
   }
 
 
@@ -726,13 +726,8 @@ public abstract class Transaction extends AttrBase
   public void fromMachine(Machine machine){
     if( machine != null ){
       fromMachine = machine;
-      try{
-	Content c = contentObj();
-	if( c != null )
-	  c.source( machine.inputStream() );
-      }catch(IOException e){
-	//fix me what should i do
-      }
+    // initialize content will get call in the run method
+    // if we are already running this may cause problems...
     }
   }
 

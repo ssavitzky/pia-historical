@@ -22,7 +22,7 @@ Agency.class: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
 	../Transaction.java ../Machine.java ../HTTPRequest.java
 
 AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \
-	 ../Pia.java ../Content.java  ../ByteStreamContent.java  \
+	 ../Pia.java ../Content.java  ../../content/ByteStreamContent.java  \
 	../Transaction.java ../Machine.java ../HTTPResponse.java
 
 Dofs.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \

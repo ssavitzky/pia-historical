@@ -9,6 +9,8 @@
 
 package crc.pia;
 
+import crc.content.ByteStreamContent;
+
 import java.net.URL;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
