@@ -36,6 +36,7 @@ import crc.util.Utilities;
 
 import crc.pia.Athread;
 import crc.tf.UnknownNameException;
+import w3c.www.http.HTTP;
 
 public abstract class Transaction implements Runnable{ // implements Runnable added by Greg
   public boolean DEBUG = false;
@@ -555,10 +556,47 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
   */
 
+ // code from jigsaw
+  /**
+   * Get the standard HTTP reason phrase for the given status code.
+   * @param status The given status code.
+   * @return A String giving the standard reason phrase, or
+   * <strong>null</strong> if the status doesn't match any knowned error.
+   */
+
+    public String standardReason(int status) {
+	int category = status / 100;
+	int catcode  = status % 100;
+	switch(category) {
+	  case 1:
+	      if ((catcode >= 0) && (catcode < HTTP.msg_100.length))
+		  return HTTP.msg_100[catcode];
+	      break;
+	  case 2:
+	      if ((catcode >= 0) && (catcode < HTTP.msg_200.length))
+		  return HTTP.msg_200[catcode];
+	      break;
+	  case 3:
+	      if ((catcode >= 0) && (catcode < HTTP.msg_300.length))
+		  return HTTP.msg_300[catcode];
+	      break;
+	  case 4:
+	      if ((catcode >= 0) && (catcode < HTTP.msg_400.length))
+		  return HTTP.msg_400[catcode];
+	      break;
+	  case 5:
+	      if ((catcode >= 0) && (catcode < HTTP.msg_500.length))
+		  return HTTP.msg_500[catcode];
+	      break;
+	}
+	return null;
+    }
+
+
   /**
    * Create header from fromMachine
    */
-  protected void initializeHeader(){
+  protected void initializeHeader() throws PiaRuntimeException{
     //content source set in fromMachine method
     InputStream in;
     String line;
@@ -573,7 +611,14 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
       Pia.instance().debug(this, "the firstline-->" + firstLine);
    
       headersObj  = hf.createHeader( in );
-      
+      if( headersObj == null ){
+	 Pia.instance().debug(this, "Can not parse header...");
+	 String msg = "Can not parse header...\n";
+	 throw new PiaRuntimeException (this
+					, "initializeHeader"
+					, msg) ;
+      }
+	 
       parseInitializationString( firstLine );
 
     }catch(IOException e){
@@ -583,7 +628,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   /**
    * Create source object from fromMachine
    */
-  protected void initializeContent(){
+  protected void initializeContent()throws PiaRuntimeException{
     //content source set in fromMachine method
   }
 
@@ -695,7 +740,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    *
    *
    */
-  protected void errorResponse(String msg){
+  protected void errorResponse(int code, String msg){
   }
 
   /**
@@ -777,12 +822,18 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   public void run()
   {
 
-    // make sure we have the header information
-    if(headersObj ==  null) initializeHeader();
+    try{
+      // make sure we have the header information
+      if(headersObj ==  null) initializeHeader();
     
-    Pia.instance().debug(this, "Got a head...");
-    // and the content
-    if(contentObj ==  null) initializeContent();
+      Pia.instance().debug(this, "Got a head...");
+      // and the content
+      if(contentObj ==  null) initializeContent();
+    }catch (PiaRuntimeException e){
+      errorResponse(500, "Server internal error");
+      Thread.currentThread().stop();      
+      notifyThreadPool();
+    }
 
     Pia.instance().debug(this, "Got a body...");
     // incase body needs to update header about content length
@@ -823,9 +874,13 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     
     
     // cleanup?
+    notifyThreadPool();
+    
+  }
+
+  protected void notifyThreadPool(){
     ThreadPool tp = Pia.instance().threadPool();
     tp.notifyDone( executionThread );
-    
   }
 
   public void startThread(){
