@@ -331,7 +331,10 @@ sub is_interform{
 $computers{agent} = \&agent;
 sub agent {
     my($request)=shift;
+    $request = $request->request if $request->is_response;
+    return unless defined $request;
     my $url=$request->url;
+    return unless defined $url;
     my $path=$url->path;
     return unless defined $url;
     my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : 'agency';
