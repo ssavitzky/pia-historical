@@ -2,6 +2,8 @@
 <html><head>
 <title>Generic Home Page for &agentName;</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<!-- NOTE: This page exists only for backwards compatibility. -->
+<!--       It has been completely supplanted by home.xh       -->
 
 <set entity name=title>Home Page</set>
 <read interform file="heading.inc" process>

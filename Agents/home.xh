@@ -2,7 +2,7 @@
 <html><head>
 <title>Generic Home Page for &AGENT:name;</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<heading>Home Page</heading>
+<header>Home Page</header>
 <set name="subs"><agent-list subs type="&agentType;"></set>
 <sub-head page=home>
     <tr><th align=right>

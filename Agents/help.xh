@@ -1,0 +1,65 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Generic Help Page for &AGENT:name;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header show-date=yes>Help</header>
+<set name="subs"><agent-list subs type="&agentType;"></set>
+<sub-head page=help>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home">&agentType;</a>/</then>
+                <else>&agentType; agents: </else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat>
+</sub-head>
+
+<if><test exact match="&agentType">&agentName;</test>
+    <then><set name=agentPath>&agentName;</set></then>
+    <else><set name=agentPath>&agentType;/&agentName;</set></else>
+</if>
+<hr>
+<nav-bar />
+<hr>
+<h2><a name="context-specific">Context-Specific Help</a></h2>
+
+<set name=referer><get name="TRANS:Referer"></set>
+<dl>
+  <dt> <strong>Where am I?</strong>
+  <dd>  &lt;URL:<a href="&url;">&url;</a>&gt; <br>
+       This is the 
+       <if><test not exact match="&agentType;">&agentName;</test>
+              <then><a href="/&agentType;/home">&agentType;</a>
+	            <a href="/&agentType;/"> / </a>
+	            <a href="/&agentType;/&agentName;">&agentName;</a>
+	      <else><a href="/&agentName;/home">&agentName;</a>
+       </if> agent of
+       <if><test exact match='pia'>&piaUSER;</test>
+		<then>An Information Appliance</then>
+		<else><a href="/My/">&piaUSER;'s</a>
+       			Personal Information Agency</else>
+       </if>
+<if>&referer;<then>       
+  <dt> <strong>Where was I?</strong>
+  <dd> &lt;URL:<a href="&referer;">&referer;</a>&gt;<br>
+       This is the page you were looking at when you clicked on a link
+       labeled ``<a href="&url;">help</a>''.
+</if>       
+</dl>
+<hr>
+
+<!-- See whether there's a "help" file for this agent. -->
+<include src="help.inc">
+
+<hr>
+<h2><a name="general">General Help</a></h2>
+
+This online help page is automatically customized for every agent that makes a
+link to it; you can <em>always</em> find a link to it from an Agent's
+<a href="&agentPath;/">index page</a>.  More general information, including
+links to the documentation and to many useful InterForms, can be
+found on the <a href="/Agency">Agency's home page</a>.
+
+<hr>
+<footer cvsid="$Id$">
+</body></html>
