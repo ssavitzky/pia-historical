@@ -1,3 +1,7 @@
+// Content.java
+// $Id$
+// (c) COPYRIGHT Ricoh California Research Center, 1997.
+
 
 package crc.pia;
 import crc.pia.Machine;
@@ -5,10 +9,6 @@ import crc.pia.Agent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-
-//import java.lang.NoSuchFieldException; //   for header fields--not quite right, but close
-                                       // enough for now
 
 /** Content
  *  is an abstract interface for those objects which can serve as the
@@ -45,15 +45,6 @@ public interface Content
   */
   /**  stream like functions go here */
 
-/** 
- * process data
- * called transaction idle time to preload incoming data
- * return false when object is complete
- * this method should return in a timely fashion and be careful of deadlock
- */
-  public void processInput(Machine from);
-  
-  
 
  /** set a source stream for this object
   * usually this will come from a machine
