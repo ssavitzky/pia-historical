@@ -13,6 +13,12 @@ public class BasicPI extends AbstractNode implements PI {
     data = "";
   }
 
+  public BasicPI(String n, String data){
+    name = n;
+    data = data;
+  }
+
+
   public BasicPI(BasicPI bpi)
   {
     if( bpi != null ){
