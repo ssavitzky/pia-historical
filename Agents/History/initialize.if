@@ -15,15 +15,15 @@
    <write directory file="&year;/&month;"></write>
    <if><test not zero><get trans feature name="html"></test>
        <then><write append trim line file="&fn;">
-	         &time; <a href="&url;"><get trans feature name=title></a><br>
+	         &time; <a href="&url;">&url; : <get trans feature name=title></a><br>
 	     </write>
              <write trim line file=".last.link">
-		 <a href="&url;"><get trans feature name=title></a>
+		 <a href="&url;">&url; : <get trans feature name=title></a>
 	     </write>
-             <write file=".last.html">&date; &time; <a href="&url;"><get trans feature name=title></a>
+             <write file=".last.html">&date; &time; <a href="&url;">&url; : <get trans feature name=title></a>
 <dl>
   <dt> <b>Link:</b>
-  <dd> <protect-result markup><a href="&url;"><get trans feature name=title></a></protect-result>
+  <dd> <protect-result markup><a href="&url;">&url; : <get trans feature name=title></a></protect-result>
   <dt> <b>Reply Header</b>
   <dd> <pre><get trans headers></pre>
   <dt> <b>Request Header</b>
