@@ -34,4 +34,13 @@
 </else>
 </if>
 
+<!-- Copy over SMIL stuff: an example audio file and a shell SMI file -->
+<if><read file="localphotos/Presentation.smi" info>
+<else>
+<write file="localphotos/Presentation.smi"><read interform file="Presentation.smi"></write>
+<write file="localphotos/LustForLife.ra"><read interform file="LustForLife.ra"></write>
+</else>
+</if>
+
+
 </body></html>
