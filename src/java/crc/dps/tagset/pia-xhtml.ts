@@ -60,6 +60,15 @@ Note that we only need these inside the PIA.
   </doc>
 </define>
 
+<define element=agent-list handler=legacy:agent-list empty>
+  <doc> List agents, possibly those with a given type.
+  </doc>
+</define>
+
+<define element=trans-control handler=legacy:trans-control>
+  <doc> Make content into a transaction control.
+  </doc>
+</define>
 
 <h2>Page Components</h2>
 
@@ -158,6 +167,34 @@ Note that we only need these inside the PIA.
   </action>
 </define>
 
+<define element=sub-head>
+  <doc> A secondary table located immediately under the header.
+	Content should consist of additional table rows.
+  </doc>
+  <define attribute=page>
+    <doc> the base name of the page, e.g. <code>index</code> or
+	  <code>home</code>.
+    </doc>
+  </define>
+  <action>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr><th align=center valign=center nowrap width=170><include src=insert>
+    <td>
+    <table cellspacing=0 cellpadding=0 border=0>
+    <tr><th align=left nowrap width=170>&blank-170x1;<td><br>
+    <tr><th align=right><xopt page="&attributes:page;"
+			      pages="home index help options">&blue-dot;</xopt>
+	<td> <xa href="home" page="&attributes:page;">Home</xa>
+    	     <xa href="index" page="&attributes:page;">Index</xa>
+    	     <xa href="help" page="&attributes:page;">Help</xa>
+	     <xa href="options" page="&attributes:page;">Options</xa>
+    </tr>
+    <get name=content>
+  </table>
+</table>
+  </action>
+</define>
+
 <define element=nav-bar>
   <doc> A navigation bar, usually placed just above the copyright notice in
 	the footer.  Usually fits in a single line.  Content is whatever you
@@ -202,7 +239,6 @@ Note that we only need these inside the PIA.
     </select> </set>
 <b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
 <em><select>&attributes;<name>cvsid<eval/></em>
-
   </action>
 </define>
 
@@ -221,7 +257,25 @@ Note that we only need these inside the PIA.
     </select> </set>
 <b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
 <em><select>&attributes;<name>cvsid<eval/></em>
+  </action>
+</define>
 
+<define element=inc-footer empty>
+  <doc> This expands into a tiny footer for include files. 
+  </doc>
+  <define attribute=cvsid>
+    <doc> The CVS id string of the file.
+    </doc>
+  </define>
+  <action>
+<set name=myear><subst match="/.* " result=", "><select>
+    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
+    </select> </set>
+<set name=incfn><select>&attributes;<name>cvsid<eval/>
+    <text split>&selected;</text> 1
+    </select><select>&attributes;<name>cvsid<eval/>
+    <text split>&selected;</text> 2</select></set>
+<h6 align=right>&incfn; &copy; &myear; Ricoh Silicon Valley<h6>
   </action>
 </define>
 
