@@ -459,7 +459,7 @@ public class Index {
     String myTag = getTag();
 
     if( s.isToken() ) {
-      Pia.debug("In merge -- token case "+s.toString());
+      //Pia.debug("In merge -- token case "+s.toString());
       return s;
     }
     else{
@@ -468,7 +468,7 @@ public class Index {
       else{
 	if( s.content().nItems() > 0 ){
 	  Class c = (s.content().itemAt( 0 )).getClass();
-	  Pia.debug("the class-->"+c.toString());
+	  //Pia.debug("the class-->"+c.toString());
 	  try{
 	    result = (SGML)c.newInstance();
 	  }catch(Exception e){e.toString();}
@@ -478,7 +478,7 @@ public class Index {
 
       result.append( s.content() );	
 
-      Pia.debug("In merge -- tokens case "+result.toString());
+      //Pia.debug("In merge -- tokens case "+result.toString());
     }
     return result;
   }
@@ -491,7 +491,7 @@ public class Index {
 	datum = merge( datum );
       }else{
 	// normal indexing case
-	Pia.debug("processing normal case.-->"+ datum.toString());
+	Pia.debug("processing normal case.");
 	parsePositions();
         datum = datum.attr( this );
       }
@@ -512,7 +512,7 @@ public class Index {
     int what;
 
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
-    Pia.debug("lookup-->"+datum.toString());
+    //Pia.debug("lookup-->"+datum.toString());
 
     what = nextPositions();
     
@@ -520,7 +520,7 @@ public class Index {
       try{
 	datum = doProcess( what, datum ); 
       }catch( InvalidInput e ){
-	Pia.debug(e.toString());
+	//Pia.debug(e.toString());
 	throw e;
       }
       resetPositionAttr();
@@ -528,8 +528,9 @@ public class Index {
     }
     
     
-    Pia.debug("my class is-->"+datum.getClass().toString());
-    Pia.debug("my content is-->"+Integer.toString(datum.content().nItems()));
+    //Pia.debug(this,"my class is-->"+datum.getClass().toString());
+    //Pia.debug(this,"my content is-->"+datum.toString());
+    //Pia.debug(this,"my content is-->"+Integer.toString(datum.content().nItems()));
 
     if( datum instanceof Tokens && datum.content().nItems() == 1 ){
       // datum is a Tokens.  return a Token instead with the datum's content
@@ -628,7 +629,7 @@ public class Index {
     // we don't want ..
     if( isDotDot != -1 ) throw new InvalidInput("dot dot is not accepted.");
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
-    Pia.debug("original datum-->"+datum.toString());
+    //Pia.debug("original datum-->"+datum.toString());
 
     what = nextPositions();
     
@@ -644,7 +645,7 @@ public class Index {
 	if( prev.content() == null || prev.content().itemAt(0).toString().equalsIgnoreCase("") )
 	  whereToPut = prev;
 	else if( !(prev instanceof Tokens) ){
-	  Pia.debug("************");
+	  //Pia.debug("************");
 	  whereToPut = prev;
 	}
 	else{
@@ -723,6 +724,10 @@ public class Index {
   }
 
 }
+
+
+
+
 
 
 
