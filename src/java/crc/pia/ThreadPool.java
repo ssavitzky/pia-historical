@@ -15,7 +15,7 @@ public class ThreadPool{
    */
   public final static String MAXTHREADS = "crc.pia.maxthreads";
 
-  int              maxThreads = 0;
+  int              maxThreads = 50;
 
   Vector freeList = null;
 
@@ -59,7 +59,7 @@ public class ThreadPool{
   ThreadPool(){
     //get pool properities from Pia
     this.props = Pia.instance().properties();
-    int maxThreads = props.getInteger(MAXTHREADS, MAXTHREADCOUNT);
+    maxThreads = props.getInteger(MAXTHREADS, MAXTHREADCOUNT);
    
     freeList = new Vector();
 
@@ -70,5 +70,6 @@ public class ThreadPool{
     
   }
 }
+
 
 
