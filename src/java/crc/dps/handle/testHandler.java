@@ -16,8 +16,8 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
 
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 
 import java.util.Enumeration;
 

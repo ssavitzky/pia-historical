@@ -21,8 +21,8 @@ import crc.ds.Association;
 import crc.ds.List;
 import crc.ds.SortTree;
 
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 
 import java.util.Enumeration;
 

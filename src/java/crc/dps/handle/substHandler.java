@@ -14,7 +14,7 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
 
-import crc.gnu.regexp.RegExp;
+import gnu.regexp.RegExp;
 
 
 /** Handler class for &lt;subst&gt tag 
