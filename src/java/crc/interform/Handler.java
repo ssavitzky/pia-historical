@@ -8,6 +8,8 @@ import crc.interform.Interp;
 
 import crc.sgml.SGML;
 import crc.ds.Table;
+import crc.dps.active.ActiveNode;
+import crc.dps.handle.LegacyHandler;
 
 /** Handler functor (<b>Strategy</b> pattern) for Actors.  Handlers
  *	can be used to reify either the <code>handle</code> method or
@@ -114,10 +116,83 @@ public class Handler implements java.io.Serializable {
   ** Legacy action in the new DPS:
   ************************************************************************/
 
+  public boolean noticeGiven = false;
+
+  public crc.dps.Action getActionForNode(crc.dps.active.ActiveNode n,
+					 crc.dps.handle.LegacyHandler h) {
+    return h;
+  }
+
+  /** Notify the user about a problem involving the legacy tagset. 
+   *	Such notice is only given once per tag.
+   */
+  protected void notify(crc.dps.Context aContext, String tag,
+			crc.dps.active.ActiveAttrList atts, String message) {
+    if (!noticeGiven) {
+      aContext.message(0, message + " in <" + tag
+		       + ((atts!=null && atts.getLength()>0)? " " + atts : "")
+		       + ">", 0, true);
+      noticeGiven = true;
+    }
+  }
+
+  /** Obtain the current InterFormContext.
+   *	This is the DPS equivalent of <code>Run.environment(ii)</code>;
+   *	it has the advantage of not dragging in the entire PIA if we're
+   *	running in a standalone document processor.
+   */
+  public crc.dps.InterFormProcessor getInterFormContext(crc.dps.Context c) {
+    if (c.getTopContext() instanceof crc.dps.InterFormProcessor) {
+      return (crc.dps.InterFormProcessor)c.getTopContext();
+    } else {
+      return null;
+    }
+  }
+							
+  /** Legacy action: default is to flag as unimplemented. */
   public boolean action(crc.dps.Context aContext, crc.dps.Output out,
 			String tag, crc.dps.active.ActiveAttrList atts,
 			crc.dom.NodeList content, String cstring) {
+    if (noticeGiven) return true;
+    noticeGiven = true;
     return false;
+  }
+
+  /** Legacy action: report an error if a non-legacy handler exists. */
+  protected boolean bogusLegacyAction(crc.dps.Context aContext, String tag) {
+    aContext.message(-1, "Legacy handler called for <" + tag
+		     + "> when new one exists", 0, true);
+    return true;
+  }
+
+  /** Legacy action: report a warning.  Usually this is for an incompletely-
+   *	superceded actor, and indicates that more work has to be done 
+   *	somewhere, possibly in the InterForm code.
+   */
+  protected boolean buggyLegacyAction(crc.dps.Context aContext, String tag,
+				      crc.dps.active.ActiveAttrList atts) {
+    aContext.message(0, "Buggy legacy handler called for <" + tag
+		     + " " + atts + ">", 0, true);
+    return true;
+  }
+
+  /** Legacy action: report an error. */
+  protected boolean legacyError(crc.dps.Context aContext, String tag,
+				String message) {
+    aContext.message(-1, "InterForm error in <" + tag + ">:" + message,
+		     0, true);
+    return true;
+  }
+
+  /** Legacy action: return a string. */
+  protected boolean putText(crc.dps.Output out, String s) {
+    out.putNode(new crc.dps.active.ParseTreeText(s));
+    return true;
+  }
+
+  /** Convenience function: create an element. */
+  protected crc.dps.active.ParseTreeElement newElement(String tag) {
+    return new crc.dps.active.ParseTreeElement(tag, null, null, null);
   }
 
   /************************************************************************
