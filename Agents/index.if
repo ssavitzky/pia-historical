@@ -14,7 +14,10 @@
     <tr><th width=170><td><br>
     <tr><th align=right><a href="home.if">&agentName;</a>: <td>Index Page
     <tr><th align=right><td> <a href="home.if">Home Page</a>
-    <tr><th><td> <a href="options.if">Options</a>
+    <tr><th>
+	<td><a href="options.if">Options</a>
+	    <if><read info interform file="initialize.if">
+	        <then><a href="initialize.if">[re-initialize]</a></then></if>
     <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
     <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
     <if>&subs;<then>
