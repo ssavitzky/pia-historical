@@ -8,7 +8,7 @@
 <read interform file="heading.inc" process>
 
 <set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
-<table align=center cellspacing=0 cellpadding=0 border=0>
+<table cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170 valign=center>
 <td>
   <table cellspacing=0 cellpadding=0 border=0>
