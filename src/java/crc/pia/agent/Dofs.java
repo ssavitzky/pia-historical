@@ -98,12 +98,7 @@ public class Dofs extends GenericAgent {
       // (need to make sure that the name isn't a prefix of something)
       Pia.debug(this, ".../"+myname+"... -- file.");
       if (path.equals("/"+myname)) {
-	try {
-	  redirectTo( request, path+"/" );
-	} catch (MalformedURLException e2){
-	  throw new PiaRuntimeException(this, "respond",
-					"Malformed URL " + path+"/");
-	}
+	redirectTo( request, path+"/" );
 	return;
       }
       try {
@@ -113,18 +108,18 @@ public class Dofs extends GenericAgent {
       }
     } else {
       String s = "/"+mytype+"/"+myname;
-      if (!myname.equals(mytype)) {
-	if (path.equals(s)) {
-	  Pia.debug(this, ".../TYPE/NAME");
-	  path = "/"+myname;
-	} else if (path.startsWith(s+"/")) {
-	  Pia.debug(this, ".../TYPE/NAME/...");
-	  path = "/"+myname+ path.substring(s.length());
-	} else {
-	  throw new PiaRuntimeException(this, "respond",
-					"Malformed DOFS path "+path);
-	}
-	respondToInterform(request, path, res);
+      if (false && !myname.equals(mytype)) {
+ 	if (path.equals(s)) {
+ 	  Pia.debug(this, ".../TYPE/NAME");
+ 	  path = "/"+myname;
+ 	} else if (path.startsWith(s+"/")) {
+ 	  Pia.debug(this, ".../TYPE/NAME/...");
+ 	  path = "/"+myname+ path.substring(s.length());
+ 	} else {
+ 	  throw new PiaRuntimeException(this, "respond",
+ 					"Malformed DOFS path "+path);
+ 	}
+ 	respondToInterform(request, path, res);
       } else {
 	respondToInterform(request, url, res);
       }
@@ -184,12 +179,12 @@ public class Dofs extends GenericAgent {
    */
 
   /**
-   * Retrieve the file at $url in order to satisfy $request.
+   * Retrieve the file at url in order to satisfy request.
    */
   protected void retrieveFile ( URL url, Transaction request ) {
     String filename = urlToFilename( url );
 
-    FileAccess.retrieveFile(urlToFilename(url), request, this);
+    FileAccess.retrieveFile(filename, request, this);
   }
 
 
