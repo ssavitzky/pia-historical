@@ -6,8 +6,6 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.AttributeList;
-import crc.dom.DocumentType;
-import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
 
@@ -19,7 +17,7 @@ import crc.dps.active.*;
  *	A Node's Handler provides all of the necessary syntactic and semantic
  *	information required for parsing, processing, and presenting the Node.
  *	A Tagset can be regarded as either a lookup table for syntactic
- *	information, or as a DOMFactory for the documents so described.  <p>
+ *	information, or as a node factory for the documents so described.  <p>
  *
  *	Note that a Tagset can be used to construct either generic DOM Node's,
  *	or DPS ActiveNode's.  A Parser is free to use either.  In the current
@@ -64,6 +62,10 @@ public interface Tagset  {
   /** Include definitions from a given tagset. 
    */
   public void include(Tagset ts);
+
+  /** Include definitions, defaults, and other parameters from a given tagset. 
+   */
+  public void setParent(Tagset ts);
 
   /** Get the tagset's name. */
   public String getName();
@@ -228,6 +230,10 @@ public interface Tagset  {
    */
   public boolean caseFoldAttributes();
 
+  /** Set the case folding parameters */
+  public void setCaseFolding(boolean forTags, boolean forAttrs);
+
+
   /** Convert an attribute name to the cannonical case. */
   public String cannonizeAttribute(String name);
 
@@ -240,7 +246,7 @@ public interface Tagset  {
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.
    */
-  public DocumentType getDocumentType();
+  //  public DocumentType getDocumentType();
 
 
   /************************************************************************

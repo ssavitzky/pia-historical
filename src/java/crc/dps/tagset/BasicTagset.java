@@ -7,7 +7,6 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.AttributeList;
 import crc.dom.DocumentType;
-import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
 import java.io.PrintStream;
@@ -120,7 +119,15 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       AbstractHandler h = (AbstractHandler)t.at(tag);
       setHandlerForTag(tag, h);
     }
+    // === entities
   }
+
+  public void setParent(Tagset ts) {
+    include(ts);
+    setCaseFolding(ts.caseFoldTagnames(), ts.caseFoldAttributes());
+    // === defaults
+  }
+
 
   /************************************************************************
   ** Entity Bindings:
@@ -358,6 +365,13 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   protected boolean caseFoldTagnames;
   protected boolean caseFoldAttributes;
+
+
+  /** Set the case folding parameters */
+  public void setCaseFolding(boolean forTags, boolean forAttrs) {
+    caseFoldTagnames   = forTags;
+    caseFoldAttributes = forAttrs;
+  }
 
   /** Does this Tagset treat uppercase and lowercase tagnames the same?
    */

@@ -56,6 +56,9 @@ public class HTML_ts extends BasicTagset {
   static String dlItems[]	= { "dd", "dt" };
 
   public void initializeHTML(boolean emptyParagraphTags) {
+    caseFoldTagnames = true;
+    caseFoldAttributes = true;
+
     emptyP = emptyParagraphTags;
 
     defTags(emptyTags, null, EMPTY);

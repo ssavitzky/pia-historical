@@ -154,9 +154,10 @@ public class tagsetHandler extends GenericHandler {
       if (parentTS == null) {
 	reportError(in, cxt, "Cannot load parent tagset " + parentTSname);
       } else {
-	newTagset.include(parentTS);
+	newTagset.setParent(parentTS);
       }
     }
+
 
     // Handle the inclusions.
     if (inclusions != null) {
