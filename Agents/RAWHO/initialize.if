@@ -35,13 +35,16 @@
 
 <if><read file=cats.html info> <then>
 <set agent name="cats"><read file=cats.html process></set>
-</then><else><set agent name="cats"><dl> </dl></set></else></if>
+</then><else><set agent name="cats"><dl>
+  <dt>  Miscellaneous </dt>
+  <dd>  A default catch-all category 
+ </dl></set></else></if>
 
 <read interform process file=init_calendar.inc>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 15:01:29 1997
+Last modified: Tue Oct 21 19:11:14 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
