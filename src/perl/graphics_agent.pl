@@ -15,6 +15,7 @@ sub make_icon{
     $height=$self->option('height') unless $height;
 
     my $type=$transaction->content_type;
+
     return $self->make_icon_html($transaction,$width,$height) if $type eq 'text/html';
     return $self->make_icon_gif($transaction,$width,$height) if $type eq 'image/gif';
     return $self->make_icon_unknown($transaction,$width,$height);
@@ -54,7 +55,10 @@ sub make_icon_html{
         # make the background transparent and interlaced
         $im->transparent($white);
 
+
 #       print $im->gif;
+
+
     my $html= IF::Run::parse_html_string($transaction->content);
 
     local $draw=sub {
@@ -68,9 +72,10 @@ sub make_icon_html{
 	my $url=$element->attr('src');
 	return unless $url;
 	$url=URI::URL->new($url,$transaction->request->url);
-	print "url is $url \n";
+	print "url is $url \n"  if $main::debugging;
 	my $newrequest=$self->create_request('GET',$url);
-	my $newresponse=$self->retrieve($newrequest,"/tmp/graphics_agent.gif");
+#	my $newresponse=$self->retrieve($newrequest,"/tmp/graphics_agent.gif");
+	my $newresponse=$main::main_resolver->simple_request(TRANSACTION->new($newrequest),"/tmp/graphics_agent.gif");
 	return 1 unless ($newresponse->code eq '200' && -e "/tmp/graphics_agent.gif");
 	open(IMAGE,"</tmp/graphics_agent.gif");
 	my $image=GD::Image->newFromGif(IMAGE);
@@ -139,12 +144,13 @@ sub machine_callback{
 #    my $newresponse=$self->retrieve($newrequest);
     my $request=$newresponse->request;
     my $destination=$$request{_thumbnail_requestor}; #hack for now
+    my $original=$$request{_thumbnail_request}; #hack for now
     my $image=$self->make_icon($newresponse);
-    if(! ref($image) ){
+#    if(! ref($image) ){
 	#my $url=$request->url if ref($request);
 	#$url=$url->as_string if ref($url);
-	$image=$self->make_icon_unknown($newresponse,$self->option(width),$self->option(height),$newresponse->code);	
-    }
+#	$image=$self->make_icon_unknown($newresponse,$self->option(width),$self->option(height),$newresponse->code);	
+#    }
 	
     my $response;
 #    if(ref($image)){
@@ -154,7 +160,8 @@ sub machine_callback{
 	$response->content_length(length($image));
 	$response->content_type('image/gif');
 	$response->content($image);
-	$response->request($request);
+	$response->request($original);
+    $response->header($self->version);
 # #    } else {
 # 	$response=HTTP::Response->new(&HTTP::Status::RC_INTERNAL_SERVER_ERROR,"giffailed"); 
 	
@@ -176,6 +183,7 @@ sub respond_to_interform{
     my $machine=$self->machine;
     $machine->callback(\&machine_callback);
     $$newrequest{_thumbnail_requestor}=$request->from_machine;
+    $$newrequest{_thumbnail_request}=$request;
     $newrequest=TRANSACTION->new($newrequest,$machine);
     return $newrequest;
     

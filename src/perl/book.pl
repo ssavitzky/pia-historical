@@ -46,8 +46,17 @@ sub bookmaker_callback{
     print "bookmaker code" .  $response->code . "\n"  if $main::debugging;
     return unless $response->code eq '200';
 #    print $response->content;
-    my $html= IF::Run::parse_html_string($response->content);
-
+    my $type=$response->content_type;
+    my $html;
+    if($type=~ /text\/html/){
+	$html= IF::Run::parse_html_string($response->content);
+    } elsif($type=~ /text/){ 
+	$html=IF::IF('pre');
+	$html->push($response->content);
+    } else {
+	return 0; #for now only html
+	print "$type is not html\n";
+    }
     my $old_request=$response->request;
     my $reference=$$old_request{'_book_reference'};
     my $reference_url=$old_request->url;
@@ -58,14 +67,14 @@ sub bookmaker_callback{
     $$new_page{cache}=$cache if $cache;
     # don't keep html if it is in cache
     my $hints = $$self{_hints};
-    delete $$new_page{html} if $$hints{cache_only};
+    delete $$new_page{html} if $$hints{cache_only} && $cache;
     my $old_depth;
     $old_depth=$$old_request{_book_depth} if $old_request;
     print "requestthinksitis $old_depth \n" if $main::debugging;
     $old_depth=$self->depth($reference) unless $old_depth;
-$old_depth=$$self{_max_depth} unless $old_depth;
-my @new_keys;
-my $new_key;
+    $old_depth=$$self{_max_depth} unless $old_depth;
+    my @new_keys;
+    my $new_key;
     print "depth is $old_depth, max is " . $$self{_max_depth} . "\n" if $main::debugging;
     print "max pages exceeded " . $$self{page} . "\n" if($$self{page}>$$self{_max_pages});
     return 1 if($$self{page}>$$self{_max_pages});
@@ -74,9 +83,12 @@ my $new_key;
 	    my ($urltext, $element) = @$_;
 	    my $url=URI::URL->new($urltext,$response->request->url);
 #	    print "new: " . $url->abs->as_string . " base: " . $response->request->url->as_string ." \n";
-	    $new_key=$self->add_link($url,$old_depth+1) if $url->abs->host;
-	    push(@new_keys,$new_key);
-	    $element->attr('book_reference',$new_key);
+	    $url=$url->abs;
+	    if($url->host && $url->scheme eq 'http'){
+		$new_key=$self->add_link($url,$old_depth+1) ;
+		push(@new_keys,$new_key);
+		$element->attr('book_reference',$new_key);
+	    }
 	}
 	$$new_page{links}=\@new_keys;
     }
@@ -112,6 +124,8 @@ $self->depth($key,$depth);
 sub add_page{
     my($self,$html,$url,$reference)=@_;
     my %page;
+    return unless ref($html) eq 'IF::IT';
+#    print($html->as_string);
     $reference=$self->reference($url) unless $reference;    
     $page{html}=$html;
     local $reference_key=$reference;

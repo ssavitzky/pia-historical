@@ -653,24 +653,11 @@ sub retrieve {
 
 ##should be using proxy...
 ## user agent should remain in existence
-    my $ua = $self->user_agent;
+  my $ua = $self->user_agent;
+#    my $ua= $main::main_resolver;
+
     my $response;
-##should use cache
-    if($cache){
-	my @res;
-	my $status=$cache->handle($request,\@res);
-	if( $status){
-	    $response=shift(@res) ;
-	    if($file) {
-		open(OUT,">$file");
-		print OUT $response->content;
-		CLOSE OUT;
-	    }
-	    return $response;
-	    
-	}
-    }
-    
+#    $request=TRANSACTION->new($request) unless ref($request) eq 'TRANSACTION';
     $response=$ua->simple_request($request,$file); 
 
     return $response;
@@ -836,6 +823,8 @@ sub respond_to_interform {
     }
     return unless ref($response);
     $response->request($request);
+    
+    $response->header('Version',$self->version()) unless $response->header('Version');
     $response=TRANSACTION->new($response,
 			       $main::this_machine,
 			       $request->from_machine());

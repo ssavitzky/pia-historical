@@ -1,5 +1,7 @@
+package PIA_AGENT::PRINTER;
 
-
+push(@ISA,PIA_AGENT::FILTER);
+push(@ISA,PIA_AGENT);
 #Agent for handling printing requests
 #this eventually will be a model of printer...
 
@@ -42,15 +44,25 @@ sub file_names{
 
 
     my $num=$self->option('preview_number');
+    my $printer_root_directory=$self->option('printer_root_directory');
+    my $printer_base_url=$self->option('printer_base_url');
     my $image_file="preview$num";
     my $string = "$printer_root_directory$image_file";
-
 ## also set ps_file
     $ps_file="$printer_root_directory$image_file.ps";
     $image_URL="$printer_base_url";
     $ps_URL="$printer_base_url$image_file.ps";
     $num+=1;
     $self->option('preview_number',$num);
+    while(-e $ps_file){
+	 $image_file="preview$num";
+	 $string = "$printer_root_directory$image_file";
+## also set ps_file
+	$ps_file="$printer_root_directory$image_file.ps";
+	$image_URL="$printer_base_url";
+	$ps_URL="$printer_base_url$image_file.ps";
+	$num+=1;
+    }
     return ($string,$ps_file,$image_URL,$ps_URL);
 
     #return $string;
@@ -94,8 +106,9 @@ sub create_postscript{
     my $request=shift;
     my $docId=shift;
 
-    my $ua = $self->user_agent;
-    my $response=$ua->simple_request($request); 
+#    my $ua = $self->user_agent;
+    my $ua = $main::main_resolver;
+    my $response=$ua->simple_request(TRANSACTION->new($request)); 
 
     my $render=$self->option("render_method");
     $docId = "010" unless $docId;

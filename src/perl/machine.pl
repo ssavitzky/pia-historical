@@ -22,6 +22,7 @@ sub new{
 sub stream{
     my($self,$socket)=@_;
     $$self{stream}=$socket if defined $socket;
+    print (ref($$self{stream})) . "stream ref\n"  if $main::debugging;
     return $$self{stream};
 }
 sub close_stream{
@@ -132,26 +133,27 @@ sub proxy{
 sub get_request{
     my($self,$request)=@_;
     
-    my $ua = new LWP::UserAgent;
+    if(!$ua) {
+	$ua = new LWP::UserAgent;
 
-    $ua->use_eval();
+	$ua->use_eval();
 
 ###Configuration --is proxy necessary?
 ### Should Be careful not to proxy through ourselves
-    my $proxy=$self->proxy($request->url->scheme);
+	my $proxy=$self->proxy($request->url->scheme);
     
     
 #### if agency returns negative number, generate error
 ###    network unavailable, or denied
 
-    if ($proxy < 0) {
-	return $request->error_response("negative proxy specified: network available?");
+	if ($proxy < 0) {
+	    return $request->error_response("negative proxy specified: network available?");
+	}
+	print "getting request" . $request->url . " through $proxy \n" . $request->headers_as_string() . "\n" if $main::debugging;
+	
+
+	$ua->proxy($request->url->scheme,$proxy) if $proxy;
     }
-    print "getting request" . $request->url . " through $proxy \n" . $request->headers_as_string() . "\n" if $main::debugging;
-    
-
-    $ua->proxy($request->url->scheme,$proxy) if $proxy;
-
     # === should really use simple_request and handle redirect with agents.
 #    my $response=$ua->request($self); 
     my $response=$ua->simple_request($request); 

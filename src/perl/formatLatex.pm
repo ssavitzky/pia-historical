@@ -97,7 +97,7 @@ $string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\
 sub footer{
     my $self=shift;
     my $string;
-    $string="\\psfig{file=" . $$self{_logo} ."}\n" if -e $$self{_logo};
+    $string="\\psfig{file=" . $$self{_logo} .",height=.25in}\n" if -e $$self{_logo};
     $string.="\n\\end{document}\n";
     return $string;
     

@@ -5,7 +5,7 @@ package PIA_AGENT::CACHE_AGENT; #######################################
 ###
 
 push(@ISA,PIA_AGENT);
-
+use FileHandle;
 sub url_to_filename{
     my($self,$url)=@_;
 
@@ -46,6 +46,11 @@ sub entry {
     my $key=$self->url_to_filename( $url);
     if ($directory){
 	$$hash{$key}=$directory ;
+	print "adding $key $directory to cache\n" if $main::debugging;
+	if($self->option('database')){
+	    print {$self->option('database')} $key . " " . $directory . "\n";
+#	    print " appended to file\n";
+	}
     } elsif (! exists($$hash{$key})){
 	## The following is supposed to update the hash table if
 	## 	there's a cached file we haven't seen this session.
@@ -56,6 +61,44 @@ sub entry {
     return $$hash{$key};
 }
 
+sub build_database{
+    my($self,$database,$cache_root_directory,$entries)=@_;
+    
+    if(-e $database){
+	my $status=open(DATABASE,"<$database");
+	while(<DATABASE>){
+	    my($key,$value)=split(" ");
+	    $$entries{$key}=$value;
+	    print "noticing $key $value from $_\n"  if $main::debugging;
+	}
+	close DATABASE;
+	
+    } else {
+	my $status=open(DATABASE,">$database");
+	my @files;
+	push(@files,$cache_root_directory);
+	while($file=shift(@files)){
+	    print "Checking $file\n";
+	    if(-d $file){
+		$file.= "/" unless $file =~ /\/$/;
+		push(@files,glob("$file*"));
+	    }
+	    if(-e "$file/.content"){
+		chop($file) if $file =~ /\/$/;
+		$$entries{$file}=$file;
+		print DATABASE $file . " " . $file . "\n";
+		
+	    }
+	}
+	close DATABASE;
+    }
+
+    my $status=open(DATABASE,">>$database");
+    autoflush DATABASE 1;
+    
+    $self->option('database',*DATABASE) if $status;
+    
+}
 sub create_directories{
     my($self,$name)=@_;
 
@@ -127,6 +170,7 @@ sub handle_request{
 
     ## This is a request -- see if the cache directory exists.
     my $directory=$self->url_to_filename($request->url);
+    print "cache handling request $directory "  if $main::debugging;
     return unless -e "$directory/.content";
 
     ## If there is a query string attached, give up.
@@ -141,22 +185,29 @@ sub handle_request{
     
     open(HEADER,"<$directory/.header");
     while (<HEADER>){
-	/^([^:]*):(.*)$/;
+	/^([^:]*): (.*)$/;
 	($key,$value) = ($1,$2);
 	$response->header($key,$value);
     }
     close HEADER;
-    $response->header('Version',$self->version());
-    return unless    open(CONTENT,"<$directory/.content");
+    my $content=new FileHandle;
+#    local *CONTENT;    
+#$response->header('Version',$self->version());
+    return unless    open($content,"<$directory/.content");
     $response->header('Cache-Location',$directory);
     my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
 	$atime,$mtime,$ctime,$blksize,$blocks)
-	= stat CONTENT;
+	= stat $content;
     $response->content_length($size) unless $response->content_length;
     my $machine=AGENT_MACHINE->new($self);
-    $machine->stream(*CONTENT);
-    my $transaction=TRANSACTION->new($response,$machine,$request->from_machine);
+    $machine->stream($content);
+#    input_record_separator CONTENT undef;
+#    my $string=<CONTENT>;
+#    print $string;
+#    $response->add_content($string);
 
+    my $transaction=TRANSACTION->new($response,$machine,$request->from_machine);
+    $transaction->assert('cache_response');
     $resolver->push($transaction);
     return 1; ##request is satisfied
 
@@ -182,7 +233,11 @@ sub act_on{
 
     if ($transaction->is_request) {
 	## We only handle a request if we have a cache entry for it.
-	$transaction->push($self) if $self->entry($transaction->url);
+	print "looking for" . $transaction->url ." in cache\n" if $main::debugging;
+	if ($self->entry($transaction->url)){
+	    $transaction->push($self) ;
+	    print "retrieving from cache\n";
+	}
     } elsif ($transaction->is_response) {
 	## Responses are _always_ handled, by caching.
 	$transaction->push($self);

@@ -183,7 +183,26 @@ sub match {
     return $matches;
 }
 
+##simple_request returns a response to caller
+sub simple_request{
+    my($self,$transaction,$file)=@_;
+    print "gettting simpleton ...\n";
+	$self->match($transaction);
 
+	$transaction->satisfy($self);
+
+    my $response=$self->pop;
+    ###badthingshappenifthisisnotaresponse
+    print "something wrong with simple request" if $response->to_machine;
+    if($file){
+    print "simple request into $file \n";
+	open(F,">$file");
+	print F $response->content;
+	close F;
+    }
+
+    return $response;
+}
 
 1;
 
