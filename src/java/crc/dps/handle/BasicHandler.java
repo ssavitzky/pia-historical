@@ -18,6 +18,8 @@ import crc.dps.BasicTokenList;
 import crc.dps.ParseStack;
 import crc.dps.Util;
 
+import crc.ds.Table;
+
 /**
  * Basic implementation for a Node Handler. <p>
  *
@@ -46,68 +48,7 @@ public class BasicHandler extends AbstractHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** The default action is simply to return the Token as the Node
-   *	being constructed.
-   */
-  public Node startAction(Token t, Processor p) {
-    t.setNode();
-    return t;
-  }
-
-  /** The default action is simply to pass the constructed Node to the output
-   *	via <code>p.result</code>, and return null.
-   */
-  public Token endAction(Token t, Processor p, Node n) {
-    return (t.isEndTag())? p.result(n, t) : p.result(n);
-  }
-
-  /** The default action is simply to pass the Token to the output via
-   *	<code>p.result</code>, and return null.
-   */
-  public Token nodeAction(Token t, Processor p) {
-    // === nodeAction could be more efficient knowing it's in a processor
-    return expandAction(t, p);
-  }
-
-  /** Returns the result of ``expanding'' the given Token. 
-   * @return a (possibly empty) NodeList of results.
-   */
-  public Token expandAction(Token t, Context c) {
-    // create a new, suitable node
-    Node node = createNode(t, c);
-    if (! node.hasChildren()) return c.result(node);
-
-    // create a new context in which to expand the children.
-    Context cc = c.newContext(node, t.getTagName());
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      if (child instanceof Token) cc.expand((Token)child);
-      else			  cc.result(child);
-    }
-    return c.result(node);
-  }
-
-
-  /** Returns a new, clean Node corresponding to the given Token.
-   *	The new Node is suitable for incorporating into a new
-   *	document. <p>
-   *
-   *	Note that this is not used when creating a parse tree of an
-   *	existing document -- such a parse tree is made out of Token
-   *	objects, which preserves the syntactic and semantic
-   *	information (e.g. handlers).
-   */
-  public Node createNode(Token t, Context c) {
-    return Util.expandAttrs(this, c.getHandlers(), c.getEntities());
-  }
-
-  /** Returns a new, clean Node corresponding to the given Token,
-   *	created using the given DOMFactory. <p>
-   */
-  public Node createNode(Token t, DOMFactory f) {
-    return t.createNode(f);
-  }
+  // All inherited.
 
   /************************************************************************
   ** Parsing Operations:
@@ -116,7 +57,7 @@ public class BasicHandler extends AbstractHandler {
   /** If the handler corresponds to an Element, this determines its syntax.
    *	<dl compact>
    *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown
+   *	    <dt>  0 <dd> unknown: look at the Token.
    *	    <dt>  1 <dd> known to be empty.
    *	</dl>
    */
@@ -159,6 +100,34 @@ public class BasicHandler extends AbstractHandler {
     return this;
   }
 
+  /** If <code>true</code>, Element tags are recognized in content. */
+  protected boolean parseElementsInContent = true;
+
+  /** If <code>true</code>, Entity references are recognized in content. */
+  protected boolean parseEntitiesInContent = true;
+
+  /** If <code>true</code>, Element tags are recognized in content. */
+  public boolean parseElementsInContent() { return parseElementsInContent; }
+
+  /** If <code>true</code>, Entity references are recognized in content. */
+  public void setParseEntitiesInContent(boolean value) {
+    parseEntitiesInContent = value;
+  }
+
+  /** Set of elements inside which this tag is not permitted. */
+  Table implicitlyEnds = null;
+
+  /** Return true if this kind of token implicitly ends the given one. */
+  public boolean implicitlyEnds(String tag) {
+    return implicitlyEnds != null && tag != null && implicitlyEnds.has(tag);
+  }
+
+  /** Insert a tag into the implicitlyEnds table. */
+  public void setImplicitlyEnds(String tag) {
+    if (implicitlyEnds == null) implicitlyEnds = new Table();
+    implicitlyEnds.at(tag, tag);
+  }
+
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
@@ -188,5 +157,46 @@ public class BasicHandler extends AbstractHandler {
   ** Documentation Operations:
   ************************************************************************/
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public BasicHandler() {}
+
+  /** Construct a BasicHandler for a passive element. 
+   *
+   * @param syntax 
+   *	<dl compact>
+   *	    <dt> -1 <dd> known to be non-empty.
+   *	    <dt>  0 <dd> unknown
+   *	    <dt>  1 <dd> known to be empty.
+   *	</dl>
+   * @param parseElts if <code>true</code> (default), recognize elements in
+   *	the content.
+   * @param parseEnts if <code>true</code> (default), recognize entities in
+   *	the content.
+   * @see #getElementSyntax
+   */
+  public BasicHandler(int syntax, boolean parseElts, boolean parseEnts) {
+    elementSyntax = syntax;
+    parseElementsInContent = parseElts;
+    parseEntitiesInContent = parseEnts;
+  }
+  /** Construct a BasicHandler for a passive element. 
+   *
+   * @param empty     if <code>true</code>, the element has no content
+   *	and expects no end tag.  If <code>false</code>, the element
+   *	<em>must</em> have an end tag.
+   * @param parseElts if <code>true</code> (default), recognize elements in
+   *	the content.
+   * @param parseEnts if <code>true</code> (default), recognize entities in
+   *	the content.
+   * @see #getElementSyntax
+   */
+  public BasicHandler(boolean empty, boolean parseElts, boolean parseEnts) {
+    elementSyntax = empty? 1 : -1;
+    parseElementsInContent = parseElts;
+    parseEntitiesInContent = parseEnts;
+  }
 
 }

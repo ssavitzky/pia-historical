@@ -5,6 +5,7 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.AttributeList;
 import crc.dom.DocumentType;
 import crc.dom.DOMFactory;
 
@@ -51,6 +52,13 @@ public interface Tagset extends DOMFactory {
    */
   public Tagset getContext();
 
+  /** Returns a DOMFactory equivalent to the one the Tagset is using.
+   *	It is sufficient to simply return <code>this</code>, but if
+   *	the Tagset is delegating its factory, it is much more efficient
+   *	to return that.
+   */
+  public DOMFactory getFactory();
+
   /************************************************************************
   ** Lookup Operations:
   ************************************************************************/
@@ -58,37 +66,43 @@ public interface Tagset extends DOMFactory {
   /** Called during parsing to return a suitable Handler for a given
    *	tagname.
    */
-  public Handler handlerForTag(String tagname);
+  public Handler getHandlerForTag(String tagname);
+
+  public void setHandlerForTag(String tagname, Handler newHandler);
 
   /** Called during parsing to return a suitable Handler for a new Text
    *	node.  It is up to the Parser to determine whether the text consists
    *	only of whitespace.
    */
-  public Handler handlerForText(boolean isWhitespace);
-
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node, given the Node's type.
-   */
-  public Handler handlerForType(int nodeType);
+  public Handler getHandlerForText(boolean isWhitespace);
 
   /** Called during parsing to return a suitable Handler for a new
    *	entity reference.
    */
-  public Handler handlerForEntity(String entityName);
+  public Handler getHandlerForEntity(String entityName);
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node, given the Node's type.
+   */
+  public Handler getHandlerForType(int nodeType);
+
+  public void setHandlerForType(int nodeType, Handler newHandler);
 
 
   /************************************************************************
   ** Parsing Operations:
   ************************************************************************/
 
-  /** Called to obtain a suitable Parser for this Tagset. 
-   *	The Parser will have had its <code>setTagset</code> method
-   *	called with <code>this</code>.
+  /** Return a Parser suitable for parsing a character stream
+   *	according to the Tagset.  The Parser may (and probably will)
+   *	know the Tagset's actual implementation class, so it can use
+   *	specialized operations not described in the Tagset interface.
    */
-  public Parser getParser();
+  public Parser createParser();
 
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before an end tag.
+   *
    * @param t the Token for which this is the handler, and for which the
    *	nesting is being checked.
    * @param p the Parser.
@@ -108,27 +122,28 @@ public interface Tagset extends DOMFactory {
    */
   public int checkElementNesting(Token t, Processor p);
 
-  /** Called during parsing to return a suitable start tag or complete
-   *	element Token.  The new Token's handler will normally be
-   *	<code>this</code>, although the Handler may select an alternative
-   *	based on the attributes.  Typically the Parser will have found the
-   *	handler in a Tagset.
-   */
-  public Token createStartToken(String tagname, NodeList attributes, Parser p);
 
-  /** Called during parsing to return an end tag Token.  The new
-   *	Token's handler will be <code>this</code>.
+  /** Called during parsing to return a suitable start tag Token for the
+   *	given tagname and attribute list. 
+   */
+  public Token createStartToken(String tagname,
+				AttributeList attributes, Parser p);
+
+  /** Called during parsing to return an end tag Token. 
    */
   public Token createEndToken(String tagname, Parser p);
 
   /** Called during parsing to return a suitable Token for a generic
-   *	Node with String content.  The new Token's handler will be
-   *	<code>this</code>.
+   *	Node with String data. 
    */
-  public Token createToken(int nodeType, String content, Parser p);
+  public Token createToken(int nodeType, String data, Parser p);
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node with String content. 
+   */
+  public Token createToken(int nodeType, String name, String data, Parser p);
 
   /** Called during parsing to return a suitable Token for a new Text.
-   *	The new Token's handler will be <code>this</code>.
    */
   public Token createTextToken(String text, Parser p);
 
@@ -151,13 +166,6 @@ public interface Tagset extends DOMFactory {
 
   /** Convert an attribute name to the cannonical case. */
   public String cannonizeAttribute(String name);
-
-  /** Return a Parser suitable for parsing a character stream
-   *	according to the Tagset.  The Parser may (and probably will)
-   *	know the Tagset's actual implementation class, so it can use
-   *	specialized operations not described in the Tagset interface.
-   */
-  public Parser createParser();
 
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.

@@ -72,7 +72,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   }
 
   /** Returns the Handler for this Token.  Note that the Handler determines
-   *	both the syntax and the semantics for the Node.  getHandler will 
+   *	both the syntax and the semantics for the Node.  getHandler should 
    *	never return null; there will always be a generic default handler that
    *	applies.
    */
@@ -80,9 +80,14 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     return handler;
   }
 
-  /** Sets the Handler for this Token. */
+  /** Sets the Handler for this Token. 
+   *	<code>newHandler.getHandlerForToken</code> is called, in case
+   *	the Handler needs to do more specific dispatching.
+   */
   public void setHandler(Handler newHandler) {
-    handler = newHandler;
+    handler = (newHandler == null)
+      ? null
+      : newHandler.getHandlerForToken(this);
   }
 
   /************************************************************************
@@ -228,6 +233,18 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     setData(data);
   }
 
+  /** Construct a BasicToken with a given nodeType, name, data, and handler. 
+   * @see crc.dps.NodeType
+   * @see crc.dom.NodeType
+   */
+  public BasicToken(int nodeType, String name, String data, Handler handler) {
+    this.nodeType = nodeType;
+    this.handler = handler;
+    if (handler != null && handler.isEmptyElement(this)) isEmpty = true;
+    setName(name);
+    setData(data);
+  }
+
   /** Construct a BasicToken with a given nodeType, data, and Handler. 
    * @see crc.dps.NodeType
    * @see crc.dom.NodeType
@@ -294,19 +311,25 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     setTagName(tagname);
     this.nodeType = NodeType.ELEMENT;
     this.syntax = syntax;
-    this.handler = handler;
     if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
+    setHandler(handler);
   }
 
   /** Construct a BasicToken from an original Node. */
   public BasicToken(Node node) {
+    this(node, 0);
+  }
+
+  /** Construct an ELEMENT BasicToken from an original node and syntax. */
+  public BasicToken(Node node, int syntax) {
     originalNode = node;
-    setNode();				// say it's a node.
+    this.syntax = syntax;
     nodeType = node.getNodeType();
     switch (nodeType) {
     case NodeType.ELEMENT: 
       crc.dom.Element e = (crc.dom.Element)node;
       setTagName(e.getTagName());
+      if (syntax <= 0) setAttributes( e.getAttributes() );
       break;
 
     case NodeType.TEXT:
@@ -503,16 +526,16 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 
   /** Expand the Token in the given Context. */
   public Token expand(Context c) {
-    if (handler != null) return c.result(handler.expandAction(this, c));
+    if (handler != null) return c.putResult(handler.expandAction(this, c));
     Node node = Util.expandAttrs(this, c.getHandlers(), c.getEntities());
     Context cc = c.newContext(node, getTagName());
     for (Node child = getFirstChild();
 	 child != null;
 	 child = child.getNextSibling()) {
       if (child instanceof Token) cc.expand((Token)child);
-      else			  cc.result(child);
+      else			  cc.putResult(child);
     }
-    return c.result(node);
+    return c.putResult(node);
   }
 
   /** Return a new start-tag Token for this Token.

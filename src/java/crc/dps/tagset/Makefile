@@ -23,7 +23,9 @@ PIA_ACTORS= \
 
 
 TAGSETS = \
-	HTML_ts.java \
+	HTML_ts.java
+
+UNDEFINED_TAGSETS = \
 	Basic_ts.java \
 	StandAlone_ts.java \
 	Standard_ts.java

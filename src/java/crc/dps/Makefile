@@ -36,6 +36,11 @@ FILES = \
 	TokenList.java \
 	Util.java
 
+# === Potential renames:
+#	ParseStack -> BasicContext
+#	Filter -> Process
+#	StackFrame is almost totally useless.
+
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
 

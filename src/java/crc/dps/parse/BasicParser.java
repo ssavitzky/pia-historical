@@ -64,7 +64,7 @@ public class BasicParser extends AbstractParser {
       last = 0;
       return false;
     }
-    next = new BasicToken(NodeType.ENTITY);
+    next = new BasicToken(NodeType.ENTITY); // === probably wants to use tagset
     next.setName(ident);
     if (last == ';') next.setHasClosingDelimiter(true);
     if (last == ';') last = 0;
@@ -84,7 +84,7 @@ public class BasicParser extends AbstractParser {
       for ( ; ; ) {
 	if (eatUntil(endString, !ignoreEntities)) {
 	  if (buf.length() != 0) 
-	    list.append(new BasicToken(buf.toString()));
+	    list.append(createTextToken(buf.toString()));
 	  break;
 	}
 	if (last == '&' && getEntity()) {
@@ -113,7 +113,7 @@ public class BasicParser extends AbstractParser {
       for ( ; ; ) {
 	if (eatUntil(quote, true)) {
 	  if (buf.length() != 0) {
-	    list.append(new BasicToken(buf.toString()));
+	    list.append(createTextToken(buf.toString()));
 	    buf.setLength(0);
 	  }
 	  if (last == quote) break;
@@ -128,7 +128,7 @@ public class BasicParser extends AbstractParser {
       buf = tmp;
       return list;
     } else if (last <= ' ' || last == '>') {
-      list.append(new BasicToken(""));
+      list.append(createTextToken(""));
       return list;
     } else {
       StringBuffer tmp = buf;
@@ -136,7 +136,7 @@ public class BasicParser extends AbstractParser {
       for ( ; ; ) {
 	if (eatUntil(notAttr, true)) {
 	  if (buf.length() != 0) {
-	    list.append(new BasicToken(buf.toString()));
+	    list.append(createTextToken(buf.toString()));
 	    buf.setLength(0);
 	  }
 	} else break;
@@ -166,7 +166,7 @@ public class BasicParser extends AbstractParser {
       buf.append(ident);
       //debug(ident);
 
-      BasicToken it = new BasicToken(ident, -1);
+      Token it = createStartToken(ident, null);
       String a; StringBuffer v;
 
       // Now go after the attributes.
@@ -204,7 +204,7 @@ public class BasicParser extends AbstractParser {
 
       eatSpaces();
       if (last != '>') return false;
-      Token it = new BasicToken(ident, 1); // cannonicalize name?
+      Token it = createEndToken(ident); // cannonicalize name?
       next = it;
       buf.setLength(tagStart);
       if (last >= 0) last = 0;
@@ -218,14 +218,14 @@ public class BasicParser extends AbstractParser {
 	// it must be a comment
 	if (last != '>') eatUntil("-->", false);
 	if (last == '>') last = 0;
-	next = new BasicToken(NodeType.COMMENT, buf.toString());
+	next = createToken(NodeType.COMMENT, buf.toString());
       } else {
 	// it's an SGML declaration: <!...>
 	// == Comments or occurrences of '>' inside will fail.
 	eatUntil('>', false);
 	if (last == '>') last = 0;
 	// === bogus -- really a declaration, and must be further analyzed. //
-	next = new BasicToken(NodeType.COMMENT, ident, buf.toString());
+	next = createToken(NodeType.COMMENT, ident, buf.toString());
       }
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
@@ -237,11 +237,11 @@ public class BasicParser extends AbstractParser {
       eatIdent();
       eatUntil('>', false);
       if (last == '>') last = 0;
-      next = new BasicToken(NodeType.PI, ident, buf.toString());
+      next = createToken(NodeType.PI, ident, buf.toString());
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
     } else if (last == '>') {	// <>		empty start tag
-      next = new BasicToken(ident, -1);
+      next = createStartToken(ident, null);
     } else {			// not a tag.
       return false;
     }
@@ -262,7 +262,7 @@ public class BasicParser extends AbstractParser {
 	  (last == '<' && getTag()) ||
 	  (last < 0)) break;
     }
-    return (buf.length() > 0)? new BasicToken(buf.toString()) : null;
+    return (buf.length() > 0)? createTextToken(buf.toString()) : null;
   }
 
   /** Get the SGML token starting with <code>last</code>.  If the

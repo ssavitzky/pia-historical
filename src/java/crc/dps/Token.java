@@ -21,7 +21,8 @@ import java.util.NoSuchElementException;
  *   <ul>
  *	<li> syntactic information required during parsing, traversal, 
  *		and rendering
- *	<li> semantic information required for processing
+ *	<li> semantic information required for processing by a Processor
+ *	     or Context.
  *	<li> a reference back to the original Node, if any.
  *   </ul>
  *
@@ -30,6 +31,12 @@ import java.util.NoSuchElementException;
  * 	the original Node.  It is also possible to create a Token
  * 	directly without reference to an original Node -- this is done
  * 	when parsing a text file, for example.  <p>
+ *
+ *	A complete parse tree can be built entirely out of Token nodes. 
+ *	Such a tree is called an ``unprocessed parse tree,'' and contains
+ *	all the information needed for efficient expansion by a Context.
+ *	``Expansion'' in this case is essentially the equivalent of the
+ *	LISP <code>eval</code> function. <p>
  *
  *	The Token interface extends all of the specializations of Node
  *	that are encountered in the body of a Document (e.g. Text,
@@ -41,8 +48,9 @@ import java.util.NoSuchElementException;
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
- * @see crc.dps.TokenFactory
  * @see crc.dom.Node
+ * @see crc.dps.Context
+ * @see crc.dps.Processor
  */
 
 public interface Token extends Element, Text {

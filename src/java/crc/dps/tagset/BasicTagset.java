@@ -5,6 +5,7 @@
 package crc.dps.tagset;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.AttributeList;
 import crc.dom.DocumentType;
 import crc.dom.BasicElement;
 import crc.dom.DOMFactory;
@@ -12,12 +13,16 @@ import crc.dom.BasicDOMFactory;
 
 import java.util.Enumeration;
 
+import crc.dps.NodeType;
 import crc.dps.Tagset;
 import crc.dps.Token;
 import crc.dps.Handler;
 import crc.dps.Parser;
 import crc.dps.Processor;
 import crc.dps.BasicToken;
+import crc.dps.Util;
+
+import crc.dps.handle.BasicHandler;
 
 import crc.ds.Table;
 import crc.ds.List;
@@ -41,11 +46,35 @@ import crc.ds.List;
 public class BasicTagset extends BasicElement implements Tagset {
 
   /************************************************************************
+  ** Data:
+  ************************************************************************/
+
+  protected Handler defaultElementHandler;
+
+  protected Handler defaultTextHandler;
+
+  protected Handler defaultEntityHandler;
+
+  protected Table handlersByTag = new Table();
+  protected List  handlerNames = new List();
+  protected List  allNames = null;
+
+  protected int  MAX_TYPE = 10;
+  protected int  MIN_TYPE = -2;
+  protected Handler handlersByType[] = new Handler[MAX_TYPE - MIN_TYPE];
+
+
+  /************************************************************************
   ** DOM Factory:
   ************************************************************************/
 
   /** The DOMFactory to which all construction requests are delegated. */
-  protected DOMFactory factory = new BasicDOMFactory();
+  protected DOMFactory factory= null;
+
+  public DOMFactory getFactory() { return factory; }
+
+  protected void setFactory(DOMFactory f) { factory = f; }
+
 
   public crc.dom.Document createDocument() {
     return factory.createDocument();
@@ -94,33 +123,73 @@ public class BasicTagset extends BasicElement implements Tagset {
   ** Lookup Operations:
   ************************************************************************/
 
-  /** Called during parsing to return a suitable Handler for a given
-   *	tagname.
+  /** Cache for the most-recently-looked-up element tag. */
+  protected String tagNameCache = null;
+
+  /** Cache for the most-recently-found element Handler.
+   *	This can greatly speed up lookup in lists. 
    */
-  public Handler handlerForTag(String tagname) {
-    return null;		// ===
+  protected Handler tagHandlerCache;
+
+  public Handler getHandlerForTag(String tagname) {
+    if (tagNameCache != null && tagname.equals(tagNameCache)) 
+      return tagHandlerCache;
+
+    tagNameCache = tagname;
+    tagHandlerCache = (Handler) handlersByTag.at(tagName);
+    if (tagHandlerCache != null) return tagHandlerCache;
+    else if (context != null) {
+      tagHandlerCache = context.getHandlerForTag(tagname);
+      return tagHandlerCache;
+    }
+
+    if (defaultElementHandler == null) 
+      defaultElementHandler = (Handler) getHandlerForType(NodeType.ELEMENT);
+    tagHandlerCache = defaultElementHandler;
+    return defaultElementHandler;
+  }
+
+  public void setHandlerForTag(String tagname, Handler newHandler) {
+    handlersByTag.at(tagName, newHandler);
+    handlerNames.push(tagName);
   }
 
   /** Called during parsing to return a suitable Handler for a new Text
    *	node.  It is up to the Parser to determine whether the text consists
    *	only of whitespace.
    */
-  public Handler handlerForText(boolean isWhitespace) {
-    return null;		// ===
-  }
-
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node, given the Node's type.
-   */
-  public Handler handlerForType(int nodeType) {
-    return null;		// ===
+  public Handler getHandlerForText(boolean isWhitespace) {
+    if (defaultTextHandler == null) 
+      defaultTextHandler = getHandlerForType(NodeType.TEXT);
+    return defaultTextHandler;
   }
 
   /** Called during parsing to return a suitable Handler for a new
    *	entity reference.
    */
-  public Handler handlerForEntity(String entityName) {
-    return null;		// ===
+  public Handler getHandlerForEntity(String entityName) {
+    if (defaultEntityHandler == null) 
+      defaultEntityHandler = getHandlerForType(NodeType.ENTITY);
+    return defaultEntityHandler;
+  }
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node, given the Node's type.
+   */
+  public Handler getHandlerForType(int nodeType) {
+    Handler h =  (Handler) handlersByType[nodeType - MIN_TYPE];
+    if (h != null) return h;
+    else if (context != null) return context.getHandlerForType(nodeType);
+
+    setHandlerForType(nodeType, new BasicHandler());
+    return (Handler) handlersByType[nodeType - MIN_TYPE];
+  }
+
+  public void setHandlerForType(int nodeType, Handler newHandler) {
+    if (nodeType < MIN_TYPE || nodeType >= MAX_TYPE) {
+      // === At this point we need to resize handlersByType
+    }
+    handlersByType[nodeType - MIN_TYPE] = newHandler;
   }
 
 
@@ -128,11 +197,12 @@ public class BasicTagset extends BasicElement implements Tagset {
   ** Parsing Operations:
   ************************************************************************/
 
-  /** Called to obtain a suitable Parser for this Tagset. 
-   *	The Parser will have had its <code>setTagset</code> method
-   *	called with <code>this</code>.
+  /** Return a Parser suitable for parsing a character stream
+   *	according to the Tagset.  The Parser may (and probably will)
+   *	know the Tagset's actual implementation class, so it can use
+   *	specialized operations not described in the Tagset interface.
    */
-  public Parser getParser() {
+  public Parser createParser() {
     Parser p = new crc.dps.parse.BasicParser();
     p.setTagset(this);
     return p;
@@ -158,39 +228,52 @@ public class BasicTagset extends BasicElement implements Tagset {
    * 	<code>t</code> can be started.
    */
   public int checkElementNesting(Token t, Processor p) {
+    // === checkElementNesting needs to use t's handler.  It's a start
+    //	   tag from this tagset, so it should have one.
+
     return 0;			// ===
   }
 
-  /** Called during parsing to return a suitable start tag or complete
-   *	element Token.  The new Token's handler will normally be
-   *	<code>this</code>, although the Handler may select an alternative
-   *	based on the attributes.  Typically the Parser will have found the
-   *	handler in a Tagset.
+  /** Called during parsing to return a suitable start tag Token.
    */
-  public Token createStartToken(String tagname, NodeList attributes, Parser p){
-    return null;		// ===
+  public Token createStartToken(String tagname,
+				AttributeList attributes,
+				Parser p){
+    Handler h = getHandlerForTag(tagname);
+    return new BasicToken(tagname, -1, attributes, h);
   }
 
-  /** Called during parsing to return an end tag Token.  The new
-   *	Token's handler will be <code>this</code>.
+  /** Called during parsing to return an end tag Token.  The Token will not
+   *	have a handler.
    */
   public Token createEndToken(String tagname, Parser p) {
     return new BasicToken(tagname, 1);
   }
 
   /** Called during parsing to return a suitable Token for a generic
-   *	Node with String content.  The new Token's handler will be
-   *	<code>this</code>.
+   *	Node with String content. 
    */
   public Token createToken(int nodeType, String data, Parser p){
-    return new BasicToken(nodeType, data);
+    Handler h = getHandlerForType(nodeType);
+    return new BasicToken(nodeType, data, h);
+  }
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node with a name, and String content.
+   */
+  public Token createToken(int nodeType, String name, String data, Parser p){
+    Handler h = getHandlerForType(nodeType);
+    return new BasicToken(nodeType, name, data, h);
   }
 
   /** Called during parsing to return a suitable Token for a new Text.
-   *	The new Token's handler will be <code>this</code>.
    */
   public Token createTextToken(String text, Parser p){
-    return new BasicToken(text);
+    boolean w = Util.isWhiteSpace(text);
+    Handler h = getHandlerForText(w);
+    Token t = new BasicToken(text, h);
+    t.setIsWhitespace(w);
+    return t;
   }
 
 
@@ -224,15 +307,6 @@ public class BasicTagset extends BasicElement implements Tagset {
     return caseFoldAttributes? name.toLowerCase() : name;
   }
 
-  /** Return a Parser suitable for parsing a character stream
-   *	according to the Tagset.  The Parser may (and probably will)
-   *	know the Tagset's actual implementation class, so it can use
-   *	specialized operations not described in the Tagset interface.
-   */
-  public Parser createParser() {
-    return null;		// ===
-  }
-
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.
    */
@@ -251,22 +325,59 @@ public class BasicTagset extends BasicElement implements Tagset {
    *	them distinctive, generated names.
    */
   public Enumeration elementNames() {
-    return null;		// ===
+    return handlerNames.elements();
   }
 
   /** Returns an Enumeration of the element names defined in this table and
    *	its context. */
   public Enumeration allNames() {
-    return null;		// ===
+    if (allNames == null) {
+      allNames = new List(elementNames());
+      if (context != null) allNames.append(context.allNames());
+    }
+    return allNames.elements();
   }
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
 
-  public BasicTagset() {}
+  /** Define a set of syntax tags with a specified implicitlyEnds table.
+   *	If the tags are already defined (e.g. they are actors or empty),
+   *	simply append to the implicitlyEnds table.
+   *
+   *	This assumes that all element handlers are subclasses of BasicHandler. 
+   */
+  protected void defTags(String tags, String notIn) {
+    Enumeration e  = new java.util.StringTokenizer(tags);
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      BasicHandler h = (BasicHandler) handlersByTag.at(tag);
+      if (h == null) h = new BasicHandler();
+      if (notIn != null) {
+	Enumeration nt = new java.util.StringTokenizer(notIn);
+	while (nt.hasMoreElements()) {
+	  h.setImplicitlyEnds(nt.nextElement().toString());
+	}
+      }
+      setHandlerForTag(tag, h);
+    }
+  }
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public BasicTagset() {
+    factory = new BasicDOMFactory();
+  }
 
   public BasicTagset(Tagset previousContext) {
+    factory = previousContext.getFactory();
     context = previousContext;
+  }
+
+  public BasicTagset(DOMFactory f) {
+    factory = f;
   }
 }

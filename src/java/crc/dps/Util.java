@@ -7,6 +7,7 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.DOMFactory;
@@ -27,6 +28,10 @@ import crc.dom.DOMFactory;
  */
 
 public class Util {
+
+  /************************************************************************
+  ** Node Construction:
+  ************************************************************************/
 
   /** Append a Node to a given parent.
    *	If the new Node is already a child of <code>parentNode</code>, nothing
@@ -66,7 +71,8 @@ public class Util {
     return new ArrayNodeList(aNode);
   }
 
-  /** Create a shallow copy of a given Node using a given DOMFactory. */
+  /** Create a shallow copy of a given Node using a given DOMFactory. 
+   */
   public static Node copyNode(Node node, DOMFactory f) {
     int nodeType = node.getNodeType();
     switch (nodeType) {
@@ -97,6 +103,17 @@ public class Util {
     }
   }
 
+  /** Create a deep copy of a given Node using a given DOMFactory. 
+   *	Recursively copy the children.
+   */
+  public static Node deepCopyNode(Node node, DOMFactory f) {
+    Node newNode = copyNode(node, f);
+    if (node.hasChildren()) {
+      appendCopies(node.getChildren(), newNode, f);
+    }
+    return newNode;
+  }
+
   /** Append the nodes in a NodeList to a given parent.
    *
    * @return parentNode.
@@ -104,7 +121,7 @@ public class Util {
    */
   public static Node appendNodes(NodeList aNodeList, Node parentNode) {
     if (aNodeList == null) return parentNode;
-    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       appendNode(node, parentNode);
     }
@@ -118,11 +135,42 @@ public class Util {
   public static void appendCopies(NodeList aNodeList, Node parent,
 				  DOMFactory f) {
     if (aNodeList == null) return;
-    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      appendNode(copyNode(node, f), parent);
+      appendNode(deepCopyNode(node, f), parent);
     }
   }
+
+  /************************************************************************
+  ** Copying Parse Trees:
+  ************************************************************************/
+
+  /** Create a deep copy of a given Node using Tokens.
+   */
+  public static Node copyAsTokens(Node node) {
+    Node newNode = BasicToken.createToken(node, true);
+    if (node.hasChildren()) {
+      copyAsTokens(node.getChildren(), newNode);
+    }
+    return newNode;
+  }
+
+  /** Append Tokens that copy the nodes in a NodeList to a given parent.
+   *
+   * @see #copyAsTokens
+   */
+  public static void copyAsTokens(NodeList aNodeList, Node parent) {
+    if (aNodeList == null) return;
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      appendNode(copyAsTokens(node), parent);
+    }
+  }
+
+
+  /************************************************************************
+  ** Expansion:
+  ************************************************************************/
 
   /** Make a deep copy of a Node, expanding defined entities. 
    *	The results are appended to a Node, which is returned.
@@ -199,7 +247,7 @@ public class Util {
   public static Node expandEntities(NodeList aNodeList, Node parent,
 					DOMFactory fac, EntityTable ents) {
     if (aNodeList == null) return parent;
-    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       expandEntities(node, parent, fac, ents);
     }
@@ -211,7 +259,7 @@ public class Util {
 					DOMFactory fac, EntityTable ents) {
     if (nl == null) nl = new ArrayNodeList();
     if (aNodeList == null) return nl;
-    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       expandEntities(node, nl, fac, ents);
     }
@@ -245,6 +293,100 @@ public class Util {
     return (Element) expandEntities(e.getChildren(),
 				    expandAttrs(e, fac, ents),
 				    fac, ents);
+  }
+
+  /** Expand the children of one Node, appending them to another. */
+  public static Node expandChildren(Node aNode, Node child,
+				String tagName, Context c) {
+    // create a new context in which to expand the children.
+    Context cc = c.newContext(aNode, tagName);
+    for ( ; child != null; child = child.getNextSibling()) {
+      if (child instanceof Token) cc.expand((Token)child);
+      else			  cc.putResult(child);
+    }
+    return aNode;
+  }
+
+  /** 
+  /** Make a deep copy of an element, expanding attributes and content. */
+  public static Element expandElement(Element e, Context c) {
+    Element expanded = expandAttrs(e, c.getHandlers(), c.getEntities());
+    expandChildren(expanded, e.getFirstChild(), e.getTagName(), c);
+    return expanded;
+  }
+
+  /************************************************************************
+  ** Tests:
+  ************************************************************************/
+
+  /** Determine whether a Node should be considered <code>true</code> as
+   *	a boolean.  Essentially whitespace, comments, and unbound entities
+   *	are considered false; everything else is true.
+   */
+  public static boolean trueValue(Node aNode) {
+    int nodeType = aNode.getNodeType();
+    switch (nodeType) {
+    case NodeType.ELEMENT: 
+      return true;
+
+    case NodeType.TEXT:
+      crc.dom.Text t = (crc.dom.Text)aNode;
+      if (t.getIsIgnorableWhitespace()) return false;
+      String s = t.getData();
+      for (int i = 0; i < s.length(); ++i) 
+	if (Character.isWhitespace(s.charAt(i))) return true;
+      return false;
+
+    case NodeType.COMMENT: 
+      return false;
+
+    case NodeType.PI:
+      return true;
+
+    case NodeType.ATTRIBUTE: 
+      crc.dom.Attribute attr = (crc.dom.Attribute)aNode;
+      return orValues(attr.getValue());
+
+    case NodeType.NODELIST: 
+      return orValues(aNode.getChildren());
+
+    default: 
+      return true;
+    }
+  }
+
+  /** Determine whether a Node should be considered <code>true</code> as
+   *	a boolean.  Essentially whitespace, comments, and unbound entities
+   *	are considered false; everything else is true.
+   */
+  public static boolean isWhiteSpace(String s) {
+    for (int i = 0; i < s.length(); ++i) 
+      if (Character.isWhitespace(s.charAt(i))) return true;
+    return false;
+  }
+
+  /** Determine whether <em>all</em> the items in a nodeList are true.
+   *	An empty list is considered <em>true</em>, because all of
+   *	its elements are true.
+   */
+  public static boolean andValues(NodeList aNodeList) {
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      if (! trueValue(node)) return false;
+    }
+    return true;
+  }
+
+  /** Determine whether <em>any</em> of the items in a nodeList are true. 
+   *	An empty list is considered <em>false</em> because it contains
+   *	no true elements.
+   */
+  public static boolean orValues(NodeList aNodeList) {
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      if (trueValue(node)) return true;
+    }
+    return false;
   }
 
 }

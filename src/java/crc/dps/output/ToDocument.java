@@ -47,7 +47,7 @@ public class ToDocument extends AbstractOutput {
    *		output, <code>false</code> to pause the Processor.
    */
   public boolean nextToken(Token theToken) {
-    
+    // === should create a node.
     return true;
   }
 

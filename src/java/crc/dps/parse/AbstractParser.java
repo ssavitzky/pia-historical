@@ -23,6 +23,8 @@ import crc.dps.InputStack;
 import crc.dps.EntityTable;
 import crc.dps.input.AbstractInputFrame;
 
+import crc.dom.AttributeList;
+
 /**
  * An abstract implementation of the Parser interface.  <p>
  *
@@ -52,6 +54,7 @@ public abstract class AbstractParser extends AbstractInputFrame
   public void setProcessor(Processor aProcessor) {
     processor 	 = aProcessor;
     guardedDepth = aProcessor.getDepth();
+    tagset	 = aProcessor.getHandlers();
   }
 
   /************************************************************************
@@ -311,18 +314,18 @@ public abstract class AbstractParser extends AbstractInputFrame
     int nodeType = t.getNodeType();
     Handler handler = null;
     if (nodeType == NodeType.ELEMENT && ! t.isEndTag()) {
-      handler = tagset.handlerForTag(t.getTagName());
+      handler = tagset.getHandlerForTag(t.getTagName());
       handler = handler.getHandlerForToken(t);
       if (handler.isEmptyElement(t)) { 
 	t.setIsEmptyElement(true);
 	// === Do we need to set syntax=0 if isEmptyElement???
       }
     } else if (nodeType == NodeType.TEXT) {
-      handler = tagset.handlerForText(t.getIsWhitespace());
+      handler = tagset.getHandlerForText(t.getIsWhitespace());
     } else if (nodeType == NodeType.ENTITY) {
-      handler = tagset.handlerForEntity(t.getName());
+      handler = tagset.getHandlerForEntity(t.getName());
     } else {
-      handler = tagset.handlerForType(nodeType);
+      handler = tagset.getHandlerForType(nodeType);
     }
     t.setHandler(handler);
     return t;
@@ -408,6 +411,48 @@ public abstract class AbstractParser extends AbstractInputFrame
    *	an end tag.
    */
   protected boolean returnedEndTag = false;
+
+  /************************************************************************
+  ** Mode Creation:
+  ************************************************************************/
+  
+  /** Called during parsing to return a suitable start tag Token for the
+   *	given tagname and attribute list. 
+   */
+  protected Token createStartToken(String tagname, AttributeList attrs) {
+    if (tagset != null) return tagset.createStartToken(tagname, attrs, this);
+    return new BasicToken(tagname, -1, attrs, null);
+  }
+
+  /** Called during parsing to return an end tag Token. 
+   */
+  protected Token createEndToken(String tagname) {
+    return new BasicToken(tagname, 1);
+  }
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node with String data. 
+   */
+  protected Token createToken(int nodeType, String data) {
+    if (tagset != null) return tagset.createToken(nodeType, data, this);
+    return new BasicToken(nodeType, data);
+  }
+
+  /** Called during parsing to return a suitable Token for a generic
+   *	Node with a name, and String data. 
+   */
+  protected Token createToken(int nodeType, String name, String data) {
+    if (tagset != null) return tagset.createToken(nodeType, name, data, this);
+    return new BasicToken(nodeType, name, data);
+  }
+
+  /** Called during parsing to return a suitable Token for a new Text.
+   */
+  protected Token createTextToken(String text) {
+    if (tagset != null) return tagset.createTextToken(text, this);
+    return new BasicToken(text);
+  }
+
 
   /************************************************************************
   ** Construction:

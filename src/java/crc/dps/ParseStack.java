@@ -52,6 +52,10 @@ public class ParseStack extends StackFrame implements Context {
 
   public final Node getNode() 		{ return node; }
 
+  public Element getElement() {
+    return (node instanceof Element)? (Element)node : null;
+  }
+
   public void  setNode(Node aNode) {
     node = aNode;
   }
@@ -340,7 +344,7 @@ public class ParseStack extends StackFrame implements Context {
       String tag = elt.getTagName();
       Context c = newContext(ne, tag);
       c.expand(elt.getChildren());
-      return result(ne);
+      return putResult(ne);
 
     case NodeType.NODELIST:
     case NodeType.TOKENLIST:
@@ -355,7 +359,7 @@ public class ParseStack extends StackFrame implements Context {
 
     default:
       // === Worry about children
-      return result(Util.copyNode(aNode, tagset));
+      return putResult(Util.copyNode(aNode, tagset));
     }
   }
 
@@ -370,18 +374,12 @@ public class ParseStack extends StackFrame implements Context {
     return null;
   }
 
-  public Token result(Node aNode) {
+  public Token putResult(Node aNode) {
     if (parsing) appendNode(aNode);
     return null;
   }
 
-  /** A ParseStack doesn't have an output, so just drop aToken on the floor. */
-  public Token result(Node aNode, Token aToken) {
-    if (parsing) appendNode(aNode);
-    return null;
-  }
-
-  public Token results(NodeList aNodeList) {
+  public Token putResults(NodeList aNodeList) {
     if (parsing) appendNodes(aNodeList);
     return null;
   }

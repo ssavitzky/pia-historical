@@ -81,7 +81,7 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   protected boolean anyResults;
 
-  public Token result(Node aNode) {
+  public Token putResult(Node aNode) {
     debug((parsing && node == null)? " dropped parse " : "ok");
     if (aNode == null) return null;
     if (parsing) appendNode(aNode);
@@ -91,20 +91,22 @@ public class BasicProcessor extends ParseStack implements Processor {
     return null;
   }
 
-  public Token result(Node aNode, Token aToken) {
+  /** Internal hack to simplify processEnd */
+  protected final Token putResult(Node aNode, Token aToken) {
     debug((parsing && node == null)? " dropped parse " : "ok");
-    if (parsing && aNode != null) appendNode(aNode);
-    if (passing && aToken != null) passOutput(aToken);
+    if (aNode == null) return null;
+    if (parsing) appendNode(aNode);
+    if (passing) passOutput(aToken);
 
     anyResults = true;
     return null;
   }
 
-  public Token results(NodeList aNodeList) {
+  public Token putResults(NodeList aNodeList) {
     if (aNodeList == null) return null;
     crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      result(node);
+      putResult(node);
     }
     return null;
   }
@@ -129,18 +131,23 @@ public class BasicProcessor extends ParseStack implements Processor {
       if (handler != null) {
 	node = handler.startAction(token, this);
 	debug(" handled ");
-      } else if (parsing) {
-	node = token;
-	token.setNode();
-	debug(" parsing "); }
-      else node = null;
+      } else {
+	node = token.createNode(this.getHandlers());
+	debug(" default ");
+      } 
     } else if (parsing) { 
       node = token; 
-      token.setNode();
     } else {
       node = null;
     }
-    if (passing && !token.isEmptyElement()) passOutput(token);
+    if (passing && !token.isEmptyElement()) {
+      if (node == null || node == token) {
+	passOutput(token);
+      } else {
+	passOutput(new BasicToken(node, -1));
+      }
+    }
+    token.setNode();
     debug("\n");
     token = null;
   }
@@ -154,6 +161,9 @@ public class BasicProcessor extends ParseStack implements Processor {
     boolean werePassing = passing;
     Token oldToken = token;
     Node newNode = node;
+    if (getElement() != null) {
+      oldToken.setTagName(getElement().getTagName());
+    }
     Handler handler;
     // then pop the parse stack, call the handler, and append the node.
     popParseStack();
@@ -161,7 +171,6 @@ public class BasicProcessor extends ParseStack implements Processor {
     // It should still be there in <code>token</code>.
     if (!token.isEmptyElement()) {
       oldToken.setEndTag();
-      oldToken.setTagName(token.getTagName());
     }
     if (oldToken.implicitEnd()) {
       token.setImplicitEnd(true);
@@ -173,13 +182,13 @@ public class BasicProcessor extends ParseStack implements Processor {
 	token = handler.endAction(token, this, newNode);
 	debug(" handled ");
       } else {
-	token = token.isEmptyElement()? result(newNode)
-	  			      : result(newNode, oldToken);
+	token = token.isEmptyElement()? putResult(newNode)
+	  			      : putResult(newNode, oldToken);
 	debug(newNode == null? " vanished " : parsing? " parsed " : " passed ");
       }
     } else {
-      token = token.isEmptyElement()? result(newNode)
-	  			    : result(newNode, oldToken);
+      token = token.isEmptyElement()? putResult(newNode)
+	  			    : putResult(newNode, oldToken);
     }
     debug("\n");
   }
@@ -194,12 +203,12 @@ public class BasicProcessor extends ParseStack implements Processor {
     if (expanding) {
       handler = token.getHandler();
       if (handler != null) token = handler.nodeAction(token, this);
-      else token = result(token.createNode(getHandlers()));
+      else token = putResult(token.createNode(getHandlers()));
     } else if (parsing) {
       if (node != null) token.copyTokenUnder(node);
       token = null;
     } else {
-      token = result(token);
+      token = putResult(token);
     }
   }
 

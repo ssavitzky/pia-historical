@@ -10,30 +10,48 @@ import crc.dom.Element;
 /**
  * The interface for a document parsing or processing context stack. <p>
  *
- *	A Context amounts to a parse stack.  It maintains a parse tree
- *	being constructed or traversed, and any additional state that
- *	applies at each level.  It need not be a stack or linked list,
- *	although this is usually the simplest implementation. <p>
+ *	A Context amounts to a parse stack or execution stack.  It maintains a
+ *	parse tree being constructed or traversed, and any additional state
+ *	that applies at each level.  It need not be a stack or linked list,
+ *	although this will usually be the simplest implementation. <p>
  *
  *	At any given level in the Context stack there is a current set of
- *	bindings for entities and handlers, and a current Node being 
- *	operated on, normally by appending to it.  There is also a current
- *	Token.  Immediately before starting (pushing) a new Context,
- *	the current Token should correspond to the Element being pushed.
- *	That way, immediately after popping, it will have any handlers that
- *	need to be called to finalize the operation. <p>
+ *	bindings for entities and handlers, and a current Node being operated
+ *	on, normally by appending to it.  There is also a current Token being
+ *	``expanded'' or processed.  Immediately before starting (pushing) a
+ *	new Context, the current Token should correspond to the Element being
+ *	pushed.  That way, immediately after popping, it will have the
+ *	Handler that needs to be called to finalize the operation.  A Handler
+ *	need not be associated with an end tag, which saves the Parser the
+ *	trouble of looking it up. <p>
  *
  *	Note that the current Node does <em>not</em> have to be a child
  *	of the current Node one level up in the stack.  It is perfectly
  *	legitimate to build a parentless parse tree, manipulate it in 
- *	some way, and <em>then</em> append it.
+ *	some way, and <em>then</em> append it. <p>
+ *
+ *	Handlers append their results to the parse tree under construction
+ *	using the Context operations <code>putResult(<em>node</em>)</code> and 
+ *	<code>putResults(<em>nodeList</em>)</code>.  This has several
+ *	advantages:
+ *   	<ul>
+ *	    <li> Handlers can easily return multiple results without
+ *		 constructing a tempory NodeList which the calling Context
+ *		 would then have to take apart.
+ *	    <li> A Processor (an extension of Context) can perform the
+ *		 optimization of passing the results directly to an 
+ *		 Output without constructing a tree at all.
+ *	    <li> Handler operations are then free to return a Token which
+ *		 represents a ``continuation.''
+ *	</ul>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
+ * @see crc.dps.Handler
+ * @see crc.dps.Output
  * @see crc.dps.Processor
- * @see crc.dps.Token
- */
+ * @see crc.dps.Token */
 
 public interface Context {
 
@@ -132,6 +150,15 @@ public interface Context {
    */
   public Node getNode();
 
+  /** Get the current <em>parent</em> Node as an Element.   <p>
+   *
+   * @return <code>(Element)getNode()</code>, or <code>null</code> if the 
+   *	current node is not an element.
+   * @see #getNode
+   * @see crc.dom.Element
+   */
+  public Element getElement();
+
   /** Set the current <em>parent</em> Node.  This is the node which will 
    *	normally become the parent of the current Token or a Node derived
    *	from it.  <p>
@@ -211,24 +238,13 @@ public interface Context {
   /** Called by an expansion Handler in order to return <code>aNode</code>
    *	as its result.  The return value is <code>null</code>, allowing
    *	the Handler to end with <br>
-   *	<code>return result(<em>aNode</em>);</code><p>
+   *	<code>return putResult(<em>aNode</em>);</code><p>
    *
    * @param aNode a Node to be appended to the parse tree under construction,
    *	and/or passed to the Output.
    * @return <code>null</code>.
    */
-  public Token result(Node aNode);
-
-  /** Called by an expansion Handler in order to return <code>aNode</code>
-   *	as its result.  The return value is <code>null</code>, allowing
-   *	the Handler to end with <br>
-   *	<code>return result(<em>aNode</em>);</code><p>
-   *
-   * @param aNode a Node to be appended to the parse tree under construction.
-   * @param aToken a Token to be passed to the output.
-   * @return <code>null</code>.
-   */
-  public Token result(Node aNode, Token aToken);
+  public Token putResult(Node aNode);
 
   /** Called by an expansion Handler in order to return <code>aNodeList</code>
    *	as its result.  The return value is <code>null</code>, allowing
@@ -239,5 +255,5 @@ public interface Context {
    *	the parse tree under construction, and/or passed to the Output.
    * @return <code>null</code>.
    */
-  public Token results(NodeList aNodeList);
+  public Token putResults(NodeList aNodeList);
 }
