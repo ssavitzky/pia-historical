@@ -32,19 +32,50 @@ public class Accepter extends Thread {
    */
   protected ServerSocket listenSocket;
 
+  /**
+   * Attribute index - whether to shutdown
+   */
+  protected boolean finish = false;
+
+  /**
+   * stop thread 
+   */
+  protected shutdown(){
+    finish = true;
+  }
+
+  /**
+   * shutdown socket
+   */
+  protected cleanup(boolean restart){
+    try {
+      listenSocket.close();
+      listenSocket = null;
+      finish = false;
+    }catch(IOException ex){
+      Pia.errlog ("[cleanup]: IOException while closing server socket.");
+    }
+  }
+
+  protected void finalize() throws IOException{
+    cleanup( false );
+  }
+  
  /**
   * Loop for connections from clients.
   * @return nothing. 
   */ 
   public void run(){
     try{
-      while( true ){
+      while( !finish && listenSocket != null ){
 	Socket clientSocket = listenSocket.accept();
-	handleConnection( clientSocket );
+	if( listenSocket != null && clientSocket != null )
+	  handleConnection( clientSocket );
       }
     }catch(IOException e){
        errSys(e, "There is an exception while listening for connection.");
     }
+    cleanup(false);
   }
 
   /**
@@ -75,6 +106,19 @@ public class Accepter extends Thread {
     Machine machine =  new Machine(addr, port, in);
     return new Transaction( machine );
  }
+
+  /**
+   * restart socket
+   */
+  protected void restart(){
+    try {
+      listenSocket = new ServerSocket( port );
+    }catch(IOException e){
+       errSys(e, "There is an exception creating accepter's socket.");
+    }
+    System.out.println("Accepter: listening on port" + port);
+    this.start();
+  }
 
   /**
   * Starts thread here
