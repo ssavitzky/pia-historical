@@ -176,6 +176,9 @@ sub get_request {
 
     $ua->agent($trans->request->user_agent . ' PIA/1.0 ' . $user_agent_id);
 
+    ## Some excessively-clever servers notice that we're proxied.
+    ##	 This may not be fixable.
+
     ## Set request content if we're posting.
     my $content = $trans->content;
     if ($content) {
