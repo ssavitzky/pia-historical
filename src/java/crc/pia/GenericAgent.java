@@ -73,8 +73,26 @@ public class GenericAgent extends AttrBase implements Agent {
   protected String tagsetNames[] = {
     null, 	"Standard",	"legacy", 	"standard", 	"standalone"};
 
+
+  /** A ``search path'' of filename suffixes for (possibly) executable files. */
+  protected String codeSearch[] = {
+    "xh", "xx", "lif", "if", "cgi",
+    "html", "xml", "htm", "txt", 
+  };
+
+  /** A ``search path'' of filename suffixes for data files. */
+  protected String dataSearch[] = {
+    "html", "xml", "htm", "txt", 
+  };
+
   private String filesep = System.getProperty("file.separator");
   public static boolean DEBUG = false;  
+
+  /** Suffix appended to the agent's name to get to its 'home InterForm' */
+  public String homePathSuffix = "/home";
+
+  /** Suffix appended to the agent's name to get to its 'index InterForm' */
+  public String indexPathSuffix = "/index";
 
   /** If true, run the request for <code>initialize.if</code> through the 
    *	Resolver.  Otherwise, run the interpretor over it directly.
@@ -909,16 +927,14 @@ public class GenericAgent extends AttrBase implements Agent {
 
     originalPath = path;
 
-    if (path.equals("/")) {
-      path = "/Agency/ROOTindex.if";
-    } else if (path.equals("/" + myname)
+    if (path.equals("/" + myname)
 	       || path.equals("/" + mytype)
 	       || path.equals("/" + mytype + "/" + myname) ) {
-      path += "/home.if";
+      if (homePathSuffix != null) path += homePathSuffix;
     } else if (path.equals("/" + myname + "/")
 	       || path.equals("/" + mytype + "/")
 	       || path.equals("/" + mytype + "/" + myname + "/") ) {
-      path += "index.if";
+      if (indexPathSuffix != null) path += "index";
     }
 
     if( originalPath == path ) // we don't have redirection
@@ -1038,7 +1054,9 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
-   * Find a filename relative to an arbitrary agent.
+   * Find a filename relative to an arbitrary agent.  
+   *	Note that the path separator <em>must</em> be ``<code>/</code>'',
+   *	i.e. the path must follow the conventions for a URL.
    */
   public String findInterform(String path, String myname, String mytype,
 			      List if_path){
@@ -1056,10 +1074,11 @@ public class GenericAgent extends AttrBase implements Agent {
       wasData = true;
     } else if (path.startsWith("/%7E") || path.startsWith("/%7e")) {
       path = "/" + path.substring(4);
+      wasData = true;
     }
 
     /* Remove a leading /type or /name or /type/name from the path. */
-
+    // === Should really handle an arbitrary prefix (mount point) ===
     if (path.startsWith("/" + mytype + "/")) {
       path = path.substring(mytype.length() + 1);
       hadType = true;
@@ -1070,8 +1089,6 @@ public class GenericAgent extends AttrBase implements Agent {
       hadName = true;
     }
     
-    // === The following fails if pathsep is not "/" ===
-
     if (path.startsWith("/" + DATA + "/") || path.equals("/" + DATA)) {
       path = path.substring(DATA.length() + 1);
       wasData = true;
@@ -1081,20 +1098,55 @@ public class GenericAgent extends AttrBase implements Agent {
       if_path = new List();
       if_path.push(agentDirectory());
     }
-      
+    
+    String suffixPath[] = wasData? dataSearch : codeSearch;
+    
+    return findFile(path, if_path, suffixPath);
+  }
+
+  /** Find a file given a search-path of directories and a search-path of
+   *	suffixes.
+   */
+  public String findFile(String path, List dirPath, String suffixPath[]){
+    // Remove leading "/" because every directory name in the search path
+    // ends with it. 
     if( path.startsWith("/") )	path = path.substring(1);
     Pia.debug(this, "Looking for -->"+ path);
 
+    int lastDot = path.lastIndexOf(".");
+    int lastSlash = path.lastIndexOf("/");
+    boolean hasSuffix = lastDot >= 0 && lastDot > lastSlash;
+
+    // === The following code fails miserably if fileSep is not "/".
+    // === It also needs to handle missing suffix (use xxxSearch)
+    // === Needs to handle file/extra_path_info
+    // === We should be caching File objects because lookup is so elaborate.
     File f;
-    Enumeration e = if_path.elements();
-    while( e.hasMoreElements() ){
-      String zpath = e.nextElement().toString();
-      String wholepath = zpath + path;
-      Pia.debug(this, "  Trying -->"+ wholepath);
-      f = new File( wholepath );
-      if( f.exists() ) return wholepath;
+    Enumeration e = dirPath.elements();
+    if (hasSuffix) {
+      while( e.hasMoreElements() ){
+	String zpath = e.nextElement().toString();
+	String wholepath = zpath + path;
+	Pia.debug(this, "  Trying -->"+ wholepath);
+	f = new File( wholepath );
+	if( f.exists() ) return wholepath;
+      }
+    } else {
+      while( e.hasMoreElements() ){
+	String zpath = e.nextElement().toString();
+	String wholepath = zpath + path;
+	Pia.debug(this, "  Trying -->"+ wholepath);
+	f = new File( wholepath );
+	if( f.exists() ) return wholepath;
+	wholepath += ".";
+	for (int i = 0; i < suffixPath.length; ++i) {
+	  String xpath = wholepath + suffixPath[i];
+	  Pia.debug(this, "  Trying -->"+ xpath);
+	  f = new File( xpath );
+	  if (f.exists()) return xpath;
+	}
+      }
     }
-    
     return null;
   }
 
@@ -1206,7 +1258,7 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Strip off destination file name for put
    * @return path with interform or cgi
-   * Store destination file name in destFileName
+   * Store destination file name in destFileName === not string safe!
    */
   protected String stripDestFile(String path){
     // If there is a destination file name after the interform file, strip it
@@ -1246,6 +1298,11 @@ public class GenericAgent extends AttrBase implements Agent {
     return null;
   }
 
+  /** Perform any necessary rewriting on the given path. */
+  protected String rewriteInterformPath(Transaction request, String path) {
+    return path;
+  }
+
   /**
    * Respond to a request directed at one of an agent's interforms, 
    * with a (possibly-modified) path.
@@ -1255,15 +1312,18 @@ public class GenericAgent extends AttrBase implements Agent {
   public boolean respondToInterform(Transaction request, String path,
 				    Resolver res){
 
-    // If the request needs to be redirected, do so now.
-    if (isRedirection( request, path )) return true;
-
     // If the path includes a query string, remove it now
     int end = path.indexOf('?');
     if(end > 0) path = path.substring(0, end);
 
     // If there is a destination file name after the interform file, strip it
     path = stripDestFile( path );
+
+    // If the request needs to be redirected, do so now.
+    if (isRedirection( request, path )) return true;
+
+    // Rewrite the path if necessary.
+    path = rewriteInterformPath(request, path);
 
     // Find the file.  If not found, return false.
     String file = findInterform( path );

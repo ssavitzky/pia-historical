@@ -151,43 +151,79 @@ public class Agency extends GenericAgent {
   }
 
   /**
-   * Act on a transaction that we have matched.  
-   * Since the Agency matches all requests to agents, this means
-   * that we need to find the agent that should handle this request
-   * and push it onto the transaction.
+   * Act on a transaction that we have matched. 
+   *
+   * <p> Since the Agency matches all requests to agents, this means
+   * 	 that we need to find the agent that should handle this request
+   * 	 and push it onto the transaction.
    */
   public void actOn(Transaction trans, Resolver res){
-    String lhost = null;
-
     boolean isAgentRequest = trans.test("IsAgentRequest");
-    
-    if(! isAgentRequest ) return;
+    if (!isAgentRequest) return; // sanity check -- it's an agent request.
 
     URL url = trans.requestURL();
-    if(url == null) return;
+    if (url == null) return;	 // sanity check -- there's a URL
     
     String path = url.getFile();
     Pia.debug(this, "actOn..." + path);
 
-    if (path.equals("/")) {
-      // Root is handled by Agency agent.
-      trans.toMachine( machine() );
-      return;
-    }
-
-    /* Now check for either /name/ or /type/name */
-
-    if (path.startsWith("/")) path = path.substring(1);
-    List pathList = new List(new java.util.StringTokenizer(path, "/"));
-
+    // Ask the resolver for the correct agent.  
     Agent agent = res.agentFromPath(path);
 
-    if( agent == null ){
-      Pia.debug(this, "Agent not found");
-      return;
-    }else{
+    if (agent != null) {
       Pia.debug(this, "Agent found: " + agent.name());
       trans.toMachine( agent.machine() );
+    } else if (isValidRootPath(path)) {
+      Pia.debug(this, "Root path redirected to " + name());
+      trans.toMachine(this.machine()); 
+    } else {
+      Pia.debug(this, "Agent not found");
+    }
+  }
+
+  /** The directory (under Agency) in which we keep root files. */
+  protected String rootPrefix = "ROOT";
+
+  /** Test path to see whether it is a valid root path. */
+  protected boolean isValidRootPath(String path) {
+    // First see if it's a possibility.
+    if (!isPossibleRootPath(path)) return false;
+    return null != findInterform(rewriteRootPath(path));
+  }
+
+  /** Test path to see whether it is a possible root path. 
+   *	This is indicated by the absence of a leading <code>/Agency</code>.
+   *	Note that by this point we have already established (in Agency's
+   *	<code>actOn</code> method) that either Agency or no valid agent
+   *	owns the path.
+   */
+  protected boolean isPossibleRootPath(String path) {
+    // We've already checked for an agent at this point, so we know that if
+    // it starts with Agency it's not a root path.
+    return !path.startsWith("/" + name());
+  }
+
+  /** Rewrite a root path.  
+   *	Correctly handle the case where a legacy <code>ROOTindex.if</code>
+   *	exists in the user's <code>.pia/Agents/Agency</code> directory.
+   *	Otherwise, rewrite to <code>Agency/ROOT/<em>path</em></code>.
+   */
+  protected String rewriteRootPath(String path) {
+    if (path.equals("/")) {
+      // root index directory -- might be ROOTindex
+      if (findInterform("ROOTindex") != null) return "/ROOTindex";
+      return "/" + rootPrefix + "/index";
+    } else {
+      return "/" + rootPrefix + path;
+    }
+  }
+
+  /** Perform any necessary rewriting on the given path. */
+  protected String rewriteInterformPath(Transaction request, String path) {
+    if (isPossibleRootPath(path)) {
+      return rewriteRootPath(path);
+    } else {
+      return path;
     }
   }
 
