@@ -44,3 +44,4 @@ include $(TOPDIR)/makefiles/package.make
 ###	depends on.  This happens quietly (unfortunately), but make
 ###	seems to cope with it and not build anything twice.
 
+Handler.class: Syntax.java Action.java
