@@ -35,19 +35,26 @@ VERSION    = $(VENDOR_TAG)$(RELEASE).$(MAJOR).$(MINOR)$(SUFFIX)
 
 /*** Subdirectories ***/
 
-SUBDIRS 	=  Doc bin lib /* pub src */
+SUBDIRS 	=  bin lib /* Doc src */
 
 /*** Symbolic Links ***/
 
-all::	lib bin lib/perl lib/java bin/pia
+all::	lib bin
 	@echo "symlinks made"
 
+setup::	
+	cd lib; make
+	cd bin; make
 
 /*** Standard Imake stuff ***/
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 
+/*** Additional subdirs for make Makefiles ***/
+
+DocMakefiles::
+	$(MAKE) Makefiles SUBDIRS=Doc
 
 /* Common cvs operations */
 
