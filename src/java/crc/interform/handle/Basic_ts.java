@@ -46,6 +46,9 @@ public class Basic_ts extends HTML_ts {
     a.initMatch();
     define(a);
 
+    // ... or could do defActors("then else", "quoted", true);
+    define(new Actor("then", "quoted"));
+    define(new Actor("else", "quoted"));
     defTags("then else", "then else");
   }
 

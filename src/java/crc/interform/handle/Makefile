@@ -17,6 +17,7 @@ BASIC_ACTORS = \
 	Difference.java \
 	Dl.java \
 	Element.java \
+	Else.java \
 	Equal.java \
 	Expand.java \
 	Foreach.java \
@@ -38,6 +39,7 @@ BASIC_ACTORS = \
 	Tagset_include.java \
 	Test.java \
 	Text.java \
+	Then.java \
 	Trim.java	
 
 ### The effect of these actors is local; they do not require a PIA, 
