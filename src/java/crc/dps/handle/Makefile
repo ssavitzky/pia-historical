@@ -9,8 +9,10 @@ TOPDIR=../../..
 HANDLERS = \
 	AbstractHandler.java \
 	BasicHandler.java \
+	EntityHandler.java \
 	GenericHandler.java \
 	LegacyHandler.java \
+	TextHandler.java \
 	TypicalHandler.java
 
 ### The effect of these actors is entirely confined to the current file
@@ -80,4 +82,6 @@ unfix:
 
 AbstractHandler.class: ../Handler.java
 BasicHandler.class: AbstractHandler.java ../Handler.java
+EntityHandler.class: AbstractHandler.java ../Handler.java
 GenericHandler.class: BasicHandler.java AbstractHandler.java ../Handler.java
+TextHandler.class: AbstractHandler.java ../Handler.java

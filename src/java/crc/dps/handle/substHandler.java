@@ -5,8 +5,6 @@
 package crc.dps.handle;
 
 import crc.dom.Node;
-import crc.dom.BasicElement;
-import crc.dom.BasicText;
 import crc.dom.Element;
 import crc.dom.NodeList;
 import crc.dom.DOMFactory;

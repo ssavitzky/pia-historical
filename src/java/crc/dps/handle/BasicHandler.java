@@ -4,13 +4,12 @@
 
 package crc.dps.handle;
 import crc.dom.Node;
-import crc.dom.BasicElement;
 import crc.dom.NodeList;
-import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.Copy;
 
 import crc.ds.Table;
 
@@ -42,7 +41,25 @@ public class BasicHandler extends AbstractHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  // All inherited.
+  /** Blythely assume that any active entities have EntityHandler as their
+   *	handler. 
+   */
+  public int actionCode(Input in, Processor p) {
+    // There is no need to check for entities here; they use EntityHandler
+    return (in.hasActiveChildren() || in.hasActiveAttributes())
+      ? Action.EXPAND_NODE: Action.COPY_NODE;
+  }
+
+  /** This sort of action has no choice but to do the whole job.
+   */
+  public void action(Input in, Context aContext, Output out) {
+    Node n = in.getNode();
+    if (in.hasActiveChildren() || in.hasActiveAttributes()) {
+      aContext.subProcess(in, out).expandCurrentNode();
+    } else {
+      Copy.copyNode(n, in, out);
+    }
+  }
 
   /************************************************************************
   ** Parsing Operations:
@@ -100,7 +117,7 @@ public class BasicHandler extends AbstractHandler {
   /** Called to determine the correct Handler for a given Token.
    *	The default action is to return <code>this</code>.
    */
-  public Action getActionForNode(Node n) {
+  public Action getActionForNode(ActiveNode n) {
     return this;
   }
 

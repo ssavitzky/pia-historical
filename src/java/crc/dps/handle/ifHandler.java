@@ -47,7 +47,7 @@ public class ifHandler extends GenericHandler {
   		     ActiveAttrList atts, NodeList content, String cstring) {
     boolean trueCondition = false;
     NodeEnumerator enum = content.getEnumerator();
-    aContext.debug("   Initializing action for <" + tag + ">\n");
+    //aContext.debug("   Initializing action for <" + tag + ">\n");
 
     for (Node child = enum.getFirst(); child != null; child = enum.getNext()) {
       /* 
@@ -58,15 +58,15 @@ public class ifHandler extends GenericHandler {
 	ActiveElement ct = (ActiveElement)child;
 	Class cl = ct.getSyntax().getClass();
 	if (cl == thenHandlerClass) {
-	  aContext.debug("     <then> with condition " + 
-			 (trueCondition? "true" : "false") + "\n");
+	  //aContext.debug("     <then> with condition " + 
+	  //	 (trueCondition? "true" : "false") + "\n");
 	  if (trueCondition) {
 	    Expand.processChildren(ct, aContext, out);
 	    return;
 	  }
 	} else if (cl == elsfHandlerClass) {
-	  aContext.debug("     <else-if> with condition " + 
-			 (trueCondition? "true" : "false") + "\n");
+	  //aContext.debug("     <else-if> with condition " + 
+	  //	 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
 	    // else-if: just delegate to <else-if>'s (expanded) children.
 	    content = Expand.processNodes(ct.getChildren(), aContext);
@@ -74,8 +74,8 @@ public class ifHandler extends GenericHandler {
 	    return;
 	  }
 	} else if (cl == elseHandlerClass) {
-	  aContext.debug("     <else> with condition " + 
-			 (trueCondition? "true" : "false") + "\n");
+	  //aContext.debug("     <else> with condition " + 
+	  //	 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
 	    Expand.processChildren(ct, aContext, out);
 	    return;

@@ -5,7 +5,6 @@
 package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.Element;
-import crc.dom.BasicElement;
 import crc.dom.NodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
@@ -44,17 +43,22 @@ implements Handler {
   /** The default action is to return the code that tells the Processor
    *	to process the node in the ``usual'' way.
    */
-  public int action(Input in, Processor p) {
+  public int actionCode(Input in, Processor p) {
     return (in.hasActiveChildren() || in.hasActiveAttributes()
 	    || in.getNode().getNodeType() == NodeType.ENTITY)
-      ? 1 : -1;
+      ? Action.EXPAND_NODE: Action.COPY_NODE;
   }
 
   /** This sort of action has no choice but to do the whole job.
    */
   public void action(Input in, Context aContext, Output out) {
-    BasicProcessor p = new BasicProcessor(in, aContext, out);
-    p.expandCurrentNode();
+    Node n = in.getNode();
+    if ((in.hasActiveChildren() || in.hasActiveAttributes()
+	 || n.getNodeType() == NodeType.ENTITY)) {
+      aContext.subProcess(in, out).expandCurrentNode();
+    } else {
+      Copy.copyNode(n, in, out);
+    }
   }
 
   /** It's unlikely that this will be called, but allow for the possibility. */
@@ -114,7 +118,7 @@ implements Handler {
    *	possible to do additional dispatching based on the Node's 
    *	attributes or other information.
    */
-  public Action getActionForNode(Node n) {
+  public Action getActionForNode(ActiveNode n) {
     return this;
   }
 
@@ -155,6 +159,23 @@ implements Handler {
    */
   public boolean passElement() { return true; }
 
+  /** Return <code>true</code> if Text nodes are permitted in the content.
+   */
+  public boolean mayContainText() { return true; }
+
+  /** Return <code>true</code> if paragraph elements are permitted in the
+   *	content.  If this is <code>true</code> and <code>mayContainText</code>
+   *	is false, whitespace is made ignorable and non-whitespace is 
+   *	commented out.
+   */
+  public boolean mayContainParagraphs() { return true; }
+
+  /** Return true if this kind of token implicitly ends the given one. 
+   *	This is not as powerful a test as using the DTD, but it will work
+   *	in most cases and permits a simpler parser.
+   */
+  public boolean implicitlyEnds(String tag) { return false; }
+
 
   /************************************************************************
   ** Presentation Operations:
@@ -166,9 +187,8 @@ implements Handler {
    *	we can give the same Document different physical representations
    *	if necessary.
    */
-  public String convertToString(Node n) {
-    crc.dom.AbstractNode nn = (crc.dom.AbstractNode)n;
-    return nn.startString() + nn.contentString() + nn.endString();
+  public String convertToString(ActiveNode n) {
+    return n.startString() + n.contentString() + n.endString();
   }
 
   /** Converts the Node to a String. 
@@ -177,9 +197,8 @@ implements Handler {
    *	we can give the same Document different physical representations
    *	if necessary.
    */
-  public String convertToString(Node n, int syntax) {
-    crc.dom.AbstractNode nn = (crc.dom.AbstractNode)n;
-    return nn.startString() + nn.contentString() + nn.endString();
+  public String convertToString(ActiveNode n, int syntax) {
+    return n.startString() + n.contentString() + n.endString();
   }
 
 

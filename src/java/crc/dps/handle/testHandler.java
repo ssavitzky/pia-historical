@@ -50,8 +50,8 @@ public class testHandler extends GenericHandler {
   }
 
   /** This does the parse-time dispatching. */
-  public Action getActionForNode(Node n) {
-    ActiveElement e = (ActiveElement)n;
+  public Action getActionForNode(ActiveNode n) {
+    ActiveElement e = n.asElement();
 
     if (dispatch(e, "zero")) 	 return new test_zero(e);
     if (dispatch(e, "positive")) return new test_positive(e);
@@ -101,7 +101,7 @@ public class testHandler extends GenericHandler {
    *	may contain entities that have to be expanded.
    */
   public void returnBoolean(boolean value, Context c, Output out) {
-    c.debug("<test> returning " + value + " " + getClass().getName() + "\n");
+    //c.debug("<test> returning " + value + " " + getClass().getName() + "\n");
     if (inverted) value = !value;
     if (value) {
       if (trueValue != null) 	{ Expand.expandNodes(c, trueValue, out); }

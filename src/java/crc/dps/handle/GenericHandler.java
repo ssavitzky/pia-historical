@@ -120,7 +120,7 @@ public class GenericHandler extends BasicHandler {
   /** We're assuming that this is an <em>active</em> node, so call
    *	the three-input <code>action</code> routine to do the work.
    */
-  public int action(Input in, Processor p) {
+  public int actionCode(Input in, Processor p) {
     action(in, p, p.getOutput());
     return Action.COMPLETED;
   }
@@ -133,15 +133,14 @@ public class GenericHandler extends BasicHandler {
    */
   public void action(Input in, Context aContext, Output out) {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
-    if (atts != null) aContext.debug("   atts: " + atts.toString() + "\n");
-    else atts = NO_ATTRS;
+    if (atts == null) atts = NO_ATTRS;
     ParseNodeList content = null;
     String cstring = null;
     if (!in.hasChildren()) {
-      aContext.debug("   no children...\n");
+      // aContext.debug("   no children...\n");
     } else if (stringContent) {
-      aContext.debug("   getting content as " + (textContent? "text in " : "")
-		     + (expandContent? "" : "un") + "expanded string\n");
+      //aContext.debug("   getting content as " + (textContent? "text in " : "")
+      //	     + (expandContent? "" : "un") + "expanded string\n");
       if (textContent) {
 	cstring = expandContent
 	  ? Expand.getProcessedTextString(in, aContext)
@@ -151,10 +150,10 @@ public class GenericHandler extends BasicHandler {
 	  ? Expand.getProcessedContentString(in, aContext)
 	  : Expand.getContentString(in, aContext);
       }
-      aContext.debug("     -> '" + cstring + "'\n");
+      //aContext.debug("     -> '" + cstring + "'\n");
     } else {
-      aContext.debug("   getting content as " + (textContent? "text in " : "")
-		     + (expandContent? "" : "un") + "expanded parse tree\n");
+      //aContext.debug("   getting content as " + (textContent? "text in " : "")
+      //	     + (expandContent? "" : "un") + "expanded parse tree\n");
       if (textContent) {
 	content = expandContent
 	  ? Expand.getProcessedText(in, aContext)
@@ -164,13 +163,11 @@ public class GenericHandler extends BasicHandler {
 	  ? Expand.getProcessedContent(in, aContext)
 	  : Expand.getContent(in, aContext);
       }
-      aContext.debug("     -> "+ content.getLength() + " nodes >"
-		     + content.toString() + "< \n");
+      //aContext.debug("     -> "+ content.getLength() + " nodes >"
+      //	     + content.toString() + "< \n");
     }
     String tag = in.getTagName();
-    aContext.debug("   Performing action for <" + tag + ">\n");
     action(in, aContext, out, tag, atts, content, cstring);
-    aContext.debug("   Completed action for <" + tag + ">\n");
   }
 
   /** This routine does the work; it should be overridden in specialized
@@ -187,7 +184,7 @@ public class GenericHandler extends BasicHandler {
    */
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
-    aContext.debug("in action for " + in.getNode());
+    //aContext.debug("in action for " + in.getNode());
     ActiveElement e = in.getActive().asElement();
 
     // === We shouldn't ever have to copy the children here.
@@ -201,7 +198,7 @@ public class GenericHandler extends BasicHandler {
     if (!noCopyNeeded) Copy.appendNodes(content, element);
     if (hasChildren()) {
       // Create a suitable sub-context:
-      aContext.debug("expanding definition in sub-context\n");
+      //aContext.debug("expanding definition in sub-context\n");
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
       ents.setEntityValue("CONTENT", content, true);
       ents.setEntityValue("ELEMENT", new ParseNodeList(element), true);

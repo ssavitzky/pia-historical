@@ -41,8 +41,8 @@ public class TypicalHandler extends GenericHandler {
    *	being passed to <code>dispatch</code> is either the name of an
    *	attribute or a period-separated suffix of the tagname. <p>
    */
-  public Action getActionForNode(Node n) {
-    ActiveElement e = (ActiveElement)n;
+  public Action getActionForNode(ActiveNode n) {
+    ActiveElement e = n.asElement();
     //if (dispatch(e, "xxx")) 	 return new Typical_xxx(e);
     return this;
   }
