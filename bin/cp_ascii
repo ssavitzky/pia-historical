@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+#
+#	cp_ascii [file... dest]
+#	$Id$
+#
+#	like cp except it replaces nl with crlf.  
+#
+
+# for now just copy stdin to stdout
+
+$dest = "";
+
+if ($#ARGV > 0) {
+   $dest = $ARGV[$#ARGV];
+   for ($i = 0; $i < $#ARGV; ++$i) {
+       $src = $ARGV[i];
+       open(STDIN, $ARGV[i]);
+       if (-d $dest) {
+          print <STDERR>, "$src -> $dest/$src\n";
+	  $destf = "$dest/$src";
+       } else {
+          die "destination must be a directory" if ($#ARGV != 1);
+          print <STDERR>, "$src -> $dest\n";
+          $destf = $dest;
+       }
+       if ( -e $destf && ! -w $destf ) {
+	   unlink $destf;
+       }
+       open(STDOUT, ">$destf");
+       while (<STDIN>) {
+	     s/\n/\r\n/;
+	     print;
+       }
+       close(STDIN);
+       close(STDOUT);
+   }
+} elsif ($#ARGV == 0) {
+  print "opening ", $ARGV[0], "\n";
+  open(STDIN, $ARGV[0]);
+  while (<STDIN>) {
+      s/\n/\r\n/;
+      print;
+  } 
+} else {
+  while (<STDIN>) {
+      s/\n/\r\n/;
+      print;
+  }
+}
