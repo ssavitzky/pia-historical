@@ -16,7 +16,7 @@ import java.io.IOException;
 import crc.pia.Content;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
-import crc.util.regexp;
+import crc.util.regexp.RegExp;
 
 public class Machine {
   /**
@@ -169,7 +169,6 @@ public class Machine {
       proxy = proxy( request.protocol() );
       if( proxy )
 	agent.setRequestProperty("proxy", proxy);
-      */
 
       return new Transaction(request, Content( URLConnection ) );
     }catch(IOException e){
