@@ -55,6 +55,27 @@ public class ListUtil {
     return r.elements();
   }
 
+
+  /** Splits a string at whitespace and replaces spaces with
+   *  separators.  Returns a node containing the new string.
+   */
+  public static Node joinTextItems(String s, String sep) {
+    List l = List.split(s);
+    Enumeration e = l.elements();
+    List r = new List();
+    String resultStr = new String();
+    int count = 0;
+    while (e.hasMoreElements()) {
+      if(count > 0) {
+	resultStr += sep;
+      }
+      resultStr += e.nextElement().toString();
+      count++;
+    }
+    return new ParseTreeText(resultStr);
+  }
+
+
   /** Return an enumeration of Text nodes.  Recursively descends into
    *	nodes with children, and splits text nodes containing whitespace.
    *	Obtains each whitespace- or markup-separated word in the list
@@ -79,6 +100,9 @@ public class ListUtil {
     }
     return results.elements();
   }
+
+
+
 
   /** Return the first ``word'' (blank- or markup-separated non-blank text) in
    *	a Node or its content. */
@@ -144,6 +168,45 @@ public class ListUtil {
 	  results.push(t);
 	}
       } else {
+	results.push(n);
+      }
+    }
+    return results.elements();
+  }
+
+
+  /** Return an enumeration of nodes.  Ignores whitespace and splits
+   *	text nodes containing whitespace. Accumulates a string from
+   *    all adjacent text nodes, and creates a single node.  Other
+   *    types of nodes are added to the result list unchanged.  For
+   *    example, text1 text2 markup1 text3 text4 markup2 would result
+   *    in a list of four nodes:  accum_text1 markup1 accum_text2 markup2.
+   *    Each accumulated text string has a separator added between each
+   *    formerly separate string; e.g. accum_text1 has string: text1,text2
+   *    where a comma is the separator.
+   */
+  public static Enumeration joinListItems(NodeList nl, String sep) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List results = new List();
+    String accumStr = null;
+    int adjacent = 0;
+
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if (n.getNodeType() == NodeType.TEXT) {
+	Text t = (Text)n;
+	String s = t.toString();
+	if (s == null || s.equals("") || Test.isWhitespace(s)) continue;
+	if (s.indexOf(" ") >= 0 || s.indexOf('\t') >= 0) {
+	  // If there's whitespace in string, split and join it into a
+	  // a single node.
+	  results.push(joinTextItems(s, sep));
+	} 
+	else {
+	  // A single node without whitespace.  Just add to list
+	  results.push(t);
+	}
+      } 
+      else {
 	results.push(n);
       }
     }
