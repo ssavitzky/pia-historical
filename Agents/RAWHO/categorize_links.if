@@ -26,7 +26,9 @@
       <set index="clnks" insert=-1><li><get agent index=links..dl-1 key=&lid;></li></set>
  added &lid; to &cat; <br>
       <set name=lobj><read process file="links/&lid;/index.html"></set>
-      <set index="lobj" key=category insert=-1><get  name="cat"></set>
+	   <set name=ldl><get index=lobj.body.dl></set>
+	   <set index="ldl" key=category insert=-1><get  name="cat"></set>
+
       <write file="links/&lid;/index.html"><get name=lobj></write>
           </then></if>
        </repeat>
@@ -58,7 +60,7 @@
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 19:29:49 1997
+Last modified: Tue Oct 21 19:36:48 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
