@@ -104,12 +104,6 @@ public interface Action {
    */
   public boolean stringContent();
 
-  /** If <code>true</code>, the element is passed to the output while being
-   *	processed.  In general this will be <code>true</code> for passive
-   *	elements and <code>false</code> for active ones.
-   */
-  public boolean passElement();
-
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
