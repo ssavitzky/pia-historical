@@ -235,7 +235,7 @@ public Object execute  (Object content, Object transaction, Object agent)
   {
     // should handle redirections and errors here
     int code = t.statusCode();
-    result.attr("responsecode",t.statusCode());
+    result.attr("responsecode",Util.toSGML(String.valueOf(t.statusCode())));
 
     if(process && (c  instanceof ParsedContent )){
       ParsedContent p = (ParsedContent) c;
