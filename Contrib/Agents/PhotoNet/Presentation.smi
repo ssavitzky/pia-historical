@@ -1,0 +1,13 @@
+<smil>
+        <head>
+                <layout>
+                <root-layout height="400" width="400" background-color="black"/>
+                </layout>
+        </head>
+        <body>
+        <par>
+                <img id="images1" src="Presentation.imf"/>
+                <audio src="LustForLife.ra"/>
+        </par>
+        </body>
+</smil>

@@ -1,0 +1,83 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Upload Photo to Photonet Given ID</title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+</head><body>
+
+<!-- Find the universal ID -->
+<set name="PhotoID"><get form name="PhotoID"></set>
+
+<!-- Given that, look up the local file name from the metadata -->
+<set name="metadata"><read file="metadata/&PhotoID;.xml" process></set>
+<set name="localfile"><get index="metadata.localfile.Text"></set>
+
+<!-- Find the user ID -->
+<set name="UserID"><get form name="userid"></set>
+
+<!-- Given that, look up the photonet account details -->
+<set name="userdata"><read file="userdata/&UserID;.xml" process></set>
+<set name="photonetrollid"><get index="userdata.personal.photonetrollid.Text"></set>
+<set name="photonetname"><get index="userdata.personal.photonetname.Text"></set>
+
+
+<!-- Fetch a fresh cookie from Photonet -->
+<set name="UploadFormURL">http://kodak53.photonet.com/cgi-pv/upload_image.pl?Order=&photonetrollid;&Name=&photonetname;</set>
+<set name="UploadForm"><read href="&UploadFormURL;" process></set>
+<!-- Get the first input tag of the form in the third column of the
+     third row of the table inside the font tag in the body
+     It so happens that this is the cookie -->
+<set name="Cookie"><get index="UploadForm.body.font.table.tr-3.td-3.form.input-1" attr="value"></set>
+
+
+<!-- Upload the local file to Photonet -->
+<set name="dummy">
+<submit-forms>
+<form ENCTYPE="multipart/form-data" METHOD="POST" action="http://kodak53.photonet.com/cgi-pv/upload_image.pl">
+<!-- <form ENCTYPE="multipart/form-data" METHOD="POST" action="http://downhaul:8080/cgi-bin/test.py"> -->
+<input type=hidden name="Cookie" value="&Cookie;">
+<input type=hidden name="Add" value="TRUE">
+<input type=file name="UploadFile" value="&localfile;">
+<input type=submit value="Upload Now!">
+</form>
+</submit-forms>
+</set>
+
+<!-- Now we assume the name of the resulting image -->
+<set name="newmaxindex"><sum digits="0"><get index="userdata.photonetmaxindex.Text"> 1</sum></set>
+
+<!-- Update the metadata for this picture -->
+<write file="metadata/&PhotoID;.xml">
+<photo>
+<get index="metadata.localfile">
+<get index="metadata.localurl">
+<get index="metadata.localthumbnailfile">
+<get index="metadata.localthumbnailurl">
+<get index="metadata.localthumbnailheight">
+<get index="metadata.localthumbnailwidth">
+<get index="metadata.photoid">
+<remoteurl>http://kodak.photonet.com/cgi-pv/images.pl/&photonetrollid;/&newmaxindex;.jpg</remoteurl>
+<photonetindex>&newmaxindex;</photonetindex>
+</photo>
+</write>
+
+<!-- And update the max photonet counter -->
+<set name="oldphotos"><get index="userdata.photoids"></set>
+<write file="userdata/&UserID;.xml">
+<user>
+<get index="userdata.personal">
+<get index="userdata.startoflatestbatch">
+<photonetmaxindex>&newmaxindex;</photonetmaxindex>
+<get index="userdata.photoids">
+</user>
+</write>
+
+
+Upload has been started; it will take a minute or two.  In the
+meantime you can continue with other tasks.
+
+<meta HTTP-EQUIV="Refresh" CONTENT="5; URL=Login.if?userid=&UserID;"></meta>
+
+</body></html>
+
+
+

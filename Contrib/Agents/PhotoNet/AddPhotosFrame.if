@@ -1,0 +1,59 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Add Photos Frame</title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+<SCRIPT LANGUAGE="Javascript">
+function ClaimNewPhotos(UserID) {
+  location = "ClaimNewPhotos.if?userid=" + UserID;
+}
+function GetPhotos(UserID) {
+  location = "GetPhotos.if?userid=" + UserID;
+}
+function MakePres(UserID) {
+  top.ViewFrame.location = "MakePresentation.if?View=all&userid=" + UserID;
+}
+function Restart(UserID) {
+  if (confirm("Erase all photos?")) {
+    top.location = "Reset.if?userid=" + UserID;
+  }
+}
+function RecordPres(UserID) {
+  top.ViewFrame.location = "record.if?View=all&userid=" + UserID;
+}
+</SCRIPT>
+</head>
+<body BGCOLOR="#000099" TEXT="#FFFFFF">
+
+<set name="onClick">onClick</set>
+
+<set name="UserID"><get form name="userid"></set>
+
+<set name="message"><get form name="message"></set>
+
+<NOBR>
+<APPLET codebase="/PhotoNet/" code="NewPhotoCheck.class" width=200 height=20>
+<PARAM name="interval" value="5">
+<PARAM name="Trace" value="true">
+</APPLET>
+<if><get name="message"><then>
+<I>&message;</I>
+</then>
+</if>
+</NOBR>
+
+<BR>
+
+<NOBR>
+<FONT SIZE="-1" COLOR="#000000">
+<FORM>
+<INPUT &onClick;="ClaimNewPhotos('&UserID;');" TYPE="button"  NAME="Fetch from Camera" VALUE="Get (Camera)">
+<INPUT &onClick;="GetPhotos('&UserID;');" TYPE="button"  NAME="Fetch from Photonet" VALUE="Get (PhotoNet)">
+<INPUT &onClick;="top.Reset();" TYPE="button"  NAME="Home" VALUE="Home">
+<INPUT &onClick;="Restart('&UserID;');" TYPE="button"  NAME="Clear" VALUE="Clear">
+<INPUT &onClick;="MakePres('&UserID;');" TYPE="button"  NAME="Present" VALUE="Present">
+<INPUT &onClick;="RecordPres('&UserID;');" TYPE="button"  NAME="Record" VALUE="Record">
+</FORM>
+</FONT>
+</NOBR>
+
+</body></html>

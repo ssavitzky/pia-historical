@@ -1,0 +1,185 @@
+<html><head>
+<title>Get Photos</title>
+<SCRIPT LANGUAGE="Javascript">
+var NumFound;
+</SCRIPT>
+</head><body BGCOLOR="#000099" TEXT="#FFFFFF" onLoad="top.DoneFetchFrom(NumFound);">
+
+<read process quiet interform file=url-tags.inc>
+
+<!-- Find the user ID -->
+<set name="UserID"><get form name="userid"></set>
+
+<!-- Given that, look up the photonet account details -->
+<set name="userdata"><read file="userdata/&UserID;.xml" process></set>
+<set name="photonetrollid"><get index="userdata.personal.photonetrollid.Text"></set>
+<set name="photonetname"><get index="userdata.personal.photonetname.Text"></set>
+<set name="photonetmaxindex"><get index="userdata.photonetmaxindex.Text"></set>
+<set name="newmaxindex">0</set>
+
+<!-- Keep track of all the new photos we find -->
+<set name="AccumulateNewIDs"></set>
+<set name="CountNewIDs">0</set>
+
+
+<!-- Redefine the A tag to extract any images in the link -->
+<!-- This executes on the </A> ending tag -->
+<actor parsed name="a" tag="a">
+
+<!-- If an image was found inside the tag -->
+<if><get name="ImageInLinkFlag">
+<then>
+
+<!-- Get the URL the image is linked to -->
+<set name="EnclosingLinkRelative"><get element name="href"></set>
+
+<set name="EnclosingLink"><full-url base="&PhotonetUrl;" url="&EnclosingLinkRelative;"></set>
+
+<!-- Find the photonet index -->
+<set name="photonetindex"><subst match=".jpg" result=""><subst match="^big" result=""><url-filename url="&ImgSrc;"></subst></subst></set>
+
+<!-- Keep track of the largest index seen -->
+<if><sorted numeric>&newmaxindex; &photonetindex;</sorted>
+<then>
+<set name="newmaxindex">&photonetindex;</set>
+</then>
+</if>
+
+<!-- See if this is a photo we already have -->
+<!-- (Assumption: Photonet increments this index by 1 each time a
+     new photo appears, and never reuses old indexes when a photo
+     is deleted
+-->
+<!-- If photonetindex strictly greater than photonetmaxindex -->
+<if><test positive><difference>&photonetindex; &photonetmaxindex;</difference></test>
+<then>
+
+Test true
+
+<!-- Assign new universal photo ID -->
+<set name="OldNumber"><read file="photoid.latest"></set>
+<set name="NewNumber"><sum digits=0>&OldNumber; 1</sum></set>
+<write file="photoid.latest">&NewNumber;</write>
+
+<!-- Update the list of photos we are adding for this user -->
+<set name="AccumulateNewIDs">&AccumulateNewIDs
+<photoid>&NewNumber</photoid></set>
+<set name="CountNewIDs"><sum digits="0">&CountNewIDs; 1</sum></set>
+
+<!-- Make a local copy of the thumbnail -->
+<set name="localthumbnailfile">localphotos/&NewNumber;t.jpg</set>
+<read href="&ImgSrc;" into="&localthumbnailfile;">
+
+<!-- Create the metadata for the photo -->
+<set name="metadata">
+<photo>
+<photoid>&NewNumber;</photoid>
+<photonetindex>&photonetindex;</photonetindex>
+<remoteurl>http://kodak.photonet.com/cgi-pv/images.pl/&photonetrollid;/&photonetindex;.jpg</remoteurl>
+<remoteactionurl>&EnclosingLink;</remoteactionurl>
+<remotethumbnailurl>&ImgSrc;</remotethumbnailurl>
+<remotethumbnailheight>&ImgHeight;</remotethumbnailheight>
+<remotethumbnailwidth>&ImgWidth;</remotethumbnailwidth>
+<localthumbnailfile>&localthumbnailfile;</localthumbnailfile>
+<localthumbnailurl>/PhotoNet/localphotos/&NewNumber;t.jpg</localthumbnailurl>
+<localthumbnailheight>&ImgHeight;</localthumbnailheight>
+<localthumbnailwidth>&ImgWidth;</localthumbnailwidth>
+<loadtime>&month;/&day;/&year; &time;</loadtime>
+<caption></caption>
+</photo>
+</set>
+
+<!-- Save it -->
+<write file="metadata/&NewNumber;.xml">&metadata;</write>
+
+</then>
+<!-- Else case: We have processed this photo before -->
+<!-- Just ignore it -->
+</if>
+
+</then>
+</if>
+
+<!-- Clear flag -->
+<set name="ImageInLinkFlag">
+</set>
+
+</actor>
+
+
+
+<!-- Redefine the IMG tag so we can grab the images -->
+<actor empty name="img" tag="img">
+
+<!-- The images we want have an ALT tag which begins with Exposure -->
+
+<if><test match="^Exposure"><get element name="alt"></test>
+<then>
+
+<!-- Retrieve the src,width,height tags for the image -->
+<set name="ImgSrc"><get element name="src"></set>
+<set name="ImgHeight"><get element name="height"></set>
+<set name="ImgWidth"><get element name="width"></set>
+<set name="ImgSrc"><full-url base="&PhotonetUrl;" url="&ImgSrc;"></set>
+
+<!-- Set a flag so an enclosing <A HREF></A> tag can find this image info -->
+<set name="ImageInLinkFlag">
+true
+</set>
+
+</then>
+</if>
+
+</actor>
+
+
+<!-- MAIN -->
+
+<!-- First get the photos from Photonet -->
+<!-- Hard coded access to Marko's Test Roll on Kodak Photonet -->
+
+<set name="PhotonetUrl">http://kodak53.photonet.com/cgi-pv/view.pl?Order=&photonetrollid;&Name=&photonetname;</set>
+<!--
+<set name="PhotonetUrl">http://downhaul:8888/PhotoNet/test2.html</set>
+-->
+
+<set name="dummy">
+<read process href="&PhotonetUrl;">
+</set>
+
+<XMP>
+&dummy;
+</XMP>
+
+<if><sorted numeric>&photonetmaxindex; &newmaxindex;;</sorted>
+<then>
+<set name="photonetmaxindex">&newmaxindex;</set>
+</then>
+</if>
+
+<!-- Write out new user info -->
+<set name="oldphotos"><get index="userdata.photoids"></set>
+<write file="userdata/&UserID;.xml">
+<user>
+<get index="userdata.personal">
+<get index="userdata.startoflatestbatch">
+<photonetmaxindex>&photonetmaxindex;</photonetmaxindex>
+<photoids>
+<repeat list="&oldphotos;" entity="photo">
+&photo;</repeat>
+&AccumulateNewIDs;
+</photoids>
+</user>
+</write>
+
+
+<I>Found &CountNewIDs; new photos</I>
+
+<SCRIPT LANGUAGE="Javascript">
+NumFound = &CountNewIDs;
+</SCRIPT>
+
+</body></html>
+
+
+

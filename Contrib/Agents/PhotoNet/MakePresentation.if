@@ -1,0 +1,158 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+</head><body bgcolor="#FFFFFF">
+
+<set name="randomcommand">&piaDIR;/src/app/random/random-num</set>
+
+<!-- Find file with info for logged in user -->
+
+<set name="UserdataFileName">userdata/&FORM.userid;.xml</set>
+
+<set name="userdata"><read file="&UserdataFileName;" process></set>
+
+<set name="View">&FORM.View;</set>
+
+<set name="Duration">3000</set>
+
+<set name="Output2">
+</set>
+
+<set name="Output3">
+<fill
+	start = "0"
+	color = "#000000"/>
+<fadein
+	start = "0"
+	duration = "3000"
+	target = "1"
+	aspect = "true"/>
+</set>
+
+<set name="Count">0</set>
+
+<if><test match="all">&View;</test><then>
+<set name="MinPhoto">0</set>
+</then><else>
+<set name="MinPhoto"><get index="userdata.startoflatestbatch.text"></set>
+</else>
+</if>
+
+<set name="photos"><dummy><get index="userdata.photoids.-1-"></dummy></set>
+<repeat list="&photos;" entity="photo">
+
+<set name="photodata"><read file="metadata/&photo.Text;.xml" process></set>
+<if><get name="photo"><then>
+
+<if><sorted numeric>&MinPhoto; &photo.Text;</sorted><then>
+
+<if><get index="photodata.localurl.Text"><then>
+
+<set name="Count"><sum digits="0">&Count; 1</sum></set>
+
+<set name="LocalFile"><get index="photodata.photoid.Text"></set>
+
+<set name="Output2">
+&Output2;
+<image
+	handle = "&Count;"
+	name="&LocalFile;l.jpg"/>
+</set>
+
+
+<if><sorted numeric>2 &Count;</sorted><then>
+
+<!-- Choose a random length -->
+<set name="length"><sum digits=0>2000 <os-command-output>&randomcommand; 5000</os-command-output></sum></set>
+
+<!-- Choose a random effect -->
+<set name="rand2"><os-command-output>&randomcommand; 3</os-command-output></set>
+
+<set name="Output3">
+&Output3;
+<if><equal>1 &rand2;</equal><then>
+  <crossfade
+	start = "&Duration;"
+	duration = "&length;"
+	target = "&Count;"
+	aspect = "true"/>
+</then>
+<else>
+  <if><equal>2 &rand2;</equal><then>
+    <wipe
+	direction = "left"
+	type = "push"
+	start = "&Duration;"
+	duration = "&length;"
+	target = "&Count;"
+	aspect = "true"/>
+  </then>
+  <else>
+    <viewchange
+	start = "&Duration;"
+	duration = "&length;"
+	srcx = "300"
+	srcy = "200"
+	srcw = "20"
+	srch = "20"/>
+    <set name="Duration"><sum digits=0>&Duration; &length; 1000</sum></set>
+  <crossfade
+	start = "&Duration;"
+	duration = "&length;"
+	target = "&Count;"
+	aspect = "true"/>
+  </else></if>
+</else></if>
+</set>
+
+<set name="Duration"><sum digits=0>&Duration; &length; 1000</sum></set>
+
+</then>
+</if>
+</then>
+</if>
+</then>
+</if>
+</then>
+</if>
+</repeat>
+
+<set name="FinalDuration"><sum digits=0>&Duration; 5000</sum></set>
+
+<set name="Output1">
+<head
+        title = "RSV Photo Kiosk"
+        author = "PIA Group"
+        copyright = "(c) 1998 Ricoh Silicon Valley Inc"
+        duration = "&FinalDuration;"
+        bitrate = "20000"
+	preroll = "10000"
+        width = "350"
+        height = "350"
+        timeformat = "milliseconds"/>
+</set>
+
+<write file="localphotos/Presentation.imf">
+<imfl>
+&Output1;
+&Output2;
+&Output3;
+<fadeout
+	start = "&Duration;"
+	duration = "5000"
+	color = "#000000"/>
+</imfl>
+</write>
+
+<!--
+<EMBED SRC="http://jaguar:8550/ramgen/Photos/Presentation.smi?embed" WIDTH="500" HEIGHT="400">
+<NOEMBED>
+-->
+Playing with <A HREF="http://www.real.com/products/player/downloadrealplayer.html">RealPlayer G2</A>...
+<meta HTTP-EQUIV="Refresh" CONTENT="1; URL=http://jaguar:8550/ramgen/Photos/Presentation.smi">
+
+<!--
+</NOEMBED>
+-->
+</body></html>
