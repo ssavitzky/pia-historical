@@ -11,4 +11,5 @@ public class NodeType {
     public static final int PI         = 3;
     public static final int COMMENT    = 4;
     public static final int TEXT       = 5;
+    public static final int ENTITY     = 6;
   };
