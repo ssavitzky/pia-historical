@@ -301,7 +301,10 @@ sub as_string {
     my $content = $self->content;
     if (defined $content) {
 	for (@$content) {
-	    if (ref($_)) { $string .= $_ -> as_HTML; }
+	    if (ref($_)) { 
+		if(ref($_) eq 'HTML::Element') {
+		    $string .= $_ -> as_HTML; } 
+		else {$string .= $_->as_string($contentOnly);}}
 	    else         { $string .= $_; }
 	    ## Note that we need as_HTML because legacy code is still
 	    ## generating HTML::Element's
