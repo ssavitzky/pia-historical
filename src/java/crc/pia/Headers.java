@@ -6,8 +6,8 @@ package crc.pia;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import crc.ds.Table;
 import w3c.www.http.HttpEntityMessage;
 import w3c.www.http.HttpMessage;
 import w3c.www.mime.MimeType;
@@ -92,7 +92,7 @@ class Headers {
   * hash keys are field names
   * throws exception if not allowed to set.
   */
-  public void setHeaders(Hashtable table){
+  public void setHeaders(Table table){
     if( zheaders!= null ){
       Enumeration keys = table.keys();
       while( keys.hasMoreElements() ){
