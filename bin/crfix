@@ -1,0 +1,10 @@
+#!/bin/csh -f
+#
+# crfix file...  
+#     delete CR characters from the specified files.  
+#     The old files stick around as *.old.
+#
+foreach f ($argv)
+  mv $f $f.old
+  tr -d '\015' < $f.old > $f
+end
