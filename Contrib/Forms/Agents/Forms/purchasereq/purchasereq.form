@@ -23,7 +23,7 @@ Contact Information:<form-variable name=contact textarea rows=2 cols=60> </form-
 
 <repeat start=1 stop=5 entity=num>
 <TR>
- <TD width=40><form-variable name="description&num;"> </form-variable>
+ <TD width=40><form-variable name="description&num;" size=45> </form-variable>
  <TD><form-variable name="item&num;"> </form-variable>
  <TD><form-variable name="qty&num;"> </form-variable>
  <TD><form-variable name="amount&num;"> </form-variable>
