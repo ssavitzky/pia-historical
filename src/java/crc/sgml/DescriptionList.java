@@ -112,7 +112,7 @@ public class  DescriptionList extends crc.sgml.Element {
       loc = dds[i];
       if( loc > s && loc < e ){
 	SGML item = itemAt( loc );
-	ts.append( (SGML)item.content() );
+	ts.append( (SGML)Util.removeSpaces(item.content()) );
       }
     }
     System.out.println("grabDd-->"+ts.toString());

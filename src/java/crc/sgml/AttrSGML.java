@@ -49,8 +49,10 @@ public abstract class AttrSGML extends AttrBase implements SGML {
  */
 public SGML attr(Index  path)
   {
-      //punt on anything other than simple string
-    return attr(path.string());
+   
+    SGML result = attr(path.getTag());
+    //   if(path.getStart()>0) return null;
+    return result;
   }
   
 

@@ -136,132 +136,116 @@ public class TableElement extends crc.sgml.Element {
     }
   }
   
+  /************************************************************
+  ** set row, column element -- just dummy for now this class should change
+  ************************************************************/
+
+  public void setRowColumn(int row, int col, SGML value){
+    buildTable();// should be doing one to 1 conversions
+    data[row][col] = value;
+  }
+
+  public SGML getRowColumn(int row, int col){
+    buildTable();
+    return data[row][col];
+  }
+
   /************************************************************************
   ** Access to attributes:
   ************************************************************************/
   
   /** Retrieve an attribute by index. 
-       If no attribute is explicitly defined, treat index
-       row.col or r1-r2.c1-c2
-       return TableElement or td Element as appropriate
+
+  *** this method is not overridden
+  *** the caller should find the row, column attributes and use those to
+  *** call getRowColumn above
    */
 
   public SGML attr(Index name) {
-    // is name ="-attr-val"?
-    if(name.isExpression()){
-      return attrExpression(name);
-    }
 
-    // if data not computed yet,
-    // buildTable(); NEEDS more Work
+    return super.attr(name);
+//     // is name ="-attr-val"?
+//     if(name.isExpression()){
+//       return attrExpression(name);
+//     }
 
-    if(data == null) return super.attr(name); // usually null
+//     // if data not computed yet,
+//     // buildTable(); NEEDS more Work
+
+//     if(data == null) return super.attr(name); // usually null
     
 
-    int rows[],cols[];
+//     int rows[],cols[];
     
-    if(name.isRange()){
-      //set rows
-      //currently non-numeric ranges not supported
-      rows=name.range(nRows);
-    } else{
-        // assume single row specified
-        rows=new int[1];
+//     if(name.isRange()){
+//       //set rows
+//       //currently non-numeric ranges not supported
+//       rows=name.range(nRows);
+//     } else{
+//         // assume single row specified
+//         rows=new int[1];
 
-      //numeric?
-      if(name.isNumeric()){
-        rows[0]=name.numeric();
-      }else{
-	String s=name.string();
-        Integer r=(Integer)rowHeaders.at(s);
-        if(r == null){
-	  return null; //unspecified row
-         //TO specify all rows, use table.0-.foo
-	}
-	rows[0] =r.intValue();
-      }
-    }
-    //now  get columns
-    String c=name.next();
-    if(c == null){
-     // no columns specified, just return tokens
-      if(rows.length == 1){
-	return content.itemAt(rows[0]);
-      } else if(rows.length == 2){
-	return content.copy(rows[0],rows[1]);
-      } else{
-	return content.copy(rows);
-      }
-    }
+//       //numeric?
+//       if(name.isNumeric()){
+//         rows[0]=name.numeric();
+//       }else{
+// 	String s=name.string();
+//         Integer r=(Integer)rowHeaders.at(s);
+//         if(r == null){
+// 	  return null; //unspecified row
+//          //TO specify all rows, use table.0-.foo
+// 	}
+// 	rows[0] =r.intValue();
+//       }
+//     }
+//     //now  get columns
+//     String c=name.next();
+//     if(c == null){
+//      // no columns specified, just return tokens
+//       if(rows.length == 1){
+// 	return content.itemAt(rows[0]);
+//       } else if(rows.length == 2){
+// 	return content.copy(rows[0],rows[1]);
+//       } else{
+// 	return content.copy(rows);
+//       }
+//     }
     
-    //name index should be advanced by call above to next
-    if(name.isExpression()){
-      return attrExpression(rows,name);
-    }
+//     //name index should be advanced by call above to next
+//     if(name.isExpression()){
+//       return attrExpression(rows,name);
+//     }
     
-    if(name.isRange()){
-      cols=name.range(nCols);
-    }else{
-      //assume singleton
-      cols= new int[1];
-      if(name.isNumeric()){
-	cols[0]=name.numeric();
-      } else{
-	String s=name.string();
-        Integer r=(Integer)columnHeaders.at(s);
-        if(r == null){
-	  return null; //unspecified column
-         //TO specify all columns, use table.row.0-
-	}
-	cols[0] =r.intValue();
-      }
-    }
+//     if(name.isRange()){
+//       cols=name.range(nCols);
+//     }else{
+//       //assume singleton
+//       cols= new int[1];
+//       if(name.isNumeric()){
+// 	cols[0]=name.numeric();
+//       } else{
+// 	String s=name.string();
+//         Integer r=(Integer)columnHeaders.at(s);
+//         if(r == null){
+// 	  return null; //unspecified column
+//          //TO specify all columns, use table.row.0-
+// 	}
+// 	cols[0] =r.intValue();
+//       }
+//     }
 
-    crc.pia.Pia.debug(this,"Getting table items wanted:" + rows.length +"rows " + cols.length  + "columns of data --size of data " + nRows + "x" + nCols);
+//     crc.pia.Pia.debug(this,"Getting table items wanted:" + rows.length +"rows " + cols.length  + "columns of data --size of data " + nRows + "x" + nCols);
     
     
-      //now should have rows[],cols[]      
-      if(rows.length == 1 && cols.length == 1){
-	// return element
-	return data[rows[0]][cols[0]];
-      }
-      return  copy(rows,cols);
+//       //now should have rows[],cols[]      
+//       if(rows.length == 1 && cols.length == 1){
+// 	// return element
+// 	return data[rows[0]][cols[0]];
+//       }
+//       return  copy(rows,cols);
   }
   
     
-  
-/**  retrieve items specified by expression
- */
-
- SGML attrExpression(Index expression)
-  {
-    SGML result = super.attrExpression(expression);
-    // add any name keywords
-    return result;
-  }
-
-
-/**  retrieve items specified by expression in context of rows
- */
-protected SGML attrExpression(int[] rows, Index expression)
-  {
-    return attrExpression(expression);
-    
-    // check for keywords   rows, cols, etc
-  }
-
-
-  /** Retrieve an attribute by name, returning its value as a String. */
-  public String attrString(String name) {
-    SGML result = attr(name);
-    return (result == null)? null : result.toString();
-    
-  }
-
-  /** Test whether an attribute exists. -- should this check for implicit attr? */
-  public boolean hasAttr(String name) {
-    return (attr(name) == null)? false : true;
-  }
 
   /************************************************************************
   ** Construction:
