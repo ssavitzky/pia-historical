@@ -52,13 +52,6 @@ public class Copy {
     }
   }
 
-  /** Copy nodes from an Input to an Output. */
-  public static final void copyNodes(Input in, Output out) {
-    for (Node n = in.getNode(); n != null; n = in.toNextSibling()) {
-      copyNode(n, in, out);
-    }
-  }
-
   /** Copy the children of the input's current Node
    *
    * === It should be possible to do this non-recursively by keeping track
@@ -69,6 +62,13 @@ public class Copy {
       copyNode(n, in, out);
     }
     in.toParent();
+  }
+
+  /** Copy nodes from an Input to an Output. */
+  public static final void copyNodes(Input in, Output out) {
+    for (Node n = in.getNode(); n != null; n = in.toNextSibling()) {
+      copyNode(n, in, out);
+    }
   }
 
   /** Copy the content of a NodeList to an Output.
