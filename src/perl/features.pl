@@ -283,6 +283,18 @@ sub is_image{
     return $request->content_type() =~ /^image/i;
 }
 
+$computers{local} = \&is_local;
+sub is_local{
+    my $request=shift;
+    my $url=$request->url; 	return 1 unless $url;
+    my $host=$url->host;
+
+    return 1 if ($host =~ /^agency/ || $host eq '');
+    return 1 if ($main::PIA_HOST =~ /^$host/);
+    return 1 if ($host =~ /localhost/i);
+    return 0;
+}
+
 $computers{local_source} = \&is_local_source;
 sub is_local_source{
     my $request=shift;
@@ -319,8 +331,8 @@ sub is_interform{
 $computers{agent} = \&agent;
 sub agent {
     my($request)=shift;
-    my $path=$url->path;
     my $url=$request->url;
+    my $path=$url->path;
     return unless defined $url;
     my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : 'agency';
     return $name;
