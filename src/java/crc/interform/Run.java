@@ -171,6 +171,8 @@ public class Run  extends Environment {
       ent("piaPORT", pia.properties().getProperty(Pia.PIA_PORT));
       ent("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
 
+      ent("usrDIR", pia.properties().getProperty(Pia.USR_ROOT));
+
       // === shouldn't have to convert these to text.
       Tokens anames = new Tokens(resolver.agentNames(), " ").sortAscending();
       ent("agentNames", anames.toText());
