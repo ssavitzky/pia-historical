@@ -100,10 +100,6 @@ public interface Action {
    */
   public boolean expandContent();
 
-  /** If <code>true</code>, collect the content in the form of a string.
-   */
-  public boolean stringContent();
-
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
