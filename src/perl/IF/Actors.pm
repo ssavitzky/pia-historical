@@ -131,7 +131,13 @@ sub foreach_handle {
     $ii->delete_it($it);
 }
 
+### -input.size-
+###	recognizes <input SIZE=fit MIN=n MAX=m>content</input>
+###	and sets size to min(m, max(n, size(content)))
 
+### -input.options-
+###	recognizes <input OPTIONS="list of options">content</input>
+###	and makes CONTENT, if present, the selected option.
 
 #############################################################################
 ###
