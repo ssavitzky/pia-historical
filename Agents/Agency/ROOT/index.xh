@@ -4,33 +4,14 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set name=piaURL>http://&piaHOST;:&piaPORT;/</set>
-<table cellspacing=0 cellpadding=0 border=0>
-<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
-	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48 alt="R I C O H"></a></th>
-    <th width=170 nowrap>
-    <th align=left nowrap nobr valign=center>
-        <a href="/"><img width=85 height=45 border=0
-	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
-<tr height=2><td colspan=3 nowrap nobr
-    ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
-<!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
-<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
-	border=0 width=170 height=21 align=top></a>
-    <th valign=top align=right width=170>
-	    <if><test exact match='pia'>&piaUSER;</test>
-		<then></then>
-		<else><a href="/My/">&piaUSER;'s</a> </else></if></th>
-	<th align=left valign=top>
-	<if><test exact match='pia'>&piaUSER;</test>
-	    <then>An Information Appliance</then>
-	    <else>Personal Information Agency</else>
-	</if><br>
-	 &lt;<a href="&piaURL;">&piaURL;</a>&gt;
-        </th>
-<tr><th><br>
-</table>
+<set name=ltitle><if><test exact match='pia'>&piaUSER;</test>
+		     <then> </then>
+		     <else><a href="/My/">&piaUSER;'s</a> </else></if></set>
+<header ltitle=&ltitle;><if><test exact match='pia'>&piaUSER;</test>
+			    <then>An Information Appliance</then>
+	    		    <else>Personal Information Agency</else>
+			</if><br>
+	 &lt;<a href="&piaURL;">&piaURL;</a>&gt;</header>
 
 <table cellspacing=0 cellpadding=0 border=0>
 <tr>
@@ -92,10 +73,6 @@
 <include src="/Agency/ROOT/welcome.inc">
 <hr>
 <include src="/Agency/ROOT/doc-grid.inc">
-
-<hr>
-<b>URL:</b>
-&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<br>
-<footer cvsid='$Id$'>
+<p>
+<short-footer cvsid='$Id$'>
 </body></html>
