@@ -12,8 +12,9 @@ import crc.ds.Table;
 import crc.interform.Util;
 import crc.ds.Index;
 
-import java.lang.Integer;  //primitives are not objects...causes us pain
 import java.util.Enumeration;
+import java.util.Hashtable;
+
 
 /**
  * The representation of an SGML <em> table element</em>. 
@@ -28,140 +29,66 @@ public class TableElement extends crc.sgml.Element {
       html never intended to treat table objects as data structures.
  */
 
-  protected Table  rowHeaders=null;   
-  protected Table columnHeaders=null;
-  protected SGML[][] data=null;  // should be populated by <td> elements
-  protected int nRows=0;
-  protected int nCols=0;
+  protected TableOfSGML data = null;
+
   /**  populate the data structures given the current content
+   * functions which can modify the contents should be overridden
+   * to clear the data... currently once the table is built it does not change
+   * ( although the cells contents may change)
   */
   protected void buildTable()
   {
-    Table tags=content.tagTable();
+    data = new TableOfSGML();
     List rowLocations = content.tagLocations("tr");
-   
-    nRows = rowLocations.nItems();
-    nCols=0;
-    for (int i = 0; i < nRows; ++i) {
-      int j = ((Integer) rowLocations.at(i)).intValue();
-      SGML row = content.itemAt(j);
-      List headers=row.content().tagLocations("th");
-      List columns=row.content().tagLocations("td");
-//go  through the table twice, once to make sure we get the size right
-// and again to populate it
-      int c = 0; //start at column 0
-      Enumeration e = headers.elements();
-      while(e.hasMoreElements()){
-	SGML datum=content.itemAt(((Integer) e.nextElement()).intValue());
-      //populate headers
-      //note,  assumes col headers found only in first row
-      // everything else is header for a row, clearly not correct but
-      // any other interpretation is ambiguous
-	if(i==0){
-          columnHeaders.at(datum.contentString(),new Integer(c));  //header for column c
-	}else{
-	  rowHeaders.at(datum.contentString(),new Integer(i));  //header for row i
-	}
-	
-	if(datum.hasAttr("colspan")){
-	  c = c + (int) datum.attr("colspan").numValue();
-	}else{
-	  c++;
-	}
-	  
-      }
-      e = columns.elements();
-      while(e.hasMoreElements()){
-	SGML datum=content.itemAt(((Integer) e.nextElement()).intValue());
-	if(datum.hasAttr("colspan")){
-	  c = c + (int) datum.attr("colspan").numValue();
-	  
-	}else{
-	  c++;
-	}
-      }
-      if(c>nCols){
-	nCols = c;
-      }
-    }
-    //create the datastructure
-    data = new SGML[nRows][nCols];
-    // now populate the structure    
-    for (int i = 0; i < nRows; ++i) {
-      int j = ((Integer) rowLocations.at(i)).intValue();
-      SGML row = content.itemAt(j);
-      List headers=row.content().tagLocations("th");
-      List columns=row.content().tagLocations("td");
-      int c = 0; //start at column 0
-      
-      while(!columns.isEmpty() || !headers.isEmpty()){
-      // if  this column is full, skip to the next one
-	while(data[i][c] != null){
-	  c++;
-          // real trouble if c exceeds boundary     
-          if(c >= nCols){
-	    nCols++;  //expand table
-	    System.err.println("table boundary exceeded\n");
-	    SGML old[][]=data;
-	    data= new SGML[nRows][nCols];
-            for(int ri=0;ri<nRows;ri++){
-	     for(int ci=0;ci<nCols-1;ci++){
-	       data[ri][ci]=old[ri][ci];
-	     }
-	    }
-	  }
-	}
-	Integer item = (Integer)columns.shift();
-        Integer itemh = (Integer)headers.shift();
-	if(itemh != null){
-	  if(itemh.intValue()<item.intValue()){
-	    if(item != null) {columns.unshift(item);} 
-	    item = itemh;
-	  } else {
-	    headers.unshift(itemh);
-	  }
-	}
-	SGML datum=content.itemAt(item.intValue());
-        int cspan;
-	int rspan;
-	
-	cspan= (datum.hasAttr("colspan"))? (int) datum.attr("colspan").numValue() :1;
-        rspan= (datum.hasAttr("rowspan"))? (int) datum.attr("rowspan").numValue() :1;
-	for(int ri=i;ri<i+rspan;ri++){
-	  for(int ci=c;ci<c+cspan;ci++){
-	    data[ri][ci]=datum;
-	  }
-	}
-      }
+    int row=0;
+    while(!rowLocations.isEmpty()){
+      int j = ((Integer) rowLocations.shift()).intValue();
+      SGML rowToken = content.itemAt(j);
+       Enumeration e = rowToken.content().elements();
+       int col=0;
+       while(e.hasMoreElements()){
+	 // find an empty column
+	 while(data.getRowColumn(row,col) != null) col++;
+	 SGML  token = (SGML)e.nextElement();
+	 if(token.tag().equalsIgnoreCase("td") ||
+	    token.tag().equalsIgnoreCase("th")){
+	   int cspan = col + Util.getInt( token, "colspan", 1);
+	   int rspan = Util.getInt( token, "colspan", 1);
+	   // set all of the rows, columns that this item spans
+	   for(int r = row; r < row + rspan; r++)
+	     for(; col < cspan; col++)
+	       data.setRowColumn( row,col, token);
+	 }
+       }
+       row++;
     }
   }
-  
+ 
+ 
   /************************************************************
-  ** set row, column element -- just dummy for now this class should change
+  ** access functions
   ************************************************************/
-
-  public void setRowColumn(int row, int col, SGML value){
-    buildTable();// should be doing one to 1 conversions
-    data[row][col] = value;
-  }
+  /**
+   * return the <TD> token associated with this cell
+   */
 
   public SGML getRowColumn(int row, int col){
-    buildTable();
-    return data[row][col];
+    // always build the table because we never know when contents might change
+    if(data == null) buildTable();
+    return data.getRowColumn(row,col);
   }
 
 
   public SGML getTable(int rowstart,int rowend,int columnstart,int columnend){
-    buildTable();
-    if(rowend<0)rowend=nRows;
+     if(data == null) buildTable();
+    if(rowend<0 || rowend > data.rows)rowend=data.rows;
     
-    if(columnend<0)columnend=nCols;
+    if(columnend<0 || columnend>data.cols)columnend=data.cols;
     int a[]={rowstart, rowend};
     int b[]={columnstart,columnend    };
-    
-    
-    
-    return copy(a,b)
+     System.out.println(" getting table " + a[0] +","+ a[1] + " " + b[0] + ","+ b[1]);
+     
+    return copy(a,b);
   }
 
   /************************************************************************
@@ -178,85 +105,6 @@ public class TableElement extends crc.sgml.Element {
   public SGML attr(Index name) {
 
     return super.attr(name);
-//     // is name ="-attr-val"?
-//     if(name.isExpression()){
-//       return attrExpression(name);
-//     }
-
-//     // if data not computed yet,
-//     // buildTable(); NEEDS more Work
-
-//     if(data == null) return super.attr(name); // usually null
-    
-
-//     int rows[],cols[];
-    
-//     if(name.isRange()){
-//       //set rows
-//       //currently non-numeric ranges not supported
-//       rows=name.range(nRows);
-//     } else{
-//         // assume single row specified
-//         rows=new int[1];
-
-//       //numeric?
-//       if(name.isNumeric()){
-//         rows[0]=name.numeric();
-//       }else{
-// 	String s=name.string();
-//         Integer r=(Integer)rowHeaders.at(s);
-//         if(r == null){
-// 	  return null; //unspecified row
-//          //TO specify all rows, use table.0-.foo
-// 	}
-// 	rows[0] =r.intValue();
-//       }
-//     }
-//     //now  get columns
-//     String c=name.next();
-//     if(c == null){
-//      // no columns specified, just return tokens
-//       if(rows.length == 1){
-// 	return content.itemAt(rows[0]);
-//       } else if(rows.length == 2){
-// 	return content.copy(rows[0],rows[1]);
-//       } else{
-// 	return content.copy(rows);
-//       }
-//     }
-    
-//     //name index should be advanced by call above to next
-//     if(name.isExpression()){
-//       return attrExpression(rows,name);
-//     }
-    
-//     if(name.isRange()){
-//       cols=name.range(nCols);
-//     }else{
-//       //assume singleton
-//       cols= new int[1];
-//       if(name.isNumeric()){
-// 	cols[0]=name.numeric();
-//       } else{
-// 	String s=name.string();
-//         Integer r=(Integer)columnHeaders.at(s);
-//         if(r == null){
-// 	  return null; //unspecified column
-//          //TO specify all columns, use table.row.0-
-// 	}
-// 	cols[0] =r.intValue();
-//       }
-//     }
-
-//     crc.pia.Pia.debug(this,"Getting table items wanted:" + rows.length +"rows " + cols.length  + "columns of data --size of data " + nRows + "x" + nCols);
-    
-    
-//       //now should have rows[],cols[]      
-//       if(rows.length == 1 && cols.length == 1){
-// 	// return element
-// 	return data[rows[0]][cols[0]];
-//       }
-//       return  copy(rows,cols);
   }
   
     
@@ -268,13 +116,16 @@ public class TableElement extends crc.sgml.Element {
   public TableElement(String tag) {
     super(tag);
   }
+
   public TableElement(Element e) {
     super(e);
   }
 
   /** clone all or part of this table */
-public TableElement copy(int[] rows, int[] cols)
+  public TableElement copy(int[] rows, int[] cols)
   {
+    if(data == null) buildTable();
+    
     int rowstart,rowstop,colstart,colstop;
     // currently only works for lengths of 1 or 2
     if(rows.length < 1 || cols.length < 1) {
@@ -286,19 +137,93 @@ public TableElement copy(int[] rows, int[] cols)
     colstop=(cols.length > 1)?cols[1]:colstart;
     TableElement result=new TableElement(this.tag());
     // push relevant items into table-- inefficient,but works
-    // eventually copy items into data
-    for(int r=rowstart;r<rowstop;r++){
+
+    // should check for span attributes and correct as needed
+    // for now assumes that one version of each TD will be sufficient to
+    // cover the appropriate cells
+    Hashtable  cells=new Hashtable();
+    for(int r=rowstart;r<=rowstop;r++){
       Element tr = new Element("tr");
-      for(int c=colstart;c<colstop;c++){
-	tr.append(data[r][c]);
+      for(int c=colstart;c<=colstop;c++){
+	SGML token =  data.getRowColumn(r,c);
+	// null cell become empty cells
+	if( token == null) token= new Element("td");
+	if( ! cells.containsKey( token)){
+	  tr.append(token);
+	  // keep track of the original row a token is put in
+	  cells.put( token, tr);
+	}
       }
       result.append(tr);
     }
     return result;
-    
+  }
+}
+
+/************************************************************
+** simple data structure for holding tables
+************************************************************/
+
+/**
+ * simple structure for holding tables
+ * maintains a pointer list indexing the cells associated with SGML object
+ */
+
+ class TableOfSGML extends Hashtable{
+
+  /**
+   * number of rows and columns -- actually maxim of each that has been set
+   */
+    public int rows=0,cols=0;
+
+  /**
+   * rows.get(i).get(j) returns element at row=i col=j
+   * which should be a "TD" token
+   * i & j are mapped to integer objects as used as keys in hash table
+   */
+
+  public SGML getRowColumn(int i, int j){
+     return getRowColumn(new Integer(i), new Integer(j));
   }
 
+  /**
+   * set the value at i,j.   value will normally be a TD or TH  token
+   */
 
-    
+  public void  setRowColumn(int i, int j, SGML value){
+      setRowColumn(new Integer(i), new Integer(j), value);
+  }
 
+  public SGML getRowColumn(Integer i, Integer j){
+    Hashtable h = (Hashtable)  get(i);
+    if(h == null) return null;
+    SGML result = (SGML) h.get(j);
+     return result;
+  }
+
+  public  void setRowColumn(Integer i, Integer j, SGML value){
+    if(i.intValue() >  rows) rows = i.intValue();
+    if(j.intValue() >  cols) cols = j.intValue();
+    Hashtable h = (Hashtable)  get(i);
+    if(h == null) {
+       h = new Hashtable();
+       put( i, h);
+    }
+    h.put(j, value);
+  }
+
+  /**
+   * header stuff could go here
+   */
+
+
+
+  /************************************************************
+  ** constructor
+  ************************************************************/
+
+  public TableOfSGML() {
+    super();
+  }
+  
 }

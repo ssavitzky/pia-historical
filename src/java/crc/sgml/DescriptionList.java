@@ -252,8 +252,16 @@ public class  DescriptionList extends crc.sgml.Element {
 
   /** Retrieve an attribute by index. */
   public SGML attr(Index i) {
-    List dtddList;
     String myTag = i.getTag();
+
+    if( myTag.equalsIgnoreCase( Index.TEXT ) ||
+	myTag.equalsIgnoreCase( Index.ANY ) ||
+	myTag.equalsIgnoreCase( "dt" ) || 
+	myTag.equalsIgnoreCase( "dd" ) )
+      return super.attr( i );
+
+
+    List dtddList;
     int s        = i.getStart();
     int e        = i.getEnd();
 
@@ -268,27 +276,55 @@ public class  DescriptionList extends crc.sgml.Element {
 
     dtddList = smashDl( poles, dts, dds );
     printDl( dtddList );
-
-    if( myTag.equalsIgnoreCase( Index.TEXT ) ||
-	myTag.equalsIgnoreCase( Index.ANY ) ||
-	myTag.equalsIgnoreCase( "dt" ) || 
-	myTag.equalsIgnoreCase( "dd" ) )
-      return super.attr( i );
-    else if( myTag.equalsIgnoreCase( Index.VALS ) ||
-	     myTag.equalsIgnoreCase( Index.KEYS ) )
+    if( myTag.equalsIgnoreCase( Index.VALS ) ||
+	myTag.equalsIgnoreCase( Index.KEYS ) )
       return getRangeWKeyVal(dtddList, myTag, s, e);
     else
       return getRange(dtddList, myTag, s, e );
-
+    
   }
-  
 
- SGML attrExpression(Index expression)
-  {
-    //check for keywords keys,values
-    SGML result = super.attrExpression(expression);
-    // add any name keywords
-    return result;
+  /************************************************************
+  ** hash like functions -- note the internally structure remains a tokens
+  ** so these are not efficient
+  ************************************************************/
+  
+  /**
+   * remove the dt and dd elements associated with key
+   */
+
+  public void removeKey(String key){
+     if(content == null) return;
+
+    // create a new content without the offending material
+    Tokens  replacement = new Tokens();
+    boolean remove = false;
+    for( int i=0;i <content.nItems();i++){
+      SGML  token =content.itemAt(i);
+      String tag =  token.tag();
+      if( tag.equalsIgnoreCase("dt")){
+	if(Util.textEquals( key, token)){
+	  // start removing things
+	  remove = true;
+	} else {
+	  // stop removing things
+	  remove = false;
+	}
+      }
+      // always keep things which are not dd  or dt -- they should not be here
+      if( remove && (tag.equalsIgnoreCase("dd") || tag.equalsIgnoreCase("dt"))){
+	//  do not copy into new content
+      } else {
+	 replacement.push(token);
+      }
+    }
+     content = replacement;
+     
+  }
+	
+  public void at(String key, SGML value){
+    append(new Element("dt", key));
+    append(new Element("dd", value));
   }
   
 

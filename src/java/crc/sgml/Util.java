@@ -242,6 +242,24 @@ public class Util {
   ** String utilities:
   ************************************************************************/
 
+  /**
+   * return true if the text parts of s1 equals s2ignoring white space
+   */
+  public static boolean textEquals(SGML s1, SGML s2){
+    String a = s1.contentString().trim();
+    String b = s2.contentString().trim();
+     return a.equals(b);
+  }
+
+
+  /**
+   * return true if the text parts of s1 equals s2ignoring white space
+   */
+  public static boolean textEquals(String a, SGML s2){
+    String b = s2.contentString().trim();
+     return a.equals(b);
+  }
+
   /** Split a String on whitespace. */
   public static final List split(String s) {
     return new List(new java.util.StringTokenizer(s));    
