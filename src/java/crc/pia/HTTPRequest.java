@@ -335,6 +335,18 @@ public class  HTTPRequest extends Transaction {
 	 out.println( qs );
        }
      }
+     if( method().equalsIgnoreCase("PUT")  ){
+       if( contentObj() != null ){
+	 Pia.debug(this, "outputting the content");
+         out.flush();
+	 
+         try{contentObj().writeTo(stream);
+	 }
+	 catch( Exception e){
+	   Pia.debug(this," failed writing content");
+	 }
+       }
+     }
      out.flush();
   }
 
