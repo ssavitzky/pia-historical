@@ -120,7 +120,7 @@ public class Token implements SGML {
  
   /** Retrieve an attribute by  index object. */
   public SGML attr(Index i) {
-    System.out.println("in single token attr.");
+    //System.out.println("in single token attr.");
 
     if( content() == null ) return null;
     Tokens ts = content();
