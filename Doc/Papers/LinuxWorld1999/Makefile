@@ -14,7 +14,7 @@ include $(MF_DIR)/subdir.make
 SUBDIRS= Images
 
 FILES = \
-	manifesto.html technical.html \
+	history.html manifesto.html technical.html \
 	lw99.html architecture.html who-what.html \
 	open-source.html oss-bkgnd.html appendices.html \
 	open-source-and-ricoh.html appliances.html
