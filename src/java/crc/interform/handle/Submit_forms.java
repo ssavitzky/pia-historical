@@ -1,4 +1,4 @@
-////// Submit-forms.java:  Handler for <submit-forms>
+////// submit-forms.java:  Handler for <submit-forms>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -49,8 +49,7 @@ public class Submit_forms extends crc.interform.Handler {
     String name = Util.getString(it, "agent", null);
     SGML itt = containsTimedSubmission(it)? it : null;
 
-    Run env = Run.environment(ii);
-    crc.pia.Agent a = (name == null)? env.agent : env.getAgent(name);
+    crc.pia.Agent a = Run.getAgent(ii, name);
 
     if (it.tag().equalsIgnoreCase("form") || it.hasAttr("href") ){
       submit(a, it, itt);

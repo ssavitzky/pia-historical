@@ -40,7 +40,7 @@ import crc.ds.Table;
  *	interpretor is operating stand-alone or inside a PIA.<p>
  *
  * @see crc.interform.Filter  */
-public class Environment {
+public class Environment implements java.lang.Cloneable {
 
   /************************************************************************
   ** Variables:
@@ -62,6 +62,16 @@ public class Environment {
   /** Construct an environment with a filename. */
   public Environment(String fn) {
     filename = fn;
+  }
+
+  /** Construct an environment with a filename. */
+  public Environment(String fn, boolean dbg) {
+    filename = fn;
+    debug = dbg;
+  }
+
+  public Object clone() {
+    return new Environment(filename, debug);
   }
 
   /************************************************************************
@@ -342,9 +352,14 @@ public class Environment {
     ii.run();
   }
 
-  /** Run the interpretor on a file, discarding the output. */
+  /** Run the interpretor on the current file, discarding the output. */
   public void skipFile(String tsname) {
     skip(open(filename), tsname);
+  }
+
+  /** Run the interpretor on a file, discarding the output. */
+  public void skipFile(String filename, String tsname) {
+    new Environment(filename).skipFile(tsname);
   }
 
   /************************************************************************

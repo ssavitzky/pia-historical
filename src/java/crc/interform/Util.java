@@ -630,10 +630,11 @@ public class Util extends crc.sgml.Util {
 				   String tagset, boolean skip) {
     Parser p = new Parser(in, null);
     Tagset ts = (tagset == null)? ii.tagset() : Tagset.require(tagset);
-    ii = new Interp(ts, ii.environment.initEntities(), false);
-    ii.from(p).toTokens();
-    if (skip) ii.setSkipping();
-    return ii.run();
+    Interp iii = new Interp(ts, ii.environment.initEntities(), false);
+    // === should really clone ii's environment at this point ===
+    iii.from(p).toTokens();
+    if (skip) iii.setSkipping();
+    return iii.run();
   }
 
   /************************************************************************

@@ -78,6 +78,10 @@ public class Run  extends Environment {
     debug = fn != null && Pia.debug() && Pia.verbose();
   }
 
+  public Object clone() {
+    return new Run(agent, transaction, resolver, filename);
+  }
+
   /************************************************************************
   ** Association with Interpretor:
   ************************************************************************/
@@ -116,18 +120,23 @@ public class Run  extends Environment {
 
   public static Agent getAgent(Interp ii, String name) {
     Run env = environment(ii);
-    return (env == null)? null : env.resolver.agent(name);
+    if (env == null) {
+      crc.pia.Resolver res = getResolver(ii);
+      return (res == null || name == null)? null : res.agent(name);
+    } else {
+      return env.getAgent(name);
+    }
   }    
 
   public Agent getAgent(String name) {
-    if (name == null) return null;
+    if (name == null) return agent;
     return resolver.agent(name);
   }    
 
 
   public static Resolver getResolver(Interp ii) {
     Run env = environment(ii);
-    return (env == null)? null : env.resolver;
+    return (env == null)? Pia.instance().resolver() : env.resolver;
   }    
 
 
@@ -277,6 +286,13 @@ public class Run  extends Environment {
 				   Transaction trans, Resolver res) {
     new Run(agent, trans, res, fn).runCode(code, "Standard");
   }
+
+
+  /** Run a tagset over a stream and discard the output. */
+  public void skipFile(String fn, String tagset) {
+    new Run(agent, transaction, resolver, fn).skipFile(tagset);
+  }
+
 
   /************************************************************************
   ** Used by Actors:

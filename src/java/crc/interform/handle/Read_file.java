@@ -170,13 +170,9 @@ public class Read_file extends Get {
 	ii.error(ia, "Cannot open Reader on '"+name+"'");
 	return;
       }
-      if (it.hasAttr("skip")) {
-	Util.processStream(ii, in, tsname, true);
-      } else {
-	if (tsname != null) ii.useTagset(tsname);
-	if (it.hasAttr("parse")) ii.quoteIt(false);
-	ii.pushInput(new crc.interform.Parser(in, null));
-      }
+      if (tsname != null) ii.useTagset(tsname);
+      if (it.hasAttr("parse")) ii.quoteIt(false);
+      ii.pushInput(new crc.interform.Parser(in, null));
 
     } else {
       try {
