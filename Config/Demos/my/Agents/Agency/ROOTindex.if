@@ -81,20 +81,6 @@
 </table>
 
 <hr>
-<table>
-  <tr><td align=left width=340>
-    <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
-<repeat list="&agentNames;"
-	   ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
-	   >	<agent-home link name="&li;">
-</repeat></pre>
-
-    <td valign=center align=left>
-    <if><agent-running name=Logo>
-	<then><img src="/Logo/pia120.gif"
-		   height=120 width=235></then></if>
-</table>
-<hr>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
 <br>
