@@ -6,6 +6,8 @@ PACKAGE=crc.ds
 TOPDIR=../../..
 
 FILES = \
+	Association.java \
+	BalancedTree.java \
 	Criteria.java \
 	Criterion.java \
 	ValueCriterion.java \
@@ -14,6 +16,8 @@ FILES = \
 	Index.java \
 	List.java \
 	Queue.java \
+	Sorter.java \
+	SortTree.java \
 	Table.java \
 	UnaryFunctor.java \
 	TernFunc.java \
@@ -24,6 +28,10 @@ FILES = \
 include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies
+
+BalancedTree.class: Sorter.java
+
+SortTree.class: Sorter.java
 
 List.class: Stuff.java
 
