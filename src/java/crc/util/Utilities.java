@@ -651,20 +651,20 @@ public class Utilities {
      */
   public static byte[] decodeBase64(String input) {
 
-	byte bytes[] = new byte[input.length()] ;
-	input.getBytes (0, bytes.length, bytes, 0) ;
-	int l = bytes.length * 3 / 4;
-	//  check for padding
-	if(bytes[l-1] == '=') l--;
-	if(bytes[l-1] == '=') l--;
-        byte result[] =  new byte[l];
-        for(int limit = 0; limit <= bytes.length - 4; limit += 4){
-	  for( int i =0; i< 4; i++) 
-	    bytes[limit+i] = (byte) cvB64(bytes[limit+i]);
-	  int decoded =  decodeBase64Word(bytes, limit,result);
-          if( decoded < 3) return result;//return null if invalid string
-	}
-	return result;
+    byte bytes[] = input.getBytes();
+
+    int l = bytes.length * 3 / 4;
+    //  check for padding
+    if(bytes[l-1] == '=') l--;
+    if(bytes[l-1] == '=') l--;
+    byte result[] =  new byte[l];
+    for(int limit = 0; limit <= bytes.length - 4; limit += 4){
+      for( int i =0; i< 4; i++) 
+	bytes[limit+i] = (byte) cvB64(bytes[limit+i]);
+      int decoded =  decodeBase64Word(bytes, limit,result);
+      if( decoded < 3) return result;//return null if invalid string
+    }
+    return result;
   }
 
 // utility function for converting base character
@@ -705,7 +705,42 @@ public class Utilities {
      result[roff+2] = (byte) (((buf[c] & 0x03) << 6) | (buf[d] & 0x3f) );
      return 3;
    }
- 
+
+  /** Decode a string in <code>x-www-form-urlencoded</code> format.
+   *	This exists only because java.net.URLDecoder doesn't. <p>
+   *	
+   *	To convert a String, each character is examined in turn: 
+   *	<ul>
+   *	  <li> The ASCII characters 'a' through 'z', 'A' through 'Z',
+   *		and '0' through '9' remain the same.   
+   *	  <li> The plus sign character '+' is converted to a space ' '. 
+   *	  <li> All other characters are converted into the 3-character
+   *		string "%xy", where xy is the two-digit 
+   *		hexadecimal representation of the lower 8-bits of the
+   *		character.  
+   *	</ul>
+   */
+  public static final String urlDecode(String s) {
+    if (s.indexOf('+') < 0 && s.indexOf('%') < 0) return s;
+
+    String ss = "";
+    for (int i = 0; i < s.length(); ++i) {
+      char c = s.charAt(i);
+      if (c == '+') {
+	ss += ' ';
+      } else if (c == '%') {
+	String foo = "" + s.charAt(++i);
+	foo += s.charAt(++i);
+	int cc = Integer.valueOf(foo, 16).intValue();
+	ss += (char)cc;
+      } else {
+	ss += c;
+      }
+    }
+    return ss;
+  }
+
+
 
   public static void main(String[] args){
     String fn = args[0];
