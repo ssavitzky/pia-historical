@@ -575,11 +575,12 @@ sub cron_run{
 	
 # just run token as interforms
 	if($utoken){
+	    print "running  $utoken \n"  if $main::debugging;
 	  IF::Run::interform_hook($self, $utoken, $request, $resolve);
 	    $job_submitted++;
 	}
     }
-print $self->name . "submitted $job_submitted jobs\n";
+print $self->name . "submitted $job_submitted jobs\n" if $job_submitted;
 }
 
 ############################################################################
