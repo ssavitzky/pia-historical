@@ -33,6 +33,13 @@
   <input type=hidden name=all value=true>
 </form>
 
+<h2>Warning!</h2>
+
+The checkpointing facility is still experimental.  It is entirely possible
+that, if the PIA's data structures change significantly, your checkpoint file
+will become unreadable.  <strong>Checkpointing should not be used as the only
+mechanism for persistent data yet.</strong><p>
+
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
