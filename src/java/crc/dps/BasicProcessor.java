@@ -270,6 +270,27 @@ public class BasicProcessor extends ParseStack implements Processor {
 
 
   /************************************************************************
+  ** Parsing Operations:
+  ************************************************************************/
+
+  /** Return true if we are currently nested inside an element with
+   *  the given tag.
+   *
+   * === insideElement may need to cannonicalize tagnames. ===
+   */
+  public final boolean insideElement(String tag) {
+    for (ParseStack s = parseStack; s != null; s = s.parseStack) {
+      if (tag.equals(s.getTagName())) return true;
+    } 
+    return false;
+  }
+
+  /** Return the tag of the immediately-surrounding Element. */
+  public final String elementTag() {
+    return (parseStack != null) ? parseStack.getTagName() : null;
+  }
+
+  /************************************************************************
   ** Operations Used by Handlers:
   ************************************************************************/
 

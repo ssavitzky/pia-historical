@@ -79,6 +79,12 @@ public interface Tagset {
   ** Parsing Operations:
   ************************************************************************/
 
+  /** Called to obtain a suitable Parser for this Tagset. 
+   *	The Parser will have had its <code>setTagset</code> method
+   *	called with <code>this</code>.
+   */
+  public Parser getParser();
+
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before an end tag.
    * @param t the Token for which this is the handler, and for which the
@@ -87,7 +93,7 @@ public interface Tagset {
    * @return the number of elements that need to be ended before
    * 	<code>t</code> can be ended.
    */
-  public int checkEndNesting(Token t, Parser p);
+  public int checkEndNesting(Token t, Processor p);
 
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before a start tag or complete element.
@@ -98,7 +104,7 @@ public interface Tagset {
    * @return the number of elements that need to be ended before
    * 	<code>t</code> can be started.
    */
-  public int checkElementNesting(Token t, Parser p);
+  public int checkElementNesting(Token t, Processor p);
 
   /** Called during parsing to return a suitable start tag or complete
    *	element Token.  The new Token's handler will normally be

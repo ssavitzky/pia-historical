@@ -67,6 +67,20 @@ public interface Token extends Element, Text {
   /** Sets the Handler for this Token. */
   public void setHandler(Handler newHandler);
 
+  /** Returns <code>true</code> if the Token corresponds to whitespace. */
+  public boolean getIsWhitespace();
+
+  /** Sets the flag that determines whether the Token corresponds to
+   *	whitespace. */
+  public void setIsWhitespace(boolean value);
+
+  /** Returns the Token's name (i.e. for ATTRIBUTE, ENTITY, or PI
+   *	NodeType's. */
+  public String getName();
+
+  /** Sets the Token's name. */
+  public void setName(String name);
+
   /************************************************************************
   ** Syntax:  DTD entry:
   ************************************************************************/
@@ -119,6 +133,9 @@ public interface Token extends Element, Text {
    *	or <code>false</code> from <code>isStartTag()</code>.
    */
   public boolean isEmptyElement();
+
+  /** Sets the internal flag corresponding to isEmptyElement. */
+  public void setIsEmptyElement(boolean value);
 
   /** Returns true if the Token corresponds to an empty Element and
    *	its (start) tag contains the final ``<code>/</code>'' that marks

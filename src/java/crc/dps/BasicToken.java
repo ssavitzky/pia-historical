@@ -54,6 +54,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 
   protected String data = null;
   protected boolean isIgnorableWhitespace = false;
+  protected boolean isWhitespace = false;
 
   protected String name = null;
 
@@ -145,14 +146,8 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     return nodeType == NodeType.ELEMENT;
   }
 
-  /** Returns true if the Token corresponds to an Element that
-   *	consists of a start tag with no content or corresponding end
-   *	tag.  Note that such an element may return either <code>true</code>
-   *	or <code>false</code> from <code>isStartTag()</code>.
-   */
-  public boolean isEmptyElement() {
-    return isEmpty;
-  }
+  public boolean isEmptyElement() { return isEmpty; }
+  public void setIsEmptyElement(boolean value) { isEmpty = value; }
 
   public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
   public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
@@ -179,6 +174,11 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public String getData() 		{ return data; }
   public void setData(String newData) 	{ data = newData;  }
 
+  public boolean getIsWhitespace() { return isWhitespace; }
+  public void setIsWhitespace(boolean value) {
+    isWhitespace = value;
+  }
+
   public boolean getIsIgnorableWhitespace() { return isIgnorableWhitespace; }
   public void setIsIgnorableWhitespace(boolean value) {
     isIgnorableWhitespace = value;
@@ -191,46 +191,96 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   ** Construction:
   ************************************************************************/
 
+  /** Construct a BasicToken with all fields to be filled in later. */
   public BasicToken() {
   }
 
+  /** Construct a BasicToken with a given nodeType.
+   * @see crc.dps.NodeType
+   * @see crc.dom.NodeType
+   */
   public BasicToken(int nodeType) {
     this.nodeType = nodeType;
   }
 
+  /** Construct a BasicToken with a given nodeType and data. 
+   * @see crc.dps.NodeType
+   * @see crc.dom.NodeType
+   */
+  public BasicToken(int nodeType, String data) {
+    this.nodeType = nodeType;
+    setData(data);
+  }
+
+  /** Construct a BasicToken with a given nodeType, name, and data. 
+   * @see crc.dps.NodeType
+   * @see crc.dom.NodeType
+   */
   public BasicToken(int nodeType, String name, String data) {
     this.nodeType = nodeType;
     setName(name);
     setData(data);
   }
 
-  public BasicToken(int nodeType, String data) {
-    this.nodeType = nodeType;
-    setData(data);
-  }
-
+  /** Construct a BasicToken with a given nodeType, data, and Handler. 
+   * @see crc.dps.NodeType
+   * @see crc.dom.NodeType
+   */
   public BasicToken(int nodeType, String data, Handler handler) {
     this.nodeType = nodeType;
     this.handler = handler;
     setData(data);
   }
 
+  /** Construct a TEXT BasicToken with given data. 
+   * @see crc.dom.Text
+   */
   public BasicToken(String data) {
     this.nodeType = NodeType.TEXT;
     setData(data);
   }
 
+  /** Construct a TEXT BasicToken with given data and Handler. 
+   * @see crc.dom.Text
+   */
   public BasicToken(String data, Handler handler) {
     this.nodeType = NodeType.TEXT;
     this.handler = handler;
     setData(data);
   }
 
+  /** Construct a TEXT BasicToken with given data and ignorableWhitespace flag. 
+   * @see crc.dom.Text
+   */
+  public BasicToken(String data, boolean ignorableWhitespace) {
+    this.nodeType = NodeType.TEXT;
+    this.handler = handler;
+    isIgnorableWhitespace = ignorableWhitespace;
+    setData(data);
+  }
+
+  /** Construct an ELEMENT BasicToken with given tagname and syntax. 
+   * @see crc.dom.Element
+   */
   public BasicToken(String tagname, int syntax) {
     setTagName(tagname);
     this.syntax = syntax;
   }
 
+  /** Construct an ELEMENT BasicToken with given tagname and syntax,
+   *	and a given implicitEnd flag (almost invariably <code>true</code>).
+   * @see crc.dom.Element
+   */
+  public BasicToken(String tagname, int syntax, boolean implicit) {
+    setTagName(tagname);
+    this.syntax = syntax;
+    implicitEnd = implicit;
+  }
+
+  /** Construct an ELEMENT BasicToken with given tagname, syntax,
+   *	and Handler.
+   * @see crc.dom.Element
+   */
   public BasicToken(String tagname, int syntax,
 		    AttributeList attrs, Handler handler) {
     setTagName(tagname);
@@ -240,19 +290,54 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   }
 
   /** Construct a BasicToken from an original Node. */
-  public BasicToken(Node original) {
-    originalNode = original;
+  public BasicToken(Node node) {
+    originalNode = node;
     setNode();				// say it's a node.
-    nodeType = original.getNodeType();
+    nodeType = node.getNodeType();
+    switch (nodeType) {
+    case NodeType.ELEMENT: 
+      crc.dom.Element e = (crc.dom.Element)node;
+      setTagName(e.getTagName());
+      break;
+
+    case NodeType.TEXT:
+      crc.dom.Text t = (crc.dom.Text)node;
+      data = t.getData();
+      isIgnorableWhitespace = t.getIsIgnorableWhitespace();
+      break;
+
+    case NodeType.COMMENT: 
+      crc.dom.Comment c = (crc.dom.Comment)node;
+      data = c.getData();
+      break;
+
+    case NodeType.PI:
+      crc.dom.PI pi = (crc.dom.PI)node;
+      name = pi.getName();
+      data = pi.getData();
+      break;
+
+    case NodeType.ATTRIBUTE: 
+      crc.dom.Attribute attr = (crc.dom.Attribute)node;
+      name = attr.getName();
+      break;
+    }
   }
 
-  /** Construct a BasicToken from an original Token. */
+  /** Construct a BasicToken from an original Token. 
+   *	The children are not copied; that has to be done explicitly.  */
   public BasicToken(Token t) {
-    originalNode = t.getOriginalNode();
-    syntax = t.getSyntax();
-    nodeType = t.getNodeType();
-    tagName = t.getTagName();
-    data = t.getData();
+    originalNode	  = t.getOriginalNode();
+    syntax 		  = t.getSyntax();
+    nodeType 		  = t.getNodeType();
+    tagName 		  = t.getTagName();
+    data 		  = t.getData();
+    name 		  = t.getName();
+    isWhitespace 	  = t.getIsWhitespace();
+    isIgnorableWhitespace = t.getIsIgnorableWhitespace();
+
+    handler		  = t.getHandler();
+
     if (t.getAttributes() != null)
       setAttributes( new crc.dom.AttrList( t.getAttributes() ) );
   }
@@ -264,7 +349,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public static Token createToken(Node original, boolean copyIfToken) {
     if (original instanceof Token) {
-      return copyIfToken? new BasicToken(original) : (Token)original;
+      return copyIfToken? new BasicToken((Token)original) : (Token)original;
     } else {
       return new BasicToken(original);
     }

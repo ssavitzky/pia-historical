@@ -7,6 +7,7 @@ package crc.dps.parse;
 import crc.dps.NodeType;
 import crc.dps.AbstractParser;
 import crc.dps.Token;
+import crc.dps.TokenList;
 import crc.dps.BasicToken;
 
 import java.util.Enumeration;
@@ -60,7 +61,7 @@ public class BasicParser extends AbstractParser {
       last = 0;
       return false;
     }
-    next = new BasicToken(NodeType.ENTITYREF, ident);
+    next = new BasicToken(NodeType.ENTITY, ident);
     if (last == ';') next.setHasClosingDelimiter(true);
     if (last == ';') last = 0;
     return true;
@@ -70,17 +71,16 @@ public class BasicParser extends AbstractParser {
    *	Clear endString and ignoreEntities when the end string is seen.
    *	If ignoreEntities is false, entities will be recognized.
    */
-  /*
-  Token getLiteral() {
+  TokenList getLiteral(String endString, boolean ignoreEntities) {
 
     buf = new StringBuffer();
-    Tokens list = new Tokens();
+    TokenList list = new crc.dps.BasicTokenList();
     
     try {
       for ( ; ; ) {
 	if (eatUntil(endString, !ignoreEntities)) {
-	  if (list.isEmpty() || ! (buf.length() == 0)) 
-	    list.append(new TextBuffer(buf));
+	  if (buf.length() != 0) 
+	    list.append(new BasicToken(buf.toString()));
 	  break;
 	}
 	if (last == '&' && getEntity()) {
@@ -88,11 +88,9 @@ public class BasicParser extends AbstractParser {
 	}
       }
     } catch (Exception e) {}
-    endString = null;
-    ignoreEntities = false;
     return list;
   }
-  */
+
 
   /** Get a value (after an attribute name inside a tag).
    *	Returns true if <code>last</code> is an equal sign and is 
@@ -267,7 +265,10 @@ public class BasicParser extends AbstractParser {
   /** Get text starting with <code>last</code>.  If the text is
    *	terminated by an entity or tag, the entity or tag ends up in
    *	<code>next</code>, and the character that terminated
-   *	<em>it</em> is left in <code>last</code>.  */
+   *	<em>it</em> is left in <code>last</code>.  
+   *
+   * === This will eventually get split so we can detect space, etc. ===
+   */
   Token getText() throws IOException {
 
     while (eatText()) {
@@ -291,21 +292,18 @@ public class BasicParser extends AbstractParser {
    *	run the full test next time around.  On the other hand, it
    *	might be useful to return words, punctuation, etc. as separate
    *	tokens, and the interpretor might appreciate getting entities
-   *	separately .*/
+   *	separately.  Subclasses will do this differently.  <p>
+   *
+   */
   public Token nextToken() {
-    buf = new StringBuffer(256);
-    Token it = null;
-
-    try {
-      it = getText();		// Try to get some text.
+    if (nextText == null && next == null) try {
+      buf.setLength(0);
+      nextText = getText();	// Try to get some text.
     } catch (IOException e) {};
-    if (it == null) {		// If that failed,
-      it = next;		// 	a tag or entity must be in next
-      next = null;		// 	so clear next for next time.
-    } else {
-      // debug("\"..\"");
-    }
-    return it;
+    
+    // At this point we have to check for nesting and the presence of 
+    // ignorable whitespace between, e.g., list tags.
+    return checkNextToken();
   }
 
 

@@ -164,6 +164,16 @@ public interface Processor extends Input {
    */
   public void setExpanding(boolean value);
 
+  /************************************************************************
+  ** Parsing Operations:
+  ************************************************************************/
+
+  /** Return true if we are currently nested inside an element with
+   *  the given tag. */
+  public boolean insideElement(String tag);
+
+  /** Return the tag of the immediately-surrounding Element. */
+  public String elementTag();
 
   /************************************************************************
   ** Operations Used by Handlers:

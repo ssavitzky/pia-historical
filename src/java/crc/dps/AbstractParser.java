@@ -281,7 +281,107 @@ public abstract class AbstractParser extends AbstractInputFrame
   ** Parsing Utilities:
   ************************************************************************/
 
+  /** Get the syntax (Handler) for a Token.
+   *	It is more efficient to consult the Tagset directly if the type
+   *	is known ahead of time.
+   *
+   * @return the Token with its handler field set.
+   */
+  protected final Token getSyntax(Token t) {
+    if (tagset == null) return t;
 
+    int nodeType = t.getNodeType();
+    Handler handler = null;
+    if (nodeType == NodeType.ELEMENT && ! t.isEndTag()) {
+      handler = tagset.handlerForTag(t.getTagName());
+      handler = handler.getHandlerForToken(t);
+      if (handler.isEmptyElement(t)) { 
+	t.setIsEmptyElement(true);
+	// === Do we need to set syntax=0 if isEmptyElement???
+      }
+    } else if (nodeType == NodeType.TEXT) {
+      handler = tagset.handlerForText(t.getIsWhitespace());
+    } else if (nodeType == NodeType.ENTITY) {
+      handler = tagset.handlerForEntity(t.getName());
+    } else {
+      handler = tagset.handlerForType(nodeType);
+    }
+    t.setHandler(handler);
+    return t;
+  }
+
+  /** Current text token.
+   *	Along with <code>next</code>, this lets the Parser look at both
+   *	the text and the tag (if that's what it is) that follows it.  
+   */
+  protected Token nextText = null;
+
+  /** Perform syntax checking. 
+   *	Uses <code>nextText</code> and <code>next</code>.  Assumes that
+   *	<code>next</code> was recognized after <code>nextText</code>.
+   *
+   * @return the correct result to return from <code>nextToken</code>
+   */
+  protected Token checkNextToken() {
+    Token it;
+    if (nextText != null) {
+      if (next != null && next.isStartTag()) {
+	// === check for ignorable whitespace before list element ===
+	// === requires one more bit of state, in returnedEndTag ...
+      }
+      it = nextText;
+      nextText = null;
+      return it;
+    } else if (next != null) {
+      if (next.isEndTag()) {
+	returnedEndTag = true;
+
+	// check for missing end tags, and supply them if necessary.
+	// This is tedious, but straightforward.
+	String tag = next.getTagName();
+	String inside = processor.elementTag();
+	if (tag == null || tag.equals(inside)) {
+	  // Current tag.  Everything's fine.
+	} else if (!checkedBadNesting) {
+	  // Not the current element.  Are we somewhere inside it?
+	  checkedBadNesting = true;
+	  if (processor.insideElement(tag)) {
+	    // ... Yes, we're OK.  End the current element.
+	    return new BasicToken(inside, 1, true);
+	  } else {
+	    // ... Bad nesting.  Change next to an appropriate comment.
+	    next = new BasicToken(NodeType.COMMENT, "Bad end tag: " + tag);
+	  }
+	} else {
+	  // We've already checked for bad nesting, and we're OK.
+	  // End the current element.
+	  return new BasicToken(inside, 1, true);
+	}
+      } else if (tagset != null &&
+		 tagset.checkElementNesting(next, processor) > 0) {
+	returnedEndTag = true;
+	return new BasicToken(processor.elementTag(), 1);
+      } else {
+	returnedEndTag = false;
+      }
+      checkedBadNesting = false;
+      it = next;
+      next = null;
+      return it;
+    } else {
+      return null;
+    }
+  }
+
+  /** <code>true</code> if <code>checkNextToken</code> has checked for
+   *	an end tag with no corresponding start tag.
+   */
+  protected boolean checkedBadNesting = false;
+
+  /** <code>true</code> if <code>checkNextToken</code> has just returned
+   *	an end tag.
+   */
+  protected boolean returnedEndTag = false;
 
   /************************************************************************
   ** Construction:
