@@ -264,8 +264,17 @@ public class Util extends crc.sgml.Util {
     Tokens list = removeSpaces(it);
     if (list == null || list.nItems() == 0) return new Tokens();
     if (list.nItems() == 1 && list.itemAt(0).isText()) {
+      //System.err.println("getPairs from query: " + list.toString());
       return getPairs(list.toString(), ii, parse);
+    } else if (list.nItems() == 1 && list.itemAt(0) instanceof Attrs
+		&& ! (list.itemAt(0) instanceof Element)) {
+      //System.err.println("getPairs from attrs: " + list.toString());
+      return getPairs((Attrs)list.itemAt(0));
+    } else if (list.nItems() == 1 && "dl".equals(list.itemAt(0).tag())) {
+      //System.err.println("getPairs from <dl>");
+      return getPairs(list.itemAt(0).content());
     } else {
+      //System.err.println("getPairs from tokens: n="+list.nItems());
       return getPairs(list);
     }
   }
@@ -300,6 +309,20 @@ public class Util extends crc.sgml.Util {
     }
 
     return result;
+  }
+
+  /** Turn an Attrs into a list of  &lt;dt&gt; / &lt;dd&gt; pairs. */
+  public static Tokens getPairs(Attrs attrs) {
+    Tokens result = new Tokens();
+    Enumeration keys = attrs.attrs();
+    String key = null;
+
+    while (keys.hasMoreElements()) {
+      key = keys.nextElement().toString();
+      result.addItem(new Element("dt").addItem(new Text(key)));
+      result.addItem(new Element("dd").addItem(attrs.attr(key)));
+    }
+    return result;    
   }
 
   /** Turn a list of Tokens into a list of &lt;dt&gt; / &lt;dd&gt; pairs.
