@@ -33,11 +33,13 @@ import java.net.Socket;
 import java.util.Hashtable;
 
 import crc.pia.Content;
+import crc.pia.HTTPResponse;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
 import crc.util.regexp.RegExp;
 import crc.util.regexp.MatchInfo;
 import crc.util.Timer;
+
 import w3c.www.http.HTTP;
 
 import crc.ds.UnaryFunctor;
@@ -174,11 +176,12 @@ public class Machine {
     }
   }
 
-  /**
-   * Sends a response through output stream, and if there are controls associated with
-   * this response they are added.
+  /** 
+   * Sends a response through output stream, and if there are
+   * controls associated with this response they are added.
    */
-  public void sendResponse (Transaction reply, Resolver resolver)throws PiaRuntimeException {
+  public void sendResponse (Transaction reply, Resolver resolver)
+       throws PiaRuntimeException {
     OutputStream out = null;
     StringBuffer ctrlStrings = null;
     Content content = null;
@@ -361,7 +364,9 @@ public class Machine {
   /**
    * Get request through a proxy by opening the proxy socket
    */
-  protected void getReqThruSock(URL url, Transaction request, Resolver resolver) throws PiaRuntimeException, UnknownHostException {
+  protected void getReqThruSock(URL url, Transaction request, Resolver resolver)
+       throws PiaRuntimeException, UnknownHostException {
+
     int zport = 80;
     String zhost;
 
@@ -393,7 +398,9 @@ public class Machine {
   /**
    * Get request data and create a response with the data 
    */
-  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException, UnknownHostException  {
+  public void getRequest(Transaction request, Resolver resolver)
+       throws PiaRuntimeException, UnknownHostException  {
+
     URL proxy;
     URL agentURL;
     URL url;
