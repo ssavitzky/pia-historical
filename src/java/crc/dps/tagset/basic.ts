@@ -1218,6 +1218,15 @@ example).
     <doc> Joins items in the content by merging adjacent Text nodes.
     </doc>
   </define>
+  <define attribute=encode handler optional>
+    <doc>  Encodes text as one of url, base64, or entity. To add a different encoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_encode.html'><em>How to extend the encode handler</em></a>
+    </doc>
+  </define>
+  <define attribute=decode handler optional>
+    <doc>  Decodes text that has been encoded as one of url, base64, or entity. To add different decoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_decode.html'><em>How to extend the decode handler</em></a>
+    </doc>
+  </define>
+
 </define>
 
 <note author=steve>
