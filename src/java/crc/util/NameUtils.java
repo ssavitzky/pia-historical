@@ -94,6 +94,35 @@ public class NameUtils {
     return n.toString();
   }
 
+  /** Turn a string into a valid Java classname with more control over
+   *	the treatment of special characters. 
+   *
+   * @param s the string
+   * @param firstCase (-1: lower; 0: preserve; 1: raise) first letter
+   * @param otherCase (-1: lower; 0: preserve; 1: raise) other letters
+   * @param elideDash elide hyphen and capitalize the next letter; otherwise
+   *	replace with underscore.
+   * @param elideDot elide period and capitalize the next letter; otherwise
+   *	replace with underscore.
+   *
+   */
+  public static final String javaName(String s, int firstCase, int otherCase,
+				      boolean elideDash, boolean elideDot) {
+    String n = "";
+    int nxcase = firstCase;
+    for (int i = 0; i < s.length(); ++i) {
+      char c = s.charAt(i);
+      if      (elideDash && c == '-') 		{ nxcase = 1; continue; }
+      else if (elideDot  && c == '.') 		{ nxcase = 1; continue; }
+      else if (!Character.isLetterOrDigit(c)) 	n += '_';
+      else if (nxcase < 0) 			n += Character.toLowerCase(c);
+      else if (nxcase > 0) 			n += Character.toUpperCase(c);
+      else 					n += c;
+      nxcase = otherCase;
+    }
+    return n;
+  }
+
   /** Load a named class.  The <code>packagePrefix</code> is prepended only if
    *	the handle name contains no "." characters.  Util.javaName can be used
    *	to convert an SGML identifier (e.g. a tag) to a class name.
