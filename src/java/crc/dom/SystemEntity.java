@@ -22,6 +22,21 @@ public class SystemEntity extends TextEntity implements ExternalTextEntity{
     setpPublicIdentifier( publicId );
   }
 
+
+  public SystemEntity(SystemEntity se){
+
+    setpIsNDATA( se.getpIsNDATA() );
+    setpIsPublic( se.getpIsPublic() );
+    setpPublicIdentifier( se.getpPublicIdentifier() );
+    setpSystemIdentifier( se.getpSystemIdentifier() );
+    setName( se.getName() );
+    setIsParameterEntity( se.getIsParameterEntity() );
+    setIsBound( se.getIsBound() );
+    setIsExternal( se.getIsExternal() );
+    setValue( new ChildNodeList( se.getValue() ));
+
+  }
+
   /**
    * This is a dummy function created to satify DOM interface.
    */
