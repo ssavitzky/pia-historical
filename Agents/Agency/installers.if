@@ -162,7 +162,7 @@ add a default start-up form to this file.  <p>
        <if><agent-running name=CDRW><then><em>installed</em></then>
        <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
-       name:<input name="agent" value="user_files">
+       name:<input name="agent" value="archive">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
        <input type="submit" value="Install">
