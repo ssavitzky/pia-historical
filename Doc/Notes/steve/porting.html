@@ -47,12 +47,13 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
   <li> This is by far the hardest problem in a C port.  You will have to use
        one of the following techniques (or possibly some mixture of them):
        <ol>
-	 <li> Reference counts.  Straightforward but somewhat error-prone.
 	 <li> Zoned allocation.  While you're processing a document, allocate
 	      all of its memory from one or more contiguous blocks.  When
 	      you're finished with a document, throw away all of the memory
 	      you allocated for it.  Keep a special block for global
-	      structures, which never get de-allocated.
+	      structures, which never get de-allocated.  This is probably
+	      the best technique.
+	 <li> Reference counts.  Straightforward but somewhat error-prone.
 	 <li> Being careful.  If you can <em>guarantee</em> that every data
 	      structure is a tree, and that no objects are shared among trees,
 	      then you know that when you are finished with a document you can
@@ -65,6 +66,19 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
        of growable buffers or arrays.  These are easily managed with a
        compacting garbage-collector. 
   <li> Fixed-size nodes can be allocated off a free list. 
+</ul>
+
+<h3>Threads</h3>
+<ul>
+  <li> Multi-threading interacts (badly, in most cases) with memory
+       management.  
+  <li> Probably the techniques easiest to make thread-safe are zoned
+       allocation and being careful.
+  <li> Even if a thread-safe allocator is in use, sharing data structures
+       (and hence documentsa) among threads is likely to be difficult.
+  <li> Currently, the only place where documents are shared among threads is
+       when proxying is being done; it may be possible to avoid this.
+
 </ul>
 
 <h3>Available Resources</h3>
