@@ -21,13 +21,18 @@ import crc.dps.input.FromParseNodes;
 import crc.dps.input.FromParseTree;
 
 /**
- * Node-expansion utilities (static methods) for a Document Processor. 
+ * Node-expansion utilities (static methods) for the Document Processor. 
  *
- *	These utilities are primarily used in handlers for obtaining
- *	processed content, expanding entities, and so on.
+ * <p>	These utilities are primarily used in handlers for obtaining processed
+ *	content, expanding entities, and so on.  They essentially duplicate
+ *	the functionality available in a Processor without requiring an actual
+ *	Processor to be instantiated.
+ *
+ * @see crc.dps.Processor
+ * @see crc.dps.process.BasicProcessor
  *
  * @version $Id$
- * @author steve@rsv.ricoh.com
+ * @author steve@rsv.ricoh.com 
  */
 
 public class Expand {
@@ -64,28 +69,30 @@ public class Expand {
     return out.getString();
   }
 
-  /** Get the processed content of the current node. */
+  /** Extract text from the processed content of the current node. */
   public static ParseNodeList getProcessedText(Input in, Context c) {
     ToNodeList out = new ToNodeList();
     c.subProcess(in, new FilterText(out)).processChildren();
     return out.getList();
   }
 
-  /** Get the processed content of the current node as a string. */
+  /** Extract text from the processed content of the current node
+   *	and return the result as a string. */
   public static String getProcessedTextString(Input in, Context c) {
     ToString out = new ToString();
     c.subProcess(in, new FilterText(out)).processChildren();
     return out.getString();
   }
 
-  /** Get the unprocessed content of the current node. */
+  /** Extract text from the unprocessed content of the current node. */
   public static ParseNodeList getText(Input in, Context c) {
     ToNodeList out = new ToNodeList();
     Copy.copyChildren(in, new FilterText(out));
     return out.getList();
   }
 
-  /** Get the unprocessed content of the current node as a string. */
+  /** Extract text from the unprocessed content of the current node 
+   *	and return the result as a string. */
   public static String getTextString(Input in, Context c) {
     ToString out = new ToString();
     Copy.copyChildren(in, new FilterText(out));
@@ -146,18 +153,22 @@ public class Expand {
   ** Expansion:
   ************************************************************************/
 
+  /** Expand entities in an AttributeList, getting values from a Context. */
   public static ActiveAttrList expandAttrs(Context c, AttributeList atts) {
     ToAttributeList dst = new ToAttributeList();
     expandAttrs(c, atts, dst);
     return dst.getList();
   }
 
+  /** Copy an attribute list without expansion. */
   public static ActiveAttrList copyAttrs(AttributeList atts) {
     ToAttributeList dst = new ToAttributeList();
     Copy.copyNodes(atts, dst);
     return dst.getList();
   }
 
+  /** Expand entities in an AttributeList with results going to a given
+   *	Output. */ 
   public static void expandAttrs(Context c, AttributeList atts, Output dst) {
     for (int i = 0; i < atts.getLength(); i++) { 
       try {
@@ -166,11 +177,13 @@ public class Expand {
     }
   }
 
+  /** Expand entities in an Attribute and put the result to an Output. */
   public static void expandAttribute(Context c, Attribute att,  Output dst) {
     dst.putNode(new ParseTreeAttribute(att.getName(),
 				       expandNodes(c, att.getValue())));
   }
 
+  /** Expand entities in a NodeList. */
   public static NodeList expandNodes(Context c, NodeList nl) {
     if (nl == null) return null;
     ToNodeList dst = new ToNodeList();
@@ -178,6 +191,7 @@ public class Expand {
     return dst.getList();
   }
 
+  /** Expand entities in a NodeList and put the result to an Output. */
   public static void expandNodes(Context c, NodeList nl, Output dst) {
     NodeEnumerator e = nl.getEnumerator();
     for (Node n = e.getFirst(); n != null; n = e.getNext()) {
@@ -189,7 +203,7 @@ public class Expand {
     }
   }
 
-  /** Expand a single entity. */
+  /** Expand a single entity, putting the expansion to an Output. */
   public static void expandEntity(Context c, Entity n, Output dst) {
     String name = n.getName();
     NodeList value = (name.indexOf('.') >= 0)

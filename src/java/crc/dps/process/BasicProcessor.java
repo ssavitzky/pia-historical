@@ -64,7 +64,7 @@ public class BasicProcessor extends ContextStack implements Processor {
     Action handler = input.getAction();
     if (handler != null) {
       additionalAction(handler.actionCode(input, this));
-      //handler.action(input, this, output);
+      // MUST BE equivalent to: handler.action(input, this, output);
     } else {
       expandCurrentNode();
     }
