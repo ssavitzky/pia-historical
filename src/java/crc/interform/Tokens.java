@@ -115,6 +115,11 @@ public class Tokens extends List implements SGML {
     return this;
   }
 
+  /** The object's content converted to a string. */
+  public String contentString() {
+    return toString();
+  }
+
   /** The result of appending some SGML tokens.  Same as this if isList(). */
   public SGML append(SGML sgml) {
     if (sgml.isList()) {

@@ -93,6 +93,11 @@ public class Text implements SGML {
     return null;
   }
 
+  /** The object's content converted to a string. */
+  public String contentString() {
+    return toString();
+  }
+
   /** The text part of the object's content. */
   public Text contentText() {
     return this;

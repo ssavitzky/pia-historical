@@ -243,6 +243,10 @@ public class Token implements SGML {
     return content;
   }
 
+  public String contentString() {
+    return (content == null)? "" : content.toString();
+  }
+
   /************************************************************************
   ** SGML list interface:
   ************************************************************************/
