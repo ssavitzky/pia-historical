@@ -517,9 +517,13 @@ public class Utilities {
 		digitBuf.append( s.charAt(++i) );
 		digitBuf.append( s.charAt(++i) );
 		
-		if( digitBuf.length() > 0 ){
+		if( digitBuf.length() > 0 ) try {
 		  int foo = Integer.parseInt( new String( digitBuf ), 16 );
 		  sbuf.append( (char)foo );
+		} catch (java.lang.NumberFormatException e) {
+		  sbuf.append((char)ch);
+		  sbuf.append(digitBuf.charAt(0));
+		  sbuf.append(digitBuf.charAt(1));
 		}
 	      } else {
 		sbuf.append((char)ch);
