@@ -44,7 +44,9 @@ JAVASOURCE=  /usr/local/java/src
 
 CLASSPATH=$(JAVACLASSES)
 
-BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
+# S is the path separator: it needs to be ";" on Windows machines.
+S=:
+BUILDCLASSES=$(CLASSDIR)$S$(JAVACLASSES)$S$(LIBCLASSES)$S$(CLASSPATH)
 
 ## Set this on the command line to see warnings about deprecated API's
 # JAVAFLAGS=-deprecation
@@ -52,7 +54,7 @@ BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 .SUFFIXES: .java .class
 
 .java.class:
-#	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
+#	javac -d $(CLASSDIR) -classpath "$(BUILDCLASSES)" $(JAVAFLAGS) $<
 	javac -d $(CLASSDIR) -classpath $(BUILDCLASSES) -g $(JAVAFLAGS) $<
 
 all:: $(FILES:.java=.class)
