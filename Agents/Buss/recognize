@@ -19,6 +19,8 @@ $cardcompany="";
 $cardurl="";
 $cardemail="";
 $cardphone="";
+$cardphonearea="";
+$cardphoneexch="";
 @notrecog;
 @fileinfo;
 
@@ -93,7 +95,10 @@ sub femail {
 sub fphone {
     $_ = pop(@_);
     if( /.*tel.*/i || /.*phone.*/i || /.*Te.$/ || /.*Te$/) {
-	$cardphone = $_;
+	/^\s*(\d+)\.(\d+)\.(\d+).*$/;
+	$cardphonearea=$1;
+	$cardphoneexch=$2;
+	$cardphone = $3;
 #        print "recognize phone --> $_\n";
 	return 1;
     }
@@ -129,6 +134,8 @@ sub dopost {
               'cardcompany' => "$cardcompany",
 	      'cardurl' => "$cardurl",
               'cardemail' => "$cardemail",
+              'cardphonearea' => "$cardphonearea",
+              'cardphoneexch' => "$cardphoneexch",
               'cardphone' => "$cardphone");
 
     my $curl = URI::URL->new("http:");
