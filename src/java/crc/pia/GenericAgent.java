@@ -57,6 +57,18 @@ import w3c.www.http.HTTP;
  */
 public class GenericAgent extends AttrBase implements Agent {
   
+  /** Extensions of executable files.
+   *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
+   *	processed with the DPS. 
+   */
+  protected int firstDPSType = 2;
+  protected String executableTypes[] = {
+    "cgi", 	"if",   	"lif",  	"xh",	  	"xx"};
+  protected String resultTypes[] = {
+    null, 	"text/html",	"text/html",	"text/html",	"text/xml"};
+  protected String tagsetNames[] = {
+    null, 	"Standard",	"legacy", 	"standard", 	"standalone"};
+
   private String filesep = System.getProperty("file.separator");
   public static boolean DEBUG = false;  
 
@@ -1101,18 +1113,6 @@ public class GenericAgent extends AttrBase implements Agent {
 
     return respondToInterform(request, url.getFile(), res);
   }
-
-  /** Extensions of executable files.
-   *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
-   *	processed with the DPS. 
-   */
-  protected int firstDPSType = 2;
-  protected String executableTypes[] = {
-    "cgi", 	"if",   	"lif",  	"dpml"};
-  protected String resultTypes[] = {
-    null, 	"text/html",	"text/html",	"text/html"};
-  protected String tagsetNames[] = {
-    null, 	"Standard",	"legacy", 	"standard"};
 
   /**
    * Strip off destination file name for put
