@@ -26,6 +26,13 @@ href=show_signatures.if?formurl=&FORM.formurl;>&FORM.formurl;</a></h4>
 <li><get index=u.authorizor attr=type><a href=route_form.if?touser=&myto;&fparam;> &u; </a></li>
 </repeat>
 </ol>
+
+<form method="get" action="edit_route.if">
+<input name="routefile" type="hidden" value="&rfile;">
+<input name="form" type="hidden" value="&FORM.formurl;">
+<input type="submit" value="Edit Route">
+</form>
+
 <h4> This is what has hapened to the form so far </h4>
 <show-form-history form=&FORM.formurl;>
 

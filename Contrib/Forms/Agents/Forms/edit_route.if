@@ -12,7 +12,15 @@
 
  <if> <get form name=form> <then>
 <set name=form><get form name=form></set>
-<set name=formfile><read file=&form;/&form;.form interform process></set>
+<if> <read file=&form;/&form;.form info interform> <then>
+  <set name=formfile><read file=&form;/&form;.form interform process></set>
+  <set name=genericroute>true</set>
+ </then>
+ <else>
+  <set name=formfile><read file=&form; process></set>
+  <set name=specificroute>true</set>
+ </else>
+</if>
 <set name=formvars><get name=formfile findall=formvariable></set>
 
 <set name=formvars><repeat list=&formvars; entity=x> <text><get name=x
@@ -22,8 +30,8 @@ attr=name></text></repeat></set>
       <set name=routefile><get name=routefile form> </set>
      </then> <else>
      <set name=routefile>&usrDIR;/Agents/&agentName;/&form;/route.inc</set>
-     <set name=genericroute>true</set>
 </else></if>
+
 
 <if> <get form name=setcannedroute> <then>
  <if-in-group group=admin reporterrors=true>
@@ -111,19 +119,29 @@ attr=name></text></repeat></set>
 </set>
  </repeat>
  </then></if>
+ <if><get name=specificroute><then>
+     <set name=originator><get name=formfile findall=formoriginator></set>
+     <set name=myuser><get index=originator.Text></set>
+     <process-route><get name=newroute></process-route>
+       <set name=route><get name=routeobject></set>   
+     </then>
+     <else>
 	  <set name=route><get name=newroute></set>   
+     </else>
+</if>
  <write file=&routefile;><get name=route>
 	  </write>
+
 	    Route &routefile; for &form; updated.
  </if-in-group>
 
-MAX ID: &maxid;
 </process>
 
 
 
 <h2>Route for &form; Form</h2>	    
  <input name="form" value=&form; type=hidden>
+ <input name="routefile" value=&routefile; type=hidden>
  <set name=steps><dummy><get name=route findall=routestep></dummy></set>
  <table border=1>
  <TR><TH>Step
@@ -139,7 +157,9 @@ MAX ID: &maxid;
        <TD><input type="checkbox" name="delete&rid;">
        <TD>
 	    <select name="user&rid;">
-	     <option selected><get  index=step.routeuser.Text></option>
+	     <option selected><authorizor-canonical-name
+	     authorizor=&step.routeuser.1;></option>
+<!-- get  index=step.routeuser.Text -->
              <option>user</option>
              <repeat list=&AGENT.authorizors.keys; entity=mygrp>
             <option>&mygrp;</option></repeat>
@@ -191,6 +211,7 @@ box). <br>
 <tr><th>Route 1 </th><th> Route 2 </th><th> Route 3 </th> </tr>
 <tr><td><form action="&url;"  method=post>
  <input name="form" value=&form; type=hidden>
+ <input name="routefile" value=&routefile; type=hidden>
  <input name="cannedsteps" value="2" type=hidden>
 <input name="user1" value="user" type=hidden>user <br>
 <input name="when1" value="always" type=hidden>
@@ -202,6 +223,7 @@ box). <br>
 </form></td>
 <td><form action="&url;"  method=post>
  <input name="form" value=&form; type=hidden>
+ <input name="routefile" value=&routefile; type=hidden>
  <input name="cannedsteps" value="2" type=hidden>
 <input name="user1" value="user" type=hidden>user <br>
 <input name="when1" value="always" type=hidden>
@@ -214,6 +236,7 @@ box). <br>
 <td><form action="&url;"  method=post>
 <input name="cannedsteps" value="3" type=hidden>
  <input name="form" value=&form; type=hidden>
+ <input name="routefile" value=&routefile; type=hidden>
  <input name="user1" value="user" type=hidden>user <br>
 <input name="when1" value="always" type=hidden>
 <input name="cond1" value="" type=hidden>
