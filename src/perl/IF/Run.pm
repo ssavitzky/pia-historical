@@ -92,7 +92,9 @@ sub run_tree {
 	shift;
 	$interp = IF::II->new(@_);
     }
-    $interp->push_input($input);
+#    print "running hook " . $input->as_string . "\n";
+#    $main::debugging=2;
+    $interp->resolve($input, 2);
     return $interp->run;
 }
 
@@ -179,6 +181,21 @@ sub interform_file {
     if (!result || ref($result)) {
 	print "\nIF::II::run_file returned '$result'\n" if $main::debugging;
 	$main::debugging=0;	# look at the first post-mortem.
+    }
+    return $result;
+}
+
+sub interform_hook {
+    local ($agent, $tree, $request, $resolver)=@_;
+
+    ## Run a standard PIA InterForm file.
+
+    $resolver = $main::resolver unless defined($resolver);
+    local $entities = if_entities($agent, '', $request);
+
+    my $result = run_tree($tree);
+    if (!result || ref($result)) {
+	print "\nIF::II::run_tree returned '$result'\n" if $main::debugging;
     }
     return $result;
 }

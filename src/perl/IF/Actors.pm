@@ -216,7 +216,7 @@ sub get_handle {
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
 	local $request = IF::Run::request();
-	$name = '$' . $name unless $name =~ /^\$/;
+	$name = '$' . $name;
 	my $status = $agent->run_code("$name", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
@@ -256,17 +256,20 @@ sub set_handle {
     my $name = $it->attr('name');
     my $value = $it->attr('value');
     $value = $it->content_string unless defined $value;
-
+    
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
 	local $request = IF::Run::request();
-	$name = '$' . $name unless $name =~ /^\$/;
+	$name = '$' . $name; 
 	my $status = $agent->run_code("$name='$value';", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
 	$ii->replace_it($status);
     } elsif ($it->attr('agent')) {
 	local $agent = IF::Run::agent();
+        if ($it->attr('hook')) {
+            $value = IF::IT->new()->push($it->content);
+        }
 	$agent->option($name, $value) if defined $agent;
     } elsif ($it->attr('local')) {
 	$ii->defvar($name, $value);
@@ -696,6 +699,9 @@ sub add_markup_handle {
     $ii->replace_it(\@result);
 }
 
+### <ignore [spaces | lines | text | markup]>content</ignore>
+###	default--ignore *everything* and expand for side-effects
+
 ### <split [separator="string" | pattern="pattern"]>text</split>
 
 ### <subst match="pattern" result="pattern">text</subst>
@@ -872,7 +878,7 @@ sub agent_options_handle {
 	$name = $agent->name;
     }
 
-    $ii->replace_it(join(' ', $agent->options));
+    $ii->replace_it(join(' ', @{$agent->attr_names}));
 }
 
 
@@ -932,6 +938,21 @@ sub agent_list_handle {
 	push (@list, $name) if $agent->type eq $type;
     }
     $ii->replace_it(join(' ', @list));
+}
+
+define_actor('agent-control', _handle => \&agent_control_handle,
+	     'dscr' => "Add a control to the current response." );
+
+sub agent_control_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $text = $it->content_string;
+    my $response = IF::Run::request();
+
+    $response -> add_control($text);
+    print "add_control($text)\n";
+
+    $ii->delete_it;
 }
 
 

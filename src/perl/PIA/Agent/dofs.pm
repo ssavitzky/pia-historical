@@ -139,7 +139,7 @@ sub retrieve_directory {
     closedir(D);
     my @urls;
     my $head;
-    my $all = $self->attribute('all');
+    my $all = $self->option('all');
 
     # Make directory listing
     for (@files) {

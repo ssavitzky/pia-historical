@@ -56,7 +56,8 @@ sub new {
 
     if($self->is_request()){
 	$self->compute_form_parameters() if $type eq 'POST';
-	$self->compute_form_parameters($self->url->query) if $type eq 'GET';
+	$self->compute_form_parameters($self->url->equery) if $type eq 'GET';
+	## === url->query dies if there are both + and %2b characters ===
     }
 
     ## need to compute form parameters if encoded in url

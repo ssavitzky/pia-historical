@@ -309,12 +309,11 @@ sub content_token {
     ##	 This means making a tagless node if necessary.
 
     my $content = $self->content;
-    return '' if (undef $content || !@$content);
-
-    return $content->[0] if (1 == @$content);
+    return if (! defined $content);
+    return $content->[0] if ((1 == @{$content}) && ref($content->[0]));
     my $token = IF::IT->new();
-    for (@$content) {
-	$token->push($_); 
+    for (@{$content}) {
+	$token->push($_);
     }
     return $token;
 }

@@ -700,7 +700,7 @@ sub implicit_end {
 ###
 
 sub resolve {
-    my $self, $it; local $incomplete;
+    my ($self, $it); local $incomplete;
     ($self, $it, $incomplete) = @_;
 
     ## Do the right thing to an incoming token.  
@@ -711,8 +711,15 @@ sub resolve {
 
     my $dstack = $self->dstack;
     my $cstack = $self->cstack;
+
     $incomplete = 0 unless defined $incomplete;
 
+    if ($incomplete == 2) {
+	$self->push_into($it);
+	$it = $self->next_input;
+	$incomplete = 0;
+    }
+    ## === should pop input stack if $it undefined.
     ## === the ref($it) shouldn't be needed ===
     $it = $self->expand_attrs($it) unless (ref($it) || $self->quoting);
 

@@ -47,10 +47,13 @@ sub has_more_data{
     return $remaining;
     
 }
-#getdata
-$chunksize=1; #defaulttoread
+
+$chunksize=1024; #default bytes to be read in one chunk
 sub read_chunk{
     my($self,$content)=@_;
+
+    ## Get a chunk of data from an input stream.
+
     my $offset=0 unless $offset;
     my $foo;
     my $input=$self->stream;
@@ -64,9 +67,7 @@ sub read_chunk{
     print "read $bytes bytes\n" if $main::debugging;
  
     $content->push($foo);
-    
     return $bytes;
-    
 }
 
 
@@ -86,22 +87,18 @@ sub send_response{
 	return;
     }
     
-    my $string="HTTP/1.0 ";
-    $string.=$reply->code;
-    $string.=" ";
-    $string.=$reply->message;
-    $string.="\n";
+    my $string="HTTP/1.0 " . $reply->code . " " . $reply->message . "\n";
     print $string  if $main::debugging;
     my ($control, $content);
     $control=join(" ",$reply->controls)	if $reply->content_type =~ /text/;
 
     if ($control) {
 	$content = $reply->content;
-	$reply->content_length($reply->content_length + length($control));
+	$reply->content_length($reply->content_length + length($control))
+	    if $reply->content_length;
     }
     
-    print "content type ". $reply->content_type . "\n"  if $main::debugging;
-    	print $reply->headers_as_string() ."\n"  if $main::debugging;
+    print $reply->headers_as_string() ."\n"  if $main::debugging;
 ##What to do if connection dies?
     # this doesn't work...
   #  local $SIG{PIPE}=sub {$abort = 1; die 'connection closed';};
@@ -121,7 +118,7 @@ sub send_response{
 	    print {$output} $control if $control;
 	}
 	print "sent controls $control" if $control && $main::debugging;
-	##$reply->content_object->add_hook(sub { shift =~ s/<body>/$controls/i});
+##$reply->content_object->add_hook(sub { shift =~ s/\<body[^>]*\>/$controls/i});
 	print {$output} ($control? $content : $reply->content);
 	$self->close_stream;
     };
@@ -170,8 +167,11 @@ sub get_request {
 
 	$ua->proxy($request->url->scheme,$proxy) if $proxy;
     }
-    # === should really use simple_request and handle redirect with agents.
-#    my $response=$ua->request($self); 
+
+    ## Actually make the request.
+    ##	  We _must_ use simple_request and pass the results, whatever they
+    ##	  are, to the browser.  Otherwise it never finds out about redirects.
+
     my $response=$ua->simple_request($request); 
     return $response;
     

@@ -11,18 +11,18 @@ push(@ISA, DS::Thing);
 
 use IF::Run;			# The new InterForm interpretor.
 use PIA::Utilities;		# File and conversion utilities
-use PIA::Agent::Options;	# converting paths, loading files...
+#use PIA::Agent::Options;	# converting paths, loading files...
 use PIA::Agent::Machine;
 
 sub new {
     my($class, $name, $type) = @_;
     my $self = {};
-    $self->{_list} = ['name', 'type', 'criteria', ];
+    $self->{_list} = ['name', 'type', ];
     bless $self,$class;
 
-    $$self{'options'}={};	# === bogus ===
-    #$$self{'criteria'}=[];	# a list (not a hash) of name => value pairs.
-    # with no criteria initially, we don't get bogus matches.
+    ## We do not initialize $self->criteria.
+    ##   because undefined matches nothing, 
+    ##   while an empty list matches everything.
 
     $self->name($name) if defined $name;
     if (defined $type) {
@@ -105,7 +105,7 @@ sub agent_directory{
     push(@possibilities,$main::USR_DIR . "/$type/");
 
     ## It is really a bad idea to mix these with the InterForms --
-    ## 	  it leads to a potentially very bad security hole.
+    ## 	  it leads to a potentially serious security hole.
 
     push(@possibilities, "/tmp/$name/"); # default of last resort
 
@@ -180,8 +180,8 @@ sub criteria {
 
     ## Return (or set) the list of match criteria.
 
-    $$self{'criteria'} = $arg if defined $arg;
-    return $$self{'criteria'};
+    $$self{'_criteria'} = $arg if defined $arg;
+    return $$self{'_criteria'};
 }
 
 sub match_criterion {
@@ -273,92 +273,21 @@ sub respond {
 ###
 ### Options:
 ###
-###	=== Eventually option(foo) will use attr(foo) unless there's a
-###	  feature, in which case it will use that.
+###	Options are strings stored in attributes.  Options may have 
+###	corresponding features derived from them, which we compute on demand.
 
 sub option{
     my($self,$key,$value)=@_;
 
     ## Set or retrieve an option.
-    ##	  Subclasses should override this to perform magic on some options.
-    ##	  For example, expanding ~ in filenames or creating list values.
+    ##	  If a feature with the same name exists, it has to be recomputed
+    ##	  whenever we change the option.
 
-    my $options=$$self{'options'};
-    $$options{$key}=$value if defined $value;
-#    my $v = $$options{$key};    print "option($key $value) -> $v\n";
-    return $$options{$key};
-}
-
-sub options {
-    ## Return the names, but not the values, of the options.
-
-    my $self=shift;
-    return keys(%{$$self{'options'}});
-}
-
-sub options_as_html {
-    ## Return a series of form input fields for the options.
-
-    my($self)=@_;
-    my $string;
-    foreach $key ($self->options){
-	my $values=$self->option($key);
-	$string.="<input name=$key size=50 value=$values >";
-	## === size should be parameter; value should be quoted. ===
+    if (defined $value) {
+	$self->attr($key, $value);
+	$self->compute($key) if $self->has($key);
     }
-    return $string;
-}
-
-sub as_html{
-    ## Return a form element that can re-install the agent.
-    my($self)=@_;
-    my $name=$self->name;
-    my $element=$self->options_form("/agency/install_agent.if","install_$name");
-    return $element; 
-}
-
-sub max {
-    my ($x, $y)=@_;
-    return ($x >= $y)? $x : $y;
-}
-
-
-# need to add functions for multiple values and comments
-### === options_form is probably obsolete now. === ###
-sub options_form{
-    my($self, $url, $label)=@_;
-
-    ## Return a form containing the current values of the options.
-    ##	  The arguments are the destination InterForm and the label 
-    ##	  for the "submit" button.
-
-    $label ="Change Options" unless defined $label;
-    my $e;
-    my $form = IF::IT->new('form', method=>"POST", action=>$url);
-    my $t = IF::IT->new('table');
-    $form->push($t);
-    # $e = $form;
-
-    my %attributes;
-    foreach $key ($self->options()) {
-	my $values=$self->option($key);
-	$e = IF::IT->new('tr');
-	$e->push(IF::IT->new('th', 'align' => 'right', $key));
-	$e->push(IF::IT->new('td')
-		 ->push(IF::IT->new('input',
-				    'name'=>$key, 'value'=>$values,
-				    'size'=>max(30, length($values)))));
-	$e->push("\n");
-	$t->push($e);
-	$t->push(IF::IT->new('p')); # Netscape does bad things with <br>
-    }
-    $e = IF::IT->new('tr');
-    $e->push(IF::IT->new('th')
-	     ->push(IF::IT->new('input', 'type'=>'submit', 'value'=>$label)));
-    $e->push(IF::IT->new('td')->push(" "));
-    $t->push($e);
-
-    return $form;
+    return $self->attr($key);
 }
 
 sub  parse_options{
@@ -369,6 +298,53 @@ sub  parse_options{
 	print("  setting $key = ",$$hash{$key},"\n") if  $main::debugging;
 	$self->option($key,$$hash{$key});
     }
+}
+
+###############====================================################
+
+### === These really ought to be implemented using features ===
+
+$home = $ENV{'HOME'};
+sub file_attribute {
+    ## Set or retrieve a file attribute.
+    ##	  Performs ~ expansion on the filename.
+    my ($self, $key, $value) = @_;
+
+    if (defined $value) {
+	$$self{"_$key"} = $value;
+    } else {
+	$value = $$self{"_$key"};
+	if (! defined $value) {
+	    $value = $self->option($key);
+	    print "substituting $home for ~ in $value\n" if $main::verbose;
+	    $value =~ s:^\~/:$home/:;
+	    $$self{"_$key"} = $value if defined $value;
+	}
+    }
+    return $value;
+}
+
+sub dir_attribute {
+    ## Set or retrieve a directory attribute.
+    ##	  Performs ~ expansion on the filename
+    ##    Makes sure that it ends in a '/' character.
+    my ($self, $key, $value) = @_;
+
+    if (defined $value) {
+	$$self{"_$key"} = $value;
+    } else {
+	$value = $$self{"_$key"};
+	if (! defined $value) {
+	    $value = $self->option($key);
+	    if (defined $value){
+		print "substituting $home for ~ in $value\n" if $main::verbose;
+		$value =~ s:^\~/:$home/:;
+		if ($value !~ m:/$:) { $value .= '/'; }
+		$$self{"_$key"} = $value;
+	    }
+	}
+    }
+    return $value;
 }
 
 
@@ -387,6 +363,7 @@ local $path;
 local $current_self;		# old name for $agent
 local $current_request;		# old name for $request
 
+### === no longer used ===
 sub load_file {
     my ($self, $attr, $fn_attr, $default) = @_;
 
@@ -430,31 +407,10 @@ sub compile_file {
     print "  $name: error in $fn: $@\n" if $@ ne '';
     print "  $name compiled $attr from $fn\n" unless $main::quiet;
 
-    $self->attribute($attr, $subr);
+    $self->attr("_$attr", $subr);
     return 1;
 }
 
-sub require_file {
-    my ($self, $fn_attr, $default) = @_;
-
-    ## require the file whose name is in attribute $fn_attr (or $default)
-    ##	  The file is located as an interform and require'd.
-
-    my $name = $self->name;
-    my $fn;
-    $fn = $self->file_attribute($fn_attr);
-    $fn = $default unless defined $fn;
-    $fn = $self->find_interform($fn);
-
-    return unless defined $fn;
-
-    require $fn;
-
-    print "  $name loaded $attr from $fn\n" unless $main::quiet;
-
-    $self->attribute($code_attr, $code);
-    return 1;
-}
 
 
 ############################################################################
@@ -496,6 +452,8 @@ sub run_code {
 
     if (ref($code) eq 'CODE') {
 	$status = &$code($trans, $res);
+    } elsif (ref($code) =~ m'IF::') {
+	$status = IF::Run::interform_hook($self, $code, $trans, $res);
     } elsif (ref($code)) {
 	$status = $code -> $op($trans, $res);
     } else {
@@ -511,8 +469,16 @@ sub run_hook {
 
     ## Run the code attached to a hook attribute.
 
-    my $code = $self->attribute($attr);
+    my $code = $self->attr("_$attr");
     return $self->run_code($code, $trans, $res, $attr);
+}
+
+sub set_hook {
+    my ($self, $attr, $code) = @_;
+
+    ## Define a hook corresponding to an attribute
+
+    $self->attr("_$attr", $code);
 }
 
 
@@ -761,66 +727,6 @@ sub respond_to_interform_put{
 print ".if not found\n";
 return $self->respond_to_interform($request,$url);
 
-}
-
-###############====================================################
-sub attribute {
-    ## Set or retrieve a named attribute
-    my ($self, $key, $value) = @_;
-    if (defined $value) {
-	$$self{$key} = $value;
-    } else {
-	$value = $$self{$key};
-	if (! defined $value) {
-	    $value = $self->option($key);
-	    $$self{$key} = $value if defined $value;
-	}
-    }
-    return $value;
-}
-
-sub file_attribute {
-    ## Set or retrieve a file attribute.
-    ##	  Performs ~ expansion on the filename.
-    my ($self, $key, $value) = @_;
-
-    if (defined $value) {
-	$$self{$key} = $value;
-    } else {
-	$value = $$self{$key};
-	if (! defined $value) {
-	    $value = $self->option($key);
-	    my $home = $ENV{'HOME'};
-	    print "substituting $home for ~ in $value\n" if $main::verbose;
-	    $value =~ s:^\~/:$home/:;
-	    $$self{$key} = $value if defined $value;
-	}
-    }
-    return $value;
-}
-
-sub dir_attribute {
-    ## Set or retrieve a directory attribute.
-    ##	  Performs ~ expansion on the filename
-    ##    Makes sure that it ends in a '/' character.
-    my ($self, $key, $value) = @_;
-
-    if (defined $value) {
-	$$self{$key} = $value;
-    } else {
-	$value = $$self{$key};
-	if (! defined $value) {
-	    $value = $self->option($key);
-	    if (defined $value){
-		my $home = $ENV{'HOME'};
-		print "substituting $home for ~ in $value\n" if $main::verbose;
-		$value =~ s:^\~/:$home/:;
-		if ($value !~ m:/$:) { $value .= '/'; }
-		$$self{$key} = $value;
-	    }
-	}
-    }
-    return $value;
 }
 
 1;
