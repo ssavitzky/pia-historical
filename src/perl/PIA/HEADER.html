@@ -1,32 +1,39 @@
 <h1>PIA -- PERL Implementation of Agencies</h1>
 
-This directory will eventually contain PERL modules for the Agency.  Note that
-everything here is intended to be in the form of <code>.pm</code> (PERL
-Module) files.  The idea is that you use a statement like:
+This directory contains PERL modules for the Agency.  Also see:
+
+<ul>
+  <li> <a href="../IF/">../IF/</a> for InterForm-related modules
+  <li> <a href="../DS/">../DS/</a> for the fundamental data structures
+</ul>
+
+Note that everything here is in the form of <code>.pm</code> (PERL Module)
+files.  The idea is that you use a statement like:
 
 <pre>
- use PIA::Generic
+ use PIA::Agent
  ...
- $agent = PIA::Generic->new;
+ $agent = PIA::Agent-&gt;new
 </pre>
 instead of the old
 <pre>
- require pia_generic_agent.pl
+ require pia_agent.pl
  ...
- $agent = PIA_AGENT::GENERIC->new;
+ $agent = PIA_AGENT-&gt;new;
 </pre>
 
 <h2>Annotated Contents</h2>
 
 <dl>
-  <dt> 
-  <dd> 
+  <dt> <a href="Agent/">Agent/</a>
+  <dd> Directory for subclasses of PIA::Agent, and for other classes that
+       belong in the PIA::Agent namespace (e.g. PIA::Agent::Machine).
 </dl>
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Oct 17 13:11:37 1996
+Last modified: Mon Dec  2 14:45:29 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
