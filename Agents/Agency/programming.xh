@@ -1,11 +1,9 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>Programming Information</title>
-<link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<set entity name=title>Programming Information</set>
-<read interform file="heading.inc" process>
-
+<header>Programming Information</>
+<sub-head page=programming> </sub-head>
 <p>
 <hr>
 
@@ -74,15 +72,5 @@
 	  (This file gets "executed" when a new Agency agent is created)
 </ul>
 
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="file:&filePath;">&filePath;</a>
-<hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/options">options</a>
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+<footer cvsid="$Id$">
 </body></html>
