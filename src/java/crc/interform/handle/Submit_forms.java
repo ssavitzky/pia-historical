@@ -128,7 +128,7 @@ public class Submit_forms extends crc.interform.Handler {
 
   public String trimQuery(String query) {
     if (query.endsWith("&")) 
-      query = query.substring(0, query.length()-2);
+      query = query.substring(0, query.length()-1);
     return query;
   }
 }
@@ -225,6 +225,7 @@ sub timed_submission {
    
 }
 */
+
 
 
 
