@@ -299,6 +299,10 @@ is pre-loaded with a number of useful entities:<p>
   <dt> <b><a name="e-filePath">filePath</a></b>
   <dd> The complete path to the file containing the InterForm being expanded.
        This is always a complete pathname on the system running the PIA.
+  <dt> <b><a name="e-forms">forms</a></b>
+  <dd> A counter that is incremented at the end tag of every &lt;form&gt;
+       element.  Can be used for constructing a unique identifier for each
+       form in a document.
   <dt> <b><a name="e-hour">hour</a></b>
   <dd> The current hour, padded with a zero if necessary to make
        two digits.
