@@ -103,4 +103,21 @@ public class Thing implements Stuff {
   public boolean isText() {
     return false;
   }
+
+  /************************************************************************
+  ** Construction and Copying:
+  ************************************************************************/
+
+  public Thing() {
+
+  }
+
+  public Thing(Thing t) {
+    if (t.items != null) items = t.items.clone();
+    if (t.attrs != null) attrs = t.attrs.clone();
+  }
+
+  public Object clone {
+    return new Thing(this);
+  }
 }

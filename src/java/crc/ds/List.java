@@ -4,6 +4,7 @@
 package crc.ds;
 
 import java.util.Vector;
+import java.util.Enumeration;
 
 public class List implements Stuff {
 
@@ -12,19 +13,23 @@ public class List implements Stuff {
   ************************************************************************/
 
   /** The actual items. */
-  Vector items = new Vector();
-
-  /************************************************************************
-  ** Stuff interface:
-  ************************************************************************/
+  protected Vector items = new Vector();
 
   /** The list of indexed list items. 
    *	This may be the same as <code>this</code> if the Stuff is a pure 
    *	list with no attributes.
    */
-  public Stuff content() {
+  public List itemList() {
     return this;
   }
+
+  public Enumeration elements() {
+    return items.elements();
+  }
+
+  /************************************************************************
+  ** Stuff interface:
+  ************************************************************************/
 
   /** The number of indexed items. */
   public int nItems() {
@@ -40,7 +45,8 @@ public class List implements Stuff {
   /** Replace an individual item <em>i</em> with value <em>v</em>. */
   public Stuff at(int i, Object v) {
     if (i > items.size()) {
-      // === not clear what to do here ===
+      // === not clear what to do here.  Throw an exception for now. ===
+      items.setElementAt(v, i);
     } else if (i == items.size()) {
       items.addElement(v);
     } else {
@@ -49,6 +55,27 @@ public class List implements Stuff {
     return this;
   }
 
+  /** Return the index of the first occurrance of a value equal to a
+   *  given object.  Returns -1 if not found. */
+  public int indexOf(Object o) {
+    Object it;
+    for (int i = 0; i < nItems(); ++i) {
+      it = items.elementAt(i);
+      if (o == it || (o != null && o.equals(it))) return i;
+    } 
+    return -1;
+  }
+
+  /** Return the index of the last occurrance of a value equal to a
+   *  given object.  Returns -1 if not found. */
+  public int lastIndexOf(Object o) {
+    Object it;
+    for (int i = nItems() - 1; i >= 0; --i) {
+      it = items.elementAt(i);
+      if (o == it || (o != null && o.equals(it))) return i;
+    } 
+    return -1;
+  }
 
   /** Remove and return the last item. */
   public Object pop() {
@@ -94,7 +121,7 @@ public class List implements Stuff {
   }
 
   /** Return an array of all the attribute keys. */
-  public String[] keyList() {
+  public List keyList() {
     return null;
   }
 
@@ -124,4 +151,41 @@ public class List implements Stuff {
     return false;
   }
 
+  /************************************************************************
+  ** additional operations:
+  ************************************************************************/
+
+  public void clear() {
+    items.removeAllElements();
+  }
+    
+  /************************************************************************
+  ** Construction and copying:
+  ************************************************************************/
+
+  public List() {
+  }
+
+  public List(List l) {
+    for (int i = 0; i < l.nItems(); ++i) push(l.at(i));
+  }
+
+  public List(Enumeration e) {
+    append(e);
+  }
+
+  public Object clone() {
+    return new List(this);
+  }
+
+  public void append(List l) {
+    for (int i = 0; i < l.nItems(); ++i) push(l.at(i));
+  }
+
+  public void append(Enumeration e) {
+    while (e.hasMoreElements()) push(e.nextElement());
+  }
+
 }
+
+

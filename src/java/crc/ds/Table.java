@@ -3,19 +3,10 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.ds;
 
-public class Table extends java.util.Hashtable implements Stuff {
+import java.util.Hashtable;
+import java.util.Enumeration;
 
-  /************************************************************************
-  ** Constructors:
-  ************************************************************************/
-
-  public Table() {
-    super();
-  }
-
-  public Table(int initialCapacity) {
-    super(initialCapacity);
-  }
+public class Table extends Hashtable implements Stuff {
 
   /************************************************************************
   ** Stuff interface:
@@ -66,6 +57,8 @@ public class Table extends java.util.Hashtable implements Stuff {
 
   /** Add or replace an attribute */
   public Stuff at(String a, Object v) {
+    if (a == null || v == null) 
+      System.err.println("Table: attempting to put a="+a+", v="+v);
     put(a, v);
     return this;
   }
@@ -76,9 +69,8 @@ public class Table extends java.util.Hashtable implements Stuff {
   }
 
   /** Return an array of all the attribute keys. */
-  public String[] keyList() {
-    // ===
-    return null;
+  public List keyList() {
+    return new List(keys());
   }
 
 
@@ -101,6 +93,78 @@ public class Table extends java.util.Hashtable implements Stuff {
    * 	singleton list containing a String. */
   public boolean isText() {
     return false;
+  }
+
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public Table() {
+    super();
+  }
+
+  public Table(int initialCapacity) {
+    super(initialCapacity);
+  }
+
+  public Table(Table t) {
+    this(t.size());
+    append(t);
+  }
+
+  public Table(List l) {
+    this(l.nItems());
+    append(l);
+  }
+
+  public Table(Enumeration e) {
+    this();
+    append(e);
+  }
+
+  /************************************************************************
+  ** Copying:
+  ************************************************************************/
+
+  public Object clone() {
+    return new Table(this);
+  }
+
+  /** Append a table */
+  public void append(Table t) {
+    Enumeration e = t.keys();
+
+    while (e.hasMoreElements()) {
+      Object k = e.nextElement();
+      put(k, t.get(k));
+    }
+  }
+
+  /** Append a List. */
+  public void append(List l) {
+    append(l.elements());
+  }
+
+  /** Append an Enumeration. */
+  public void append(Enumeration e) {
+    while (e.hasMoreElements()) {
+      Object v = e.nextElement();
+      put(v.toString(), v);
+    }
+  }
+
+  /** Append key, value pairs from an enumeration. */
+  public void appendPairs(Enumeration e) {
+    while (e.hasMoreElements()) {
+      Object k = e.nextElement();
+      Object v = e.nextElement();
+      put(k.toString(), v);
+    }
+  }
+
+  public void appendPairs(List l) {
+    appendPairs(l.elements());
   }
 
 }

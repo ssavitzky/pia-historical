@@ -20,7 +20,7 @@ package crc.ds;
  *	out-of-bounds conditions, Stuff will either do nothing or return a
  *	null value (like PERL).  
  */
-public interface Stuff {
+public interface Stuff extends java.lang.Cloneable {
   /** The number of indexed items. */
   int nItems();
 
@@ -53,9 +53,8 @@ public interface Stuff {
   /** Add or replace an attribute */
   Stuff at(String a, Object v);
 
-  /** Return an array of all the attribute keys. */
-  String[] keyList();
-
+  /** Return a List of all the attribute keys. */
+  List keyList();
 
   /** Return true if the Stuff is a pure hash table, with no items. */
   boolean isTable();
