@@ -1,4 +1,4 @@
-// GetAgent.java
+// Agent.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
