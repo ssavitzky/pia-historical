@@ -40,8 +40,8 @@ public class T_Node{
   * 
   */ 
   private static void test1(String foo){
-    Report.debugToFile( true );
-    Report.setDebugFilePath("logfile");
+    //Report.debugToFile( true );
+    //Report.setDebugFilePath("logfile");
     Report.debug("Hello world");
 
     NodeEnumerator ne = null;
@@ -128,7 +128,7 @@ public class T_Node{
     try{
       attr = (Attribute)l.item( i );
       while( attr != null ){
-	Report.debug( "<" + attr.getName()+"/>" );
+	Report.debug( "</" + attr.getName()+">" );
 	attr = (Attribute)l.item( ++i );
       }
     }catch(NoSuchNodeException ee){
@@ -157,8 +157,8 @@ public class T_Node{
   * 
   */ 
   private static void test2( String foobar ){
-    Report.debugToFile( true );
-    Report.setDebugFilePath("logfile");
+    //Report.debugToFile( true );
+    //Report.setDebugFilePath("logfile");
 
     NodeEnumerator ne = null;
 
@@ -200,7 +200,7 @@ public class T_Node{
       be.removeChild( t2 );
       printChildNodeList( ne );
       Report.debug("End of test...");
-      Report.closeTraceFile();
+      //Report.closeTraceFile();
 
     }catch(NotMyChildException e){
       Report.debug(e.toString());
