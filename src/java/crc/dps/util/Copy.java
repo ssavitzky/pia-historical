@@ -40,9 +40,10 @@ public class Copy {
    * === It should be possible to do this non-recursively by keeping track
    * === of depth.  Note that we're using the Input's stack for state.
    */
-  public static void copyNode(Node n, Input in, Output out) {
+  public static final void copyNode(Node n, Input in, Output out) {
     if (n == null) n = in.getNode();
-    if (in.hasChildren()) {
+    if (in.hasChildren() && ! n.hasChildren()) {
+      // Copy recursively only if the node hasn't been fully parsed yet.
       out.startNode(n);
       copyChildren(in, out);
       out.endNode();
@@ -57,7 +58,7 @@ public class Copy {
    * === It should be possible to do this non-recursively by keeping track
    * === of depth.  Note that we're using the Input's stack for state.
    */
-  public static void copyChildren(Input in, Output out) {
+  public static final void copyChildren(Input in, Output out) {
     for (Node n = in.toFirstChild(); n != null; n = in.toNextSibling()) {
       copyNode(n, in, out);
     }
