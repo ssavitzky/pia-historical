@@ -585,8 +585,8 @@ public class FormContent extends Properties implements Content{
   private static void printusage(){
     System.out.println("Needs to know what kind of test");
     System.out.println("For test 1, here is the command --> java crc.pia.FormContent -1 postno1line.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.FormContent -2 post.txt");
-    System.out.println("For test 3, here is the command --> java crc.pia.FormContent -3 post.txt");
+    System.out.println("For test 2, here is the command --> java crc.pia.FormContent -2 postno1line.txt");
+    System.out.println("For test 3, here is the command --> java crc.pia.FormContent -3 postbody.txt");
   }
 
 
@@ -690,6 +690,8 @@ public class FormContent extends Properties implements Content{
  
 
 }
+
+
 
 
 
