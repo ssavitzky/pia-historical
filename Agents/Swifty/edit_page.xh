@@ -1,0 +1,57 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+<html><head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<title>Home Page Editor</title>
+<a name="Swifty Edit"></a>
+<header>
+</head>
+
+<!-- Process form variables -->
+
+<if><get name="FORM:submission"> <then>
+
+	<if>&FORM:fullname;<then>
+		<set name="AGENT:fname">&FORM:fullname;</set>
+	</if>
+
+	<!-- Process links selections -->
+
+	<set name=AGENT:links>
+		<appendlink>
+	</set>
+
+	<!-- Connect to Yahoo news -->
+
+	<set name=AGENT:ynews>
+		<connectto url="http://www.yahoo.com" link=News></connectto>
+	</set>
+</if>
+
+<form action="/Swifty/edit_page" method="POST">
+
+<h1> Edit Your Home Page</h1>
+Enter a new or different name for your home page title, or select
+different links.
+<p>
+Enter the name that will appear in the title of your home page.
+<p>
+<b>Title name:</b> <input name="fullname" value="&AGENT:fname;">
+<p>
+<HR>
+<p>
+<h2> Select Links for Home Page </h2>
+
+<input type="checkbox" name="wea" value="Weather">Weather
+<input type="checkbox" name="sjmn" value="San Jose Mercury News">San Jose Mercury News
+<input type="checkbox" name="yah" value="Yahoo">Yahoo
+<input type="checkbox" name="dej" value="DejaNews">DejaNews
+<input type="checkbox" name="his" value="History">History
+<p>
+<HR>
+
+<input type="submit" name="submission" value="Submit"> 
+<input type="reset" value="Reset"> 
+</form> 
+<footer>
+</body></html>

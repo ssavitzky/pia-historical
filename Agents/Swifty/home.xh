@@ -1,0 +1,70 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0"><HTML>
+<html><head>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<title>Prototype Home Page</title>
+<a name="Swifty Home"></a>
+<header>
+</head>
+
+<form action="/Swifty/edit_page" method="POST">
+
+<!-- =================================================================== -->
+<!-- Put in a default name in the heading
+<!-- =================================================================== -->
+
+<h1><font color="#FF0000"> Home Page for &AGENT:fname; </font></h1>
+
+<!-- =================================================================== -->
+<!-- Use a table to layout an image column and a links column
+<!-- =================================================================== -->
+
+<TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="66%" HEIGHT="33%" NOSAVE >
+<TR>
+<!-- Add column headers -->
+<TD><b><u><font size=+2>Photo Album</font></u></b></TD>
+<TD><b><u><font size=+2>Daily Distractions</font></u></b></TD>
+</TR>
+
+<!-- Add an image for some decoration -->
+<TR>
+<TD><IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100></TD>
+
+<!-- =================================================================== -->
+<!-- Display links, if there are any
+<!-- =================================================================== -->
+<TD>
+	&AGENT:links;
+</TD>
+</TR>
+
+<TR>
+<!-- Add column headers -->
+<TD> </TD>
+<TD><b><u><font size=+2>Yahoo News</font></u></b></TD>
+</TR>
+
+<TR>
+<TD> <!  Blank cell>
+
+<!-- =================================================================== -->
+<!-- Display results of connection to Yahoo
+<!-- =================================================================== -->
+<TD>
+	&AGENT:ynews;
+</TD>
+</TR>
+
+</TABLE>
+<p>
+<hr>
+<p>
+<!-- =================================================================== -->
+<!-- Add an edit button
+<!-- =================================================================== -->
+
+<input type="submit" value="Edit"> 
+</form>
+<footer>
+
+</BODY>
+</HTML>
