@@ -11,7 +11,7 @@ import crc.dom.Element;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.tagset.TagsetProcessor;
 import crc.dps.handle.Loader;
 

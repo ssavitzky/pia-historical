@@ -4,7 +4,7 @@
 
 package crc.dps.output;
 
-import crc.dps.aux.CurrentActive;
+import crc.dps.util.CurrentActive;
 import crc.dps.*;
 import crc.dom.*;
 

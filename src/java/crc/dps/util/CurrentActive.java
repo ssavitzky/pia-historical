@@ -2,7 +2,7 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
-package crc.dps.aux;
+package crc.dps.util;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
@@ -11,7 +11,7 @@ import crc.dom.Attribute;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 /**
  * The base class for objects with a current node in a parse tree.

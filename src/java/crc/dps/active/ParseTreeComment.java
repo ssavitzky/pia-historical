@@ -12,7 +12,7 @@ import crc.dom.BasicComment;
 import crc.dom.Comment;
 
 import crc.dps.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 /**
  * An implementation of the ActiveComment interface, suitable for use in 

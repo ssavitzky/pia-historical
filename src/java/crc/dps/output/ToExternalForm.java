@@ -8,7 +8,7 @@ import crc.dom.*;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 
 import java.util.NoSuchElementException;
 

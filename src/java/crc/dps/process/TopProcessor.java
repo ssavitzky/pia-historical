@@ -22,7 +22,7 @@ import java.net.MalformedURLException;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dom.NodeList;
 
 import crc.ds.List;

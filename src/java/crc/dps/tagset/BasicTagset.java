@@ -22,7 +22,7 @@ import crc.dps.EntityTable;
 import crc.dps.Namespace;
 
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.handle.*;
 
 import crc.util.NameUtils;

@@ -103,7 +103,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   }
 
   public boolean hasTrueAttribute(String name) {
-    return crc.dps.aux.Test.trueValue(getAttribute(name));
+    return crc.dps.util.Test.trueValue(getAttribute(name));
   }
 
   public void setAttributeValue(String name, NodeList value) {

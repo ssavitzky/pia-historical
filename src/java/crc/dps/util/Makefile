@@ -2,7 +2,7 @@
 # 	$Id$
 #	Copyright 1997, Ricoh California Research Center
 
-PACKAGE=crc.dps.aux
+PACKAGE=crc.dps.util
 TOPDIR=../../..
 
 FILES = $(CLASSES) $(UTILITIES)

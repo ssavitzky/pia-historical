@@ -11,7 +11,7 @@ import crc.dps.NodeType;
 import crc.dps.Parser;
 import crc.dps.Syntax;
 import crc.dps.active.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;

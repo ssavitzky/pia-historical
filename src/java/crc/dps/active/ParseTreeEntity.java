@@ -12,7 +12,7 @@ import crc.dom.BasicNamedNode;
 import crc.dom.Entity;
 
 import crc.dps.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 /**
  * An implementation of the ActiveEntity interface, suitable for use in 

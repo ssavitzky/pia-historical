@@ -32,7 +32,7 @@ public class Text extends crc.interform.Handler {
   public boolean action(crc.dps.Context aContext, crc.dps.Output out,
 			String tag, crc.dps.active.ActiveAttrList atts,
 			crc.dom.NodeList content, String cstring) {
-    crc.dps.aux.Copy.copyNodes(content, new crc.dps.output.FilterText(out));
+    crc.dps.util.Copy.copyNodes(content, new crc.dps.output.FilterText(out));
     return true;
   }
 }

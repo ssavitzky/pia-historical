@@ -23,7 +23,7 @@ import java.util.Enumeration;
  *
  * @see crc.dom.Entity
  * @see crc.dps.active.ActiveEntity
- * @see crc.dps.aux.BasicEntityTable
+ * @see crc.dps.util.BasicEntityTable
  */
 
 public interface EntityTable extends Namespace {

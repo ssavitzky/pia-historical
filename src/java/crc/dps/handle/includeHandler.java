@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.input.FromParseNodes;
 
 /**

@@ -12,7 +12,7 @@ import crc.dom.Entity;
 import crc.dom.Text;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.active.*;
 import crc.dps.output.ToNodeList;
 

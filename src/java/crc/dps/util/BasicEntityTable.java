@@ -1,7 +1,7 @@
 ////// BasicEntityTable.java: Node Handler Lookup Table
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
-package crc.dps.aux;
+package crc.dps.util;
 
 import crc.dom.Node;
 import crc.dom.NodeList;

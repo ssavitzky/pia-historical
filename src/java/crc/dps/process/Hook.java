@@ -14,7 +14,7 @@ import java.io.PrintStream;
 import java.net.URL;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dom.NodeList;
 import crc.ds.List;
 

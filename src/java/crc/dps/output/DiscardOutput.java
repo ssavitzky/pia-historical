@@ -6,7 +6,7 @@ package crc.dps.output;
 
 import crc.dom.*;
 import crc.dps.*;
-import crc.dps.aux.Log;
+import crc.dps.util.Log;
 
 import java.io.PrintStream;
 

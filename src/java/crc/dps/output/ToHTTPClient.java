@@ -5,7 +5,7 @@
 package crc.dps.output;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dom.*;
 
 import crc.pia.Headers;

@@ -9,7 +9,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 import crc.ds.Table;
 

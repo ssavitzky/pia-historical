@@ -9,7 +9,7 @@ import crc.dom.Element;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 
 /**
  * Generic implementation for an Element Handler. <p>

@@ -2,7 +2,7 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
-package crc.dps.aux;
+package crc.dps.util;
 
 import crc.dom.Node;
 import crc.dom.Element;
@@ -25,8 +25,8 @@ import crc.dps.*;
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
- * @see crc.dps.aux.Expand
- * @see crc.dps.aux.Process
+ * @see crc.dps.util.Expand
+ * @see crc.dps.util.Process
  */
 
 public class Copy {

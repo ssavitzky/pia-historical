@@ -12,7 +12,7 @@ import crc.dom.BasicPI;
 import crc.dom.PI;
 
 import crc.dps.*;
-import crc.dps.aux.Copy;
+import crc.dps.util.Copy;
 
 /**
  * An implementation of the ActivePI interface, suitable for use in 

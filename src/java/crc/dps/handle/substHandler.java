@@ -12,7 +12,7 @@ import crc.dom.AttributeList;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 
 import crc.gnu.regexp.RegExp;
 

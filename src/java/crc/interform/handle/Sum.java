@@ -12,7 +12,7 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-import crc.dps.aux.MathUtil;
+import crc.dps.util.MathUtil;
 import java.util.Enumeration;
 import crc.ds.Association;
 

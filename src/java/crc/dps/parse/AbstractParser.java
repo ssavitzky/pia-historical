@@ -24,7 +24,7 @@ import crc.dps.Handler;
 import crc.dps.NodeType;
 import crc.dps.EntityTable;
 
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.active.*;
 
 /**

@@ -11,7 +11,7 @@ import crc.dom.Element;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 
 /**
  * Wrapper for legacy handlers from <code>crc.interform.handle</code>.

@@ -9,7 +9,7 @@ import crc.dom.Element;
 import crc.dom.Attribute;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.active.*;
 
 

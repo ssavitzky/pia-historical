@@ -5,7 +5,7 @@
 package crc.dps.input;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.dps.active.*;
 
 import crc.dom.Node;

@@ -158,7 +158,7 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
    *	as a boolean
    */
   public boolean hasTrueAttribute(String name) {
-    return crc.dps.aux.Test.trueValue(getAttribute(name));
+    return crc.dps.util.Test.trueValue(getAttribute(name));
   }
 
   public void setAttributeValue(String aname, NodeList value) {

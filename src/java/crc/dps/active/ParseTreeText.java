@@ -17,7 +17,7 @@ import crc.dom.Comment;
 import crc.dom.PI;
 
 import crc.dps.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 
 /**
  * An implementation of the ActiveText interface, suitable for use in 

@@ -17,7 +17,7 @@ import crc.ds.Association;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.aux.*;
+import crc.dps.util.*;
 import crc.util.*;
 
 import java.util.Enumeration;
