@@ -7,8 +7,9 @@
 <!-- read process quiet interform file=tagset.inc -->
 <tagset-load name=Form-agent-actors>
 <read process interform file=tagset.inc>
-<!-- create-route-cache -->
 
+ <load-data data=authlist>
+<create-route-cache>
 
 Make sure that everyone has a cache entry.
 <repeat list=&AGENT.users.keys;>
@@ -18,7 +19,7 @@ Make sure that everyone has a cache entry.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Aug 11 08:52:13 1998
+Last modified: Wed Aug 12 12:58:23 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

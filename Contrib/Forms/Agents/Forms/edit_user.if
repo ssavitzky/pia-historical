@@ -56,7 +56,7 @@
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
 <TR> <TD>Manager:<TD><select name=manager><option><manager user=&uid></option>
  <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat> </select >
-  <TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
+  <TR> <TD>Phone:<TD><input name="userext" size="7" value=&u.userext.Text;>
 </table>
 
 
@@ -115,6 +115,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Sun Aug  9 14:37:17 1998
+Last modified: Wed Aug 12 12:07:16 1998
 <!-- hhmts end -->
 </body></html>
