@@ -10,5 +10,7 @@ public interface TernFunc
    * @param object The object to process.
    * @return The result of processing the input Object.
    */
-  Object execute( Object object, Object object, Object object );
+  Object execute( Object object1, Object object2, Object object3 );
   }
+
+
