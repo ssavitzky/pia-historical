@@ -32,7 +32,7 @@ return $element;
 </code>
 <table><tr>
 <td>
-<form action="/&agentName;/print.if" method=post>
+<form action="http://&piaHOST;:&piaPORT;/&agentName;/print.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
 <input name="spoolfile" value="&AGENT.last_ps_file;" type=hidden>
 <input type="SUBMIT" value="Print">

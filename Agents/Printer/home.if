@@ -30,7 +30,7 @@
     <a href="/&agentName;/preview.if">Print Preview</a><br>
 </then></if>
 <TR><th rowspan=3 valign=center>
-      <a href="http://www.ricohcorp.com/ddshow.html">  <img src="/&agentName;/rprinter.jpg" width=144 border=0></a> 
+      <a href="http://www.ricohcorp.com/ccopysub.htm">  <img src="/&agentName;/rprinter.jpg" width=144 border=0></a> 
     <TD align=right><td><!-- move td to after the icon to get the -->
                         <!-- icons lined up to the left of the PIA -->
         <a href="/&agentName;/mkbook.if">
@@ -65,6 +65,6 @@
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 13:19:38 1997
+Last modified: Tue Jun 10 00:43:17 1997
 <!-- hhmts end -->
 </body></html>

@@ -15,7 +15,7 @@
 <set agent hook name="_act_on"><protect>
 <trans-control>
 <set entity name=myprinter>http://&piaHOST;:&piaPORT;/&agentName;</set>
-<a href="&myprinter;/printer.if?URL=&url;"><img src="&myprinter;/printer.gif" width=27 height=27 alt="PrintPage"></a>
+<a href="&myprinter;/print.if?URL=&url;"><img src="&myprinter;/printer.gif" width=27 height=27 alt="PrintPage"></a>
 <a href="&myprinter;/preview.if?URL=&url;"><img src="&myprinter;/preview.gif" width=27 height=27 alt="PreviewPage"></a>
 <a href="&myprinter;/mkbook.if"><img src="&myprinter;/bookmark.gif" width=30 height=27 alt="MakeBook"></a>
 <a href="&myprinter;/home.if"><img src="http://&piaHOST;:&piaPORT;/Agency/Icons/pia20.gif" width=40 height=27 alt="&agentName;Home"></a>
