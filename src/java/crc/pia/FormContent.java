@@ -26,7 +26,8 @@ import crc.util.Utilities;
 
 import crc.pia.Headers;
 import crc.pia.HttpBuffer;
-
+import crc.ds.Table;
+import crc.ds.List;
 
 public class FormContent extends Properties implements Content{
   // conditions to notify agents
@@ -240,8 +241,10 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, 0, buffer.length );
       else{
-	int hlen = headers.contentLength();
-	if( hlen == totalRead ) return -1;
+	if( headers != null ){
+	  int hlen = headers.contentLength();
+	  if( hlen == totalRead ) return -1;
+	}
 
 	len = body.read( buffer );
 	if( len != -1 )
@@ -283,8 +286,10 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, offset, buffer.length );
       else{
-	int hlen = headers.contentLength();
-	if( hlen == totalRead ) return -1;
+	if( headers != null ){
+	  int hlen = headers.contentLength();
+	  if( hlen == totalRead ) return -1;
+	}
 
 	len = body.read( buffer, offset, length );
 	if( len != -1 )
@@ -323,6 +328,13 @@ public class FormContent extends Properties implements Content{
     source( in );
   }
 
+  public FormContent(String s){
+    Pia.instance().debug( this, "string constructor..." + s );
+    if( s != null ){
+      setParameters(s);
+    }
+  }
+
 
   /**
    * Return a copy of this content's data as bytes.
@@ -332,6 +344,11 @@ public class FormContent extends Properties implements Content{
 
     int bytesRead;
     HttpBuffer data = new HttpBuffer(); 
+
+    if ( headers == null ){
+      byte[] bytes = suckFromSource();
+      return bytes;
+    }
 
     int len = headers.contentLength();
 
@@ -356,6 +373,39 @@ public class FormContent extends Properties implements Content{
     return null;
   }
 
+  private byte[] suckFromSource(){
+    int bytesRead;
+    int len = 1024;
+    HttpBuffer data = new HttpBuffer();
+
+    Pia.instance().debug(this, "sucking from source is processing...");
+
+    try{
+
+      byte[]buffer = new byte[ len ];
+      for(;;){
+	bytesRead = read( buffer, 0, len );
+
+	if(bytesRead == -1) break;
+
+	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
+	Pia.instance().debug(this, new String(buffer,0,0,bytesRead));
+
+
+	data.append( buffer, 0, bytesRead );
+      }
+
+      Pia.instance().debug(this, "data length is: " + Integer.toString( data.length() ) );
+      if( data.length() == 0 ){
+	return null;
+      }
+
+      return data.getByteCopy();
+      
+    }catch(IOException e){
+    }
+    return null;
+  }
 
   /**
    * Return this content's data as a string.
@@ -366,6 +416,12 @@ public class FormContent extends Properties implements Content{
     int bytesRead;
     HttpBuffer data = new HttpBuffer();
 
+    if ( headers == null ){
+      byte[] bytes = suckFromSource();
+      String zdata = new String ( bytes,0,0, bytes.length);
+      return zdata;
+    }
+      
     int hlen = headers.contentLength();
 
     int len = hlen;
@@ -379,11 +435,13 @@ public class FormContent extends Properties implements Content{
       byte[]buffer = new byte[ len ];
       for(; len > 0;){
 	bytesRead = read( buffer, 0, len );
-	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
-	Pia.instance().debug(this, new String(buffer,0,0,buffer.length));
+
 	if(bytesRead == -1) break;
 
 	len -= bytesRead;
+
+	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
+	Pia.instance().debug(this, new String(buffer,0,0,buffer.length));
 
 	data.append( buffer, 0, bytesRead );
       }
@@ -415,16 +473,24 @@ public class FormContent extends Properties implements Content{
 
     Pia.instance().debug(this, "processing...");
     if( toSplit != null ){
-      tokens = new StringTokenizer(toSplit,"&");
+      String urldecodeStr = Utilities.unescape( toSplit );
+
+      tokens = new StringTokenizer( urldecodeStr,"&" );
+
       queryString = toSplit;
     }
     else{
       String zcontent = toString();
-      Pia.instance().debug(this, "the content is :"+zcontent);
+
+      Pia.instance().debug(this, "the content is below:");
+      Pia.instance().debug(this, zcontent);
       if( zcontent == null ) return;
 
       queryString  = zcontent;
-      tokens = new StringTokenizer(zcontent,"&");
+
+      String urldecodeStr = Utilities.unescape( zcontent );
+
+      tokens = new StringTokenizer(urldecodeStr,"&");
 
     }
     if(tokens==null) return;
@@ -459,13 +525,13 @@ public class FormContent extends Properties implements Content{
    * Return parameter key words in the original order.
    * @return parameter key words in the original order
    */
-  public String[]paramKeys(){
+  public List paramKeys(){
     int size =0;
     if ( (size=paramKeys.size()) > 0){
-      String[] p = new String[size];
+      List list = new List();
       for(int i=0; i < size; i++)
-	p[i] = (String)paramKeys.elementAt(i);
-      return p;
+	list.push( paramKeys.elementAt(i) );
+      return list;
     }else
       return null;
   }
@@ -476,6 +542,11 @@ public class FormContent extends Properties implements Content{
    */
   public String queryString(){
     Pia.instance().debug(this , "queryString" );
+    // Thus, someone must have called setParameters(...) on HTTPRequest
+    return queryString;
+
+    
+    /*
     if( queryString != null )
       return queryString;
     else {
@@ -483,6 +554,16 @@ public class FormContent extends Properties implements Content{
       setParameters( null );
       return queryString;
     }
+    */
+  }
+
+  /**
+   *
+   */
+  public Table getParameters(){
+    Enumeration e = propertyNames();
+    Table zTable = new Table( e );
+    return zTable;
   }
 
   /**
@@ -505,6 +586,7 @@ public class FormContent extends Properties implements Content{
     System.out.println("Needs to know what kind of test");
     System.out.println("For test 1, here is the command --> java crc.pia.FormContent -1 postno1line.txt");
     System.out.println("For test 2, here is the command --> java crc.pia.FormContent -2 post.txt");
+    System.out.println("For test 3, here is the command --> java crc.pia.FormContent -3 post.txt");
   }
 
 
@@ -520,6 +602,8 @@ public class FormContent extends Properties implements Content{
 	test1( args[1] );
       else if( args[0].equals ("-2") && args[1] != null )
 	test2( args[1] );
+      else if( args[0].equals ("-3") && args[1] != null )
+	test3( args[1] );
       else{
 	printusage();
 	System.exit( 1 );
@@ -552,6 +636,8 @@ public class FormContent extends Properties implements Content{
     }
     System.exit( 0 );
   }
+
+
  
   /**
   * For testing.
@@ -584,7 +670,24 @@ public class FormContent extends Properties implements Content{
   }
  
   
+ /**
+  * For testing.
+  * 
+  */ 
+  private static void test3(String filename){
 
+    try{
+      String s = Utilities.readStringFrom( filename );
+      
+      FormContent c = new FormContent( s );
+      c.printParametersOn( System.out );
+    }catch(Exception e ){
+      System.out.println( e.toString() );
+    }
+    System.exit( 0 );
+  }
+ 
+ 
 
 }
 
