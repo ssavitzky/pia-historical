@@ -5,10 +5,9 @@
 package crc.pia;
 
 import java.io.File;
-import crc.pia.PiaProperties;
 import crc.pia.PiaInitException;
 import crc.pia.Machine;
-//import crc.pia.Agency;
+import crc.pia.agent.Agency;
 import crc.pia.Resolver;
 import crc.pia.Logger;
 
@@ -56,11 +55,6 @@ public class Pia{
   public static final String PIA_HOST = "crc.pia.host";
 
   /**
-   * Name of pia lib directory
-   */
-  public static final String PIA_LIB = "crc.pia.lib";
-
-  /**
    * Name of user's agent directory
    */
   public static final String PIA_USR_ROOT = "crc.pia.usrroot";
@@ -81,7 +75,6 @@ public class Pia{
   public static final String PIA_LOGGER = "crc.pia.logger";
 
 
-  private String  identifier  = null;
   private String  docurl      = null;
   private Logger  logger      = null;
   private Logger  loggerClassName = null;
@@ -89,9 +82,6 @@ public class Pia{
   
   private String  rootStr    = null;
   private String  rootDir    = null;
-  
-  private String  piaLibStr  = null;
-  private String  piaLibDir  = null;
   
   private String  piaUsrRootStr = null;
   private String  piaUsrRootDir = null;
@@ -105,8 +95,7 @@ public class Pia{
   
 
   private HashTable proxies           = new HashTable();
-  private String[]  noProxies=        = null;
-  private PiaProperties properties    = null;
+  private String[]  noProxies        = null;
 
   private String piaAgentsStr    = null;
   private String piaAgentsDir    = null;
@@ -150,13 +139,6 @@ public class Pia{
   }
 
   /**
-   * @return this agency identifier
-   */
-  public String getIdentifier(){
-    return identifier;
-  } 
-
-  /**
    * @return the URL for the documentation
    */
   public String getDocUrl(){
@@ -175,20 +157,6 @@ public class Pia{
    */
   public File getRootDir(){
     return rootDir;
-  }  
-
-  /**
-   * @return the library directory -- i.e /pia/src/lib
-   */
-  public String getLib(){
-    return piaLibStr;
-  }  
-
-  /**
-   * @return the library directory -- i.e /pia/src/lib
-   */
-  public File getLibDir(){
-    return piaLibDir;
   }  
 
   /**
@@ -277,14 +245,6 @@ public class Pia{
    */
   public String[] getNoProxies(){
     return noProxies;
-  } 
-
-
-  /**
-   * @return this agency's properties
-   */
-  public PiaProperties getProperties(){
-    return properties;
   } 
 
 
@@ -406,10 +366,9 @@ public class Pia{
 
 	o.println("usage: PIA [OPTIONS]") ;
 	o.println("-port <8001>          : listen on the given port number.");
-	o.println("-id   <id>            : agency identifier.");
-	o.println("-root <pia dir : (.:~/pia:/pia1/pia)>    : pia directory.");
-	o.println("-u    <~/.PIA>        : user directory.") ;
-	o.println("-p    <~/.PIA/agency.props>       : property file to read.");
+	o.println("-root <pia dir : /pia>: pia directory.");
+	o.println("-u    <~/Agent>       : user directory.") ;
+	o.println("-p    </pia/Bin/agency.props>       : property file to read.");
 	o.println("-d                    : turns debugging on.") ;
 	o.println("-v                    : print pia properties.");
 	o.println("?                     : print this help.");
@@ -420,7 +379,6 @@ public class Pia{
 	PrintStream o = System.out ;
 
 	o.println(rootStr         + " (parent of src, lib, Agents)\n");
-	o.println(piaLibStr       + " (agency libraries)\n");
 	o.println(piaAgentsStr + " (agent interforms)\n");
 	o.println(piaUsrRootStr   + " (user directory)\n");
 	o.println(piaUsrAgentsStr + " (user interforms)\n");
@@ -457,7 +415,7 @@ public class Pia{
     // get from properties its value
     // push k,v to proxies
 
-    Enumeration e properties.propertyNames();
+    Enumeration e =  properties.propertyNames();
     while( e.hasMoreElements() ){
       try{
 	String keyEntry = (String) e.nextElement();
@@ -468,7 +426,7 @@ public class Pia{
       }catch( NoSuchElementException e ){
       }
     }
-    String noproxies = properties.getString(this, PIA_NO_PROXIES, null);
+    String noproxies = properties.getProperty(this, PIA_NO_PROXIES, null);
     if( noproxies != null ){
       StringTokenizer parser = new StringTokenizer(noproxies, ",");
       try{
@@ -497,14 +455,13 @@ public class Pia{
     }
 
 
-    verbose         = properties.getString(this, PIA_VERBOSE, verbose);
-    debug           = properties.getString(this, PIA_DEBUG, debug);
-    rootStr         = properties.getString(this, PIA_ROOT, null);
-    piaLibStr       = properties.getString(this, PIA_LIB, null);
-    piaUsrRootStr   = properties.getString(this, PIA_USR_ROOT, null);
-    host            = properties.getString(this, PIA_HOST, thisHost);
-    port            = properties.getString(this, PIA_PORT, port);
-    loggerClassName = properties.getString(this, PIA_LOGGER, null);
+    verbose         = properties.getProperty(PIA_VERBOSE, verbose);
+    debug           = properties.getProperty(PIA_DEBUG, debug);
+    rootStr         = properties.getProperty(PIA_ROOT, null);
+    piaUsrRootStr   = properties.getProperty(PIA_USR_ROOT, null);
+    host            = properties.getProperty(PIA_HOST, thisHost);
+    port            = properties.getProperty(PIA_PORT, port);
+    loggerClassName = properties.getProperty(PIA_LOGGER, null);
 
     // i. e. agency.crc.pia.proxy_http=foobar 
     // get keys from properties
@@ -513,11 +470,12 @@ public class Pia{
     // get from properties its value
     // push k,v to proxies
 
-    initializeProxies()
+    initializeProxies();
 
     // file separator
     String filesep = System.getProperty("file.separator");
     String home    = System.getProperty("user.home");
+    String userName    = System.getProperty("user.name");
 
     if( host == null ){
       throw new PiaInitException(this.getClass().getName()
@@ -528,44 +486,47 @@ public class Pia{
     if( rootStr == null ){
 	    File piafile = new File(".","Pia.java");
 	    if( piafile.exists() )
-	      rootStr = ".."+filesep+".."+filesep+".."+filesep+".."+filesep+".."+filesep+"..";
+	      rootStr = ".."+filesep;
 	    else{
 	      File piadir = new File(home, "pia");
 
 	      // check if we have a copy of the working directory
 	      if ( piadir.exists() && piadir.isDirectory() )
 		rootStr = piadir.getAbsolutePath();
-	      else{
-		File usrlocaldir = new File("/usr/local/src","pia");
-		if ( usrlocaldir.exists() && usrlocaldir.isDirectory() )
-		  rootStr = usrlocaldir.getAbsolutePath();
-		else{
-		  File topdir = new File("/pia1","pia");
-		  if(  topdir.exists() && topdir.isDirectory() )
-		    rootStr = topdir.getAbsolutePath();
-		  else {
-		    throw new PiaInitException(this.getClass().getName()
+	      else
+		throw new PiaInitException(this.getClass().getName()
 						 +"[initializeProperties]: "
 						 +"[pia root directory] undefined.");
-		  }
-		}
-	      }
 	    }
-	}
+    }
 
-// Now the directories that depend on it:
+        // Now the directories that depend on it:
         rootDir = new File( rootStr );
     
-	piaLibStr  = rootStr+"src/lib/java/classes/crc";     //hmmm, is this needed?
-	piaLibDir = new File( piaLibStr );
-	
-
-	piaAgentsStr = rootStr+"src/Agents";
+	//  we are at /pia/Agents -- this is for interform
+	piaAgentsStr = rootStr+"Agents";
 	piaAgentsDir = new File( piaAgentsStr );
 	
 
-	if( piaUsrRootStr == null ) 
-	  piaUsrRootStr = home + "/.pia";
+	if( piaUsrRootStr == null ){ 
+	  if( home && home != "" )
+	    // i.e. we have ~/bob
+	    piaUsrRootStr = home;
+	  else{
+	    // i.e. we have /pia/Users and if bob is valid user's name
+	    // we have /pia/Users/bob
+	    File usersDir = new File(rootStr,"Users");
+	    if( usersDir.exists() ){
+	      if( userName && userName != "" )
+		pisUsrRootStr = usersDir + userName; 
+	    }
+	    else throw new PiaInitException(this.getClass().getName()
+					    +"[initializeProperties]: "
+					    +"[user root directory] undefined.");
+
+	    
+	  }
+	}
 	piaUsrRootDir = new File( piaUsrRootStr );
 	
 
@@ -576,15 +537,6 @@ public class Pia{
 	url = getURL();
 	
   }
-
-  public void createAgency(){
-    machine = new Machine(InetAddress.getLocalHost()., port, null);
-    resolver = new Resolver();
-    agency = new Agency("agency", null);
-    resolver.registerAgent( agency );
-    agency.setResolver( resolver );
-  }
-
 
   private void initializePiaAgency(){
     thisMachine  = new Machine( host, port, null );
@@ -597,8 +549,7 @@ public class Pia{
       verbose();
   }
 
-  public void initialize(String identifier, PiaProperties cmdProps) throws PiaInitException{
-    this.identifier = identifier;
+  public void initialize(Properties cmdProps) throws PiaInitException{
     this.properties = cmdProps;
 
     initializeProperties();
@@ -612,7 +563,6 @@ public class Pia{
 	String  cmdroot      = null ;
 	String  cmdusrdir    = null ;
 	String  cmdprop      = null ;
-	String  cmdid        = "agency" ;
 	Boolean cmddebugging = null ;
 	Boolean cmdverbose   = null ;
 
@@ -625,8 +575,6 @@ public class Pia{
 		    System.out.println ("invalid port number ["+args[i]+"]");
 		    System.exit (1) ;
 		}
-	    } else if ( args[i].equals("-id") ) {
-		cmdid = args[++i];
 	    } else if ( args[i].equals ("-root") ) {
 		cmdroot = args[++i] ;
 	    } else if ( args[i].equals ("-u") ) {
@@ -646,7 +594,7 @@ public class Pia{
 	    }
 	}
 	
-	PiaProperties piaprops = new PiaProperties(System.getProperties());
+	Properties piaprops = new Properties(System.getProperties());
 
 	// sucks in the property file and set properties here
 
@@ -669,21 +617,21 @@ public class Pia{
 	}
 
 	if( cmdroot != null )
-	  piaprops.put(cmdid + "." + PIA_ROOT, rootStr );
+	  piaprops.put(PIA_ROOT, rootStr );
 
 	if( cmdport != null )
-	  piaprops.put(cmdid + "." + PIA_PORT, cmdport.toString());
+	  piaprops.put(PIA_PORT, cmdport.toString());
 	if( cmdusrdir != null )
-	  piaprops.put(cmdid + "." + PIA_USR_ROOT, cmdusrdir );
+	  piaprops.put(PIA_USR_ROOT, cmdusrdir );
 	if( cmddebugging != null )
-	  piaprops.put(cmdid + "." + PIA_DEBUG, "true" );
+	  piaprops.put(PIA_DEBUG, "true" );
 	if( cmdverbose != null )
-	  piaprops.put(cmdid + "." + PIA_VERBOSE, "true" );
+	  piaprops.put(PIA_VERBOSE, "true" );
 	
 	try
 	  {
 	    Pia piaAgency = new Pia();
-	    piaAgency.initialize(cmdid, piaprops);
+	    piaAgency.initialize(piaprops);
 	  }catch(Exception e)
 	    {
 	       System.out.println ("===> Initialization failed, aborting !") ;
