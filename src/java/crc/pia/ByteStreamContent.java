@@ -68,11 +68,11 @@ public class ByteStreamContent implements Content
   /**
    * read into buffer
    */
-  private int pullContent() throws IOException{
+  private synchronized int pullContent() throws IOException{
     int howmany = -1;
     byte[]buffer = new byte[1024];
 
-    if( body.available() != 0 ){
+    //if( body.available() != 0 ){
       try{
 	//howmany = body.read( buffer, numberOfBytes, 1024 );
 	howmany = body.read( buffer, 0, 1024 );
@@ -87,8 +87,8 @@ public class ByteStreamContent implements Content
       }catch(IOException e){
 	throw e;
       }
-    }
-    return howmany;
+      //}
+      //return howmany;
 
   }
 
@@ -128,7 +128,7 @@ public class ByteStreamContent implements Content
  /**
    * read from buffer
    */
-  private int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
+  private synchronized int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
     int limit = 0;
     int len   = -1;
 
@@ -216,13 +216,13 @@ public class ByteStreamContent implements Content
       if( available() > 0 )
 	len = getFromReadBuf( buffer, 0, buffer.length );
       else{
-	if( body.available() != 0 ){
+	//if( body.available() != 0 ){
 	  len = body.read( buffer );
 	  if( len != -1 )
 	    totalRead += len;
 	  else
 	    setContentLength( totalRead );
-	}
+	  //}
       }
       return len;
     }catch(IOException e){
@@ -237,6 +237,11 @@ public class ByteStreamContent implements Content
     Headers myheader = headers();
     if( myheader != null )
       myheader.setContentLength( len );
+    if( body != null ){
+      try{
+	body.close();
+      }catch(IOException e){}
+    }
   }
  
  /**
@@ -255,13 +260,13 @@ public class ByteStreamContent implements Content
       if( available() > 0 )
 	len = getFromReadBuf( buffer, offset, buffer.length );
       else{
-	if( body.available() != 0 ){
+	//if( body.available() != 0 ){
 	  len = body.read( buffer, offset, length );
 	  if( len != -1 )
 	    totalRead += len;
 	  else
 	    setContentLength( totalRead );
-	}
+	  //}
       }
       return len;
     }catch(IOException e2){
@@ -291,7 +296,8 @@ public class ByteStreamContent implements Content
     try{
       while(true){
 	bytesRead = read( buffer, 0, 1024 );
-	if(bytesRead == -1) break;
+	if(bytesRead == -1)
+	  break;
 	data.append( buffer, 0, bytesRead );
       }
       return data.getByteCopy();
