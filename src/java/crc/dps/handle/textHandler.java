@@ -416,9 +416,18 @@ class text_join extends textHandler {
 
    <UL>
    <LI>
-   Test the new attribute.&nbsp; Add the following lines to the <TT>encrypt.xh</TT>
-   example above.</LI>
+   Test the new attribute.&nbsp; Below is an example of a test file called
+   <TT>decode.xh</TT>. The test code is run as follows:&nbsp;&nbsp; <TT>process
+   -t standard decode.xh.</TT>&nbsp; The process program processes the test
+   file and writes the results of the tag evaluation to standard out.&nbsp;
+   The <TT>standard</TT> argument refers to the standard tagset.</LI>
+   </UL>
 
+   <UL><TT>&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"></TT>
+   <BR><TT>&lt;html>&lt;head></TT>
+   <BR><TT>&lt;link rev="made" href="mailto:pgage@rsv.ricoh.com"></TT>
+   <BR><TT>&lt;/head>&lt;body></TT>
+   <BR><TT>&lt;h1>Test file decode.xh&lt;/h1></TT><TT></TT>
 
    <P><TT>TEST 2: decode encrypt: &Ccedil;=&ETH;&deg;S></TT>
    <BR><TT>Should return:&nbsp; hello</TT>
@@ -426,6 +435,13 @@ class text_join extends textHandler {
    <BR><TT></TT>&nbsp;</UL>
    &nbsp;
 
+   <P><TT>&lt;hr></TT>
+   <BR><TT>&lt;b>Copyright &amp;copy; 1997 Ricoh Silicon Valley&lt;/b>&lt;br></TT>
+   <BR><TT>&lt;!-- the following conditional keeps the id out of the results
+   -->&lt;if></TT>
+   <BR><TT>&lt;then>&lt;b>$Id$&lt;/b>&lt;br>&lt;/then>&lt;/if></TT>
+   <BR><TT>&lt;/body>&lt;/html></TT></UL>
+   &nbsp;
   */
 class text_decode extends textHandler {
 
@@ -569,20 +585,17 @@ class text_decode extends textHandler {
 
    <LI>
    Test the new attribute.&nbsp; Below is an example of a test file called
-   <TT>encrypt.xh</TT>. The test code is run as follows:&nbsp;&nbsp; <TT>process
-   -t standard decode.xh.</TT>&nbsp; The process program processes the test
+   <TT>encode.xh</TT>. The test code is run as follows:&nbsp;&nbsp; <TT>process
+   -t standard encode.xh.</TT>&nbsp; The process program processes the test
    file and writes the results of the tag evaluation to standard out.&nbsp;
    The <TT>standard</TT> argument refers to the standard tagset.</LI>
    </UL>
 
    <UL><TT>&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"></TT>
    <BR><TT>&lt;html>&lt;head></TT>
-   <BR><TT>&lt;title>t1.if&lt;/title></TT>
    <BR><TT>&lt;link rev="made" href="mailto:pgage@rsv.ricoh.com"></TT>
    <BR><TT>&lt;/head>&lt;body></TT>
-   <BR><TT>&lt;h1>Test file encrypt.xh&lt;/h1></TT><TT></TT>
-
-   <P><TT>&lt;h2>Test encode encrypt&lt;/h2></TT><TT></TT>
+   <BR><TT>&lt;h1>Test file encode.xh&lt;/h1></TT><TT></TT>
 
    <P><TT>TEST 1: encode encrypt: hello</TT>
    <BR><TT>Should return:&nbsp; &Ccedil;=&ETH;&deg;Š></TT>
