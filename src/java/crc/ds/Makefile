@@ -9,11 +9,11 @@ FILES = \
 	Features.java \
 	List.java \
 	Queue.java \
-	Stuff.java \
 	Table.java \
 	Thing.java \
 	UnaryFunctor.java \
-	TernFunc.java
+	TernFunc.java \
+	Stuff.java 
 
 include $(TOPDIR)/makefiles/file.make
 
