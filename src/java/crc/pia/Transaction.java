@@ -623,22 +623,6 @@ public abstract class Transaction extends AttrBase implements Runnable {
     return contentObj;
   }
 
-  /*
-  private String readFirstLine(InputStream in){
-    StringBuffer buf = new StringBuffer();
-   
-    int ch;
-    for(int i= 0; i < 32; i++){
-      try{
-	ch = in.read();
-	buf.append( (char)ch );
-      }catch(Exception e){;}
-    }
-    return new String( buf );
-
-  }
-  */
-
  // code from jigsaw
   /**
    * Get the standard HTTP reason phrase for the given status code.
@@ -804,8 +788,8 @@ public abstract class Transaction extends AttrBase implements Runnable {
   }
 
   /**
-   * sendResponse -- Utilities to actually respond to a transaction, get a request, 
-   * or generate (return) an error response transaction.
+   * sendResponse -- Utilities to actually respond to a transaction, 
+   *	get a request, or generate (return) an error response transaction.<p>
    *
    * These pass the resolver down to the Machine that actually does the 
    * work, because it might belong to an agent.
