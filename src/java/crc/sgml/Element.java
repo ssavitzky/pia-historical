@@ -493,10 +493,12 @@ public class Element extends Token implements Attrs {
 	t.append(attrNameAt(i));
 	SGML v = attrValueAt(i);
 	if (v != null && !(v.isList() && v.isEmpty())) {
-	  t.append("='");
+	  t.append("=\"");
 	  // === Should be more discriminating about quoting ===
+	  // === on the other hand some browsers are confused by ' ===
+	  // === should also entity-encode <&>
 	  v.appendTextTo(t);
-	  t.append("'");
+	  t.append("\"");
 	}
       }
       t.append(">");
