@@ -28,6 +28,8 @@ import crc.dom.DOMFactory;
  */
 public abstract class ParseTreeNode implements ActiveNode, Serializable {
 
+  public static int nodesCreated = 0;
+
   /************************************************************************
   ** Constructors:
   ************************************************************************/
@@ -40,6 +42,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
     prev   = null;
     handler= null;
     action = null;
+    nodesCreated ++;
   }
 
   public ParseTreeNode(Handler h) {
@@ -49,6 +52,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
     next   = null;
     prev   = null;
     setHandler(h);
+    nodesCreated ++;
   }
 
   public ParseTreeNode(ParseTreeNode n, boolean copyChildren) {
@@ -122,7 +126,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
       throw new NotActiveNodeException("newChild in insertBefore not active.");
     else nc = (ParseTreeNode)newChild;
 
-    insertBefore(nc, (ParseTreeNode)refChild);
+    doInsert(nc, (ParseTreeNode)refChild);
   }
 
   /** 
@@ -218,7 +222,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
 	 child != null;
 	 child = child.getNext()) {
       ParseTreeNode newChild = (ParseTreeNode)child.deepCopy();
-      node.doInsertAtEnd(newChild);
+      node.doInsert(newChild, null);
     }
     return node;
   }
@@ -233,7 +237,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
     if (newChild == null) return;
     if (newChild.getParentNode() == this) return;
     if (newChild.getParentNode() != null) newChild = newChild.deepCopy();
-    doInsertAtEnd((ParseTreeNode)newChild);
+    doInsert((ParseTreeNode)newChild, null);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -306,12 +310,11 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
   // List Processing:
 
   /** Simple implementation of insertBefore assuming all synchronization
-   *	and error-checking have been done.
+   *	and error-checking have been done.  Overriding this method will
+   *	take care of <em>all</em> operations that add children.
    */
-  protected void insertBefore(ParseTreeNode newChild, ParseTreeNode refChild)
+  protected void doInsert(ParseTreeNode newChild, ParseTreeNode refChild)
   {
-    // === worry about newChild.parent ===
-
     if (refChild == null) 		doInsertAtEnd(newChild); 
     else if (refChild == getHead())	doInsertAtStart(newChild);
     else				doInsertBefore( newChild, refChild );
@@ -319,7 +322,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
 
   /** Insert at the end of the list.  Handles empty list.
    */
-  protected void doInsertAtEnd( ParseTreeNode newChild ){
+  protected final void doInsertAtEnd(ParseTreeNode newChild) {
     incChildCount();
     newChild.setParent( this );
     if( !hasChildren() ){ 
@@ -343,7 +346,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
   /**
    * Insert a new child at the start.  Handles empty list.
    */
-  protected void doInsertAtStart(ParseTreeNode newChild){
+  protected final void doInsertAtStart(ParseTreeNode newChild){
     incChildCount();
     newChild.setParent( this );
     newChild.setPrev( null );
@@ -361,7 +364,8 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
   /**
    * Normal case insert somewhere in the middle
    */
-  protected void doInsertBefore(ParseTreeNode newChild, ParseTreeNode refChild){
+  protected final void doInsertBefore(ParseTreeNode newChild,
+				      ParseTreeNode refChild) {
     incChildCount();
     newChild.setParent( this );
 
@@ -459,7 +463,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
     ParseTreeNode elem = null;
     for (elem = nodeB.getHead(); elem != null; elem = elem.getNext()) {
       ParseTreeNode clone = (ParseTreeNode)elem.deepCopy();
-      doInsertAtEnd( clone );
+      doInsert( clone, null );
     }
   }
 
@@ -470,7 +474,7 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
 	 elem != null;
 	 elem = elem.getNextActive()) {
       ParseTreeNode clone = (ParseTreeNode)elem.deepCopy();
-      doInsertAtEnd( clone );
+      doInsert( clone, null );
     }
   }
 
