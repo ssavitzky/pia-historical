@@ -19,12 +19,14 @@ package crc.dps;
 
 public interface InputStackFrame extends InputStack {
 
-  // === it would be possible for these to take and return InputStack ===
-
-  /** Return the next frame in the stack. */
-  public InputStackFrame getNextInputFrame();
+  /** Return the next frame in the stack. 
+  *	Note that this returns InputStack and not InputStackFrame.  This
+  *	allows an InputStackFrame to be chained in front of an InputStack
+  *	with a different implementation (not that we expect to have any).
+  */
+  public InputStack getNextInputStack();
 
   /** set the next-frame pointer and return <code>this</code> */
-  public InputStackFrame pushOnto(InputStackFrame nextFrame);
+  public InputStackFrame pushOnto(InputStack nextFrame);
 
 }

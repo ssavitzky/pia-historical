@@ -4,6 +4,8 @@
 
 package crc.dps;
 
+import crc.dps.input.Wrapper;
+
 /**
  * The base class for Input implementations that also implement the
  *	InputStackFrame interface, and so can be used to efficiently
@@ -33,7 +35,7 @@ public abstract class AbstractInputFrame
    * @return the new InputStack.
    */
   public InputStack pushInput(Input anInput) {
-    return new BasicInputFrame(anInput, this);
+    return new Wrapper(anInput, this);
   }
 
   /** Push an InputStackFrame onto the stack.  
@@ -41,7 +43,7 @@ public abstract class AbstractInputFrame
    *
    * @return the new InputStack.
    */
-  public InputStack pushFrame(InputStackFrame aFrame) {
+  public final InputStack pushFrame(InputStackFrame aFrame) {
     return aFrame.pushOnto(this);
   }
 
@@ -53,7 +55,7 @@ public abstract class AbstractInputFrame
    *	next Input.
    */
   public InputStack popInput() {
-    return nextInputFrame;
+    return nextInputStack;
   }
 
   /** Returns the Input object at this level.  
@@ -68,16 +70,16 @@ public abstract class AbstractInputFrame
   ** Stack Frame Operations:
   ************************************************************************/
 
-  protected InputStackFrame nextInputFrame;
+  protected InputStack nextInputStack;
 
   /** Return the next frame in the stack. */
-  public InputStackFrame getNextInputFrame() {
-    return nextInputFrame;
+  public InputStack getNextInputStack() {
+    return nextInputStack;
   }
 
   /** set the next-frame pointer and return <code>this</code> */
-  public InputStackFrame pushOnto(InputStackFrame nextFrame) {
-    nextInputFrame = nextFrame;
+  public InputStackFrame pushOnto(InputStack nextFrame) {
+    nextInputStack = nextFrame;
     return this;
   }
 
@@ -87,7 +89,7 @@ public abstract class AbstractInputFrame
 
   protected AbstractInputFrame() {}
 
-  protected AbstractInputFrame(InputStackFrame next) {
-    nextInputFrame = next;
+  protected AbstractInputFrame(InputStack next) {
+    nextInputStack = next;
   }
 }
