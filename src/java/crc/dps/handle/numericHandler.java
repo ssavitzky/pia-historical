@@ -302,7 +302,7 @@ class numeric_sort extends numericHandler {
   public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     Enumeration args = MathUtil.getNumbers(content);
-    unimplemented(in, cxt);
+    unimplemented(in, cxt);	// === numeric_sort
   }
   public numeric_sort(ActiveElement e) {
     super(e);

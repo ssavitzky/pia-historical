@@ -218,7 +218,7 @@ class define_entity extends defineHandler {
 class define_word extends defineHandler {
   public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
-    unimplemented(in, cxt);
+    unimplemented(in, cxt);	// define word -- maybe not needed.
   }
   define_word(String aname) { super(aname); }
   static define_word handle = new define_word("word");
