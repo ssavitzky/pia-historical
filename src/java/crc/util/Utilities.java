@@ -538,27 +538,76 @@ public class Utilities {
 
 
    
-    /**
+    
+  /**
+   * encode a byte stream into base 64
+   */
+  public static String encodeBase64( byte[] buf){
+     byte[] result = new byte[(buf.length + 2) / 3 * 4];
+     for (int i = 0; i < buf.length; i += 3){
+       encodeBase64Word(buf,i,buf.length - i, result);
+     }
+     return new String(result);
+  }
+
+    /** base64 6 bit values */
+  private final static char b64_array[] = {
+        //       0   1   2   3   4   5   6   7
+                'A','B','C','D','E','F','G','H', // 0
+                'I','J','K','L','M','N','O','P', // 1
+                'Q','R','S','T','U','V','W','X', // 2
+                'Y','Z','a','b','c','d','e','f', // 3
+                'g','h','i','j','k','l','m','n', // 4
+                'o','p','q','r','s','t','u','v', // 5
+                'w','x','y','z','0','1','2','3', // 6
+                '4','5','6','7','8','9','+','/'  // 7
+        };
+
+
+  // put into result offset for result is offset times 4/3
+  private static void encodeBase64Word(byte buf[], int offset, int len, byte result[]){
+        
+	byte a,b,c;
+	int roff = offset * 4 / 3;
+	a = buf[offset];
+	b = 0;
+	c = 0;
+        if (len > 1) {
+            b = buf[offset + 1];
+	}
+        if (len > 2) {
+            c = buf[offset + 2];
+	}
+	result[roff] = (byte)b64_array[(a >>> 2) & 0x3F];
+	result[roff + 1] = (byte)b64_array[((a << 4) & 0x30) + ((b >>> 4) & 0xf)];
+	result[roff + 2] = (byte)b64_array[((b << 2) & 0x3c) + ((c >>> 6) & 0x3)];
+	result[roff + 3 ] =(byte)b64_array[c & 0x3F];
+	if (len < 3) result[roff + 3 ] = (byte)'=';
+	if (len < 2) result[roff + 2 ] = (byte)'=';
+  }
+
+
+/**
      * decode a base64 String.
      * @param input The string to be decoded.
      */
+  public static byte[] decodeBase64(String input) {
 
-    public static String decodeBase64(String input) {
 	byte bytes[] = new byte[input.length()] ;
 	input.getBytes (0, bytes.length, bytes, 0) ;
-
-        String decoded;
-	byte buf[] = new byte[4];
-	
-	String result ="";  
+	int l = bytes.length * 3 / 4;
+	//  check for padding
+	if(bytes[l-1] == '=') l--;
+	if(bytes[l-1] == '=') l--;
+        byte result[] =  new byte[l];
         for(int limit = 0; limit <= bytes.length - 4; limit += 4){
-	  for( int i =0; i< 4; i++) buf[i] = (byte) cvB64(bytes[limit+i]);
-	  decoded =  decodeBase64(buf);
-          if( decoded == null) return result;//return null if invalid string
-	  result += decoded;
+	  for( int i =0; i< 4; i++) 
+	    bytes[limit+i] = (byte) cvB64(bytes[limit+i]);
+	  int decoded =  decodeBase64Word(bytes, limit,result);
+          if( decoded < 3) return result;//return null if invalid string
 	}
 	return result;
-    }
+  }
 
 // utility function for converting base character
     private  static final int cvB64 (int ch) {
@@ -582,20 +631,23 @@ public class Utilities {
 	}
     }
 
-  public static String decodeBase64(byte[] buf)
-   {
-     if (buf[0] < 0 || buf[1] < 0 || buf[1] > 64 ||buf[0] > 64 ) return null;
-     byte[] result = new byte[3];
-     result[0] = (byte) (((buf[0] & 0x3f) << 2) | ((buf[1] & 0x30) >>> 4));
-     if (buf[2] > 64 ) return new String(result,0,1);
-     result[1] = (byte) (((buf[1] & 0x0f) << 4) | ((buf[2] &0x3c) >>> 2));
-     if (buf[3] > 64 ) return new String(result,0,2);
-     result[2] = (byte) (((buf[2] & 0x03) << 6) | (buf[3] & 0x3f) );
-     return new String (result);
-   }
   
-
-
+  private static int decodeBase64Word(byte[] buf,int off,  byte[] result)
+   {
+     int roff = off * 3 / 4;
+     int a=off;
+     int b=off+1;
+     int c= off+2;
+     int d= off+3;
+     if (buf[a] < 0 || buf[a] < 0 || buf[b] > 64 ||buf[b] > 64 ) return 0;
+     result[roff] = (byte) (((buf[a] & 0x3f) << 2) | ((buf[b] & 0x30) >>> 4));
+     if (buf[c] > 64 ) return 1;
+     result[roff+1] = (byte) (((buf[b] & 0x0f) << 4) | ((buf[c] &0x3c) >>> 2));
+     if (buf[d] > 64 ) return 2;
+     result[roff+2] = (byte) (((buf[c] & 0x03) << 6) | (buf[d] & 0x3f) );
+     return 3;
+   }
+ 
 
   public static void main(String[] args){
     String fn = args[0];

@@ -75,10 +75,12 @@ public class Authenticator implements java.io.Serializable{
       Pia.debug(this, "checking authorization");
     if ( authorization == null) return false;
 	
-    String decoded = Utilities.decodeBase64(authorization);
+    byte[] mybuf = Utilities.decodeBase64(authorization);
 
-    if (decoded == null) return false;
+    if (mybuf.length == 0) return false;
     String user=null, password=null; 
+    String decoded=new String(mybuf);
+    
     int icolon = decoded.indexOf (':') ;
     if ( (icolon > 0) && (icolon+1 <= decoded.length()) ) {
       user     = decoded.substring (0, icolon) ;
@@ -91,6 +93,8 @@ public class Authenticator implements java.io.Serializable{
     if(verifyPassword(user, password)){
       request.assert("AuthenticatedUser", user);	
       request.assert("AuthenticationMethod", "Basic");	
+      // remove the password from the headers
+      request.setHeader("authorization",user);
       return true;
     }  else {
       // should return403 e.g.  throw authentication exception
