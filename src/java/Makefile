@@ -17,6 +17,7 @@ PIAPACKAGENAMES= \
 	crc.content crc.content.text \
 	crc.dom \
 	crc.dps crc.dps.handle crc.dps.input crc.dps.output crc.dps.parse \
+	crc.dps.active crc.dps.util \
 	crc.ds \
 	crc.gnu.regexp \
 	crc.interform crc.interform.handle \
@@ -24,7 +25,6 @@ PIAPACKAGENAMES= \
 	crc.sgml \
 	crc.tf \
 	crc.util \
-	crc.dom \
 	misc
 
 ### These are the names of the classes in the JDK that the PIA uses.  
