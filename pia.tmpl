@@ -80,6 +80,7 @@ name::									@@\
  * of the specified step in the build.  If $(TOP) is set to an absolute path, 
  * do not prepend the ../ prefix.  This makes running things outside of the 
  * source tree to be much easier.
+ **GJW-8/96 changed RemoveFile(Makefile.bak) to $(RM) Makefile.bak
  */
 #ifdef MakeMakeSubdirs
 #undef MakeMakeSubdirs
@@ -133,7 +134,7 @@ target::								@@\
 		   imakeprefix=$$newtop/ ;; \				@@\
 		esac; \							@@\
 		cd $$i; \						@@\
-		RemoveFile(Makefile.bak); \				@@\
+		$(RM) Makefile.bak; \					@@\
 		if [ -f Makefile ]; then \				@@\
 			echo "	$(MV) Makefile Makefile.bak"; \		@@\
 			if [ "$$executeit" != "no" ]; then \		@@\
