@@ -38,8 +38,11 @@ public class ParseTreeDecl extends ParseTreeNamed implements ActiveDeclaration {
   public void setTagName(String name) 	{ tagName = name; }
   public String getTagName() 	   	{ return tagName; }
 
-  // === It will probably be necessary to have multiple node types ===
-  public int getNodeType()		{ return NodeType.DECLARATION; }
+  protected int nodeType = NodeType.DECLARATION;
+  public int getNodeType()		{ return nodeType; }
+
+  /** In some cases it may be necessary to make the node type more specific. */
+  void setNodeType(int value) { nodeType = value; }
   
   /************************************************************************
   ** ActiveNode interface:
