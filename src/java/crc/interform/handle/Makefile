@@ -8,6 +8,8 @@ TOPDIR=../../../..
 # The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
 	Actor.java \
+	Actor_dscr.java \
+	Actor_attrs.java \
 	Add_markup.java \
 	Difference.java \
 	Element.java \
@@ -36,8 +38,13 @@ BASIC_ACTORS = \
 # The effect of these actors is local; they do not require a PIA.
 SA_ACTORS = \
 	Read.java \
+	Read_file.java \
+	Read_href.java \
 	Write.java \
+	Write_file.java \
+	Write_href.java \
 	User_message.java \
+	Get_env.java \
 	Os_command.java \
 	Os_command_output.java \
 	StandAlone_ts.java 
@@ -52,8 +59,13 @@ PIA_ACTORS= \
 	Agent_set_criterion.java \
 	Agent_install.java \
 	Agent_remove.java \
-	Trans_control.java \
+	Get_agent.java \
+	Get_form.java \
+	Get_pia.java \
+	Get_trans.java \
 	Pia_exit.java \
+	Submit.java \
+	Trans_control.java \
 	Standard_ts.java
 
 
@@ -63,3 +75,12 @@ TAGSETS = \
 FILES = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) $(TAGSETS)
 
 include $(TOPDIR)/makefiles/file.make
+
+# Count unimplemented and total actors.
+all::
+	@echo 'BASIC:	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
+		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
+	@echo 'SA:	' `ls -l $(SA_ACTORS) | wc -l`, \
+		`grep 'unimplemented(' $(SA_ACTORS) | wc -l` unimp.
+	@echo 'PIA:	' `ls -l $(PIA_ACTORS) | wc -l`, \
+		`grep 'unimplemented(' $(PIA_ACTORS) | wc -l` unimp.

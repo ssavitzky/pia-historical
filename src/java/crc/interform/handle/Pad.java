@@ -9,52 +9,45 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<pad width=N [align=[left|right|center]] [spaces]>...</pad>
+ * Dscr:
+ *	Pad CONTENT to a given WIDTH with given ALIGNment
+ *	(left/center/right).  Optionally just generate the SPACES.  
+ *	Ignores markup.
+ */
 
 /** Handler class for &lt;pad&gt tag */
 public class Pad extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    String text = it.content().toString();
+    String align = Util.getString(it, "align", "left");
+    align = align.toLowerCase();
+    int width = Util.getInt(it, "width", 8);
+    boolean spaces = it.hasAttr("spaces");
 
-    ii.deleteIt();
+    int pad = width - text.length();
+    String left="", right="";
+
+    while (pad-- > 0) {
+      if (align.equals("left")
+	  || (align.equals("center") && (pad & 1)==1)) {
+	left += " ";
+      } else {
+	right += " ";
+      }
+    }
+
+    if (it.isText() || spaces) {
+      if (spaces) text = "";
+      ii.replaceIt(right + text + left);
+    } else {
+      ii.replaceIt(new Tokens().append(right).append(it).append(left));
+    }
   }
 }
 
-/* ====================================================================
-
-### <pad width=N align=[left|right|center] [spaces]>string</pad>
-###	If the "spaces" attribute is present, only the spaces are 
-###	returned.  This lets you pad the contents of a link (for
-###	example) without having to put the padding inside the link
-###	where it will get underlined and look ugly.
-
-define_actor('pad', 
-	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment
-(left/center/right).  Optionally just generate the SPACES.  Ignores markup.");
-
-sub pad_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $text   = $it->content_text;
-    
-    my $align  = (lc $it->attr('align')) || 'left';
-    my $width  = $it->attr('width') || 8;
-    my $spaces = $it->attr('spaces') || 0;
-
-    my $pad  = $width - length $text;
-    my ($left, $right) = ('', '');
-
-    while ($pad-- > 0) {
-	if ($align eq 'left' || ($align eq 'center' && ($pad & 1))) {
-	    $left .= ' ';
-	} else {
-	    $right .= ' ';
-	}
-    }
-
-    if ($it->is_text || $spaces) {
-	$text = '' if $spaces;
-	$ii->replace_it("$right$text$left");
-    } else {
-	$ii->replace_it(IF::IT->new()->push($right)->push($it)->push($left));
-    }
-}
-*/

@@ -9,33 +9,26 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<sum>n1 n2 ... </sum>
+ * Dscr:
+ *	Return sum of numbers in CONTENT
+ */
 
 /** Handler class for &lt;sum&gt tag */
 public class Sum extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.deleteIt();
+    Tokens list = Util.listItems(it);
+    double result = Util.numValue((SGML)list.shift());
+    double n;
+    
+    while (list.nItems() > 0) {
+      result += Util.numValue((SGML)list.shift());
+    }    
+    ii.replaceIt(new crc.interform.Text(java.lang.Double.toString(result)));
   }
 }
 
-/* ====================================================================
-###### Number Processing:
-
-### <sum>list</sum> <difference>list</difference> 
-### <product>list</product> <quotient>list</quotient>
-
-define_actor('sum', 'dscr' => "Return sum of numbers in CONTENT");
-
-sub sum_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $list = list_items($it);
-    my $result=0;
-
-    my $n;
-    foreach $n (@$list) {
-	$result += ref($n)? $n->content_text : $n;
-    }
-    $ii->replace_it($result);
-}
-*/

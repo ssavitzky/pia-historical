@@ -19,8 +19,9 @@ import java.util.Enumeration;
  *	actors that are meaningful and useful outside the PIA. */
 public class StandAlone_ts extends Basic_ts {
 
-  static String emptyActors = "read";
-  static String parsedActors = "os-command os-command-output write";
+  static String emptyActors = "read read.file read.href";
+  static String parsedActors = "os-command os-command-output write" 
+  + " write.file write.href";
 
   public StandAlone_ts() {
     this("StandAlone", true);

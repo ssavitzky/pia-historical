@@ -9,94 +9,53 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<get [name="name"] [pia|agent|form|trans|env|element|local|entity]
+ *	 [file="filename"|href="url"|[file|href] name="string"] >
+ * Dscr:
+ *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
+ *	ELEMENT, TRANSaction, or LOCAL or global ENTITY context.
+ *	Default is the generic lookup that includes paths.
+ *	If FILE or HREF specified, functions as read.
+ */
 
 /** Handler class for &lt;get&gt tag */
 public class Get extends crc.interform.Handler {
+  /** Handle for &lt;get&gt.  The dispatching really should be in 
+   *	actOn; we're faking it for now. === */
   public void handle(Actor ia, SGML it, Interp ii) {
+    if (it.hasAttr("pia")) dispatch("get.pia", ia, it, ii);
+    else if (it.hasAttr("agent")) dispatch("get.agent", ia, it, ii);
+    else if (it.hasAttr("form")) dispatch("get.form", ia, it, ii);
+    else if (it.hasAttr("trans")) dispatch("get.trans", ia, it, ii);
+    else if (it.hasAttr("env")) dispatch("get.env", ia, it, ii);
+    else if (it.hasAttr("href")) dispatch("read.href", ia, it, ii);
+    else if (it.hasAttr("file")) dispatch("read.file", ia, it, ii);
+    else {
+      /* The following are all in the Basic tagset,
+       *     so it's cheaper not to dispatch on them.
+       */
+      String name = Util.getString(it, "name", null);
+      if (name == null || "".equals(name)) {
+	ii.error(ia, "name attribute required");
+	return;
+      }
+      SGML result = null;
 
-    ii.deleteIt();
+      if (it.hasAttr("element")) { // dispatch("get.element", ia, it, ii);
+	result = (ii.getAttr(name));
+      } else if (it.hasAttr("local")) { // dispatch("get.local", ia, it, ii);
+	result = (ii.getvar(name));
+      } else if (it.hasAttr("entity")) { // dispatch("get.entity", ia, it, ii);
+	result = (ii.getGlobal(name));
+      } else {
+	result = (ii.getEntity(name));
+      }
+      ii.replaceIt(result);
+    }
   }
 }
-
-/* ====================================================================
-### <get [name="n"] [pia] [entity]>name</get->
-###	Gets the value of a variable named in the 'name' attribute or content.
-###	if the 'pia' attribute is set, uses the pia (PERL) context,
-###	if the 'entity' attribute is set, uses the entity table.
-###
-### Namespace options:
-###	namespace="whatever", or one of the following:
-###	local	current element 
-###	attr	attributes of the current element
-###	form	this InterForm's outer context
-###	pia	pia (PERL) context
-###	agent	attributes of the current PIA agent
-###	
-###	Variables can also be accessed as entities:
-###	e.g. &AGENT.Foo.bar;
-###	
-
-### === <get file="name"> should map to read
-
-define_actor('get', 'empty' => 1, 
-	     'dscr' => "Get value of NAME, 
-optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.
-If FILE or HREF specified, functions as read.");
-
-### === EXPAND/PROTECT ?===
-
-sub get_handle {
-    my ($self, $it, $ii) = @_;
-
-    if ($it->attr('file') || $it->attr('href')) {
-	return read_handle($self, $it, $ii);
-    }
-
-    my $name = $it->attr('name');
-    $name = $name->as_string if ref $name;
-    my $result;
-
-    if ($it->attr('pia')) {
-	local $agent = IF::Run::agent();
-	local $request = IF::Run::request();
-	$name = '$' . $name;
-	my $status = $agent->run_code("$name", $request);
-	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-	print "code status is $status\n" if  $main::debugging;
-	$result = ($status);
-    } elsif ($it->attr('env')) {
-	$result = ($ENV{$name});
-    } elsif ($it->attr('form')) {
-	my $hash = IF::Run::request()->parameters;
-	$result = ($$hash{$name});
-    } elsif ($it->attr('agent')) {
-	local $agent = IF::Run::agent();
-	$result = ($agent->option($name)) if defined $agent;
-    } elsif ($it->attr('trans')) {
-	local $trans = IF::Run::transaction();
-        if ($it->attr('feature')) {
-	    $result = ($trans->get_feature($name)) if defined $trans;
-	} elsif ($it->attr('headers')) {
-	    if ($it->attr('request')) {
-		$result = $trans->is_request? $trans->request->headers_as_string
-		    : $trans->response_to->request->headers_as_string;
-	    } else {
-	        $result = $trans->message->headers_as_string;
-	    }
-	} else {
-	    $result = ($trans->attr($name)) if defined $trans;
-	}
-    } elsif ($it->attr('entity')) {
-	$result = ($ii->entities->{$name});
-    } elsif ($it->attr('element')) {
-	$result = ($ii->in_token->attr($name));
-    } elsif ($it->attr('local')) {
-        $result = ($ii->getvar($name));
-    } else {
-	## default is to search local variables first, then global entities.
-        $result = ($ii->get_entity($name));
-    }
-    $ii->replace_it($result);
-}
-
-*/

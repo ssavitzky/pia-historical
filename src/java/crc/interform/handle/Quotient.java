@@ -9,35 +9,25 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<quotient>n1 n2 ... </quotient>
+ * Dscr:
+ *	Return difference (n1/n2/...) of numbers in CONTENT.
+ */
 
 /** Handler class for &lt;quotient&gt tag */
 public class Quotient extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.deleteIt();
+    Tokens list = Util.listItems(it);
+    double result = Util.numValue((SGML)list.shift());
+    double n;
+    
+    while (list.nItems() > 0) {
+      result /= Util.numValue((SGML)list.shift());
+    }    
+    ii.replaceIt(new crc.interform.Text(java.lang.Double.toString(result)));
   }
 }
-
-/* ====================================================================
-define_actor('quotient', 'dscr' => "Return quotient of numbers in CONTENT");
-
-sub quotient_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $list = list_items($it);
-    my $result=shift(@$list);
-    $result = $result->content-text if ref($result);
-
-    my $n;
-    foreach $n (@$list) {
-	$n = $n->content_text if ref($n);
-	if ($n == 0) {
-	    $ii->replace_it('***');
-	    return;
-	}
-	$result /= $n;
-    }
-    $ii->replace_it($result);
-}
-
-*/

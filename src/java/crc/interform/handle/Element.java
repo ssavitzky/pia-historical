@@ -10,6 +10,14 @@ import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
 
+
+/* Syntax:
+ *	<element tag=ident [empty] [not-inside="list of tags"]>
+ * Dscr:
+ *	Define the syntax for an SGML element.  Optionally EMPTY.
+ *	Optionally NOT-INSIDE a list of tags which it implicitly ends.
+ */
+
 /** Handler class for &lt;element&gt tag */
 public class Element extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {

@@ -9,12 +9,21 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	
+ * Dscr:
+ *	
+ */
 
 /** Handler class for &lt;os-command-output&gt tag */
 public class Os_command_output extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.deleteIt();
+    ii.unimplemented(ia);
   }
 }
 

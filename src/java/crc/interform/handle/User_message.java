@@ -8,28 +8,17 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
-import crc.interform.Token;
+
+/* Syntax:
+ *	<user-message>content</user-message>
+ * Dscr:
+ *	Display CONTENT as a message to the user.
+ */
 
 /** Handler class for &lt;user-message&gt tag */
 public class User_message extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
+    ii.message(it.content().toString());
     ii.deleteIt();
   }
 }
-
-/* ====================================================================
-### <user-message>string</user-message>
-
-define_actor('user-message', 
-	     'dscr' => "Display a message to the user." );
-
-sub user_message_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $content = $it->content_string;
-    print "$content\n" unless $main::quiet;
-    $ii->delete_it;
-}
-
-*/

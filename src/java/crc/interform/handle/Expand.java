@@ -9,29 +9,26 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<expand [protect [markup]]>content</expand>
+ * Dscr:
+ *	Expand CONTENT, then either re-expand or PROTECT it.
+ *	Optionally protect MARKUP as well.
+ */
 
 /** Handler class for &lt;expand&gt tag */
-public class Expand extends crc.interform.Handler {
+public class Expand extends Protect {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.deleteIt();
+    if (it.hasAttr("protect")) {
+      // The following is slightly sleazy, but it works.
+      super.handle(ia, it, ii); 
+    } else {
+      ii.pushInto(it.content());
+      ii.deleteIt();
+    }
   }
 }
-
-/* ====================================================================
-
-define_actor('expand', 
-	     'dscr' => "Expand CONTENT, then either re-expand or PROTECT it.
-Optionally protect MARKUP as well.");
-
-sub expand_handle {
-    my ($self, $it, $ii) = @_;
-
-    if ($it->attr('protect')) {
-	protect_handle($self, $it, $ii);
-    } else {
-	$ii->push_into($it->content);
-	$ii->delete_it;
-    }
-}
-*/

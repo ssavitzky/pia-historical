@@ -20,9 +20,9 @@ import java.util.Enumeration;
 public class Standard_ts extends StandAlone_ts {
 
   static String emptyActors = "actor-dscr agent-criteria agent-install"
-  + " agent-list agent-options agent-running agent-remove"
-  + " agent-set-criterion pia-exit";
-  static String parsedActors = "agent-home agent-set-criteria" 
+  + " agent-home agent-list agent-options agent-running agent-remove"
+  + " agent-set-criterion pia-exit get.agent get.form get.pia get.trans";
+  static String parsedActors = "agent-set-criteria" 
   + " agent-set-options submit trans-control"; 
 
   public Standard_ts() {

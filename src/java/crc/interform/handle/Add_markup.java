@@ -9,51 +9,30 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<add-markup>text</add-markup>
+ * Dscr:
+ *	Add markup to text CONTENT using common conventions.
+ */
 
 /** Handler class for &lt;add-markup&gt tag */
 public class Add_markup extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.deleteIt();
+    Tokens content = it.content();
+    Tokens result = new Tokens();
+    SGML item;
+    while (content.nItems() > 0) {
+      item = (SGML)content.shift();
+      if (item.isText()) {
+	result.append(Util.addMarkup(item.toString()));
+      } else {
+	result.append(item);
+      }
+    }
+    ii.replaceIt(content);
   }
 }
-
-/* ====================================================================
-### <add-markup>text</add-markup>
-
-define_actor('add-markup', 
-	     'dscr' => "convert common text conventions to markup");
-
-sub add_markup_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $content = $it->content;
-    my $uc = $it->attr('uc') || 'strong'; # What to do with uppercase
-    my $text;
-    my @result;
-
-    foreach $text (@$content) {
-	if (ref $text) {
-	    push(@result, $text); # already marked up
-	} else {
-	    ## Uppercased words.
-	    while ($text =~ /([A-Z][A-Z]+)/ ) {
-		my $x = "<$uc>" . lc $1 . "</$uc>";
-		$text =~ s/$1/$x/;
-	    }
-
-	    ## Words surrounded by _ or *
-
-	    ## Paragraph breaks
-
-	    ## Line breaks
-
-	    ## Horizontal rules
-
-	    push(@result, $text);
-	}
-    }
-
-    $ii->replace_it(\@result);
-}
-====================================================================== */

@@ -9,12 +9,21 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Text;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<agent-criteria [name=ident]>
+ * Dscr:
+ *	Return the match-criteria list for agent NAME or the current agent.
+ */
 
 /** Handler class for &lt;agent-criteria&gt tag */
 public class Agent_criteria extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.deleteIt();
+    ii.unimplemented(ia);
   }
 }
 

@@ -9,29 +9,25 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Token;
+import crc.interform.Tokens;
+import crc.interform.Util;
+
+/* Syntax:
+ *	<product>n1 n2 ... </product>
+ * Dscr:
+ *	Return product of numbers in CONTENT
+ */
 
 /** Handler class for &lt;product&gt tag */
 public class Product extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.deleteIt();
+    Tokens list = Util.listItems(it);
+    double result = Util.numValue((SGML)list.shift());
+    double n;
+    
+    while (list.nItems() > 0) {
+      result *= Util.numValue((SGML)list.shift());
+    }    
+    ii.replaceIt(new crc.interform.Text(java.lang.Double.toString(result)));
   }
 }
-
-/* ====================================================================
-define_actor('product', 'dscr' => "Return product of numbers in CONTENT");
-
-sub product_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $list = list_items($it);
-    my $result=1;
-
-    my $n;
-    foreach $n (@$list) {
-	$result *= ref($n)? $n->content_text : $n;
-    }
-    $ii->replace_it($result);
-}
-
-*/
