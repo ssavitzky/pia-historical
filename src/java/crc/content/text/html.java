@@ -62,9 +62,20 @@ public class html extends Default
 	  //if (crc.pia.Pia.debug()) e.printStackTrace();
 	}
 	
+
+	  // if there is no body, assume it is a frame
+	  // specification or something else bad and we should do nothing
+	  if(bend == 0 )  {
+    	    crc.pia.Pia.debug( this," no body tag detected");
+            return;
+	  }
+	  
 	crc.pia.Pia.debug( this," putting at"+  bend);
 	
 	 insert(add,bend);
+         // remove this addition
+         additions.remove(k);
+	 
          return;
 	 
       }

@@ -376,11 +376,8 @@ public class Default extends StreamingContent {
    */
  protected  int processBuffer(int newChars){
 
-    if(firstTime){
-      insertAddition(0);
-      firstTime = false;
-    }
-
+   insertAdditions();
+   
     int processed = 0;
     // do any substitutions between out limit and next in
     if(replacements  != null){
@@ -393,8 +390,29 @@ public class Default extends StreamingContent {
       lastTime=true;
       insertAddition(-1);
     }
+
+    if(firstTime){
+      firstTime = false;
+    }
      return processed;   
   }
+
+  /**
+   * additions can be put into specific locations -- eventually this should be 
+   * obsoleted by using parsed html
+   * for now, only understands additions at 0
+   */
+  protected void insertAdditions(){
+
+    // if there's something at 0, try to insert it
+    if(additions.at("0") != null) {
+      insertAddition(0);
+    }
+    
+   
+  }
+
+
 
   /**
    * place to  for editing operations to store items to be added to input
@@ -409,6 +427,8 @@ public class Default extends StreamingContent {
       if( location == 0)
 	insert( addition, nextOut); // earliest possible spot
 	else appendToPending(addition);
+      additions.remove(k);
+      
     }
   }
 
@@ -507,8 +527,8 @@ public class Default extends StreamingContent {
     }
     String add = addition;
     String k =  new Integer(location).toString();
-    if(additions.has(k)){
-      add += addition;
+    if(additions.at(k) != null){
+      add = additions.at(k) + add;
     }
     additions.at(k, add);
     Pia.debug("adding "+add + " at "+  location);
