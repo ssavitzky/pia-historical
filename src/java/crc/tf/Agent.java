@@ -34,7 +34,7 @@ public final class Agent implements UnaryFunctor{
     public Object execute( Object trans ){
       String name = "agency";
 
-      String url = trans.getRequestURL();
+      String url = trans.requestURL();
       if( !url ) return null;
       String path = url.getFile();
       if( !path ) return null;

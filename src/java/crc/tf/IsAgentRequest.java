@@ -34,7 +34,7 @@ public final class IsAgentRequest implements UnaryFunctor{
       Object ztrue  = new Boolean( true );
 
       if( !trans.isRequest() ) return zfalse;
-      URL url = trans.getRequestURL();
+      URL url = trans.requestURL();
       if( !url ) return zfalse;
 
       String host = url.getHost();
@@ -47,7 +47,7 @@ public final class IsAgentRequest implements UnaryFunctor{
       if( lhost.startsWith("agency") || lhost == "" )
 	return ztrue;
 
-      if( Pia.getInstance().getPort() == lport && Pia.getInstance().getHost().startsWith( lhost ) )
+      if( Pia.instance().port() == lport && Pia.instance().host().startsWith( lhost ) )
 	return ztrue;
       
       return zfalse;
