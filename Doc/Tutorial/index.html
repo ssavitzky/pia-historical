@@ -44,6 +44,21 @@ which executes <code>pia</code> using <code>/pia1/pia</code> as the PIA
 directory).
 <p>
 
+<h4>If you are a developer</h4>
+
+you probably have a working copy of the PIA's source tree checked out in your
+home directory.  In that case, <code>PIA_DIR</code> is <code>~/pia</code> --
+the <code>pia</code> subdirectory of your home directory.  You should start
+the PIA with the command:
+<pre>
+  ~/pia/bin/pia
+</pre>
+
+If you use <code>jpia</code>, any changes you make in the code won't be
+reflected on the server, and you'll wonder why nothing changed.
+
+<h4>Once it's Running</h4>
+
 Once you have an agency running, you should be able to view your agency's home
 page at <code>
 <a href="http://localhost:8888/">http://<i>YOUR.HOST.NAME.HERE</i>:8888/</a>
@@ -51,8 +66,6 @@ page at <code>
 <p>
  If you have trouble getting to this point, please contact the <a
  href="../pia_group.html"> PIA group </a>.
-<!-- http://pia.crc.ricoh.com:8888/PIA/Doc/pia_group.html -->
-<!-- === not clear which of these links to use for pia group... === -->
 
 <h3>   <a name="viewing">Viewing an agents home page</a></h3>
 We call our system an Information Agency because every document (or request
@@ -66,20 +79,20 @@ scripts.)
 <p>
 
 If you have not already done so, please open another browser window on your
- <a href="http://localhost:8888/"> agency's home page</a>.
+ <a href="http://localhost:8888/Agency/ROOT/index"> agency's home page</a>.
 
 <p>
 Notice the url for this page:
 <pre>
-http://localhost:8888/Agency/ROOTindex.if
-^^^^^^^^^^^^^^^^^^^^^ ^^^^^^ ^^^^^^^^^^^^
+http://localhost:8888/Agency/ROOT/index
+^^^^^^^^^^^^^^^^^^^^^ ^^^^^^ ^^^^^^^^^^
       1                  2         3     </pre>
 
 It consists of three parts
 <ol>
   <li>  <code>http://.../</code> -- the machine name and port number
   <li>   <tt> Agency</tt> -- the name of the agent handling this request
-  <li>  <code>ROOTindex.if</code> --  an InterForm file name
+  <li>  <code>ROOT/index</code> --  a path from that agent's root directory.
 </ol>
 
 <p>
@@ -97,56 +110,63 @@ generate the page that your browser displays.
 <p>
 On this page, you should see  a listing of all the agents currently running on
 your Information Agency.  Click on one of the agent links to see the home page
-for that agent.  By default, the agency comes configured to start up with the following agents:
+for that agent.  By default, the agency comes configured to start up with the
+following agents: 
+
 <dl>
   <dt> <tt> Agency</tt>
   <dd> main agent-- manages all other agents
   <dt> <tt> History</tt>
   <dd> maintains list of visited web pages --  see below
-  <dt> <tt> FBI</tt>
+  <dt> <tt> fbi</tt>
   <dd> adds control menu to pages served by your Information Agency
-  <dt> <tt>CIA</tt>
+  <dt> <tt>cia</tt>
   <dd> adds control menu to pages proxied through your agency
-  <dt> <tt> InterForm</tt>
-  <dd> demonstrates features of the InterForm language (the extension of HTML
-       in which agents are written)
   <dt> <tt> PIA</tt>
   <dd> serves files located in the PIA_DIR directory
-  <dt> <tt>MY</tt>
-  <dd>  serves files located in your local PIA_HOME directory (usually ~/.pia)
+  <dt> <tt>My</tt>
+  <dd>  serves files located in your local PIA_HOME directory (usually
+	<code>~/.pia</code> )
 </dl>
 
 <h3>   <a name="using">Using the history agent</a></h3>
- The History agent is meant to keep track of all web pages that you visit from
- any browser, allowing you to search those urls by date or other feature.
-To make best use of the History agent, you should set your browsers to use
-your local Information Agency as your proxy (this setting is usually found under the
-Network options available under edit/preferences, options/network, or some
+
+The History agent is meant to keep track of all web pages that you visit from
+any browser, allowing you to search those urls by date or other feature.  To
+make best use of the History agent, you should set your browsers to use your
+local Information Agency as your proxy (this setting is usually found under
+the Network options available under edit/preferences, options/network, or some
 similar menu.  You need to specify both the host name and port--8888 by
-default-- where your agency is running.)
-<p>
- Once you set your Information Agency as your proxy, browse to a few external
- web pages, then visit the  <a href="/History/home.if"> History agent's home
- page</a>. You should see a link to today's date (e.g. <tt>My/History / 1997 /
- 08 / 04</tt>) which will list the pages you visited.
+default-- where your agency is running.)  <p>
+
+Once you set your Information Agency as your proxy, browse to a few external
+web pages, then visit the  <a href="/History/home.if"> History agent's home
+page</a>. You should see a link to today's date (e.g. <tt>My/History / 1997 /
+08 / 04</tt>) which will list the pages you visited.
 
 <h3>  <a name="directories">Directory structure</a></h3>
- In addition to the PIA_DIR directory (which contains all the code,
- documentation, agents, etc. released by the PIA group), your information
- agency also uses PIA_HOME (typically ~/.pia) to store agent data and
- customized interforms.  By default, agents will read and write their data
- files into PIA_HOME/AGENT_NAME (where AGENT_NAME is the name of the agent.
- So, by default the History agent keeps lists of visited urls in
-  <code>~/.pia/History/</code>) 
- For their InterForms, agents look first in PIA_HOME/Agents/AGENT_NAME, and
- then in PIA_DIR/Agents/AGENT_NAME making it easy to customize your agents
- simply by putting new InterForm files in
- PIA_HOME/Agents/AGENT_NAME/FILENAME.if (so a customized form,  <code>foo.if</code> for the History
- agent would go in  <code>~/.pia/Agents/History/foo.if</code>). 
+
+In addition to the PIA_DIR directory (which contains all the code,
+documentation, agents, etc. released by the PIA group), your information
+agency also uses PIA_HOME (typically <code>~/.pia</code>) to store agent data
+and customized interforms.  By default, agents will read and write their data
+files into PIA_HOME/AGENT_NAME (where AGENT_NAME is the name of the agent.
+So, by default the History agent keeps lists of visited urls in
+<code>~/.pia/History/</code>)
+
+<p>
+
+For their InterForms, agents look first in PIA_HOME/Agents/AGENT_NAME, and
+then in PIA_DIR/Agents/AGENT_NAME making it easy to customize your agents
+simply by putting new InterForm files in
+PIA_HOME/Agents/AGENT_NAME/FILENAME.if (so a customized form,
+<code>foo.if</code> for the History agent would go in
+<code>~/.pia/Agents/History/foo.if</code>).
 
 
 <h2>  <a name="agents">Agents &amp; InterForms</a> </h2>
- Agents are persistent software objects running on the Information Agency.
+
+Agents are persistent software objects running on the Information Agency.
  When they receive a request for a document, they look for a file (in
  PIA_xxxx/Agents/AGENT_NAME) which matches that request.  Once the file is
  found, they  interpret that file  and return the result.  To the end user,
@@ -197,6 +217,12 @@ the <a href="../Manuals/InterForm/index.html">InterForm Manual</a>.
      automates the  steps for creating a new agent.  It is recommended that
      you <a href=http://Agency/Agency/installers.if>install</a> and use the <a href=http://Agency/Template>Template</a> agent for creating new agents, rather
      than follow the steps here. </i>
+
+<p>
+<strong>...and as of October 1998 major changes have been made, so some of
+this information is obsolete.</strong>
+
+<p>
 
  To create your own agent, first create a directory,
  <tt>~/.pia/Agents/HelloWorld</tt>.  Now create a home page for your agent, 
