@@ -67,7 +67,11 @@ public class Get extends crc.interform.Handler {
       SGML result = null;
 
       if (it.hasAttr("element")) {
-	result = ii.getAttr(name, it.attr("tag").toString());
+	if (it.hasAttr("tag")) {
+	  result = ii.getAttr(name, it.attr("tag").toString());
+	} else {
+	  result = ii.getAttr(name, null);
+	}
       } else if (it.hasAttr("local")) {
 	result = ii.getvar(name);  // look only in local table
       } else if (it.hasAttr("global")) {
