@@ -45,6 +45,46 @@ public class BasicElement extends AbstractNode implements Element {
       setAttributes( new AttrList( atts ) );
   }
 
+  public BasicElement( BasicElement e, AttributeList atts, NodeList content ){
+    setParent( null );
+    setPrevious( null );
+    setNext( null );
+    setTagName( e.getTagName() );
+    if( atts != null )
+      setAttributes( new AttrList( atts ) );
+    if (content != null) {
+      NodeEnumerator enum = content.getEnumerator();
+
+      for (Node elem = enum.getFirst(); elem != null; elem = enum.getNext()) {
+	try{
+	  insertBefore( elem, null );
+	}catch(NotMyChildException ex){
+	  Report.debug(ex.toString());
+	}
+      }
+    }
+  }
+
+  public BasicElement( String tag, AttributeList atts, NodeList content ){
+    setParent( null );
+    setPrevious( null );
+    setNext( null );
+    setTagName( tag );
+    if( atts != null )
+      setAttributes( new AttrList( atts ) );
+    if (content != null) {
+      NodeEnumerator enum = content.getEnumerator();
+
+      for (Node elem = enum.getFirst(); elem != null; elem = enum.getNext()) {
+	try{
+	  insertBefore( elem, null );
+	}catch(NotMyChildException ex){
+	  Report.debug(ex.toString());
+	}
+      }
+    }
+  }
+
   public BasicElement(Node myParent){
     if( myParent != null )
       setParent( (AbstractNode)myParent );
