@@ -3,20 +3,6 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
  
-  /**
-   *Feature Computers.
-   *All take a transaction as their argument, and most return a
-   *boolean.  Feature computers may use the utility method
-   *transaction->assert(name,value) to set additional features. 
-   *
-   *By convention, a feature computer "is_foo" computes a feature
-   *named "foo". 
-   *
-   *Default Features: 
-   *	These are computed by default when a transaction is created;
-   *	they may have to be recomputed if the transaction is modified.
-   *
-   */
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
@@ -26,9 +12,11 @@ import crc.pia.Transaction;
 public final class IsAgentResponse implements UnaryFunctor{
 
   /**
-   * 
+   * Is this an agent's response transaction. 
    * @param object A transaction 
-   * @return object boolean
+   * @return true if this transaction's "Version" header is "pia" and  either of the following condition is true:
+   * 1- The request transaction attached to this  transaction is not defined
+   * 2- The request transaction is a request for the agency.
    */
     public Object execute( Object o ){
       URL url = null;
@@ -53,7 +41,7 @@ public final class IsAgentResponse implements UnaryFunctor{
 	if(!defineRequest)
 	  return new Boolean( true );
 	Boolean res = (Boolean)request.is("IsAgentRequest");
-	if( res.booleanValue() )
+	if( res.booleanValue()  == true )
 	  return new Boolean( true );
       }
       return new Boolean( false );
