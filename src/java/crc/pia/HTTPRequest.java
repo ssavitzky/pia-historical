@@ -371,10 +371,13 @@ public class  HTTPRequest extends Transaction {
       else{
 	String zurl = zurlandmore.substring(0, pos);
 	url = zurl;
-	String qs = zurlandmore.substring(pos+1);
-	
+	//String qs = zurlandmore.substring(pos+1);
+	String qs = zurlandmore.substring(pos);
+
 	if( qs!= null )
 	  queryString = Utilities.unescape( qs );
+
+	Pia.debug(this, "The query string is: "+qs);
       }
     }
     else
@@ -414,7 +417,9 @@ public class  HTTPRequest extends Transaction {
     fc = (contentObj() instanceof FormContent)? (FormContent)contentObj()
                                               : new FormContent();
     if( queryString()!= null && mymethod.equalsIgnoreCase( "GET" ) ){
-      fc.setParameters( queryString() );
+      String qs = queryString().substring( 1 );
+      Pia.debug(this, "Before setting parameters, query string w/o ? is" + qs );
+      fc.setParameters( qs );
     }else {
       if( mymethod.equalsIgnoreCase( "POST" )  )
 	// sucks actual parameters from body of content
