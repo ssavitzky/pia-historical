@@ -29,24 +29,78 @@ public class T_content{
   private static void printusage(){
     System.out.println("Needs to know what kind of test");
     System.out.println("For test 1, here is the command --> java crc.pia.T_content -1 postno1line.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.T_content CONTENT_CLASS_ID FILE_NAME");
+    System.out.println("For test 2, here is the command --> java crc.pia.T_content -2 textString");
+    System.out.println("For test 3, here is the command --> java crc.pia.T_content CONTENT_CLASS_ID FILE_NAME");
+    System.out.println("For test 2, here is the command --> java crc.pia.T_content originalString targetString replacementString");
 
   }
 
 
   public static void main(String[] args){
-
-    if( args.length != 2 ){
+    if( args.length < 2 ){
       printusage();
       System.exit( 1 );
     }
     
-    if( args[0].equals ("-1") && args[1] != null )
-      test1( args[1] );
-      else 
-	test2( args[0], args[1] );
+    if( args.length == 3 ){
+      // testing contentString replacement
+      // args[0] -- is the original string
+      // args[1] -- is the target substring
+      // args[2] -- is the replacement 
+      testStringContRep( args[0], args[1], args[2] );
+    }else{
+      if( args[0].equals ("-1") && args[1] != null )
+	test1( args[1] );
+      else {
+	if( args[0].equals ("-2") && args[1] != null ) 
+	  testStringCont( args[1] );
+	else
+	  test2( args[0], args[1] );
+      }
+    }
     System.exit( 1 );
   }
+
+
+  private static void testStringContRep( String os, String ts, String rs ){
+    System.out.println("Testing  Stringcontent class's replacement function using.");
+    System.out.println("Input is original, target, and replacement strings.\n\n");
+    System.out.println("Output is a dump of the Stringcontent.\n\n");
+    StringContent c;
+
+    try{
+      c = new StringContent( os );
+      c.replace( ts, rs );
+      c.writeTo(System.out);
+    }catch(Exception e ){
+      e.printStackTrace();
+      System.out.println( e.toString() );
+    }
+    System.exit( 0 );
+
+  }
+
+
+
+  /**
+  * For testing.
+  * 
+  */ 
+  private static void testStringCont(String s){
+    System.out.println("Testing  Stringcontent class using s as input.");
+    System.out.println("Output is a dump of the Stringcontent.\n\n");
+    Content c;
+
+    try{
+      c = new StringContent( s );
+      c.writeTo(System.out);
+    }catch(Exception e ){
+      e.printStackTrace();
+      System.out.println( e.toString() );
+    }
+    System.exit( 0 );
+  }
+
 
 
 
