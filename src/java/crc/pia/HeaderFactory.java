@@ -47,11 +47,11 @@ public class HeaderFactory
     try{
       MimeParser p  = new MimeParser(input, f);
 
-      Pia.instance().debug(this, "Parsing header...\n\n");
+      Pia.debug(this, "Parsing header...\n\n");
       HttpEntityMessage jigsawHeaders = (HttpEntityMessage) p.parse();
 
       Headers headers = new Headers( jigsawHeaders );
-      Pia.instance().debug(this, "Header is done\n");
+      Pia.debug(this, "Header is done\n");
 
       return headers;
     }catch(Exception ex){
@@ -60,39 +60,14 @@ public class HeaderFactory
     }
     
   }
-
-  private static void usage(){
-    System.out.println("Test the creation of a header.  Use headerstest.txt for input.");
-    System.out.println("java crc.pia.HeaderFactory headerstest.txt");
-  }
-
-  /**
-  * For testing.
-  * 
-  */ 
-  public static void main(String[] args){
-    if( args.length == 0 ){
-      usage();
-      System.exit( 1 );
-    }
-
-    String filename = args[0];
-
-    HeaderFactory hf = new HeaderFactory();
-
-    try{
-      InputStream in = (new BufferedInputStream
-			(new FileInputStream (filename)));
-    
-      Headers h = hf.createHeader( in );
-      Pia.instance().debug( h.toString() );
-    }catch(Exception e ){
-      Pia.instance().debug( e.toString() );
-    }finally{
-      System.exit( 0 );
-    }
-  }
 }
+
+
+
+
+
+
+
 
 
 
