@@ -1,0 +1,653 @@
+\documentclass{article}
+\usepackage{psfig}            
+\usepackage{html}            
+
+\begin{document}
+\input{../macros}
+\pagestyle{myheadings}\markboth{DRAFT NOA on PIA}{DRAFT NOA on PIA}
+\title{DRAFT -- DRAFT -- DRAFT -- \\Building Network Office Appliances using the PIA Framework}
+\author{\htmladdnormallink{ Gregory J.  Wolff}{http://rsv.ricoh.com/$\tilde{}$wolff/}
+\\ \htmladdnormallink{PIA Group}{\PIA}}
+\date{}
+\maketitle
+
+
+
+\begin{abstract}
+This document presents  a  working guide to building  Network User
+Interfaces for Network Office Appliances
+using the PIA framework.  
+Links to examples, code, and related
+documents are provided.
+\end{abstract}
+
+\tableofcontents
+%\listoffigures
+
+\section{Introduction}
+\label{sec:intro}
+
+An Information Appliance differs significantly from a personal computer in
+ ease of installation and maintenance, intended usage, and training
+ costs.  Network Office Appliances represent an important class of
+ Information Appliances.  A Network Office Appliance (NOA) connects to the
+ network, is shared among a group of users, and works so simply that You
+ Already Know How To Use It (YAKHUI). 
+
+Users control and access network appliances (and other servers) through a web browser.
+All functions, options, and  documentation appear embedded in web pages
+(HTML documents) that can be viewed on any display.  These pages constitute a
+{\it Network User Interface} for the appliance.  In contrast with the
+``Desktop'' metaphor of Graphical User Interfaces, the Network User
+Interface  uses a document metaphor.
+The primitive state of design principles and tools for developing
+Network User Interfaces poses a difficult challenge for network appliance
+developers. 
+
+
+This document describes a reusable design or ``Framework''  that can reduce
+the difficulty and speed up the development of Network Office Appliances.  This framework reduces time-to-marked by enabling developers to
+rapidly do the prototyping and user testing needed to create
+effective Network User Interfaces while simultaneously developing working hardware.
+ The framework also provides a number of other features, such as full
+customization and integrated customer service, 
+that can greatly reduce life cycle costs while providing additional customer value.
+
+\FIG{NOAvsPC}{Diagram of relationship between PC and NOA.  PC (on left) is
+an ``open box'' solution -- shaded areas represent device specific dependencies that user
+must maintain.  NOA is ``closed box'' no dependencies across box boundaries.}
+
+\latexonly{
+Figure \ref{fig:NOAvsPC} sketches the architectural differences between
+conventional PCs and Network Office Appliances.}  For
+ %\SEE{http://rsv.ricoh.com}{sbc}{the Strategic Business Center}.  For
+demonstrations of prototype NOA's \SEE{PIA/Doc/demos.html}{the PIA demos}.
+
+\subsection{About this document}
+Each section of this document contains links to related material,
+including other documents, presentations, working code, and manuals.     The
+In the paper
+version, the URL associated with a link will show up as a footnote.
+ Links to components of the PIA framework appear in special type.  Here are
+some examples:
+\begin{description}
+\item[Manuals] \MAN{User}
+\item[InterForm (links to live output and the source)] \IFcode{Agency/home.if}
+\item[Java Classes (links to documentation and the source)]
+\Jclass{crc.pia.Pia}
+\item[Other files in the PIA distribution]
+\TOP{PIA/Doc/Papers/BuildingNOA/BuildingNOA}{This Document}
+\item[Files outside the distribution] \SEE{}{PIA Web Site}. 
+\end{description}
+
+\subsection{PIA -- Peripheral Information Agency}
+% diagram of relationship between IA, NOA, PC
+A computational {\bf Platform} provides a means for creating and running
+user level applications.  Conventional computer platforms, such as
+Microsoft's Windows,  support the creation of {\it Graphical User
+Interfaces}.   Sharing this
+infrastructure across applications reduces development time and improves
+usability.
+
+A Peripheral Information Agency provides a means for creating and running
+ networked appliances which users access through a web browser. The PIA
+ supports the creation of {\it Network User Interfaces} with a core set of
+ functions for manipulating documents.
+ Like conventional platforms, sharing this
+infrastructure reduces development time and improves the reliability and
+ usability of network appliances.
+
+ Applications on the PIA platform are called ``Agents'' because they typically
+ engage in a dialog with users, sending a sequence of pages in response to
+ user requests.  As explained below, most Agents can be created by authoring
+ HTML documents without the need for programming.
+
+%\FIG{platforms}{Diagram of relationship between NOA, PIA}
+
+
+For more on Information Appliances \SEE{Doc/vision.html}{the PIA vision}.
+For more on  Frameworks  see \htmladdnormallinkfoot{REST -
+Extensible Software Toolkit}{http://internal.crc.ricoh.com/projects/es/rest}.
+
+
+\section{Fax Management Appliance}
+\label{sec:FMA}
+A proposed ``Fax Management Appliance'' (FMA) serves to illustrate our design
+principles for Network Office Appliances.  Based on a standard fax machine
+(a very successful office appliance), the FMA converts faxes into electronic
+documents and vice versa, allowing users to view or send them using a web
+browser.  The FMA also provides means for managing those documents, such as
+grouping together all correspondence with a particular customer, or all
+communications/versions of a particular document.
+
+\IFcode{FMA}
+%%FMA ScreenShow goes here
+
+\section{Architecture Overview}
+\label{sec:arch}
+ Each NOA connects to the network and acts as both a client and server.
+ User's interact with the NOA through any web browser. Depending on the
+ device, some or all functions may also be available through the front
+ panel\footnote{Front panel requests can always be mapped into
+ corresponding HTTP requests.}.
+
+\FIG{arch}{Diagram of NOA architecture}
+
+ Internally, the NOA consists of the two main parts shown in Figure \ref{fig:arch}. The ``Information Agency''
+ responds to user requests and maintains the document database.
+ The ``Hardware Unit'' which performs some task (e.g. printer engine,
+ scanner, etc.) similar to today's peripherals\footnote{Peripherals differ
+ from NOA in determining system boundaries.  Peripherals generate / consume
+ data which must be interpreted by some application before being useful.
+ Customers are responsible for maintaining the proper link between
+ application and peripherals (an {\bf open-box} solution).  In contrast,
+ NOA's generate documents which customers can use directly (a {\bf
+ closed-box} solution).}.
+ During prototyping, these two parts may be located in separate boxes.  The
+ Information Agency box (called a ``WebWort'') plugging into the network and
+ communicating with the Hardware Unit via proprietary channels (e.g. a
+ WebPrinter Agency connected by parallel port to a printer).
+
+ The Information Agency scales from small, resource limited devices to full scale
+ supercomputers and does not specify a particular hardware architecture or
+ operating system.
+ Typically the computational resources needed will be dictated by the
+ Hardware Unit and the core PIA system will be ported to that computational
+ environment.  This core requires a network interface,  a small amount of
+ process memory, and access to static memory for the InterForms.  Ports to C
+ environments should be straightforward.  
+
+The PIA group provides a reference
+ implementation  Information Agency written in Java along with assistance
+ for porting the core functions to other
+ environments.  Any computer can run this reference implementation and be
+ used to prototype the  Network User Interface.  Because of the wide range of hardware
+ environment, the interaction between the Information Agency and the
+ Hardware Unit must be determined on a case by case basis\footnote{The
+ framework does provide some guidelines for this interaction.  However the
+ main determining factor will be the hardware port.   In some cases, the
+ systems will communicate via the document storage.  In other cases, agents
+ will be extended to communicate via system calls.  See \ref{sub:hi}}.
+
+\subsection{Information Agency components}
+
+%\FIG{arch}{Diagram of Information Agency Component}
+
+\begin{description}
+\item[Agents] Software objects which respond to user requests and manipulate
+documents.  Roughly analogous to applications except that all
+ user interaction takes place through a sequence of HTTP requests and responses. See \MAN{Author},
+\Jclass{crc.pia.Agent}.
+\item[InterForms] Since all user interaction happens through HTTP requests,
+the {\bf user interface} consists of a set of HTML {\bf forms}.   Rather
+than write programs to generate these HTML documents, developers simply
+create SGML documents which we call InterForms ({\bf Inter}face {\bf
+Forms}). For most user requests, an agent retrieves the appropriate
+InterForm and sends it the user.  In addition to standard HTML tags,
+InterForms include a number of special tags which instruct the agent to
+perform various actions.  For example,  an agent would interpret:
+{\tt <repeat list=\&documents; entity=doc> \&doc; </repeat> }  
+ as an instruction to insert the list of documents into the HTML document that
+is being sent back to the user.  See \MAN{InterForm}, \IFcode{FMA/home.if},
+\IFcode{FMA/send.if}, \Jclass{crc.interform.Handle}, \Jclass{crc.interform.Interp},
+\item[Document storage]  Stores information about documents in the system.
+May also store the electronic versions of documents themselves, or pointers to documents stored
+elsewhere on the network. For simplicity, the reference implementation uses
+the underlying file system. See \DATA{FMA/incoming}, \Jclass{findInterForm}{crc.pia.GenericAgent}
+\item[HardwareInterface] Many appliances include some special hardware, for
+example a fax modem. This interface allows agents to send instructions to
+the  hardware, or for the hardware to send messages to agents or add to the
+document storage.  Generally, input devices (scanners) simply add documents to the
+database.  \SEE{\USER}{Config}{Configuration directory}  for setting up
+processes and \Jclass{crc.interform.Handle} for getting access from within
+InterForms.
+
+\end{description}
+
+ \subsection{Office Architecture}
+ Eventually offices will include several NOA's and other information
+ resources. Most offices will have a central directory and resources guide.
+ This repository will point to other servers within the organization and
+ NOA's.   This repository may also provide search, archiving, and backup
+ functions across these resources.  Conventions for these operations will
+ develop over time and be incorporated into the PIA framework.
+\FIG{lahoo}{Logical structure of NOA's}
+
+
+
+
+\section{Steps to Building a NOA}
+\label{sec:steps}
+This section describes the steps in building a Network User Interface.  As
+shown in Figure \ref{fig:arch}, the Information Agency handles all user
+(HTTP) requests.  The agency routes each request to the appropriate agent
+which uses an InterForm to generate a response.  Thus the InterForms and
+their interrelationships constitute the Network User Interface.  Section
+\ref{sub:agents} describes  the general procedure for creating
+agents, while section \ref{sub:interforms} describes authoring InterForms.  
+Because of the new paradigm,   user
+testing (Section \ref{sub:usertests}) will be critical to creating successful
+Network User Interfaces.
+
+ Developing the user interface requires a combination of technical writing,
+ graphic design, and user testing skills to construct the set of web pages
+ (InterForms) that the users see.  Some programming skills may be required
+ to extend agents to provide additional functions not currently supported in
+ the core agency.
+
+ The Information Agency runs on top of some computational architecture.  For
+ initial development, a conventional PC running the PIA reference
+ implementation (Section \ref{sub:refimp} may be used.
+ For the delivered product, the core functions of the agency must be ported
+ to the target architecture as described in section \ref{sub:hard}.
+ This step can be done been parallel with the user interface development to reduce the time to market.
+
+ Porting the PIA core to the target hardware requires standard software
+ engineering skills. Normally this work would be performed by the group
+ responsible for software components (OS, controller, protocol handlers) of
+ the device.  Porting can be done either by implementing the core functions
+ in native code, or providing a Java run-time environment on which the
+ reference implementation can run.  This group should also determine and
+ implement the Hardware Interface\footnote{Note that since this group
+ controls both sides of this interface, the development task should be
+ considerably easier and more flexible than traditional interfaces where the
+ device driver resides on the PC.}.
+
+\subsection{Prototyping}
+
+ Prototyping the Network User Interface should begin as early as  possible.
+ Because of the novelty of the linked document, several rounds of user
+ testing will be necessary to construct an effective and clear interface.
+
+
+\subsubsection{PIA reference implementation}
+\label{sub:refimp}
+The PIA reference implementation can be used for prototyping (with or
+without the hardware backend).  The reference implementation written in Java
+ should run on most computers and has been tested on Unix and Windows95. 
+ Contact the \htmladdnormallinkfoot{PIA group}{\PIA} to obtain a copy.
+
+ A running PIA looks like a web server.  By default it should be accessible
+ to any web browser through port {\tt 8888}.
+ If you have a PIA running, this document should be available at
+ \htmladdnormallink{{\tt http://localhost:8888/Doc/Papers/BuildingNOA/}}{http://localhost:8888/Doc/Papers/BuildingNOA/} where {\tt localhost} is the name of machine the PIA is running  on.
+The port number, host name, and many other properties can be modified with
+ command line arguments or through the \TOP{Config/pia.props}{properties
+ file}.
+
+See the \MAN{Install} for more information and configuration information.
+
+
+\subsubsection{Agent(s)}
+\label{sub:agents}
+ Agents are persistent software objects that exist on the Information Agency.
+ Agents handle (HTTP) requests made to the agency, typically by locating the
+ appropriate InterForm, interpreting it, and sending the results back to the
+ user.  Most requests specify a particular agent directly in the url, for
+ example \URL{FMA/home.if} specifies a request for the home page of the FMA
+ agent.
+
+ Agent objects get created during start-up by the \Jclass{crc.pia.Pia}. In
+ the development system, a special agent called ``Agency'' gets instantiated
+ by default.  This agent in turn reads the file
+ \TOP{Agents/Agency/START-UP.html} and instantiates the agents listed
+ there.  On a running agency, agent objects can be creating through the
+ \IFcode{Agency/installers.if}.
+
+Agents have both a name and a type.  By convention agent names should begin
+with a capital letter.  In most cases the agent name and type will be
+identical.   Sometimes different agents will share the same functions but
+operate on different data, for example, each instance of the
+\TOP{Agents/DOFS}{Document Oriented Filing System} operates on a different
+file hierarchy.  These agents have the same type, but different names.
+
+ If the agency has access to a class corresponding to the specified type of
+ an agent, the agent object will be an instantiation of that class.  By
+ default, agent objects are instantiations of the
+ \Jclass{crc.pia.GenericAgent}.   This section describes the standard
+ behavior of these GenericAgent types. \footnote{\Jclass{crc.pia.Agent} is an
+ interface.  Software engineers may create agents with almost any kind of
+ behavior.  In practice, functions  specific to a given agent will generally
+ be implemented by subclassing GenericAgent.}
+
+ Agent names and types serve to specify the location of an agents InterForm
+ and data  objects.  On the development system these objects are stored in
+ files.  Data files are located in the \&usrDIR; (default: $\tilde{}$/.pia,
+ property: crc.pia.usrroot, command line flag: -d)
+ directory. \&usrDIR;/FMA specifies the directory for the \DATA{FMA}.
+ InterForms are located in the \TOP{Agents} directory.  Agents look for
+ InterForms first in a subdirectory corresponding to their name, then a
+ subdirectory corresponding to their type, then in the Agents directory.  On
+ the development system, if the directory \&usrDIR;/Agents exists then
+ agents will look for InterForms in that directory before using the
+ \TOP{Agents} directory.  This provides a very simple type of InterForm
+ inheritance that makes it extremely quick easy to  customize the  behavior
+ of agents.
+
+ See the \MAN{Tutorial} \MAN{Author}
+ for more information on creating agents
+
+
+The NOA network user interface development precedes by creating a new agent
+tailored to the specific functions of the appliance.  In addition to the
+device specific InterForms, this agent should
+provide the standard set of InterForms:
+ \begin{itemize}
+\item\IFcode{home.if} The home page for the appliance which includes links
+to major functions and Ricoh support sites.
+\item\IFcode{index.if} Should list all functions available in terse format.
+\item \IFcode{about.inc} should provide a summary description of the
+appliance to be included in other InterForms.
+\item \IFcode{initialize.if}  Should initialize any data structures --
+ this form is automatically accessed  by the agency when creating the agent
+ object.
+\item \IFcode{archive.if} Should return a list of links, the contents of
+which constitute a snapshot of the data of this agent-- used by other systems
+ for creating system wide backups and directories.
+ \end{itemize}(These can be inherited from the \TOP{Agents}{Agents directory}.)
+
+
+\FIG{fma1.home}{Links between InterForms for the Fax Management Appliance.}
+
+The fax management agent includes InterForms for sending faxes, viewing
+received faxes, and viewing fax correspondence organized in various ways.
+Faxes to be sent can be specified by URL, in which case the agent first
+retrieves the document and renders it for faxing, or ``up-loaded'' to the agent
+using the browser.
+Both received and sent faxes  can be searched and viewed in several ways, for example by
+date (using a calendar), by phone number, by account, etc. 
+  Most NOA's will have similar InterForms for viewing their document
+databases.   These views should be appropriate to the customer tasks, and
+may eventually use document analysis to provide, for example, views showing
+versions of the same document.
+
+
+\IFcode{home.if}
+\IFcode{FMA/initialize.if}
+\IFcode{FMA/about.inc}
+\IFcode{FMA/send.if}
+
+\Jclass{crc.pia.Agent}
+\Jclass{crc.pia.GenericAgent}
+
+
+\subsubsection{InterForms}
+\label{sub:interforms}
+ InterForms are standard HTML documents with an extended set of tags,
+ including {\tt repeat, get, sort, ... }.
+ Agents respond to requests by locating the appropriate InterForm,
+ interpreting the contents, and sending the result as the response.
+ Most tags will be passed to the browser as normal.  Some tags cause
+ the agent to perform some action, for example, when the agent sees {\tt <get
+ name=''foo''> } it will insert the contents of the variable {\tt foo} into
+ the response, or {\tt <sort> 2 1 3 </sort> } will put {\tt 1 2 3 } in the
+ response.  Agents also perform entity (like variables) substitution.
+ Constructs like{\tt  \&agentName;} will be replaced by the corresponding
+ value,  e.g. {\tt FMA} in the response.
+ In this way, InterForms act like a scripting language for agents.
+
+ The InterForm interpreter provides many tags for manipulating documents and
+agents, and a means for dynamically extending the set of tags. See the
+\MAN{InterForm} and the InterForm demonstration agent:
+\IFcode{InterForm/demo.if}
+\IFcode{InterForm/entities.if}
+
+ HTML documents and InterForms are a type 
+ SGML\footnote{Standard Generalized Markup Language is an international
+ standard for document types.  HTML documents are a type of SGML documents that conform to the HTML
+ Document Type Definition (DTD).  The InterForm system extends the HTML DTD
+ and could work with any other type of SGML document given the proper
+ \Jcode{crc.sgml.Tagset}.} with which most technical writers should be
+ familiar.  All of the editing tools and support for SGML documents should
+ apply to creating InterForms.
+
+Active documents such as InterForms present a new set of challenges for
+information designers. These documents serve both as the user manual and the
+Network User Interface for the appliance.  Pages will be viewed on a wide variety of displays,
+and must afford efficient access to the primary functions.  User
+participation and testing
+will be critical to developing successful systems.
+
+ In developing the PIA demonstrations, several conventions have been
+ observed to improve the look and feel of the documents and aid in
+ maintainability.
+\begin{itemize}
+\item  Commonly used pieces, such as headers and footers should be stored in
+separate files with a {\tt .inc} extension and included in documents using
+the
+{\tt <read interform file=XXX.inc process>} tag.
+\IFcode{FMA/heading.inc}\IFcode{FMA/footing.inc}
+\item The actions to take on submission of a form should be embedded in a
+process tag inside a form,
+{\tt <form action=''\&url''> ... <process> ACTIONS </process> </form>}
+\item The home page  should include links to major functions, as well as the
+product support site,\IFcode{FMA/home.if}
+\item Graphics should be stored in an {\tt Icons} subdirectory of the agents
+InterForm directory.
+\item Absolute urls using {\tt http://\&piaHOST;\&piaPORT;/\&agentName;/XXX}
+should be used when possible. (This allows users to store and modify the pages
+that they view, while maintaining portability of the InterForm sources
+across agencies and agent names.)
+\item  The collection of an agent's InterForms should be maintained using a
+version control system. (The PIA group uses CVS.)
+\end{itemize}
+ Over time, design principles and guides for Network User Interfaces should
+ be established.
+
+\subsubsection{Document Processing and Storage}
+ Most network office appliances will process documents of one type or
+another.  The nature, size, and implementation of this storage will vary
+across appliances.  All implementations should be able to store the contents
+of the documents along any meta-data, such as a of creation and source.
+ The reference implementation uses a simple file system structure for
+storing documents. The data directory for each agent contains a subdirectory
+for each type of document, for example, in the FMA agent, the
+\DDIR{FMA/incoming}{incoming} and \DDIR{FMA/outgoing}{outgoing} directories
+contain the incoming and outgoing faxes.  Within each directory documents
+are stored in a unique location corresponding to current date, so a fax sent
+on Sept.12, 1997 at 10 a.m. would be stored in a directory {\tt
+FMA/outgoing/1997/09/12/10:00/}. Files in that directory would include the
+contents {\tt fax.tif} and additional meta data {\tt XXX}.
+
+ By default,  file names within an InterForm are relative to the agents data
+ directory, so {\tt <read file=FMA/outgoing/1997/09/12/10:00/XXX>} would
+ read in the meta data file above.  For convenience, urls beginning with
+ {\tt /$\tilde{}$AGENTNAME/} also map to the agents data directory, so {\tt
+ <a
+ href=``http://\&piaHOST;:\&piaPORT;/$\tilde{}$\&agentName;/outgoing/1997/09/12/10:00/fax.tif''>} in an FMA agent InterForm would generate a link to the
+ above fax.
+
+ Within an InterForm, SGML documents can be treated as data structures.
+ Imagine setting the variable foo to the contents of Ricoh's home page:{\tt
+ <set name=foo><read href=``http://www.ricoh.com/''></set>}. The various
+ pieces of foo can now be accessed using the get tag: {\tt <get
+ name=``foo.head.title''>}  would return the title (if any) of the document
+ assuming the canonical html structure {\tt <head><title>DOCUMENT
+ TITLE</title></head>}.  For convenience, entity substitutions {\tt
+ \&foo.head.title;} can be used in place of get tags.
+
+Agents provide a convenient mechanism for storing data/documents. {\tt <set
+agent name=foo>CONTENTS</set> } sets a variable foo that can be accessed by
+any other InterForms as {\tt <get agent name=foo>} or more simply {\tt
+\&AGENT.foo;}.  Likewise the data associated with a form submission is
+available within the interform as {\tt <get  form name=foo>} 
+{\tt \&FORM.foo;} where {\tt  foo} is the name of an input field in the
+form.
+
+Agents should provide mechanisms for searching the document database through
+the get tag.  For example,{\tt <get agent name=DATA contains=''keyword''>}
+should return  all documents containing the {\tt keyword}.  Standardized
+mechanisms and the query interface are under development.  
+
+
+
+\subsubsection{Hardware Interface}
+\label{sub:hi}
+ The PIA framework does not specify a single means for interaction between
+ the information agency and the hardware unit.  Depending upon the core
+ implementation, this interaction may take one of several forms.  In the
+ simplest case, the systems share the document repository.  Documents
+ captured by the hardware are added to the proper location in the
+ repository.  InterForms access these documents in the normal manner.  The
+ \htmladdnormallinkfoot{http://photo.crc.ricoh.com:8001/}{Photo\_Album}
+ prototype operates in this manner.  When a memory card is inserted, photos
+ are automatically copied into the photo database for future retrieval by
+ agents.  The {\tt latest} link is updated to point to that location.
+
+A second method allows InterForms to control hardware functions through
+special tags, for example {\tt <status>} might insert a string
+ representing the status of the hardware. Implementation of these tags
+should be done by extending the \Jcode{crc.interform.Handler}. (Also see the
+standard \Jcode{crc.interform.handler} package.) During development, the{\tt
+<define-actor>} tag may be used define a tag to mimic the designed behavior.
+
+For more complex interactions, developers may create a new class of agents,
+either by extending the \Jcode{crc.pia.GenericAgent} or creating a new class
+which extends the \Jcode{crc.pia.Agent} interface.  In this case, responses
+to certain types of requests might be generated directly by the agent
+without any responding InterForm.  During development,  the behavior could
+be mimicked by InterForms for testing purposes.
+
+
+
+\subsection{User Testing}
+\label{sub:usertests}
+ User testing plays a critical role in developing successful NOA's.  Because
+ of the new Network User Interface paradigm and the positioning as
+ ``appliances'' several iterations of developing and testing the prototype
+ should be performed.
+
+Informal testing of the interface should begin soon after InterForm
+development starts.  Initial prototypes (usually consisting of separate
+information agency and hardware unit boxes) should be placed in customer
+sites as soon as possible.   In addition to normal user interviews, the \IFcode{History} and \IFcode{Bug} agents can be used to track
+accesses and provide feedback on the usability of interface.
+
+ Since development consists mainly of editing HTML documents, the InterForm
+ developer can respond almost immediately to user concerns and requests for
+ changes.   Part of the initial installation might include the developer
+ spending a few days on site customizing the system.  Integrating the
+ changes made across all customers should result in a superior system.
+
+\FIG{Usertests}{Proposed project timeline}
+
+\subsection{Hardware / Software Development}
+\label{sub:hard}
+ The PIA framework does not specify a particular computational
+ architecture.  It does provide a means for cleanly separating the Network
+ User Interface from the system hardware allowing parallel development
+ efforts. The choice of hardware platform and operating system will normally
+ be dictated by the hardware unit.  
+
+\subsubsection{PIA core implementation}
+The software developers should be
+ responsible for supplying the core PIA functions on the target system.
+These include basic network transport along with the Agent,
+ Content, Transaction, Machine, and Resolves interfaces and data structures.
+
+The core functions may be supported either by porting the core functions to
+the target system or by supplying a Java run time environment for the PIA
+reference implementation.\footnote{Sun Microsystems has announced plans for
+ system components for embedded devices such as NOA's.  These include Java
+OS, Embedded Java, and the Java chipset.  See
+\htmladdnormallink{http://java.sun.com/}{http://java.sun.com/}}
+
+In porting the PIA core, the software developers should also provide the
+ hardware interface between the information agency and the hardware unit.
+ See \ref{sub:hi} for more details.
+
+ In cases where the PIA port does not include an InterForm interpreter or to
+ conserve storage and improve performance, source InterForms can be compiled
+ to an internal format.   Using an appropriately defined
+ \Jclass{crc.interform.Tagset}, the reference implementation can be
+ configured to generate the appropriately compiled InterForms for the target
+ system.
+
+ Please contact the PIA group for assistance in porting the core to your
+ target hardware.  The PIA group will maintain the most current reference
+ implementation and attempt to ensure consistency, compatibility, and
+ code reuse among different ports.
+
+
+\section{Cost of Goods and Other Considerations}
+\label{sec:add}
+ The PIA framework has implications for the other steps in the life cycle of
+ an NOA.
+
+\begin{description}
+
+\item[Cost of Goods]   The PIA framework itself should not  substantially affect the costs of
+ goods.  Any NOA will require the same set of minimal hardware
+ (processing, storage).  The services provided, e.g. size of document store
+ or image processing capabilities,
+ will have the biggest impact on costs.
+ Relative to existing peripherals, NOA's may require more process memory and
+ long term storage.(And of course a network interface.)
+
+\item[Manufacture] A diagnostic agent could be developed which assists been
+ the  quality assurance process.
+
+\item[Installation] NOA devices should require no installation effort by the
+user.  After plugging the NOA into the power and data networks, the system
+should continue itself.  This includes auto detection of network type, host
+name (e.g. DHCP), etc. Default parameters may be changed through
+administration InterForms.
+
+\item[Maintenance]  One of the agents on the delivered system should be
+responsible for monitoring the status of the device.  It may automatically
+fix some problems (e.g. archiving files when storage gets tight), and alerts
+users and / or the product support center for others.  It would also provide
+data to remote diagnostic systems.   Each NOA product line should have an
+associated technical support web site for communication with these
+diagnostic agents as well as customers.
+
+
+\item[Business models]   The many experiments currently underway on the
+Internet and Intranets will eventually lead to some successful business models.
+The flexibility of the Network User Interface
+developed in the PIA framework will enable NOA's to take advantage of these
+business models.   For example, targeted advertising could be included in
+the interface.  At the least, the brand name will constantly be displayed
+and customers will always have a ``one-click'' path to contact the provider.
+
+\end{description}
+
+\section{Conclusion}
+\label{sec:conc}
+ The PIA framework provides a structured method for building the Network
+ User Interface to Network Office Appliances.  It provides a rapid
+ prototyping environment for reducing development time and improving
+ quality, separates user interfaces from hardware thereby allowing parallel
+ development, and scales across a broad range of product lines, resulting in
+ lower life cycle costs and improved ability to deliver value added solutions.
+
+
+\section{Appendix: PIA development}
+\label{app:pia}
+ The PIA group started at Ricoh's California Research Center in January 1997
+ with the charter of producing Platforms for Information Appliances.  The
+ primary activity has been developing the reference implementation of the
+ Information Agency.  Originally built in perl, the system was ported to
+ Java and substantially improved during the first half of 1997.
+
+Several demonstration appliances have been created and are in daily use
+ around CRC.  These include both Peripheral Information Agencies (
+ \htmladdnormallinkfoot{Photo\_Album}{http://photo.crc.ricoh.com:8001},
+ \htmladdnormallinkfoot{Forms processor}{http://forms.crc.ricoh.com:8000},
+and the \htmladdnormallinkfoot{PIA web site}{http://pia.crc.ricoh.com:8888})
+ and  Personal Information Agencies (\htmladdnormallinkfoot{Steve's PIA}{http://gelion.crc.ricoh.com:8888},
+ \htmladdnormallinkfoot{Greg's PIA}{http://ookami.crc.ricoh.com:8888})
+ which act as proxy servers for their owners providing many enhanced web
+ functions.
+
+ The on-line version of this document should be available on
+ \htmladdnormallinkfoot{the PIA web site}{http://pia.crc.ricoh.com:8888/Doc/Papers/BuildingNOA/BuildingNOA}  and is supplied with a distribution of the PIA reference implementation.
+
+For pointers to related technology \SEE{InternalDoc/other}{this loosely
+organized list.}
+
+
+
+ 
+\end{document}
+
