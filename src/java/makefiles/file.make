@@ -33,7 +33,8 @@ DOCDIR  = $(TOPDIR)/Doc
 .SUFFIXES: .java .class
 
 .java.class:
-	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
+#	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
+	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -g $<
 
 all:: $(FILES:.java=.class)
 
