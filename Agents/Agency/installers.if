@@ -210,7 +210,7 @@ which is only useful for agents which have no options.
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="WebPrinter">
-       type: <input name="type" value="Printer">
+       type: <input name="type" value="printer">
        </form>
   <dt>  spool
   <dd> <form action="/Agency/install_agent.if" method="POST">
