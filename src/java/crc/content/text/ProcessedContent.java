@@ -109,6 +109,11 @@ public class ProcessedContent extends  GenericContent {
 
     processor = p;
     tagset = processor.getTagset();
+
+    // === fileName and filePath are probably the wrong entities to define
+    // inputFileName is the full pathname, and pathExtension goes past it.
+    p.define("fileName", file);
+    p.define("filePath", path);
   }
 
 
