@@ -116,8 +116,8 @@ public class Pia{
   private String  host       = null;
   private int     port       = 8001;
   private int     reqTimeout = 50000;
-  private boolean verbose    = true;
-  private static boolean debug  = true;  // always print to screen or file if debugToFile is on
+  private static boolean verbose = true;
+  private static boolean debug   = true;  // always print to screen or file if debugToFile is on
   private static boolean debugToFile= false;
   
 
@@ -255,6 +255,13 @@ public class Pia{
   } 
 
   /**
+   * @return this port number
+   */
+  public int portNumber() {
+    return port;
+  }
+
+  /**
    * @return request time out
    */
   public int requestTimeout(){
@@ -373,34 +380,71 @@ public class Pia{
     
   }
 
+  /** 
+   * Display a message to the user if the "verbose" flag is set.
+   */
+  public static void verbose(String msg) {
+    if (debug) debug(msg);
+    else if (verbose) System.err.println(msg);
+  }
+
   /**
-   * Dump a debugging statement to trace file
+   * Dump a debugging statement to the trace file
    *
    */
   public static void debug( String msg )
   {
-    if( debug && logger != null && debugToFile )
+    if (!debug) return;
+    if( logger != null && debugToFile )
 	logger.trace ( msg );
-    else if( debug )
+    else
       System.out.println( msg );
-    
   }
 
-    /**
-     * Dump a debugging statement to trace file on behalf of
-     * an object
-     */
-  public static void debug(Object o, String msg )
-  {
-    if( debug && logger != null && debugToFile )
+  /**
+   * Dump a debugging statement to the trace file on behalf of
+   * an object
+   */
+  public static void debug(Object o, String msg) {
+    if (!debug) return;
+    if( logger != null && debugToFile )
 	logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
-    else if( debug )
+    else
       System.out.println("[" +  o.getClass().getName() + "]-->" + msg );
   }
 
     
   /**
-   * message to log
+   * Dump a debugging statement to the trace file, with an extra message
+   *	if verbose.
+   */
+  public static void debug( String msg, String vmsg ) {
+    if (!debug) return;
+    if (verbose) msg = (msg == null)? vmsg : msg + vmsg;
+    if (msg == null) return;
+    if( logger != null && debugToFile )
+	logger.trace ( msg );
+    else
+      System.out.println( msg );
+  }
+
+  /**
+   * Dump a debugging statement to the trace file on behalf of
+   *	 an object, with an extra message if verbose.
+   */
+  public static void debug(Object o, String msg, String vmsg) {
+    if (!debug) return;
+    if (verbose) msg = (msg == null)? vmsg : msg + vmsg;
+    if (msg == null) return;
+    if( logger != null && debugToFile )
+	logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
+    else
+      System.out.println("[" +  o.getClass().getName() + "]-->" + msg );
+  }
+
+    
+  /**
+   * Output a message to the log.
    *
    */
   public static void log( String msg )
