@@ -81,6 +81,10 @@ prep_rel::
 pia_bin.toc:: rm_bin_tar prep_rel
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
+	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
+	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
+	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
+	    | grep -v src/app/webfax | grep -v src/tex \
 	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
 
 pia_bin.tar:	pia_bin.toc
@@ -90,8 +94,14 @@ pia_bin.tar:	pia_bin.toc
 
 pia.toc:: rm_pia_tar prep_rel
 	cd ..;	find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc > pia/pia.toc 
+	    | grep -v CVS | grep -v InternalDoc \
+	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
+	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
+	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
+	    | grep -v src/app/webfax | grep -v src/tex \
+	    | grep -v Doc/Slides > pia/pia.toc 
 
 pia.tar:	pia.toc
 	cd ..; $(TAR) cfT pia/pia.tar pia/pia.toc ;	/bin/gzip pia/pia.tar
+
 
