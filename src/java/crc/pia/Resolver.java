@@ -25,14 +25,14 @@ import java.util.Enumeration;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
-import java.util.Vector;
-
 import java.net.URL;
+
 import crc.pia.Agent;
+import crc.pia.Transaction;
+
 import crc.ds.Queue;
 
-
-public class Resolver extends Thread{
+public class Resolver extends Thread {
   /**
    * Attribute index - a collection of agents currently running.
    */
@@ -45,36 +45,32 @@ public class Resolver extends Thread{
   protected Hashtable computers;
 
   /**
+   * Attribute index - whether to stop running
+   */
+  protected boolean finish = false;
+  
+  /************************************************************************
+  ** Transaction Queue:
+  ************************************************************************/
+
+  /**
    * Attribute index - transaction queue.
    */
   protected Queue transactions;
 
   /**
-   * Attribute index - whether to stop running
-   */
-  protected boolean finish = false;
-  
-  /**
-   * queue -- returns transaction list
-   * 
-   */ 
-  protected Enumeration queue(){
-    return transactions.queue();
-  }
-
-  /**
    * shift -- remove and return the transaction at front of list .
    * If there is no transaction returns null.
    */
-  public Object shift(){
-    return transactions.shift();
+  public final synchronized Transaction shift(){
+    return (Transaction) transactions.shift();
   }
 
   /**
    * unshift -- put a transaction to the front of the list. 
    * returns the number of elements
    */ 
-  public int unshift( Object obj ){
+  public final synchronized int unshift( Transaction obj ){
     return transactions.unshift( obj );
   }
 
@@ -82,30 +78,34 @@ public class Resolver extends Thread{
    * push -- push a transaction onto the end of the list. 
    * returns the number of elements
    */  
-  public int push( Object obj ){
-    Pia.instance().debug(this, "Resolver push get called");
-    return transactions.push( obj );
+  public final synchronized int push( Transaction obj ){
+    Pia.instance().debug(this, "push()");
+    int i = transactions.push( obj );
+    notify();
+    return i;
   }
 
   /**
    * pop -- removes a transaction from the back of the queue and returns it. 
    * returns the number of elements
    */ 
-  public Object pop(){
-    return transactions.pop();
+  public final synchronized Transaction pop(){
+    return (Transaction) transactions.pop();
   }
 
   /**
    * Number of transactions in queue
-   *
    */
-  public int size(){
+  public final synchronized int size(){
     return transactions.size();
   }
 
+  /************************************************************************
+  ** Agents:
+  ************************************************************************/
+
   /**
    * Given agent and its name, store it.
-   *
    */
   protected void agent( String name, Agent agent ){
     String zname = null;
@@ -117,7 +117,6 @@ public class Resolver extends Thread{
 
   /**
    * Get agent collection in a hashtable
-   *
    */
   protected Hashtable agent(){
     return agentCollection;
@@ -192,7 +191,7 @@ public class Resolver extends Thread{
       return null;
   }
 
- /**
+  /**
    * stop thread 
    */
   protected void shutdown(){
@@ -216,33 +215,42 @@ public class Resolver extends Thread{
     start();
   }
 
+  /************************************************************************
+  ** Main Loop:
+  ************************************************************************/
+
+  /** Count of the total number of transactions processed. */
+  public long count;
+
   /**
    *  Resolve -- This is the resolver's main loop.  It starts with one or more
    *  incoming transactions that have been pushed onto its queue, and
    *  loops until they're all taken care of.
    */
   public void run(){
-    int count = 0;
-    int numb = size();
     Transaction tran;
     String urlString;
     long delay = 1000;
-    URL url;
+
+    count = 0;
 
     // Main loop.  
     //	 Entered with some transactions in the input queue.
     //	 Returns total number of transactions processed.
     while( !finish ){
 
-      if( size() == 0 ){
+      if( size() == 0 ) synchronized (this){
 	try{
-	  Thread.currentThread().sleep(delay);
+	  // === should really wait for push to signal us. ===
+	  //Thread.currentThread().sleep(delay);
+	  wait(delay);
 	}catch(InterruptedException ex){;}
       }
       else{
-	tran = (Transaction) pop();
+	tran = pop();
+	count++;
 
-	Pia.instance().debug(this, "Remaining number of transaction " + Integer.toString( size() ) );
+	Pia.instance().debug(this, "Popped "+count+", " + size()+ " left");
 
 	/*
 	  Look for matches.
@@ -251,9 +259,9 @@ public class Resolver extends Thread{
 	  transactions onto the resolver, push satisfiers onto the
 	  transaction, or directly modify the transaction.
 	  */
-	Pia.instance().debug(this, "Before match making...");
-	match( tran );
-	Pia.instance().debug(this, "After match making...");
+	Pia.instance().debug(this, "Attempting to match");
+	int n = match( tran );
+	Pia.instance().debug(this, "..." + n + " matches");
 	
 	/*
 	  Tell the transaction to go satisfy itself.  
@@ -263,7 +271,7 @@ public class Resolver extends Thread{
 	
 	// do indirectly by notifying transaction that it is resolved,
 	// the transaction thread becomes responsible for running satisfy
-	Pia.instance().debug(this, "Transaction please resolve");
+	Pia.instance().debug(this, "Transaction resolves");
 	tran.resolved();      
       }
       
@@ -272,8 +280,12 @@ public class Resolver extends Thread{
     
   }
 
+  /************************************************************************
+  ** Matching features:
+  ************************************************************************/
+
   /**
-   * Find all agents that match the given transaction ;
+   * Find all agents that match the given transaction 
    * each agent that matches gets its actOn method called.
    * @Return the number of matches.
    */
@@ -291,33 +303,38 @@ public class Resolver extends Thread{
     
     while( e.hasMoreElements() ){
       agent = (Agent) e.nextElement();
+      Pia.instance().debug(this, "   match " + agent.name() + "?");
 
       if (tran.matches( agent.criteria() )){
+	Pia.instance().debug(this, "   matched " + agent.name());
 	agent.actOn( tran, this );
 	++ matches;
       }
-      
     }
     return matches;
-
   }
   
+  /************************************************************************
+  ** User Agent
+  ************************************************************************/
+
   /**
-   * Return a response to a caller
-   *
+   * Make a simple request.  This allows the Resolver to serve as
+   *	a user agent.  Agents are matched against the transaction.
+   *	@return the response transaction.
+   *	@param tran the request transaction.
+   *	@param fileName if non-null, a file into which the response
+   *		content is directed. 
    */
-  public Transaction simpleRequest( Transaction tran, String fileName )throws IOException{
+  public Transaction simpleRequest( Transaction tran, String fileName )
+       throws IOException{
     File destinationFile;
     FileOutputStream destination = null;
     PrintStream out = null;
-    Transaction response;
-    /*
-      Return a response to a caller.
-      This lets the resolver serve as a user agent in place of LWP.
-    */
+
     match( tran );
     tran.satisfy( this );
-    response = (Transaction)pop();
+    Transaction response = pop();
     
     if( fileName != null ){
       try{
@@ -334,6 +351,10 @@ public class Resolver extends Thread{
     }
     return response;
   }
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
   public Resolver(){
     agentCollection = new Hashtable();
