@@ -473,9 +473,9 @@ public class FormContent extends Properties implements Content{
 
     Pia.instance().debug(this, "processing...");
     if( toSplit != null ){
-      String urldecodeStr = Utilities.unescape( toSplit );
+      Pia.instance().debug(this, "the toSplit string is-->"+ toSplit);
 
-      tokens = new StringTokenizer( urldecodeStr,"&" );
+      tokens = new StringTokenizer( toSplit,"&" );
 
       queryString = toSplit;
     }
@@ -488,9 +488,7 @@ public class FormContent extends Properties implements Content{
 
       queryString  = zcontent;
 
-      String urldecodeStr = Utilities.unescape( zcontent );
-
-      tokens = new StringTokenizer(urldecodeStr,"&");
+      tokens = new StringTokenizer(zcontent,"&");
 
     }
     if(tokens==null) return;
@@ -505,18 +503,37 @@ public class FormContent extends Properties implements Content{
       pairs[i++] = token;
     }
     i = 0;
+    String param = null;
+    String value = null;
+
     for(; i < pairs.length; i++){
       String s = pairs[i];
-      pos = s.indexOf('=');
-      String p = s.substring(0, pos);
-      String pt = p.trim();
-      paramKeys.addElement( pt );
-      String param = Utilities.unescape( pt );
 
-      String v = s.substring( pos+1 );
-      String vt = v.trim();
-      paramKeys.addElement( vt );
-      String value = Utilities.unescape( vt );
+      Pia.instance().debug(this, "a pair-->"+ s);
+
+      pos = s.indexOf('=');
+      if( pos == -1 ){
+	String eparam = s.trim();
+	paramKeys.addElement( eparam );
+	param = Utilities.unescape( eparam );
+	Pia.instance().debug(this, "a param1-->"+ param);
+
+	//value = crc.sgml.Token.empty;
+	value = "";
+	Pia.instance().debug(this, "a val1-->"+ value);
+      }else{
+	String p = s.substring(0, pos);
+	String eparam = p.trim();
+	paramKeys.addElement( eparam );
+	param = Utilities.unescape( eparam );
+	Pia.instance().debug(this, "a param2-->"+ param);
+	
+	String v = s.substring( pos+1 );
+	String evalue = v.trim();
+	paramKeys.addElement( evalue );
+	value = Utilities.unescape( evalue );
+	Pia.instance().debug(this, "a val2-->"+ value);
+      }
       put(param, value);
     }
   }
@@ -572,11 +589,18 @@ public class FormContent extends Properties implements Content{
   protected OutputStream printParametersOn(OutputStream out){
     PrintStream ps = new PrintStream( out );
     Enumeration e = propertyNames();
+    Object o;
+
     while( e.hasMoreElements() ){
       try{
 	String key = (String)e.nextElement();
 	ps.print( key + "-->" );
-	ps.println( getProperty( key ) ); 
+
+	o = getProperty( key );
+	if( o instanceof String  )
+	  ps.println( (String)o );
+	else
+	  ps.println( "" );
       }catch(Exception ex){ return out;}
     }
     return out;
