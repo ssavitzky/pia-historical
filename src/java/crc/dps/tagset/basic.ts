@@ -56,11 +56,11 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 <define element=define handler no-text>
   <doc> Defines an element, attribute, entity, or word.  It is meaningful for
 	for <tag>define</tag> to occur outside of a <tag>namespace</tag> or
-	<tag>tagset</tag> element because there is always a ``current''
+	<tag>tagset</tag> element because there is always a "current''
 	namespace and tagset in effect.
 
 	<p>A <tag>define</tag> element that contains neither a
-	<tag>value</tag> nor an <tag>action</tag> sub-element defines only
+	<tag>value</tag> nor an <tag>action</tag> subelement defines only
 	syntax.  The defined construct is simply passed through to the output
 	by the processor, with its contents and attributes (if any) also being
 	processed in turn. 
@@ -71,7 +71,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	definition can contain arbitrary decorative markup, and that arbitrary
 	computation can be done in the course of processing a definition.
 
-	<p>A construct can be ``defined'' more than once; the attributes
+	<p>A construct can be "defined'' more than once; the attributes
 	are effectively merged; the value and/or action are replaced.  The
 	main use of this is to associate a new value with a construct, and to
 	associate an action with a construct that has already been defined. 
@@ -90,8 +90,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     <doc> Specifies that an element (tag) is being defined.  The value of the
 	  attribute is the tagname of the element being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
-	  sub-element is present, the element will be active.  If a
-	  <code>value</code> attribute or sub-element is present, the element
+	  subelement is present, the element will be active.  If a
+	  <code>value</code> attribute or subelement is present, the element
 	  will be passively replaced by its value when the document is
 	  processed.
     </doc>
@@ -100,8 +100,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     <doc> Specifies that an attribute is being defined.    The value of the
 	  attribute is the name of the attribute being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
-	  sub-element is present, the attribute will be active.  If a
-	  <code>value</code> attribute or sub-element is present, the
+	  subelement is present, the attribute will be active.  If a
+	  <code>value</code> attribute or subelement is present, the
 	  attribute will be passively replaced by its value unless a value is
 	  explicitly specified in the tag where the attribute occurs.
 
@@ -113,8 +113,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     <doc> Specifies that an entity is being defined.    The value of the
 	  attribute is the name of the entity being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
-	  sub-element is present, the entity will be active.  If a
-	  <code>value</code> attribute or sub-element is present, the entity
+	  subelement is present, the entity will be active.  If a
+	  <code>value</code> attribute or subelement is present, the entity
 	  will be passively replaced by its value when it is referenced in a
 	  document.
     </doc>
@@ -140,18 +140,18 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  is obtained from the <code>legacy</code> tagset.  This is a
 	  temporary kludge.)
 
-	  <p><strong>Note</strong> that if the Node being defined is an
+	  <p>If the node being defined is an
 	  <em>attribute</em>, things get a little complicated.  What we would
 	  really like to happen is that the parser selects a handler for the
-	  containing <em>element</em> based on the presence of a ``handled''
-	  attribute.  Probably only one such attribute should be permitted.
+	  containing <em>element</em> based on the presence of a "handled''
+	  attribute.  Only one such attribute is permitted.
     </doc>
   </define>
 
   <h4>Modifiers for <code><tag>define element</tag></code>:</h4>
   <blockquote><em>
-	  The following attributes are only meaningful when defining an
-	  Element.  It is impossible to represent this constraint in SGML.
+	  The following attributes are meaningful only when defining an
+	  element.  It is impossible to represent this constraint in SGML.
   </em></blockquote>
 
   <define attribute=quoted optional>
@@ -160,7 +160,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
   <define attribute=literal optional>
-    <doc> Indicates that the content of the element is unparsed (#CDATA).
+    <doc> Indicates that the content of the element is not parsed (#CDATA).
     </doc>
   </define>
   <define attribute=text optional>
@@ -176,22 +176,25 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
   <define attribute=empty optional>
-    <doc> Indicates that the element being defined will never have any
+    <doc> Indicates that the element being defined cannot have any
 	  content.  In XML an empty element may have an end tag or be
-	  terminated with ``<code>/&gt;</code>''; in HTML and generic SGML the
+	  terminated with "<code>/&gt;</code>''; in HTML and generic SGML the
 	  end tag is simply omitted.
     </doc>
   </define>
 
   <h4>Modifiers for <code><tag>define attribute</tag></code>:</h4>
 
+<blockquote>
+	The following are modifiers for the define attribute.
+</blockquote>
 
   <define attribute=optional optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
 	  implied (optional).
     </doc>
     <note author=steve> === I'm not certain of the semantics of SGML
-	  ``implied'' attributes, and in any case ``optional'' is unambiguous.
+	  "implied'' attributes, and in any case "optional'' is unambiguous.
     </note>
   </define>
   <define attribute=required optional>
@@ -208,13 +211,13 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <h4>Modifiers for <code><tag>define entity</tag></code>:</h4>
 
   <define attribute=system optional>
-    <doc> The value of this attribute is the ``system identifier'' (URI) of
-	  an ``external entity''.  Usually it will be a filename relative to
+    <doc> The value of this attribute is the "system identifier" (URI) of
+	  an "external entity".  Typically it is a filename relative to
 	  the document containing the definition being processed.
     </doc>
   </define>
   <define attribute=public optional>
-    <doc> The value of this attribute is the ``public identifier'' of an
+    <doc> The value of this attribute is the "public identifier" of an
 	  external entity.  In a DTD, an alternative system identifier must be
 	  provided; that should be specified via the <code>system</code>
 	  attribute. 
@@ -250,8 +253,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
   <define attribute=parameter optional><!-- unimplemented -->
-    <doc> This specifies that the entity is a ``parameter entity,'' of the
-	  sort prefixed by ``<code>%</code>'' in DTD's.  Unlike ordinary
+    <doc> This specifies that the entity is a "parameter entity," of the
+	  sort prefixed by "<code>%</code>" in DTD's.  Unlike ordinary
 	  entities, parameter entities are expanded <em>while defining a
 	  tagset</em> or DTD. 
     </doc>
@@ -266,7 +269,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        content is marked ignorable. 
 </dl>
 
-<h4>Sub-elements of <tag>define</tag></h4>
+<h4>Subelements of <tag>define</tag></h4>
 <dl>
   <dt> Note:
   <dd> The use of <code>parent=</code> specifies that these elements only
@@ -282,8 +285,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <ul>
   <li> <define element=value parent=define quoted handler>
-         <doc> The <tag>value</tag> sub-element defines a value for the node
-	       being defined.  The node will be replaced by its value whenever
+         <doc> The <tag>value</tag> subelement defines a value for the node
+	       being defined.  The node is replaced by its value whenever
 	       it appears in a document being processed.
 
        	       <p>The contents of the <tag>value</tag> element are processed
@@ -307,7 +310,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        	 <define attribute=passive implicit>
            <doc> If present, suppresses replacement of the defined construct
 		 with its value during normal processing.  The construct,
-		 usually an entity, will be passed through all the way to the
+		 usually an entity, is passed through all the way to the
 		 output.  Passive values are normally used for things like
 		 character entities (<code>&amp;amp;</code> and so on).  They
 		 <em>are</em> expanded when converting an object to a string.
@@ -316,7 +319,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        </define>
 
   <li> <define element=action parent=define quoted handler>
-         <doc> The <tag>action</tag> sub-element defines an action for the
+         <doc> The <tag>action</tag> subelement defines an action for the
 	       node being defined.  Note that it is possible for a node to
 	       have both an action and a value.
 
@@ -324,20 +327,20 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        	       at the point in the document where the defined construct is
        	       expanded. They are <em>not</em> processed in the definition.
 
-       	       <p>Expanding an action associated with an Element or Attribute
+       	       <p>Expanding an action associated with an element or attribute
        	       implicitly defines a local <tag>namespace</tag> containing the
        	       following entities:
 
        		<dl>
 		  <dt> <code>&amp;content;</code>
-		  <dd> the content of the element being expanded.
+		  <dd> The content of the element being expanded.
 		  <dt> <code>&amp;element;</code>
-		  <dd> the ``start tag'' of the element being expanded: the
+		  <dd> The "start tag" of the element being expanded: the
 		       element without its content.
 		  <dt> <code>&amp;attributes;</code>
-		  <dd> the attribute list of the element being expanded.
+		  <dd> The attribute list of the element being expanded.
 		  <dt> <code>&amp;value;</code>
-		  <dd> the defined <tag>value</tag> associated with the
+		  <dd> The defined <tag>value</tag> associated with the
 		       definition being expanded.
 		</dl>
        	       <p>Expanding an action associated with an Entity or Word
@@ -346,11 +349,11 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
        		<dl>
 		  <dt> <code>&amp;content;</code>
-		  <dd> the children of the node being expanded, if any.
+		  <dd> The children of the node being expanded, if any.
 		  <dt> <code>&amp;node;</code>
-		  <dd> the Text or EntityReference node being expanded
+		  <dd> The Text or EntityReference node being expanded
 		  <dt> <code>&amp;value;</code>
-		  <dd> the defined <tag>value</tag> associated with the
+		  <dd> The defined <tag>value</tag> associated with the
 		       definition being expanded.
 		</dl>
        </doc>
@@ -366,27 +369,29 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
   <p>It is, however, meaningful for <tag>define</tag> to occur outside of
   a <tag>namespace</tag> or <tag>tagset</tag> element because there is always
-  a ``current'' namespace and tagset in effect.
+  a "current" namespace and tagset in effect.
 </em></blockquote>
 
 <define element=tagset handler>
-  <doc> This element defines a ``<em>tagset</em>'' -- roughly the equivalent
-	of a DTD or database schema.  Having an XML representation allows
-	tagsets to be processed using ``normal'' methods, rather than devising
+  <doc> This element defines a "<em>tagset</em>".  A tagset is roughly equivalent
+	to a DTD or database schema.  Having an XML representation allows
+	tagsets to be processed using "normal" methods, rather than devising
 	special machinery for parsing and processing DTD's.
   </doc>
   <note author=steve>
 	Eventually it will be possible to process XML tagsets into DTD's.
   </note>
   <note author=steve>
-	Eventually we must make it possible to ``include'' one tagset
+	Eventually we must make it possible to "include" one tagset
 	inside another by using <tag>extract</tag>.
   </note>
 
   <define attribute=name required />
+	<doc>The tagset name.
+	</doc>
   <define attribute=parent optional>
     <doc> The <code>parent</code> attribute specifies the tagset in which
-	  names not defined in the current tagset will be looked up.  It is
+	  names not defined in the current tagset are looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.
     </doc>
   </define>
@@ -409,14 +414,14 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  tagset can be used in the <tag>action</tag> and <tag>value</tag>
 	  definitions of other elements.  The default is to restrict
 	  definitions to be in terms of elements and entities defined in the
-	  <em>enclosing document's</em> tagset, which allows the language used
+	  <em>enclosing document's</em> tagset.  This allows the language used
 	  to define tagsets to differ from the language being defined.
 
 	  <p><strong>Note</strong> that it may be almost impossible (totally
-	  impossible, in some cases) to come up with a DTD that will
-	  accurately describe a recursive tagset definition file.  It will
-	  still be reducible to a valid DTD, however, so that the documents
-	  <em>it describes</em> will be valid SGML.
+	  impossible, in some cases) to come up with a DTD that 
+	  accurately describes a recursive tagset definition file.  It is
+	  reducible to a valid DTD, however, so that the documents
+	  <em>it describes</em> are valid SGML.
     </doc>
   </define>
 </define>
@@ -448,21 +453,25 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <h3>Documentation Elements</h3>
 
+<blockquote>
+The <tag>parent</tag> and <tag>note</tag> elements are subelements of <tag>tagset</tag>.
+</blockquote>
+
 <ul>
   <li> <define element=doc parent="define namespace tagset">
-         <doc> This sub-element contains documentation for the node being
-	       defined.  It may be either retained or stripped out depending
+         <doc> Contains documentation for the node being
+	       defined.  It can be either retained or stripped out depending
 	       on how the enclosing namespace is being processed. 
          </doc>
        </define>
 
   <li> <define element=note parent="define namespace tagset">
-         <doc> This sub-element contains attributed annotation for the node
-	       being defined.  It may be either retained or stripped out
-	       depending on how the enclosing namespace is being processed.
+         <doc> This subelement contains attributed annotation for the node
+	       being defined.  Whether it is retained or stripped 
+	       depends on how the enclosing namespace is processed.
          </doc>
          <define attribute=author required>
-       	   <doc> The value of this attribute should be the author's initials,
+       	   <doc> The value of this attribute identifies the author's initials,
 		 login name, or e-mail address.
            </doc>
          </define>
@@ -473,15 +482,21 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <blockquote><em>
   Control structure elements modify the control flow of an expansion, by
-  selectively including, skipping, or repeating some content.
+  selectively including, skipping, or repeating some content.  The control structure
+  elements are <tag>if</tag> and <tag>repeat</tag>.
+
+The control structure elements are summarized here:
+
 </em></blockquote>
 
-<h3>If and its components</h3>
+<h3>If and its Components</h3>
 <define element=if handler PCDATA>
   <doc> If any non-whitespace text, or any defined entity, is present before
-	the first ``official'' child element, the <em>condition</em> of the
+	the first "official" child element, the <em>condition</em> of the
 	<tag>if</tag> is considered to be <code>true</code>.  Otherwise it is
 	false.  (This implies that comments are ignored.)
+
+	Any element is allowed as a child of <tag>if</tag>.
   </doc>
 </define>
 <dl>
@@ -493,20 +508,20 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        implementation is cleaner and more efficient without doing so.
 </dl>
 
-<h4>Sub-elements of <tag>if</tag></h4>
+<h4>Subelements of <tag>if</tag></h4>
 <ul>
   <li> <define element=then parent="if else-if elif elsf" handler quoted>
-         <doc> the <tag>then</tag> component is expanded if its parent's
+         <doc> The <tag>then</tag> component is expanded if its parent's
 	       condition is <code>true</code>.
          </doc>
        </define>
   <li> <define element=else parent=if handler quoted>
-         <doc> the <tag>else</tag> component is expanded if its parent's
+         <doc> The <tag>else</tag> component is expanded if its parent's
 	       condition is <code>false</code>.
          </doc>
        </define>
   <li> <define element=else-if parent=if handler=elsf>
-         <doc> the <tag>else-if</tag> component is expanded if its parent's
+         <doc> The <tag>else-if</tag> component is expanded if its parent's
 	       condition is <code>false</code>.  Its contents consist of a
 	       <em>condition</em> and a <tag>then</tag> element which is
 	       expanded if the condition is <code>true</code>.  If the
@@ -523,7 +538,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <li> <define element=elif parent=if handler=elsf>
          <doc> This is a compact synonym for <tag>else-if</tag>, chosen because
 	       it is the same length as <tag>then</tag> and <tag>else</tag>.
-	       It is the keyword used for this purpose in Python, for example.
+	       Note that <tag>elif</tag> is the keyword used for this purpose in Python.
          </doc>
        </define>
 </ul>
@@ -531,54 +546,52 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 <h3>Repeat and its components</h3>
 <define element=repeat handler quoted PCDATA>
   <doc> The content of this element is repeatedly expanded until one of the
-	defined sub-elements reaches its specified ``stop'' condition.  An
+	defined subelements reaches its specified "stop" condition.  An
 	implicit local namespace is created in which the iteration variables
 	are defined.
   </doc>
   <define attribute=list optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
-	  <code><tag>foreach</tag></code> sub-element.
+	  <code><tag>foreach</tag></code> subelement.
     </doc>
   </define>
   <define attribute=start optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
-	  <code><tag>for</tag></code> sub-element.
+	  <code><tag>for</tag></code> subelement.
     </doc>
   </define>
   <define attribute=stop optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
-	  <code><tag>for</tag></code> sub-element.
+	  <code><tag>for</tag></code> subelement.
     </doc>
   </define>
   <define attribute=step optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
-	  <code><tag>for</tag></code> sub-element.
+	  <code><tag>for</tag></code> subelement.
     </doc>
   </define>
   <define attribute=entity optional>
     <doc> If present, this specifies the name of the iteration variable for an
 	  implied <code><tag>foreach</tag></code> or
-	  <code><tag>for</tag></code> sub-element.
+	  <code><tag>for</tag></code> subelement.
     </doc>
   </define>
 </define>
 
-<h4>Sub-elements of <tag>repeat</tag></h4>
-
+<h4>Subelements of <tag>repeat</tag></h4>
 <doc>
-The contents of a <tag>repeat</tag> is repeatedly expanded; all of the
-following sub-elements are effectively iterating in parallel, which makes it
-easy to go through multiple lists and number the corresponding elements (for
-example). 
+The contents of a <tag>repeat</tag> is repeatedly expanded.  All of the
+following subelements are effectively iterating in parallel, which makes it
+easy to go through multiple lists and number the corresponding elements. 
 </doc>
 
 <ul>
   <li> <define element=foreach parent=repeat handler>
-         <doc> The contents of this sub-element are a list; at each iteration
+         <doc> The contents of this subelement are a list; at each iteration
 	       the specified entity (default <code>&amp;li;</code>) is
 	       replaced by an item from the list.  The list
 	       is contained in the entity
@@ -587,7 +600,7 @@ example).
          </doc>
          <define attribute=entity optional>
            <doc> If present, this specifies the name of the iteration variable
-		 used by the <tag>foreach</tag> sub-element.  
+		 used by the <tag>foreach</tag> subelement.  
     	   </doc>
          </define>
        </define>
@@ -600,22 +613,22 @@ example).
          </doc>
          <define attribute=entity optional>
            <doc> If present, this specifies the name of the iteration variable
-		 used by the <tag>for</tag> sub-element.  
+		 used by the <tag>for</tag> subelement.  
     	   </doc>
          </define>
          <define attribute=start optional>
            <doc> If present, this specifies the starting value for the
-		 iteration variable, replacing a <tag>start</tag> sub-element.  
+		 iteration variable, replacing a <tag>start</tag> subelement.  
     	   </doc>
          </define>
          <define attribute=stop optional>
            <doc> If present, this specifies the final value for the
-		 iteration variable, replacing a <tag>stop</tag> sub-element.  
+		 iteration variable, replacing a <tag>stop</tag> subelement.  
     	   </doc>
          </define>
          <define attribute=step optional>
            <doc> If present, this specifies the step value for the
-		 iteration variable, replacing a <tag>step</tag> sub-element.  
+		 iteration variable, replacing a <tag>step</tag> subelement.  
     	   </doc>
          </define>
        </define>
@@ -639,13 +652,13 @@ example).
   <li> <define element=while parent=repeat handler>
          <doc> At each iteration the content is evaluated as a
 	       <em>condition</em> as in <tag>if</tag>; if the condition is
-	       <code>false</code> the <tag>repeat</tag> is terminated.
+	       <code>false</code> the <tag>repeat</tag> terminates.
          </doc>
        </define>
   <li> <define element=until parent=repeat handler>
          <doc> At each iteration the content is evaluated as a
 	       <em>condition</em> as in <tag>if</tag>; if the condition is
-	       <code>true</code> the <tag>repeat</tag> is terminated.
+	       <code>true</code> the <tag>repeat</tag> terminates.
          </doc>
        </define>
   <li> <define element=first parent=repeat handler>
@@ -660,7 +673,12 @@ example).
        </define>
 </ul>
 
-<h3>Logical</h3>
+<h3>Logical Elements</h3>
+
+<doc>
+The logical elements are <tag>logical</tag> and <tag>test</tag>.
+</doc>
+
 <define element=logical handler>
   <doc> This element is essentially a convenient shorthand for a nested set of
 	<tag>if</tag> elements.  It performs functions that are equivalent to
@@ -671,21 +689,21 @@ example).
 	remove whitespace from the content.
   </doc>
   <define attribute=and optional>
-    <doc> If present, this specifies that a ``logical AND'' operations will be
+    <doc> If present, this specifies that a "logical AND" operation is
 	  performed.  Each child of the <tag>logical</tag> element is expanded
 	  in turn.  Declarations, comments, processing instructions, and
 	  whitespace are ignored.  If <em>every</em> other child expands to
-	  something <tag>if</tag> would consider a ``<code>true</code>''
+	  something <tag>if</tag> would consider a "<code>true</code>"
 	  condition, the expansion of the <em>last</em> such child is passed
 	  to the output.  Otherwise no output is generated.
     </doc>
   </define>
   <define attribute=or optional>
-    <doc> If present, this specifies that a ``logical OR operations will be
+    <doc> If present, this specifies that a "logical OR operation is
 	  performed.  Each child of the <tag>logical</tag> element is expanded
 	  in turn.  Declarations, comments, processing instructions, and
 	  whitespace are ignored.  If <em>any</em> other child expands to
-	  something <tag>if</tag> would consider a ``<code>true</code>''
+	  something <tag>if</tag> would consider a "<code>true</code>"
 	  condition, the expansion of the <em>that</em> child is passed
 	  to the output, and expansion stops at that point.  Otherwise no
 	  output is generated. 
@@ -698,7 +716,7 @@ example).
   <doc> This element performs a test on its content.  If no attributes are
 	specified, the test is the same as that performed by <tag>if</tag>.
 	If the tested condition is <code>true</code>, the <tag>test</tag>
-	element expands to ``<code>1</code>'', otherwise it ``expands'' to
+	element expands to "<code>1</code>", otherwise it "expands" to
 	nothing at all.
 
 	<p><tag>test</tag> is not, strictly speaking, a control-flow
@@ -706,7 +724,7 @@ example).
 	operations for computing conditions.
 
 	<p>Because the expansion of a successful <tag>test</tag> is
-	``<code>1</code>'', <tag>test</tag> can be used for counting the
+	"<code>1</code>", <tag>test</tag> can be used for counting the
 	number of items in a list that satisfy some condition.  
   </doc>
   <define attribute=text optional>
@@ -760,15 +778,15 @@ example).
 <h2>Document Structure Elements</h2>
 
 <blockquote><em>
-  Document structure elements extract Nodes or sets of Nodes from a parse tree,
-  and perform structural modifications on trees.  Note that the tree being
-  operated on need not be part of the document being processed; it might be a
-  Namespace or the value of an entity.  
+  Document structure elements extract nodes or sets of nodes from a parse tree,
+  and perform structural modifications on trees.  The tree being
+  operated on need not be part of the document being processed.  It might be a
+  namespace or the value of an entity.  
 </em></blockquote>
 
-<h3>Extract and its components</h3>
+<h3>Extract and its Components</h3>
 <define element=extract handler>
-  <doc> Extract, and optionally replace, a set of nodes.  Sub-elements in the
+  <doc> Extract, and optionally replace, a set of nodes.  Subelements in the
 	content are processed in order of occurrence.  At any time in this
 	sequence of operations, there is a <em>current set</em> of nodes that
 	have been extracted.  This set is accessible as the value of the entity
@@ -778,11 +796,11 @@ example).
 	<tag>extract</tag> is enclosed in some outer <tag>extract</tag>, in
 	which case it is that extract's current set.<!-- unimplemented -->
 
-	<p>Each stage in the extraction process results in ``extracting'' some
+	<p>Each stage in the extraction process results in "extracting" some
 	set of nodes (possibly a subset of the current set, but also possibly
 	some or all of their children, siblings, etc.) and replacing the
 	current set of nodes with the set of extracted nodes.  This is done by
-	simply expanding each sub-element and using its expansion as the next
+	simply expanding each subelement and using its expansion as the next
 	current set.  If the current set ever becomes empty, the process
 	terminates. 
 
@@ -794,8 +812,8 @@ example).
 	expressions.
   </doc>
   <define attribute=sep optional>
-    <doc> Separator to use between extracted items in the output.  Default is
-	  whitespace. 
+    <doc> The separator to use between extracted items in the output.  The default
+	 is whitespace. 
     </doc>
   </define>
   <define attribute=all optional><!-- unimplemented -->
@@ -807,12 +825,12 @@ example).
   </define>
 </define>
 
-<h4>Sub-elements of <tag>extract</tag>: Starting Points</h4>
+<h4>Subelements of <tag>extract</tag>: Starting Points</h4>
 <ul>
   <li> <define element=from parent=extract handler>
-         <doc> Contains a sequence of nodes which serves as the for the
-	       extraction, or in other words from which the extraction is made.
-	       Text nodes are split on whitespace.
+         <doc> Contains a sequence of nodes.  These are the currently
+		selected set expanded to its content.  Text nodes are 
+		split on whitespace.
          </doc>
        </define>
        
@@ -853,7 +871,7 @@ example).
        </define>
 </ul>
 
-<h4>Sub-elements of <tag>extract</tag>: Extraction</h4>
+<h4>Subelements of <tag>extract</tag>: Extraction</h4>
 <ul>
   <li> <code>text</code> can occur inside a <tag>extract</tag> element.  Text
        is split on whitespace and interpreted as follows:
@@ -870,7 +888,7 @@ example).
 	      <code>#all</code> is defined, matching <em>any</em> node.  Type
 	      matching is case-insensitive.
 
-	 <li> Otherwise, it is matched as a ``<em>name</em>''.  The name of an
+	 <li> Otherwise, it is matched as a "<em>name</em>".  The name of an
 	      entity or attribute is the name it is defined to have; the name
 	      of an element is its tag name.
        </ul>
@@ -900,8 +918,8 @@ example).
          </define>
          <define attribute=recursive optional>
            <doc> Causes the matching to descend recursively into the children
-		 (content) of the current set.  Note that if a node (e.g. a
-		 list) is extracted, its content will not be further examined.
+		 (i.e. the content) of the current set.  If a node (e.g. a
+		 list) is extracted, its content is not further examined.
            </doc>
          </define>
          <define attribute=all optional>
@@ -914,7 +932,7 @@ example).
          </define>
        </define>
   <li> <define element=key parent=extract text handler>
-         <doc> Contains a ``key'' (string) which is matched against nodes in
+         <doc> Contains a "key" (string) which is matched against nodes in
 	       the current set.  Attributes and entities are matched by name;
 	       elements are matched by the text in their content.  Text nodes
 	       are matched by their content.
@@ -927,21 +945,21 @@ example).
          <define attribute=sep optional>
            <doc> Contains a delimiter string that marks the end of the key
 		 in a node's text.  If specified, nodes that lack the
-		 delimiter will be ignored.
+		 delimiter are ignored.
            </doc>
          </define>
          <define attribute=recursive optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Note that if a node (e.g. a
-		 list) is extracted, its content will not be further examined.
+		 list) is extracted, its content is not examined further.
            </doc>
          </define>
          <define attribute=all optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Unlike <code>recursive</code>,
-		 content even of extracted nodes will be further examined; this
-		 will result in extracting <em>all</em> elements with the
-		 matching tag.
+		 content even of extracted nodes is examined further.  The
+		 result is that <em>all</em> elements with the matching tag
+		are extracted.
            </doc>
          </define>
        </define>
@@ -966,7 +984,7 @@ example).
 	       last children of each node in the current set.
 
        	       <p>Note that <tag>child</tag> only contains text terms, with
-       	       none of the sub-elements permitted in <tag>extract</tag>.  This
+       	       none of the subelements permitted in <tag>extract</tag>.  This
        	       is to allow the text terms to be computed (for example,
        	       computing a name or index), which is more useful.  The more
        	       general operation can be done using an embedded
@@ -1044,13 +1062,13 @@ example).
   </ul>
 </note>
 
-<h4>Sub-elements of <tag>extract</tag>: Replacement</h4>
+<h4>Subelements of <tag>extract</tag>: Replacement</h4>
 <ul>
   <li> <define element=replace parent=extract handler>
          <doc> Contains a list of nodes.  The default action is for the entire
 	       list to replace the current content of each extracted element,
 	       and the value of each extracted entity or attribute.  (In most
-	       cases only one node will be extracted.)
+	       cases only one node is extracted.)
          </doc>
          <define attribute=name optional>
            <doc> The content of the <tag>replace</tag> element replaces the
@@ -1060,12 +1078,12 @@ example).
 
              <p> <b>Note</b> that there is no way to change the <em>name</em>
 		 of a node; this is deliberate.  Named nodes are used in hash
-		 tables, which would be rendered unuseable if nodes could be
+		 tables, which would be rendered unusable if nodes could be
 		 renamed. 
            </doc>
          </define>
          <define attribute=case optional>
-           <doc> name matching is done on a case-sensitive basis.
+           <doc> Name matching is done on a case-sensitive basis.
            </doc>
          </define>
          <undefine attribute=each optional><!-- unimplemented -->
@@ -1081,7 +1099,7 @@ example).
 	       node. 
          </doc>
          <define attribute=children optional>
-           <doc> appends to the children (content) of <em>each</em> extracted
+           <doc> Appends to the children (content) of <em>each</em> extracted
 		 node. 
            </doc>
          </define>
@@ -1142,7 +1160,7 @@ example).
     </doc>
   </define>
   <define attribute=markup optional>
-    <doc> Markup in the content is ``protected'' from further expansion by
+    <doc> Markup in the content is "protected" from further expansion by
 	  converting it to text, replacing markup-specific characters with the
 	  corresponding entity references.
     </doc>
@@ -1156,13 +1174,13 @@ example).
 	only. 
   </doc>
   <define attribute=markup optional>
-    <doc> Only markup in the content is ``hidden'' -- text is passed through
+    <doc> Only markup in the content is "hidden" -- text is passed through
 	  to the output.  References to passive entities (including character
 	  entities) are expanded.
     </doc>
   </define>
   <define attribute=text optional>
-    <doc> Only text in the content is ``hidden'' -- markup is passed through
+    <doc> Only text in the content is "hidden" -- markup is passed through
 	  to the output.  References to passive entities (including character
 	  entities) are expanded.
     </doc>
@@ -1191,7 +1209,7 @@ example).
 	n<sub>1</sub>, ...</em> separated by whitespace.  Elements are
 	represented by their first non-whitespace text.  If no operation is
 	specified in the attributes, this sequence is returned as a
-	space-separated list of Text nodes.
+	space-separated list of text nodes.
   </doc>
   <define attribute=sum optional>
     <doc> The numbers in the content are added.
@@ -1329,7 +1347,7 @@ example).
     </doc>
   </define>
   <define attribute=split handler optional>
-    <doc> Splits the text into ``tokens'' (words) on whitespace and element
+    <doc> Splits the text into "tokens" (words) on whitespace and element
 	  boundaries.  With the <code>sep</code> attribute present, the
 	  separator is inserted between each token in the result.  The tokens
 	  and the separators remain distinct Text nodes unless the
@@ -1341,11 +1359,11 @@ example).
     </doc>
   </define>
   <define attribute=encode handler optional>
-    <doc>  Encodes text as one of url, base64, or entity. To add a different encoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_encode.html'><em>How to extend the encode handler</em></a>
+    <doc>  Encodes text as one of url, base64, or entity. To add a different encoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_encode.html'><em>How to extend the encode handler</em></a>.
     </doc>
   </define>
   <define attribute=decode handler optional>
-    <doc>  Decodes text that has been encoded as one of url, base64, or entity. To add different decoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_decode.html'><em>How to extend the decode handler</em></a>
+    <doc>  Decodes text that has been encoded as one of url, base64, or entity. To add different decoding, see <a href='../../../Manuals/Api/JavaDoc/crc.dps.handle.text_decode.html'><em>How to extend the decode handler</em></a>.
     </doc>
   </define>
 
@@ -1371,7 +1389,7 @@ example).
   </define>
 </define>
 
-<h4>Sub-elements of <tag>subst</tag></h4>
+<h4>Subelements of <tag>subst</tag></h4>
 <ul>
   <li> <undefine element=match parent=subst handler>
          <doc> Contains the regular expression to match against.
@@ -1395,7 +1413,7 @@ example).
 	parsed using the current tagset.
 
 	<p>In general the result of parsing the text is a (possibly empty)
-	sequence of name=value pairs, plus a (possibly empty) ``remainder left
+	sequence of name=value pairs, plus a (possibly empty) "remainder left
 	over.  (For example, the <code>entities</code> format returns no
 	pairs, and the <code>query</code> format returns no remainder.)
 
@@ -1411,7 +1429,7 @@ example).
 	  articles:  <code>_<i>italics</i>_</code>,
 	  <code>*<b>bold</b>*</code>, and so on, similar to the legacy
 	  <code>&lt;add-markup&gt;</code> tag.  Runs of multiple uppercase
-	  letters are lowercased and set monospaced, and values after an equal
+	  letters are converted to lower case and set monospaced.  Values after an equals
 	  sign are italicized.  
     </doc>
   </define>
@@ -1444,8 +1462,8 @@ example).
 
   <define attribute=element optional>
     <doc> The result is produced as a single element, with attribute-value
-	  pairs in its attributes.  The content of the resulting element will
-	  be any component of the input ``left over'' after the parsing
+	  pairs in its attributes.  The content of the resulting element is
+	  any component of the input "left over" after the parsing
 	  process, i.e. the body of a message parsed with the
 	  <code>header</code> format.  The value of this attribute is the
 	  tagname of the element. 
@@ -1466,8 +1484,8 @@ example).
   </define>
   <define attribute=pairs optional>
     <doc> The value of this attribute is a space-separated list of 
-	  two element tagnames.  The first is the element that will be used
-	  for names, the second the element that will be used values.  The
+	  two element tagnames.  The first is the element that is used
+	  for names, the second the element that is used for values.  The
 	  default value is <code>"dt dd"</code>.
     </doc>
   </define>
@@ -1500,11 +1518,10 @@ example).
 <h2>External Resources</h2>
 
 <blockquote><em>
-  External ``resources'' include both documents local to the system on which
+  External "resources" include both documents local to the system on which
   the document processor resides (i.e. files), and remote resources (specified
-  with complete URL's).
+  with complete URLs).
 </em></blockquote>
-
 
 <h3>Include</h3>
 <define element=include empty handler >
@@ -1527,14 +1544,14 @@ example).
   </define>
   <define attribute=entity optional>
     <doc> Specifies the name of an entity to be defined, effectively caching
-	  the resource.  If not specified, no entity will be defined and the
-	  resource will not be cached.  If the entity is already defined, that
-	  definition will be used.
+	  the resource.  If not specified, no entity is defined and the
+	  resource is not cached.  If the entity is already defined, that
+	  definition is used.
     </doc>
   </define>
   <define attribute=quoted boolean optional>
-    <doc> If present, specifies that the included document will be parsed but
-	  not processed.  This can be useful if, for example, the included
+    <doc> If present, specifies that the included document is parsed but
+	  not processed.  This is useful if, for example, the included
 	  document needs to access entities in the main document's namespace.
     </doc>
   </define>
@@ -1545,7 +1562,7 @@ example).
   <doc> Output the content to a remote or local resource.  Essentially a
 	convenience function that replaces a suitable <tag>connect</tag>,
 	except that the resulting document, if any, is not returned.  This
-	makes it more suitable for use with files than with URL's.
+	makes it more suitable for use with files than with URLs.
   </doc>
   <define attribute=dst required>
     <doc> Specifies the URL (or path relative to the current document or its
@@ -1576,10 +1593,10 @@ example).
 	any nonblank content, they are used for the connection.
   </doc>
   <define attribute=method optional>
-    <doc> The request ``method''.  Default is <code>GET</code>.  Any valid HTTP
+    <doc> The request "method".  Default is <code>GET</code>.  Any valid HTTP
 	  request method is allowed.  When operating on a local (file)
-	  resource, <code>POST</code> specifies an ``append'' operation, while
-	  <code>PUT</code> specifies a ``write''.
+	  resource, <code>POST</code> specifies an "append" operation, while
+	  <code>PUT</code> specifies a "write".
     </doc>
   </define>
   <define attribute=src optional>
@@ -1600,8 +1617,8 @@ example).
   </define>
   <define attribute=entity optional>
     <doc> Specifies the name of an entity to be defined, effectively caching
-	  the resource.  If not specified, no entity will be defined and the
-	  resource will not be cached.  If the entity has already been defined
+	  the resource.  If not specified, no entity is defined and the
+	  resource is not cached.  If the entity has already been defined
 	  as an external entity, the <code>src</code> attribute may be omitted.
     </doc>
   </define>
@@ -1642,7 +1659,7 @@ example).
   </doc>
   <define attribute=src optional>
     <doc> The URL of the resource being queried.  If the resource is local,
-	  the filesystem is queried.  If remote, only information that can be
+	  the file system is queried.  If remote, only information that can be
 	  obtained from the URL is returned -- getting more information
 	  requires a connection.
     </doc>
@@ -1664,55 +1681,55 @@ example).
 <h2>Data Structure Elements</h2>
 
 <blockquote><em>
-  Data structure elements perform no operations; they exist to represent
+  Data structure elements perform no operations.  They represent
   common forms of complex structured data.  Strictly speaking,
   <code><tag>tagset</tag></code> and <code><tag>namespace</tag></code> are
-  data structure elements.  Often a data structure element will have a
+  data structure elements.  Often a data structure element has a
   representation that is a <em>subclass</em> of the representation of an
-  ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
+  ordinary element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
 </em></blockquote>
 
-<h3>DOCUMENT and its components</h3>
+<h3>DOCUMENT and its Components</h3>
 <define element=DOCUMENT>
   <doc> Corresponds to a DOM <code>Document</code> object.  The attributes
 	correspond to the data present in the first line of the response
-	returned from an HTTP request; the headers are the first element in
+	returned from an HTTP request.  The headers are the first element in
 	the content. 
   </doc>
   <define attribute=protocol optional>
-    <doc> If present, the protocol (typically HTTP).  If the document
-	  corresponds to a file, this will be <code>file</code>.
+    <doc> The protocol is typically HTTP.  If the document
+	  corresponds to a file, is <code>file</code>.
     </doc>
   </define>
   <define attribute=version optional>
-    <doc> If present, the protocol version.
+    <doc> The protocol version.
     </doc>
   </define>
   <define attribute=code optional>
-    <doc> If present, the result code returned from the HTTP request. 
+    <doc> The result code returned from the HTTP request. 
     </doc>
   </define>
   <define attribute=message optional>
-    <doc> If present, the message corresponding to the result code.
+    <doc> The message corresponding to the result code.
     </doc>
   </define>
 </define>
 
 
-<h3>Headers and its components</h3>
+<h3>HEADERS and its Components</h3>
 <define element=HEADERS handler=headersHandler>
   <doc> Corresponds to a standard set of e-mail headers consisting of
 	<code><em>name</em>: <em>value</em></code> pairs.  Each pair in its
 	content is a separate <tag>header</tag> element.  Lines can be
-	extracted using the <tag>id</tag> sub-element of <tag>extract</tag>.
+	extracted using the <tag>id</tag> subelement of <tag>extract</tag>.
 
 	<p>This is an active element.  If the content is initially a text node
-	in <code><em>name</em>: <em>value</em><b>\n</b></code> format, it will
-	be converted.
+	in <code><em>name</em>: <em>value</em><b>\n</b></code> format, it is
+	converted.
   </doc>
   <define attribute=element optional>
-    <doc> If present, the element will be left as an element; otherwise it
-	  will be converted to text when output or converted to a string.
+    <doc> If present, the element is left as an element; otherwise it
+	  is converted to text when output or converted to a string.
     </doc>
   </define>
 </define>
@@ -1739,19 +1756,20 @@ example).
 
 	<p>This is an active element.  If the content is initially a text node
 	in <code><em>name</em>=<em>value</em><b>\n</b></code> format, a form,
-	or a description list, it will be converted.
+	or a description list, it is converted.
   </doc>
   <define attribute=element optional>
-    <doc> If present, the query will be left as an element; otherwise it
-	  will be converted to text when output or converted to a string.
+    <doc> If present, the query is left as an element; otherwise it
+	  is converted to text when output or converted to a string.
     </doc>
   </define>
 </define>
 
-<h3>URL and its components</h3>
+<h3>URL and its Components</h3>
+
 <define element=URL handler=urlHandler>
   <doc> Represents a URL or, more generally, a URI.  When expanded, its
-	content and attributes are ``synchronized'' so that all attributes
+	content and attributes are "synchronized" so that all attributes
 	corresponding to portions of the complete URL are set correctly, and
 	the content is replaced by a text node containing the external
 	representation of the complete URL.
@@ -1802,7 +1820,7 @@ example).
   </define>
 </define>
 
-<h4>Sub-elements of <tag>xxx</tag></h4>
+<h4>Subelements of <tag>xxx</tag></h4>
 <ul>
   <li> <define element=yyy parent=xxx handler>
          <doc>
