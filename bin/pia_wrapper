@@ -32,7 +32,7 @@ export PIA_HOME
 if [ -f $PIA_HOME/lib/java/crc.zip ] ; then
     PIA_CLASSES=${PIA_CLASSES-$PIA_HOME/lib/java/crc.zip}
 else
-    PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+    PIA_CLASSES=$PIA_HOME/src/java
 fi
 
 #where zjigsaw lives, ya
