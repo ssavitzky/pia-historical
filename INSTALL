@@ -121,8 +121,22 @@ III. Setup
 	directory and the directory for storing Agent data and customization files.
 	They are the following with their default values:
 
-	PIA_DIR=/usr/local/src
-	USR_DIR=~/.pia
+	a. For Unix
+
+		PIA_DIR=/usr/local/src
+		USR_DIR=~/.pia
+
+	b. For Windows
+			
+		PIA_DIR=<cd-rom-drivename>:\pia
+		USR_DIR=c:\PIAUSERS\<username>
+
+	Please note that the directory for storing Agent data, is
+	automatically created by the PIA if you do not specify it neither in the
+	USR_DIR environment variable nor the -u command line option.
+	In the case of Unix the directory will be .pia under the login user.
+	In the case of Windows the directory will be c:\PIAUSERS\<username>
+	 
 
 	Also, if you are proxying through another server, please indicate the
 	server like below:
@@ -133,10 +147,13 @@ III. Setup
 
 	  pia/Config/pia.props
 
-	When the PIA starts, it will look for the pia.props under ~./pia.
+	When the PIA starts, it will look for the pia.props under ~./pia/Config.
 	You can create a customizable copy in your home directory under
-	~/.pia by copying pia/Config/pia.props and modifying it using a text
+	~/.pia/Config by copying pia/Config/pia.props and modifying it using a text
 	editor.
+
+	Please note that if you start the PIA with a -u <userdir> option,
+	the PIA will look for the pia.props in <userdir>/Config.
 
 	You will also find it convenient to put the directory "pia/bin"
 	into your shell's search path.  
@@ -221,3 +238,4 @@ VI. Peripheral Agencies
 ========================================================================
 Copyright 1997 Ricoh Silicon Valley
 $Id$
+
