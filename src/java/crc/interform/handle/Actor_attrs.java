@@ -13,12 +13,8 @@ import crc.sgml.Token;
 
 
 /** Handler class for &lt;actor-dscr&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor-attrs name="name"&gt;
- * <dt>Dscr:<dd>
- *	get an actor's attributes in a format suitable for documentation.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#actor-dscr">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor_attrs extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -16,12 +16,8 @@ import crc.pia.Agent;
 
 
 /** Handler class for &lt;agent-running&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-running name="agent-name"&gt;
- * <dt>Dscr:<dd>
- *	Tests whether the agent with the given NAME is running.
- *  </dl>
+ *<p>See <a href="../../InterForm/tag_man.html#agent-running">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_running extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

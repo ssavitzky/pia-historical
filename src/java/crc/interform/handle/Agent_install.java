@@ -14,13 +14,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;agent-install&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-install name=ident [type=ident]&gt;...&lt;/agent-install&gt;
- * <dt>Dscr:<dd>
- *	Install an agent with given NAME and TYPE.  CONTENT is options form.
- *	Returns the agent's name.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-install">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Agent_install extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

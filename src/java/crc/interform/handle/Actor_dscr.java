@@ -12,12 +12,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;actor-dscr&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor-dscr name="name"&gt;
- * <dt>Dscr:<dd>
- *	get an actor's DSCR attribute in documentation format.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#actor-dscr">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor_dscr extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

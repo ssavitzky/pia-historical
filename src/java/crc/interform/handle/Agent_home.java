@@ -16,14 +16,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;agent-home&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-home name=ident [link]&gt;
- * <dt>Dscr:<dd>
- *	Return path to a pia agent's home InterForm.  Agent NAME defaults
- *	to the name of the current agent.
- *	Optionally make a LINK.  Very kludgy.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-home">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_home extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

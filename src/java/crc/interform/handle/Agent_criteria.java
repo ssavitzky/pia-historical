@@ -16,12 +16,8 @@ import crc.sgml.Tokens;
 import crc.sgml.Text;
 
 /** Handler class for &lt;agent-criteria&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-criteria [agent=ident]&gt;
- * <dt>Dscr:<dd>
- *	Return the match-criteria list for AGENT or the current agent.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-criteria">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_criteria extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

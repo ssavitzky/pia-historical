@@ -21,15 +21,8 @@ import crc.sgml.Text;
 import crc.ds.List;
 
 /** Handler class for &lt;agent-restore&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent.restore file="name" [interform [agent="agentName"]] [quiet]
- *	      [base="path"] &gt;
- * <dt>Dscr:<dd>
- *	Input from FILE, with optional BASE path.  FILE may be looked
- *	up as an INTERFORM in current or other AGENT.  Optionally be
- *	QUIET if file does not exist.
- *  </dl>
+ * <p>See <a href="../../InterForm/tag_man.html#agent-restore">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_restore extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -12,12 +12,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;actor-doc&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor-doc name="name"&gt;
- * <dt>Dscr:<dd>
- *	get an actor's DOC attribute in documentation format.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#actor-doc">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor_doc extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

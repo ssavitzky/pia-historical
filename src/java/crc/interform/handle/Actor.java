@@ -7,21 +7,12 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.sgml.SGML;
 
-/** Note: 
- *	There is special hackery in this file because there the class
- *	crc.interform.Tagset exists, so we can't just import it.  */
-
-/* === should have skipped as well === */
-
-
 /** Handler class for &lt;actor&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor [quoted|literal|empty] [parsed|passed]
- *	[name=ident] [tag=ident] [not-inside="tag list"]&gt; content &lt;/actor&gt;
- * <dt>Dscr:<dd>
- *	define an InterForm actor.
- *  </dl>
+ *  Note: 
+ *	There is special hackery in this file because the class
+ *	crc.interform.Actor exists, so we can't just import it.
+ *  <p> See <a href="../../InterForm/tag_man.html#actor">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

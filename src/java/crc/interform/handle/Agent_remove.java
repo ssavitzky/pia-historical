@@ -16,12 +16,8 @@ import crc.pia.Agent;
 
 
 /** Handler class for &lt;agent-remove&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-remove name="agent-name"&gt;
- * <dt>Dscr:<dd>
- *	Remove (uninstall) the agent with the given NAME.
- *  </dl>
+ * <p> See <a href="../../InterForm/tag_man.html#agent-remove">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_remove extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

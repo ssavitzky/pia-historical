@@ -15,12 +15,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;agent-set-options&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-set-options [name="agent-name"]&gt;options&lt;/agent-set-options&gt;
- * <dt>Dscr:<dd>
- *	Sets CONTENT as options for agent NAME.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-set-options">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Agent_set_options extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

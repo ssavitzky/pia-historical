@@ -15,12 +15,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;add-markup&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;add-markup&gt;text&lt;/add-markup&gt;
- * <dt>Dscr:<dd>
- *	Add markup to text CONTENT using common conventions.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#add-markup">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Add_markup extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -19,13 +19,8 @@ import java.io.IOException;
 import misc.Jcrypt;
 
 /** Handler class for &lt;authenticate&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;authenticate user=ident password="string" [file="fn"]&gt;
- * <dt>Dscr:<dd>
- *	Authenticate USER with given PASSWORD in FILE (default /etc/passwd).
- *	Return USER if authentication succeeds.
- * </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#authenticate">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Authenticate extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

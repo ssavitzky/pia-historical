@@ -15,13 +15,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;actor-names&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor-names [tag=id]&gt;
- * <dt>Dscr:<dd>
- *	Return a list of the current actor names.  Optionally as an element 
- *	with the given TAG.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#actor-names">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor_names extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

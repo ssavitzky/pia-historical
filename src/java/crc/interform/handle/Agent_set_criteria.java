@@ -20,13 +20,8 @@ import crc.ds.Criterion;
 
 
 /** Handler class for &lt;agent-set-criteria&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-set-criteria name="agent-name"&gt;list&lt;/agent-set-criteria&gt;
- * <dt>Dscr:<dd>
- *	Sets CONTENT  as criteria for agent NAME.
- *	Each item is 'feature', 'feature-', 'f=value' or 'f-=value'.
- * </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-set-criteria">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Agent_set_criteria extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

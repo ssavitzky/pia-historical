@@ -19,12 +19,8 @@ import crc.pia.Resolver;
 import java.util.Enumeration;
 
 /** Handler class for &lt;agent-list&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-list [type=type][subs]&gt;
- * <dt>Dscr:<dd>
- *	List the agents with given TYPE. Possibly SUBS only.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-list">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_list extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

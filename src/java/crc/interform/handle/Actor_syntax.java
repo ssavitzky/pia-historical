@@ -12,12 +12,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;actor-syntax&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;actor-syntax name="name"&gt;
- * <dt>Dscr:<dd>
- *	get an actor's SYNTAX attribute in documentation format.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#actor-syntax">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Actor_syntax extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

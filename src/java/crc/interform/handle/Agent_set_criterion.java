@@ -14,14 +14,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;agent-set-criterion&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-set-criterion name="name" [value="value"] 
- *			     [agent="agent-name"]&gt;
- * <dt>Dscr:<dd>
- *	set match criterion NAME to VALUE (default true), 
- *	optionally in AGENT.  NAME ending in '-' negates test.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-set-criterion">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Agent_set_criterion extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -17,12 +17,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;agent-options&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-options [name="agent-name"]&gt;
- * <dt>Dscr:<dd>
- *	Returns list of option names for agent NAME.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-options">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Agent_options extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

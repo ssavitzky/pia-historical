@@ -22,15 +22,8 @@ import crc.pia.Agent;
 
 
 /** Handler class for &lt;agent-save&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;agent-save [name="agent-name" | list="names"] file="name"
- *	        [interform] [append] [base="path"]&gt;
- * <dt>Dscr:<dd>
- *	Save state of the current or NAMEd agent or LIST in FILE, with optional 
- *	BASE path.  FILE may be looked up as an INTERFORM.  
- *	BASE directory is created if necessary.  Optionally APPEND. 
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#agent-save">Manual Entry</a> 
+ *	for syntax and description.
  */
 public class Agent_save extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
