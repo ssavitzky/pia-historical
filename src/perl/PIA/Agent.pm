@@ -87,13 +87,44 @@ sub error_message {
 }
 
 sub agent_directory{
-    ## returns a directory that we can write to
+    ## returns a directory that we can write data into.
     ##  creates one if necessary, starts with agent_directory,
     ##  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
 
     my($self)=@_;
     my $directory=$self->dir_attribute(agent_directory);
     return $directory if $directory;
+    my  @possibilities;
+    my $name=$self->name;
+    my $type=$self->type;
+
+    push(@possibilities,$main::USR_DIR . "/$name/");
+    push(@possibilities,$main::USR_DIR . "/$type/");
+
+    ## It is really a bad idea to mix these with the InterForms --
+    ## 	  it leads to a potentially very bad security hole.
+
+    push(@possibilities, "/tmp/$name/"); # default of last resort
+
+    foreach $directory (@possibilities) {
+	$directory =~ s:/$::;	# mkdir doesn't like trailing slash!
+	if(-e $directory  || mkdir($directory,0777)){
+	    if(-d $directory && -w $directory) {
+		$directory=$self->dir_attribute(agent_directory,$directory );
+		return "$directory/";
+	    }
+	}
+    }
+    $self->error_message("could not find appropriate, writable directory");
+    return ;
+}
+
+sub agent_if_root{
+    ## returns a directory that we can write InterForms into
+    ##  creates one if necessary, starts with if_root, then
+    ##  USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
+
+    my($self)=@_;
     my $root=$self->dir_attribute(if_root);
     my  @possibilities;
     push(@possibilities,$root) if $root;
