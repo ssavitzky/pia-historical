@@ -12,6 +12,7 @@ PACKAGES = \
 	input \
 	output \
 	parse \
+	process \
 	tagset
 
 FILES = \
