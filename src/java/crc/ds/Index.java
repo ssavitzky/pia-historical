@@ -14,12 +14,14 @@ import java.util.Enumeration;
 
 
 /** An index object is used for indexing SGML objects.
- *      foo.bar.1 should return the 1st token of the bar element of foo
- *       semantics depend upon SGML type
+ *      foo.bar should return the bar element of foo.
+ *       Semantics depend upon SGML type.
  *	 indexes behave somewhat like enumerations-- asking for the next
- *       element moves a pointer up one
+ *       element moves a pointer up one.
  *       this class also implements the recursive lookup by delegating
- *       to each SGML object in secession
+ *       to each SGML object in secession.
+ *       In general, 'foo' should return an SGML object, 'foo.' should return the contents of an SGML object (the tokens). 'foo.bar' should return the 'bar' item from contents of foo, ...
+ *     For  complicated expressions use an SGMLquery object.
  *     Possible indices:
  *       'bar' is a simple attribute name  : isString
  *       '1'  is a numeric index           : isNumeric
@@ -83,7 +85,7 @@ public SGML lookup(SGML datum)
   {
 
      while(currentItem < size() && datum != null){
-       //debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() );
+      crc.pia.Pia.debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() + "in" + datum.getClass().getName());
        
       datum = datum.attr(this);  //delegate to SGML
       next();  // shift counter up
