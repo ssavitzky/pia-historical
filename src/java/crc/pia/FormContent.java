@@ -418,8 +418,9 @@ public class FormContent extends Properties implements Content{
 
     if ( headers == null ){
       byte[] bytes = suckFromSource();
+      if (bytes == null) return null;
       String zdata = new String ( bytes,0,0, bytes.length);
-      return zdata;
+      return zdata; // === should really be setting the headers! ===
     }
       
     int hlen = headers.contentLength();
@@ -563,11 +564,15 @@ public class FormContent extends Properties implements Content{
   }
 
   /**
-   *
+   * Convert to a Table.
    */
   public Table getParameters(){
-    Enumeration e = propertyNames();
-    Table zTable = new Table( e );
+    Enumeration e = keys();
+    Table zTable = new Table( );
+    while (e.hasMoreElements()) {
+      String prop = e.nextElement().toString();
+      zTable.at(prop, get(prop));
+    }
     return zTable;
   }
 
