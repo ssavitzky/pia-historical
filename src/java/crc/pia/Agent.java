@@ -163,7 +163,7 @@ public interface Agent {
    */
   public String respondToInterformPut();
 
-  public Transaction respond(Transaction trans, Resolver res);
+  public void respond(Transaction trans, Resolver res) throws PiaRuntimeException;
 
   public Object computeFeature(String featureName) throws UnknownNameException;
 
