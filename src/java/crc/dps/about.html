@@ -1,0 +1,109 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>About the Document Processing System</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>About the Document Processing System</h1>
+
+<blockquote><em>
+  This document contains notes about the PIA's Document Processing System
+  (DPS), as implemented in the Java module <code>crc.dps</code>.
+</em></blockquote>
+
+<h2>Philosophy</h2>
+
+The DPS has several ways of looking at a document:
+
+<ul>
+  <li> As a character stream
+  <li> As a parse tree
+  <li> As a program, which ``expands'' (evaluates) to a document.
+</ul>
+
+An InterForm is a document viewed as a program which expands into a character
+stream. <p>
+
+The easy way to implement an InterForm would be to use the
+<code>toString</code> method on <code>Node</code>.  Active nodes would simply
+expand appropriately by overriding the <code>toString</code> method, and
+everything would be cool.  <p>
+
+There are several problems with this:
+<ol>
+  <li> In some cases the InterForm is represented as a stream (file), and we
+       want to expand it ``on the fly''.
+  <li> In other cases, we want the result to be another parse tree.  The
+       biggest problem here is that <code>Node</code> doesn't have an
+       <code>eval</code> method.
+  <li> In yet other cases, we want the result to be something else altogether,
+       for example nothing (evaluation for side effects), a bitmap (rendering
+       on the screen or for print), or a totally transformed document.
+  <li> Sometimes we want to do all three:  expand into a stream, modify the
+       original InterForm parse tree itself, and store the modified parse tree
+       back into the original file.
+  <li> What's worse, we want to be able to process the same document in
+       different ways (e.g. expanding it or pretty-printing it).
+</ol>
+
+
+<h2>Implementation</h2>
+
+The fundamental implementation technique is to <em>traverse</em> the parse
+tree, resulting in a stream of <code>Token</code> nodes.  A Token contains a
+reference back to the original node, and a reference to a Handler that
+contains all of the action information.  A single SGML Element gets turned
+into <em>two</em> <code>Token</code>s:  one for the start tag, and one for the
+end tag. <p> 
+
+An <code>Input</code> is a source for <code>Token</code>s.  A
+<code>Processor</code> takes <code>Token</code>s from an <code>Input</code>,
+processes them (figures) by invoking methods on their <code>Handler</code>s,
+and passes the results to an <code>Output</code>. <p>
+
+Along the way, a <code>Processor</code> might build a parse tree out of, not
+ordinary <code>Node</code>s, but <code>Token</code>s.  Unlike a
+<code>Node</code>, a <code>Token</code> can be asked to expand itself.
+<p>
+
+There are several major problems with this approach:
+<ol>
+  <li> We'd like to build parse trees out of ordinary <code>Node</code>s, and
+       in particular out of arbitrary implementations of the <code>Node</code>
+       interface.  In doing this we gain the ability to associate intrinsic
+       behavior with objects in the parse tree, but lose the ability to
+       associate arbitrary handlers with them.  Testing each <code>Node</code>
+       in the tree to find out whether it's a <code>Token</code> is potentially
+       very inefficient. 
+  <li> <code>Handler</code>s get complicated because we need to insure that
+       they produce equivalent results when converting to a
+       <code>String</code>, outputting characters to a stream, constructing a
+       new parse tree, and modifying an old one in place.
+</ol>
+
+We have several possible remedies:
+
+<ul>
+  <li> Make every <code>Node</code> tell (via an <code>isToken</code> method)
+       whether it's a <code>Token</code>, or (more efficiently) return a
+       suitable <code>Handler</code> from <code>getHandler</code>.  This
+       involves extending the DOM interfaces in possibly-incompatible ways.
+  <li> Give every <code>Node</code> some of the appropriate
+       <code>Handler</code> methods: <code>expand</code>, etc.  Much more
+       effient, but does even more damage to the model.
+  <li> Give <code>Token</code> a different (set of) node types.  This means
+       that a <code>Token</code> has a different node type from the
+       <code>Node</code> it represents, and still leaves us the inefficiency
+       of casting <code>Node</code> to <code>Token</code> (which isn't free in
+       Java).
+  <li> Build parallel <code>Node</code> and <code>Token</code> trees.
+       Inactive <code>Node</code>s can be treated as constants or as comments,
+       whichever is more appropriate. 
+</ul>
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

@@ -62,21 +62,20 @@ public class BasicProcessor extends ParseStack implements Processor {
 	 *	we have to save all the other variables before calling the
 	 *	handler.
 	 */
-	pushToken(token);
+	pushToken(token, token.getTagName());
 	if (expanding) {
 	  handler = token.getHandler();
-	  if (handler != null) token = handler.startAction(token, this);
-	}
-	parseStack.token = token;
-	// === next line: only if expanding.  Otherwise copy the token. ===
-	// === pass expanding to createNodeUnder?
-	if (parsing) {
-	  if (token != null) node = token.createNodeUnder(node);
+	  if (handler != null) node = handler.startAction(token, this);
 	} else {
-	  node = null;
+	  // If we're just building a parse tree, the token _is_ the node,
+	  // and we can append it now. 
+	  if (parsing) { appendNode(token); node = token; }
 	}
+	if (!parsing) node = null;
+
       } else if (token.isEndTag()) {		// End tag
-	debug("</" + token.getTagName() + ">", depth-1);
+	debug("</" + token.getTagName()
+	      + (token.implicitEnd()? " i" : "") +">", depth-1);
 	// remember whether we were passing the contents.
 	boolean werePassing = passing;
 	// then pop the parse stack.
@@ -84,9 +83,10 @@ public class BasicProcessor extends ParseStack implements Processor {
 	// the handler we want is the one from the start tag on the stack.
 	if (expanding) {
 	  handler = token.getHandler();
-	  if (handler != null) token = handler.endAction(token, this);
+	  if (handler != null) appendNode(handler.endAction(token, this));
 	}
-	// Don't have to appendTreeTo, since the start tag did that already.
+	// If we were parsing but not expanding, the node has already been added
+	// Don't have to createTreeUnder, since the start tag did that already.
 	// If we <em>were</em> passing, we just want to pass the end tag.
 	if (werePassing && token != null) token.setEndTag();
       } else /* token.isNode() */ {		// Complete node
@@ -96,12 +96,13 @@ public class BasicProcessor extends ParseStack implements Processor {
 	// === We require eval to be equivalent to the blind expansion...
 	if (expanding) {
 	  handler = token.getHandler();
-	  if (handler != null) token = handler.nodeAction(token, this);
+	  if (handler != null) appendNode(handler.nodeAction(token, this));
+	} else if (parsing) {
+	  if (node != null) token.copyTokenUnder(node);
 	}
 	// === next line: only if expanding.  Otherwise copy the token. ===
 	// === Worry about shallow/deep and whether expansion is done.  ===
 	// === pass expanding to appendTreeTo?
-	if (parsing && token != null) token.appendTreeTo(node);
       }
 
       // If we still have a token, see whether we need to pass it along ...
@@ -159,7 +160,7 @@ public class BasicProcessor extends ParseStack implements Processor {
   protected void passOutput(Token aToken) {
     if (! running || output == null) {
       outputQueue.append(aToken);
-    } else if (outputQueue.length() > 0) {
+    } else if (outputQueue.getLength() > 0) {
       outputQueue.append(aToken);
       passOutputQueue();
     } else {
@@ -169,7 +170,7 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   /** Pass several Tokens to the output. */
   protected void passOutput(TokenList someTokens) {
-    long length = someTokens.length();
+    long length = someTokens.getLength();
     for (long i = 0; i < length; ++i) {
       passOutput(someTokens.tokenAt(i));
     }
@@ -316,31 +317,6 @@ public class BasicProcessor extends ParseStack implements Processor {
    */
   public boolean hasMoreElements() { return ! atEnd(); }
 
-
-  /************************************************************************
-  ** Parsing Operations:
-  ************************************************************************/
-
-  /** Return true if we are currently nested inside an element with
-   *  the given tag.
-   *
-   * === insideElement may need to cannonicalize tagnames. ===
-   */
-  public final boolean insideElement(String tag) {
-    for (ParseStack s = parseStack; s != null; s = s.parseStack) {
-      if (tag.equals(s.getTagName())) return true;
-    } 
-    return false;
-  }
-
-  /** Return the tag of the immediately-surrounding Element. */
-  public final String elementTag() {
-    return (parseStack != null) ? parseStack.getTagName() : null;
-  }
-
-  /************************************************************************
-  ** Operations Used by Handlers:
-  ************************************************************************/
 
   /************************************************************************
   ** Debugging:

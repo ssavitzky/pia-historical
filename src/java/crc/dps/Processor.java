@@ -51,7 +51,7 @@ import crc.dom.NodeList;
  * @see crc.dps.Token
  * @see crc.dps.Input */
 
-public interface Processor extends Input {
+public interface Processor extends Input, Context {
 
   /************************************************************************
   ** Pushing Output from the Processor:
@@ -73,17 +73,6 @@ public interface Processor extends Input {
   /** Test whether the Processor is ``running'' (in ``push mode'').
    */
   public boolean isRunning();
-
-  /************************************************************************
-  ** Context Operations:
-  ************************************************************************/
-
-  /** Obtain the current handler bindings. */
-  public Tagset getHandlers();
-
-  /** Obtain the current entity bindings. */
-  public EntityTable getEntities();
-
 
   /************************************************************************
   ** Input Stack Operations:
@@ -137,46 +126,6 @@ public interface Processor extends Input {
   /** Push a Token onto the parse stack. */
   public void pushToken(Token aToken);
 
-  /** Test whether a parse tree is under construction. */
-  public boolean isParsing();
-
-  /** Test whether the output is receiving separate tokens for start tags,
-   *	content, and end tags. 
-   */
-  public boolean isPassing();
-
-  /** Test whether handler actions associated with tokens are being called.
-   */
-  public boolean isExpanding();
-
-  /** Set the flag that determines whether a parse tree is being constructed. 
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setParsing(boolean value);
-
-  /** Set the flag that determines whether a parse tree is being constructed. 
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setPassing(boolean value);
-
-  /** Set the flag that determines whether handlers are being called.
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setExpanding(boolean value);
-
-  /************************************************************************
-  ** Parsing Operations:
-  ************************************************************************/
-
-  /** Return true if we are currently nested inside an element with
-   *  the given tag. */
-  public boolean insideElement(String tag);
-
-  /** Return the tag of the immediately-surrounding Element. */
-  public String elementTag();
-
-  /** Return the depth of nesting in the parse stack. */
-  public int getDepth();
 
   /************************************************************************
   ** Operations Used by Handlers:

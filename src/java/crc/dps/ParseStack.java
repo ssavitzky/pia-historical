@@ -5,6 +5,8 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.Element;
+import crc.dom.NodeEnumerator;
 
 /**
  * The implementation of a Processor's parse stack, using a linked list.
@@ -13,6 +15,10 @@ import crc.dom.NodeList;
  *	pointer to the corresponding Input object, ParseStack objects
  *	contain all of the necessary state information, which saves a
  *	level of indirection. <p>
+ *
+ *	The implementation is a little twisted because a Processor
+ *	has additional state beyond a simple ParseStack, so it wants
+ *	to stay on top of the stack.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -23,13 +29,15 @@ import crc.dom.NodeList;
  * @see java.util.NoSuchElementException
  */
 
-public class ParseStack extends StackFrame {
+public class ParseStack extends StackFrame implements Context {
 
   /************************************************************************
   ** State:
   ************************************************************************/
 
   protected Node node;
+  protected String tagName;
+
   protected Token token;
 
   protected boolean parsing;
@@ -40,29 +48,24 @@ public class ParseStack extends StackFrame {
   ** State Accessors:
   ************************************************************************/
 
-  /** Returns the current Node of a parse tree under construction. 
-   *	Note that if we are constructing a parse tree and the current
-   *	Token is null (indicating a sequence of Tokens balanced for start
-   *	and end tags), getNode returns the next non-null Node up the stack.
-   */
-  public final Node getNode() {
-    return node;
+  public final Node getNode() 		{ return node; }
+
+  public void  setNode(Node aNode) {
+    node = aNode;
   }
 
-  /** Returns the start tag Token corresponding to the current Node. 
-   *	Note that the current Token can be null, indicating a sequence of
-   *	Nodes which may be part of a larger NodeList but within which every
-   *	start tag must have a corresponding end tag.
-   */
-  public final Token getToken() {
-    return token;
+  public void setNode(Node aNode, String aTagName) {
+    node = aNode;
+    tagName = aTagName;
   }
 
+  public final Token getToken() 	{ return token; }
+  public void  setToken(Token aToken) 	{ token = aToken; }
 
   /** Returns the tag name of the corresponding element.
    */
   public final String getTagName() {
-    return token == null? null : token.getTagName();
+    return tagName;
   }
 
 
@@ -102,9 +105,11 @@ public class ParseStack extends StackFrame {
   ************************************************************************/
 
   protected EntityTable entities;
+  protected EntityTable localEntities;
   protected ParseStack entityContext;
 
   protected Tagset handlers;
+  protected Tagset localHandlers;
   protected ParseStack handlerContext;
 
   /************************************************************************
@@ -115,16 +120,19 @@ public class ParseStack extends StackFrame {
    *	Goes up the context stack if no entities are defined at this level.  
    */
   public final EntityTable getEntities() {
-    if (entities != null) return entities;
-    else if (handlerContext == null) return null;
-    else return handlerContext.getEntities();
+    return entities;
+  }
+
+  public final void setEntities(EntityTable bindings) {
+    localEntities = bindings;
+    entities = bindings;
   }
 
   /** Returns the current local EntityTable. 
    *	Returns null if no entities are defined at this level.  
    */
   public final EntityTable getLocalEntities() {
-    return entities;
+    return localEntities;
   }
 
   /** Returns the next stack frame in which entities are defined. 
@@ -140,16 +148,19 @@ public class ParseStack extends StackFrame {
    *	Goes up the context stack if no handlers are defined at this level.  
    */
   public final Tagset getHandlers() {
-    if (handlers != null) return handlers;
-    else if (handlerContext == null) return null;
-    else return handlerContext.getHandlers();
+    return handlers;
+  }
+
+  public final void setHandlers(Tagset bindings) { 
+    handlers = bindings;
+    localHandlers = bindings;
   }
 
   /** Returns the current local Tagset. 
    *	Returns null if no handlers are defined at this level.  
    */
   public final Tagset getLocalHandlers() {
-    return handlers;
+    return localHandlers;
   }
 
   /** Returns the next stack frame in which entities are defined. 
@@ -159,6 +170,61 @@ public class ParseStack extends StackFrame {
    */
   public final ParseStack getHandlerContext() {
     return handlerContext;
+  }
+
+  /************************************************************************
+  ** Information Needed for Parsing:
+  ************************************************************************/
+
+  public final boolean insideElement(String tag, boolean ignoreCase,
+				     int stopDepth) {
+    if (ignoreCase) tag = tag.toLowerCase();
+    for (ParseStack s = parseStack;
+	 s != null && s.depth >= stopDepth;
+	 s = s.parseStack) {
+      String etag = s.getTagName();
+      if (etag == null) continue;
+      if (ignoreCase) etag = etag.toLowerCase();
+      if (tag.equals(etag)) return true;
+    } 
+    return false;
+  }
+
+  public final String elementTag() {
+    return getTagName();
+  }
+
+
+  /************************************************************************
+  ** Parse Tree Construction:
+  ************************************************************************/
+
+  /** Append a Node to the current parent.
+   *	If the new Node's parent is the current Node, nothing happens.
+   *	If its parent is non-<code>null</code> and <em>different</em>
+   *	from the current Node, it will be reparented.  If the Node's
+   *	type is NODELIST, its children will be appended (spliced in). <p>
+   *
+   * @see #getNode
+   * @see #setNode
+   * @see crc.dps.NodeType
+   */
+  public void appendNode(Node aNode) { Util.appendNode(aNode, node); }
+
+  /** Append the nodes in a NodeList to the current parent.
+   *	It is usual for a Handler to return a NodeList rather than a Node
+   *	when computing a value.  <p>
+   *
+   * @see #getNode
+   * @see #setNode
+   * @see crc.dps.Handler
+   */
+  public void appendNodes(NodeList aNodeList) {
+    if (aNodeList == null) return;
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      appendNode(node);
+    }
   }
 
   /************************************************************************
@@ -190,18 +256,14 @@ public class ParseStack extends StackFrame {
 
   protected void push() {
 
-    parseStack = new ParseStack(parseStack);
-
+    parseStack = new ParseStack(this);
     depth++;
-    parseStack.node 		= node;
-    parseStack.token		= token;
-    parseStack.parsing		= parsing;
-    parseStack.expanding	= expanding;
-    parseStack.passing		= passing;
-    parseStack.entities		= entities;
-    parseStack.entityContext	= entityContext;
-    parseStack.handlers		= handlers;
-    parseStack.handlerContext	= handlerContext;
+
+    if (localHandlers != null) handlerContext = parseStack;
+    localHandlers = null;
+
+    if (localEntities != null) entityContext = parseStack;
+    localEntities = null;
   }
 
   /** Push a Token onto the parse stack. */
@@ -209,6 +271,15 @@ public class ParseStack extends StackFrame {
     push();
     node = null;
     token = aToken;
+    tagName = aToken.getTagName();
+  }
+
+  /** Push a Token onto the parse stack along with its tagname. */
+  public void pushToken(Token aToken, String aTagName){
+    push();
+    node = null;
+    token = aToken;
+    tagName = aTagName;
   }
 
   /** Pop the parse stack. 
@@ -218,18 +289,27 @@ public class ParseStack extends StackFrame {
     if (parseStack == null) return false;
 
     depth--;
-    node 		= parseStack.node;
-    token 		= parseStack.token;
-    parsing 		= parseStack.parsing;
-    expanding		= parseStack.expanding;
-    passing 		= parseStack.passing;
-    entities 		= parseStack.entities;
-    entityContext 	= parseStack.entityContext;
-    handlers 		= parseStack.handlers;
-    handlerContext 	= parseStack.handlerContext;
-    parseStack 		= parseStack.parseStack;
-
+    copy(parseStack);
     return true;
+  }
+
+  public void copy(ParseStack s) {
+    node 		= s.node;
+    token 		= s.token;
+    tagName		= s.tagName;
+    parsing 		= s.parsing;
+    expanding		= s.expanding;
+    passing 		= s.passing;
+
+    entities 		= s.entities;
+    localEntities	= s.localEntities;
+    entityContext 	= s.entityContext;
+
+    handlers 		= s.handlers;
+    localHandlers	= s.localHandlers;
+    handlerContext 	= s.handlerContext;
+    parseStack 		= s.parseStack;
+    depth		= s.depth;
   }
 
   /************************************************************************
@@ -241,8 +321,8 @@ public class ParseStack extends StackFrame {
   }
 
   public ParseStack(ParseStack next) {
-    super((next == null)? 0 : next.depth + 1);
-    parseStack = next;
+    copy(next);
   }
+
 
 }

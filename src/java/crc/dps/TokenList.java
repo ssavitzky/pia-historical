@@ -19,7 +19,7 @@ package crc.dps;
  * @see crc.ds.List
  */
 
-public interface TokenList {
+public interface TokenList  {
 
   /**
    * Returns the indexth item in the collection, as a Token.
@@ -35,6 +35,8 @@ public interface TokenList {
    */
   public void append(Token newChild);
 
-  /** Returns the number of Tokens in the list. */
-  public long length();
+  /** 
+   * @return length
+   */
+  public long getLength();
 }

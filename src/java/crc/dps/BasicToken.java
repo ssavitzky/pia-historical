@@ -4,6 +4,7 @@
 
 package crc.dps;
 import crc.dom.Node;
+import crc.dom.NodeList;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
@@ -381,10 +382,12 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public String startString() {
     switch (nodeType) {
     case NodeType.ELEMENT:
-      return "<" +
-	(tagName == null ? "" : tagName) +
-	(getAttributes() == null ? "" : " " + getAttributes().toString()) +
-	(hasEmptyDelimiter() ? "/" : "") + ">";
+      String s = "<" +(tagName == null ? "" : tagName);
+      crc.dom.AttributeList attrs = getAttributes();
+      if (attrs != null && attrs.getLength() > 0) {
+	s += " " + attrs.toString();
+      }
+      return s + (hasEmptyDelimiter() ? "/" : "") + ">";
 
     case NodeType.TEXT:
       return "";
@@ -483,6 +486,34 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     return new BasicToken(this);
   }
 
+  /** Return a deep copy of this Token.  Attributes and children are copied.
+   */
+  public Token deepCopy() {
+    Token node = shallowCopy();
+    for (Node child = getFirstChild();
+	 child != null;
+	 child = child.getNextSibling()) {
+      Node newChild = createToken(child, true);
+      Util.appendNode(newChild, node);
+    }
+    return node;
+  }
+
+  /** Expand the Token in the given Context. */
+  public NodeList expand(Context c) {
+    if (handler != null) return handler.expand(this, c);
+    Token node = null; //  === createNode(c);
+    for (Node child = getFirstChild();
+	 child != null;
+	 child = child.getNextSibling()) {
+      NodeList results = (child instanceof Token) 
+	? ((Token)child).expand(c)
+	: null; // === Util.expand(child, c);
+      Util.appendNodes(results, node);
+    }
+    return new BasicTokenList(node);
+  }
+
   /** Return a new start-tag Token for this Token.
    *	If the Token is already a start tag, it is simply returned. 
    *	If the Token is not an element, null is returned.
@@ -554,6 +585,21 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     }
   }
 
+  /** Return a copy of the Token, including its children, unless the Token
+   *	is not already part of a parse tree.  If the Token is a start tag
+   *	it is known not to be part of a tree, so it is simply returned with
+   *	its syntax changed to Node.
+   */
+  public Token copyTokenIfNecessary() {
+    if (syntax < 0) {
+      syntax = 0;
+      return this;
+    } else {
+      return deepCopy();
+    }
+  }
+
+
   /************************************************************************
   ** Convenience Functions:
   ************************************************************************/
@@ -577,26 +623,15 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     setAttribute(attr);
   }
 
-  /** Create a new node for children to append to. */
-  public Node createNodeUnder(Node parent) {
-    Node node = (handler == null)? this : handler.createNode(this);
-    if (parent != null && node != null) try {
+  /** Append the Token (or a copy if necessary) to the given parent. */
+  public Token copyTokenUnder(Node parent) {
+    Token node = copyTokenIfNecessary();
+    if (parent != null) try {
       parent.insertBefore(node, null);
     } catch (crc.dom.NotMyChildException e) {
 	  // === not clear what to do here...  shouldn't happen. ===
     }
     return node;
-  }
-
-  /** Create a new node and append it to the given node. */
-  public void appendTreeTo(Node parent) {
-    // === This should probably call createTree instead of createNode. 
-    Node node = (handler == null)? this : handler.createNode(this);
-    if (parent != null && node != null) try {
-      parent.insertBefore(node, null);
-    } catch (crc.dom.NotMyChildException e) {
-	  // === not clear what to do here...  shouldn't happen. ===
-    }
   }
 
 }

@@ -3,7 +3,9 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps;
-import crc.ds.List;
+
+import crc.dom.ArrayNodeList;
+import crc.dom.Node;
 
 /**
  * A list or sequence of Token objects.  
@@ -18,7 +20,7 @@ import crc.ds.List;
  * @see crc.dom.Node
  */
 
-public class BasicTokenList extends List implements TokenList {
+public class BasicTokenList extends ArrayNodeList implements TokenList {
 
   /**
    * Returns the indexth item in the collection, as a Token.
@@ -28,14 +30,21 @@ public class BasicTokenList extends List implements TokenList {
    * @return a Token at index position.
    * @param index Position to get node.
    */
-  public Token tokenAt(long index) { return (Token)at((int)index); }
+  public Token tokenAt(long index) { 
+    try {
+      return (Token)item(index);
+    } catch (crc.dom.NoSuchNodeException e) {
+      return null;
+    }
+  }
 
   /** Append a new Token.
    */
-  public void append(Token newChild) { push(newChild); }
-
-  /** Returns the number of Tokens in the list. */
-  public long length() { return nItems(); }
+  public void append(Token newChild) { append((Node)newChild); }
 
   public BasicTokenList() {}
+
+  public BasicTokenList(Token initialChild) {
+    super((Node)initialChild);
+  }
 }

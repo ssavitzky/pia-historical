@@ -18,6 +18,7 @@ FILES = \
 	BasicProcessor.java \
 	BasicToken.java \
 	BasicTokenList.java \
+	Context.java \
 	EntityTable.java \
 	Filter.java \
 	Handler.java \
@@ -45,4 +46,4 @@ include $(TOPDIR)/makefiles/package.make
 
 InputStack.class: StackFrame.java
 ParseStack.class: StackFrame.java
-
+BasicTokenList.class: TokenList.java ../dom/ArrayNodeList.java

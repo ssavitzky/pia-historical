@@ -207,6 +207,13 @@ public interface Token extends Element, Text {
    */
   public Token shallowCopy();
 
+  /** Return a deep copy of this Token.  Attributes and children are copied.
+   */
+  public Token deepCopy();
+
+  /** Expand the Token in the given Context. */
+  public NodeList expand(Context c);
+
   /** Return a new start-tag Token for this Token.
    *	If the Token is already a start tag, it is simply returned. 
    *	If the Token is not an element, null is returned.
@@ -229,6 +236,13 @@ public interface Token extends Element, Text {
    */
   public Node createTree(DOMFactory f);
 
+  /** Return a copy of the Token, including its children, unless the Token
+   *	is not already part of a parse tree.  If the Token is a start tag
+   *	it is known not to be part of a tree, so it is simply returned with
+   *	its syntax changed to Node.
+   */
+  public Token copyTokenIfNecessary();
+
   /************************************************************************
   ** Convenience Functions:
   ************************************************************************/
@@ -243,9 +257,6 @@ public interface Token extends Element, Text {
    */
   public void addAttr(String aname, NodeList value);
 
-  /** Create a new node for children to append to. */
-  public Node createNodeUnder(Node parent);
-
-  /** Create a new node and append it to the given node. */
-  public void appendTreeTo(Node parent);
+  /** Copy the Token, if necessary, and put it  under the given parent node. */
+  public Token copyTokenUnder(Node parent);
 }
