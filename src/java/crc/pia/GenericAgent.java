@@ -28,6 +28,7 @@ import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
 import crc.content.ByteStreamContent;
+import crc.content.text.ProcessedContent;
 import crc.pia.Authenticator;
 import crc.pia.Pia;
 import crc.pia.ContentOperationUnavailable;
@@ -38,6 +39,10 @@ import crc.ds.List;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
 import crc.ds.Tabular;
+
+import crc.dps.Tagset;
+import crc.dps.tagset.Loader;
+import crc.dps.process.ActiveDoc;
 
 import crc.sgml.SGML;
 import crc.sgml.Attrs;
@@ -72,7 +77,7 @@ public class GenericAgent implements Agent {
   protected String resultTypes[] = {
     null, 	"text/html",	"text/html",	"text/html",	"text/xml"};
   protected String tagsetNames[] = {
-    null, 	"Standard",	"legacy", 	"standard", 	"standalone"};
+    null, 	"Standard",	"legacy", 	"xhtml", 	"xxml"};
 
 
   /** A ``search path'' of filename suffixes for (possibly) executable files. */
@@ -148,7 +153,7 @@ public class GenericAgent implements Agent {
    *	a transaction is matched by the agent.  Initialized by setting the 
    *	agent's <code>act-on</code> or <code>_act_on</code> attribute.
    */
-  protected SGML actOnHook;
+  protected Object actOnHook;	
 
   /**
    * Handle Hook.  A pre-parsed piece of InterForm code that is run when 
@@ -156,7 +161,7 @@ public class GenericAgent implements Agent {
    *	setting the agent's <code>handle</code> or <code>_handle</code> 
    *	attribute.
    */
-  protected SGML handleHook;
+  protected Object handleHook;	// === needs to be Object for old/new
 
   /**
    * Path prefix for data subdirectory.
@@ -766,9 +771,13 @@ public class GenericAgent implements Agent {
    * Act on a transaction that we have matched.  
    */
   public void actOn(Transaction ts, Resolver res){
-    if (actOnHook != null) {
+    if (actOnHook == null) return;
+    else if (actOnHook instanceof SGML) {
       Pia.debug(this, name()+".actOnHook", "="+actOnHook.toString());
-      Run.interformHook(this, actOnHook, name()+".act-on", ts, res);
+      Run.interformHook(this, (SGML)actOnHook, name()+".act-on", ts, res);
+    } else {
+      Pia.debug(this, name()+".actOnHook", "= DPS:"+actOnHook.toString());
+      // run DPS hook!
     }
   }
 
@@ -779,12 +788,15 @@ public class GenericAgent implements Agent {
    * may want to intercept a transaction meant for somewhere else.
    */
   public boolean handle(Transaction ts, Resolver res) {
-    if (handleHook != null) {
+    if (handleHook == null)  return false;
+    else if (handleHook instanceof SGML) {
       Pia.debug(this, name()+".handleHook", "="+handleHook.toString());
-      Run.interformHook(this, handleHook, name()+".act-on", ts, res);
+      Run.interformHook(this, (SGML)handleHook, name()+".act-on", ts, res);
       return true;
-    } else
-      return false;
+    } else {
+      Pia.debug(this, name()+".handleHook", "= DPS: "+handleHook.toString());
+      return false;      // run DPS hook!
+    }
   }
 
 
@@ -1201,10 +1213,20 @@ public class GenericAgent implements Agent {
    */
   public void sendProcessedResponse ( String file, String path, 
 				      Transaction trans, Resolver res ) {
-    String ts = tagsetName(file);
     Transaction response = new HTTPResponse( trans, false );
-    Content c = new crc.content.text.ProcessedContent(this, file, path, ts,
-						      trans, response, res);
+    String tsn = tagsetName(file);
+    ActiveDoc proc = new ActiveDoc(this, trans, response, res);
+    Tagset ts  = proc.loadTagset(type()+"-" + tsn);
+    if (ts == null) ts = proc.loadTagset(tsn);
+
+    if (ts == null) {
+      sendErrorResponse(trans, 500, "cannot load tagset " +tsn);
+      return;
+    }
+
+    proc.setTagset(ts);
+    Content c = new ProcessedContent(this, file, path, proc,
+				     trans, response, res);
     response.setStatus( 200 ); 
     response.setContentType( resultType(file) );
     response.setContentObj( c );
