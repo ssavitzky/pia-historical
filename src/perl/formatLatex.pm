@@ -28,7 +28,7 @@ sub new{
     $main::format_options{_type}="article";
 $main::format_options{_column_width}="7";
 $main::format_options{_logo}="/home/pia/pia/src/Agents/printer/logo.ps";
-$main::format_options{_paper}="a4paper";
+$main::format_options{_paper}="letter";
 $main::format_options{_images}="1";
 
 sub initialize{
@@ -97,10 +97,15 @@ sub header{
 
     $string.="]{" . $$self{_type} . "}\n";
     $string.="\\usepackage{psfig}\n";
-
-$string.=" \\addtolength{\\textwidth}{2cm}\\addtolength{\\textheight}{3cm}";
-$string.="\\addtolength{\\topmargin}{-.75cm}";
+    if ($$self{_columns} == 2) {
+$string.=" \\addtolength{\\textwidth}{3.75cm}\\addtolength{\\textheight}{6cm}";
+$string.="\\addtolength{\\topmargin}{-3.0cm}";
+$string.="\\setlength{\\oddsidemargin}{-1.5cm}\\setlength{\\evensidemargin}{-1.5cm}";
+}else {
+$string.=" \\addtolength{\\textwidth}{4cm}\\addtolength{\\textheight}{6cm}";
+$string.="\\addtolength{\\topmargin}{-3.0cm}";
 $string.="\\setlength{\\oddsidemargin}{-.5cm}\\setlength{\\evensidemargin}{-.5cm}";
+}
     $string.="\\begin{document}\n"; 
 
     return $string;
@@ -130,21 +135,23 @@ sub latex_string{
 }
 
 sub latex_start{
-    my($self,$argument)=@_;
+    my($token,$argument)=@_;
 
-    return $latex_start{$self->tag} if exists $latex_start{$self->tag};
+    return $latex_start{$token->tag} if exists $latex_start{$token->tag};
     #default nothing
-#    print "no latex for " . $self->tag;
+#    print "no latex for " . $token->tag;
     return "";
 }
 sub latex_end{
-    my($self,$argument)=@_;
-#    return $$self{_latex_end} if exists $$self{_latex_end};
+    my($token,$argument)=@_;
+#    print "I am $token" . $token->tag." \n";
+    return "" if ref($token) eq 'DS::Tokens';
+    return $$token{_latex_end} if exists $$token{_latex_end};
     
-    return $latex_end{$self->tag} if exists $latex_end{$self->tag};
+    return $latex_end{$token->tag} if exists $latex_end{$token->tag};
     #default close { if start
-    if( exists $latex_start{$self->tag}){
-	my $start=$latex_start{$self->tag};
+    if( exists $latex_start{$token->tag}){
+	my $start=$latex_start{$token->tag};
 	my $end;
 #	print "start is $start ";
 	if ($start =~ /\\begin\{(.+)\}/){ #begins
@@ -161,15 +168,15 @@ sub latex_end{
 
  # latex stuff
 sub latex{
-    my($self,$ignore_functions)=@_;
-    #print "latexing ".$self->tag ."\n" if $main::debugging;
-    return latex_function($self) if !$ignore_functions && exists $latex_functions{$self->tag};
+    my($token,$ignore_functions)=@_;
+    #print "latexing ".$token->tag ."\n" if $main::debugging;
+    return latex_function($token) if !$ignore_functions && exists $latex_functions{$token->tag};
     my $string;
-    $string=latex_start($self);
+    $string=latex_start($token);
     ## Convert a token to latex
     
 
-    my $content = $self->content;
+    my $content = $token->content;
     if (defined $content) {
 	for (@$content) {
 	    if (ref($_)) { 
@@ -182,27 +189,27 @@ sub latex{
 		}
 	}
     }
-    $string .= latex_end($self);
+    $string .= latex_end($token);
     return $string;
 }
 
 sub latex_function{
-    my($self,$argument)=@_;
-    my $function=$latex_functions{$self->tag};
+    my($token,$argument)=@_;
+    my $function=$latex_functions{$token->tag};
     return unless ref($function) eq 'CODE';
-    my $result=&$function($self);
+    my $result=&$function($token);
     return $result;
 }
 
 
 sub latex_a{
 ##need to add ref code for anchors
-    my($self)=shift;
+    my($token)=shift;
 #    my $string="\\htmladdnormallink{" ;
     my $string;
-    $string.=latex($self,1);
-    my $url=$self->attr('href');
-    my $book_reference=$self->attr('book_reference');
+    $string.=latex($token,1);
+    my $url=$token->attr('href');
+    my $book_reference=$token->attr('book_reference');
     if($book_reference){
 	$string.="[\\ref{" . $book_reference . "}]";
     }
@@ -279,24 +286,24 @@ sub latex_table{
     return $string;
 }
 sub latex_table_cell{
-    $self=shift;
+    $token=shift;
     my $string;
 ##do spanshere  \multicolumn{n}{c}{...}
-    $string.=latex($self,1);
+    $string.=latex($token,1);
     $string.= "&";
     return $string;
     
 }
 sub latex_image{
-    $self=shift;
+    $token=shift;
     return unless $main::format_options{_images};
-    my $width=$self->attr('width');
-    my $height=$self->attr('height');
-    my $source=$self->attr('src');
-    my $file=$self->attr('psfile');
+    my $width=$token->attr('width');
+    my $height=$token->attr('height');
+    my $source=$token->attr('src');
+    my $file=$token->attr('psfile');
     my $string="\\psfig{figure=$file";
     if(!$file){
-	my $alternate=$self->attr('alt');
+	my $alternate=$token->attr('alt');
 	$alternate="[IMAGE]" unless $alternate;
 	return $alternate;
     }
