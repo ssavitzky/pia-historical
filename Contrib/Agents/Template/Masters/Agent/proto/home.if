@@ -1,0 +1,26 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; Home Page</title>
+<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Home Page</set>
+<read interform file="heading.inc" process>
+<!-- === should be done in template === -->
+<if><read info=p interform file="althead.inc">
+    <then><read interform file="althead.inc" process>
+    <else><read interform file="subhead.inc" process>
+</if>
+<hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
+
+<!-- See whether there's an "about" file for this agent. -->
+<read interform file="about.inc" quiet process>
+<p>
+
+
+<hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
+<b>|dCopyright|</b><br>
+<b>$Id$</b><br>
+</body></html>
