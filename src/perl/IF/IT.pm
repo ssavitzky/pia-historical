@@ -410,7 +410,7 @@ sub traverse {
 @empty_tags = (	
 	       '!', '!--', '?', 
 	       'img', 'hr', 'br', 'link', 'input',
-
+	       'get',
 	       ## The following are dubious; there's no good way to
 	       ##    handle implicit end tags yet.
 	        'p', # 'li', 'dt', 'dd',

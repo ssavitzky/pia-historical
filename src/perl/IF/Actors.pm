@@ -1150,7 +1150,7 @@ sub read_handle {
 
     if ($it->attr('process')) {
 	$ii->push_into($content);
-	$ii->delete_it();
+	$ii->replace_it('');
     } else {
 	$ii->replace_it($content);
     }

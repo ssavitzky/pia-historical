@@ -148,7 +148,7 @@ sub parse_html_string {
 ### Evaluating Interforms on behalf of PIA Agents:
 ###
 
-local $agent, $request, $transaction, $resolver;
+local ($agent, $request, $transaction, $resolver);
 
 sub interform_file {
     local ($agent, $file, $request, $resolver)=@_;

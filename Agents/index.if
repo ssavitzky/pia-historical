@@ -3,7 +3,6 @@
 <title>Generic Index for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-
 <set entity name=title>&agentName; agent <br>Index Page</set>
 <read interform file="heading.inc" process>
 

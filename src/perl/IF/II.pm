@@ -804,7 +804,7 @@ sub run {
 
     $self->flush;
     return $self->streaming? $self->out_queue->as_string 
-	                   : $self->out_queue->as_token;
+	                   : $self->out_queue;
 }
 
 sub flush {

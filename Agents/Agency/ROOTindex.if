@@ -9,23 +9,16 @@
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a>
     <th width=170 nowrap>
-    <th align=left nowrap nobr valign=center>
-        <a href="/"><img width=85 height=45 border=0
-	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
-<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=340><br></tr>
+<tr nowrap nobr><th align=left><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
-    <th>
-    <th align=left><font face=helvetica>Root Index for
-	<if><test exact  match='pia'><get env name="USER"></test>
-	    <then> this </then>
-	    <else> &piaUSER;'s</else></if>
-	<tr><th><th><th align=left>
-	<if><test exact match='pia'><get env name="USER"></test>
-	    <then>Peripheral Interface </then>
-	    <else>Personal Information </else></if> Agency </font> <br>
+    <th align=right width=170>
+    <th align=left nowrap nobr valign=center><font face=helvetica>
+        <a href="/"><img width=85 height=45 border=0 alt=PIA
+	    	         src="/Agency/Icons/pia45.gif"></a></font><br></tr>
+<tr><th><br>
 </table>
 
 <table cellspacing=0 cellpadding=0 border=0>
@@ -39,6 +32,16 @@
     </table>
   <td valign=top>
     <table cellspacing=0 cellpadding=0 border=0>
+
+    <tr><th valign=top align=right width=170>
+	    <if><test exact match='pia'><get env name="USER"></test>
+		<then></then>
+		<else><a href="/My/">&piaUSER;'s</a> </else></if>
+	<th align=left><font face=helvetica>
+	<if><test exact match='pia'><get env name="USER"></test>
+	    <then>An Information Appliance</then>
+	    <else>Personal Information Agency</else>
+	</if></font> <br>
     <tr><th valign=top align=right width=170>
 	    <a href="/Agency/home.if"><b>Agency:</b></a>
 	<td valign=top>
