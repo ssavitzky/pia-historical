@@ -7,9 +7,10 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.BasicAttribute;
 
 import crc.dps.active.ParseTreeElement;
+import crc.dps.active.ParseTreeAttribute;
+
 import crc.dps.*;
 
 import java.util.Enumeration;
@@ -77,6 +78,7 @@ public class BasicEntityTable extends ParseTreeElement implements EntityTable {
 
   /** Look up a name and get a (local) binding. */
   public Attribute getBinding(String name) {
+    if (getAttributes() == null) return null;
     return getAttributes().getAttribute(name);
   }
 
@@ -87,7 +89,7 @@ public class BasicEntityTable extends ParseTreeElement implements EntityTable {
 
   /** Construct a new binding or replace the value in an existing one. */
   public void setBinding(String name, NodeList value) {
-    setAttribute (new BasicAttribute(name, value));
+    setAttribute (new ParseTreeAttribute(name, value));
   }
 
   /************************************************************************
