@@ -24,12 +24,7 @@
                   <write append file="&FORM.filepath;"><b><get name="nameobject.&FORM.name;"></b> &dateString;<br></write>
                   Your signature has been appended to the document.<br>
 
-                 <actor name=form tag=form handle="submit_forms"></actor>
-                 <form method=GET action="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi">
-                 <input name="username" value="&FORM.name;">
-                 <input name="src_url" value="http://&piaHOST;:&piaPORT;/My/Forms/&FORM.filepath;">
-                 <input type="submit" value="SendFormToIMP">
-                 </form>
+                 <read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi?username=&FORM.name;&amp;src_url=http://&piaHOST;:&piaPORT;/My/Forms/&FORM.filepath;">
 
                   <if><test exact match="NULL">&nextperson;</test><then>
                   This document requires no additional electronic signatures.
