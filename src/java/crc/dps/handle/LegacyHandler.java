@@ -63,4 +63,10 @@ public class LegacyHandler extends GenericHandler {
   public LegacyHandler(crc.interform.Handler h) {
     wrapped = h;
   }
+
+  /** Utility to wrap a different handler, for dispatching. */
+  public LegacyHandler wrap(crc.interform.Handler h) {
+    return new LegacyHandler(h);
+  }
+
 }
