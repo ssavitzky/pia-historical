@@ -41,7 +41,9 @@ import crc.pia.Configuration;
 
 public class Pia {
   /**
-   * A substring that ends all proxy property names.
+   * The tail of a property name (the prefix of which is protocol),
+   * that indicates a proxy.  The value of the property should be the URL to 
+   * proxy through.
    */
   public static final String PROXY = "_proxy";
 
@@ -51,6 +53,20 @@ public class Pia {
    */
   public static final String NO_PROXY = "no_proxy";
 
+  /**
+   * The tail of a property name (the prefix of which is protocol) that 
+   * contains a proxy authorization <code>userid:passwd</code> pair.
+   * Should be base-64 encoded unless the correspondinng PROXY_AUTH_ENC
+   * property is non-null.
+   */
+  public static final String PROXY_AUTH = "_proxy-auth";
+
+  /**
+   * The tail of a property name (the prefix of which is protocol) that 
+   * indicates that a corresponding proxy authorization is cleartext, and 
+   * so needs to be base-64 encoded before being sent to the proxy.
+   */
+  public static final String PROXY_AUTH_ENC = "_proxy-auth-encode";
 
   /**
    * Property name of path of pia properties file.
@@ -591,6 +607,24 @@ public class Pia {
 	String v = properties.getProperty(propName);
 	if (! v.endsWith("/")) v += "/";
 	proxies.put(scheme, v);
+      } else if (propName.endsWith(PROXY_AUTH_ENC)) {
+	// Also look for "_proxy-auth" and "_proxy-auth-encode"
+	// If the ...-encode string is present, print out the encoded
+	// userID/password string for the user to fix.
+	String scheme = propName.substring(0, propName.indexOf(PROXY_AUTH_ENC));
+	String auth = properties.getProperty(scheme + PROXY_AUTH);
+	if (auth != null) {
+	  byte bytes[] = new byte[auth.length()] ;
+	  auth.getBytes(0, bytes.length, bytes, 0) ;
+	  auth = crc.util.Utilities.encodeBase64(bytes);
+	  System.err.println("*** Please edit the your pia.props file"
+			     + " to remove a security hole: ***");
+	  System.err.println("    Replace the line defining "
+			     + scheme + PROXY_AUTH + " with the following:");
+	  System.err.println(scheme+PROXY_AUTH+"="+auth);
+	  System.err.println("    Remove the line defining "
+			     + scheme + PROXY_AUTH_ENC);
+	}
       }
     }
     

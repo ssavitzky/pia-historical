@@ -285,6 +285,22 @@ public class  HTTPRequest extends Transaction {
     if( m != null )
       proxy = m.proxy( protocol() );
 
+    // === AUTHORIZATION KLUDGE === 
+    // Requires properties http_proxy-auth = userid:passwd
+    // Set http_proxy-auth-encode = non-null to encode the auth string.
+    if (proxy != null) {
+      Properties props = Pia.instance().properties();
+      String auth = props.getProperty(protocol()+"_proxy-auth");
+      if (auth != null) {
+	if (props.getProperty(protocol()+"_proxy-auth-encode") != null) {
+	  byte bytes[] = new byte[auth.length()] ;
+	  auth.getBytes(0, bytes.length, bytes, 0) ;
+	  auth = crc.util.Utilities.encodeBase64(bytes);
+	}
+	setHeader("Proxy-Authorization", "Basic " + auth);
+      }
+    }
+
     buf = new StringBuffer();
     // Send method as upper case, as some servers e.g. NCSA 1.5a
     // do not recognize it otherwise
