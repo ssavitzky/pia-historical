@@ -32,8 +32,6 @@ public class testHandler extends GenericHandler {
   ************************************************************************/
 
   protected boolean  inverted = false;
-  protected NodeList trueValue = null;
-  protected NodeList falseValue = null;
 
   /************************************************************************
   ** Semantic Operations:
@@ -81,21 +79,13 @@ public class testHandler extends GenericHandler {
     }
     NodeList rv;
     if (atts.hasTrueAttribute("not")) value = !value;
-    if (value) {
-      rv = atts.getAttributeValue("iftrue");
-      if (rv != null) 	{ Copy.copyNodes(rv, out); }
-      else 		{ out.putNode(new ParseTreeText("1")); }
-    } else {
-      rv = atts.getAttributeValue("iffalse");
-      if (rv != null) 	{ Copy.copyNodes(rv, out); }
-      // nothing to do if there's no false return value.
-    }
+    if (value) { out.putNode(new ParseTreeText("1")); }
+    // nothing to do if there's no false return value.
   }
 
-  /** This returns a boolean <code>value</code> according to the 
-   *	<code>not</code>, <code>iftrue</code>, and <code>iffalse</code>
-   *	attributes already accumulated in a fresh instance of the
-   *	handler. <p>
+  /** This returns a boolean <code>value</code> possibly modified by
+   *	a <code>not</code> attribute already stored in the handler instance.
+   *	<p>
    *
    *	This routine takes a Context because the <code>iftrue</code> and
    *	<code>iffalse</code> attributes were acquired at parse time and
@@ -104,13 +94,8 @@ public class testHandler extends GenericHandler {
   public void returnBoolean(boolean value, Context c, Output out) {
     //c.debug("<test> returning " + value + " " + getClass().getName() + "\n");
     if (inverted) value = !value;
-    if (value) {
-      if (trueValue != null) 	{ Expand.expandNodes(c, trueValue, out); }
-      else 			{ out.putNode(new ParseTreeText("1")); }
-    } else {
-      if (falseValue != null) 	{ Expand.expandNodes(c, falseValue, out); }
-      // nothing to do if there's no false return value.
-    }
+    if (value) { out.putNode(new ParseTreeText("1")); }
+    // nothing to do if there's no false return value.
   }
 
   /************************************************************************
@@ -132,11 +117,8 @@ public class testHandler extends GenericHandler {
   }
 
   /** Construct a specialized action. */
-  public testHandler(boolean string, boolean text, boolean invert,
-		     NodeList iftrue, NodeList iffalse) {
+  public testHandler(boolean string, boolean text, boolean invert) {
     inverted 	= invert;
-    trueValue 	= iftrue;
-    falseValue 	= iffalse;
 
     /* Expansion control: */
     stringContent = string;	//  	want content as string?
@@ -154,15 +136,11 @@ public class testHandler extends GenericHandler {
 
   public testHandler(ActiveElement e) {
     this(false, e.hasTrueAttribute("text"),
-	 e.hasTrueAttribute("not"),
-	 e.getAttributeValue("iftrue"),
-	 e.getAttributeValue("iffalse"));
+	 e.hasTrueAttribute("not"));
   }
   public testHandler(ActiveElement e, boolean text, boolean string) {
     this(string, text,
-	 e.hasTrueAttribute("not"),
-	 e.getAttributeValue("iftrue"),
-	 e.getAttributeValue("iffalse"));
+	 e.hasTrueAttribute("not"));
   }
 }
 
