@@ -10,6 +10,7 @@ import crc.dom.AttributeList;
 import crc.dom.Element;
 
 import crc.ds.Association;
+import crc.ds.List;
 
 import crc.dps.*;
 import crc.dps.active.*;
@@ -17,6 +18,8 @@ import crc.dps.aux.*;
 
 import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
+
+import java.util.Enumeration;
 
 /**
  * Handler for <test>  <p>
@@ -57,6 +60,7 @@ public class testHandler extends GenericHandler {
     if (dispatch(e, "match")) 	 return test_match.handle(e);
     if (dispatch(e, "null")) 	 return test_null.handle(e);
     if (dispatch(e, "numeric"))	 return test_numeric.handle(e);
+    if (dispatch(e, "sorted"))	 return test_sorted.handle(e);
 
     if (e.getAttributes() == null || e.getAttributes().getLength() == 0)
       return this;
@@ -219,6 +223,41 @@ class test_numeric extends testHandler {
   }
   public test_numeric(ActiveElement e) { super(e, true, true); }
   static Action handle(ActiveElement e) { return new test_numeric(e); }
+}
+
+class test_sorted extends testHandler {
+
+  protected boolean reverse = false;
+  protected boolean caseSens = false;
+  protected boolean text = false;
+  boolean result = false;
+
+  public void action(Input in, Context aContext, Output out,
+		     ActiveAttrList atts, NodeList content) {
+
+    boolean result = true;
+
+    reverse = atts.hasTrueAttribute("reverse");
+    caseSens = atts.hasTrueAttribute("case");
+    text = atts.hasTrueAttribute("text");
+
+    if(text) {
+      List tl = TextUtil.getTextList(content, caseSens);
+      long len = tl.size();
+      
+      for(int i = 1; i < len; i++) {
+	int c = ((Association)tl.at(i)).compareTo((Association)tl.at(i-1));
+	if ( (reverse && (c > 0)) || (!reverse && (c < 0)) ) {
+	  result = false;
+	  break;
+	}
+      }
+    }
+    returnBoolean(result, aContext, out);
+  }
+
+  public test_sorted(ActiveElement e) { super(e, true, true); }
+  static Action handle(ActiveElement e) { return new test_sorted(e); }
 }
 
 class test_match extends testHandler {
