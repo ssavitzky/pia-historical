@@ -7,9 +7,13 @@ TOPDIR=../../..
 
 FILES = \
 	AbstractOutput.java \
+	ActiveOutput.java \
+	OutputTrace.java \
 	ToDocument.java \
+	ToParseTree.java \
 	ToWriter.java
 
 include $(TOPDIR)/makefiles/file.make
 
-AbstractOutput.class: ../Output.java ../Token.java
+AbstractOutput.class: ../Output.java ../aux/CurrentNode.java
+ActiveOutput.class: ../Output.java ../aux/CurrentActive.java

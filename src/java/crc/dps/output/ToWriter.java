@@ -4,26 +4,25 @@
 
 package crc.dps.output;
 
-import crc.dps.Token;
-import crc.dps.Output;
+import crc.dps.*;
+import crc.dps.aux.*;
+import crc.dom.*;
 
-import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.io.Writer;
 import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Output a Token stream to a Writer (character output stream). <p>
  *
- *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
- * @see crc.dps.Token
- * @see crc.dps.Input
+ * @see crc.dps.Output
  * @see crc.dps.Processor
  */
 
-public class ToWriter extends AbstractOutput {
+public class ToWriter extends CursorStack implements Output {
 
   /************************************************************************
   ** State:
@@ -31,31 +30,78 @@ public class ToWriter extends AbstractOutput {
 
   protected Writer destination = null;
 
+
   /************************************************************************
-  ** Pull Mode Operations:
+  ** Internal utilities:
   ************************************************************************/
 
-  /** Accepts the next token from the associated Processor, converts
-   *	it to a string, and sends it to the associated Writer.
-   *
-   *	@return <code>true</code> if the Output is willing to accept more
-   *		output, <code>false</code> to pause the Processor.
-   */
-  public boolean nextToken(Token theToken) {
+  protected void write(String s) {
     try {
-      destination.write(theToken.toString());
-    } catch (java.io.IOException e) {
-      System.err.println(e.toString()); // === error handling needs improvement
-    }
-    return true;
+      destination.write(s);
+    } catch (IOException e) {}
   }
 
-  /** Informs the Output that no more Tokens are available.
-   */
-  public void endOutput() {
-    try {
-      destination.close();
-    } catch (java.io.IOException e) {}
+  protected String encode(String s) {
+    return s;			// === encode
+  }
+
+  /************************************************************************
+  ** Operations:
+  ************************************************************************/
+
+  public void putNode(Node aNode) { 
+    write(aNode.toString());
+  }
+  public void startNode(Node aNode) { 
+    pushInPlace();
+    setNode(aNode);
+    if (active != null) {
+      write(active.startString());
+    } else if (node instanceof AbstractNode) {
+      AbstractNode n = (AbstractNode) node;
+      write(n.startString());
+    } else {
+      // === punt -- should never happen.
+    }
+  }
+
+  public boolean endNode() {
+    if (active != null) {
+      write(active.endString());
+    } else if (node == null) {
+      // null node indicates nothing to do.
+    } else if (node instanceof AbstractNode) {
+      AbstractNode n = (AbstractNode) node;
+      write(n.endString());
+    }  else {
+      // === punt -- should never happen.
+    }   
+    return popInPlace();
+  }
+
+  public void startElement(Element anElement) {
+    startNode(anElement);
+  }
+
+  public boolean endElement(boolean optional) {
+    if (optional) {
+      return popInPlace();
+    } else {
+      return endNode();
+    }
+  }
+
+  public void putAttribute(String name, NodeList value) {
+    if (value == null) {
+      write(name);
+    } else {
+      write(name + "=" + value.toString());
+    }
+  }
+  public void startAttribute(String name) {
+    write(name + "+");
+    pushInPlace();
+    setNode(null);
   }
 
   /************************************************************************
