@@ -5,42 +5,51 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>Install Agent</set>
-<read interform file="heading.inc" process>
+<!-- read interform file="heading.inc" process -->
 
 <table cellspacing=0 cellpadding=0>
-<tr><th width=340><td><br>
+<tr><th width=340 align=left>Ricoh Silicon Valley<td><br>
+<tr><th width=340 align=left><td>Install Agent<br>
+<tr><th width=340 align=left><td><br>
 <tr><th align=right>&agentName;:
 	<td> Install / <a href="/Agency/remove_agent.if">remove</a> agents
 <tr><th><td> <a href="home.if">Home Page</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 	     (<a href="/My/Agents/&agentName;/">Customized</a>)
 </table>
+(heading simplified to save time during startup)
 <p>
 <hr>
-
 <set entity name="name"><agent-install>&urlQuery;</agent-install></set>
-<!-- urlQuery fails because install is normally a POST -->
 
 <if><get entity name="name">
 <then>
+  <set entity name=type><get form name=type></set>
   <h2>&name; installed:</h2> <p>
   <table cellspacing=0 cellpadding=0>
   <tr><th width=340><td><br>
   <tr><th align=right>&name;:
-  <tr><th width=340><td> <a href="/&name;/home.if">home page</a>
+  <tr><th width=340><td> <a href="/&name;">home page</a>
   <tr><th width=340><td> <a href="/&name;/">index</a>
+  <if><test not exact match="&name;">&type;</test>
+    <then>
+    <tr><th width=340><td> <a href="/&type;">/&type;</a> (type agent)
+    <tr><th width=340><td> <a href="/&type;/&name;">/&type;/&name;</a>
+    </then>
+  </if>
   <tr><th width=340><td> <a href="/&name;/options.if">options</a>
   <tr><th width=340><td> <form action="/Agency/remove_agent.if" method="POST">
 	 <input name="agent" value="&name;" type=hidden>
 	 <input type="submit" value="Remove &name;">
 	 </form>
   </ul>
+  </table>
+  <hr>
+  Query string: <code>&urlQuery;</code>
+
 </then>
-<else> <p> Please specify an agent using the form below:
-</if>
-<p>
-<hr>
-<h2> Form for installing another agent</a>
+<else>
+<h2> Form for installing an agent</h2>
 <form action="/Agency/install_agent.if" method="POST">
 <input type="submit" value="Install">
 Name:<input name="agent" value="agent_name" size=30>
@@ -50,10 +59,12 @@ Type:<input name="type" value="">
 You can usually leave the <em>type</em> blank and it will default to the name.
 If a class-declaration module <code>PIA::Agent::<em>Type</em></code> exists,
 it will be loaded if necessary.  The standard ones are in <code><a
-href="/PIA/src/lib/perl/PIA/Agent/"
->/PIA/src/lib/perl/PIA/Agent/</a></code><p>
+href="/PIA/src/lib/perl/PIA/Agent/">/PIA/src/lib/perl/PIA/Agent/</a></code><p>
 
+</else>
+</if>
 
+ Query string: <code>&urlQuery;</code>
   
   
 <hr>
