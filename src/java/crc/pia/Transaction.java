@@ -486,11 +486,31 @@ public class Transaction extends Thing{
   /**
    * parse the request line to get method, url, http's major and minor version numbers
    */
-  protected void parseRequestLine(){
+  protected void parseRequestLine()throws IOException{
     if( !isRequest() ) return;
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
+
     String zmethod = tokens.nextToken();
+    if( !zmethod ) 
+      throw new RuntimeException("Bad request, no method.");
+
+    assert("Method", zmethod );
+
+    String zurlandmore = tokens.nextToken();
+    if( !zurlandmore )
+      throw new RuntimeException("Bad request, no url.");
     
+    if( zmethod == "GET" ){
+      int pos;
+      if( (pos = zurlandmore.indexOf("?")) == -1 )
+	assert("Url", zurlandmore);
+      else{
+	String zurl = zurlandmore.substring(0, pos);
+	assert("Url", zurl);
+	assert("Querystring", zurl.substring(pos+1);
+      }
+    }
+      
   }
 
   /**
