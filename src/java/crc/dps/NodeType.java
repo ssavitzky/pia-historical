@@ -4,7 +4,10 @@
 
 package crc.dps;
 
-/** Extension of crc.dom.NodeType for internally-used types. 
+/** Node types and their names.
+ *	
+ * <p> This class mainly exists to compensate for the lack of enumerated
+ *	types in Java.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -12,7 +15,15 @@ package crc.dps;
  * @see crc.dps.Token
  */
 
-public class NodeType extends crc.dom.NodeType {
+public class NodeType {
+  public static final int DOCUMENT   = 0;
+  public static final int ELEMENT    = 1;
+  public static final int ATTRIBUTE  = 2;
+  public static final int PI         = 3;
+  public static final int COMMENT    = 4;
+  public static final int TEXT       = 5;
+  public static final int ENTITY     = 6;
+
   public static final int ENDTAG = -1;
   public static final int NODELIST = -2;
   public static final int DECLARATION = -3;
