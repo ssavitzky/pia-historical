@@ -172,10 +172,10 @@ public class Read_file extends crc.interform.Handler {
 	ii.useTagset(tsname);
       if (it.hasAttr("skip")) ii.setSkipping();
       try {
-	java.io.FileInputStream in = new java.io.FileInputStream(name);
+	java.io.FileReader in = new java.io.FileReader(name);
 	ii.pushInput(new crc.interform.Parser(in, null));
       } catch (Exception e) {
-	ii.error(ia, "Cannot open input stream on '"+name+"'");
+	ii.error(ia, "Cannot open Reader on '"+name+"'");
       }
 
     } else {
