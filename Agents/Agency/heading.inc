@@ -5,7 +5,7 @@
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a></th>
     <th width=170 nowrap></th>
-    <th align=left nowrap nobr valign=center>
+    <th align=left nowrap nobr valign=center width=170>
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
 <tr height=2><td colspan=3  nowrap nobr
@@ -14,10 +14,10 @@
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a>
-    <th width=170 align=right valign=top><font size=5 face=helvetica><a
-	href="/&agentName;">&agentName;</a>: </font></th>
-    <th align=left><font size=5 face=helvetica><if><get entity name=title>
+    <th width=170 align=right valign=top><a
+	href="/&agentName;">&agentName;</a>: </th>
+    <th align=left><if><get entity name=title>
 	<then><get entity name=title></then>
-	<else>&fileName;</else></if></font></th></tr>
+	<else>&fileName;</else></if></th></tr>
 </table>
 <!-- $Id$ -->

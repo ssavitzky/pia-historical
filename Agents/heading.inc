@@ -8,16 +8,16 @@
     <th align=left nowrap nobr valign=center width=170>
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
-<tr height=2><th colspan=3 align=left
+<tr height=2><td colspan=3  nowrap nobr
     ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
 <!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
-<tr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
+<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a></th>
-    <th align=right valign=top width=170><font size=5 face=helvetica><a
-	href="/&agentName;">&agentName;</a>: </font></th>
-    <th align=left colspan=2><font size=5 face=helvetica><if><get entity name=title>
+    <th align=right valign=top width=170><a
+	href="/&agentName;">&agentName;</a>: </th>
+    <th align=left colspan=2><if><get entity name=title>
 	<then><get entity name=title></then>
-	<else>&fileName;</else></if></font></th></tr>
+	<else>&fileName;</else></if></th></tr>
 </table>
 <!-- $Id$ -->
