@@ -65,15 +65,12 @@ public class Run  extends Environment {
     transaction = tr;
     resolver = res;
     filename = fn;
+    debug = fn != null && Pia.debug() && Pia.verbose();
   }
 
   /************************************************************************
   ** Association with Interpretor:
   ************************************************************************/
-
-  public void use(Interp ii) {
-    ii.environment = this;
-  }
 
   public static Run environment(Interp ii) {
     try {
@@ -149,9 +146,10 @@ public class Run  extends Environment {
       ent("piaPORT", pia.properties().getProperty(Pia.PIA_PORT));
       ent("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
 
-      ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " "));
+      // === shouldn't have to convert these to text.
+      ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " ").toText());
       ent("entityNames", "");
-      ent("entityNames", new crc.sgml.Tokens(entities.keys(), " "));
+      ent("entityNames", new crc.sgml.Tokens(entities.keys(), " ").toText());
     }
 
     /* Set these even if we retrieved the entity table from the */
@@ -213,9 +211,8 @@ public class Run  extends Environment {
   /** Look up an interform file on behalf of the agent invoked on the
    *      given SGML. */
   public String lookupFile(String fn, SGML it, boolean write) {
-    // === both agentIfRoot and findInterform(String) are unimplemented! 
-    // if (write) return Util.makePath(agent.agentIfRoot(), fn);
-    return agent.findInterform(fn, false);
+    return (write)? Util.makePath(agent.agentIfDir(), fn) 
+      		  : agent.findInterform(fn, false);
   }
 
   /** Retrieve a URL. */
