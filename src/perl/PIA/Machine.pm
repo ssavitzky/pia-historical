@@ -117,7 +117,11 @@ sub send_response{
 ##Temporary because hooks don't work
 	if ($control && $content =~ m/\<body[^>]*\>/is) {
 	    $content =~ s/(\<body[^>]*\>)/$1$control/is;
+	} elsif ($control && $content =~ m/\<noframes[^>]*\>/is) {
+	    $content =~ s/(\<noframes[^>]*\>)/$1$control/is;
 	} else {
+	    ## === if they're stupid enough to put in frames without 
+	    ##     a noframes tag, we're probably hosed for now. ===
 	    print {$output} $control if $control;
 	}
 	print "sent controls $control" if $control && $main::debugging;
@@ -174,7 +178,8 @@ sub get_request {
 	#$ua->proxy($trans->url->scheme,$proxy) if $proxy;
     }
 
-    $ua->agent($trans->request->user_agent . ' PIA/1.0 ' . $user_agent_id);
+    $ua->agent($trans->request->user_agent .
+	       ' 9PIA/1.0; ' . $user_agent_id . ')');
 
     ## Some excessively-clever servers notice that we're proxied.
     ##	 This may not be fixable.
