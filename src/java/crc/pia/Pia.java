@@ -17,7 +17,6 @@ import java.util.Properties;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import gnu.regexp.RegExp;
 
 import crc.pia.PiaInitException;
 import crc.pia.Machine;
@@ -227,14 +226,14 @@ public class Pia{
   }  
 
   /**
-   * @return the user directory path -- i.e ~/PIA
+   * @return the user directory path -- i.e ~/pia
    */
   public String piaUsrRoot(){
     return piaUsrRootStr;
   }  
 
   /**
-   * @return a File object for the user directory path -- i.e ~/PIA
+   * @return a File object for the user directory path -- i.e ~/pia
    */
   public File piaUsrRootDir(){
     return piaUsrRootDir;
@@ -452,10 +451,10 @@ public class Pia{
   public void verbose() {
 	PrintStream o = System.out ;
 
-	o.println(rootStr         + " (parent of src, lib, Agents)\n");
-	o.println(piaAgentsStr + " (agent interforms)\n");
-	o.println(piaUsrRootStr   + " (user directory)\n");
-	o.println(piaUsrAgentsStr + " (user interforms)\n");
+	o.println(rootStr         + " (parent of src, lib, Agents)");
+	o.println(piaAgentsStr + " (agent interforms)");
+	o.println(piaUsrRootStr   + " (user directory)");
+	o.println(piaUsrAgentsStr + " (user interforms)");
 	o.println(Integer.toString( requestTimeout() ) + " (request time out)\n");
 	o.println(url+"\n");
   }
@@ -549,8 +548,8 @@ public class Pia{
 
     if( host == null ){
       throw new PiaInitException(this.getClass().getName()
-						 +"[initializeProperties]: "
-						 +"[host] undefined.");
+				 +"[initializeProperties]: "
+				 +"[host] undefined.");
     }
     
     if( rootStr == null ){
@@ -567,61 +566,62 @@ public class Pia{
 		rootStr = piadir.getAbsolutePath();
 	      else
 		throw new PiaInitException(this.getClass().getName()
-						 +"[initializeProperties]: "
-						 +"[pia root directory] undefined.");
+					   +"[initializeProperties]: "
+					   +"[pia root directory] undefined.");
 	    }
     }
 
     if ( rootStr.startsWith("~") ){
-      try{
-        RegExp re = new RegExp("~");
-	rootStr = re.substitute(rootStr,home,true);
-      }catch(Exception e){
+      rootStr = home + rootStr.substring(1);
+    }
+    // Now the directories that depend on it:
+    rootDir = new File( rootStr );
+    
+    //  we are at /pia/Agents -- this is for interform
+    piaAgentsStr = rootStr + filesep + "Agents";
+    piaAgentsDir = new File( piaAgentsStr );
+
+    if( piaUsrRootStr == null ){ 
+      if( home!=null && home != "" ){
+	// i.e. we have ~/bob and looking for ~/bob/pia
+	File dir = new File(home, "pia");
+	if( dir.exists() ){
+	  piaUsrRootStr = dir.getAbsolutePath(); 
+	}
+      }
+	  
+      if( piaUsrRootStr == null ){
+	// i.e. we have /pia/users and if bob is valid user's name
+	// we have /pia/users/bob
+	File usersDir = new File(rootStr,"users");
+	if( usersDir.exists() ){
+	  if( userName!=null && userName != "" )
+	    piaUsrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
+	}
+	else throw new PiaInitException(this.getClass().getName()
+					+"[initializeProperties]: "
+					+"[user root directory] undefined.");
       }
     }
-        // Now the directories that depend on it:
-        rootDir = new File( rootStr );
-    
-	//  we are at /pia/Agents -- this is for interform
-	piaAgentsStr = rootStr + filesep + "Agents";
-	piaAgentsDir = new File( piaAgentsStr );
+
+    if ( piaUsrRootStr.startsWith("~") ){
+      piaUsrRootStr = home + piaUsrRootStr.substring(1);
+    }
+    piaUsrRootDir = new File( piaUsrRootStr );
 	
+    piaUsrAgentsStr = piaUsrRootStr + filesep + "Agents";
+    piaUsrAgentsDir = new File( piaUsrAgentsStr );
 
-	if( piaUsrRootStr == null ){ 
-	  if( home!=null && home != "" ){
-	    // i.e. we have ~/bob and looking for ~/bob/pia
-	    File dir = new File(home, "pia");
-	    if( dir.exists() ){
-	      piaUsrRootStr = dir.getAbsolutePath(); 
-	    }
-	  }
-	  
-	  if( piaUsrRootStr == null ){
-	    // i.e. we have /pia/users and if bob is valid user's name
-	    // we have /pia/users/bob
-	    File usersDir = new File(rootStr,"users");
-	    if( usersDir.exists() ){
-	      if( userName!=null && userName != "" )
-		piaUsrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
-	    }
-	    else throw new PiaInitException(this.getClass().getName()
-					    +"[initializeProperties]: "
-					    +"[user root directory] undefined.");
-	  }
-	}
+    /* Now set the properties that defaulted. */
 
-	if ( piaUsrRootStr.startsWith("~") ){
-	  try{
-	    RegExp re = new RegExp("~");
-	    piaUsrRootStr = re.substitute(piaUsrRootStr, home, true);
-	  }catch(Exception ex){
-	  }
-	}
-
-	piaUsrRootDir = new File( piaUsrRootStr );
-	
-	piaUsrAgentsStr = piaUsrRootStr + filesep + "Agents";
-	piaUsrAgentsDir = new File( piaUsrAgentsStr );
+    properties.setBoolean(PIA_VERBOSE, verbose);
+    properties.setBoolean(PIA_DEBUG, debug);
+    properties.setProperty(PIA_ROOT, rootStr);
+    properties.setProperty(PIA_USR_ROOT, piaUsrRootStr);
+    properties.setProperty(PIA_HOST, host);
+    properties.setInteger(PIA_PORT, port);
+    properties.setInteger(PIA_REQTIMEOUT, reqTimeout);
+    properties.setProperty(PIA_LOGGER, loggerClassName);
 
 	url = url();
 	
@@ -634,28 +634,27 @@ public class Pia{
     resolver     = new Resolver();
     Transaction.resolver = resolver;
     
-    agency       = new Agency("agency", null);
+    agency       = new Agency("Agency", null);
     resolver.registerAgent( agency );
     
     
     debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
     Table ht = new Table();
-    ht.put("agent", "popart");
-    ht.put("type", "dofs");
-    ht.put("root", "~/");
+    ht.put("agent", "PIA");
+    ht.put("type", "DOFS");
+    ht.put("root", "~/pia");
     ht.put("all", "false");
     try{
       agency.install( ht );
     }catch(AgentInstallException e){
-      debug(this, "Unable to install Dofs agent" );
+      debug(this, "Unable to install: " + e.getMessage() );
     }
 
     if( verbose )
       verbose();
-     
 
     try{
-      accepter     = new Accepter( port );
+      accepter = new Accepter( port );
     }catch(IOException e){
       errSys( e, "Can not create Accepter" );
     }
@@ -667,8 +666,6 @@ public class Pia{
 
     initializeProperties();
     initializeLogger();
-
-
   }
 
   protected void cleanup(boolean restart){
