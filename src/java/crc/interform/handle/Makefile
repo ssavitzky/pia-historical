@@ -115,18 +115,36 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 
 ### Reporting.
 
+### Identify all the handlers that have not been modified for DPS 
+###	compatibility. 
+dps-check::
+	@echo 'TOTAL	' `ls -l $(ACTORS) | wc -l` handlers':' \
+		`grep 'action(' $(ACTORS) | wc -l` dps checked \
+		`grep 'bogusL' $(ACTORS) | wc -l` superceded \
+		`grep 'buggyL' $(ACTORS) | wc -l` buggy
+	@for f in `ls $(ACTORS)`; do \
+	  grep -q 'action(' $$f || echo $$f:`wc -l $$f` no action ; done
+
 ### Count unimplemented and total actor handles.  
 ###	This finds only actors that call "Interp.unimplemented", not
 ###	individual features that call "Interp.error" directly.
 report::
 	@echo 'BASIC:	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
-		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
+		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp \
+		`grep 'action(' $(BASIC_ACTORS) | wc -l` dps checked \
+		`grep 'bogusL' $(BASIC_ACTORS) | wc -l` superceded
 	@echo 'SA:	' `ls -l $(SA_ACTORS) | wc -l`, \
-		`grep 'unimplemented(' $(SA_ACTORS) | wc -l` unimp.
+		`grep 'unimplemented(' $(SA_ACTORS) | wc -l` unimp \
+		`grep 'action(' $(SA_ACTORS) | wc -l` dps checked \
+		`grep 'bogusL' $(SA_ACTORS) | wc -l` superceded
 	@echo 'PIA:	' `ls -l $(PIA_ACTORS) | wc -l`, \
-		`grep 'unimplemented(' $(PIA_ACTORS) | wc -l` unimp.
+		`grep 'unimplemented(' $(PIA_ACTORS) | wc -l` unimp \
+		`grep 'action(' $(PIA_ACTORS) | wc -l` dps checked \
+		`grep 'bogusL' $(PIA_ACTORS) | wc -l` superceded
 	@echo 'TOTAL:	' `ls -l $(ACTORS) | wc -l`, \
-		`grep 'unimplemented(' $(ACTORS) | wc -l` unimp.
+		`grep 'unimplemented(' $(ACTORS) | wc -l` unimp \
+		`grep 'action(' $(ACTORS) | wc -l` dps checked \
+		`grep 'bogusL' $(ACTORS) | wc -l` superceded
 
 ### This finds and prints out every instance of the string "unimplemented" 
 report::
