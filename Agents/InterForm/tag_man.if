@@ -62,8 +62,10 @@ most cases, that will be faster, but is not always as up-to-date.<p>
   <li> <a href="#numeric">Numeric Processing</a>
   <li> <a href="#list">List Processing</a>
   <li> <a href="#string">String Processing</a>
+  <li> <a href="#calendar">Calendar Operations</a>
   <li> <a href="#os">OS Operations</a>
   <li> <a href="#agents">PIA Agents</a>
+  <li> <a href="#forms">PIA Form processing</a>
 
        <p>
 
@@ -312,37 +314,56 @@ element</alist>
 
 <hr> <!-- ========================================================== -->
 <h2><a name="expansion">Expansion Control</a></h2>
-<alist>expand protect protect-result</alist>
+<alist>expand process protect protect-result</alist>
 
 <adscr>expand</adscr>
 
-<dl>
-  <dt> 
-  <dd> Cause the <at>CONTENT</at> to be ``expanded'' (processed by the InterForm
-       interpretor) a <em>second time</em> -- it will already have been
-       processed ``in place'' once.
-</dl>
+Causes the <at>CONTENT</at> to be ``expanded'' (processed by the InterForm
+interpretor) a <em>second time</em> -- it will already have been processed
+``in place'' once.
+
+
+<adscr>process</adscr>
+
+Unlike <an>expand</an>, <an>process</an> normally discards its results, unless
+the <at>copy</at> attribute is provided.  <an>process</an> is usually done for
+its side-effects. <p>
+
+Inside a <an>form</an> element, <an>process</an> is normally expanded only if
+the <an>form</an> is being ``processed'' -- i.e. a corresponding query has
+been posted.  If the <an>process</an> has the <at>copy</at> attribute and the
+<an>form</an> does not, the output of the <an>process</an> <em>replaces</em>
+the <an>form</an> element.  <p>
+
+If a <an>form</an> is <em>not</em> being processed, a <an>process</an>
+tag will expand into
+<pre>
+   &lt;input name=name="id" value="form-<em>N</em>" type="hidden"&gt;
+</pre>
+where <em>N</em> is the value of the entity
+<add-markup>&amp;forms;</add-markup>, which is incremented at the end of every
+<an>form</an> element.<p>
+
+The ``outside,'' unconditional behavior of ``process'' can be
+enforced with the <at>anyway</at> attribute. <p>
+
 
 <adscr>protect</adscr>
 
-<dl>
-  <dt> 
-  <dd> Cause the <at>CONTENT</at> not to be ``expanded'' (processed by the
-       InterForm interpretor) at all.
-</dl>
+Cause the <at>CONTENT</at> not to be ``expanded'' (processed by the
+InterForm interpretor) at all.
+
 
 <adscr>protect-result</adscr>
 
-<dl>
-  <dt> 
-  <dd> This protects, not <at>CONTENT</at>, but the result of
-       <em>expanding</em> <at>CONTENT</at>.  It can be used,
-       for example, to prevent further processing of a file or computed text
-       that contains markup.  It is worth noting that <an>protect</an> and
-       <an>protect-result</an> perform the same operation (namely, replace the
-       actor element with its <at>CONTENT</at>); the only difference is whether
-       the <at>CONTENT</at> is expanded while it is being parsed.
-</dl>
+This protects, not <at>CONTENT</at>, but the result of
+<em>expanding</em> <at>CONTENT</at>.  It can be used,
+for example, to prevent further processing of a file or computed text
+that contains markup.  It is worth noting that <an>protect</an> and
+<an>protect-result</an> perform the same operation (namely, replace the
+actor element with its <at>CONTENT</at>); the only difference is whether
+the <at>CONTENT</at> is expanded while it is being parsed.
+
 
 <hr> <!-- ========================================================== -->
 <h2><a name="bindings">Name Bindings</a></h2>
@@ -350,9 +371,25 @@ element</alist>
 
 <adscr>get</adscr>
 
-  
+<hr> <!-- ========================================================== -->
+<h3>Specialized Versions</h3>
+<alist>get.agent get.env get.form get.pia get.trans</alist>
+
+<repeat list="get.agent get.env get.form get.pia get.trans">
+    <adscr>&li;</adscr>
+</repeat>
+
 <adscr>set</adscr>
 
+<hr> <!-- ========================================================== -->
+<h3>Specialized Versions</h3>
+<alist>set.agent set.env set.pia set.trans</alist>
+
+<repeat list="set.agent set.env set.pia set.trans">
+    <adscr>&li;</adscr>
+</repeat>
+
+ 
 
 <hr> <!-- ========================================================== -->
 <h2><a name="control">Control Structure</a></h2>
@@ -367,30 +404,22 @@ element</alist>
 
 <adscr>foreach</adscr>
 
-<dl>
-  <dt> 
-  <dd> When <an>foreach</an> is a <em>tag</em> rather than an attribute,
-       only the <at>CONTENT</at>, of the <an>foreach</an> element is
-       returned, unlike the entire element as with the <em>attribute</em>
-       <at>FOREACH</at>.
-</dl>
+When <an>foreach</an> is a <em>tag</em> rather than an attribute,
+only the <at>CONTENT</at>, of the <an>foreach</an> element is
+returned, unlike the entire element as with the <em>attribute</em>
+<at>FOREACH</at>.
+
 
 <adscr>-foreach-</adscr>
 
-<dl>
-  <dt> 
-  <dd> When <at>FOREACH</at> is an <em>attribute</em> rather than a tag,
-       the element that contains it is returned rather than just its
-       <at>CONTENT</at>, as with the <em>tag</em> <an>foreach</an>.
-</dl>
+When <at>FOREACH</at> is an <em>attribute</em> rather than a tag,
+the element that contains it is returned rather than just its
+<at>CONTENT</at>, as with the <em>tag</em> <an>foreach</an>.
 
 <adscr>repeat</adscr>
 
-<dl>
-  <dt> 
-  <dd> <an>repeat</an> is just a synonym for <an>foreach</an>, but at some
-       point some additional functionality will be added.
-</dl>
+<an>repeat</an> is just a synonym for <an>foreach</an>, but at some
+point some additional functionality will be added.
 
 <hr> <!-- ========================================================== -->
 <h2><a name="tests">Tests</a></h2>
@@ -552,22 +581,53 @@ Note that spaces, tabs, and HTML comments are all considered whitespace.<p>
 
 
 <hr> <!-- ========================================================== -->
+<h2><a name="calendar">Calendar Operations</a></h2>
+<alist>calendar calendar-day</alist>
+
+<adscr>calendar</adscr>
+
+<adscr>calendar-day</adscr>
+
+
+<hr> <!-- ========================================================== -->
 <h2><a name="os">OS Operations</a></h2>
-<alist>os-command os-command-output read write</alist>
+<alist>authenticate os-command os-command-output password-file-entry
+       read write</alist>
+
+<adscr>authenticate</adscr>
+
+Presently this uses the Unix password file or the equivalent; the same kind of
+file is used as the basic authentication method in most HTTP servers.  Entries
+can be  constructed with the <an>password-file-entry</an> actor.<p>
+
 
 <adscr>os-command</adscr>
 
 <adscr>os-command-output</adscr>
 
+<adscr>password-file-entry</adscr>
+
+Constructs a Unix-style password file (<code>/etc/passwd</code>) entry for a
+given username and password.  The other fields in the line can be generated,
+but are ignored by the <an>authenticate</an> actor.<p>
+
+
 <adscr>read</adscr>
 
 <adscr>write</adscr>
 
+<h3>Specialized Versions</h3>
+<alist>read.file read.href write.file write.href</alist>
+
+<repeat list="read.file read.href write.file write.href">
+    <adscr>&li;</adscr>
+</repeat>
+
 
 <hr> <!-- ========================================================== -->
 <h2><a name="agents">PIA Agents</a></h2>
-<alist>agent-home agent-install agent-list agent-options agent-remove
-       agent-running agent-set-options</alist>
+<alist>agent-criteria agent-home agent-install agent-list agent-options
+	agent-remove agent-running agent-set-criterion agent-set-options</alist>
 
 <dl>
   <dt> Note:
@@ -575,6 +635,8 @@ Note that spaces, tabs, and HTML comments are all considered whitespace.<p>
        developed.  They are still useful, however, since they are usually
        shorter and faster than the general method.
 </dl>
+
+<adscr>agent-criteria</adscr>
 
 <adscr>agent-home</adscr>
 
@@ -588,7 +650,17 @@ Note that spaces, tabs, and HTML comments are all considered whitespace.<p>
 
 <adscr>agent-running</adscr>
 
+<adscr>agent-set-criterion</adscr>
+
 <adscr>agent-set-options</adscr>
+
+<hr> <!-- ========================================================== -->
+<h2><a name="forms">PIA Form processing</a></h2>
+<alist>form submit-forms</alist>
+
+<adscr>form</adscr>
+
+<adscr>submit-forms</adscr>
 
 <hr> <!-- ========================================================== -->
 <h2><a name="actor-index">Actor Index</a></h2>
