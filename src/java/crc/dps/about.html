@@ -41,10 +41,11 @@ There are several problems with this:
        different ways (e.g. expanding it or pretty-printing it).
 </ol>
 
-Instead, we prefer to view an InterForm as a ParseTree Document composed of
+As a result, we prefer to view an InterForm as an ActiveDocument composed of
 Nodes (some of) which implement the ActiveNode interface.  <em>Active</em>
-nodes simply expand into more nodes (specifically,
-<code><em>node</em>.expand(<em>context</em>)</code> yields a NodeList). <p>
+nodes simply expand into more nodes.  The classes whose names start with
+``<code>ParseTree</code>'' in <code>crc.dps.active</code> implement the
+<code>ActiveNode</code> interface. <p>
 
 The efficient way to accomplish this kind of processing is to use a parse tree
 <em>traverser</em> as an <code>Input</code>, and a <em>constructor</em> of
@@ -52,8 +53,12 @@ some sort for an <code>Output</code>.  This avoids actually constructing nodes
 or nodelists until they are really needed.  (Attribute lists, in particular,
 will usually have to be constructed, but the attributes themselves can be
 shared so the overhead is small.  Nodes in child lists <em>cannot</em> be
-shared, but we use traversal to avoid constructing them in most cases. <p>
+shared, but we use traversal to avoid constructing them in most cases.) <p>
 
+The default action for a node is to copy it (recursively, if necessary) from
+the current <code>Input</code> to the current <code>Output</code>.  Active
+nodes have an <code>action</code> routine that performs any necessary
+computation, and puts the results on the <code>Output</code>.
 
 <h3>Local Transformations</h3>
 
@@ -69,63 +74,6 @@ in a single depth-first, left-to-right traversal.
 
 
 <h2>Implementation: New</h2>
-
-<h3>To Be Done</h3>
-
-<ul>
-  <li> <b>Bug:</b>  true branch of &lt;if&gt; seems to be failing.
-       
-  <li> The current major implementation holes are:
-       <ol>
-	 <li> Handlers (legacy and new)
-	 <li> getIndexValue, setIndexValue, ...
-	 <li> Entity-table initialization in global context.
-       </ol>
-
-  <li> Nothing is careful about cannonical attribute and tag names yet.
-
-  <li> Named nodes should have defined, assigned and default values. Only
-       defined value should be the children; it would be used for the
-       <em>definition</em> of a name.  Want to be able to share assigned
-       values; the NodeList of an assigned value would be a copy (just like we
-       presently do for attribute lists, and for the same reason). 
-
-  <li> Fairly soon we will want to expand ParseTree* to a full DOM
-       implementation, and make it completely independent from the
-       implementations in <code>crc.dom</code>. 
-
-  <li> <code>deepCopy</code> should use a method in the abstract parent to
-       copy the children.  The reason it doesn't now is that the existing
-       method meant for that purpose is in <code>crc.dom.AbstractNode</code>,
-       and doesn't constructive active nodes.  It uses <code>clone</code>, and
-       it's broken.
-
-  <li> Currently Parser does not check syntax of current node to see whether
-       to look for entities or elements in the content.  
-
-  <li> Need flag that tells whether the current node has been processed yet.
-       (really relevant only for toNextNode, to keep track of whether we've
-       enumerated the children yet)
-
-  <li> ParseTreeElement should keep information about whether any of its
-       attributes contain entities that need to be expanded.  Should be much
-       faster, since most don't and it's known at parse time. <p>
-
-       The other possibility is lazy evaluation -- don't even look at them
-       until they're needed when converting an attribute's value to a string.<p>
-
-  <li> We will want a ParseTreeIterator that implements both Input and
-       Output (and of course TreeIterator).  The main use would be
-       constructing an node and then processing it.
-
-  <li> Rename ParseTree* -&gt; Tree*  (A*??) and move to a separate subdir (?)
-
-  <li> Eventually there should be a ParseTreeGenericNode, basically Token, so
-       that we can build trees with arbitrary node types.
-
-  <li> BasicEntityTable, BasicTagset should be moved to <code>aux/</code>. 
-
-</ul>
 
 <h3>Structure Sharing and Copying</h3>
 
@@ -154,15 +102,16 @@ The fundamental implementation is to <em>traverse</em> an active document
   <li> It may be unidirectional, implementing only the navigation operations
        <ul>
 	 <li> <code>toNextSibling</code>
-	 <li> <code>toParent</code> -- unlike a TreeIterator, a
-	      ParseTreeIterator actually has <em>two</em> possible
-	      ``positions'' relative to a Node:  before it and after it.
+	 <li> <code>toParent</code>
 	 <li> <code>toFirstChild</code>
-	 <li> <code>toFirstAttribute</code> (?)
        </ul>
   <li> Rather than directly returning the next Node, it is possible to
        <em>query</em> it to determine its node type, string data, and
        whether it has children or attributes.
+  <li> If <code>input.hasChildren()</code> returns <code>true</code> but
+       <code>input.getNode().hasChildren()</code> returns <code>false</code>,
+       we know that <code><em>input</em></code> is a parser, and that
+       the current node's children have not been seen yet.
   <li> The following all return implementations of ActiveNode:
        <ul>
 	 <li> <code>getNode</code> -- a reference to the actual current node
