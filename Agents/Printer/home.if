@@ -1,0 +1,33 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>Home page</a> for printer <code language="perl"> return $current_self->name; </code> </h1>
+You have reached the web printer home page.    You may preview a URL:
+<code language=perl>
+my $url=$current_request->header(Referer);
+my $name=$current_self->name;
+my $form=make_form("/$name/preview.if",({name => 'URL',size =>
+ 50, value => $url},{type => 'submit',value => 'Preview'}));
+return $form;
+</code>
+
+ or <ul>
+   <li> change printer <a href=options.if> options</a>
+   <li> see the current <a
+ href=status.if> status </a>
+   <li> <a href=initialize.if> add </a> or <a
+	href=uninitialize.if>remove</a> preview button to every page.
+</ul>
+
+  For more information see <a
+ href=http://internal/documents/pia/>  the PIA  manual</a>.
+<hr>
+
+  <hr>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Jul 18 18:26:11 1996
+<!-- hhmts end -->
+</body></html>
