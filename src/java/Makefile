@@ -44,7 +44,8 @@ include $(TOPDIR)/makefiles/file.make
 # Stuff for jarring class files.
 #
 pia_class.toc::
-	find crc -name "*.class" -print > pia_class.toc	
+	find crc -name "*.class" -print > pia_class.toc
+	find misc -name "*.class" -print >> pia_class.toc	
 crc.zip: pia_class.toc
 	$(BINDIR)/jarcrc
 	mv $@ $(LIBDIR)
