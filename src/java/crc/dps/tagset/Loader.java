@@ -18,12 +18,18 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+
+import java.net.URL;
+import java.net.URLConnection;
 
 /** Loader for Tagsets.
  *
  *	Tagsets can be loaded either by instantiating an implementation class
  *	(by far the fastest method if the class exists), or from a file.
- *	Files can be either Java objects (<code>.obj</code>), XML tagsets
+ *	Files can be either Java objects (<code>.tso</code>), XML tagsets
  *	(<code>.ts</code>), or XML tagsets stripped of extraneous
  *	documentation (<code>.tss</code>).  To make matters worse, files can
  *	be loaded either from the file system (as one might expect), from the
@@ -39,15 +45,26 @@ public class Loader {
    */
   static Table tagsets = new Table();
 
+  /** It is convenient to have an instance of a class in the tagset package,
+   *	to use for loading resources.
+   */
+  static BOOT_ts boot_ts = new BOOT_ts();
+
+  protected static Class boot_class   = boot_ts.getClass();
+  protected static ClassLoader loader = boot_ts.getClass().getClassLoader();
+
   static int verbosity = 0;
+  static PrintStream log = System.err;
 
   /** Set the verbosity to be used when loading tagsets. */
-  public static void setVerbosity(int v) { verbosity = v; }
+  public static void setVerbosity(int v) { verbosity = v;  }
+  public PrintStream getLog() 		 { return log; }
+  public void 	setLog(PrintStream stream) { log = stream; }
 
   /** Initialize the static table with the HTML, BOOT, and tagset tagsets. */
   static {
+    tagsets.at("BOOT", boot_ts);
     tagsets.at("HTML", new HTML_ts());
-    tagsets.at("BOOT", new BOOT_ts());
     tagsets.at("tagset", new tagset());
   }
 
@@ -101,7 +118,7 @@ public class Loader {
     if (name.indexOf("/") >= 0
 	|| name.endsWith(".ts")
 	|| name.endsWith(".tss")
-	|| name.endsWith(".obj")) {
+	|| name.endsWith(".tso")) {
       // Definitely a file. 
       loadTagsetFile(name);
     } else if (name.indexOf(".") >= 0) {
@@ -126,12 +143,17 @@ public class Loader {
       }
       return (c != null)? (Tagset)c.newInstance() : null;
     } catch (Exception e) { 
-      e.printStackTrace(System.err);
+      e.printStackTrace(log);
       return null;
     }
   }
 
-  /** Load a Tagset implementation from an InputStream. */
+  /** Load a Tagset implementation from an InputStream. 
+   * 
+   * @param src the InputStream to load from
+   * @param boot if true, use the BOOT tagset for a stripped
+   *	(<code>.tss</code>) tagset file. 
+   */
   protected static Tagset loadTagsetFromStream(InputStream src, boolean boot) {
     Tagset ts = boot? (Tagset)new BOOT_ts() : (Tagset)new tagset();
     Parser p = ts.createParser();
@@ -147,41 +169,136 @@ public class Loader {
     return proc.getNewTagset();
   }
 
+  /** Open a URLConnection to a named resource.  */
+  protected static URLConnection loadResource(String name, String ext) {
+    // === getResource or getSystemResource? ===
+    // === prepend package name; change dots to slashes.
+
+    if (ext != null) name += ext;
+    URL u = boot_class.getResource(name);
+    if (u != null) try {
+      return u.openConnection();
+    } catch (IOException ex) {
+      ex.printStackTrace(log);
+    }
+    return null;
+  }
+
+  /** Close the input stream associated with a URLConnection. */
+  protected static void close(URLConnection uc) {
+    if (uc == null) return;
+    try { uc.getInputStream().close(); } catch (Exception ex) {}
+  }
+
+  /** Return the last-modified date of a URLConnection.
+   *	In some (all?) Java implementations a local resource may have
+   *	a zero lastModified date, which is BAD.
+   */
+  protected static long lastModified(URLConnection uc) {
+    if (uc == null) return 0;
+    if (uc.getLastModified() != 0) return uc.getLastModified();
+    // Stupid server or java impl. didn't return a date.  Bad java.  No cookie.
+    return 0;
+  }
+
   /** Load a Tagset implementation from a Java ``resource''. 
    *
-   *	Tries ".obj", ".tss", and ".ts" in that order (but will not load a
-   *	".obj" or ".tss" file older than the ".ts" file, since that is
+   *	Tries ".tso", ".tss", and ".ts" in that order (but will not load a
+   *	".tso" or ".tss" file older than the ".ts" file, since that is
    *	presumably the master copy.
    */
   protected static Tagset loadTagsetFromResource(String name) {
-    
-    return loadTagsetFile(name); // ===
+    boolean boot = false;
+    Tagset ts = null;
+    InputStream s = null;
+
+    URLConnection tsUC  = loadResource(name, ".ts");
+    URLConnection tsoUC = loadResource(name, ".tso");
+    URLConnection tssUC = loadResource(name, ".tss");
+
+    if (tsoUC != null && tsUC != null
+	&& lastModified(tsoUC) >= lastModified(tsUC)) {
+      try {
+	ts = (Tagset)crc.util.Utilities.readObjectFrom(tsoUC.getInputStream());
+      } catch (Exception ex) {
+	ex.printStackTrace(log);
+	ts = null;
+      }
+      if (ts != null) {
+	close(tsUC); close(tssUC); close(tsoUC);
+	if (verbosity > 0) {
+	  log.println("Tagset loaded from resource " + name + ".tso");
+	}
+	return ts;
+      }
+    }
+    if (tssUC != null && tsUC != null
+	&& lastModified(tssUC) >= lastModified(tsUC)) {
+      try { s = tssUC.getInputStream(); } catch (IOException ex) {
+	ex.printStackTrace(log);
+	s = null;
+      }
+      boot = true;
+    } else {
+      try { s = tsUC.getInputStream(); } catch (IOException ex) {
+	ex.printStackTrace(log);
+	s = null;
+      }
+    }
+
+    ts = (s == null)? null : loadTagsetFromStream(s, boot);
+    close(tsUC); close(tssUC); close(tsoUC);
+    if (verbosity > 0) {
+      log.println("Tagset loaded from resource " + name
+		  + (boot? ".tss" : ".ts"));
+    }
+    return ts;
   }
 
   /** Load a Tagset from a file.  
    *
-   *	Tries ".obj", ".tss", and ".ts" in that order (but will not load a
-   *	".obj" or ".tss" file older than the ".ts" file, since that is
+   *	Tries ".tso", ".tss", and ".ts" in that order (but will not load a
+   *	".tso" or ".tss" file older than the ".ts" file, since that is
    *	presumably the master copy.
    */
   protected static Tagset loadTagsetFile(String name) {
     boolean boot = false;
+    Tagset ts = null;
 
     if (name.endsWith(".ts")
 	|| name.endsWith(".tss")
-	|| name.endsWith(".obj")) {
+	|| name.endsWith(".tso")) {
       // We know the extension already.
     } else {
-      // === loadTagsetFile needs to check search path ===
-      name += ".ts";
+      File tsFile  = new File(name + ".ts");
+      File tsoFile = new File(name + ".tso");
+      File tssFile = new File(name + ".tss");
+
+      if (tsoFile.exists() && tsFile.exists()
+	  && tsoFile.lastModified() > tsFile.lastModified()) {
+	try {
+	  ts = (Tagset)crc.util.Utilities.readObjectFrom(name+".tso");
+	} catch (Exception ex) {
+	  ex.printStackTrace(log);
+	  ts = null;
+	}
+	if (ts != null) return ts;
+      }
+      if (tssFile.exists() && tsFile.exists()
+	  && tssFile.lastModified() > tsFile.lastModified()) {
+	name += ".tss";
+	boot = true;
+      } else {
+	name += ".ts";
+      }
     }
     FileInputStream s = null;
     try {
       s = new FileInputStream(name);
     } catch (FileNotFoundException ex) {
-      ex.printStackTrace(System.err);
+      ex.printStackTrace(log);
     }
-    Tagset ts = (s == null)? null : loadTagsetFromStream(s, boot);
+    ts = (s == null)? null : loadTagsetFromStream(s, boot);
     if (s != null) try { s.close(); } catch (Exception ex) {}
     return ts;
   }
