@@ -26,6 +26,7 @@ import crc.interform.SecureAttrs;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Token;
+import crc.sgml.Tokens;
 import crc.sgml.AttrTable;
 import crc.sgml.AttrWrap;
 
@@ -167,7 +168,8 @@ public class Run  extends Environment {
       ent("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
 
       // === shouldn't have to convert these to text.
-      ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " ").toText());
+      Tokens anames = new Tokens(resolver.agentNames()).sortAscending();
+      ent("agentNames", new crc.sgml.Tokens(anames.elements(), " ").toText());
     }
 
     /* Set these even if we retrieved the entity table from the */
@@ -177,7 +179,8 @@ public class Run  extends Environment {
     ent("agentType", agent.type());
 
     ent("entityNames", "");
-    ent("entityNames", new crc.sgml.Tokens(entities.keys(), " ").toText());
+    Tokens enames = new Tokens(entities.keys()).sortAscending();
+    ent("entityNames", new crc.sgml.Tokens(enames.elements(), " ").toText());
 
     return entities;
   }
