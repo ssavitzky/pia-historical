@@ -292,7 +292,8 @@ public class Loader {
       File tsoFile = locateFile(name + ".tso", cxt);
       File tssFile = locateFile(name + ".tss", cxt);
 
-      if (tsoFile.exists() && tsFile.exists()
+      if (tsoFile != null && tsoFile.exists() 
+	  && tsFile != null && tsFile.exists()
 	  && tsoFile.lastModified() > tsFile.lastModified()) {
 	try {
 	  ts = (Tagset)crc.util.Utilities.readObjectFrom(name+".tso");
@@ -305,7 +306,8 @@ public class Loader {
 	}
 	if (ts != null) return ts;
       }
-      if (tssFile.exists() && tsFile.exists()
+      if (tssFile != null && tssFile.exists()
+	  && tsFile != null && tsFile.exists()
 	  && tssFile.lastModified() > tsFile.lastModified()) {
 	name += ".tss";
 	boot = true;
