@@ -90,7 +90,7 @@ public class MathUtil {
     return (a.isNumeric())? a : null;
   }
 
-  /** Return a numeric Association between an obj4ct and its numeric value. 
+  /** Return a numeric Association between an object and its numeric value. 
    *	Return null if the object contains no numeric text.
    */
   public static Association getNumeric(Object o) {
