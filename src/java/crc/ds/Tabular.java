@@ -9,7 +9,7 @@ import java.util.Enumeration;
  *	<code>Map</code>s or <code>HashTable</code>s.
  *
  * <p> The names of some of the methods, e.g. <code>get</code>,
- * 	<code>set</code>, and <code>size</code>, come from Java's
+ * 	<code>put</code>, and <code>size</code>, come from Java's
  * 	<code>HashTable</code> and <code>Map</code>. This is in contrast with
  * 	the older <code>Stuff</code>, which is derived from Perl.
  *
@@ -23,7 +23,7 @@ public interface Tabular {
   Object get(String key);
 
   /** Replace an individual named item with value <em>v</em>. */
-  void set(String key, Object v);
+  void put(String key, Object v);
 
   /** Return an enumeration of all the  keys. */
   Enumeration keys();

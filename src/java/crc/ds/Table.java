@@ -104,7 +104,7 @@ public class Table extends Hashtable implements Stuff, Tabular {
   // in HashTable: public Enumeration keys();
 
   public Object get(String key) { return get((Object)key); }
-  public void set(String key, Object value) { at(key, value); }
+  public void put(String key, Object value) { at(key, value); }
   
   /************************************************************************
   ** Construction:
