@@ -502,7 +502,7 @@ public class Parser extends Input {
       buf.append(ident);
       debug(ident);
 
-      Element it = new Element(ident);
+      Element it = new Element(ident.toLowerCase());
       String a; StringBuffer v;
 
       // Now go after the attributes.
@@ -512,7 +512,7 @@ public class Parser extends Input {
 	// need to be appending the identifier in case we lose ===
 	eatSpaces();	
 	if (eatIdent()) {
-	  a = ident;
+	  a = ident.toLowerCase();
 	  buf.append(ident);
 	  debug(" "+a);
 	  if (getValue()) it.addAttr(a, next);
@@ -534,7 +534,7 @@ public class Parser extends Input {
 
       eatSpaces();
       if (last != '>') return false;
-      Element it = Element.endTagFor(ident);
+      Element it = Element.endTagFor(ident.toLowerCase());
       it.incomplete((byte)-2);
       it.endTagRequired((byte)1);
       next = it;
