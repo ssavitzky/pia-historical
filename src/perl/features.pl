@@ -13,8 +13,14 @@
 ###
 ###	Features may actually have any value, but the resolver is only
 ###	interested in truth value.  Some agents, however, make use of
-###	feature values.  In particular, 'agent'
-###
+###	feature values.  In particular, 'agent' binds to the name of the
+###	agent at which a request is directed.
+###	
+###	An agent can easily create a transaction and assert features in
+###	order to ensure that some other agent will or will not match it.  It
+###	is also possible to add a feature and ``recycle'' a transaction.  In
+###	this case we will eventually need a feature to prevent unwanted
+###	matching by agents that have already seen it.
 
 package FEATURES;
 
@@ -98,9 +104,12 @@ sub compute {
 	if defined $computer;
 
     ## Not defined:
+    ##	  Undefined features get asserted as a null string, so you can
+    ##	  tell the difference between false and undefined, but don't
+    ##	  have to recompute things you know aren't there.
 
-    print "No computer for feature $feature\n";
-    return;
+    print "No computer for feature $feature\n" if $main::debugging;
+    return $self->assert($feature, '');
 }
 
 ### Initialization:
@@ -148,32 +157,44 @@ sub register {
 ### Matching.
 ###
 ###	The match criteria are a list (not a hash, because order might be
-###	significant), of name=>value pairs.  The value is considered to be
-###	a boolean.  A sublist in place of a pair is ORed.
+###	significant), of sublists or name=>value pairs.
+###
+###		[criteria]	ORed, i.e. fail if not matched.
+###		x => bool	fail if !test(x) != !b
+###		x => \&subr	fail if &subr(test(x)) returns false
+###		x => \$var	$var = test(x)
 
-### === could allow x=>y where x is a reference to a subroutine and y is
-###	an argument list.
-
-### === could allow x=>y where x is a feature name and y a reference to a
-###	scalar variable to bind.
+### === maybe 	x => ["op" value]	comparison
+###		x => [value] 		eq
+###		x => [subr args...] (splice test(x) in as first arg.)
 
 sub matches {
     my($self, $criteria)=@_;
 
     ## Match against a list of criteria.
     ##	  The criteria are a list because order might be important.
-    ##	  Sublists are OR'ed.
+    ##    We index through the list so we don't have to copy it.
 
     my $i;
     for ($i = 0; $i <= $#$criteria; $i++) {
 	my $c = $$criteria[$i];
-	if (ref $c) {
+	if (! ref $c) {
+	    local $f = $self->test($c);
+	    local $v = $$criteria[++$i];
+	    print " $f" if $main::debugging;
+	    if (! ref $v) {
+		return 0 if !$f != !$v;
+	    } elsif (ref($v) eq 'REF') {
+		$$v = $f;
+	    } elsif (ref($v) eq 'CODE') {
+		return 0 if ! &$v($f);
+	    } else {
+		print "undefined match criterion $c=>$v\n";
+	    }
+	} elsif (ref($c) eq 'ARRAY') {
 	    return 0 if ! self->matches($c);
 	} else {
-	    my $f = $self->test($c);
-	    my $v = $$criteria[++$i];
-	    print " $f" if $main::debugging;
-	    return 0 if !$f != !$v;
+	    print "undefined match criterion $c\n";
 	}
     }
     print " matched.\n" if  $main::debugging;
