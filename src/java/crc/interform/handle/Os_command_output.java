@@ -11,15 +11,27 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<os-command-output [bypass]>command</os-command-output>
- * Dscr:
+
+/** Handler class for &lt;os-command-output&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;os-command-output [bypass]&gt;command&lt;/os-command-output&gt;
+ * <dt>Dscr:<dd>
  *	Execute CONTENT as an operating system command 
  *	and capture its output.  Optionally BYPASS proxies.
+ *  </dl>
  */
-
-/** Handler class for &lt;os-command-output&gt tag */
 public class Os_command_output extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<os-command-output [bypass]>command</os-command-output>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Execute CONTENT as an operating system command \n" +
+    "and capture its output.  Optionally BYPASS proxies.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     crc.interform.Environment env = ii.environment;
     Runtime runtime = Runtime.getRuntime();

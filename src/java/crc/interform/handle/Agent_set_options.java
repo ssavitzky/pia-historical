@@ -12,14 +12,25 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<agent-set-options [name="agent-name"]>options</agent-set-options>
- * Dscr:
- *	Sets CONTENT as options for agent NAME.
- */
 
-/** Handler class for &lt;agent-set-options&gt tag */
+/** Handler class for &lt;agent-set-options&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-set-options [name="agent-name"]&gt;options&lt;/agent-set-options&gt;
+ * <dt>Dscr:<dd>
+ *	Sets CONTENT as options for agent NAME.
+ *  </dl>
+ */
 public class Agent_set_options extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-set-options [name=\"agent-name\"]>options</agent-set-options>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Sets CONTENT as options for agent NAME.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);

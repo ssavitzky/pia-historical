@@ -13,19 +13,30 @@ import crc.sgml.SGML;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<add-markup>text</add-markup>
- * Dscr:
- *	Add markup to text CONTENT using common conventions.
- */
 
-/** Handler class for &lt;add-markup&gt tag */
+/** Handler class for &lt;add-markup&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;add-markup&gt;text&lt;/add-markup&gt;
+ * <dt>Dscr:<dd>
+ *	Add markup to text CONTENT using common conventions.
+ *  </dl>
+ */
 public class Add_markup extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<add-markup>text</add-markup>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Add markup to text CONTENT using common conventions.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens content = it.content();
     Tokens result = new Tokens();
     SGML item;
-    while (content.nItems() > 0) {
+    while (content != null && content.nItems() > 0) {
       item = (SGML)content.shift();
       if (item.isText()) {
 	result.append(Util.addMarkup(item.toString()));
@@ -33,6 +44,6 @@ public class Add_markup extends crc.interform.Handler {
 	result.append(item);
       }
     }
-    ii.replaceIt(content);
+    ii.replaceIt(result);
   }
 }

@@ -16,25 +16,49 @@ import crc.sgml.Text;
 
 import crc.pia.Agent;
 import java.util.Enumeration;
-/* Syntax:
- *	<submit-forms [hour=hh] [minute=mm] [day=dd]
+
+/** Handler class for &lt;submit-forms&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;submit-forms [hour=hh] [minute=mm] [day=dd]
  *		      [month=["name"|mm]] [weekday=["name"|n]]
- *		      [repeat=count] [until=mm-dd-hh]>
- *	   <a href="query">...</a>|...form...</submit-forms>
- * Dscr:
+ *		      [repeat=count] [until=mm-dd-hh]&gt;
+ *	   &lt;a href="query"&gt;...&lt;/a&gt;|...form...&lt;/submit-forms&gt;
+ * <dt>Dscr:<dd>
  *	Submit a form or link ELEMENT or every form (not links) in CONTENT.  
  *	Optionally submit at HOUR, MINUTE, DAY, MONTH, WEEKDAY. 
  *	Optionally REPEAT=N times (missing hour, day, month, weekday 
  *	are wildcards).  
  *	Optionally UNTIL=MM-DD-HH time when submissions are halted.
  *	Use options interform of agent to delete repeating entries.
- * Note:
- *	The following InterForm code makes <form> active:
- *		<actor name=form handle="submit_forms"></actor>
+ * <dt>Note:<dd>
+ *	The following InterForm code makes &lt;form&gt; <dt>active:<dd>
+ *		&lt;actor name=form handle="submit_forms"&gt;&lt;/actor&gt;
+ *  </dl>
  */
-
-/** Handler class for &lt;submit-forms&gt tag */
 public class Submit_forms extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<submit-forms [hour=hh] [minute=mm] [day=dd]\n" +
+    "[month=[\"name\"|mm]] [weekday=[\"name\"|n]]\n" +
+    "[repeat=count] [until=mm-dd-hh]>\n" +
+    "<a href=\"query\">...</a>|...form...</submit-forms>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Submit a form or link ELEMENT or every form (not links) in CONTENT.  \n" +
+    "Optionally submit at HOUR, MINUTE, DAY, MONTH, WEEKDAY. \n" +
+    "Optionally REPEAT=N times (missing hour, day, month, weekday \n" +
+    "are wildcards).  \n" +
+    "Optionally UNTIL=MM-DD-HH time when submissions are halted.\n" +
+    "Use options interform of agent to delete repeating entries.\n" +
+"";
+  public String note() { return noteStr; }
+  static String noteStr=
+    "The following InterForm code makes <form> active:\n" +
+    "	<actor name=form handle=\"submit_forms\"></actor>\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "agent", null);
     

@@ -12,15 +12,27 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<protect [markup]>content</protect>
- * Dscr:
+
+/** Handler class for &lt;protect&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;protect [markup]&gt;content&lt;/protect&gt;
+ * <dt>Dscr:<dd>
  *	Protect CONTENT from expansion.  Optionally protect
  *	MARKUP by converting special characters to entities.
+ *  </dl>
  */
-
-/** Handler class for &lt;protect&gt tag */
 public class Protect extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<protect [markup]>content</protect>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Protect CONTENT from expansion.  Optionally protect\n" +
+    "MARKUP by converting special characters to entities.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     if (it.hasAttr("markup")) {
       ii.replaceIt(new Text(Util.protectMarkup(it.contentString())));

@@ -12,14 +12,25 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<subst match="pattern" result="string">text</subst>
- * Dscr:
- *	Substitute RESULT string for MATCH pattern in CONTENT.
- */
 
-/** Handler class for &lt;subst&gt tag */
+/** Handler class for &lt;subst&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;subst match="pattern" result="string"&gt;text&lt;/subst&gt;
+ * <dt>Dscr:<dd>
+ *	Substitute RESULT string for MATCH pattern in CONTENT.
+ *  </dl>
+ */
 public class Subst extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<subst match=\"pattern\" result=\"string\">text</subst>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Substitute RESULT string for MATCH pattern in CONTENT.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);

@@ -14,15 +14,27 @@ import crc.sgml.SGML;
 
 import crc.pia.Transaction;
 
-/* Syntax:
- *	<set.trans name="name" [copy] [feature|header]>...</set.trans>
- * Dscr:
+
+/** Handler class for &lt;set.trans&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;set.trans name="name" [copy] [feature|header]&gt;...&lt;/set.trans&gt;
+ * <dt>Dscr:<dd>
  *	Set NAME to CONTENT in a transaction.  Optionally set a FEATURE
  *	or HEADER.  Optionally COPY content as result.
+ *  </dl>
  */
-
-/** Handler class for &lt;set.trans&gt tag */
 public class Set_trans extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<set.trans name=\"name\" [copy] [feature|header]>...</set.trans>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Set NAME to CONTENT in a transaction.  Optionally set a FEATURE\n" +
+    "or HEADER.  Optionally COPY content as result.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

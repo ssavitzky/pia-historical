@@ -14,16 +14,29 @@ import crc.sgml.SGML;
 import java.lang.Process;
 import java.lang.Runtime;
 
-/* Syntax:
- *	<os-command [bypass]>command</os-command>
- * Dscr:
+
+/** Handler class for &lt;os-command&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;os-command [bypass]&gt;command&lt;/os-command&gt;
+ * <dt>Dscr:<dd>
  *	Execute CONTENT as an operating system command 
  *	in the background with proxies set to PIA.  
  *	Optionally BYPASS proxies.
+ *  </dl>
  */
-
-/** Handler class for &lt;os-command&gt tag */
 public class Os_command extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<os-command [bypass]>command</os-command>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Execute CONTENT as an operating system command \n" +
+    "in the background with proxies set to PIA.  \n" +
+    "Optionally BYPASS proxies.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     crc.interform.Environment env = ii.environment;
     Runtime runtime = Runtime.getRuntime();

@@ -16,21 +16,39 @@ import crc.sgml.Text;
 
 import java.util.Date;
 
-/* Syntax:
- *	<read.file file="name" [interform [agent="agentName"]]
+
+/** Handler class for &lt;read-file&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;read.file file="name" [interform [agent="agentName"]]
  *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
- *	      [base="path"] [process [tagset="name"]] >
- * Dscr:
+ *	      [base="path"] [process [tagset="name"]] &gt;
+ * <dt>Dscr:<dd>
  *	Input from FILE, with optional BASE path.  FILE may be looked
  *	up as an INTERFORM in current or other AGENT.  Optionally read
  *	only INFO or HEAD.  For DIRECTORY, read names or LINKS, and
  *	return TAG or ul.  DIRECTORY can read ALL names or those that
  *	MATCH; default is all but backups.  Optionally PROCESS with
  *	optional TAGSET.  
+ *  </dl>
  */
-
-/** Handler class for &lt;read-file&gt tag */
 public class Read_file extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<read.file file=\"name\" [interform [agent=\"agentName\"]]\n" +
+    "[info|head|directory [links] [tag=tag] [all|match=\"regexp\"]] \n" +
+    "[base=\"path\"] [process [tagset=\"name\"]] >\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Input from FILE, with optional BASE path.  FILE may be looked\n" +
+    "up as an INTERFORM in current or other AGENT.  Optionally read\n" +
+    "only INFO or HEAD.  For DIRECTORY, read names or LINKS, and\n" +
+    "return TAG or ul.  DIRECTORY can read ALL names or those that\n" +
+    "MATCH; default is all but backups.  Optionally PROCESS with\n" +
+    "optional TAGSET.  \n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getFileName(it, ii, false);
     if (name == null) {

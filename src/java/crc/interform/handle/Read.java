@@ -11,22 +11,42 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<read [ file="name" [interform [agent="agentName"]] 
+
+/** Handler class for &lt;read&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;read [ file="name" [interform [agent="agentName"]] 
  *	        [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
  *	      | href="url" [resolve] ] 
- *	      [base="path"] [process [tagset="name"]] >
- * Dscr:
+ *	      [base="path"] [process [tagset="name"]] &gt;
+ * <dt>Dscr:<dd>
  *	Input from FILE or HREF, with optional BASE path.  FILE may be
  *	looked up as an INTERFORM in current or other AGENT.
  *	Optionally read only INFO or HEAD.  For DIRECTORY, read names
  *	or LINKS, and return TAG or ul.  DIRECTORY can read ALL names
  *	or those that MATCH; default is all but backups.  Optionally
  *	PROCESS with optional TAGSET.  HREF can optionally RESOLVE in
- *	pia.  */
-
-/** Handler class for &lt;read&gt tag */
+ *	pia.
+ * </dl>
+ */
 public class Read extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<read [ file=\"name\" [interform [agent=\"agentName\"]] \n" +
+    "[info|head|directory [links] [tag=tag] [all|match=\"regexp\"]] \n" +
+    "| href=\"url\" [resolve] ] \n" +
+    "[base=\"path\"] [process [tagset=\"name\"]] >\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Input from FILE or HREF, with optional BASE path.  FILE may be\n" +
+    "looked up as an INTERFORM in current or other AGENT.\n" +
+    "Optionally read only INFO or HEAD.  For DIRECTORY, read names\n" +
+    "or LINKS, and return TAG or ul.  DIRECTORY can read ALL names\n" +
+    "or those that MATCH; default is all but backups.  Optionally\n" +
+    "PROCESS with optional TAGSET.  HREF can optionally RESOLVE in\n" +
+    "pia.\n" + 
+"";
   public void handle(Actor ia, SGML it, Interp ii) {
     // === href + resolve should dispatch to read.href.resolve ===
     // === file + interform should dispatch to read.file.interform

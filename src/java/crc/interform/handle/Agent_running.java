@@ -14,14 +14,25 @@ import crc.sgml.SGML;
 import crc.interform.Run;
 import crc.pia.Agent;
 
-/* Syntax:
- *	<agent-running name="agent-name">
- * Dscr:
- *	Tests whether the agent with the given NAME is running.
- */
 
-/** Handler class for &lt;agent-running&gt tag */
+/** Handler class for &lt;agent-running&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-running name="agent-name"&gt;
+ * <dt>Dscr:<dd>
+ *	Tests whether the agent with the given NAME is running.
+ *  </dl>
+ */
 public class Agent_running extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-running name=\"agent-name\">\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Tests whether the agent with the given NAME is running.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

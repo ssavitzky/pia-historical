@@ -9,7 +9,9 @@ TOPDIR=../../../..
 BASIC_ACTORS = \
 	Actor.java \
 	Actor_attrs.java \
+	Actor_doc.java \
 	Actor_dscr.java \
+	Actor_syntax.java \
 	Actor_names.java \
 	Add_markup.java \
 	Difference.java \
@@ -56,9 +58,11 @@ SA_ACTORS = \
 
 PIA_ACTORS= \
 	Agent_home.java \
+	Agent_list.java \
 	Agent_running.java \
 	Agent_set_options.java \
 	Agent_options.java \
+	Agent_criteria.java \
 	Agent_set_criteria.java \
 	Agent_set_criterion.java \
 	Agent_install.java \
@@ -110,3 +114,30 @@ all::
 	-@grep -q 'unimplemented' $(PIA_ACTORS) && \
 	  (echo 'PIA:	' ; grep 'unimplemented' $(PIA_ACTORS)) || true
 
+### Extract the documentation comments:
+
+DOC_CMD= $(BINDIR)/pia_wrapper crc.interform.Filter
+
+Basic-tagset.html::	$(BASIC_ACTORS)
+	$(DOC_CMD) -t Basic actor-doc.if > Basic-tagset.html
+
+StandAlone-tagset.html::	$(BASIC_ACTORS) $(SA_ACTORS)
+	$(DOC_CMD) -t StandAlone actor-doc.if > StandAlone-tagset.html
+
+Standard-tagset.html::	$(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
+	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
+
+actor-doc:	Basic-tagset.html StandAlone-tagset.html Standard-tagset.html
+
+### Run a perl script over all actors.  It can be redefined for various
+###	one-shot fixups; the first use is transforming syntax comments
+###	into a combination of javadoc and executable forms.
+
+FIXUP=./fixup.pl
+fixup:
+	$(FIXUP) $(BASIC_ACTORS)
+	$(FIXUP) $(SA_ACTORS)
+	$(FIXUP) $(PIA_ACTORS)
+
+unfix:
+	for f in *.java ; do if [ -f $$f.bak ]; then mv -f $$f.bak $$f; fi ; done

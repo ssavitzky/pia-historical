@@ -12,16 +12,29 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<agent-set-criterion name="name" [value="value"] 
- *			     [agent="agent-name"]>
- * Dscr:
+
+/** Handler class for &lt;agent-set-criterion&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-set-criterion name="name" [value="value"] 
+ *			     [agent="agent-name"]&gt;
+ * <dt>Dscr:<dd>
  *	set match criterion NAME to VALUE (default true), 
  *	optionally in AGENT.
+ *  </dl>
  */
-
-/** Handler class for &lt;agent-set-criterion&gt tag */
 public class Agent_set_criterion extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-set-criterion name=\"name\" [value=\"value\"] \n" +
+    "[agent=\"agent-name\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "set match criterion NAME to VALUE (default true), \n" +
+    "optionally in AGENT.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

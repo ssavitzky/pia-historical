@@ -11,19 +11,35 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<get [name="name"] 
+
+/** Handler class for &lt;get&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;get [name="name"] 
  *	     [pia|agent|form|trans|env|element[tag=tag]|local|entity
- *	     | [file="filename"|href="url"|[file|href] name="string" ] >
- * Dscr:
+ *	     | [file="filename"|href="url"|[file|href] name="string" ] &gt;
+ * <dt>Dscr:<dd>
  *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
  *	ELEMENT, TRANSaction, or LOCAL or global ENTITY context.
  *	Default is the generic lookup that includes paths.
- *	If FILE or HREF specified, functions as <read>.
+ *	If FILE or HREF specified, functions as &lt;read&gt;.
+ *  </dl>
  */
-
-/** Handler class for &lt;get&gt tag */
 public class Get extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<get [name=\"name\"] \n" +
+    "[pia|agent|form|trans|env|element[tag=tag]|local|entity\n" +
+    "| [file=\"filename\"|href=\"url\"|[file|href] name=\"string\" ] >\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Get value of NAME, optionally in PIA, ENV, AGENT, FORM, \n" +
+    "ELEMENT, TRANSaction, or LOCAL or global ENTITY context.\n" +
+    "Default is the generic lookup that includes paths.\n" +
+    "If FILE or HREF specified, functions as <read>.\n" +
+"";
+ 
   /** Handle for &lt;get&gt.  The dispatching really should be in 
    *	actOn; we're faking it for now. === */
   public void handle(Actor ia, SGML it, Interp ii) {

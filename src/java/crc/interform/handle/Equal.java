@@ -14,16 +14,29 @@ import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<equal [not] [case] [text] [link] [numeric]>list...</equal>
- * Dscr:
+
+/** Handler class for &lt;equal&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;equal [not] [case] [text] [link] [numeric]&gt;list...&lt;/equal&gt;
+ * <dt>Dscr:<dd>
  *	Test list items in CONTENT for equality; 
  *	return null or IFFALSE if false, else '1' or IFTRUE. 
- *	Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.
+ *	<dt>Modifiers:<dd> NOT, CASE (sensitive), TEXT, LINK, NUMERIC.
+ *  </dl>
  */
-
-/** Handler class for &lt;equal&gt tag */
 public class Equal extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<equal [not] [case] [text] [link] [numeric]>list...</equal>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Test list items in CONTENT for equality; \n" +
+    "return null or IFFALSE if false, else '1' or IFTRUE. \n" +
+    "Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);

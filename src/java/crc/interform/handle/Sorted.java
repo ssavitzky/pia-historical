@@ -12,18 +12,27 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<sorted [case][text][numeric][reverse]>item, ...</sorted>
- * Dscr:
+
+/** Handler class for &lt;sorted&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;sorted [case][text][numeric][reverse]&gt;item, ...&lt;/sorted&gt;
+ * <dt>Dscr:<dd>
  *	Test whether items in CONTENT are sorted.  Optionally 
  *	CASE (sensitive), TEXT, NUMERIC, REVERSE.
- *	
- * Dscr:
- *	
  */
-
-/** Handler class for &lt;sorted&gt tag */
 public class Sorted extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<sorted [case][text][numeric][reverse]>item, ...</sorted>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Test whether items in CONTENT are sorted.  Optionally \n" +
+    "CASE (sensitive), TEXT, NUMERIC, REVERSE.\n" +
+    "\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);

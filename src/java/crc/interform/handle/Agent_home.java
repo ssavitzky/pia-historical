@@ -14,16 +14,29 @@ import crc.sgml.SGML;
 import crc.sgml.Element;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<agent-home name=ident [link]>
- * Dscr:
+
+/** Handler class for &lt;agent-home&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-home name=ident [link]&gt;
+ * <dt>Dscr:<dd>
  *	Return path to a pia agent's home InterForm.  Agent NAME defaults
  *	to the name of the current agent.
  *	Optionally make a LINK.  Very kludgy.
+ *  </dl>
  */
-
-/** Handler class for &lt;agent-home&gt tag */
 public class Agent_home extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-home name=ident [link]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Return path to a pia agent's home InterForm.  Agent NAME defaults\n" +
+    "to the name of the current agent.\n" +
+    "Optionally make a LINK.  Very kludgy.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", Run.getAgentName(ii));
     boolean link = it.hasAttr("link");

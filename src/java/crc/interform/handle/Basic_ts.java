@@ -22,7 +22,8 @@ import java.util.Enumeration;
  *	including it; we may want to revisit this decision later. */
 public class Basic_ts extends HTML_ts {
 
-  static String emptyActors = "get tagset-include element actor-names";
+  static String emptyActors = "actor-attrs actor-dscr actor-doc actor-syntax"
+  + " get tagset-include element actor-names";
   static String parsedActors = "add-markup difference equal expand if"
   + " pad product protect-result quotient set sort sorted subst sum"
   + " tagset test text trim user-message";

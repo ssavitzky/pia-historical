@@ -7,20 +7,31 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
-import crc.interform.Token;
-import crc.interform.Tokens;
-import crc.interform.Text;
 import crc.interform.Util;
+import crc.sgml.SGML;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
+import crc.sgml.Text;
 
-/* Syntax:
- *	<agent-list [type=type][subs]>
- * Dscr:
+
+/** Handler class for &lt;agent-list&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-list [type=type][subs]&gt;
+ * <dt>Dscr:<dd>
  *	List the agents with given TYPE. Possibly SUBS only.
+ *  </dl>
  */
-
-/** Handler class for &lt;agent-list&gt tag */
 public class Agent_list extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-list [type=type][subs]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "List the agents with given TYPE. Possibly SUBS only.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);

@@ -14,15 +14,27 @@ import crc.pia.Transaction;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<get-trans [name="name"]>
- * Dscr:
+
+/** Handler class for &lt;get-trans&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;get-trans [name="name"]&gt;
+ * <dt>Dscr:<dd>
  *	Get value of NAME, in the TRANSaction context.  Optionally get
  *	HEADERS (optionally from REQUEST) or a FEATURE.
+ *  </dl>
  */
-
-/** Handler class for &lt;get-trans&gt tag */
 public class Get_trans extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<get-trans [name=\"name\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Get value of NAME, in the TRANSaction context.  Optionally get\n" +
+    "HEADERS (optionally from REQUEST) or a FEATURE.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

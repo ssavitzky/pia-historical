@@ -14,15 +14,27 @@ import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<pia-exit [status=N]>message</pia-exit>
- * Dscr:
+
+/** Handler class for &lt;pia-exit&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;pia-exit [status=N]&gt;message&lt;/pia-exit&gt;
+ * <dt>Dscr:<dd>
  *	Exit from the pia, after printing CONTENT.  Optional STATUS 
  *	(default 1).
+ *  </dl>
  */
-
-/** Handler class for &lt;pia-exit&gt tag */
 public class Pia_exit extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<pia-exit [status=N]>message</pia-exit>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Exit from the pia, after printing CONTENT.  Optional STATUS \n" +
+    "(default 1).\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     //=== should set a flag to allow the resolver to quit cleanly

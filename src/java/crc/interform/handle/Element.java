@@ -10,15 +10,27 @@ import crc.interform.Interp;
 import crc.sgml.SGML;
 
 
-/* Syntax:
- *	<element tag=ident [empty] [not-inside="list of tags"]>
- * Dscr:
+
+/** Handler class for &lt;element&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;element tag=ident [empty] [not-inside="list of tags"]&gt;
+ * <dt>Dscr:<dd>
  *	Define the syntax for an SGML element.  Optionally EMPTY.
  *	Optionally NOT-INSIDE a list of tags which it implicitly ends.
+ *  </dl>
  */
-
-/** Handler class for &lt;element&gt tag */
 public class Element extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<element tag=ident [empty] [not-inside=\"list of tags\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Define the syntax for an SGML element.  Optionally EMPTY.\n" +
+    "Optionally NOT-INSIDE a list of tags which it implicitly ends.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     ii.tagset().define(new Actor(it, it.attrString("syntax")));
     ii.deleteIt();

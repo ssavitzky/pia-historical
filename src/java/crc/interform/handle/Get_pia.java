@@ -12,14 +12,25 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<get.pia [name="name"]>
- * Dscr:
- *	Get value of NAME, in the PIA context (i.e. as a pia property).
- */
 
-/** Handler class for &lt;get-pia&gt tag */
+/** Handler class for &lt;get-pia&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;get.pia [name="name"]&gt;
+ * <dt>Dscr:<dd>
+ *	Get value of NAME, in the PIA context (i.e. as a pia property).
+ *  </dl>
+ */
 public class Get_pia extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<get.pia [name=\"name\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Get value of NAME, in the PIA context (i.e. as a pia property).\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = getName(ia, it, ii);
     if (name == null) return;

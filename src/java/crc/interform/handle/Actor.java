@@ -13,15 +13,27 @@ import crc.sgml.SGML;
 
 /* === should have skipped as well === */
 
-/* Syntax:
- *	<actor [quoted|literal|empty] [parsed|passed]
- *	[name=ident] [tag=ident] [not-inside="tag list"]> content </actor>
- * Dscr:
- *	define an InterForm actor.
- */
 
-/** Handler class for &lt;actor&gt tag. */
+/** Handler class for &lt;actor&gt tag. 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;actor [quoted|literal|empty] [parsed|passed]
+ *	[name=ident] [tag=ident] [not-inside="tag list"]&gt; content &lt;/actor&gt;
+ * <dt>Dscr:<dd>
+ *	define an InterForm actor.
+ *  </dl>
+ */
 public class Actor extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<actor [quoted|literal|empty] [parsed|passed]\n" +
+    "[name=ident] [tag=ident] [not-inside=\"tag list\"]> content </actor>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "define an InterForm actor.\n" +
+"";
+ 
   public void handle(crc.interform.Actor ia, SGML it, Interp ii) {
     ii.tagset().define(new crc.interform.Actor(it));
     ii.deleteIt();

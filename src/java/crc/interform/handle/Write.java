@@ -11,21 +11,27 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<write [file="name" [interform] [append] | href="url" [post]] 
- *	       [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] >content</write>
- * Dscr:
- *	Output CONTENT to FILE or HREF, with optional BASE path.  FILE
- *	may be looked up as an INTERFORM.  BASE directory is created
- *	if necessary.  Optionally APPEND or POST.  Optionally TRIM
- *	leading and trailing whitespace. Optionally end LINE.
- *	Optionally COPY content to InterForm.
- */
 
 /** Handler class for &lt;write&gt tag.  Dispatches to write-file or
- *	write.href as needed. */
+ *	write.href as needed. 
+ * <dl> </dl>
+ */
 public class Write extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<write [file=\"name\" [interform] [append] | href=\"url\" [post]] \n" +
+    "[base=\"path\"] [trim] [line]\n" +
+    "[copy [protect [markup]]] >content</write>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Output CONTENT to FILE or HREF, with optional BASE path.  FILE\n" +
+    "may be looked up as an INTERFORM.  BASE directory is created\n" +
+    "if necessary.  Optionally APPEND or POST.  Optionally TRIM\n" +
+    "leading and trailing whitespace. Optionally end LINE.\n" +
+    "Optionally COPY content to InterForm.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     // === href + resolve should dispatch to write.href.resolve ===
     // === file + interform should dispatch to write.file.interform

@@ -12,14 +12,25 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<get-agent [agent="agent-name"] name="name">
- * Dscr:
- *	Get value of NAME, in the AGENT context (i.e. as an option).
- */
 
-/** Handler class for &lt;get-agent&gt tag */
+/** Handler class for &lt;get-agent&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;get-agent [agent="agent-name"] name="name"&gt;
+ * <dt>Dscr:<dd>
+ *	Get value of NAME, in the AGENT context (i.e. as an option).
+ *  </dl>
+ */
 public class Get_agent extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<get-agent [agent=\"agent-name\"] name=\"name\">\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Get value of NAME, in the AGENT context (i.e. as an option).\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

@@ -11,15 +11,27 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<tagset-include name=tagset-name>
- * Dscr:
+
+/** Handler class for &lt;tagset-include&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;tagset-include name=tagset-name&gt;
+ * <dt>Dscr:<dd>
  *	Include (merge) an InterForm tagset called NAME 
  *	into the current tagset.
+ *  </dl>
  */
-
-/** Handler class for &lt;tagset-include&gt tag */
 public class Tagset_include extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<tagset-include name=tagset-name>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Include (merge) an InterForm tagset called NAME \n" +
+    "into the current tagset.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

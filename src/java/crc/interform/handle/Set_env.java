@@ -12,15 +12,27 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<set.env name="name" [copy]>...</set.env>
- * Dscr:
+
+/** Handler class for &lt;set.env&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;set.env name="name" [copy]&gt;...&lt;/set.env&gt;
+ * <dt>Dscr:<dd>
  *	set NAME to CONTENT in the environment (system properties). 
  *	Optionally COPY content as result.
+ *  </dl>
  */
-
-/** Handler class for &lt;set.env&gt tag */
 public class Set_env extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<set.env name=\"name\" [copy]>...</set.env>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "set NAME to CONTENT in the environment (system properties). \n" +
+    "Optionally COPY content as result.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

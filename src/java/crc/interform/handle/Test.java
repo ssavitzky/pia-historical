@@ -12,17 +12,33 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<test [iftrue="value"] [iffalse="value"] [not] [text|link]
- *	      [zero|positive|negative|null| match="pattern" [exact] [case] ]
- * Dscr:
- *	Test CONTENT; return null or IFFALSE if false, else '1' or
- *	IFTRUE.  Tests: default (non-whitespace), ZERO, POSITIVE,
- *	NEGATIVE, NULL, MATCH='pattern'.  Modifiers: NOT, CASE
- *	(sensitive), TEXT, LINK, EXACT (match).  */
 
-/** Handler class for &lt;test&gt tag */
+/** Handler class for &lt;test&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;test [iftrue="value"] [iffalse="value"] [not] [text|link]
+ *	      [zero|positive|negative|null| match="pattern" [exact] [case] ]
+ * <dt>Dscr:<dd>
+ *	Test CONTENT; return null or IFFALSE if false, else '1' or
+ *	IFTRUE.  <dt>Tests:<dd> default (non-whitespace), ZERO, POSITIVE,
+ *	NEGATIVE, NULL, MATCH='pattern'.  <dt>Modifiers:<dd> NOT, CASE
+ *	(sensitive), TEXT, LINK, EXACT (match).
+ * </dl>
+ */
 public class Test extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<test [iftrue=\"value\"] [iffalse=\"value\"] [not] [text|link]\n" +
+    "[zero|positive|negative|null| match=\"pattern\" [exact] [case] ]\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Test CONTENT; return null or IFFALSE if false, else '1' or\n" +
+    "IFTRUE.  Tests: default (non-whitespace), ZERO, POSITIVE,\n" +
+    "NEGATIVE, NULL, MATCH='pattern'.  Modifiers: NOT, CASE\n" +
+    "(sensitive), TEXT, LINK, EXACT (match).\n" +
+"";
+
   public void handle(Actor ia, SGML it, Interp ii) {
     boolean result = false;
     SGML test = Util.removeSpaces(it.content());

@@ -11,20 +11,37 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<set name="name" [copy]
+
+/** Handler class for &lt;set&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;set name="name" [copy]
  *	     [ pia | agent [hook] | trans [feature] | env 
- *  	     | [element [tag=ident] | entity [local] ]>...</set>
- * Dscr:
+ *  	     | [element [tag=ident] | entity [local] ]&gt;...&lt;/set&gt;
+ * <dt>Dscr:<dd>
  *	set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, 
  *	ENVironment, ELEMENT, or ENTITY context.  ENTITY may define
  *	a LOCAL binding.  ELEMENT may have a TAG.  TRANSaction item
  *	may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. 
  *	Optionally COPY content as result.
+ *  </dl>
  */
-
-/** Handler class for &lt;set&gt tag */
 public class Set extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<set name=\"name\" [copy]\n" +
+    "[ pia | agent [hook] | trans [feature] | env \n" +
+    "| [element [tag=ident] | entity [local] ]>...</set>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, \n" +
+    "ENVironment, ELEMENT, or ENTITY context.  ENTITY may define\n" +
+    "a LOCAL binding.  ELEMENT may have a TAG.  TRANSaction item\n" +
+    "may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. \n" +
+    "Optionally COPY content as result.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     if (it.hasAttr("pia")) dispatch("set.pia", ia, it, ii);
     else if (it.hasAttr("agent")) dispatch("set.agent", ia, it, ii);

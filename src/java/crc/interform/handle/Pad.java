@@ -12,16 +12,29 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<pad width=N [align=[left|right|center]] [spaces]>...</pad>
- * Dscr:
+
+/** Handler class for &lt;pad&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;pad width=N [align=[left|right|center]] [spaces]&gt;...&lt;/pad&gt;
+ * <dt>Dscr:<dd>
  *	Pad CONTENT to a given WIDTH with given ALIGNment
  *	(left/center/right).  Optionally just generate the SPACES.  
  *	Ignores markup.
+ *  </dl>
  */
-
-/** Handler class for &lt;pad&gt tag */
 public class Pad extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<pad width=N [align=[left|right|center]] [spaces]>...</pad>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Pad CONTENT to a given WIDTH with given ALIGNment\n" +
+    "(left/center/right).  Optionally just generate the SPACES.  \n" +
+    "Ignores markup.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String text = it.contentString();
     String align = Util.getString(it, "align", "left");

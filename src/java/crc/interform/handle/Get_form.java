@@ -15,15 +15,27 @@ import crc.sgml.Element;
 
 import crc.ds.Table;
 
-/* Syntax:
- *	<get.form [name="name"]>
- * Dscr:
+
+/** Handler class for &lt;get-form&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;get.form [name="name"]&gt;
+ * <dt>Dscr:<dd>
  *	Get value of NAME, in the FORM context.  
  *	With no name, returns entire form. 
+ *  </dl>
  */
-
-/** Handler class for &lt;get-form&gt tag */
 public class Get_form extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<get.form [name=\"name\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Get value of NAME, in the FORM context.  \n" +
+    "With no name, returns entire form. \n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
 

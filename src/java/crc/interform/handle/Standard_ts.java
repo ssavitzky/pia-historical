@@ -20,7 +20,7 @@ import java.util.Enumeration;
  *	actors that normally used <em>inside</em> the PIA. */
 public class Standard_ts extends StandAlone_ts {
 
-  static String emptyActors = "actor-dscr agent-criteria agent-install"
+  static String emptyActors = "agent-criteria agent-install"
   + " agent-home agent-list agent-options agent-running agent-remove"
   + " agent-set-criterion pia-exit get.agent get.form get.pia get.trans";
 

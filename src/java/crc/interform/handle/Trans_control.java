@@ -12,14 +12,25 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<trans-control>...</trans-control>
- * Dscr:
- *	Add CONTENT as a control to the current response transaction.
- */
 
-/** Handler class for &lt;trans-control&gt tag */
+/** Handler class for &lt;trans-control&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;trans-control&gt;...&lt;/trans-control&gt;
+ * <dt>Dscr:<dd>
+ *	Add CONTENT as a control to the current response transaction.
+ *  </dl>
+ */
 public class Trans_control extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<trans-control>...</trans-control>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Add CONTENT as a control to the current response transaction.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     Run env = Run.environment(ii);

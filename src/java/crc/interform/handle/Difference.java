@@ -13,14 +13,25 @@ import crc.sgml.SGML;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<difference>n1 n2 ... </difference>
- * Dscr:
- *	Return difference of numbers in CONTENT
- */
 
-/** Handler class for &lt;difference&gt tag */
+/** Handler class for &lt;difference&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;difference&gt;n1 n2 ... &lt;/difference&gt;
+ * <dt>Dscr:<dd>
+ *	Return difference of numbers in CONTENT
+ *  </dl>
+ */
 public class Difference extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<difference>n1 n2 ... </difference>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Return difference of numbers in CONTENT\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens list = Util.listItems(it);
     double result = Util.numValue((SGML)list.shift());

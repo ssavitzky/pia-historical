@@ -12,14 +12,25 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<if><test>condition</test><then>...</then><else>...</else></if>
- * Dscr:
- *	If TEST non-null, expand THEN, else ELSE.
- */
 
-/** Handler class for &lt;if&gt tag */
+/** Handler class for &lt;if&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;if&gt;&lt;test&gt;condition&lt;/test&gt;&lt;then&gt;...&lt;/then&gt;&lt;else&gt;...&lt;/else&gt;&lt;/if&gt;
+ * <dt>Dscr:<dd>
+ *	If TEST non-null, expand THEN, else ELSE.
+ *  </dl>
+ */
 public class If extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<if><test>condition</test><then>...</then><else>...</else></if>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "If TEST non-null, expand THEN, else ELSE.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens from = it.content();
     if (from == null) {

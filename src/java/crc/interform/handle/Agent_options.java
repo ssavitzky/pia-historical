@@ -15,14 +15,25 @@ import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<agent-options [name="agent-name"]>
- * Dscr:
- *	Returns list of option names for agent NAME.
- */
 
-/** Handler class for &lt;agent-options&gt tag */
+/** Handler class for &lt;agent-options&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-options [name="agent-name"]&gt;
+ * <dt>Dscr:<dd>
+ *	Returns list of option names for agent NAME.
+ *  </dl>
+ */
 public class Agent_options extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-options [name=\"agent-name\"]>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Returns list of option names for agent NAME.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "agent", Util.getString(it, "name", null));
     if (ii.missing(ia, "name or agent attribute", name)) return;

@@ -12,15 +12,27 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<agent-install name=ident [type=ident]>...</agent-install>
- * Dscr:
+
+/** Handler class for &lt;agent-install&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-install name=ident [type=ident]&gt;...&lt;/agent-install&gt;
+ * <dt>Dscr:<dd>
  *	Install an agent with given NAME and TYPE.  CONTENT is options form.
  *	Returns the agent's name.
+ *  </dl>
  */
-
-/** Handler class for &lt;agent-install&gt tag */
 public class Agent_install extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-install name=ident [type=ident]>...</agent-install>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Install an agent with given NAME and TYPE.  CONTENT is options form.\n" +
+    "Returns the agent's name.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;

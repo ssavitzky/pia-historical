@@ -9,14 +9,25 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<user-message>content</user-message>
- * Dscr:
- *	Display CONTENT as a message to the user.
- */
 
-/** Handler class for &lt;user-message&gt tag */
+/** Handler class for &lt;user-message&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;user-message&gt;content&lt;/user-message&gt;
+ * <dt>Dscr:<dd>
+ *	Display CONTENT as a message to the user.
+ *  </dl>
+ */
 public class User_message extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<user-message>content</user-message>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Display CONTENT as a message to the user.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     ii.message(it.contentString());
     ii.deleteIt();

@@ -1,4 +1,4 @@
-////// Actor_attrs.java:  Handler for <actor-attrs>
+////// Actor_syntax.java:  Handler for <actor-syntax>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -9,25 +9,24 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
 import crc.sgml.SGML;
-import crc.sgml.Token;
 
 
-/** Handler class for &lt;actor-dscr&gt tag. 
+/** Handler class for &lt;actor-syntax&gt tag. 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;actor-attrs name="name"&gt;
+ *	&lt;actor-syntax name="name"&gt;
  * <dt>Dscr:<dd>
- *	get an actor's attributes in a format suitable for documentation.
+ *	get an actor's SYNTAX attribute in documentation format.
  *  </dl>
  */
-public class Actor_attrs extends crc.interform.Handler {
+public class Actor_syntax extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<actor-attrs name=\"name\">\n" +
+    "<actor-syntax name=\"name\">\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "get an actor's attributes in a format suitable for documentation.\n" +
+    "get an actor's SYNTAX attribute in documentation format.\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -36,6 +35,8 @@ public class Actor_attrs extends crc.interform.Handler {
     
     Actor actor = ii.tagset().forName(name);
 
-    ii.replaceIt(Util.attrsResult(it, actor));
+    ii.replaceIt((actor == null)? null : actor.syntax());
   }
 }
+
+

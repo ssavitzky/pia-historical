@@ -14,16 +14,31 @@ import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
-/* Syntax:
- *	<agent-set-criteria name="agent-name">query_string</agent-set-criteria>
- * Dscr:
- *	Sets CONTENT (query string or dl) as criteria for agent NAME.
- * Note:
- *	this never worked, so perhaps we should delete it.
- */
 
-/** Handler class for &lt;agent-set-criteria&gt tag */
+/** Handler class for &lt;agent-set-criteria&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;agent-set-criteria name="agent-name"&gt;query_string&lt;/agent-set-criteria&gt;
+ * <dt>Dscr:<dd>
+ *	Sets CONTENT (query string or dl) as criteria for agent NAME.
+ * <dt>Note:<dd>
+ *	this never worked, so perhaps we should delete it.
+ *  </dl>
+ */
 public class Agent_set_criteria extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<agent-set-criteria name=\"agent-name\">query_string</agent-set-criteria>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Sets CONTENT (query string or dl) as criteria for agent NAME.\n" +
+"";
+  public String note() { return noteStr; }
+  static String noteStr=
+    "this never worked, so perhaps we should delete it.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
 
     ii.unimplemented(ia);	// === never worked -- delete? ===

@@ -12,14 +12,25 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<repeat list="..." [entity="name"]>...</repeat>
- * Dscr:
- *	Repeat CONTENT with ENTITY (default &amp;li; in LIST of words.
- */
 
-/** Handler class for &lt;repeat&gt tag */
+/** Handler class for &lt;repeat&gt tag 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;repeat list="..." [entity="name"]&gt;...&lt;/repeat&gt;
+ * <dt>Dscr:<dd>
+ *	Repeat CONTENT with ENTITY (default &amp;amp;li; in LIST of words.
+ *  </dl>
+ */
 public class Repeat extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<repeat list=\"...\" [entity=\"name\"]>...</repeat>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Repeat CONTENT with ENTITY (default &amp;li; in LIST of words.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens list = Util.listItems(it.attr("list"));
     String entity = Util.getString(it, "entity", "li");

@@ -13,14 +13,25 @@ import crc.sgml.SGML;
 import crc.sgml.Element;
 import crc.sgml.Tokens;
 
-/* Syntax:
- *	<... foreach list="list" [entity=ident]>element</>
- * Dscr:
- *	Repeat ELEMENT for each ENTITY (default &amp;li;) in LIST of words.
- */
 
-/** Handler class for &lt;... foreach list=...&gt */
+/** Handler class for &lt;... foreach list=...&gt 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;... foreach list="list" [entity=ident]&gt;element&lt;/&gt;
+ * <dt>Dscr:<dd>
+ *	Repeat ELEMENT for each ENTITY (default &amp;amp;li;) in LIST of words.
+ *  </dl>
+ */
 public class Foreach extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<... foreach list=\"list\" [entity=ident]>element</>\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "Repeat ELEMENT for each ENTITY (default &amp;li;) in LIST of words.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens list = Util.listItems(it.attr("list"));
     String entity = Util.getString(it, "entity", "li");

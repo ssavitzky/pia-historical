@@ -7,47 +7,35 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
+import crc.interform.Util;
 import crc.sgml.SGML;
 
-/* Syntax:
- *	<actor-dscr name="name">
- * Dscr:
+
+/** Handler class for &lt;actor-dscr&gt tag. 
+ * <dl>
+ * <dt>Syntax:<dd>
+ *	&lt;actor-dscr name="name"&gt;
+ * <dt>Dscr:<dd>
  *	get an actor's DSCR attribute in documentation format.
+ *  </dl>
  */
-
-/** Handler class for &lt;actor-dscr&gt tag. */
 public class Actor_dscr extends crc.interform.Handler {
+  public String syntax() { return syntaxStr; }
+  static String syntaxStr=
+    "<actor-dscr name=\"name\">\n" +
+"";
+  public String dscr() { return dscrStr; }
+  static String dscrStr=
+    "get an actor's DSCR attribute in documentation format.\n" +
+"";
+ 
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.unimplemented(ia);
+    String name = Util.getString(it, "name", null);
+    if (ii.missing(ia, "name", name)) return;
+    
+    Actor actor = ii.tagset().forName(name);
+    ii.replaceIt((actor == null)? null : actor.dscr());
   }
 }
-
-/* ====================================================================
-### === very kludgy -- should just use attributes ===
-### <actor-dscr name="name">
-define_actor('actor-dscr', 'content' => 'name', 
-	     'dscr' => "get an actor's DSCR attribute");
-
-sub actor_dscr_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $name = $it->attr('name');
-    $name = $it->content_string unless defined $name;
-    my $link = $it->attr('link');
-
-    my $a = $ii->tagset->actors->{$name};
-    if (!defined $a) {
-	$ii->replace_it('');
-	return;
-    }
-
-    my $dscr = $a->attr('dscr');
-    $dscr = '' unless defined $dscr;
-    $ii->replace_it($dscr);
-}
-
-
-*/
 
 
