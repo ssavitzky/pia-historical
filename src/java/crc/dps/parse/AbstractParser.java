@@ -15,6 +15,7 @@ import java.io.IOException;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.Attribute;
+import crc.dom.AttributeList;
 
 import crc.dps.Tagset;
 import crc.dps.Parser;
@@ -25,10 +26,6 @@ import crc.dps.EntityTable;
 
 import crc.dps.aux.*;
 import crc.dps.active.*;
-
-import crc.dps.aux.CursorStack;
-
-import crc.dom.AttributeList;
 
 /**
  * An abstract implementation of the Parser interface.  <p>
@@ -120,7 +117,9 @@ public abstract class AbstractParser extends CursorStack implements Parser
     for (i = '0'; i <= '9'; ++i) { isIdent.set(i); isURL.set(i); }
     isIdent.set('-'); isURL.set('-');
     isIdent.set('.'); isURL.set('.');
-    String url = ":/?+~%&;";
+    isIdent.set('_'); isURL.set('_');
+    isIdent.set(':'); isURL.set(':');
+    String url = "/?+~%&;";
     for (i = 0; i < url.length(); ++i) isURL.set(url.charAt(i));
     String s = "<>\"'";
     for (i = 0; i < s.length(); ++i) notAttr.set(s.charAt(i));
@@ -417,31 +416,14 @@ public abstract class AbstractParser extends CursorStack implements Parser
   protected ActiveElement createActiveElement(String tagname,
 					      AttributeList attributes,
 					      boolean hasEmptyDelim) {
-    ActiveElement e = (tagset == null)
-      ? new ParseTreeElement(tagname, attributes)
-      : tagset.createActiveElement(tagname, attributes);
-    if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
-    e.setAction(e.getSyntax().getActionForNode(e));
-    e.setIsEmptyElement(e.getSyntax().isEmptyElement(e));
-    return e;
-  }
-
-  /** Creates an active element with no attributes. */
-  protected ActiveElement createActiveElement(String tagname) {
-    ActiveElement e = (tagset == null)
-      ? new ParseTreeElement(tagname, null)
-      : tagset.createActiveElement(tagname, null);
-    return e;
-  }
-
-  /** Fixes up an active element that was created before its attributes
-   *	were completely parsed. */
-  protected ActiveElement correctActiveElement(ActiveElement e,
-					       boolean hasEmptyDelim) {
-    if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
-    e.setAction(e.getSyntax().getActionForNode(e));
-    e.setIsEmptyElement(hasEmptyDelim || e.getSyntax().isEmptyElement(e));
-    return e;
+    if (tagset == null) {
+      ActiveElement e = new ParseTreeElement(tagname, attributes);
+      if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
+      e.setIsEmptyElement(e.getSyntax().isEmptyElement(e));
+      return e;
+    } else {
+      return tagset.createActiveElement(tagname, attributes, hasEmptyDelim);
+    }
   }
 
   /** Creates an ActiveNode of arbitrary type with (optional) data.
@@ -457,7 +439,6 @@ public abstract class AbstractParser extends CursorStack implements Parser
     ActiveNode n = (tagset == null)
       ? Create.createActiveNode(nodeType, name, data)
       : tagset.createActiveNode(nodeType, name, data);
-    n.setAction(n.getSyntax().getActionForNode(n));
     return n;
   }
 

@@ -5,6 +5,7 @@
 package crc.dps.parse;
 
 import crc.dom.NodeList;
+import crc.dom.AttributeList;
 
 import crc.dps.NodeType;
 import crc.dps.Parser;
@@ -170,7 +171,11 @@ public class BasicParser extends AbstractParser {
       buf.append(ident);
       //debug(ident);
 
-      ActiveElement it = createActiveElement(ident);
+      // === have to create the element at the end.
+      // === may want to get the handler at this point.
+      ActiveAttrList attrs = new ParseTreeAttrs();
+      String tag = ident;
+
       boolean hasEmptyDelim = false;
       String a; StringBuffer v;
 
@@ -181,10 +186,10 @@ public class BasicParser extends AbstractParser {
 	// need to be appending the identifier in case we lose ===
 	eatSpaces();	
 	if (eatIdent()) {
-	  a = ident.toLowerCase();
+	  a = ident.toLowerCase(); // shouldn't lowercase attr names! ===
 	  buf.append(ident);
 	  //debug(" "+a);
-	  it.addAttribute(a, getValue());
+	  attrs.setAttributeValue(a, getValue());
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  hasEmptyDelim = true;
@@ -197,7 +202,7 @@ public class BasicParser extends AbstractParser {
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
-      next = correctActiveElement(it, hasEmptyDelim);
+      next = createActiveElement(tag, attrs, hasEmptyDelim);
       if (last >= 0) last = 0;
     } else if (last == '/') {	// </...	end tag
       // debug("'/'");
