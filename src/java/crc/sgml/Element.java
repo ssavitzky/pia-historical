@@ -156,6 +156,8 @@ public class Element extends Token implements Attrs {
  */
 public SGML attr(Index name)
   {
+    return super.attr( name );
+    /*
     if(name.isExpression()){
       return attrExpression(name);
     }
@@ -163,6 +165,7 @@ public SGML attr(Index name)
       return content.attr(name);
     }
     return attr(name.string());
+    */
   }
   
 //associate keyword with action
@@ -170,6 +173,8 @@ public SGML attr(Index name)
  */
   SGML attrExpression(Index expression)
   {
+    /*
+
     //look for keywords,tag matches,etc.
     Enumeration keywords=expression.expression().elements();
     int[] indices;  // integer pointers to items that match expression
@@ -199,7 +204,8 @@ public SGML attr(Index name)
       
     }
     return result;
-    
+    */
+    return null;
   }
   
 
