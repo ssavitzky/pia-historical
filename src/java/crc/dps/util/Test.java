@@ -74,6 +74,7 @@ public class Test {
 
     case NodeType.ATTRIBUTE: 
       crc.dom.Attribute attr = (crc.dom.Attribute)aNode;
+      if (! attr.getSpecified()) return true;
       return orValues(attr.getValue());
 
     case NodeType.NODELIST: 
@@ -89,6 +90,7 @@ public class Test {
    *	its elements are true.
    */
   public static boolean andValues(NodeList aNodeList) {
+    if (aNodeList == null) return true;
     NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       if (! trueValue(node)) return false;
@@ -101,6 +103,7 @@ public class Test {
    *	no true elements.
    */
   public static boolean orValues(NodeList aNodeList) {
+    if (aNodeList == null) return false;
     NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       if (trueValue(node)) return true;
