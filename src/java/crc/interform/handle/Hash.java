@@ -39,4 +39,20 @@ public class Hash extends crc.interform.Handler {
          
     ii.replaceIt(crc.util.Utilities.encodeBase64(hash));
   }
+
+  /** Legacy action.  */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    byte hash[];
+    
+    try{
+      MessageDigest sha = MessageDigest.getInstance("SHA-1");
+      hash = sha.digest(cstring.getBytes());
+    } catch (Exception e) {
+      hash = new byte[0];
+    }
+    return putText(out, crc.util.Utilities.encodeBase64(hash));
+  }
+
 }

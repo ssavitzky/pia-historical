@@ -13,6 +13,9 @@ import crc.sgml.SGML;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
+import crc.dps.aux.MathUtil;
+import java.util.Enumeration;
+import crc.ds.Association;
 
 /** Handler class for &lt;difference&gt tag 
  *  <p> See <a href="../../InterForm/tag_man.html#difference">Manual
@@ -38,6 +41,26 @@ public class Difference extends crc.interform.Handler {
       result -= Util.numValue((SGML)list.shift());
     }    
     ii.replaceIt(Util.numberToString(result,Util.getInt(it,"digits",-1)));
+  }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double result = 0;
+    Association a;
+    if (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      result = a.doubleValue();
+    }      
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      result -= a.doubleValue();
+    }
+    return putText(out,
+		   Util.numberToString(result,
+				       MathUtil.getInt(atts, "digits", -1)));
   }
 }
 

@@ -393,4 +393,11 @@ public class Get extends crc.interform.Handler {
      return context;
     }
 
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    // === need to handle legacy attributes. ===
+    return buggyLegacyAction(aContext, tag, atts);
+  }
 }

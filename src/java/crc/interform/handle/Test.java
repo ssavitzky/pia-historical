@@ -84,4 +84,12 @@ public class Test extends crc.interform.Handler {
       ii.replaceIt(it.hasAttr("iffalse")? it.attr("iffalse") : null);
     }
   }
+
+  /** Legacy action.  Should never get here. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return bogusLegacyAction(aContext, tag);
+  }
+
 }

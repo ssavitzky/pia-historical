@@ -42,4 +42,13 @@ public class Add_markup extends crc.interform.Handler {
     }
     ii.replaceIt(result);
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.aux.TextUtil.addMarkup(cstring, out);
+    return true;
+  }
+
 }

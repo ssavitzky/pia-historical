@@ -12,6 +12,9 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 
+import crc.dps.aux.MathUtil;
+import java.util.Enumeration;
+import crc.ds.Association;
 
 /** Handler class for &lt;sum&gt tag 
  *  <p> See <a href="../../InterForm/tag_man.html#sum">Manual
@@ -39,5 +42,22 @@ public class Sum extends crc.interform.Handler {
 // Need a default for digits
     ii.replaceIt(Util.numberToString(result,Util.getInt(it,"digits",-1)));
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double result = 0;
+    Association a;
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      result += a.doubleValue();
+    }
+    return putText(out,
+		   Util.numberToString(result,
+				       MathUtil.getInt(atts, "digits", -1)));
+  }
+
 }
 

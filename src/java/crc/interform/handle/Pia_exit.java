@@ -37,5 +37,14 @@ public class Pia_exit extends crc.interform.Handler {
     ii.message(it.contentString());
     System.exit(Util.getInt(it, "status", 1));
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    aContext.message(0, cstring, 0, true);
+    System.exit((int)crc.dps.aux.MathUtil.getLong(atts, "status", 1));
+    return true;
+  }
 }
 

@@ -28,4 +28,12 @@ public class User_message extends crc.interform.Handler {
     ii.message(it.contentString());
     ii.deleteIt();
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    aContext.message(0, cstring, 0, true);
+    return true;
+  }
 }

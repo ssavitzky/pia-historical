@@ -39,4 +39,18 @@ public class Agent_running extends crc.interform.Handler {
       ii.replaceIt(name);
     }
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running");
+
+    String name = atts.getAttributeString("name");
+    if (name == null)
+      return legacyError(aContext, tag, "NAME attribute missing");
+    if (env.getAgent(name) != null) putText(out, name);
+    return true;
+  }
 }

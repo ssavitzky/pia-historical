@@ -49,4 +49,30 @@ public class Agent_list extends crc.interform.Handler {
 
     ii.replaceIt(list.toString());
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running");
+
+    String type = atts.getAttributeString("type");
+    boolean subs = atts.hasTrueAttribute("subs");
+
+    Resolver resolver = env.getResolver();
+
+    Tokens list = new Tokens(" "); // === bogus but we don't return it, so OK.
+
+    Enumeration names = resolver.agentNames();
+    while (names.hasMoreElements()) {
+      String name = names.nextElement().toString();
+      Agent agent = resolver.agent(name);
+      if (subs && name.equals(agent.type())) continue;
+      if (type == null || type.equals(agent.type())) list.push(name);
+    }
+
+    // === should really return list of agent names as a list ===
+    return putText(out, list.toString());
+  }
 }

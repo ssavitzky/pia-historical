@@ -37,4 +37,19 @@ public class Agent_remove extends crc.interform.Handler {
     Run.getResolver(ii).unRegisterAgent( name );
     ii.replaceIt(name);
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running");
+
+    String name = atts.getAttributeString("name");
+    if (name == null)
+      return legacyError(aContext, tag, "NAME attribute missing");
+    crc.pia.Resolver resolver = env.getResolver();
+    resolver.unRegisterAgent(name);
+    return putText(out, name);
+  }
 }

@@ -50,4 +50,27 @@ public class Agent_home extends crc.interform.Handler {
       ii.replaceIt(home);
     }
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running.");
+
+    String name = env.getAgentName(atts.getAttributeString("agent"));
+    String type = env.getAgentType(name);
+    boolean link = atts.hasTrueAttribute("link");
+
+    String home = (type.equals(name))? name : type + "/" + name;
+    if (link) {
+      crc.dps.active.ActiveElement t = newElement("a");
+      t.setAttributeValue("href", "/" + home + "/home.if");
+      t.addChild(new crc.dps.active.ParseTreeText(home));
+      out.putNode(t);
+    } else {
+      return putText(out, home);
+    }
+    return true;
+  }
 }

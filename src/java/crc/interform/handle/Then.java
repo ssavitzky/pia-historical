@@ -29,4 +29,11 @@ public class Then extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
   }
+
+  /** Legacy action.  Should never get here. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return bogusLegacyAction(aContext, tag);
+  }
 }

@@ -59,17 +59,10 @@ public class If extends crc.interform.Handler {
     ii.deleteIt();
   }
 
-  /************************************************************************
-  ** Legacy action in the new DPS:
-  ************************************************************************/
-
-  /** Should never be called: this tag has a non-legacy equivalent. */
+  /** Legacy action.  Should never get here. */
   public boolean action(crc.dps.Context aContext, crc.dps.Output out,
 			String tag, crc.dps.active.ActiveAttrList atts,
 			crc.dom.NodeList content, String cstring) {
-    aContext.message(-1, "Legacy action for <" + tag
-		     + "> should have been overridden", 0, true);
-    return false;
+    return bogusLegacyAction(aContext, tag);
   }
-
 }

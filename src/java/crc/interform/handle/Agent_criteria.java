@@ -30,10 +30,24 @@ public class Agent_criteria extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String aname= Util.getString(it, "agent", Run.getAgentName(ii));
+    String aname = Util.getString(it, "agent", Run.getAgentName(ii));
     Run env = Run.environment(ii);
     crc.pia.Agent a = env.getAgent(aname);
 
     ii.replaceIt(new Text(a.criteria().toString()));
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+
+    String aname = atts.getAttributeString("agent");
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) 
+      return legacyError(aContext, tag, "PIA not running: no agent");
+    crc.pia.Agent a = env.getAgent(aname);
+    return putText(out, a.criteria().toString());
+  }
+
 }

@@ -353,5 +353,12 @@ public class Set extends crc.interform.Handler {
      }
   }
 
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    // === need to handle legacy attributes. ===
+    return buggyLegacyAction(aContext, tag, atts);
+  }
 }
   

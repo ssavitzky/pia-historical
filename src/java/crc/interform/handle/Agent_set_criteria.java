@@ -49,4 +49,21 @@ public class Agent_set_criteria extends crc.interform.Handler {
 
     ii.deleteIt();
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running.");
+
+    String name = env.getAgentName(atts.getAttributeString("agent"));
+    crc.pia.Agent a = env.getAgent(name);
+
+    List l = Util.split(cstring); // should really be contentText...
+    for (int i = 0; i < l.nItems(); ++i) {
+      a.matchCriterion(l.at(i).toString());
+    }
+    return true;
+  }
 }
