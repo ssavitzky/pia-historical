@@ -228,6 +228,19 @@ public class Interp extends State {
     return null;
   }
 
+  /** Get the binding table that includes this path, if any 
+       start local and move up stack frame.  Return null 
+       if none includes name*/
+  public final Table getLocalBindings(Index path) {
+    
+    // need first index to find correct table
+     String    name =  path.nextToken();
+    if(name ==  null) return null;
+    // index will do full lookup    
+     path.pushBackToken(name);
+    return getLocalBindings(name);
+  }
+
   /** Get the current local binding for a variable, if any */
   public final SGML getLocalBinding(String name) {
     return (variables != null)? (SGML)variables.at(name) : null;
@@ -240,13 +253,16 @@ public class Interp extends State {
    */
   public final SGML getvar (String name) {
     Index names =  new  Index(name);
-    name = names.string();
-    Table bindings = getLocalBindings(name);
+
+    Table bindings = getLocalBindings(names);
     if(bindings == null){
      return null;
     }
+    try{ return  names.lookup(bindings);
+    }catch(Exception e){
+    }
+    return null;
     
-    return  names.lookup(bindings);
   }
 
   /** Get the value of a named variable (entity) with path lookup.
@@ -258,34 +274,45 @@ public class Interp extends State {
    */
   public final SGML getEntity(String name) {
     Index names =  new  Index(name);
-    name = names.string();
-    Table bindings = getLocalBindings(name);
+    
+    Table bindings = getLocalBindings(names);
     if(bindings == null){
       bindings = entities;
     }
-    return  names.lookup(bindings);
+    try{
+       return  names.lookup(bindings);
+    }catch(Exception e){
+    }
+    return null;
+    
   }
 
 
   /** Get the value of a named global variable (entity).
     */
   public final SGML getGlobal(String name) {
-    return  Index.get(name,entities);
+    try{
+      return  Index.get(name,entities);
+    }
+    catch ( Exception e){
+    }
+    return null;
+    
   }
   
 
 /** Set the value of a named variable (entity).
    *	If no local binding is found, a new one is created in the global 
-   *	stack frame.
+   *	stack frame.if
    */
   public final void setvar(String name, SGML value) {
     Index names= new Index(name);
-    
-    Table bindings = getLocalBindings(names.string());
+    Table bindings = getLocalBindings(names);
     if(bindings == null){
       bindings=entities;
     }
-    names.lookupSet(bindings,value);
+    Util.setInTable( bindings, names, value);
+    
     
    }
 
@@ -294,17 +321,17 @@ public class Interp extends State {
   public final void defvar(String name, SGML value) {
     if (variables == null) variables = new Table();
     if (value == null) value = Token.empty;
-    Index.set(variables,name,value);
+    Util.setInTable( variables, new Index(name), value);
     
   }
 
   /** Set the value of a named global variable (entity).
    */
   public final void setGlobal(String name, SGML value) {
-    Index.set(entities,name,value);
-    
+          Util.setInTable( entities, new Index(name), value);
   }
   
+    
 
   /** Get the value of a named attribute.  Looks up the context tree until
    *	it finds one, or if tag is specified, an element with that tag.

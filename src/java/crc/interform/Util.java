@@ -19,6 +19,7 @@ import crc.sgml.Element;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -376,5 +377,55 @@ public class Util extends crc.sgml.Util {
     }
     return base + file;
   }
+
+  /************************************************************************
+  **  SGML assigning utilities
+  ************************************************************************/
+
+  /**  sets value in this table
+      creates path   if necessary*/
+  static public void setInTable(Table table, Index i, SGML value)
+  {
+    String s=i.nextToken();
+    if (i.size()<=0){
+      table.at(s,value);
+    }
+    else{
+      SGML tokens = (SGML)table.at(s);
+      if( tokens== null) {
+         tokens = new Element(s);
+         table.at(s, tokens);
+      }
+      // create a path if none exists
+     try{    tokens = i.path( tokens);
+     setSGML( tokens, value);
+     }
+     catch (Exception e){
+//       Pia.debug( this," set failed");
+     }
+     
+    }
+  }
+  
+
+  /** sets the value of a token */
+ static public void setSGML(SGML token, SGML value)
+  {
+    if (token instanceof Tokens){
+      Tokens t=(Tokens) token;
+      
+      for(int i=0;i<t.nItems();i++){
+	setSGML(t.itemAt(i), value);
+      }
+    }   else{
+         // remove any items
+         Tokens t= (Tokens)token.content();
+          t.clear();
+	 token.append(value);
+	 
+    }
+ }
+
+
 
 }
