@@ -657,7 +657,9 @@ public class GenericAgent extends AttrBase implements Agent {
 
     String msg ="Redirecting " + oldUrl.toExternalForm()
       + " to:" + redirUrlString; 
-    System.err.println(msg);
+
+    Pia.debug(this, msg);
+
     Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     req.fromMachine(), ct, false);
@@ -724,7 +726,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
 
   /**
-   * Find an interform starting with a string pathname.
+   * Find a filename relative to this Agent.
    */
   public String findInterform( String path, boolean noDefault ){
     if ( path == null ) return null;
@@ -733,44 +735,40 @@ public class GenericAgent extends AttrBase implements Agent {
 
     String myname = name();
     String mytype = type();
-    
-    Pia.debug(this, "Looking for -->"+ path);
 
+    boolean hadName = false;	// these might be useful someday.
+    boolean hadType = false;
+    
     /* Remove a leading /type or /name or /type/name from the path. */
 
-    if (path.startsWith("/" + mytype + "/")) 
-      path = path.substring(mytype.length() + 2);
+    if (path.startsWith("/" + mytype + "/")) {
+      path = path.substring(mytype.length() + 1);
+      hadType = true;
+    }
     
-    if (path.startsWith("/" + myname + "/")) 
-      path = path.substring(myname.length() + 2);
+    if (path.startsWith("/" + myname + "/")) {
+      path = path.substring(myname.length() + 1);
+      hadName = true;
+    }
     
+    if( path.startsWith("/") )	path = path.substring(1);
+    Pia.debug(this, "Looking for -->"+ path);
 
     List if_path = dirAttribute( "if_path" );
     if ( if_path == null ) {
       if_path = new List();
 
-      /*
+      /**
        * If the path isn't already defined, set it up now.
        *
-       * === Should also try .../type/name/...
-       *
        *  the path puts any  defined if_root first 
-       *   (if_root/myname, if_root/mytype, if_root),
+       *   (if_root/myname, if_root/mytype/myname if_root/mytype, if_root),
+
+       * If the above is not defined, it will try:
+       *    .../name, .../type/name, .../type
+       *    relative to each of (piaUsrAgentsStr, piaAgentsStr)
        *
-       *  piaAgentsStr/agentName/  --> example, /pia/Agents/myHistory/ 
-       *  piaAgentsStr/agentType/  --> example, /pia/Agents/History/
-       *  piaAgentsStr/            --> example, /pia/Agents/    
-       *
-       * If the above is not define
-       * next :
-       *
-       *  piaUsrAgentsStr/agentName/  --> example, ~Joe/pia/Agents/myHistory/ 
-       *  piaUsrAgentsStr/agentType/  --> example, ~Joe/pia/Agents/History/
-       *  piaAgentsStr/agentName/     --> example, /pia/Agents/myHistory/
-       *  piaAgentsStr/agentType/     --> example, /pia/Agents/History/
-       *  piaUsrAgentsStr/            --> example, ~Joe/pia/Agents/
-       *  piaAgentsStr/               --> example, /pia/Agents
-       * 
+       * and finally  (piaUsrAgentsStr, piaAgentsStr)
        */
       String home = Pia.instance().piaAgents();
       if ( !home.endsWith( filesep ) ){ home = home + filesep; }
@@ -840,12 +838,8 @@ public class GenericAgent extends AttrBase implements Agent {
     File f;
     Enumeration e = if_path.elements();
     while( e.hasMoreElements() ){
-      String zpath = (String)e.nextElement();
-      if( path.startsWith("/") )
-	path = path.substring(1);
+      String zpath = e.nextElement().toString();
       String wholepath = zpath + path;
-      Pia.debug(this, "  zpath -->"+ zpath);
-      Pia.debug(this, "  path  -->"+ path);
       Pia.debug(this, "  Trying -->"+ wholepath);
       f = new File( wholepath );
       if( f.exists() ) return wholepath;
@@ -857,7 +851,7 @@ public class GenericAgent extends AttrBase implements Agent {
   /** 
    * Send an error message that includes the agent's name and type.
    */
-  protected void sendErrorResponse( Transaction req, int code, String msg ) {
+  public void sendErrorResponse( Transaction req, int code, String msg ) {
     msg = "Agent=" + name()
       + (! name().equals(type())? " Type=" + type() : "")
       + "<br>\n"
@@ -868,7 +862,7 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Send error message for not found interform file
    */
-  protected void respondNotFound( Transaction req, URL url){
+  public void respondNotFound( Transaction req, URL url){
     String msg = "No InterForm file found for <code>" +
       url.getFile() + "</code>.";
     sendErrorResponse(req, HTTP.NOT_FOUND, msg);
@@ -877,7 +871,7 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Send error message for not found interform file
    */
-  protected void respondNotFound( Transaction req, String path){
+  public void respondNotFound( Transaction req, String path){
     String msg = "File <code>" + path + "<code> not found.";
     sendErrorResponse(req, HTTP.NOT_FOUND, msg);
   }
