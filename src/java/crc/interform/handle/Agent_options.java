@@ -38,7 +38,6 @@ public class Agent_options extends crc.interform.Handler {
 
     Run env = Run.environment(ii);
     crc.pia.Agent a = env.getAgent(name);
-
-    ii.replaceIt(Util.listResult(it, a.attrs()));
+    ii.replaceIt(Util.listResult(it, a.keys()));
   }
 }
