@@ -3,7 +3,7 @@ Subject:  Pending forms
 Hello, 
 This message is to inform you that your electronic signature has been
 requested by one or more forms. For links to the forms that require your
-signature, go to http://forms:8000/Forms/users.if and click on your
+signature, go to http://forms.crc.ricoh.com:8000/Forms/users.if and click on your
 username.
 
 Questions and comments should be mailed to kevin@crc.ricoh.com or
