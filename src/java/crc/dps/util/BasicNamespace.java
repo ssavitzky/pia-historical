@@ -1,4 +1,4 @@
-////// BasicNamespace.java: Node Handler Lookup Table
+////// BasicNamespace.java: Node Lookup Table
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 package crc.dps.aux;
@@ -18,7 +18,7 @@ import crc.ds.List;
 import crc.ds.Table;
 
 /**
- * The basic implementation for a Namespace -- a lookup table for syntax. 
+ * The basic implementation for a Namespace -- a lookup table for Nodes 
  *
  *	This implementation is represented as an Element; the bindings
  *	are kept in its attribute list.  <p>
@@ -53,7 +53,7 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
 
   /** Look up a name and get a (local) binding. */
   public ActiveNode getBinding(String name) {
-    if (caseSensitive) name = cannonizeName(name);
+    if (!caseSensitive) name = cannonizeName(name);
     return (ActiveNode)itemsByName.at(name);
   }
 
@@ -73,7 +73,7 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
 
   /** Add a new local binding or replace an existing one. */
   public ActiveNode setBinding(String name, ActiveNode binding) {
-    if (caseSensitive) name = cannonizeName(name);
+    if (!caseSensitive) name = cannonizeName(name);
     ActiveNode old = getBinding(name);
     if (binding == null) {	// We are removing an old binding
       if (old == null) {	// ... but there wasn't one.  Nothing to do.
