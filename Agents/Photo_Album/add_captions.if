@@ -10,12 +10,12 @@
 <if> <get name=capfile form> <then>
 <set name=capfile>&FORM.capfile;</set>
 <set name=caps><read file=&capfile; process></set>
+  <set name=pdate><get index=caps.photosdate.Text></set>
+  <set name=pdirectory><get index=caps.photosdirectory.Text></set>
  <repeat list=&caps.photos.photo; entity=photo>
  <set name=myindex><get index=photo.photoindex.Text></set>
  <set name=mycap><get index=photo.photocaption></set>
- <set name=pdirectory><get index=photo.photosdirectory.Text></set>
- <set name=pdate><get index=photo.photosdate.Text></set>
-
+ 
 <if> <get name=caption&myindex; form><then>
  <if> <get name=mycap> <else><set name=mycap><photocaption> </photocaption></set>
  <set name=photo insert=-1><get name=mycap></set>
