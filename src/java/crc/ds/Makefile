@@ -4,7 +4,8 @@ FILES = \
 	Features.java \
 	Queue.java \
 	Thing.java \
-	UnaryFunctor.java 
+	UnaryFunctor.java \
+	TernFunc.java
 
 include $(MAKEDIR)/file.make
 
