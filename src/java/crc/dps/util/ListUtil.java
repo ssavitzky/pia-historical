@@ -56,7 +56,10 @@ public class ListUtil {
   }
 
   /** Return an enumeration of Text nodes.  Recursively descends into
-   *	nodes with children, and splits text nodes containing whitespace. */
+   *	nodes with children, and splits text nodes containing whitespace.
+   *	Obtains each whitespace- or markup-separated word in the list
+   *	as a separate Text object.
+   */
   public static Enumeration getTextItems(NodeList nl) {
     NodeEnumerator enum = nl.getEnumerator();
     List results = new List();
@@ -75,6 +78,28 @@ public class ListUtil {
       }
     }
     return results.elements();
+  }
+
+  /** Return the first ``word'' (blank- or markup-separated non-blank text) in
+   *	a Node or its content. */
+  static String getFirstWord(Node n) {
+    if (n.hasChildren()) {
+      Enumeration e = getTextItems(n.getChildren());
+      return e.hasMoreElements()? e.nextElement().toString() : null;
+    } else if (n.getNodeType() == NodeType.TEXT) {
+      Text t = (Text)n;
+      String s = t.toString();
+      if (s == null || s.equals("") || Test.isWhitespace(s)) return null;
+      if (s.indexOf(" ") >= 0 || s.indexOf('\t') >= 0) {
+	Enumeration e = getTextItems(s);
+	return e.hasMoreElements()? e.nextElement().toString() : null;
+      } else {
+	return s;
+      }
+    } else {
+      // === We have to assume that entities are already expanded. === 
+      return null;
+    }
   }
 
   /** Return an enumeration of Strings.  Recursively descends into
@@ -100,7 +125,11 @@ public class ListUtil {
   }
 
   /** Return an enumeration of nodes.  Ignores whitespace and splits
-   *	text nodes containing whitespace. */
+   *	text nodes containing whitespace. 
+   *
+   * <p> This is probably the most useful utility for splitting up the
+   *	 content of a node prior to sorting it. 
+   */
   public static Enumeration getListItems(NodeList nl) {
     NodeEnumerator enum = nl.getEnumerator();
     List results = new List();
