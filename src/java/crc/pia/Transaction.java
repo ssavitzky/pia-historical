@@ -677,7 +677,7 @@ public abstract class Transaction extends AttrBase
       // The following is non-deprecated and supposedly correct, but it hangs.
       //BufferedReader input = new BufferedReader(new InputStreamReader(in));
 
-      firstLine = input.readLine();
+      firstLine = input.readLine(); // the non-deprecated alternative fails.
       if( firstLine == null ){
 	String msg = "First line is null...\n";
 	throw new PiaRuntimeException (this
