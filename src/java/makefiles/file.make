@@ -33,7 +33,8 @@ PIADIR=$(TOPDIR)/../../..
 LIBDIR= $(TOPDIR)/../../../lib/java
 BINDIR=$(TOPDIR)/../../../bin
 
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
+#LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
 #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
