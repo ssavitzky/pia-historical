@@ -29,6 +29,7 @@ TO_TEXT = \
 
 TO_PROXY = \
 	DiscardOutput.java \
+	FilterMarkup.java \
 	FilterText.java \
 	OutputTrace.java \
 	Proxy.java
