@@ -970,29 +970,37 @@ public abstract class Transaction
       long delay = 100;
 
       try{
-        // process incoming data
-        if(!contentObj.processInput()) synchronized (this){
-          //  no more data to process, so wait for resolution
-          if(! resolved) wait();
-        }
-        else  synchronized (this){
-	  // sleep for a while
-          if(! resolved) wait(delay);
-          //	  Thread.currentThread().sleep(delay);
+	// 11/3/98 pg
+	// This is commented out because tapIn currently does
+	// not work correctly.  It reports that it cannot set a
+	// tap because data is already being read.  Data is in
+	// a buffer, but is still actually available to be tapped.
+	// Two more states are needed:  1. READING_BUT_NOT_MODIFIED
+	// (with a snappier name), 2. MODIFIED.  Once this latter state
+	// is reached, it should not be possible to add a tapIn.
+	/*
+	  process incoming data
+	  if(!contentObj.processInput()) synchronized (this){
+	  // no more data to process, so wait for resolution
+	  if(! resolved) wait();
+	  }
+	  else  synchronized (this){
+	   sleep for a while
+	   if(! resolved) wait(delay);
+	   Thread.currentThread().sleep(delay);
+	   }
+	*/
+	synchronized(this) {
+	  if(! resolved) wait();
 	}
       }
       catch(InterruptedException ex){;}
-      
     }
-    
-    
     // resolved, so now satisfy self
     satisfy( resolver);
     
-    
     // cleanup?
     notifyThreadPool();
-    
   }
 
   protected void notifyThreadPool(){
