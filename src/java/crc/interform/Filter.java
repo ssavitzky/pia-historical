@@ -31,6 +31,7 @@ public class Filter {
   static boolean tree = false;
   static boolean debug = false;
   static boolean entities = true;
+  static boolean verbose = false;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -59,7 +60,15 @@ public class Filter {
       System.err.println("Cannot open output file " + outfile);
     }
 
-    if (debug) {
+    if (verbose) {
+      java.util.Properties env = System.getProperties();
+      java.util.Enumeration names = env.propertyNames();
+      while (names.hasMoreElements()) {
+	String name = names.nextElement().toString();
+	System.err.println(name+" = " + env.getProperty(name));
+      }
+    }
+    if (verbose) {
       System.err.println("infile = " + infile );
       System.err.println("outfile= " + outfile);
       System.err.println("propfile= " + propfile);
@@ -91,6 +100,7 @@ public class Filter {
     o.println("        -o file	specify output file");
     o.println("        -p file	specify property file");
     o.println("        -t ts	specify tagset name");
+    o.println("	       -v	verbose");
     o.println("        -d	debug");
   }
 
@@ -116,6 +126,8 @@ public class Filter {
       } else if (args[i].equals("-t")) {
 	if (i == args.length - 1) return false;
 	tsname = args[++i];
+      } else if (args[i].equals("-v")) {
+	verbose = true;
       } else if (args[i].charAt(0) != '-') {
 	if (infile != null) return false;
 	infile = args[i];
