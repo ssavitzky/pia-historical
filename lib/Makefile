@@ -13,4 +13,4 @@ all:: perl
 	@echo "symlinks made"
 
 perl: 
-	test -d perl || ( test -d ../src/perl && ln -s ../src/perl . )
+	-test -d perl || ( test -d ../src/perl && ln -s ../src/perl . )
