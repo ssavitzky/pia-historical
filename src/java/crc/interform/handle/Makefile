@@ -51,6 +51,7 @@ BASIC_ACTORS = \
 ###	but may have an effect on the local system. 
 
 SA_ACTORS = \
+	File.java \
 	Read.java \
 	Read_file.java \
 	Read_href.java \

@@ -20,7 +20,7 @@ import java.util.Enumeration;
  *	actors that are meaningful and useful outside the PIA. */
 public class StandAlone_ts extends Basic_ts {
 
-  static String emptyActors = "read get.env read.file read.href";
+  static String emptyActors = "file read get.env read.file read.href";
   static String parsedActors = "os-command os-command-output set.env" 
   + " write write.file write.href";
 
