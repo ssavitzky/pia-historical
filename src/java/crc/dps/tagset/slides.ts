@@ -66,6 +66,13 @@
 
 <h3>Logos and Buttons</h3>
 
+<define entity=icons>
+  <doc> This is the leading path for graphics.  It should begin and end with
+	a slash if necessary.
+  </doc>
+  <value>/PIA/Doc/Graphics/</value>
+</define>
+
 <define entity=logo>
   <doc> This appears in the upper-left-corner of each slide.  It needs to be
 	almost exactly the same height as the text, because it is used as the
@@ -74,7 +81,7 @@
 	produce stand-alone HTML you'll have to move it into the same
 	directory as your slides. 
   </doc>
-  <value><img src="/PIA/Doc/Graphics/pent16.gif" alt="&nbsp;"></value>
+  <value><img src="&icons;pent16.gif" alt="&nbsp;"></value>
 </define>
 <define entity=toPrev><value>&lt;&lt;</define>
 <define entity=toNext><value>&gt;&gt;</define>
@@ -116,23 +123,23 @@
   <if>&DOC:slidelist;<else><set name=DOC:slidelist> </set></if>
 </hide>
 <table width="100%" cellspacing=0 cellpadding=5 border=0>
-<tr>
-   <td bgcolor="&ulBg;" fgcolor="&ulFg;" width=10
-       ><a name="&slide;">&logo;</a></td>
-   <th align=left bgcolor="&topBg;" fgcolor="&topFg;" width="100%"><if>
+<tr><th bgcolor="&ulBg;" fgcolor="&ulFg;" valign=top align=center
+       ><a name="&slide;">&slide;</a></td>
+    <th align=left bgcolor="&topBg;" fgcolor="&topFg;" width="100%"><if>
         <get name=label>
-	<then><a name="&label;">&nbsp;<get name=caption></a>
-	<else>&nbsp;<get name=caption></if>
-   <th bgcolor="&topBg;" fgcolor="&topFg;" align=right nobreak><if>
-        &prev;<then><a href="#&prev;">&toPrev;</a><else>&noPrev;</if><if>
-	<test zero>&slide;</test>
-              <then>&nbsp;<else><a href="#TOC">&nbsp;&slide;&nbsp;</a></if><if>
-        &next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if></td>
-<tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" height="&hh;" width=10
-         valign=top>&nbsp;</td>
+	<then><a name="&label;">&nbsp;<get name=caption></then>
+	<else>&nbsp;<get name=caption></else></if>
+    <th align=right nobreak bgcolor="&topBg;"><expand>&logo;</expand></th>
+
+<tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" height="&hh;" valign=top>
+        <if>&next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if><br>
+	<a href="#TOC">toc</a><br>
+	<if>&prev;<then><a href="#&prev;">&toPrev;</a><else>&noPrev;</if><br>
+    </td>
+
     <td bgcolor="&mainBg;" fgcolor="&mainFg;" valign=top colspan=2>
 &content;
-<tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" width=10>&nbsp;</td>
+<tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" width=25>&nbsp;</td>
   <td align=left valign=bottom bgcolor="&mainBg;" fgcolor="&mainFg"
       width='100%'><em>&subCaption;</em>
   <td align=right bgcolor=white nobreak><if><!-- bogus if to avoid linebreak -->
