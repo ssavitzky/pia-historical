@@ -17,6 +17,7 @@ FILES = \
 	List.java \
 	Nil.java \
 	Queue.java \
+	Registered.java \
 	Sorter.java \
 	SortTree.java \
 	Table.java \

@@ -10,7 +10,7 @@ import crc.ds.HasFeatures;
 /**
  *  A Criterion performs a matching operation on a named Feature.
  */
-public class Criterion {
+public class Criterion implements java.io.Serializable {
 
   String name;
 

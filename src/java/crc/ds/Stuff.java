@@ -8,7 +8,7 @@ package crc.ds;
  *	make conversion of legacy PERL code as painless as possible.<p>
  *
  *	The names of some of the methods, e.g. push and pop, come from
- *	the original PERL implementation of the PIA.  They have the
+ *	the original PERL implementation of the PIA; they have the
  *	virtue of being short and descriptive.  Access functions are
  *	overloaded (almost all are called <code>at</code>) so as to
  *	avoid polluting the name space; they also follow the PERL
@@ -18,9 +18,26 @@ package crc.ds;
  *
  *	Unlike the normal Java classes, which throw exceptions on
  *	out-of-bounds conditions, Stuff will either do nothing or return a
- *	null value (like PERL).  
+ *	null value (like PERL), as appropriate.  <p>
+ *
+ *	It is expected that some implementations of Stuff will be subclassed
+ *	to have type-specific content.  In this case, it is expected that:
+ *
+ *	<ol>
+ *	    <li> The insertion routines <code>push</code>, 
+ *		 <code>unshift</code>, <code>at(int, Object)</code> and
+ *		 <code>at(String, Object)</code> will perform type
+ *		 checking.
+ *	    <li> Hence, casting the result of a retrieval should never
+ *		 raise an exception.
+ *	    <li> Type-specific operations will be defined.  By convention
+ *		 these are called <code>attr</code> for the keyed operations
+ *		 and <code>itemAt</code> for the indexed ones.  Insertion
+ *	 	 should use the <code>super</code> operations to bypass type
+ *		 checking.
+ *	</ol>
  */
-public interface Stuff extends java.lang.Cloneable {
+public interface Stuff extends java.lang.Cloneable, java.io.Serializable {
   /** The number of indexed items. */
   int nItems();
 

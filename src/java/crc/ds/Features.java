@@ -27,7 +27,7 @@ import java.util.Hashtable;
 import crc.ds.HasFeatures;
 import crc.ds.Criterion;
 
-public class Features {
+public class Features implements java.io.Serializable {
 
   /**
    * Attribute index - feature table
