@@ -42,7 +42,12 @@
    </define>
 </define>
 
+<!-- doesn't work no legacy handle -->
 <define element=agent-restore handler=legacy:agent-restore>
+</define>
+
+<!-- doesn't work: no legacy handle -->
+<define element=agent-save handler=legacy:agent-save>
 </define>
 
 <define element=agent-install handler=legacy:agent-install>
