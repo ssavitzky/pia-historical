@@ -92,6 +92,7 @@ public class Util {
     if (it == null) return list;
 
     Tokens from = it.content();
+    if (from == null) return list;
 
     for (int i = 0; i < from.nItems(); ++i) {
       SGML s = from.itemAt(i);
