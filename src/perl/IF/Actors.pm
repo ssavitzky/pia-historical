@@ -334,12 +334,22 @@ sub get_handle {
         if ($it->attr('feature')) {
 	    $result = ($trans->get_feature($name)) if defined $trans;
 	} elsif ($it->attr('headers')) {
+           if($name){
+	    if ($it->attr('request')) {
+		$result = $trans->is_request? $trans->request->header($name)
+		    : $trans->response_to->request->header($name);
+	    } else {
+	        $result = $trans->message->header($name);
+	    }
+           } else {
+
 	    if ($it->attr('request')) {
 		$result = $trans->is_request? $trans->request->headers_as_string
 		    : $trans->response_to->request->headers_as_string;
 	    } else {
 	        $result = $trans->message->headers_as_string;
 	    }
+           }
 	} else {
 	    $result = ($trans->attr($name)) if defined $trans;
 	}
