@@ -1,0 +1,25 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> discussion list initialization</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<h1>Initialize discussion agent</h1>
+<!-- Load and initialize the actors specific to this agent -->
+<read file=tagset.inc interform process>
+
+<set name=topics agent><ul> </ul></set>
+<set name=files local><read file=topics directory></set>
+ <repeat list=&files;> <load-topic topic=&li;> </repeat>
+
+ <load-data data=description> 
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Fri Jul 10 13:59:58 1998
+<!-- hhmts end -->
+<p>
+<address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>
