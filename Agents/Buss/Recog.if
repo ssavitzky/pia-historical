@@ -9,6 +9,8 @@
 <set name=cardcompany>&FORM.cardcompany;</set>
 <set name=cardurl>&FORM.cardurl;</set>
 <set name=cardemail>&FORM.cardemail;</set>
+<set name=cardphonearea>&FORM.cardphonearea;</set>
+<set name=cardphoneexch>&FORM.cardphoneexch;</set>
 <set name=cardphone>&FORM.cardphone;</set>
 <set name=notrecog>&FORM.cannotrecog;</set>
 <set name=imagefn>&FORM.imagefn;</set>
@@ -29,11 +31,9 @@
    company = &cardcompany;<br>
    url = &cardurl;<br>
    email = &cardemail;<br>
+   phoneareacode = &cardphonearea;<br>
+   phoneexch= &cardphoneexch;<br>
    phone = &cardphone;<br>
-   <hr>
-   Can not recognize the following...<br>
-   &notrecog;
-   <hr>
    <!--set agent name=visiturl>&cardurl;</set-->
    <!--read href="http://&piaHOST:&piaPORT/Buss/visit.if" process-->
 <set name=imgusrname>&FORM.imgusrname;</set>
@@ -43,7 +43,7 @@
 
 
    <read.href method=post href="http://&piaHOST:&piaPORT/Buss/Fillcard.if" 
-      query="firstname=&cardfname;?lastname=&cardlname;?company=&cardcompany;?url=&cardurl;?email=&cardemail;?imagefn=&imagefn;?imgusrname=&imgusrname;?imgyear=&imgyear;?imgmonth=&imgmonth;?imgfn=&imgfn;" process>
+      query="firstname=&cardfname;?lastname=&cardlname;?company=&cardcompany;?url=&cardurl;?email=&cardemail;?PhoneArea=&cardphonearea;?PhoneExch=&cardphoneexch;?Phone=&cardphone;?notrecog=&notrecog;?imagefn=&imagefn;?imgusrname=&imgusrname;?imgyear=&imgyear;?imgmonth=&imgmonth;?imgfn=&imgfn;" process>
 </html>
 </write>
 
