@@ -35,8 +35,13 @@ public class T_OtherElement{
   private static void test1(String dummy){
     Report.debug("\nTesting Basic Comment, PI, Text, and Document...");
 
+    Report.debug("\nOoo Ooo. What is that smell...  Can you smell that smell.");
+    Text st = new BasicText("Ooo Ooo. What is that smell...  Can you smell that smell.");
+    Report.debug("\nText data is -->"+ st.getData());
+
+
     Report.debug("\nCreating text Rain in Spain...");
-    Text t = new BasicText("Rain in Spain");
+    Text t = new BasicText("Spain&apos;s rain is both &lt;romantic&gt; &amp; sad. &quot;The rain keep you sane.&quot;someone said.");
     Report.debug("\nText data is -->"+ t.getData());
     Report.debug("\nCloning Rain in Spain...");
     Text t2 = new BasicText( (BasicText)t );
