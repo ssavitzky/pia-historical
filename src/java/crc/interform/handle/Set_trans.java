@@ -11,6 +11,8 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
+import crc.sgml.AttrWrap;
+
 import crc.interform.SecureAttrs;
 import crc.pia.Transaction;
 import crc.ds.Index;
@@ -53,7 +55,7 @@ public class Set_trans extends Set {
       trans.setHeader(name, value.toString());
     } else {
       if(isComplex(index,it)){
-	doComplexSet(key,index,new SecureAttrs(trans, ii), value, ia,it,ii);
+	doComplexSet(key,index,new AttrWrap(new SecureAttrs(trans, ii)), value, ia,it,ii);
       }else {
 	trans.attr(key, value);
       }

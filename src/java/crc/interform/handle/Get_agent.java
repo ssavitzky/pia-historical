@@ -12,8 +12,11 @@ import crc.interform.Run;
 import crc.interform.SecureAttrs;
 
 import crc.sgml.SGML;
+import crc.sgml.AttrWrap;
 
 import crc.ds.Index;
+
+import crc.pia.Agent;
 
 /** Handler class for &lt;get-agent&gt tag 
  *  <p> See <a href="../../InterForm/tag_man.html#get.agent">Manual
@@ -46,7 +49,7 @@ public class Get_agent extends Get {
       ii.error(ia, "agent " + aname + " not running");
       ii.deleteIt();
     }
-    SGML result = getValue(new SecureAttrs(a, ii), name, index);
+    SGML result = getValue(new AttrWrap(new SecureAttrs(a, ii)), name, index);
     result = processResult(result, it);
     ii.replaceIt(result);
       

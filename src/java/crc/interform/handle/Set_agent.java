@@ -12,6 +12,7 @@ import crc.interform.Run;
 import crc.interform.SecureAttrs;
 
 import crc.sgml.SGML;
+import crc.sgml.AttrWrap;
 
 import crc.ds.Index;
 import crc.sgml.Tokens;
@@ -62,11 +63,12 @@ public class Set_agent extends Set {
     if(isComplexSet){
       debug(this," agent "+aname+" doing complex set " + it);
       // do complex set
-      doComplexSet( key,index,new SecureAttrs(a, ii),  value ,ia, it, ii);
+      doComplexSet( key,index,new AttrWrap(new SecureAttrs(a, ii)),  value ,ia, it, ii);
     } else {
       // do the simple set
       if( key != null )
-	a.attr(key, value);	// security unimplemented! ===  
+	// a.attr(key, value);	// security unimplemented! ===  
+	a.put(key, value);	// security unimplemented! ===  
     }
     doFinish(it,value,ii);
 
