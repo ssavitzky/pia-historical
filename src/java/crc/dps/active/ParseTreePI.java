@@ -16,7 +16,7 @@ import crc.dps.aux.Copy;
 
 /**
  * An implementation of the ActivePI interface, suitable for use in 
- *	DPS parse.
+ *	DPS parse trees.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
