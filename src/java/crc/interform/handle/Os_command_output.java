@@ -48,7 +48,7 @@ public class Os_command_output extends crc.interform.Handler {
     // using pipes instead of redirection works even if "cmd" contains
     // redirection or pipes.
 
-    cmd = proxies+"cat /dev/null | "+cmd;
+    cmd = "cat /dev/null | "+proxies+ " " + cmd;
     ii.message("Executing: "+cmd);
 
     // We have to use a string array because Java doesn't parse
