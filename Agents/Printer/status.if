@@ -7,6 +7,9 @@
 <read interform file="heading.inc" process>
 
 
+<tagset-load name=Printer-agent-actors>
+
+
 <pre>
 <os-command-output> lpq -P&AGENT.device; </os-command-output>
 </pre>
@@ -14,8 +17,5 @@
 <hr><if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
 <p>
 </then></if>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
-<!-- hhmts start -->
-Last modified: Thu Jun  5 13:18:46 1997
-<!-- hhmts end -->
+<page-footer> </page-footer>
 </body></html>

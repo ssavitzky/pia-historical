@@ -3,6 +3,7 @@
 <title> WebPrinter </title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<tagset-load name=Printer-agent-actors>
 
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
@@ -24,38 +25,56 @@
 <if><agent-running name="&agentName;"><then>
 <TR><th>
     <TD align=right height=32><td>
-        <a href="/&agentName;/preview.if">
-        <img src="/&agentName;/preview.gif"
-                   height=32 width=32 border=0 alt=""></a>
-    <a href="/&agentName;/preview.if">Print Preview</a><br>
+	<form action="preview.if" method="post">
+        <input type=image src="/&agentName;/preview.gif"
+        height=32 width=32 border=0 alt=Preview>
+        <!-- input type=submit value="Preview" -->
+       <set name="refered"><get trans headers request name=referer></set>
+       <if><test match=&piaHOST;><get name=refered></test>
+        <else><set name=myurl><get name=refered></set> </else>
+	</if>
+	<if>
+	<test><get name="myurl"></test>
+	<else>
+	<set-lastlink>
+	<set name="myurl"><get name="lastlink" attr=href></set>
+	</else>
+	</if>
+	<input type="url" name=URL value="&myurl;" size=20>
+	</form>
 </then></if>
+
+
 <TR><th rowspan=3 valign=center>
       <a href="http://www.ricohcorp.com/ccopysub.htm">  <img src="/&agentName;/rprinter.jpg" width=144 border=0></a> 
-    <TD align=right><td><!-- move td to after the icon to get the -->
-                        <!-- icons lined up to the left of the PIA -->
-        <a href="/&agentName;/mkbook.if">
-        <img src="/&agentName;/bookmark.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/mkbook.if">Create book</a><br>
+    <TD align=right><td>
+	<form action="print.if" method="post">
+        <input type=image src="/&agentName;/printer.gif"
+        height=32 width=32 border=0 alt=Print>
+        <!-- input type=submit value="Print" -->
+	<input type="url" name=url value="&myurl;" size=20>
+	</form>
 
-<TR><TD align=right><td>
-        <a href="/&agentName;/status.if">
-        <img src="/&agentName;/printer.gif"  height=32 width=32 border=0 alt="WebPrinter"></a>
-    <a href="/&agentName;/status.if">Status</a>/<a href="/&agentName;/options.if"> Options</a><br>
+<TR><TD align=right><td><!-- move td to after the icon to get the -->
+                        <!-- icons lined up to the left of the PIA -->
+	<form action="mkbook.if" method="post">
+        <input type=image src="/&agentName;/bookmark.gif"
+        height=32 width=32 border=0 alt=Print>
+	<input type="url" name=url value="&myurl;" size=20>
+	</form>
 
 <TR>
     <TD align=right><td>
-        <a href="/&agentName;/entries.if"><img src="/&agentName;/previews.gif"
-        height=32 width=32 border=0 ></a>
-        <a href="/&agentName;/entries.if">Previous Prints </a>
+	<form action="previous.if" method="get">
+        <input type=image src="/&agentName;/previews.gif"
+        height=32 width=32 border=0 alt=Previous>
+        <!-- input type=submit value="Previous Print" -->
+         Previous print:
+	<input type="text" name=cachenum value="" size=3>
+	</form>
        
 <tr><th>
-    <TD align=right><td><img src="/Agency/Icons/dot-blue.gif" border=0 height=20
-    width=20>
-    PageControls:
-        <a href="/&agentName;/add_preview_button.if">
-        Add</a>
-    <a href="/&agentName;/remove_preview_button.if">Remove</a><br>
-
+    <TD align=right><td>
 
 </table>  
 
@@ -63,8 +82,6 @@
   
 
   <hr>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
-<!-- hhmts start -->
-Last modified: Tue Jun 10 00:43:17 1997
-<!-- hhmts end -->
+<page-footer> </page-footer>
+
 </body></html>

@@ -1,72 +1,73 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title> &agentName; printing document</title>
-<link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<set entity name=title>&agentName; printing document</set>
+<title>&agentName; URL Printing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title>Printing</set>
+<!-- put up the header at the top of the page -->
 <read interform file="heading.inc" process>
 
-<code language=perl>
-my $printer=$agent->option('device');
-$printer="ps6"  unless $printer;
-if(! $printer){
-my $element=IF::IT->new('a',href => "/$name/options.if");
-$element->push_content("please specify a printer");
-return $element;
-}
+<tagset-load name=Printer-agent-actors>
 
-my $type=$request->method;
-my %parameters=%{$request->parameters};
-my $file=$parameters{spoolfile};
-
-if($file){
-$file=$agent->option('printer_root_directory') . $file  unless -e $file;
-$status=system("lpr -P$printer $file");
-return "Printing document on $printer" unless  $status;
-return "Unable to print $file on $printer....status $status";
-
-}
-
-if($parameters{URL}) {
-my $ask=$agent->create_request('GET',$parameters{URL});
-my @files=$agent->file_names;
-my $image_file=shift @files;
-$ps_file=shift @files;
-print "generatepostscript\n";
-my $response=$agent->create_postscript($ask);
-if(-e $ps_file){
-$status=system("lpr -P$printer $ps_file");
-return "printing $file on $printer...status $status";
-} else {
-return "problem creating print file";
-}
+<if> <get form name=spoolfile> <then>
+ 
 
 
-} else{
-if($type eq "PUT") {
-my $contenttype=$type;
-return "only postscript or plain text currently supported, not  $contenttype"
-unless $contenttype =~ /(postscript)|(plain)|(html)/;
+<print-ps-file psfile=&usrDIR;/&agentName;/&FORM.spoolfile;>
+&FORM.spoolfile; is being printed on the WebPrinter.
+<hr>
 
-my $self=$agent;
-    my @files=$self->file_names();
-    my $image_file=shift @files;
-    $ps_file=shift @files;
-if($contenttype =~ /html/){    
-    my $status=$self->html_ps($request,$request,"000");
-   $status=system("lpr -P$printer $file");
-   return "printing $file on $printer...status $status";
-}
-}}
-return "neither post nor put\n";
-</code>
+ </then> <else>
+<if> <get name=url form> <then>
+ <set name="theurl"><get name="url" form></set>
+ <if><get form name=style> <then> <set name=style><get form
+ name=style></set></then> <else>
+<set name=style><default-style url=&theurl;></set> 
+ </else></if>
+
+ <set name=spoolfile><new-file-name></set>
+
+    <fetch-url input=&theurl; style=&thisstyle; output=&spoolfile;>
+
+    <set name=commandout> </set>
+<!--     creating Postscript...using style &thisstyle; -->
+
+    <create-ps-file-simple file=&spoolfile;.html input=&theurl;
+    output=&spoolfile; style=&thisstyle;>
+
+<print-ps-file psfile=&usrDIR;/&agentName;/&spoolfile;.ps>
+&theurl; is being printed on the WebPrinter.
+</then>
+
+<else>
+
+
+<form action="&url;" method=POST>
+<set name="refered"><get trans headers request name=referer></set>
+<if><test match=&piaHOST;><get name=refered></test>
+ <else><set name=myurl><get name=refered></set> </else>
+ </if>
+  <if>
+  <test><get name="myurl"></test>
+  <else>
+  <set-lastlink>
+  <set name="myurl"><get name="lastlink" attr=href></set>
+   </else>
+ </if>
+
+Format this URL: <input type="URL" size=65 name="url" value=&myurl;>
+
+<br>
+Using this <a href=edit_style.if>Style:</a>
+<select name=style>
+ <style-option-list url=&myurl;>
+</select>
+<input type="SUBMIT" value="Print">
+</form>
+
+
+ </else> </if></else> </if>
 
 <hr>
-<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
-<p>
-</then></if>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
-<!-- hhmts start -->
-Last modified: Mon Jun  9 22:36:15 1997
-<!-- hhmts end -->
+<page-footer> </page-footer>
 </body></html>

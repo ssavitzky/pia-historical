@@ -8,50 +8,21 @@ Reading:  <code><a href="tagset.inc">tagset.inc</a></code>
 <read process quiet interform file=tagset.inc>
 <br>
 
-Initializing options (stored in formsoptions.dat in a dl)
- <if> <read file=printeroptions.dat info> <else>
- <write file=printeroptions.dat><read interform file=options.dat></write></else>
- </if>
-<!-- now load the options -->
- <load-options> <read file=printeroptions.dat process> </load-options>
+<!-- use set device to name of printer if other than lp -->
+<if><read info file=device.dat>
+ <then><set name="device" agent><read file=device.dat></set></then> 
+</if>
 
-<!-- Set default style -->
- <set name=styles agent><ul><li>default<li>latex-actors</ul></set>
-
-<h2>Banner for bottom of each page:</h2>
-
-<set agent name="banner"><table align=center>
-<TR><TD> <a href="/Agency/home.if">
-<img src="/Agency/Icons/pia20.gif" height=20 width=37 alt=PIA></a>
-<TD> <a href="/&agentName;/home.if">
-<img src="/&agentName;/printer.gif"  height=20 width=20 alt="&agentName;"></a>
-<TD> <a href="/&agentName;/preview.if">
-<img src="/&agentName;/preview.gif"  height=20 width=20 alt="Preview"></a>
-<TD> <a href="/&agentName;/entries.if">
-<img src="/&agentName;/previews.gif"  height=20 width=20 alt="Previous"></a>
-<TD> <a href="/&agentName;/help.if">
-<img src="/Agency/Icons/help.gif"  height=20 width=40 alt="Help"></a>
-</table><hr></set>
+<h3> Page controls for proxied pages </h3>
+<read interform file=toggle_page_controls.if process>
 
 
-<h3> Page controls </h3>
-<agent-set-criterion name="response">
-<agent-set-criterion name="agent_response" value=0>
-
-<set agent hook name="_act_on"><protect>
-<trans-control>
-<set entity name=myprinter>http://&piaHOST;:&piaPORT;/&agentName;</set>
-<a href="&myprinter;/print.if?URL=&url;"><img src="&myprinter;/printer.gif" width=27 height=27 alt="PrintPage"></a>
-<a href="&myprinter;/preview.if?URL=&url;"><img src="&myprinter;/preview.gif" width=27 height=27 alt="PreviewPage"></a>
-<a href="&myprinter;/mkbook.if"><img src="&myprinter;/bookmark.gif" width=30 height=27 alt="MakeBook"></a>
-<a href="&myprinter;/home.if"><img src="http://&piaHOST;:&piaPORT;/Agency/Icons/pia20.gif" width=40 height=27 alt="&agentName;Home"></a>
-<hr>
-</trans-control>
-</protect></set>
+<!-- load the style entries  -->
+<load-styles>
 
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  4 18:52:52 1998
+Last modified: Mon Jul 13 17:02:01 1998
 <!-- hhmts end -->
 </body></html>

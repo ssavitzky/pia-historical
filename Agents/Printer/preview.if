@@ -6,83 +6,85 @@
 <set entity name=title> &agentName;  PreviewPage</set>
 <read interform file="heading.inc" process>
 
+<tagset-load name=Printer-agent-actors>
 
 <if><test><get form name="URL"></test>
-<then>
-Previewing &FORM.URL;
-<p>
+  <then>
+    <set name="theurl"><get name=URL form></set>
+    <!-- Previewing &FORM.URL; -->
+    <set name=spoolfile><new-file-name></set>
 
-THIS PAGE under CONSTRUCTION
+    <if> <get name=style form>
+      <then> <set name=thisstyle><get name=style
+	form></set>
+      </then>
+      <else><set name=thisstyle><default-style url=&theurl;></set></else>
+    </if>
 
-<table>
-<caption>Previewing &FORM.URL; </caption>
-<tr><td><a href=/~&agentName;/temp/tmp1.gif><img src=/~&agentName;/temp/tmp1.gif
-width=100></a> </td>
-<td><a href=/~&agentName;/temp/tmp2.gif><img src=/~&agentName;/temp/tmp2.gif
-width=100></a> </td>
-</tr>
-</table>
-<set name=ps_file>/home/wolff/.piajava/Printer/temp/tmp.ps</set>
+    <fetch-url input=&theurl; style=&thisstyle; output=&spoolfile;>
+
+    <set name=commandout> </set>
+<!--     creating Postscript...using style &thisstyle; -->
+
+    <create-ps-file-simple file=&spoolfile;.html input=&theurl;
+    output=&spoolfile; style=&thisstyle;>
+
+<!--    creating Previews ... ps file command returned: &commandout; --> 
+     <create-ps-preview-simple style=&thisstyle; psfile=&spoolfile;>
+
+<!-- Preview command returned: &commandout; -->
+
+     <show-summary spoolfile=&spoolfile; parseddoc=&document; url=&theurl;>
+     </show-summary>
+
+
 
 <table><tr>
 <td>
 <form action="http://&piaHOST;:&piaPORT;/&agentName;/print.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
-<input name="spoolfile" value="&ps_file;" type=hidden>
+<input name="spoolfile" value="&spoolfile;.ps" type=hidden>
 <input type="SUBMIT" value="Print">
 </form>
 <td>
-<form action="/&agentName;/preview.if" method=post>
-<input name="URL" value="&FORM.URL;" type=hidden>
-<input name="thumbsize" value="30" type=hidden>
-<input type="SUBMIT" value="SmallThumbnails">
-</form>
-<td>
-<form action="/&agentName;/preview.if" method=post>
-<input name="URL" value="&FORM.URL;" type=hidden>
-<input name="render_method" value="normal" type=hidden>
-<input type="SUBMIT" value="Images">
-</form>
 </table>
+<if><get name=setdefaultstyle form><then><set-default-style url=&theurl; style=&thisstyle;> </then></if>
 
 </then>
-<else>
-<form action="&url;" method=POST>
-<set name="myurl"><get trans headers request name=referer></set>
-<if><test match="&agentName;/home.if"><get name=myurl></test> <then>
- <set
- name=myurl>http://www.wired.com/news/news/technology/story/12654.html</set></then>
- <else></else> </if>
-Format this URL: <input type="URL" size=55 name="URL" value=&myurl;>
-<br>
-Using this <a href=loadtagset.if>Style:</a>
-<select name=style>
- <repeat list=&AGENT.styles;><option>&li;</option> </repeat>
-</select>
-
-
-<input type="SUBMIT" value="Show me the Preview">
-</form>
-</else>
 </if>
-<hr>
-<br>
-<table>
-<tr><TD><a href=toc.if>Table of contents</a>
-<TD><a href=twocolumn.if>2 column</a>
-<TD><a href=onecolumn.if>1 column</a>
-<TD><a href=footnotes.if>footnotes</a>
-</table>
-<br>
-
 
 
 <hr>
-<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+
+
+<form action="&url;" method=POST>
+<set name="refered"><get trans headers request name=referer></set>
+<if><test match=&piaHOST;><get name=refered></test>
+ <else><set name=myurl><get name=refered></set> </else>
+ </if>
+  <if>
+  <test><get name="myurl"></test>
+  <else>
+  <set-lastlink>
+  <set name="myurl"><get name="lastlink" attr=href></set>
+   </else>
+ </if>
+
+Format this URL: <input type="URL" size=65 name="URL" value=&myurl;>
+
+<br>
+Using this <a href=edit_style.if>Style:</a>
+<select name=style>
+ <style-option-list url=&myurl;>
+</select>
+<input type="SUBMIT" value="Show Preview">
+<br>(<input type=radio name=setdefaultstyle> Set style as default for this host?)
+</form>
+<hr>
+
+
+
 <p>
 </then></if>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
-<!-- hhmts start -->
-Last modified: Thu Jun  4 18:52:33 1998
-<!-- hhmts end -->
+<page-footer> </page-footer>
 </body></html>

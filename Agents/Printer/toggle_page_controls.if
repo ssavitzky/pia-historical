@@ -1,0 +1,64 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Page Controls</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>&agentName; PageControls</set>
+
+<read interform file="heading.inc" process>
+The WebPrinter can insert controls for printing on pages which are proxied through it.
+
+<if><get agent name=pagecontrolson>
+ <then><set agent name=pagecontrolson> </set>
+
+WebPrinter controls will no longer be added to proxied pages.
+
+<set agent hook name="_act_on"><protect>
+</protect></set>
+ </then> 
+
+<else><set agent name=pagecontrolson> on </set> 
+<agent-set-criterion name="response">
+<agent-set-criterion name="agent_response" value=0>
+
+<!-- currently ignoring the query parameters sent via a post mechanism --these
+are available in the urlQuery string without a leading "?" -->
+
+<set agent hook name="_act_on"><protect>
+<trans-control>
+<set entity name=myprinter>http://&piaHOST;:&piaPORT;/&agentName;</set>
+<if><test match="^\?">&urlQuery;</test><then>
+<set entity name=myuq>&url;&urlQuery;</set>
+</then><else><set entity name=myuq>&url;</set></else></if>
+<table><tr><td><form action="&myprinter;/print.if" method="post">
+        <input type=image src="&myprinter;/printer.gif"
+        height=32 width=32 border=0 alt="Print">
+        <!-- input type=submit value="Print" -->
+	<input type="hidden" name=URL value="&myuq;">
+	</form>
+</td><td>
+<form action="&myprinter;/preview.if" method="post">
+        <input type=image src="&myprinter;/preview.gif"
+        height=32 width=32 border=0 alt="Print">
+        <!-- input type=submit value="Print" -->
+	<input type="hidden" name=URL value="&myuq;">
+	</form>
+</td><td>
+<form action="&myprinter;/mkbook.if" method="post">
+        <input type=image src="&myprinter;/bookmark.gif"
+        height=32 width=32 border=0 alt="Print">
+        <!-- input type=submit value="Print" -->
+	<input type="hidden" name=URL value="&myuq;">
+	</form>
+</td><td valign=top><a href="&myprinter;/home.if"><img
+src="http://&piaHOST;:&piaPORT;/Agency/Logo/A100.gif" border=0 height=32
+valign=top alt="&agentName;Home"></a></td></tr></table>
+<hr>
+</trans-control>
+</protect></set>
+WebPrinter controls will now be added to all proxied pages.
+</else></if>
+
+<page-footer> </page-footer>
+</body></html>

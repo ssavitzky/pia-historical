@@ -12,45 +12,27 @@
 
 <tagset-load name=Form-agent-actors>
 <hr>
-
- <set name=myoptions><read file=formsoptions.dat process></set>
- <set name=options><dummy><get name=myoptions findall=agentoption></dummy></set>
+<table>
+<tr> <td>
 <form action="&url;" process copy method=post>
  <process copy>
-<!-- Replace  option values with values in form -->
- <repeat list=&options; entity=myoption>
- <set index=myoption.optionvalue insert=0 replace><get form
- name=&myoption.optionname.Text;></set>
- </repeat>
- <write file=formsoptions.dat><get name=myoptions></write>
-
-<!-- load the options into the agent -->
-<load-options> <get name=myoptions> </load-options>
-New options have been loaded and stored.
-<hr>
-
+<if><get name="device" form>
+ <then><set name="device" agent><get name="device" form></set> </then> 
+ <else> </else></if>
+ <write file=device.dat><get name="device" agent></write>
 </process>
-  <table>
-<tr><th> Option Name <th>  Description <th> Value</tr>
- <repeat list=&options; entity=myoption>
-
-<tr><td><get index=myoption.optionname.text></td>
-    <td><get index=myoption.optiondescription.text></td>
-    <td><input name=&myoption.optionname.text; value=&myoption.optionvalue.text;></td>
-</tr>
- </repeat>
- </table>
-<input type="SUBMIT" value="ChangeOptions">
 </form>
+Device: <input name="device" value="&AGENT.device;"><br>
+(<code>lp </code> is default)
+ </td>
+<td><a href="edit_style.if"> Styles</a> </td>
+<td><a href=toggle_page_controls.if>Turn on/off proxy banner </td> <br>
+(control buttons inserted on proxy to pages)
+</tr>
+</table>
 
-<hr>
-To add new options, edit the file <code>&usrDIR;/&agentName;/options.dat</code>
-<hr>
-<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
-<p>
-</then></if>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
-<!-- hhmts start -->
-Last modified: Mon Jun  1 12:00:50 1998
-<!-- hhmts end -->
+
+
+<page-footer> </page-footer>
+
 </body></html>
