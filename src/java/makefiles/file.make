@@ -25,13 +25,15 @@
 #	This has serious problems when you're trying to use source control.
 
 CLASSDIR= $(TOPDIR)/classes
-DOCDIR  = $(TOPDIR)/Doc
+
 
 #piahome/lib/java/*.zip   
 #zip files added in file.make...could determine automatically...
 PIADIR=$(TOPDIR)/../../..
 LIBDIR= $(TOPDIR)/../../../lib/java
 BINDIR=$(TOPDIR)/../../../bin
+DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
+
 
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
@@ -39,7 +41,6 @@ LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
 ##javac wrapper should find these  .. specify explicitly if problem
 #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 #sun 1.0.2 location
-#JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
 JAVACLASSES= /usr/local/java/lib/classes.zip
 
 .SUFFIXES: .java .class
