@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
+import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -282,14 +283,6 @@ public class GenericAgent extends AttrBase implements Agent {
       
     }
     
-    Enumeration enum = res.elements();
-    String zpath = null;
-    while( enum.hasMoreElements() ){
-      try{
-	zpath = (String)enum.nextElement();
-	Pia.debug(this, "file attribute-->"+ zpath);
-      }catch(Exception e){}
-    }
     return res;
   }
 
@@ -907,8 +900,17 @@ public class GenericAgent extends AttrBase implements Agent {
 	sendStreamResponse(request, in);
       } else if( file.endsWith(".cgi") ){
 	// === CGI should be executed with the right stuff in the environment.
+	Runtime rt = Runtime.getRuntime();
+	try{
+	  rt.exec(file);
+	}catch(IOException e){
+	  String msg = "Can not execute :"+file;
+	  throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+	}
+	/*
 	String msg = "cgi invocation unimplemented.";
 	throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+	*/
       } else {
 	crc.pia.FileAccess.retrieveFile(file, request, this);
       }
