@@ -1,9 +1,0 @@
-
-<h1>Inspiration</h1>
-
-Employee:  <formvariable name=name options=users> </formvariable>
-     
-Noteworthy Idea:<br>
-<formvariable textarea=true rows=20 cols=70> </formvariable><p>
-
-References (related URLS): <references> </references>

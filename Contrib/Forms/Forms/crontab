@@ -1,2 +1,0 @@
-## crontab entry for mailing forms reminder at 9 am and 4 pm
-0 9,16 * * 1,2,3,4,5   cd /pc-mac/admin/piaforms/Forms; ./emailer.exe
