@@ -58,6 +58,11 @@ public class Interp extends State {
    */
   Tokens output;
 
+  /** Output stream.
+   *	Output can go directly to a Writer.
+   */
+  Writer writer;
+
   /** If true, convert tokens to strings before putting them on the
    *  output queue.  */
   boolean streaming;
@@ -746,22 +751,21 @@ public class Interp extends State {
 
   /** Pass a token or tree to the output. */
   final void passToken(SGML it) {
-    if (output == null) return;	// skipping.
+    if (output == null && writer == null) return;	// skipping.
     if (! streaming) {		// Not streaming: just pass the tree
       if (it.incomplete() > 0) it = ((Element)it).startToken();
       output.push(it);		// === There should be an appendTo
       // === Otherwise we need to copy start tags. ===
+    } else if (writer != null) {
+      it.writeOn(writer);
     } else {
-      /* The PERL version used to elaborately check "incomplete" and 
-       *   do the right thing, including expand lists.  appendTextTo
-       *   does the right thing directly.
-       */
+      // === This is old; using writer is better === 
       if ( output.nItems() == 0) {
 	/* Using a StringBuffer here is more efficient and avoids
 	 *	appending to a Text already in use somewhere else. */
 	output.push(new TextBuffer());
       } 
-      it.appendTextTo(output);
+      output.append(it.toText());
     }
   }
 
