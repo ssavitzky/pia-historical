@@ -15,25 +15,28 @@ import crc.sgml.SGML;
 /** Handler class for &lt;expand&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;expand [protect [markup]]&gt;content&lt;/expand&gt;
+ *	&lt;expand [skip | protect [markup]]&gt;content&lt;/expand&gt;
  * <dt>Dscr:<dd>
- *	Expand CONTENT, then either re-expand or PROTECT it.
+ *	Expand CONTENT, then either re-expand, SKIP, or PROTECT it.
  *	Optionally protect MARKUP as well.
  *  </dl>
  */
 public class Expand extends Protect {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<expand [protect [markup]]>content</expand>\n" +
+    "<expand [skip | protect [markup]]>content</expand>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "Expand CONTENT, then either re-expand or PROTECT it.\n" +
+    "Expand CONTENT, then either re-expand, SKIP, or PROTECT it.\n" +
     "Optionally protect MARKUP as well.\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    if (it.hasAttr("protect")) {
+    if (it.hasAttr("skip")) {
+      // Skipping.  It's already been expanded once.
+      ii.deleteIt();
+    } else if (it.hasAttr("protect")) {
       // The following is slightly sleazy, but it works.
       super.handle(ia, it, ii); 
     } else {
