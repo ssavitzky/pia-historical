@@ -151,6 +151,14 @@ which is only useful for agents which have no options.
 <h3><a name="app">Appliances</a></h3>
 
 <dl>
+  <dt> <a name="FMA">FMA</a>
+       <if><agent-running name="FMA"><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="FMA"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form></if>
   <dt> <a name="Photo_Album">Photo Album</a>
        <if><agent-running name="Photo_Album"><then><em>installed</em></then>
        <else>
