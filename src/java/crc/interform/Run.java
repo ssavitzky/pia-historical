@@ -144,7 +144,7 @@ public class Run  extends Environment {
 	ent("urlPath", transaction.requestURL().getFile());
       }
 
-    // form parameters have 2 access methods
+      // form parameters might be either query string or POST data
       if(transaction.hasQueryString()){
         ent("urlQuery",  (SGML)new Text(transaction.queryString()));
         ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
@@ -152,11 +152,14 @@ public class Run  extends Environment {
             ent("urlQuery",  (SGML)Token.empty);
        }
 
-      Object aname = transaction.getFeature("agent");
-      Agent  ta = (aname == null)? null : resolver.agent(aname.toString());
-      if (ta != null) {
-	ent("transAgentName", ta.toString());
-	ent("transAgentType", ta.type()); 
+      if (transaction.test("agent-request") ||
+	   transaction.test("agent-response")) {
+
+	String aname = transaction.getFeatureString("agent");
+	String atype = transaction.getFeatureString("agent-type");
+
+	ent("transAgentName", aname);
+	ent("transAgentType", atype); 
       } else {
 	ent("transAgentName", Token.empty);
 	ent("transAgentType", Token.empty);
@@ -239,10 +242,12 @@ public class Run  extends Environment {
     new Run(agent, trans, res, filepath).skipFile("Standard");
   }
 
-  /** Run an already-parsed InterForm element as an Agent's actOn hook. */
-  public static void interformHook(Agent agent, SGML code,
+  /** Run an already-parsed InterForm element as an Agent's actOn hook. 
+   *	A String ``filename'' can be passed for use in error messages.
+   */
+  public static void interformHook(Agent agent, SGML code, String fn,
 				   Transaction trans, Resolver res) {
-    new Run(agent, trans, res, null).runCode(code, "Standard");
+    new Run(agent, trans, res, fn).runCode(code, "Standard");
   }
 
   /************************************************************************
