@@ -27,7 +27,6 @@ import crc.dps.Handler;
  * @author steve@rsv.ricoh.com 
  * @see crc.dom.Node
  * @see crc.dom.Element
- * @see crc.dom.BasicElement
  * @see crc.dps.Context
  * @see crc.dps.Processor
  */
@@ -63,7 +62,6 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
     ArrayNodeList result = new ArrayNodeList();
     findAll( name, this, result );
     return result.getEnumerator();
-    
   }
 
   /************************************************************************
@@ -147,10 +145,18 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
    *	it can greatly speed up many operations that would otherwise require
    *	knowledge of the DTD.
    */
-  public boolean isEmptyElement() { return isEmptyElement; }
+  public boolean isEmptyElement() {
+    //System.err.println("<" + getTagName() + "> is " + 
+    //	       (isEmptyElement? "empty" : "non-empty"));
+    return isEmptyElement;
+  }
 
   /** Sets the internal flag corresponding to isEmptyElement. */
-  public void setIsEmptyElement(boolean value) { isEmptyElement = value; }
+  public void setIsEmptyElement(boolean value) { 
+    isEmptyElement = value;
+    //System.err.println("<" + getTagName() + "> defined as " + 
+    //	       (isEmptyElement? "empty" : "non-empty"));
+  }
 
   /** Returns <code>true</code> if the Element has an XML-style 
    *	``<code>/</code>'' denoting an empty element.
