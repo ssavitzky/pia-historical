@@ -13,6 +13,8 @@
  <repeat list=&caps.photos.photo; entity=photo>
  <set name=myindex><get index=photo.photoindex.Text></set>
  <set name=mycap><get index=photo.photocaption></set>
+ <set name=pdirectory><get index=photo.photosdirectory.Text></set>
+ <set name=pdate><get index=photo.photosdate.Text></set>
 
 <if> <get name=caption&myindex; form><then>
  <if> <get name=mycap> <else><set name=mycap><photocaption> </photocaption></set>
@@ -26,9 +28,9 @@
  <set name=caps insert=-1><photostitle><get form
  name=captitle></photostitle></set>
  <write append file="&AGENT.masterlist;"><tr>
-<td><a href=show_captioned.if?capfile=&capfile;><img src=&caps.photos.photo-1.photothumbnail.Text;></a> </td><td>
+<td><a href=show_captioned.if?capfile=&capfile;><img src=/~&agentName;/&pdirectory;/&caps.photos.photo-1.photothumbnail.Text;></a> </td><td>
 <a href=show_captioned.if?capfile=&capfile;><get form
- name=captitle></a> <td>&date; </tr>
+ name=captitle></a> <td><get name=pdate> </tr>
 </write>
  </then> </if>
  <if> <get name=writeflag> <then> <write file=&capfile;><get
