@@ -26,7 +26,7 @@
      <set name=olddept><user-dept user=&uid;></set>
      <if><test match=&FORM.userdept;><get name=olddept></test> <else>
          <set index=u.userdept replace><get name=userdept form></set>
-	 <dept-remove-member member=&uid; department=&olddept;>
+	 <if><get name=olddept><then><dept-remove-member member=&uid; department=&olddept;></then></if>
 	 <dept-add-member member=&uid; department=&FORM.userdept;>
 	 <save-data data=departments>
      </else> </if>

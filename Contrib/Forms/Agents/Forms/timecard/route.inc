@@ -8,10 +8,5 @@
             <routeuser>deptAdmin</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
-            </routestep><routestep>
-            <routeid>3</routeid>
-            <routeuser>manager</routeuser>
-            <routewhen>always</routewhen>
-            <routecond> </routecond>
             </routestep></route>
 	  

@@ -175,7 +175,7 @@ index=userdat.username.Text></then><else><get name=value></else></if></actor>
  <set name=mylist local><get agent name=groups key=&group;></set>
   <if> <get name="group">
        <then> <set agent name=groups key=&group;><ul foreach list=&mylist;
-               entity=gruid><if><test match=&value;>&gruid;</test><then></then><else><li>&gruid;</li></else></if>
+               entity=gruid><if><test match=&value; exact><get index=gruid.Text></test><then></then><else>&gruid;</else></if>
 	        </ul></set>
 	</then>
     </if> 

@@ -1,0 +1,23 @@
+
+<h2>Asset_Transfer form</h2>
+
+RSV works hard to get the most out of its capital assets, and has been generally successful in identifying
+good uses for underutilized assets.   Now that we are a real company, there is actually an economic
+incentive for groups to identify these opportunities as associated depreciation costs move with the asset.
+<p>
+This form is used to allow better tracking of such asset movements from one division or department to another.
+
+This is a default template for forms.
+Variable to be filled out should be specified with formvariable tags as
+below:
+ <table>
+<tr><th>Employee</th><th>Simple Value to be entered</th><th>List of values to choose</th></tr>
+<tr><td> <formvariable name="employee" options="users"> </formvariable>
+    </td><td> <formvariable name="simplevalue"> </formvariable>
+    </td><td> <formvariable name="choicevalue" options="choice1 choice2">
+         </formvariable>
+</td></tr>
+ </table>
+Sums and other combinations of variables can also be added, see other forms
+for examples.
+ 

@@ -11,13 +11,20 @@
 <h3>Verify user information</h3>
 <set name=auser><get trans name=AuthenticatedUser></set>
  <set name=u><get agent name=users key=&auser;></set>
+<if><get name=u><else><set agent name=users key=&auser;><user>
+ <userid><get name=auser></userid>
+ <username><get name=auser></username>
+ <userdept></userdept>
+ <userext>7xx</userext></user></set>
+ <set name=u><get agent name=users key=&auser;></set>
+</else></if>
 <ul>
   <li> Your Name: <b><get index=u.username></b>
-  <li> Your Manager: <b><get index=u.usermanager></b>
   <li> Your Extension: <b><get index=u.userext></b>       
     <li> Your Department: <b><get index=u.userdept></b>       
+    <li> Your Department: <b><manager user=&auser;></b>
 </ul>
-<if><get index=u.usermanager.Text> <then>
+<if><get index=u.userdept.Text> <then>
 If these values are correct, please continue on to the next section, otherwise
 please <a href="edit_user.if?euser=&auser;">EDIT</a> these values and then
 return to this page.

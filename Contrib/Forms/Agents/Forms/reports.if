@@ -11,7 +11,7 @@
 Note this page needs lots of work, but does mostly function properly.
 
 <h2> Department Listing </h2>
-Forms submitted on or before May 15 will not show up with the by department listings.
+Forms submitted  before June 19 may not show up properly in the department listings.
 
 <form action=reports_dept.if method=post> 
 <a href=show_depts.if>Department:</a><select name="dept">
@@ -33,7 +33,7 @@ Month: <select name=startmonth><option selected>&month;</option></else></if>
 <h2>Common Reports</h2>
 <form action=&url; method=post>
 <input type=hidden name=id value=report>
-Show Current <input type=submit name="form" value=timecard> forms.
+Show Current <!-- input type=submit name="form" value=timecard --> (temporarily disabled timecard listings --> forms.
  <set name=mymonth>&month;</set>
  <set name=myyear>&year;</set>
 <set-previous-month mctr=mymonth yctr=myyear>
@@ -227,7 +227,7 @@ this value:
  </then></if>
 <!-- Add input type="INT" name="conditions" size="2" value=&nconditions;
 condition(s). -->
-<input type="SUBMIT" value="Show Forms (+data)">
+<!-- input type="SUBMIT" value="Show Forms (+data)" --> (temporarily disabled data reports)
 <if><get form name=form><else><input type="SUBMIT" value="ListForms(quicker)" name=quicklist></else></if>
 </form>
 

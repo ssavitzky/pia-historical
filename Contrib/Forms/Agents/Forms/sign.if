@@ -15,7 +15,7 @@
 <set entity name=nameobject><read file="usertoname.dat" process></set>
 
 <if><test text>&FORM.signature;</test><then>
-    <if><authenticate user="&FORM.name;" password="&FORM.signature;" file="/home/dgillen/.pia/Forms/passwd"><then>
+    <if><authenticate user="&FORM.name;" password="&FORM.signature;" file="/pc-mac/admin/piaforms/Forms/passwd"><then>
         <if><test match="&FORM.name;">&routeobject;</test><then>
             <if><test match="signed">&nextperson;</test><then>
                 You have already signed this document.<p></then>
