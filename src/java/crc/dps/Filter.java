@@ -27,7 +27,7 @@ import crc.dps.tagset.TagsetProcessor;
 import crc.dps.output.*;
 import crc.dps.active.*;
 import crc.dps.handle.GenericHandler;
-import crc.dps.handle.LegacyHandler;
+// import crc.dps.handle.LegacyHandler;
 
 /**
  * Filter an input stream or file with the DPS.
@@ -212,9 +212,7 @@ public class Filter {
       if (gh != null) {
 	name += gh.getSyntaxCode() < 0? "E" : h.expandContent()? "X" : "Q";
 	String cname = gh.getClass().getName();
-	if (cname.equals("crc.dps.handle.GenericHandler")
-	    || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
-	else if (gh instanceof LegacyHandler) name += "L";
+	if (cname.equals("crc.dps.handle.GenericHandler")) name += "U";
       }
       System.err.print(" " + name + " " + ((gh != null)? gh.toString() : ""));
     }
