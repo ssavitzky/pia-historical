@@ -17,6 +17,8 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Element;
+import crc.sgml.AttrWrap;
+import crc.sgml.Attrs;
 
 import java.lang.Process;
 import java.lang.Runtime;
@@ -215,16 +217,23 @@ public class Calendar extends crc.interform.Handler {
   }
 
   protected void addCellToRow(Element row, String data){
-    String startTag = "<TD VALIGN=TOP>";
-    String endTag   = "</TD>";
-    row.append( startTag + data + endTag );
+    //    String startTag = "<TD VALIGN=TOP>";
+    //    String endTag   = "</TD>";
+    Element b = new Element("b");
+    b.append( data );
+    Element e = new Element("td");
+    e.append( b );
+
+    e.addAttr("ALIGN", "TOP");
+    row.append( e );
   }
 
 
   protected void addEmptyCellToRow(Element row){
-    String startTag = "<TD>";
-    String endTag   = "</TD>";
-    row.append( startTag + endTag );
+    //String startTag = "<TD>";
+    //String endTag   = "</TD>";
+    Element e = new Element( "TD", "" );
+    row.append( e );
   }
 
   /**
