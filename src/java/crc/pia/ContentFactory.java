@@ -77,6 +77,7 @@ public class ContentFactory
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
+    System.exit(0);
   }
   
   
