@@ -17,7 +17,7 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
 import crc.pia.ds.UnaryFunctor;
 
@@ -29,7 +29,29 @@ public final class IsAgResp implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      URL url = null;
+      boolean defineRequest = false;
+      Transaction request;
+
+      if ( !trans.isResponse() )
+	return new Boolean( false );
+
+      String agent = trans.getHeader("Version");
+      if( (request = trans.getRequestTrans()) ){
+	defineRequest = true;
+	url = request.getRequestURL();
+      }
+
+      if( url && url.getFile().toLowerCase().startsWith("/http:") )
+	return new Boolean( false );
+
+      if( agent.toLowerCase().startsWith("pia") ){
+	if(!defineRequest)
+	  return new Boolean( true );
+	if( request.is("agent_request") )
+	  return new Boolean( true );
+      }
+	
     }
 }
 
