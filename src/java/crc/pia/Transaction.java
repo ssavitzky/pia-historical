@@ -22,10 +22,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.DataInputStream;
 import java.lang.Runnable; // added by Greg
-import java.util.Vector;
 
 import crc.ds.Features;
 import crc.ds.Queue;
+import crc.ds.Table;
+import crc.ds.List;
 import crc.ds.UnaryFunctor;
 import crc.ds.Criteria;
 
@@ -387,6 +388,14 @@ public abstract class Transaction extends AttrBase implements Runnable {
     return false;
   }
 
+
+  /**
+   * return parameters associated with a request in table form
+   */
+  public Table getParameters(){
+    return null;
+  }
+
   /**
    * return parameters associated with a request
    */
@@ -404,7 +413,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
   /**
    * controls such as buttons -- usually inserted with a response
    */
-  public Object[] controls(){
+  public List controls(){
     return null;
   }
 
