@@ -8,6 +8,7 @@ ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 PACKAGES= \
 	misc \
+	org \
 	crc
 
 ### These are the names of all the packages in the PIA.
@@ -40,7 +41,9 @@ SUNPACKAGENAMES= \
 
 MISCPACKAGENAMES= \
 	w3c.www.http \
-	w3c.www.mime
+	w3c.www.mime \
+	org.w3c.dom \
+	org.w3c.dom.html
 
 PACKAGENAMES= $(PIAPACKAGENAMES) $(MISCPACKAGENAMES) $(SUNPACKAGENAMES)
 
