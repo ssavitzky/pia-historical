@@ -4,15 +4,15 @@
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff">
 <h1>The 
-<img src="/Logo/?height=60&type=Logo" align=top alt=LOGO>
+<img src="height=60&type=Logo" align=top alt=LOGO>
 Agent</h1>
 
-For the <img src="/Logo/?height=72&type=pia" align=top>
+For the <img src="height=72&type=pia" align=top>
 
 
 <if><agent-running name=Logo>
   <then>is installed and running.
-        <a href="/&agentName/initialize.if">[re-initialize]</a></then>
+        <a href="initialize.if">[re-initialize]</a></then>
   <else>is not currently installed.
         <form method=POST action="/Agency/install_agent.if">
 		<input name="agent" value="Logo" size=30>
@@ -32,21 +32,21 @@ The Logo Agent's job is to generate flashy pentagon and PIA logos in various
 sizes, like this:
 <p>
 
-<img src="/Logo/?height=24&type=pia">, and this, 
-<img src="/Logo/?height=32&type=pia">, and this, 
-<img src="/Logo/?height=32&type=dofs">, and this,
-<img src="/Logo/?height=32&type=pent">, 
+<img src="height=24&type=pia">, and this, 
+<img src="height=32&type=pia">, and this, 
+<img src="height=32&type=dofs">, and this,
+<img src="height=32&type=pent">, 
 and even these:<br>
-<img src="/Logo/foo?height=200&width=210&type=pent"> 
-<img src="/Logo/?height=220&scale=2&type=pia"> <br>
+<img src="foo?height=200&width=210&type=pent"> 
+<img src="height=220&scale=2&type=pia"> <br>
 ; they were generated using:
 
 <listing>
-&lt;img src="/Logo/?height=24&amp;type=pia"&gt;
-&lt;img src="/Logo/?height=32&amp;type=pia"&gt;
-&lt;img src="/Logo/?height=32&amp;type=pent"&gt;
-&lt;img src="/Logo/foo?height=200&amp;width=210&amp;type=pent"&gt;
-&lt;img src="/Logo/?height=220&amp;scale=2&amp;type=pia"&gt;
+&lt;img src="height=24&amp;type=pia"&gt;
+&lt;img src="height=32&amp;type=pia"&gt;
+&lt;img src="height=32&amp;type=pent"&gt;
+&lt;img src="height=200&amp;width=210&amp;type=pent"&gt;
+&lt;img src="height=220&amp;scale=2&amp;type=pia"&gt;
 </listing>
 
 The only really important parameters are <code>height</code> and
@@ -72,29 +72,29 @@ to be 20 at the moment, although some smaller sizes can work.  16 is,
 fortunately, passable in both <code>pia</code> and <code>pent</code> styles.
 Border width is forced to 0 below height=21, which helps.<br>
 
-pia14.gif = <img src="/Logo/pia14.gif">;
-pia15.gif = <img src="/Logo/pia15.gif">;
-pia16.gif = <img src="/Logo/pia16.gif">;
-pia17.gif = <img src="/Logo/pia17.gif">;
-pia18.gif = <img src="/Logo/pia18.gif">;
-pia19.gif = <img src="/Logo/pia19.gif">;
-pia20.gif = <img src="/Logo/pia20.gif">;
-pia21.gif = <img src="/Logo/pia21.gif">;
-pia22.gif = <img src="/Logo/pia22.gif">;
-pia23.gif = <img src="/Logo/pia23.gif">;
-pia24.gif = <img src="/Logo/pia24.gif">;
+pia14.gif = <img src="pia14.gif">;
+pia15.gif = <img src="pia15.gif">;
+pia16.gif = <img src="pia16.gif">;
+pia17.gif = <img src="pia17.gif">;
+pia18.gif = <img src="pia18.gif">;
+pia19.gif = <img src="pia19.gif">;
+pia20.gif = <img src="pia20.gif">;
+pia21.gif = <img src="pia21.gif">;
+pia22.gif = <img src="pia22.gif">;
+pia23.gif = <img src="pia23.gif">;
+pia24.gif = <img src="pia24.gif">;
 <p>
-pent14.gif = <img src="/Logo/pent14.gif">;
-pent15.gif = <img src="/Logo/pent15.gif">;
-pent16.gif = <img src="/Logo/pent16.gif">;
-pent17.gif = <img src="/Logo/pent17.gif">;
-pent18.gif = <img src="/Logo/pent18.gif">;
-pent19.gif = <img src="/Logo/pent19.gif">;
-pent20.gif = <img src="/Logo/pent20.gif">;
-pent21.gif = <img src="/Logo/pent21.gif">;
-pent22.gif = <img src="/Logo/pent22.gif">;
-pent23.gif = <img src="/Logo/pent23.gif">;
-pent24.gif = <img src="/Logo/pent24.gif">;
+pent14.gif = <img src="pent14.gif">;
+pent15.gif = <img src="pent15.gif">;
+pent16.gif = <img src="pent16.gif">;
+pent17.gif = <img src="pent17.gif">;
+pent18.gif = <img src="pent18.gif">;
+pent19.gif = <img src="pent19.gif">;
+pent20.gif = <img src="pent20.gif">;
+pent21.gif = <img src="pent21.gif">;
+pent22.gif = <img src="pent22.gif">;
+pent23.gif = <img src="pent23.gif">;
+pent24.gif = <img src="pent24.gif">;
 <p>
 
 In the absence of a good way for one agent to require another, it's difficult
