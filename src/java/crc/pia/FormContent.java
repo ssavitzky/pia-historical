@@ -167,6 +167,11 @@ public class FormContent extends Properties implements Content{
    *  generic source throws exception
    */
   public void source(Object o)  throws ContentOperationUnavailable {
+    InputStream s;
+    if ( o instanceof InputStream ){
+      s = ( InputStream ) o;
+      source( s );
+    }else
     throw(new ContentOperationUnavailable(" cannot handle type as source"));
   }
 
