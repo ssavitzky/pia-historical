@@ -46,10 +46,10 @@ public class BasicDocument extends AbstractDocument implements Document {
   public Object clone(){
     BasicDocument n = (BasicDocument)super.clone();
     //only refers to DTD here
-    setDocumentType( getDocumentType() );
+    n.setDocumentType( getDocumentType() );
     Element rootDoc = getDocumentElement();
     Object cloneroot = ((AbstractNode)rootDoc).clone();
-    setDocumentElement( (Element)cloneroot );
+    n.setDocumentElement( (Element)cloneroot );
 
     return n;
   }
