@@ -218,7 +218,7 @@ public class  DescriptionList extends crc.sgml.Element {
       if( j <= len - 2 ){
 	j++;
 
-	if( myTag.equalsIgnoreCase( dtText ) ){
+	if( myTag.equalsIgnoreCase( dtText.trim() ) ){
 	  //System.out.println("In equal");
 	  if( howmany >= s && howmany <= e ){
 	    //System.out.println("howmany-->"+Integer.toString(howmany));
