@@ -23,8 +23,9 @@ public final class IsAgentResponse extends TFComputer {
 
       if ( !trans.isResponse() ) return False;
 
-      String agent = trans.header("Version");
-      if( agent != null && agent.toLowerCase().startsWith("pia") ) return True;
+      /* This is incorrect: it responds to agents in other agencies. */
+      //String agent = trans.header("Version");
+      //if( agent != null && agent.toLowerCase().startsWith("pia")) return True;
 
       Transaction request = trans.requestTran();
       if (request == null) return True;
