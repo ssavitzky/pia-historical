@@ -206,6 +206,7 @@ public class Util extends crc.sgml.Util {
     return (Character.isLetterOrDigit(c) || c == '-' || c == '.');
   }
 
+
   /************************************************************************
   ** Actor Argument utilities:
   ************************************************************************/
@@ -218,6 +219,90 @@ public class Util extends crc.sgml.Util {
   public static int getInt(SGML it, String attr, int dflt) {
     SGML v = it.attr(attr);
     return (v == null)? dflt : (int) v.numValue();
+  }
+
+  /** Convert an SGML object to a Tokens list of &lt;dt&gt; and &lt;dd&gt;
+   *	pairs.  The result is suitable for passing to, for example,
+   *	Agent.addAttrs.
+   *
+   *	@param it is the SGML object to be converted. 
+   *	@param ii is the Interp to be used to parse strings.
+   *	@param parse if true, use ii to parse the values of query strings
+   *	that contain markup.
+   */
+  public static Tokens getPairs(SGML it, Interp ii, boolean parse) {
+    Tokens list = removeSpaces(it);
+    if (list == null || list.nItems() == 0) return new Tokens();
+    if (list.nItems() == 1 && list.itemAt(0).isText()) {
+      return getPairs(list.toString(), ii, parse);
+    } else {
+      return getPairs(list);
+    }
+  }
+
+  public static Tokens getPairs(String query, Interp ii, boolean parse) {
+    List l = split(query, '&');
+    Tokens result = new Tokens();
+    String name;
+    String value;
+    SGML   parsedValue;
+    String tagset = "Standard";
+
+    for (int j = 0; j < l.nItems(); ++j) {
+      String s = l.at(j).toString();
+      int i = s.indexOf('=');
+      if (i < 0) {
+	result.push(new Element("dt", s));
+	result.push(new Element("dd", s));
+      } else {
+	name = s.substring(0, i);
+	value= (i == s.length()-1) ? "" : s.substring(i+1);
+	value = Util.urlDecode(value);
+	if (parse && (value.indexOf('&') >= 0 || value.indexOf('<') >= 0)) {
+	  // expand markup.
+	  parsedValue = ii.environment.parseString(value, tagset);
+	} else {
+	  parsedValue = new Text(value);
+	}
+	result.push(new Element("dt", name));
+	result.push(new Element("dd", parsedValue));
+      }
+    }
+
+    return result;
+  }
+
+  /** Turn a list of Tokens into a list of &lt;dt&gt; / &lt;dd&gt; pairs.
+   *	Even if the list is already in the correct form, it is processed
+   *	to ensure that every value has a corresponding key.
+   */
+  public static Tokens getPairs(Tokens list) {
+    if (list.nItems() == 0) return list;
+    Tokens result = new Tokens();
+    SGML key = null;
+    SGML value = null;
+
+    for (int i = 0; i < list.nItems(); ++i) {
+      if ("dt".equals(list.itemAt(i).tag())) {
+	if (key != null) {
+	  result.addItem(key);
+	  result.addItem(new Element("dd"));
+	}
+	key = list.itemAt(i);
+      } else if ("dd".equals(list.itemAt(i).tag())) {
+	if (key == null) key = new Element("dt");
+	result.addItem(key);
+	result.addItem(list.itemAt(i));
+      } else {
+	value = list.itemAt(i);
+	if ("li".equals(value.tag())) value = value.content();
+	key = new Element("dt").addItem(value.contentText());
+	result.addItem(key);
+	result.addItem(value);
+	key = null;
+      }
+    }
+    return result;
   }
 
   /************************************************************************
