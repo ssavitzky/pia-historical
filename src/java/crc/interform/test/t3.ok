@@ -10,11 +10,11 @@ if false is working
 
 <h2>Test &lt;test&gt; operation</h2>
 
-should be '': '1' (completely empty)
-should be '': '1' (space)
-should be '1': '' ( not blanks )
-should be '': '1' text( )
-should be '1': '' text( not blanks )
+should be '': '' (completely empty)
+should be '': '' (space)
+should be '1': '1' ( not blanks )
+should be '': '' text( )
+should be '1': '1' text( not blanks )
 should be '1': '1' zero( 0 )
 should be '1': '1' zero( xxx )
 should be '': '' zero( 100 )
@@ -79,11 +79,11 @@ Foreach: <ol><li>a </li><li>b </li><li>c </li></ol><br>
 set bar: 
 bar: should be 'foo': 'foo'
 <!-- at one point, entity values were getting appended to: -->
-Should be 1: ''
+Should be 1: '1'
 Should be 'foo': 'foo'
-Should be 1: ''
+Should be 1: '1'
 Should be 'foo': 'foo'
-Should be 1: ''
+Should be 1: '1'
 Should be 'foo': 'foo'
 
 Entity used as list for repeat; expanded in attribute:
