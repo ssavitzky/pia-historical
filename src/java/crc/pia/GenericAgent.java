@@ -37,6 +37,7 @@ import crc.ds.Table;
 import crc.ds.List;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
+import crc.ds.Tabular;
 
 import crc.sgml.SGML;
 import crc.sgml.Attrs;
@@ -59,7 +60,7 @@ import w3c.www.http.HTTP;
  *
  *	@see crc.pia.Agent
  */
-public class GenericAgent extends AttrBase implements Agent {
+public class GenericAgent implements Agent {
   
   /** Extensions of executable files.
    *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
@@ -102,8 +103,7 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Attribute table for storing options
    */
-  protected AttrTable attributes = new AttrTable();
-
+  protected Table attributes = new Table();
 
   /**
    * Attribute index - name of this agent
@@ -205,8 +205,8 @@ public class GenericAgent extends AttrBase implements Agent {
     if( t != null && !n.equalsIgnoreCase( t ) ) 
       type( t );
 
-    attr("name", n);
-    attr("type", type());
+    put("name", n);
+    put("type", type());
 
     if( DEBUG ) {
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode." +
@@ -490,7 +490,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( fileTable.containsKey( key ) )
       res = (List)fileTable.get(key);
     if( res == null ){
-      v = attrString( key );
+      v = getObjectString( key );
       if ( v!=null && v.startsWith("~/") ){
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
@@ -530,7 +530,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( dirTable.containsKey( key ) )
       res = (List)dirTable.get(key);
     if( res== null ){
-      v = attrString( key );
+      v = getObjectString( key );
       if ( v!=null && v.startsWith("~"+filesep) ) {
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
@@ -802,41 +802,35 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /************************************************************************
-  ** Attrs interface: 
+  ** Attribute interface: 
   ************************************************************************/
 
   /** Return the number of defined. */
-  public synchronized int nAttrs() {
-    return attributes.nAttrs();
+  public synchronized int size() {
+    return attributes.size();
   }
 
-  /** Test whether an attribute exists. */
-  public synchronized  boolean hasAttr(String name) {
-    return attributes.hasAttr(name.toLowerCase());
-  }
-  
   /** Retrieve an attribute by name.  Returns null if no such
    *	attribute exists. */
-  public synchronized SGML attr(String name) {
-    return attributes.attr(name.toLowerCase());
+  public synchronized Object get(String name) {
+    return attributes.get(name.toLowerCase());
   }
 
-  /** Enumerate the defined attributes. */
-  public java.util.Enumeration attrs() {
-    return attributes.attrs();
+  /** Returns an enumeration of the table keys */
+  public java.util.Enumeration keys() {
+    return attributes.keys();
   }
 
   /** Set an attribute. opportunity to do special processing for special attr*/
-  public synchronized void attr(String name, SGML value) {
+  public synchronized void put(String name, Object value) {
     if( name == null ) return;
-
     name = name.toLowerCase();
-    attributes.attr(name, value);
+    attributes.put(name, value);
     if (name.equals("act-on") || name.equals("_act_on")) {
-      actOnHook = value;
+      actOnHook = (SGML)value;
       Pia.debug(this, "Setting ActOn hook", ":="+value.toString());
     } else if (name.equals("handle") || name.equals("_handle")) {
-      handleHook = value;
+      handleHook = (SGML)value;
       Pia.debug(this, "Setting handle hook", ":="+value.toString());
     }else if (name.equals("authentication") || name.equals("_authentication")) {
       
@@ -864,8 +858,14 @@ public class GenericAgent extends AttrBase implements Agent {
       // Ignore "agent", which is replaced by "name".
       if (key.equalsIgnoreCase("agent")) continue;
       String value = (String)hash.get( keyObj );
-      attr( key, value );
+      put(key, value);
     }
+  }
+
+  /** Retrieve an attribute by name, returning its value as a String. */
+  public String getObjectString(String name) {
+    Object o = get(name);
+    return (o == null)? null : o.toString();
   }
 
   /************************************************************************
