@@ -1011,9 +1011,12 @@ public class Interp extends State {
     if (debug) s = "\n"+s;
     String tag = (ia == null)? null : ia.attrString("tag");
     String name = (ia == null)? null : ia.name();
+    String fn = (environment == null)? null : environment.filename;
 
     if (tag != null) s += "<" + tag + "> ";
     else if (name != null) s += "<... " + name + "> ";
+
+    if (fn != null) s += "in " + fn + " ";
     return s;
   }
 }
