@@ -47,12 +47,25 @@ public class Criterion implements java.io.Serializable {
   ** Construction:
   ************************************************************************/
 
+  public Criterion() {
+    negate = false;
+  }
   public Criterion(String nm) {
     if (nm.endsWith("-")) {
       nm = nm.substring(0, nm.length()-1);
       negate = true;
     } else {
       negate = false;
+    }
+    name = Features.cannonicalName(nm);
+  }
+
+  public Criterion(String nm, boolean truth) {
+    if (nm.endsWith("-")) {
+      nm = nm.substring(0, nm.length()-1);
+      negate = truth;
+    } else {
+      negate = ! truth;
     }
     name = Features.cannonicalName(nm);
   }
@@ -80,7 +93,7 @@ public class Criterion implements java.io.Serializable {
 
   /** Return a Criterion subclass suitable for making the given test. */
   public static Criterion toMatch(String name, boolean test) {
-    return test? new Criterion(name) : new ValueCriterion(name, null);
+    return test? new Criterion(name) : new Criterion(name, test);
   }
 
 }
