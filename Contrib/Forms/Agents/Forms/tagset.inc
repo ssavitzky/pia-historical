@@ -295,7 +295,7 @@ AUTHLIST" empty>
     </else>
   </if>
 
-  <set name=next local>NoMoreRoute</set>
+  <set name=next local>NoRouteFound</set>
   <if><get name=myroute >
     <then>
       <!-- loop to get at next user on list -->
@@ -341,8 +341,18 @@ AUTHLIST" empty>
 	      <write file=&myform;.completed>&date;</write>
 	    </then>
 	    <else>
+	      <if> <test match=NoRouteFound><get name=next></test>
+		<then>
+		  <br> The next step for this form could not be identified.
+		  Please <a href=show_route.if?formurl=&myform;> route this
+		  form manually.</a>
+		  <append-form-history form=&myform;>Unable to route form properly</append-form-history>
+		</then>
+		<else>
 	      <notify-user form=&myform; user=&next;>
 	      Routing &myform;  to <authorizor-canonical-name authorizor=&next;>
+
+		</else>
 	    </else>
 	  </if>
 	</then>
@@ -533,7 +543,7 @@ name=AuthenticatedUser></set></else></if>
  <actor tag=remove-inbox-entry empty desc=" removes FORM from specified INBOX">
    <set name=myf local><get name=form element></set>
    <set name=minefile local><get name=inbox element></set>
-   <set local name=flag>0</set>
+   <set local name=flag></set>
    
    <if> <read file=users/&minefile;.html info>
      <then>
