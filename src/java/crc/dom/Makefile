@@ -37,7 +37,7 @@ FILES = \
 	CRCDOM.java \
 	CRCDOMFactory.java \
 	BasicElement.java \
-	BasicAttr.java \
+	BasicAttribute.java \
 	CRCAttribute.java \
 	AppComment.java \
 	ChildNodeList.java \
