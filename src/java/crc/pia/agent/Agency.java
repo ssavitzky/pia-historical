@@ -11,11 +11,13 @@
 package crc.pia.agent;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Hashtable;
 import java.util.NoSuchElementException;
+import java.util.Enumeration;
 
 import java.net.URL;
 
+import crc.ds.Table;
+import crc.ds.List;
 import crc.pia.GenericAgent;
 import crc.pia.Resolver;
 import crc.pia.Agent;
@@ -24,8 +26,8 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 
 public class Agency extends GenericAgent {
   public boolean DEBUG = false;
@@ -49,8 +51,8 @@ public class Agency extends GenericAgent {
    * Install a named agent.  Automatically loads the class if necessary.
    *
    */
-  public void install(Hashtable ht) throws NullPointerException, AgentInstallException{
-    if( ht == null ) throw new NullPointerException("bad parameter Hashtable ht\n");
+  public void install(Table ht) throws NullPointerException, AgentInstallException{
+    if( ht == null ) throw new NullPointerException("bad parameter Table ht\n");
     String name      = (String)ht.get("agent");
     String type      = (String)ht.get("type");
     String className = null;
@@ -101,9 +103,10 @@ public class Agency extends GenericAgent {
   public String proxyFor(String destination, String protocol){
     String s = null;
     try{
-      String[] list = noProxies();
-      for(int i = 0; i < list.length; i++){
-	s = list[i];
+      List list = noProxies();
+      Enumeration e = list.elements();
+      while( e.hasMoreElements() ){
+	s = (String)e.nextElement();
 	if( s.indexOf(destination) != -1 )
 	  return null;
       }
@@ -115,8 +118,8 @@ public class Agency extends GenericAgent {
   /**
    * @return no proxies list from PIA
    */
-  public String[] noProxies() throws NoSuchElementException{
-    String[] list = Pia.instance().noProxies();
+  public List noProxies() throws NoSuchElementException{
+    List list = Pia.instance().noProxies();
     if( list == null ) 
       throw new NoSuchElementException("no-proxies list is empty");
     else
@@ -127,7 +130,7 @@ public class Agency extends GenericAgent {
    * @return proxy string given protocol
    */
   public String proxy(String protocol){
-    Hashtable ht = Pia.instance().proxies();
+    Table ht = Pia.instance().proxies();
     if( !ht.isEmpty() && ht.containsKey( protocol ) ){
       String v = (String)ht.get( protocol );
       return v;
@@ -146,6 +149,7 @@ public class Agency extends GenericAgent {
     String lhost = null;
 
     Pia.instance().debug(this, "actOn...");
+
     boolean isAgentRequest = trans.test("IsAgentRequest");
     
     if(! isAgentRequest ) return;
@@ -239,8 +243,8 @@ public class Agency extends GenericAgent {
     pentagon.option("agent_directory", "~/pia/pentagon");
     System.out.println("Agent directory: " + pentagon.agentDirectory());
     pentagon.option("agent_file", "~/pia/pentagon/foobar.txt");
-    String files[] = pentagon.fileAttribute("agent_file");
-    System.out.println("Agent file: " + files[0]);
+    List files = pentagon.fileAttribute("agent_file");
+    System.out.println("Agent file: " + (String)files.at(0));
 
 
     System.out.println("\n\nTesting proxyFor -- http");
@@ -276,7 +280,7 @@ public class Agency extends GenericAgent {
       System.exit( 0 );
       /*
       System.out.println("\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-      Hashtable ht = new Hashtable();
+      Table ht = new Table();
       ht.put("agent", "Dofs");
       ht.put("type", "dofs");
       pentagon.install( ht );
