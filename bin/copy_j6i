@@ -7,7 +7,7 @@ $tmpfile = "/tmp/pnm"; # not used currently
 
 ###should directory be unmounted afterwards?
 $unmount = 1;
-
+umask 2;
 
 ##should make stats same for new file as for j6i
 
