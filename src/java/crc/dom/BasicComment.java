@@ -42,6 +42,34 @@ public class BasicComment extends AbstractNode implements Comment {
   public void setData(String data){ comment = data; }
   public String getData(){ return comment; }
 
+
+  /** Return an empty string
+   * 
+   */
+  public String startString(){
+    return "";
+  }
+  
+  /** Return the String equivalent of this node type.
+   *  Subclasses are suppose to override this function
+   *  to return appropriate content string.
+   */
+  public String contentString(){
+    return getData();
+  }
+
+  /** Return an empty string
+   *	
+   */
+  public String endString(){
+    return "";
+  }
+
+
+
+
+
+
   /**
    * actual comment
    */
