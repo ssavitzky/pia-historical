@@ -8,8 +8,9 @@ TOPDIR=../../../..
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
 	Actor.java \
-	Actor_dscr.java \
 	Actor_attrs.java \
+	Actor_dscr.java \
+	Actor_names.java \
 	Add_markup.java \
 	Difference.java \
 	Element.java \
