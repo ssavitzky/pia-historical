@@ -144,7 +144,7 @@ public class Filter {
     ToParseTree outputTree = null;
     Output output = null;
     if (parsing) {
-      outputTree = new ToParseTree();
+      outputTree = new crc.dps.output.ToParseTree();
       // === root should be an ActiveDocument ===
       outputTree.setRoot(new crc.dps.active.ParseTreeElement("Document", null));
       output = outputTree;
