@@ -16,7 +16,7 @@ import java.util.Enumeration;
  * to associate key with an Object.  Also, it allows 
  * access to Object by indexing.
  */
-public abstract class AbstractNamedList {
+public abstract class AbstractNamedList implements Serializable {
 
   /**
    * Retreive a value base on key.

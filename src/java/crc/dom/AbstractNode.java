@@ -13,7 +13,7 @@ package crc.dom;
 
 import java.io.*;
 
-public abstract class AbstractNode implements Node, Cloneable {
+public abstract class AbstractNode implements Node, Cloneable, Serializable {
 
   /**
    * implementing Node methods
