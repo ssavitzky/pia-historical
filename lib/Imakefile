@@ -8,11 +8,9 @@ all:: perl
 	@echo "symlinks made"
 
 perl: 
-	test -d perl || ln -s ../src/lib/perl .
+	test -d perl || ( test -d ../src/perl && ln -s ../src/perl . )
 
 /* java is now a real subdir
-java: 
-	test -d java || ln -s ../src/lib/java .
 */
 
 
