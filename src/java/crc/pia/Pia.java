@@ -164,8 +164,9 @@ public class Pia {
   protected String loggerClassName 	= "crc.pia.Logger";
 
   /** The name of the class that is our initial Agency.
+   *	If it can't be loaded, crc.pia.agents.Fallback is used.
    *	@see crc.pia.agents.Agency
-   *	@see crc.pia.agents.Fallback -- used if the pia's files can't be found.
+   *	@see crc.pia.agents.Fallback
    */
   protected String agencyClassName 	= "crc.pia.agent.Agency";
 
@@ -592,6 +593,8 @@ public class Pia {
    * Initialize the Pia from the properties that we already have.
    *	Put the values of any properties that defaulted back into
    *	the property table.
+   *
+   *	@exception PiaInitException if the host cannot be identified.
    */
   protected void initializeProperties() throws PiaInitException {
     String thisHost = null;

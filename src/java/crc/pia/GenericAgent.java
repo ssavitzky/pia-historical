@@ -7,7 +7,7 @@ import crc.tf.UnknownNameException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
-import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.io.IOException;
 
 import java.io.OutputStream;
@@ -128,6 +128,12 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected String DATA = "~";
 
+  /** 
+   * Crontab for timed requests.
+   */
+  protected Crontab crontab;
+
+
   /************************************************************************
   ** Initialization:
   ************************************************************************/
@@ -199,19 +205,41 @@ public class GenericAgent extends AttrBase implements Agent {
   ************************************************************************/
 
   /**
-   * Create a new request given method, url, query.  The results are tossed
-   * on the floor.
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
    */
   public void createRequest(String method, String url, String queryString){
     makeRequest(machine(), method, url, queryString).startThread();
   }
 
   /**
-   * Create a new request given destination machine, method, url, queryString.
+   * Given a url string and content create a request transaction.
+   *	@param m the Machine to which the response is to be sent.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
    */
   public void createRequest(Machine m, String method, String url,
 			    String queryString) {
     makeRequest(m, method, url, queryString).startThread();
+  }
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   */
+  public void createTimedRequest(String method, String url,
+				 String queryString, SGML itt) {
+    if (crontab == null) crontab = new Crontab();
+    crontab.makeEntry(this, method, url, queryString, itt);
   }
 
   /** Make a new request Transaction on this agent. */
@@ -245,6 +273,15 @@ public class GenericAgent extends AttrBase implements Agent {
     return request;
   }
  
+  /** 
+   * Handle timed requests.
+   */
+  public void handleTimedRequests() {
+    if (crontab != null) {
+      crontab.handleRequests(this);
+    }
+  }
+
   /************************************************************************
   ** Access to fields:
   ************************************************************************/
@@ -536,14 +573,15 @@ public class GenericAgent extends AttrBase implements Agent {
  /** 
   * agents can ask content objects to notify them of state changes.
   * this is the callback method for that notification.
-  * @see Content notifyWhen
   * AgentMachines also use this as the default callback for sending a response.
-  * 
+  *
+  * @see crc.pia.Content 
+  * @see crc.pia.agent.AgentMachine
   */
-
   public void updateContent(Content c, String state, Object arg)
   {
-    Pia.debug(this,"updating content object" + c.toString()+" state "+ state, " argument "+arg);
+    Pia.debug(this,"updating content object" + c.toString()
+	      + " state "+ state, " argument "+arg);
     if(arg instanceof AgentMachine){
       // write content to a null stream for side effects
        try{
@@ -561,7 +599,7 @@ public class GenericAgent extends AttrBase implements Agent {
   ************************************************************************/
 
   /**
-   * agents are associated with a virtual machine which is an
+   * Each Agent is associated with a virtual machine which is an
    * interface for actually getting and sending transactions.  Posts
    * explicitly to an agent get sent to the agent's machine (then to
    * the agent's interform_request method). Other requests can be
@@ -718,7 +756,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
     Pia.debug(this, msg);
 
-    Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
+    Content ct = new crc.content.text.html( new StringReader(msg) );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     req.fromMachine(), ct, false);
     response.setHeader("Location", redirUrlString);
@@ -1053,7 +1091,8 @@ public class GenericAgent extends AttrBase implements Agent {
     return true;
     }
 
-  protected void execCgi( Transaction request, String file ) throws PiaRuntimeException
+  protected void execCgi( Transaction request, String file )
+       throws PiaRuntimeException
   {
     Runtime rt = Runtime.getRuntime();
     Process process = null;
@@ -1073,6 +1112,9 @@ public class GenericAgent extends AttrBase implements Agent {
 
       in = process.getInputStream();
 
+      // === a ByteStreamContent is wrong for a CGI.
+      // === We should really create a Machine and let Transaction
+      // === parse the headers it returns.
       Content ct = new ByteStreamContent( in );
       Transaction response = new HTTPResponse( request, ct);
       

@@ -219,10 +219,6 @@ public class FileAccess {
 	    reply.startThread();
 
 	  } else if (! FIX_BASE ) {
-
-	    // === should use a FileReader and content.text.html ===
-	    //FileInputStream newdata = new FileInputStream(filename);
-	    //Content finalContent = new ByteStreamContent( newdata );
 	    FileReader newdata = new FileReader(filename);
 	    Content finalContent = new crc.content.text.html( newdata );
 	    
@@ -273,9 +269,7 @@ public class FileAccess {
 	    reply.setContentType( contentType );
 	    reply.setContentObj( finalContent );
 	    reply.startThread();
-	    
 	  }
-	  
 	  
 	}catch(NullPointerException e1){
 	  String msg = "Bad file name.\n";
@@ -288,7 +282,6 @@ public class FileAccess {
 	}catch(Exception e3){
 	}
       }
-      
     }
     
   /**

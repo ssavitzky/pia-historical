@@ -9,14 +9,12 @@
 
 package crc.pia;
 
-import crc.content.ByteStreamContent;
-
 import java.net.URL;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.OutputStreamWriter;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.OutputStream;
 import java.util.Vector;
 import java.util.StringTokenizer;
@@ -178,12 +176,11 @@ public class  HTTPResponse extends Transaction {
    */
   public void errorResponse(int code, String msg){
     int mycode = code;
-    StringBufferInputStream foo = null;
+    StringReader foo = null;
     String masterMsg = "Agency is unable to process " + requestURL() + ": ";
 
     if ( msg != null ){
       masterMsg += msg;
-      foo = new StringBufferInputStream( masterMsg );
     }
     else{
       String standardMsg = standardReason( mycode );
@@ -191,10 +188,10 @@ public class  HTTPResponse extends Transaction {
 	masterMsg += ".\n";
       else
 	masterMsg = standardMsg;
-      foo = new StringBufferInputStream( masterMsg );
     }
+    foo = new StringReader(masterMsg);
 
-    Content ct = new ByteStreamContent( foo );
+    Content ct = new crc.content.text.html( foo );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     toMachine(), ct, false);
     response.setStatus( mycode );
@@ -227,33 +224,35 @@ public class  HTTPResponse extends Transaction {
   }
   
 
-    /**
-     * Set this reply status code.
-     * This will also set the reply reason, to the default HTTP/1.1 reason
-     * phrase.
-     * @param status The status code for this reply.
-     */
+  /**
+   * Set this reply status code.
+   * This will also set the reply reason, to the default HTTP/1.1 reason
+   * phrase.
+   * @param status The status code for this reply.
+   */
 
-    public void setStatus(int s) {
-	if ((statusCode() != s) || (reason() == null))
-	    reason = standardReason(s);
-	code = s;
-    }
+  public void setStatus(int s) {
+    if ((statusCode() != s) || (reason() == null))
+      reason = standardReason(s);
+    code = s;
+  }
 
-    /**
-     * Get the reason phrase for this reply.
-     * @return A String encoded reason phrase.
-     */
+  /**
+   * Get the reason phrase for this reply.
+   * @return A String encoded reason phrase.
+   */
+  public String getReason() {
+    return reason;
+  }
 
+  /**
+   * Set the reason phrase of this reply.
+   * @param reason The reason phrase for this reply.
+   */
 
-    /**
-     * Set the reason phrase of this reply.
-     * @param reason The reason phrase for this reply.
-     */
-
-    public void setReason(String reason) {
-	this.reason = reason;
-    }
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
 
 
 
@@ -471,19 +470,19 @@ public class  HTTPResponse extends Transaction {
    * output protocolInitializationString, headers, and content.
    */
   public void printOn(OutputStream stream) throws IOException{
-     PrintStream out = new PrintStream( stream );
+    OutputStreamWriter out = new OutputStreamWriter(stream);
 
      String responseLine = protocolInitializationString();
      if( responseLine != null )
-       out.println( responseLine );
+       out.write( responseLine + "\n" );
      
      String headersString= headersAsString();
      if( headersString != null )
-       out.print( headersString );
+       out.write( headersString );
      
      Content c = contentObj();
      if( c!= null )
-       out.print( c.toString() );
+       out.write( c.toString() );
        
      out.flush();
   }

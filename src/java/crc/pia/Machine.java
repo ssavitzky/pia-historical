@@ -12,7 +12,6 @@
  * we don't do that.  */
 
 package crc.pia;
-import crc.content.ByteStreamContent;
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -150,7 +149,6 @@ public class Machine implements java.io.Serializable {
 
  /**
   * Closing socket.
-  * @returns nothing. 
   */
   public void closeConnection() {
     try {
@@ -173,10 +171,17 @@ public class Machine implements java.io.Serializable {
    * 	come from the Transaction's Content object.  If there are
    * 	controls associated with this response they are added.  <p>
    *
-   *	Note that controls may be added by the Machine (makes request to content)  because the machine is in
+   *	Note that controls may be added by the Machine 
+   *	(makes request to content)  because the machine is in
    *	a position to know what client the response is destined for, 
    *	and hence in what form to send the controls.  (Of course,
    *	at the moment we are not taking advantage of this ability.)
+   *
+   *	@param reply	the Transaction being responded to.
+   *	@param resolver	the resolver on which to queue the Transaction.
+   *	@exception PiaRuntimeException if errors occur while transmitting
+   *		the data.  (Consolidates information from several possible
+   *		exceptions so that the caller only has to handle one.)
    */
   public void sendResponse (Transaction reply, Resolver resolver)
        throws PiaRuntimeException {
@@ -559,7 +564,7 @@ bytesRead=c.writeTo(out);
 
   /**
    * Get proxy url given protocol scheme 
-   * @returns the url of the proxy machine 
+   * @return the url of the proxy machine 
    */
   public URL proxy ( String scheme ) {
     URL myproxy = null;
@@ -643,7 +648,8 @@ bytesRead=c.writeTo(out);
    * Construct from an InputStream.  This constructor is used when we 
    *	are creating the Content for a response Transaction from an
    *	InputStream (for example a file or the InterForm interpretor).
-   * @param anInputStream
+   * @param anInputStream typically from a Content
+   * @see crc.pia.Content
    */ 
   public Machine( InputStream anInputStream ){
     this.inputStream = anInputStream;

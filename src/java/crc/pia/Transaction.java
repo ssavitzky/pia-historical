@@ -20,7 +20,8 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.Runnable; // added by Greg
 
 import crc.ds.Features;
@@ -47,7 +48,8 @@ import crc.tf.TFComputer;
 import w3c.www.http.HTTP;
 
 public abstract class Transaction extends AttrBase
-    implements Runnable, HasFeatures {
+    implements Runnable, HasFeatures
+{
 
   public boolean DEBUG = false;
 
@@ -670,9 +672,12 @@ public abstract class Transaction extends AttrBase
     try{
       in = fromMachine().inputStream();
 
-      DataInputStream input = new DataInputStream( in );
+      java.io.DataInputStream input = new java.io.DataInputStream(in);
+
+      // The following is non-deprecated and supposedly correct, but it hangs.
+      //BufferedReader input = new BufferedReader(new InputStreamReader(in));
+
       firstLine = input.readLine();
-    
       if( firstLine == null ){
 	String msg = "First line is null...\n";
 	throw new PiaRuntimeException (this
@@ -793,9 +798,6 @@ public abstract class Transaction extends AttrBase
   {
     resolved = true;
     notify();  //wake up if sleeping
-    
-   
-    
   }
 
   /**
@@ -879,21 +881,23 @@ public abstract class Transaction extends AttrBase
   ** Runnable interface:
   ************************************************************************/
 
- // constructor methods should wait until  run method is called to do any
- // initialization that requires IO
+      // constructor methods should wait until  run method is called to do any
+      // initialization that requires IO
 
-/** run - process the transaction
- * <pre>
- * THIS should be called  just after a transaction has been created but,
- * created before resolution begins.(Resolution should wait until feature values are available).
- * This thread should live until the transaction has been satisfied.
- * each transaction goes through two logical steps.
- * first the content comes in from the FROM machine 
- * then content goes out to the TO machine.
- * for reasons of efficiency,  and interactions with the resolver,
- * the actual processing is not so clean.
- * </pre>
- */
+  /** run - process the transaction.
+   *  <code>run</code> should be called  
+   *  just after a transaction has been created but before resolution begins.
+   *  (Resolution should wait until feature values are available).<p>
+   *
+   *  This thread should live until the transaction has been satisfied.
+   *  Each transaction goes through two logical steps:
+   *  <ol>
+   * 	<li> first the content comes in from the FROM machine 
+   * 	<li>then content goes out to the TO machine.
+   *  </ol>
+   * For reasons of efficiency,  and because of interactions with the resolver,
+   * the actual processing is not so clean.
+   */
   public void run()
   {
 

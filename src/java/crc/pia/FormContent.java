@@ -2,6 +2,10 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
+/** Standard HTML-encoded query string used as the content of a 
+ *	POST transaction.
+ */
+
 package crc.pia;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -15,12 +19,12 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.ByteArrayInputStream;
-
 
 import crc.util.Utilities;
 
@@ -29,11 +33,7 @@ import crc.pia.HttpBuffer;
 import crc.ds.Table;
 import crc.ds.List;
 
-public class FormContent extends Properties implements Content{
-  // conditions to notify agents
-
-  // public static final Condition foo = new Condition-A(...);
-  // public static final Condition bar = new Condition-B(...);
+public class FormContent extends Properties implements Content {
  
   /**
    * headers
@@ -164,7 +164,11 @@ public class FormContent extends Properties implements Content{
   ************************************************************/
 
   /**
-   *  generic source throws exception
+   * Set source.
+   * param o the source object, which in this case must be an InputStream.
+   * @exception crc.pia.ContentOperationUnavailable if the source is
+   *	anything but an InputStream.
+   * @see java.io.InputStream
    */
   public void source(Object o)  throws ContentOperationUnavailable {
     InputStream s;
@@ -216,9 +220,12 @@ public class FormContent extends Properties implements Content{
 
   /**
    * send all of data out the output stream
+   * @param outStream the OutputStream to write on.
+   * @return the number of items written
+   * @exception java.io.IOException if thrown by the OutputStream.
    */
-
-  public int writeTo(OutputStream output)  throws ContentOperationUnavailable, IOException{
+  public int writeTo(OutputStream output)
+       throws IOException{
      int written = 0;
      // should use existing buffers -- temporary hack until rewrite
       byte[] myBuffer = new byte[4096];
@@ -356,30 +363,38 @@ public class FormContent extends Properties implements Content{
   ** agent interactions:
   ************************************************************/
   /** 
-   * add an output stream to "tap" the data before it is written
-   * any taps will get data during a read operation
-   * before the data "goes out the door"
+   * Tap the input stream.
+   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
+   *	thrown, because a FormContent can't be tapped.
    */
   public void tapIn(OutputStream tap) throws ContentOperationUnavailable{
     throw( new ContentOperationUnavailable("Tapping not implemented for FormContent"));
   }
+
+  /** 
+   * Tap the output stream.
+   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
+   *	thrown, because a FormContent can't be tapped.
+   */
   public void tapOut(OutputStream tap) throws ContentOperationUnavailable{
-    throw( new ContentOperationUnavailable("Tapping not implemented for FormContent"));
+    throw( new ContentOperationUnavailable("Tapping not implemented " +
+					   " by FormContent"));
   }
   
   /**  
-   * specify an agent to be notified when a condition is satisfy  
+   * Specify an agent to be notified when a condition is satisfy  
    * for example the object is complete
+   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
+   *	thrown, because a FormConten can't notify.
    */
-  public void notifyWhen(Agent interested, String state, Object condition) throws ContentOperationUnavailable{
-    // Need a hash of (condition, vector of agents)
-    // Given a condition, get the corresponding vector
-    // if no the interested agent is not previously registered
-    // register it
-    throw( new ContentOperationUnavailable("Notification not implemented for FormContent"));
+  public void notifyWhen(Agent interested, String state, Object condition)
+       throws ContentOperationUnavailable
+  {
+    throw( new ContentOperationUnavailable("Notification not implemented" +
+					   " by FormContent"));
   }
 
-public String[] states()
+  public String[] states()
   {
     return null; //not  implemented
   }
@@ -627,7 +642,7 @@ public String[] states()
    * for testing only
    */
   public OutputStream printParametersOn(OutputStream out){
-    PrintStream ps = new PrintStream( out );
+    PrintWriter ps = new PrintWriter(new OutputStreamWriter( out ));
     Enumeration e = propertyNames();
     Object o;
 
@@ -651,26 +666,35 @@ public String[] states()
    ***********************************/
 
   /**
-   * Add an object to the content
-   * if object is not a compatible type, throws exception
-   * @param  where: interpretation depend on content,  by convention 0 means at front
-   * -1 means at end, everything else is subject to interpretation
+   * Add an object to the content.
+   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
+   *	thrown, because a FormContent can't be edited in the usual way.
    */
-   public void add(Object moreContent, int where) throws ContentOperationUnavailable {
-     throw(new ContentOperationUnavailable("adding " + moreContent.getClass().getName() + " not supported by " + this.getClass().getName()));
+   public void add(Object moreContent, int where)
+       throws ContentOperationUnavailable
+  {
+     throw(new ContentOperationUnavailable("adding " +
+					   moreContent.getClass().getName() +
+					   " not supported by " +
+					   this.getClass().getName()));
    }
   
 
 
 
   /**
-   * replace target with replacement
-   * subject to interpretation.
-   * null  replacement implies removal of target
+   * Replace target with replacement.
+   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
+   *	thrown, because a FormContent can't be edited in the usual way.
    */
-   public void replace(Object target, Object replacement) throws ContentOperationUnavailable{
-     throw(new ContentOperationUnavailable("replacing " +  target.getClass().getName() + " not supported by " + this.getClass().getName()));
-    }
+   public void replace(Object target, Object replacement)
+       throws ContentOperationUnavailable
+  {
+     throw(new ContentOperationUnavailable("replacing " +
+					   target.getClass().getName() +
+					   " not supported by " +
+					   this.getClass().getName()));
+  }
   
 
 

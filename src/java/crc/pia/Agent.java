@@ -203,19 +203,41 @@ public interface Agent extends Attrs, Registered {
    */
   public void respond(Transaction trans, Resolver res) throws PiaRuntimeException;
 
-  /*
-   * Given a url string and content create a request transaction
-   * Note: content is used for POST request.
-   *       Also, the from machine is default to the agent's machine
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
    */
   public void createRequest(String method, String url, String queryString);
 
-  /*
-   * Given a url string and content create a request transaction
-   * Note: content is used for POST request.
-   *       User must specify from machine.
+  /**
+   * Given a url string and content create a request transaction.
+   *	@param m the Machine to which the response is to be sent.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
    */
-  public void createRequest(Machine m, String method, String url, String queryString);
+  public void createRequest(Machine m, String method, String url,
+			    String queryString);
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   */
+  public void createTimedRequest(String method, String url,
+				 String queryString, SGML itt);
+
+  /** 
+   * Handle timed requests.
+   */
+  public void handleTimedRequests();
 
   /** 
    * Send an error message that includes the agent's name and type.

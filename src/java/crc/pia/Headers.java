@@ -55,7 +55,10 @@ public class Headers {
   }
 
   /**
-   * set content type
+   * Set content type.
+   *	@param type the MIME type (e.g. <code>text/html</code>).
+   *	@exception crc.pia.BadMimeTypeException if type cannot be parsed as
+   *	 a valid MIME type.
    */
   public void setContentType(String type) throws BadMimeTypeException{
     if( zheaders!= null ){

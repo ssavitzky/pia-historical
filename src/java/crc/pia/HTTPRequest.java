@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
-import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.util.Properties;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -30,7 +30,6 @@ import java.util.NoSuchElementException;
 import crc.pia.Machine;
 import crc.pia.agent.AgentMachine;
 import crc.pia.Content;
-import crc.content.ByteStreamContent;
 import crc.pia.Transaction;
 import crc.pia.HTTPResponse;
 
@@ -549,25 +548,23 @@ public class  HTTPRequest extends Transaction {
     int mycode = code;
     String reason = standardReason(mycode);
     Pia.debug(this, "This is the err msg :"+msg);
-    StringBufferInputStream inputStream = null;
+    StringReader inputStream = null;
     String masterMsg = "<H2>Error " + mycode + " " + reason + "</H2>\n" +
       "on request for <code>" + requestURL() + "</code><br>\n";
 
     if ( msg != null ){
       masterMsg += msg + "\n<hr>\n";
-      inputStream = new StringBufferInputStream( masterMsg  );
-    }
-    else{
+    } else{
       String standardMsg = standardReason( mycode );
       if ( standardMsg == null )
 	masterMsg += ".\n";
       else
 	masterMsg = standardMsg;
       masterMsg += "\n<hr>\n";
-      inputStream = new StringBufferInputStream( masterMsg );
     }
 
-    Content ct = new ByteStreamContent( inputStream );
+    inputStream = new StringReader( masterMsg );
+    Content ct = new crc.content.text.html( inputStream );
     Transaction response = new HTTPResponse( this, Pia.instance().thisMachine,
 					     ct, false);    
     response.setStatus( mycode );

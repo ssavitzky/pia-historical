@@ -18,6 +18,8 @@ FILES = \
 	Configuration.java \
 	Content.java \
 	ContentOperationUnavailable.java \
+	Crontab.java \
+	CrontabEntry.java \
 	Agent.java \
 	ContentFactory.java \
 	GenericAgent.java \
