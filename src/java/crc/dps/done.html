@@ -1,0 +1,65 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Done</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Done</h1>
+
+<blockquote><em>
+  This file contains completed tasks. 
+</em></blockquote>
+
+<a href="#end">Most Recent Last.</a>
+
+<ul>
+  <li> 1998/6/12 <b>Bug:</b> 1998/6/11 | true branch of &lt;if&gt; failing.
+       <br>
+       This turned out to be due to the fact that, unlike
+       <code>java.util.Enumeration</code>, a <code>NodeEnumerator</code> skips
+       the first item if you start with <code>getNext</code> instead of
+       <code>getFirst</code>.
+
+  <li> 1998/6/12 <b>Check:</b> 1998/6/12 | Loops with NodeEnumerator <br>
+       Loops involving a <code>NodeEnumerator</code> have to
+       start with <code>getFirst</code> -- <code>getNext</code> skips the
+       first element (unlike a <code>java.util.Enumeration</code>)!
+       
+  <li> 1998/6/12 <b>Bug:</b>  1998/6/11 | <code>testHandler</code> <br>
+       &lt;test&gt;foo&lt;/test&gt; returns 11 -- extra put, perhaps.
+       <br>
+       Missing return, actually, after the test for null attribute list.
+
+  <li> 1998/6/15 <b>Bug:</b> 1998/6/11 | entity substitution <br>
+       &amp;date; not getting substituted (i.e. not getting looked up) in
+       running text, but substituted correctly in attributes.
+       <br>
+       Caused by AbstractHandler not checking for NodeType == ENTITY.
+
+  <li> 1998/6/15 <b>Bug:</b> 1998/6/12 | nested &lt;if&gt; <br>
+       The correct branch is selected, but appears twice in the output.
+       <br>
+       [copying a node that actually has children should just do a putNode and
+       not recurse.]
+
+  <li> 1998/6/15 <b>Bug:</b> 1998/6/12 | &lt;if text&gt; <br>
+       any element in the condition appears to be considered true.
+       <br>
+       Incorrect dispatching -- Wasn't dispatching if no subtype attr.
+       This meant that <code>text</code>, specifically, wasn't handled.
+
+  <li> 1998/6/15 <b>Hole:</b> 1998/6/15 | <code>Filter</code> parse tree
+       output <br> 
+       parse tree input &amp; output should use serialized object streams.
+       <br>
+       The <code>-n</code> option was added to permit parsing but not
+       expanding an input file.
+
+</ul>
+<a name="end">Most Recent.</a>
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

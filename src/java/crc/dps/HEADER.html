@@ -1,7 +1,12 @@
 <h1>InterForm Interpretor and Actors</h1>
 
 <a href="../">[..]</a>
-<a href="#files">[files]</a><p>
+<a href="#files">[files]</a>
+( <a href="about.html">about</a>,
+  <a href="to-do.html">to-do</a>,
+  <a href="done.html">done</a>
+)
+<p>
 
 This directory contains the all-new, all-singing, all-dancing,
 SGML-based, buzzword-compliant Document Processing System. <p>
@@ -38,6 +43,7 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
 
 <h3>Interfaces</h3>
 
+<h4>Contexts</h4>
 <dl>
   <dt> <a href="Context.java">Context</a>
   <dd> An environment in which processing is done.  Contains an Input, an
@@ -47,7 +53,10 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="TopContext.java">TopContext</a>
   <dd> A top-level context.  (An implementation of TopContext is normally a
        Processor as well.) 
-       <p>
+</dl>
+
+<h4>Handlers</h4>
+<dl>
   <dt> <a href="Action.java">Action</a>
   <dd> Semantic handlers for active nodes. 
   <dt> <a href="Active.java">Active</a>
@@ -57,12 +66,18 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dd> Interface for node syntax handlers. 
   <dt> <a href="Handler.java">Handler</a>
   <dd> Combination of Syntax and Action handlers.
-       <p>
+</dl>
+
+<h4>Bindings</h4>
+<dl>
   <dt> <a href="EntityTable.java">EntityTable</a>
   <dd> A lookup table for Entity values.  Supports context chaining.
   <dt> <a href="Tagset.java">Tagset</a>
   <dd> A lookup table for Handlers.  Supports context chaining.
-       <p>
+</dl>
+
+<h4>Traversal</h4>
+<dl>
   <dt> <a href="Cursor.java">Cursor</a>
   <dd> An interface that allows anything with a ``current node'' to be handled
        efficiently.  The parent for Input and Output.
