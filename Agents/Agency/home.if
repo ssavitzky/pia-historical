@@ -3,105 +3,109 @@
 <title>&piaUSER;'s &agentName;: Home Page</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 <base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
-</head><body bgcolor="#ffffff">
-<h1>Agency Home for 
-<if><test match="^pia$">&piaUSER;</test>
-    <then> the </then>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48 alt="R I C O H"></a>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
+<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
+<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
+	border=0 width=170 height=21></a>
+    <th>
+    <th align=left><font face=helvetica>&agentName home page</font>
+for
+<if><test exact  match='pia'><get env name="USER"></test>
+    <then> this </then>
     <else> &piaUSER;'s</else></if>
-<if><agent-running name=Logo>
-    <then><img src="/Logo/pia32" align=top 
-               height=32 width=60 alt=PIA></then>
-    <else> PIA
-           <img src="http://&piaHOST;:&piaPORT;/PIA/Doc/Graphics/sm_pent.gif"
-	        align=top>
-    </else></if>
-on &piaHOST;
-</h1>
-
-<h3>
-<if><test match="^pia$">&piaUSER;</test>
-    <then> a Peripheral Interface </then>
-    <else> &piaUSER;'s Personal Information </else></if> Agency</h3>
-
-<b>URL:</b> &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<b>User:</b> &piaUSER;<br>
-<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
-<b>Agents:</b>
-   <repeat list="&agentNames;" entity="foo">
+<tr><th><th><th align=left>
+<if><test exact match='pia'><get env name="USER"></test>
+    <then>Peripheral Interface </then>
+    <else>Personal Information </else></if> Agency
+<td>
+<tr><th width=170 rowspan=5>
+	<if><agent-running name="Logo">
+	    <then><img src="/Logo/A100.gif" height=100 width=111></then>
+	    <else>&agentName;</else>
+	</if>
+    <td><br>
+<tr>
+    <th valign=top align=right><b>&agentName;:</b>
+    <td valign=top> <a href="/Agency/agents.if">list</a> / 
+	<a href="/Agency/installers.if">install</a> / 
+ 	<a href="/Agency/remove_agent.if">remove</a>
+ 	agents<br>
+	<if><test exact match='pia'><get env name="USER"></test>
+	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
+<tr>
+    <th valign=top align=right><b>Files:</b>
+    <td valign=top> <a href="/PIA/">PIA files</a>
+	<a href="/My/">My files</a>
+	<a href="/PIA/src/">Sources</a>
+	<a href="/PIA/Doc/"><b>Docs</b></a><br>
+       
+<tr>
+    <th valign=top align=right><b>Agents:</b>
+    <td valign=top> <repeat list="&agentNames;" entity="foo">
       <a href="/&foo;/home.if">&foo;</a> <a href="/&foo;/"><b> / </b></a>
-   </repeat>
-<p>
+   </repeat><br>
+   
+<tr>
+    <th valign=top align=right><b>URL:</b>
+    <td valign=top> &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<tr><td>
+    <th valign=top align=right><b>Date:</b>
+    <td valign=top> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
+
+<tr><th align=left><br><!-- in case history isn't running -->
+<tr><th align=left><br>
+</table>
+
 
 <hr>
 This is the home page for the ``<strong>&agentName;</strong>'' agent.  It is
-used for controlling the other agents running on this PIA.
+used for controlling the other agents running on this PIA.  An agent name
+without a final slash leads to the agent's <em>home page</em>.  With the slash
+you get a generic index page.
 <hr>
-
 
 <h3>Useful Interforms:</h3>
 <ul>
   <li> <a href=/Agency/agents.if>list running agents</a>
   <li> <a href="/Agency/installers.if">install new agents</a>
   <li> <a href=/Agency/options.if>view/change options</a>
+<if><test not exact match='pia'><get env name="USER"></test><then>
   <li> <a href=/Agency/debug.if>toggle debugging</a> (currently
        <if><test zero><get pia name="main::debugging"></test>
            <then>off</then><else>on</else></if>)
   <li> <a href=/Agency/remove_agent.if> remove agent</a>
   <li> <a href="/Agency/os-cmd.if">run OS commands</a>
+</then><else>
   <li> <a href="/Agency/shutdown.if">Shut down the PIA or the computer</a>
+</else></if>       
 </ul>
 
 <h3>Other Information:</h3>
 <ul>
   <li> <a href="/PIA/Doc/"><b>Documentation</b> </a>
        <if><agent-running name=PIA><then></then>
-       <else><a href="/Agency/installers.if#PIA"><em>install
-       needed!</em></a></else></if>
-  <li> <a href="/Agency/entities.if">list defined entities</a>
-  <li> <a href="/Agency/actors.if">list defined actors</a>
-  <li> <a href="/InterForm/home.if">InterForm demonstration agent</a>
-       <if><agent-running name="InterForm"><then></then>
-       <else><a href="/Agency/installers.if#InterForm"><em>install
-       needed!</em></a></else></if>
+       <else><a href="/Agency/installers.if#PIA"><em>install needed!</em></a>
+       </else></if>
+  <li> <a href="/Agency/programming.if">Programming information</a>
 </ul>
 
 <hr>
-<dl>
-  <dt> <b>Note:</b>
-  <dd> The information above is what you'll use almost all the time.
-       Everything below this is mainly of interest to hackers, and can safely
-       be skipped by the non-curious.
-</dl>
-<hr>
-
-<h3>Where Things Are:</h3>
-
-<ul>
-  <li> <code>PIA_DIR = &piaDIR; </code>
-       (parent of src, Doc, etc.) <br>
-       If things are set up correctly, this should also be reachable as
-       <a href="/PIA/">/PIA/</a>
-  <li> <code>PIA_LIB = <get pia name="main::PIA_LIB"></code>
-       (agency libraries)
-  <li> <code>PIA_ROOT= <get pia name="main::PIA_ROOT"></code>
-       (agent interforms)
-  <li> <code>USR_DIR = <get pia name="main::USR_DIR"></code>
-       (your customizations and agent output)  <br>
-       If things are set up correctly, this should also be reachable as
-       <a href="/My/">/My/</a>
-  <li> <code>USR_ROOT= <get pia name="main::USR_ROOT"></code>
-       (your customized interforms)
-</ul>
-
-<h3>Miscellaneous files...normally not accessed directly</h3>
-<ul>
-     <li> <a href=/Agency/install_agent.if> install agent</a> -- requires
-	  knowledge of several non-obvious parameters.
-     <li> <a href=/Agency/START-UP.html> start-up 
-	  (this file gets "executed" on start-up)</a>
-     <li> <a href=/Agency/initialize.if> initialize agency 
-	  (this file gets "executed" when a new agency agent is created)</a>
-</ul>
+<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+    <b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+</table>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>

@@ -13,7 +13,7 @@
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
 <tr><th align=left><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
@@ -31,35 +31,49 @@ for
 <tr><th width=170 rowspan=5>
 	<if><read info interform file="/Agency/insert.if">
 	    <then><read interform file="/Agency/insert.if" process></then>
-	<else></if>
+	</if>
     <td><br>
 <tr>
     <th valign=top align=right><a href="/Agency/home.if"><b>Agency:</b></a>
-    <td valign=top ><a href="/Agency/installers.if">install</a> / 
+    <td valign=top> <a href="/Agency/agents.if">list</a> /
+	<a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>
- 	<a href="/Agency/agents.if">agents</a><br>
-<tr>
-    <th valign=top align=right><a href="/PIA/"><b>Files:</b></a>
-    <td valign=top ><a href="/PIA/Agents/">Agents</a>
-	<a href="/PIA/Doc/">Documents</a>
-	<a href="/PIA/src/">sources</a><br>
+ 	agents.<br>
+	<if><test exact match='pia'><get env name="USER"></test>
+	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
+<tr><if><test exact match='pia'><get env name="USER"></test>
+  <then>
+    <th valign=top align=right><b>Agent:</b>
+    <td valign=top>
+	<if><agent-running name="Photo_Album"><then>
+            <a href="/Photo_Album/home.if">Photo Album</a></then>
+        <else><if><agent-running name="CDRW"><then>
+            <a href="/CDRW/home.if">CDRW</a></then>
+        <else>???</if></if></then>
+  <else>
+    <th valign=top align=right><b>Files:</b>
+    <td valign=top> <a href="/PIA/Agents/">Agents</a>
+	<a href="/My/Agents/">(custom)</a>
+	<a href="/PIA/Doc/">Doc</a>
+	<a href="/PIA/src/">src</a>
+  </if><br>
 <if><agent-running name=History><then>
 <tr>
     <th valign=top align=right><a href="/History"><b>History:</b></a>
-    <td valign=top ><a href="/My/History">All</a>
+    <td valign=top> <a href="/My/History">All</a>
         <a href="/My/History/&date;.html">[&date;]</a><br></then>
 </if>
 <tr><th align=left><br><!-- in case history isn't running -->
 <tr><th align=left><br>
 
-<tr><th align=left colspan=2>
+<tr><td align=left colspan=2>
 <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
 <repeat list="&agentNames;"
        ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
        >	<agent-home link name="&li;">
 </repeat></pre>
 
-<td valign=bottom>
+<th valign=center>
 <if><agent-running name=Logo>
     <then><img src="/Logo/pia120.gif"
                height=120 width=222></then></if>

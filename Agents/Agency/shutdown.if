@@ -40,9 +40,9 @@
     </then><else>
 	<form action="/&agentName;/&fileName;" method=GET>
 	<select name=function>
+		<option>computer</option>
 		<option>pia</option>
 		<option>immediately</option>
-		<option>computer</option>
 	</select>
 	<input type="submit" value="CONFIRM">
 	</form>
@@ -56,7 +56,9 @@ This page lets you shutdown either the Agency, or the computer (operating
 system).  The latter operation will only be done if there is a program called
 <code>shutdown</code> in your home binary directory,
 <code>&home;/bin/</code>.  The peripheral agency user, ``pia,'' will normally
-have this; an ordinary user will not.<p>
+have this; an ordinary user will not.  If you shut down the Agency on a
+stand-alone peripheral, you will almost certainly have trouble getting it
+restarted. <p>
 
 Source for the <code>shutdown</code> program can be found in <a
 href="/PIA/src/app/setuid/">/PIA/src/app/setuid/</a> in the file
