@@ -1,10 +1,10 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>PhotoAlbum help</title>
+<title>Help for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<h1>Help for &agentName;</h1>
-
+<set entity name=title>Help for &agentName;</set>
+<read interform agent=Agency file="heading.inc" process>
 
 <h3>Functions</h3>
 <ul>
@@ -23,7 +23,7 @@
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 17:44:07 1997
+Last modified: Tue Jun  3 17:15:01 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
