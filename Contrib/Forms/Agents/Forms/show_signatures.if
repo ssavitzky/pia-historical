@@ -10,15 +10,14 @@
 
 <if> <get form name=formurl> <then>
  <set name=sigs><read file=&FORM.formurl;.sig process></set>
-<read file=&FORM.formurl;>
+<set name=file><subst match="^\.\./" result=""><get form
+name=formurl></subst></set>
+
+<read file=&file;>
 <hr>
 <if> <get name=sigs> <then>
 <h3> Signatures on <a href="&FORM.formurl;">&FORM.formurl; </a></h3>
 
- <if> <get form name=verify> <then>
-       <set name=document><read file=&FORM.formurl;></set>
-	 <set name=hash><hash><get name=document></hash></set>
-  </then></if>
 
  <table>
 <!-- for-every tag=signature object=&sigs; entity=sig -->
@@ -60,7 +59,7 @@
 
 </table>
 </then> <else>
-No signatures for &FORM.formurl;
+No signatures for &FORM.formurl; 
 </else>
 </if>
 <br> Show <a href=show_route.if?formurl=&FORM.formurl;>route</a>.
