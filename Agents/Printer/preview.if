@@ -27,12 +27,9 @@ require("printer_agent.pl");
 
 my %form_parameters=%{$current_request->parameters()};
 my $ask=$current_self->create_request('GET',$form_parameters{URL});
-my $feedback=create_preview($ask);
+my $element=create_preview($current_self,$ask);
 
-my $image_url = $current_request->url->as_string;
-my $element=HTML::Element->new('a',href => $image_url);
-my $particle=HTML::Element->new('img', src => $image_URL );
-$element->push_content($particle);
+print "preview created \n";
 return $element;
 
 </code>
@@ -40,6 +37,6 @@ return $element;
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jul 24 18:00:08 1996
+Last modified: Thu Sep 19 17:30:28 1996
 <!-- hhmts end -->
 </body></html>

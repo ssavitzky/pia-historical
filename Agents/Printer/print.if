@@ -1,0 +1,62 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>Print page for <code language="perl">
+my $name=$current_self->name;
+my $element=HTML::Element->new('a',href => "/$name/home.if");
+$element->push_content("$name");
+return $element;
+</code></h1>
+
+<code language=perl>
+my $printer=$current_self->option('printer');
+$printer="ps3";
+if(! $printer){
+my $element=HTML::Element->new('a',href => "/$name/options.if");
+$element->push_content("please specify a printer");
+return $element;
+}
+
+my $type=$current_request->method;
+if($type eq "POST") {
+return "post not supported yet";
+
+
+} else{
+if($type eq "PUT") {
+my $contenttype=$current_request->content_type();
+return "only postscript or plain text currently supported" unless $contenttype =~ /(postscript)|(plain)/;
+my $spool=$current_self->option('spool_directory');
+$spool=$printer_root_directory unless $spool;
+my $num=$current_self->option('preview_number');
+    my $spoolfile = "$spool"."job$num";
+$spoolfile .= ".ps" if $contenttype =~ /postscript/;
+$spoolfile .= ".ps";
+    $num+=1;
+    $current_self->option('preview_number',$num);
+open(SPOOL,">$spoolfile");
+print SPOOL $current_request->content();
+close(SPOOL);
+print "spoolfile is $spoolfile\n"  if $main::debugging;
+
+my $print_delay=$current_self->option('print_delay');
+
+$print_delay=1;
+
+my $status;
+$status=system("lpr -P$printer $spoolfile") unless $print_delay;
+
+return "printing $spoolfile status is $status";
+
+}}
+return "neither post nor put\n";
+</code>
+
+<hr>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Sep 19 20:43:52 1996
+<!-- hhmts end -->
+</body></html>
