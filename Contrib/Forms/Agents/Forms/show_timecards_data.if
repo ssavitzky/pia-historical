@@ -16,12 +16,7 @@
 <set name=myperiod><if><get form name=period><then><get form name=period></then>
 <else><if><test positive><difference>&day; 9 </difference ></test> <then>1-15</then><else>16-31</else></if></else> </if></set>
 
-<form action=show_timecards_data.if method=post>
-<input type=submit value="Show original data">
-<input name=year value=&myyear; type=hidden>
-<input name=month value=&mymonth; type=hidden>
-<input name=period value=&myperiod; type=hidden>
-</form>
+
 
 <!-- process a specified set of timecards -->
 
@@ -83,6 +78,7 @@
 <set name=mytimefile>timecards/&myyear;/&mymonth;/&myperiod;/</set>
 <repeat list=&AGENT.users.keys; entity=myman>
  <if> <read file=&mytimefile;&myman;.html info> <then>
+<h3> Data Submitted for signature for &myman;</h3>
 <hr>  <read file=&mytimefile;&myman;.html>
    <if><read file=&mytimefile;&myman;.html.sig> <then>
     <set name=sigs><read file=&mytimefile;&myman;.html.sig process></set>
@@ -90,8 +86,11 @@
    </then> <else> (Not signed yet)</else> </if>
    <hr>
  </then>
-   <else> <if> <read file=&mytimefile;&myman;.dat info> <then>
-     <set name=mycards><read file=&mytimefile;&myman;.dat process></set>
+</if>
+
+<if> <read file=&mytimefile;&myman;.dat info> <then>
+<h3> Raw data for &myman;</h3>
+    <set name=mycards><read file=&mytimefile;&myman;.dat process></set>
      <set name=thecards><dummy><get name=mycards findall=timecard></dummy></set>
      <table border=1>
      <tr><th>Employee</th>      <th>1<br>16</th> 
@@ -127,7 +126,6 @@
      </form></tr>
      </table>
    </then></if>
- </if>
 </repeat>
 
 <hr>
