@@ -174,6 +174,9 @@ sub actor_handle {
 ###	agent	attributes of the current PIA agent
 ###	
 
+### === <get file [path="p1:p2..."]
+###	<file read|write|append [path=] [name=] >content</file>
+
 define_actor('get', 'active' => 1, 'content' => 'name',
 	     _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
@@ -323,6 +326,14 @@ sub repeat_end_input {
     }
     return $undefined;
 }
+
+### <parse [tagset="..."]>text to reparse</parse>
+###	basically backtic.  The content gets parsed TWICE: it's expanded, 
+###	(maybe the text extracted) then reparsed.
+
+### <noparse>text to not parse</noparse>
+###	basically quote.  Or could have <parse never> 
+###	or <block quoted|parsed|...>
 
 ###### Tests:
 
@@ -582,6 +593,11 @@ sub pad_handle {
 	$it->replace_it(IF::IT->new()->push($right)->push($it)->push($left));
     }
 }
+
+### <split [separator="string" | pattern="pattern"]>text</split>
+
+### <subst match="pattern" result="pattern">text</subst>
+
 
 ###### InterForm Actors:
 
