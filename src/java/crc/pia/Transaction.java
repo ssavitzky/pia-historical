@@ -47,7 +47,6 @@ import w3c.www.http.HTTP;
 
 public abstract class Transaction extends AttrBase implements Runnable {
 				// implements Runnable added by Greg
-  public boolean DEBUG = false;
   /**
    * Attribute index - use to notify thread pool when this transaction is done
    */
@@ -675,11 +674,11 @@ public abstract class Transaction extends AttrBase implements Runnable {
       DataInputStream input = new DataInputStream( in );
       firstLine = input.readLine();
     
-      Pia.instance().debug(this, "the firstline-->" + firstLine);
+      Pia.debug(this, "the firstline-->" + firstLine);
    
       headersObj  = hf.createHeader( in );
       if( headersObj == null ){
-	 Pia.instance().debug(this, "Can not parse header...");
+	 Pia.debug(this, "Can not parse header...");
 	 String msg = "Can not parse header...\n";
 	 throw new PiaRuntimeException (this
 					, "initializeHeader"
@@ -774,7 +773,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    */
    public void defaultHandle( Resolver resolver ){
    // subclass should implement
-     Pia.instance().debug(this, "defaultHandle ...");
+     Pia.debug(this, "defaultHandle ...");
    }
 
   /** 
@@ -824,7 +823,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
     Object obj;
     boolean satisfied = false;
 
-    Pia.instance().debug(this, "Satisfaction ?");
+    Pia.debug(this, "Satisfaction ?");
     
     Enumeration e = handlers.queue();
     while( e.hasMoreElements() ){
@@ -851,7 +850,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
     //  send a response or get a request.
 
     if(!satisfied){
-      Pia.instance().debug(this, "Got no satisfaction...");
+      Pia.debug(this, "Got no satisfaction...");
       defaultHandle( resolver );
     }
 
@@ -890,7 +889,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
       // make sure we have the header information
       if(headersObj ==  null) initializeHeader();
     
-      Pia.instance().debug(this, "Got a head...");
+      Pia.debug(this, "Got a head...");
       // and the content
       if(contentObj ==  null) initializeContent();
     }catch (PiaRuntimeException e){
@@ -899,7 +898,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
       notifyThreadPool();
     }
 
-    Pia.instance().debug(this, "Got a body...");
+    Pia.debug(this, "Got a body...");
     // incase body needs to update header about content length
     if( headersObj!= null && contentObj != null )
       contentObj.setHeaders( headersObj );
@@ -914,7 +913,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
       //contentobject returns false when object is complete
       //if(!contentObj.processInput(fromMachine)) 
 
-      Pia.instance().debug(this, "Waiting to be resolved");
+      Pia.debug(this, "Waiting to be resolved");
 
       long delay = 1000;
 
