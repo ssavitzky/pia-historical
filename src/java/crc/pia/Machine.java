@@ -394,12 +394,11 @@ public class Machine {
     int zport = 80;
     String zhost;
 
-    Pia.debug(this, "Getting data through proxy request");
+    Pia.debug(this, "Getting data through proxy request") ;
     int p        = url.getPort();
     zport        = (p == -1) ? 80 : p;
     zhost        = url.getHost();
     try{
-
       socket = new Socket(zhost, zport);
       outputStream = socket.getOutputStream();
       inputStream  = new BufferedInputStream( socket.getInputStream() );
@@ -409,6 +408,7 @@ public class Machine {
       
       new HTTPResponse(request, this);
 
+
     }catch(UnknownHostException ue){
       throw ue;
     }catch(IOException e){
@@ -417,6 +417,7 @@ public class Machine {
 				     , "getReqThruSock"
 				     , msg) ;
     }
+    Pia.debug(this, "Leaving proxy request");
   }
 
   /**
@@ -489,7 +490,11 @@ public class Machine {
       p = proxystring;
 
     if (p==null) {
-      String mainproxy = Pia.instance().agency().proxyFor(hostName, scheme);
+      String mainproxy = null;
+
+      crc.pia.agent.Agency mainagency = Pia.instance().agency;
+      if( mainagency !=null )
+	mainproxy = mainagency.proxyFor(hostName, scheme);
       if ( mainproxy!= null ) p = mainproxy;
     }
 
