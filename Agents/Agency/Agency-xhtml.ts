@@ -37,6 +37,13 @@
    </define>
 </define>
 
+<define element=agent-remove empty handler=crc.pia.agent.agentRemove>
+   <define attribute=agent required>
+      <doc> specifies the name of the agent to be removed
+      </doc>
+   </define>
+</define>
+
 <define element=agent-save empty handler=crc.pia.agent.agentSave>
    <define attribute=file required>
       <doc> specifies the name of the file to be saved into.
