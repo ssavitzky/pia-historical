@@ -165,7 +165,7 @@ public class GenericAgent extends AttrBase implements Agent {
     } else if ("GET".equalsIgnoreCase(method)) {
       request =  new HTTPRequest();
       request.fromMachine( m );
-      url += queryString;
+      url += "?" + queryString;
     } else {
       FormContent c = new FormContent( queryString );
       request = new HTTPRequest( m, c, false );
