@@ -15,36 +15,34 @@ import java.io.*;
 public class CRCElement extends BasicElement implements Element {
 
   public CRCElement(){
-    setParent( null );
-    setPrevious( null );
-    setNext( null );
-    setTagName( "" );
-    setAttributes( null );
+    super();
+    setElementDef( null );
+  }
+
+  public CRCElement( CRCElement e ){
+    super( e );
+    elementDef = e.getElementDef();
   }
 
   public CRCElement(Node myParent){
-    if( myParent != null )
-      setParent( (AbstractNode) myParent );
-    else
-      setParent( null );
-    setPrevious( null );
-    setNext( null );
-    setTagName( "" );
-    setAttributes( null );
+    super( myParent );
+    setElementDef( null );
+  }
+
+  public Object clone(){
+    CRCElement n = (CRCElement)super.clone();
+    n.setTagName( getTagName() );
+    n.copyChildren( this );
+    AttributeList l = getAttributes();
+    if( l != null )
+      n.setAttributes( new AttrList( l ) );
+    n.setElementDef( getElementDef() );
+    return n;
   }
 
   /**
    * implementing Element methods
    */
-  public int getNodeType() { return NodeType.ELEMENT; }
-
-  public void setTagName(String tagName){}
-  public String getTagName(){ return tagName; }
-  
-  public void setAttributes(AttributeList attributes){}
-  public AttributeList getAttributes(){ return attrList; }
-  
-  public void setAttribute(Attribute newAttr){}
 
   public void setElementDef(ElementDefinition d ){
     elementDef = d;
@@ -54,9 +52,6 @@ public class CRCElement extends BasicElement implements Element {
     return elementDef;
   }
   
-  public NodeEnumerator getElementsByTagName(String name){ return null; }
-
-
   /**
    * ElementDefinition
    */
