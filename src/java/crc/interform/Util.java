@@ -13,6 +13,7 @@ import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Attrs;
 import crc.sgml.AttrWrap;
+import crc.sgml.Token;
 import crc.sgml.Element;
 
 import crc.ds.List;

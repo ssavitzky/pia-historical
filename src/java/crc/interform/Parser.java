@@ -197,21 +197,28 @@ public class Parser extends Input {
   /** True for every character permitted in a URL */
   public static BitSet isURL;
 
+  /** True for every character not permitted in an attribute */
+  public static BitSet notAttr;
+
   /** Initialize the identifier and whitespace BitSet's.  Since we are only 
    *	concerned with the SGML reference syntax, we don't have to make these 
    *	public or have a set for each Parser object. */
   static void initializeTables() {
+    int i;
     isIdent = new BitSet();
     isSpace = new BitSet();
     isURL = new BitSet();
-    for (int i = 0; i <= ' '; ++i) isSpace.set(i);
-    for (int i = 'A'; i <= 'Z'; ++i) { isIdent.set(i); isURL.set(i); }
-    for (int i = 'a'; i <= 'z'; ++i) { isIdent.set(i); isURL.set(i); }
-    for (int i = '0'; i <= '9'; ++i) { isIdent.set(i); isURL.set(i); }
+    notAttr = new BitSet();
+    for (i = 0; i <= ' '; ++i) { isSpace.set(i); notAttr.set(i); }
+    for (i = 'A'; i <= 'Z'; ++i) { isIdent.set(i); isURL.set(i); }
+    for (i = 'a'; i <= 'z'; ++i) { isIdent.set(i); isURL.set(i); }
+    for (i = '0'; i <= '9'; ++i) { isIdent.set(i); isURL.set(i); }
     isIdent.set('-'); isURL.set('-');
     isIdent.set('.'); isURL.set('.');
     String url = ":/?+~%&;";
-    for (int i = 0; i < url.length(); ++i) isURL.set(url.charAt(i));
+    for (i = 0; i < url.length(); ++i) isURL.set(url.charAt(i));
+    String s = "<>\"'";
+    for (i = 0; i < s.length(); ++i) notAttr.set(s.charAt(i));
   }
 
   /************************************************************************
@@ -265,6 +272,21 @@ public class Parser extends Input {
        throws IOException {
     if (last == 0) last = in.read();
     while (last >= 0 && last != aCharacter
+	   && !(checkEntities && last == '&')) {
+      buf.append((char)last);
+      last = in.read();
+    } 
+    return last >= 0;    
+  }
+
+  /** Starting at the next available character, append characters to
+   *	<code>buf</code> until a character in <code>aBitSet</code> is seen.
+   *
+   *	@return false if end-of-file is reached before a match. */
+  final boolean eatUntil(BitSet aBitSet, boolean checkEntities)
+       throws IOException {
+    if (last == 0) last = in.read();
+    while (last >= 0 && ! aBitSet.get(last)
 	   && !(checkEntities && last == '&')) {
       buf.append((char)last);
       last = in.read();
@@ -357,6 +379,7 @@ public class Parser extends Input {
    *	an entity name.
    */
   boolean getEntity() throws IOException {
+    if (last != '&') return false;
     last = 0;
     if (!eatIdent()) {
       buf.append("&"); 
@@ -383,7 +406,7 @@ public class Parser extends Input {
 	    list.append(new Text(buf));
 	  break;
 	}
-	if (getEntity()) {
+	if (last == '&' && getEntity()) {
 	  list.append(next);
 	}
       }
@@ -429,6 +452,30 @@ public class Parser extends Input {
       debug("=" + (char)quote + next.toString() + (char)quote);
       buf = tmp;
       return true;
+    } else if (last <= ' ' || last == '>') {
+      next = new Text("");
+      return true;
+    } else {
+      StringBuffer tmp = buf;
+      buf = new StringBuffer();
+      Tokens list = new Tokens();
+      for ( ; ; ) {
+	if (eatUntil(notAttr, true)) {
+	  if (list.isEmpty() || ! (buf.length() == 0)) {
+	    list.append(new Text(buf));
+	    buf = new StringBuffer();
+	  }
+	} else break;
+	if (getEntity()) {
+	  list.append(next);
+	} else break;
+      }
+      next = list.simplify();
+      debug("=" + (list.isText()? ".." : ".&."));
+      buf = tmp;
+      return true;
+    }
+    /* === checking for an Ident doesn't work; too many missing quotes ===
     } else if (eatIdent()) {
       next = new Text(ident);
       debug("="+ident);
@@ -437,6 +484,7 @@ public class Parser extends Input {
       next = new Text("");
       return true;
     }
+    === */
   }
 
   /** Get a tag starting with <code>last='&amp;'</code> and return it in
@@ -460,8 +508,8 @@ public class Parser extends Input {
       // Now go after the attributes.
       //    They have to be separated by spaces.
 
-      while (last == 0 || last >= ' ' && last != '>') {
-	// === need to be appending the identifier in case we lose ===
+      while (last >= 0 && last != '>') {
+	// need to be appending the identifier in case we lose ===
 	eatSpaces();	
 	if (eatIdent()) {
 	  a = ident;
@@ -469,7 +517,7 @@ public class Parser extends Input {
 	  debug(" "+a);
 	  if (getValue()) it.addAttr(a, next);
 	  else		  it.addAttr(a, Token.empty);
-	}
+	} else break;
       }
       if (last != '>') return false;
 
