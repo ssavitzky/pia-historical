@@ -56,9 +56,9 @@
 	    <a href="/Agency/installers.if">install</a> / 
 	    <a href="/Agency/remove_agent.if">remove</a>
 	    agents.<br>
-	    <if><test exact match='pia'><get env name="USER"></test>
+	    <if><test exact match='pia'>&piaUSER;</test>
 	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
-    <tr><if><test exact match='pia'><get env name="USER"></test>
+    <tr><if><test exact match='pia'>&piaUSER;</test>
       <then>
 	<th valign=top align=right><b>Agent:</b>
 	<td valign=top>

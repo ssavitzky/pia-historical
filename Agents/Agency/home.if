@@ -6,10 +6,10 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>home page for
-<if><test exact  match='pia'><get env name="USER"></test>
+<if><test exact  match='pia'>&piaUSER;</test>
     <then> this </then>
     <else> &piaUSER;'s</else></if><br>
-<if><test exact match='pia'><get env name="USER"></test>
+<if><test exact match='pia'>&piaUSER;</test>
     <then>Peripheral Interface </then>
     <else>Personal Information </else></if> Agency</set>
 <read interform file="heading.inc" process>
@@ -30,7 +30,7 @@
 	<a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>
  	agents<br>
-	<if><test exact match='pia'><get env name="USER"></test>
+	<if><test exact match='pia'>&piaUSER;</test>
 	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
   <tr>
     <th valign=top align=right>
@@ -64,7 +64,7 @@ you get a generic <em><a href="index.if">index</a></em> page.
   <li> <a href=/Agency/agents.if>list running agents</a>
   <li> <a href="/Agency/installers.if">install new agents</a>
   <li> <a href=/Agency/options.if>view/change options</a>
-<if><test not exact match='pia'><get env name="USER"></test><then>
+<if><test not exact match='pia'>&piaUSER;</test><then>
   <li> <a href=/Agency/debug.if>toggle debugging</a> (currently
        <if><test zero><get pia name="main::debugging"></test>
            <then>off</then><else>on</else></if>)
