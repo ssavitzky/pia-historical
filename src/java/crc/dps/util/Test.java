@@ -111,6 +111,12 @@ public class Test {
     return (orValues(v))? v : null;
   }
 
+  /** Determine whether a Node has a true value in a given context. 
+   */
+  public static boolean trueValue(ActiveNode aNode, Context aContext) {
+    return getTrueValue(aNode, aContext) != null;
+  }
+
   /** Determine whether <em>all</em> the items in a nodeList are true.
    *	An empty list is considered <em>true</em>, because all of
    *	its elements are true.
@@ -124,6 +130,17 @@ public class Test {
     return true;
   }
 
+  /** Determine whether <em>all</em> the items in a nodeList are true in a
+   *	given context.  */
+  public static boolean andValues(NodeList aNodeList, Context aContext) {
+    if (aNodeList == null) return true;
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      if (! trueValue((ActiveNode)node, aContext)) return false;
+    }
+    return true;
+  }
+
   /** Determine whether <em>any</em> of the items in a nodeList are true. 
    *	An empty list is considered <em>false</em> because it contains
    *	no true elements.
@@ -133,6 +150,18 @@ public class Test {
     NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       if (trueValue(node)) return true;
+    }
+    return false;
+  }
+
+  /** Determine whether <em>any</em> of the items in a nodeList are true
+   *	in a given context.
+   */
+  public static boolean orValues(NodeList aNodeList, Context aContext) {
+    if (aNodeList == null) return false;
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      if (trueValue((ActiveNode)node, aContext)) return true;
     }
     return false;
   }
