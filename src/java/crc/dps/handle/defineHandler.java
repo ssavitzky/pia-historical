@@ -12,6 +12,7 @@ import crc.dom.Element;
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
+import crc.dps.tagset.TagsetProcessor;
 import crc.dps.handle.Loader;
 
 import java.util.Enumeration;
@@ -116,6 +117,7 @@ public class defineHandler extends GenericHandler {
   }
 }
 
+/** Define an element.  Corresponds to &lt!ELEMENT ...&gt; */
 class define_element extends defineHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
@@ -188,6 +190,51 @@ class define_element extends defineHandler {
   }
 }
 
+/** Define an entity.  Corresponds to &lt!ENTITY ...&gt; */
+class define_entity extends defineHandler {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
+    String       name = atts.getAttributeString(attrName);
+    TopContext   top  = cxt.getTopContext();
+
+    NodeList newContent = null;
+    // Get the action, if any.
+    ActiveElement action = getAction(content);
+    newContent  = (action == null)? null : action.getChildren();
+    // Get the value, if any.
+    ActiveElement value = getValue(content);
+    newContent  = (value == null)? null : value.getChildren();
+
+    if (action != null && value != null)
+      unimplemented(in, cxt, "entity with both action and value");
+    if (action != null) unimplemented(in, cxt, "entity with action");
+    // === with action or passive entity, need to set up a binding. ===
+
+    TagsetProcessor tproc = (top instanceof TagsetProcessor)
+      ? (TagsetProcessor) top : null;
+
+    if (hasNamespace(name)) {
+      // Have to worry about namespace. 
+      cxt.setEntityValue(name, newContent, false);
+    } else if (tproc != null ) {
+      // If we're in a tagset, define it there.
+      tproc.getTagset().setEntityValue(name, newContent);
+    } else {
+      // Otherwise, define it in the document's entity table. 
+      top.setEntityValue(name, newContent, false);
+    }
+  }
+  define_entity(String aname) { super(aname); }
+  static define_entity handle = new define_entity("entity");
+  static Action handle(ActiveElement e) { return handle; }
+
+  protected boolean hasNamespace(String name) {
+    return name.indexOf(":") >= 0;
+  }
+}
+
+// -----------------------------------------------------------------------
+
 class define_attribute extends defineHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
@@ -197,20 +244,6 @@ class define_attribute extends defineHandler {
   }
   define_attribute(String aname) { super(aname); }
   static define_attribute handle = new define_attribute("attribute");
-  static Action handle(ActiveElement e) { return handle; }
-}
-
-class define_entity extends defineHandler {
-  public void action(Input in, Context cxt, Output out, 
-  		     ActiveAttrList atts, NodeList content) {
-    String name = atts.getAttributeString(attrName);
-    // Might have to handle both action and value
-
-    // Have to worry about namespace. 
-    unimplemented(in, cxt);  // === define_entity
-  }
-  define_entity(String aname) { super(aname); }
-  static define_entity handle = new define_entity("entity");
   static Action handle(ActiveElement e) { return handle; }
 }
 

@@ -1,4 +1,4 @@
-////// ToWriter.java: Token output Stream to Writer
+////// ToHTTPClient.java: output nodes to HTTP client
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -8,13 +8,20 @@ import crc.dps.*;
 import crc.dps.aux.*;
 import crc.dom.*;
 
+import crc.pia.Headers;
+
 import java.util.NoSuchElementException;
 import java.io.Writer;
-import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 /**
- * Output a Token stream to a Writer (character output stream). <p>
+ * Output a Token stream to an HTTP client (represented by its OutputStream). 
+ *
+ * <p>	Contains extra machinery to output the response line and headers ahead
+ *	of the document content.  This allows the DPS to modify the response
+ *	type and headers. 
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -22,14 +29,16 @@ import java.io.IOException;
  * @see crc.dps.Processor
  */
 
-public class ToWriter extends ToExternalForm {
+public class ToHTTPClient extends ToExternalForm implements Output {
 
   /************************************************************************
   ** State:
   ************************************************************************/
 
   protected Writer destination = null;
-
+  protected OutputStream destStream = null;
+  protected boolean headersOutput = false;
+  protected Headers headers = null;
 
   /************************************************************************
   ** Internal utilities:
@@ -46,12 +55,10 @@ public class ToWriter extends ToExternalForm {
   ************************************************************************/
 
   /** Construct an Output given a destination Writer */
-  public ToWriter(Writer dest) {
-    destination = dest;
+  public ToHTTPClient(OutputStream dest, Headers hdrs) {
+    destStream  = dest;
+    destination = new OutputStreamWriter(destStream);
+    headers     = hdrs;
   }
 
-  /** Construct an Output given a destination filaname.  Opens the file. */
-  public ToWriter(String filename) throws java.io.IOException {
-    destination = new FileWriter(filename);
-  }
 }

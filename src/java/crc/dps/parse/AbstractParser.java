@@ -44,34 +44,31 @@ import crc.dps.active.*;
 
 public abstract class AbstractParser extends CursorStack implements Parser
 {
-
   /************************************************************************
-  ** Processor Access:
+  ** State:
   ************************************************************************/
 
-  protected Processor    processor;
+  protected Processor   processor;
+  protected ActiveNode 	document 	= null;
+  protected Reader 	in 		= null;
+  protected Tagset 	tagset 		= null;
+  protected EntityTable entities	= null; 
 
-  public Processor getProcessor() { return processor; }
+  /************************************************************************
+  ** Access:
+  ************************************************************************/
 
-  public void setProcessor(Processor aProcessor) {
-    processor 	 = aProcessor;
+  public ActiveNode getDocument() { return document; }
+  public void setDocument(ActiveNode aDocument) {
+    document = aDocument; 
+    retainTree = (document != null);
   }
 
-  /************************************************************************
-  ** Reader Access:
-  ************************************************************************/
-
-  protected Reader in = null;
+  public Processor getProcessor() { return processor; }
+  public void setProcessor(Processor aProcessor) { processor = aProcessor; }
 
   public Reader getReader() { return in; }
   public void setReader(Reader aReader) { in = aReader; }
-
-  /************************************************************************
-  ** Access to Bindings:
-  ************************************************************************/
-
-  protected Tagset tagset = null;
-  protected EntityTable entities = null; 
 
   public Tagset getTagset() { return tagset; }
   public void setTagset(Tagset aTagset) {
@@ -199,11 +196,11 @@ public abstract class AbstractParser extends CursorStack implements Parser
    protected final boolean eatText() throws IOException {
     if (last == 0) last = in.read();
     if (last < 0) return false;
-    if (last == '&' || last == '<') return true;
+    if (last == entityStart || last == '<') return true;
     do {
       buf.append((char)last);
       last = in.read();
-    } while (last >= 0 && last != '&' && last != '<');
+    } while (last >= 0 && last != entityStart && last != '<');
     return last >= 0;    
   }
 
@@ -236,7 +233,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
        throws IOException {
     if (last == 0) last = in.read();
     while (last >= 0 && last != aCharacter
-	   && !(checkEntities && last == '&')) {
+	   && !(checkEntities && last == entityStart)) {
       buf.append((char)last);
       last = in.read();
     } 
@@ -251,7 +248,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
        throws IOException {
     if (last == 0) last = in.read();
     while (last >= 0 && ! aBitSet.get(last)
-	   && !(checkEntities && last == '&')) {
+	   && !(checkEntities && last == entityStart)) {
       buf.append((char)last);
       last = in.read();
     } 
@@ -273,10 +270,10 @@ public abstract class AbstractParser extends CursorStack implements Parser
     int nextPosition = aString.indexOf(aCharacter, 1);
 
     if (last == 0) last = in.read();
-    while (last >= 0) {
+    while (last >= 0 && last != entityStart) {
 
       /* This could be faster, but it could be a lot slower, too.  We
-       * append, looking for aCharacter, the first character in
+       * append to buf while looking for aCharacter, the first character in
        * aString.  We keep track of its position in itsPosition, the
        * tentative starting point of a match to aString.
        */
@@ -291,30 +288,39 @@ public abstract class AbstractParser extends CursorStack implements Parser
        */
       if (itsPosition >= 0 &&
 	  (buf.length() - itsPosition) == matchLength) {
-	int i = 1, j = itsPosition + 1;
+	int i = 1; 
+	int j = itsPosition + 1;
 	for ( ; i < matchLength; ++i, ++j) {
 	  if (aString.charAt(i) != Character.toLowerCase(buf.charAt(j))) {
-	    j = 0;
 	    break;
 	  }
 	}
-	if (j > 0) {		// Success
+	if (i == matchLength) {		// Success
 	  buf.setLength(buf.length() - matchLength);
+	  last = 0;
 	  return true;
 	}
 
 	/* The match failed.  Advance the tentative starting point to the
-	 * next occurrence of aCharacter, if any.
+	 * next occurrence of aCharacter, if any.  
 	 */
-	if (nextPosition > 0 && nextPosition < i) 
+	if (nextPosition > 0 && nextPosition < i) {
+	  // We matched a second occurrence in aString, so go there.
 	  itsPosition += nextPosition;
-	else
+	} else {
 	  itsPosition = -1;
+	  // It doesn't occur in the part we matched, but may occur later.
+	  for (++i, ++j; i < matchLength; ++i, ++j) {
+	    if (Character.toLowerCase(buf.charAt(j)) == aCharacter) {
+	      itsPosition = j;
+	      break;
+	    }
+	  }
+	}
       }
       last = in.read();
     } 
-    // ===
-    return false;
+    return last >= 0;
   }
 
   /** Starting at <code>last</code> (or the next available character
@@ -526,9 +532,13 @@ public abstract class AbstractParser extends CursorStack implements Parser
       check = checkStartTag(n);
       if (check == 0) {
 	setNode(n);
-	if (retainTree && depth > 0) {
-	  Node parent = getNode(depth-1);
-	  if (parent != null) Copy.appendNode(n, parent);
+	if (retainTree) {
+	  if (depth > 0) {
+	    Node parent = getNode(depth-1);
+	    if (parent != null) Copy.appendNode(n, parent);
+	  } else {
+	    if (document != null) Copy.appendNode(n, document);
+	  }
 	} 
 	atLast = false;
 	return n;

@@ -39,15 +39,24 @@ public class Loader {
     defHandle("define", new defineHandler());
     /**/defHandle("action", new actionHandler());
     /**/defHandle("value", new valueHandler());
+    defHandle("connect", new connectHandler());
+    defHandle("expand", new expandHandler());
+    defHandle("hide", new hideHandler());
     defHandle("if", new ifHandler());
     /**/defHandle("else", new elseHandler());
     /**/defHandle("elsf", new elsfHandler());
+    /**/defHandle("then", new thenHandler());
     defHandle("get", new getHandler());
+    defHandle("include", new includeHandler());
+    defHandle("logical", new logicalHandler());
+    defHandle("numeric", new numericHandler());
+    defHandle("protect", new protectHandler());
     defHandle("repeat", new repeatHandler());
     defHandle("set", new setHandler());
     defHandle("subst", new substHandler());
+    defHandle("tagset", new tagsetHandler());
     defHandle("test", new testHandler());
-    defHandle("then", new thenHandler());
+    defHandle("text", new textHandler());
   }
 
   /** Load an appropriate handler class and instantiate it. 

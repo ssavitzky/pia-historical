@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.text.DateFormat;
 
 import java.io.PrintStream;
+import java.io.File;
 
 import java.net.URL;
 
@@ -155,6 +156,56 @@ public class ActiveDoc extends TopProcessor {
   }
 
   /************************************************************************
+  ** External Entities:
+  ************************************************************************/
+
+  /** Locate a resource accessible as a file. */
+  public File locateSystemResource(String path, boolean forWriting) {
+    if (path.startsWith("file:")) {
+      // Just remove the "file:" prefix.
+      path = path.substring(5);
+    }
+    if (path.startsWith("/")) {
+      // Path starting with "/" is relative to document root
+      path = agent.findInterform(path);
+      return (path == null)? null : new File(path);
+    } else if (path.indexOf(":") >= 0) {
+      // URL: fail.
+      return null;
+    } else {
+      // Path not starting with "/" is relative to documentBase.
+      if (path.startsWith("./")) path = path.substring(2);
+      if (documentBase != null) path = documentBase + path;
+      path = agent.findInterform(path);
+      return (path == null)? null : new File(path);
+    }
+  }
+
+  /************************************************************************
+  ** Sub-processing:
+  ************************************************************************/
+
+  /** Load a Tagset by name. 
+   * @param tsname the tagset name.  If null, returns the current tagset. 
+   */
+  public Tagset loadTagset(String tsname) {
+    // === loadTagset is probably different in the PIA
+    return (tsname == null)? tagset : crc.dps.tagset.Loader.loadTagset(tsname);
+  }
+
+  /** Process a new subdocument. 
+   * 
+   * @param in the input.
+   * @param ts the tagset.  If null, the current tagset is used.
+   * @param cxt the parent context. 
+   * @param out the output.  If null, the parent context's output is used.
+   */
+  public TopContext subDocument(Input in, Context cxt, Output out, Tagset ts) {
+    if (ts == null) ts = tagset;
+    return new ActiveDoc(in, cxt, out, ts);
+  }
+
+  /************************************************************************
   ** Construction:
   ************************************************************************/
 
@@ -179,7 +230,7 @@ public class ActiveDoc extends TopProcessor {
   }
 
   public ActiveDoc(Input in, Output out) {
-    super(in, null, out, null);
+    super(in, out);
     initializeEntities();
   }
 
@@ -187,9 +238,12 @@ public class ActiveDoc extends TopProcessor {
     super(in, null, out, ents);
   }
 
-  public ActiveDoc(Input in, Context prev, Output out,
-			   EntityTable ents) {
+  public ActiveDoc(Input in, Context prev, Output out, EntityTable ents) {
     super(in, prev, out, ents);
+  }
+
+  public ActiveDoc(Input in, Context prev, Output out, Tagset ts) {
+    super(in, prev, out, ts);
   }
 
 

@@ -5,6 +5,12 @@
 package crc.dps;
 
 import java.io.PrintStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
+
+import java.net.URL;
 
 /**
  * The interface for a top context.
@@ -44,7 +50,7 @@ public interface TopContext extends Processor {
   public ProcessorInput getProcessorInput();
 
   /************************************************************************
-  ** Input and Output
+  ** Input and Output:
   ************************************************************************/
 
   /** Registers an Input object for the Processor.  
@@ -54,6 +60,81 @@ public interface TopContext extends Processor {
   /** Registers an Output object for the Processor.  
    */
   public void setOutput(Output anOutput);
+
+  /************************************************************************
+  ** External Entities:
+  ************************************************************************/
+
+  /** The root URL of the document -- the server where it is located. 
+   *
+   * <p> This is null if the document is located on the same host as the
+   *	 DPS process, i.e. the document is accessible as a file.
+   */
+  public URL getDocumentLocation();
+
+  /** The file path of the current document relative to its location
+   *	(i.e., the result of <code>getDocumentLocation</code>).
+   *
+   * <p> This will always be a file path (starting with ``<code>/</code>'') 
+   *	 following the URL convention of forward slashes for separators.
+   *	 In all cases it will end with a ``<code>/</code>''. 
+   *
+   * <p> Inside a PIA or other server the base path is need not be a path 
+   *	 from the filesystem root, but may be relative to the server's
+   *	 document root instead.
+   */
+  public String getDocumentBase();
+
+  /** The file name of the current document. 
+   *	May be null if the current document is a string. 
+   */
+  public String getDocumentName();
+
+  /** Read from a resource. 
+   *	The given path always uses ordinary (forward) slashes as file
+   *	separators, because it is really a URI.  If a protocol and host
+   *	are not specified, the path is relative to some implementation-
+   *	dependent origin if it starts with '<code>/</code>', otherwise
+   *	it is relative to the start of the document being processed.
+   */
+  public InputStream readExternalResource(String path)
+    throws IOException;
+
+  /** Write to a resource. 
+   * @param path a path.
+   * @param append append to an existing resource. 
+   * @param createIfAbsent if no resource of the given name exists, create one
+   * @param doNotOverwrite do not overwrite an existing resource
+   */
+  public OutputStream writeExternalResource(String path, boolean append,
+					    boolean createIfAbsent,
+					    boolean doNotOverwrite)
+    throws IOException;
+
+  /** Locate a resource accessible as a file. */
+  public File locateSystemResource(String path, boolean forWriting);
+
+  /** Locate a resource accessible as a URL. */
+  public URL locateRemoteResource(String path, boolean forWriting);
+
+
+  /************************************************************************
+  ** Sub-processing:
+  ************************************************************************/
+
+  /** Load a Tagset by name. 
+   * @param tsname the tagset name.  If null, returns the current tagset. 
+   */
+  public Tagset loadTagset(String tsname);
+
+  /** Process a new subdocument. 
+   * 
+   * @param in the input.
+   * @param cxt the parent context. 
+   * @param out the output.  If null, the parent context's output is used.
+   * @param ts the tagset.  If null, the current tagset is used.
+   */
+  public TopContext subDocument(Input in, Context cxt, Output out, Tagset ts);
 
   /************************************************************************
   ** Message Reporting:

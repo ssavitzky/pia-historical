@@ -19,9 +19,6 @@ import crc.dps.output.ToNodeList;
 /**
  * A minimal implementation for a document Processor. <p>
  *
- * === NOTE: Both Parser and Processor need DTD and parse stack info. ===
- * === it's up to the Parser to associate Handler, etc. with Token. ===
- *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
@@ -72,6 +69,7 @@ public class BasicProcessor extends ContextStack implements Processor {
       // MUST BE equivalent to: handler.action(input, this, output);
     } else {
       expandCurrentNode();
+      // MUST BE equivalent to the default action for a node.
     }
   }
 

@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
  * @see crc.dps.Processor
  */
 
-public class ToString extends CursorStack implements Output {
+public class ToString extends ToExternalForm {
 
   /************************************************************************
   ** State:
@@ -41,10 +41,6 @@ public class ToString extends CursorStack implements Output {
     destination += s;
   }
 
-  protected String encode(String s) {
-    return s;			// === encode
-  }
-
   /************************************************************************
   ** Operations:
   ************************************************************************/
@@ -58,44 +54,6 @@ public class ToString extends CursorStack implements Output {
       else write(aNode.toString());
     } else {
       write(aNode.toString());
-    }
-  }
-  public void startNode(Node aNode) { 
-    pushInPlace();
-    setNode(aNode);
-    if (active != null) {
-      write(active.startString());
-    } else if (node instanceof AbstractNode) {
-      AbstractNode n = (AbstractNode) node;
-      write(n.startString());
-    } else {
-      // === punt -- should never happen.
-    }
-  }
-
-  public boolean endNode() {
-    if (active != null) {
-      write(active.endString());
-    } else if (node == null) {
-      // null node indicates nothing to do.
-    } else if (node instanceof AbstractNode) {
-      AbstractNode n = (AbstractNode) node;
-      write(n.endString());
-    }  else {
-      // === punt -- should never happen.
-    }   
-    return popInPlace();
-  }
-
-  public void startElement(Element anElement) {
-    startNode(anElement);
-  }
-
-  public boolean endElement(boolean optional) {
-    if (optional) {
-      return popInPlace();
-    } else {
-      return endNode();
     }
   }
 

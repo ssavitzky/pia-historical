@@ -4,6 +4,7 @@
 
 package crc.dps;
 
+import crc.dps.active.*;
 import java.io.Reader;
 
 /**
@@ -28,4 +29,14 @@ public interface Parser extends ProcessorInput {
   /** Sets the Reader from which this Parser will obtain input. */
   public void setReader(Reader aReader);
 
+  /** Returns the top-level Document node under construction. */
+  public ActiveNode getDocument();
+
+  /** Sets the top-level Document node.
+   *	Note that this also sets retainTree.  
+   *
+   * <p> In future implementations this should be an ActiveDocument node,
+   *	 which would let us use the Document's factory methods. 
+   */
+  public void setDocument(ActiveNode aDocument);
 }

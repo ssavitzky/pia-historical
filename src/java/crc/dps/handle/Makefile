@@ -23,12 +23,14 @@ PRIM_HANDLERS = \
 	defineHandler.java \
 	  actionHandler.java \
 	  valueHandler.java \
+	connectHandler.java \
 	expandHandler.java \
 	hideHandler.java \
 	ifHandler.java \
 	  elseHandler.java \
 	  elsfHandler.java \
 	  thenHandler.java \
+	includeHandler.java \
 	logicalHandler.java \
 	numericHandler.java \
 	protectHandler.java \
@@ -126,6 +128,7 @@ protectHandler.class: $(HANDLER_DEPS)
 repeatHandler.class: $(HANDLER_DEPS)
 selectHandler.class: $(HANDLER_DEPS)
 setHandler.class: $(HANDLER_DEPS)
+submitHandler.class: $(HANDLER_DEPS)
 substHandler.class: $(HANDLER_DEPS)
 tagsetHandler.class: $(HANDLER_DEPS)
 testHandler.class: $(HANDLER_DEPS)

@@ -10,6 +10,7 @@ import crc.dom.AttributeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.Element;
 import crc.dom.Entity;
+import crc.dom.Text;
 
 import crc.dps.*;
 import crc.dps.active.*;
@@ -184,6 +185,9 @@ public class selectHandler extends GenericHandler {
     } else if (item.getNodeType() == NodeType.ENTITY) {
       Entity n = (Entity)item;
       key = n.getName();
+    } else if (item.getNodeType() == NodeType.TEXT) {
+      Text t = (Text)item;
+      key = (t.getIsIgnorableWhitespace())? null : t.getData();
     } else {
       key = TextUtil.getTextString((ActiveNode)item);
       if (key != null) key = key.trim();
@@ -354,11 +358,19 @@ class keyHandler extends select_subHandler {
 			ActiveAttrList atts, NodeList content) {
     NodeList selected = getSelected(aContext);
     boolean caseSens = atts.hasTrueAttribute("case");
+    String sep = atts.getAttributeString("sep");
     String key = content.toString();
     if (key != null && !caseSens) key = key.toLowerCase();
     NodeEnumerator items = selected.getEnumerator();
     for (Node item = items.getFirst(); item != null; item = items.getNext()) {
-      String k = getNodeKey(item, false);
+      String k = getNodeKey(item, caseSens);
+      if (sep != null) {
+	if (k.indexOf(sep)>=0) {
+	  k = k.substring(0, k.indexOf(sep));
+	} else {
+	  continue;
+	}
+      }  
       if (key == null && key.equals(k))
 	out.putNode(item);
     }    

@@ -10,6 +10,14 @@ import java.util.GregorianCalendar;
 import java.text.DateFormat;
 
 import java.io.PrintStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.IOException;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.MalformedURLException;
 
 import crc.dps.*;
 import crc.dps.active.*;
@@ -38,6 +46,9 @@ import crc.ds.List;
 public class TopProcessor extends BasicProcessor implements TopContext
 {
   protected Tagset tagset;
+  protected String documentBase;
+  protected String documentName;
+  protected URL    documentLocation = null;
 
   /************************************************************************
   ** State accessors:
@@ -110,6 +121,155 @@ public class TopProcessor extends BasicProcessor implements TopContext
     }
   }
 
+  /************************************************************************
+  ** External Entities:
+  ************************************************************************/
+
+  /** The prefix (<code>protocol://host:port/</code>) that makes the
+   *	<code>documentBase</code> into a URL.
+   *
+   * <p> If documents are local, <code>documentLocation</code> will be null.
+   *	 That does not necessarily mean that <code>documentBase</code> is
+   *	 an absolute path, however.
+   */
+  public URL  getDocumentLocation() { return documentLocation; }
+  public void setDocumentLocation(URL u) { documentLocation = u; }
+
+  /** The base path of the current document.  It always ends with 
+   *	``<code>/</code>'' if non-null.
+   *
+   * <p> If <code>documentBase</code> starts with ``<code>/</code>'', it
+   *	 indicates an absolute path to the base directory; otherwise is
+   *	 is relative to some other root, for example the URL started by
+   *	 <code>documentLocation</code>.
+   *
+   * <p> Inside a PIA or other server the base path is <em>not</em> a path 
+   *	 from the filesystem root, but rather is relative to the server's
+   *	 document root.  Any special handling required for this occurs in 
+   *	<code>locateSystemResource</code> .
+   */
+  public String getDocumentBase() { return documentBase; }
+  public void   setDocumentBase(String s) { documentBase = s; }
+
+  /** The file name of the current document. 
+   *	May be null if the current document is a string. 
+   */
+  public String getDocumentName() { return documentName; }
+  public void   setDocumentName(String s) { documentName = s; }
+
+  /** Read from a resource. 
+   *	The given path always uses ordinary (forward) slashes as file
+   *	separators, because it is really a URI.  If a protocol and host
+   *	are not specified, the path is relative to some implementation-
+   *	dependent origin if it starts with '<code>/</code>', otherwise
+   *	it is relative to the start of the document being processed.
+   */
+  public InputStream readExternalResource(String path)
+    throws IOException {
+    if (documentLocation == null) {
+      File f = locateSystemResource(path, false);
+      if (f != null) {
+	return new java.io.FileInputStream(f);
+      }
+    } else {
+      URL u = locateRemoteResource(path, false);
+      if (u != null) {
+	return u.openStream();
+      }
+    }
+    return null;
+  }
+
+  /** Write to a resource. 
+   * @param path a path.
+   * @param append append to an existing resource. 
+   * @param createIfAbsent if no resource of the given name exists, create one
+   * @param doNotOverwrite do not overwrite an existing resource
+   */
+  public OutputStream writeExternalResource(String path, boolean append,
+					    boolean createIfAbsent,
+					    boolean doNotOverwrite)
+    throws IOException {
+    if (documentLocation == null) {
+      File f = locateSystemResource(path, true);
+      if (f != null) {
+	// === worry about the booleans here!
+	return new java.io.FileOutputStream(f);
+      }
+    } else {
+      URL u = locateRemoteResource(path, true);
+      if (u != null) {
+	return null; // === writeExternalResource
+      }
+    }
+    return null;
+  }
+
+  /** Locate a resource accessible as a file. */
+  public File locateSystemResource(String path, boolean forWriting) {
+    if (path.startsWith("file:")) {
+      // Just remove the "file:" prefix.
+      path = path.substring(5);
+    }
+    if (path.startsWith("/")) {
+      // Path starting with "/" is relative to document root
+      return new File(path);
+    } else if (path.indexOf(":") >= 0) {
+      // URL: fail.
+      return null;
+    } else {
+      // Path not starting with "/" is relative to documentBase.
+      if (path.startsWith("./")) path = path.substring(2);
+      if (documentBase != null) path = documentBase + path;
+      return new File(path);
+    }
+  }
+
+  /** Locate a resource accessible as a URL. */
+  public URL locateRemoteResource(String path, boolean forWriting) {
+    if (path.startsWith("file:")) {
+      return null; // === file: in locateRemoteResource -- not clear what to do
+    }
+    if (path.indexOf(":") > 0 && path.indexOf("/") > 0 
+	&& path.indexOf(":") < path.indexOf("/") ) {
+      try {
+	return new URL(path);
+      } catch (MalformedURLException e) {
+	return null;
+      }
+    } else if (documentLocation != null) {
+      try {
+	return new URL(documentLocation, path);
+      } catch (MalformedURLException e) {
+	return null;
+      }
+    }
+    return null;
+  }
+
+
+  /************************************************************************
+  ** Sub-processing:
+  ************************************************************************/
+
+  /** Load a Tagset by name. 
+   * @param tsname the tagset name.  If null, returns the current tagset. 
+   */
+  public Tagset loadTagset(String tsname) {
+    return (tsname == null)? tagset : crc.dps.tagset.Loader.loadTagset(tsname);
+  }
+
+  /** Process a new subdocument. 
+   * 
+   * @param in the input.
+   * @param ts the tagset.  If null, the current tagset is used.
+   * @param cxt the parent context. 
+   * @param out the output.  If null, the parent context's output is used.
+   */
+  public TopContext subDocument(Input in, Context cxt, Output out, Tagset ts) {
+    if (ts == null) ts = tagset;
+    return new TopProcessor(in, cxt, out, ts);
+  }
 
   /************************************************************************
   ** Message Reporting:
@@ -225,9 +385,14 @@ public class TopProcessor extends BasicProcessor implements TopContext
     top = this;
   }
 
-  public TopProcessor(Input in, Context prev, Output out,
-			   EntityTable ents) {
+  public TopProcessor(Input in, Context prev, Output out, EntityTable ents) {
     super(in, prev, out, ents);
+    top = this;
+  }
+
+  public TopProcessor(Input in, Context prev, Output out, Tagset ts) {
+    super(in, prev, out, null);
+    tagset = ts;
     top = this;
   }
 

@@ -108,6 +108,11 @@ public interface Context {
    */
   public ActiveEntity getEntityBinding(String name, boolean local);
 
+  /** Set the binding (Entity node) of an entity, given its name. 
+   *	Note that the given name may include a namespace part. 
+   */
+  public void setEntityBinding(String name, ActiveEntity ent, boolean local);
+
   /************************************************************************
   ** Context Stack:
   ************************************************************************/

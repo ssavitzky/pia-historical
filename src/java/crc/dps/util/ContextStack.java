@@ -150,6 +150,15 @@ public class ContextStack  implements Context {
       ? ent : nameContext.getEntityBinding(name, local);
   }
 
+  /** Set the binding (Entity node) of an entity, given its name. 
+   *	Note that the given name may include a namespace part. 
+   */
+  public void setEntityBinding(String name, ActiveEntity ent, boolean local) {
+    // === currently hard to implement.  Fake it. ===
+    setEntityValue(name, ent.getValue(), local);
+  }
+
+
 
   /************************************************************************
   ** Debugging:

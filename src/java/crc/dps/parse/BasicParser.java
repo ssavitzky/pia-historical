@@ -87,12 +87,23 @@ public class BasicParser extends AbstractParser {
     try {
       for ( ; ; ) {
 	if (eatUntil(endString, !ignoreEntities)) {
-	  if (buf.length() != 0) 
-	    list.append(createActiveText(buf.toString(), false));
-	  break;
-	}
-	if (last == '&' && getEntity(strictEntities)) {
-	  list.append(next);
+	  if (last == '&' && !ignoreEntities) {
+	    if (getEntity(strictEntities)) {
+	      if (buf.length() != 0) 
+		list.append(createActiveText(buf.toString(), false));
+	      list.append(next);
+	    } else {
+	      // getEntity has already stuffed the text back in the buffer
+	      continue;
+	    }
+	  } else {
+	    if (buf.length() != 0) {
+	      list.append(createActiveText(buf.toString(), false));
+	    }
+	    break;
+	  }
+	  // get here if we found an entity.  Reset the buffer.
+	  buf.setLength(0);
 	}
       }
     } catch (Exception e) {}

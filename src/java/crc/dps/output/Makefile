@@ -20,8 +20,10 @@ TO_NODES = \
 # so the have to keep their state in a stack.
 
 TO_TEXT = \
+	ToExternalForm.java \
+	ToHTTPClient.java \
 	ToString.java \
-	ToWriter.java
+	ToWriter.java 
 
 # The following Output classes proxy to another output, so they need to
 # keep no state at all except for depth (which is really needed only if 
