@@ -5,15 +5,17 @@ package crc.dps.aux;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
 
-import crc.dps.active.ParseTreeElement;
-import crc.dps.active.ParseTreeAttribute;
-
+import crc.dps.active.*;
 import crc.dps.*;
 
 import java.util.Enumeration;
+
+import crc.ds.List;
+import crc.ds.Table;
 
 /**
  * The basic implementation for a EntityTable -- a lookup table for syntax. 
@@ -33,7 +35,15 @@ import java.util.Enumeration;
  * @see crc.dom.Attribute
  */
 
-public class BasicEntityTable extends ParseTreeElement implements EntityTable {
+public class BasicEntityTable extends ParseTreeGeneric implements EntityTable {
+
+  /************************************************************************
+  ** Data:
+  ************************************************************************/
+
+  protected Table entitiesByName 	= new Table();
+  protected List  entityNames 		= new List();
+  protected List  contextEntityNames 	= null;
 
   /************************************************************************
   ** Context:
@@ -57,39 +67,51 @@ public class BasicEntityTable extends ParseTreeElement implements EntityTable {
    *	context if necessary. 
    */
   public NodeList getEntityValue(String name, boolean local) {
-    Attribute binding = getBinding(name);
-    if (binding != null) return binding.getValue();
-    return (local || context == null) ? null
-      				      : context.getEntityValue(name, local);
+    ActiveEntity binding = getBinding(name, local);
+    return (binding != null)? binding.getValue() :  null;
   }
 
   /** Set the value for a given name.
    */
   public void setEntityValue(String name, NodeList value, boolean local) {
-    Attribute binding = getBinding(name);
+    ActiveEntity binding = getBinding(name, local);
     if (binding != null) {
       binding.setValue(value);
     } else if (local || context == null) {
-      setBinding(name, value);
-    } else {
-      context.setEntityValue(name, value,local);
-    }
+      newBinding(name, value);
+    } 
   }
 
   /** Look up a name and get a (local) binding. */
-  public Attribute getBinding(String name) {
-    if (getAttributes() == null) return null;
-    return getAttributes().getAttribute(name);
+  public ActiveEntity getBinding(String name, boolean local) {
+    ActiveEntity binding = (ActiveEntity)entitiesByName.at(name);
+    return (local || binding != null || context == null)
+      ? binding
+      : context.getBinding(name, local);    
   }
 
-  /** Add a new binding or replace an existing one. */
-  public void setBinding(Attribute binding) {
-    setAttribute(binding);
+  /** Add a new local binding or replace an existing one. */
+  public void setBinding(ActiveEntity binding) {
+    String name = binding.getName();
+    ActiveEntity old = getBinding(name, true);
+    if (old == null) addBinding(name, binding);
+    else try {
+      entitiesByName.at(name, binding);
+      replaceChild(old, binding);
+    } catch (Exception ex) {
+      ex.printStackTrace(System.err);
+    }
   }
 
-  /** Construct a new binding or replace the value in an existing one. */
-  public void setBinding(String name, NodeList value) {
-    setAttribute (new ParseTreeAttribute(name, value));
+  /** Construct a new local binding. */
+  protected void newBinding(String name, NodeList value) {
+    addBinding(name, new ParseTreeEntity(name, value));
+  }
+
+  protected void addBinding(String name, ActiveEntity binding) {
+    entitiesByName.at(name, binding);
+    entityNames.push(name);
+    addChild(binding);
   }
 
   /************************************************************************
@@ -97,28 +119,34 @@ public class BasicEntityTable extends ParseTreeElement implements EntityTable {
   ************************************************************************/
 
   /** Returns the bindings defined in this table. */
-  public AttributeList getBindings() {
-    return getAttributes();
+  public NodeEnumerator getBindings() {
+    return (hasChildren())? getChildren().getEnumerator() : null;
   }
 
   /** Returns an Enumeration of the entity names defined in this table. 
    */
   public Enumeration entityNames() { 
-    return null;		// === need to be able to enumerate attrs! ===
+    return entityNames.elements();
   }
 
   /** Returns an Enumeration of the entity names defined in this table and
-   *	its context. */
-  public Enumeration allNames() { 
-    return null;		// ===
+   *	its context, in order of definition (most recent last). */
+  public Enumeration allEntityNames() { 
+    if (contextEntityNames == null) {
+      contextEntityNames = new List(context.allEntityNames());
+    }
+    List allNames = new List(contextEntityNames);
+    allNames.append(entityNames());
+    return allNames.elements();
   }
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
 
-  public BasicEntityTable() {}
+  public BasicEntityTable() { super("EntityTable"); }
   public BasicEntityTable(EntityTable parent) {
+    super("EntityTable"); 
     context = parent;
   }
 
