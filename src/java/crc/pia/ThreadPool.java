@@ -36,6 +36,19 @@ public class ThreadPool{
   boolean running = true;
 
   /**
+   *
+   */
+  public boolean isThreadRunning(){
+    Athread one = null;
+    for(int i = 0; i < freeList.size(); i ++){
+      one = (Athread)freeList.elementAt( i );
+      if( one.status == one.C_BUSY )
+	return true;
+    }
+    return false;
+  }
+
+  /**
    * check a thread out 
    */
   public synchronized Athread checkOut(){
