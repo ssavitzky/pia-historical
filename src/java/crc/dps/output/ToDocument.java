@@ -6,7 +6,6 @@ package crc.dps.output;
 
 import crc.dps.Token;
 import crc.dps.Output;
-import crc.dps.AbstractOutput;
 
 import crc.dom.Node;
 import crc.dom.Document;
