@@ -99,9 +99,9 @@ Note that we only need these inside the PIA.
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
 	  <a href="/&agentType;/&agentName;/options">options</a>
-          <a href="/&agentType;/&agentName;/">help</a> (
-	     <a href="#context-specific">specific</a>
-	     <a href="#general">general</a> )
+          <a href="/&agentType;/&agentName;/help">help</a> (
+	     <a href="/&agentType;/&agentName;/help#context-specific">specific</a>
+	     <a href="/&agentType;/&agentName;/help#general">general</a> )
     <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
 	  <a href="/&agentName;/options">options</a>
