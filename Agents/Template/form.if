@@ -152,10 +152,12 @@
           <a href="/&agentType;/&agentName;/">index</a>
           <a href="/&agentType;/&agentName;/">help</a>
 	  <a href="/&agentType;/&agentName;/options.if">options</a>
+	  <a href="/&agentType;/&agentName;/tagload.if">tags</a>
     <else><a href="/&agentName;/home.if">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
 	  <a href="/&agentName;/">help</a>
 	  <a href="/&agentName;/options.if">options</a>
+	  <a href="/&agentName;/tagload.if">tags</a>
 </if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>

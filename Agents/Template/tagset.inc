@@ -479,16 +479,17 @@
 	<if>&tForm;<else><set name=tForm></set></if>
 
 	<!-- set base directory.  DOFS stuff fails if no /My and /PIA. -->
+	<!-- entities are sleazier than read info=p, but faster. -->
 	<if><test match=user>&tBase;</test>
-    	    <then><set name=t-base><read info=p file="Masters"></set>
+    	    <then><set name=t-base>&usrDIR;/&agentName;/Masters</set>
     		  <set name=t-base-DOFS>/My/&agentName;/Masters</set>
         <else><if><test match=system>&tBase;</test>
-    	    <then><set name=t-base><read info=p interform file="Masters"></set>
+    	    <then><set name=t-base>&piaDIR;/Agents/&agentName;/Masters</set>
     		  <set name=t-base-DOFS>/PIA/Agents/&agentName;/Masters</set>
 	<else><if>&tBase;
     	    <then><set name=t-base><get form name=tBase></set>
     		  <set name=t-base-DOFS>/Root&tBase;</set>
-    	<else><set name=t-base><read info=p interform file="Masters"></set>
+    	<else><set name=t-base>&piaDIR;/Agents/&agentName;/Masters</set>
     		  <set name=t-base-DOFS>/PIA/Agents/&agentName;/Masters</set>
 	</if></if></if>
 
@@ -516,7 +517,7 @@
 
 	<!-- Now the form-specific data -->
 	<set name=t-form-path><if><get name=tFormFile>
-	    <then><read info=p file="&tDir/&tFormFile;"></then>
+	    <then>&tDir/&tFormFile;</then>
 	    <else></else>
 	</set>
 	<if><get name=tTitle>
