@@ -77,6 +77,10 @@ public class Filter {
 
     /* Initialize and run the interpretor */
 
+    // === Must get the tagset at this point and ask _it_ for the Parser.
+    // === Eventually tagsets need to be in a NamedNodeList; for now
+    // === just load the class.
+
     Parser p = new crc.dps.parse.BasicParser(in, null);
     // p.debug = debug;
 
