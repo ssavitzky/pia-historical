@@ -63,7 +63,7 @@ public class Logo extends GenericAgent {
     if (true) {
       /* === extreme hack!! call a PERL program! === */
       String cgi = findInterform("Logo.cgi");
-      execProgram(request, cgi+" -cgi "+path);
+      execProgram(request, "perl " + cgi+" -cgi "+path);
       
     } else {
       /* === EVEN MORE extreme hack!! Redirect to PERL PIA!!! === */
@@ -98,11 +98,12 @@ public class Logo extends GenericAgent {
     Process process = null;
     InputStream in;
     PrintStream out;
+    String cmdArray[] = {"/bin/sh", "-c", cmd};
+
 
     try{
-      process = rt.exec( cmd );
+      process = rt.exec( cmdArray );
       in = process.getInputStream();
-
       Transaction response = new HTTPResponse( request, new Machine(in));
       
     }catch(Exception ee){
