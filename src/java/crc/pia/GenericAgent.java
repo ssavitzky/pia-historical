@@ -1071,7 +1071,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
     tails.push(myname + filesep);
     if (!myname.equals(mytype)) tails.push(mytype + filesep);
 
-    /* Roots: if_root, ~/.pia/Agents, pia/Agents, pia/src/Agents */
+    /* Roots: if_root, ~/.pia/Agents, pia/Agents */
 
     List roots = dirAttribute( "if_root" );
     if (roots == null) roots = new List();
@@ -1095,8 +1095,6 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     roots.push(Pia.instance().usrAgents());
     roots.push(Pia.instance().piaAgents());
-    roots.push(Pia.instance().piaRoot() +
-	       filesep + "src" + filesep + "Agents" + filesep);
 
     /* Make sure all the roots end in filesep */
 
