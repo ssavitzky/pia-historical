@@ -49,19 +49,36 @@ public class Util {
   ************************************************************************/
 
   /** Pick an SGML object apart into Tokens.  Text is split on 
-   *	whitespace.  */
+   *	whitespace.  Lists have spaces removed. */
   public static final Tokens listItems(SGML it) {
     if (it.isText()) {
       return splitTokens(it.toString());
+    } 
+
+    Tokens content = removeSpaces(it.content());
+    
+    if (isList(it)) {
+      return content;
+    } else if (containsList(it)) {
+      return listItems(content.itemAt(0));
+    } else if (content.nItems() == 1 && content.itemAt(0).isText()) {
+      return splitTokens(content.itemAt(0).toString());
     } else {
-      return it.content();
+      return content;
     }
+  }
+
+  /** Convert an SGML object into a List of Association objects.
+   *	whitespace.  Lists have spaces removed. */
+  public static final List assocItems(SGML it, boolean numeric,
+				     boolean casesens, boolean text) {
+    return listItems(it).associations(numeric, casesens, text);
   }
 
   /** Pick an SGML object apart into attribute-value pairs.  Text is
    *	parsed as a query string.  */
   public static final Tokens listPairs(SGML it) {
-    return null;// ===
+    return null;// === listPairs unimplemented
   }
 
   /** Copy a list of Tokens (or the content of an object), with spaces
@@ -164,6 +181,52 @@ public class Util {
     }
   }
 
+
+  /************************************************************************
+  ** Element utilities:
+  ************************************************************************/
+
+  /** Test whether an SGML object is a list Element. */
+  public static boolean isList(SGML it) {
+    String tag = it.tag();
+    if (tag == null) return true;
+    return tag.equals("ul") || tag.equals("ol") || tag.equals("dl")
+      || tag.equals("menu") || tag.equals("table") || tag.equals("tr");
+  }
+
+  /** Test whether an SGML object contains a list Element as its only
+   *	(nonblank) content. 
+   */
+  public static boolean containsList(SGML it) {
+    if (it.isText()) return false;
+    Tokens t = removeSpaces(it);
+    return t.nItems() == 1 && isList(t.itemAt(0));
+  }
+
+  /** Return <code>it</code>'s tag if <code>it.isList()</code>. */
+  public static String listTag(SGML it, boolean checkContents) {
+    String tag = it.tag();
+    if (tag != null && (tag.equals("ul") || tag.equals("ol") 
+			|| tag.equals("dl") || tag.equals("menu")
+			|| tag.equals("table") || tag.equals("tr")))
+      return tag;
+    else if (checkContents) {
+      if (it.isText()) return null;
+      Tokens t = removeSpaces(it);
+      return (t.nItems() == 1 && isList(t.itemAt(0)))
+	? listTag(t.itemAt(0), false) : null;
+    } else return null;
+  }
+
+  /** Return a suitable tag for list items, given the tag of a list. */
+  public static String listItemTag(String tag) {
+    if (tag == null) return tag;
+    if (tag.equals("ul") || tag.equals("ol")|| tag.equals("menu")) return "li";
+    if (tag.equals("table")) return "tr";
+    if (tag.equals("tr")) return "td";
+    if (tag.equals("dl")) return "dt";
+    return null;
+  }
 
   /************************************************************************
   ** String utilities:

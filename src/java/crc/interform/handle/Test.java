@@ -66,7 +66,7 @@ public class Test extends crc.interform.Handler {
 	ii.error(ia, "regexp match unimplemented");
       }
     } else {
-      result = test.isEmpty();
+      result = ! test.isEmpty();
     } 
 
     if (result) {

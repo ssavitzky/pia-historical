@@ -33,11 +33,11 @@ public class Sum extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
     Tokens list = Util.listItems(it);
-    double result = Util.numValue((SGML)list.shift());
+    double result = 0.0;
     double n;
     
-    while (list.nItems() > 0) {
-      result += Util.numValue((SGML)list.shift());
+    for (int i = 0; i < list.nItems(); ++i) {
+      result += Util.numValue(list.itemAt(i));
     }    
     ii.replaceIt(java.lang.Double.toString(result));
   }

@@ -14,65 +14,54 @@ import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
+import crc.ds.List;
+import crc.ds.Association;
 
 /** Handler class for &lt;equal&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;equal [not] [case] [text] [link] [numeric]&gt;list...&lt;/equal&gt;
+ *	&lt;equal [not] [case] [text] [numeric]&gt;list...&lt;/equal&gt;
  * <dt>Dscr:<dd>
  *	Test list items in CONTENT for equality; 
  *	return null or IFFALSE if false, else '1' or IFTRUE. 
- *	<dt>Modifiers:<dd> NOT, CASE (sensitive), TEXT, LINK, NUMERIC.
+ *	<dt>Modifiers:<dd> NOT, CASE (sensitive), TEXT, NUMERIC.
  *  </dl>
  */
 public class Equal extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<equal [not] [case] [text] [link] [numeric]>list...</equal>\n" +
+    "<equal [not] [case] [text] [numeric]>list...</equal>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Test list items in CONTENT for equality; \n" +
     "return null or IFFALSE if false, else '1' or IFTRUE. \n" +
-    "Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.\n" +
+    "Modifiers: NOT, CASE (sensitive), TEXT, NUMERIC.\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.unimplemented(ia);
+    boolean numeric = it.hasAttr("numeric");
+    boolean casesens= it.hasAttr("case");
+    boolean text    = it.hasAttr("text");
+
+    boolean result = true;
+
+    List list = Util.assocItems(it, numeric, casesens, text);
+    
+    for (int i = 1; i < list.nItems(); ++i) {
+      if (! ((Association)list.at(i)).equals(((Association)list.at(i-1)))) {
+	result = false;
+	break;
+      }
+    }
+
+    if (result) {
+      ii.replaceIt(it.hasAttr("iftrue")? it.attr("iftrue") : new Text("1"));
+    } else {
+      ii.replaceIt(it.hasAttr("iffalse")? it.attr("iffalse") : null);
+    }
+
   }
 }
 
-/* ====================================================================
-### <equal [options]>strings</equal>
-
-define_actor('equal', 'content' => 'list',
-	     'dscr' => "test tokens in LIST (content) for equality; 
-return null or IFFALSE if false, else '1' or IFTRUE. 
-Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.");
-
-sub equal_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $list = get_list($it);
-    my ($a, $b, $compare);
-    my $prep = prep_item_sub($it);
-
-    if ($it->attr('numeric')) {
-	$compare = sub{$a == $b};
-    } else {
-	$compare = sub{$a eq $b};
-    }
-
-    foreach $b (@$list) {
-	$b = &$prep($b);
-	if (defined $a && ! &$compare($a, $b)) {
-	    test_result('', $it, $ii);
-	    return;
-	}	    
-	$a = $b;
-    }
-    test_result(1, $it, $ii);
-}
-
-*/

@@ -11,7 +11,10 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
+import crc.sgml.Text;
 
+import crc.ds.List;
+import crc.ds.Association;
 
 /** Handler class for &lt;sorted&gt tag 
  * <dl>
@@ -35,43 +38,27 @@ public class Sorted extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.unimplemented(ia);
+    boolean numeric = it.hasAttr("numeric");
+    boolean casesens= it.hasAttr("case");
+    boolean text    = it.hasAttr("text");
+    boolean reverse = it.hasAttr("reverse");
+
+    boolean result = true;
+
+    List list = Util.assocItems(it, numeric, casesens, text);
+    
+    for (int i = 1; i < list.nItems(); ++i) {
+      int c = ((Association)list.at(i)).compareTo((Association)list.at(i-1));
+      if ( (reverse && (c > 0)) || (!reverse && (c < 0)) ) {
+	result = false;
+	break;
+      }
+    }
+
+    if (result) {
+      ii.replaceIt(it.hasAttr("iftrue")? it.attr("iftrue") : new Text("1"));
+    } else {
+      ii.replaceIt(it.hasAttr("iffalse")? it.attr("iffalse") : null);
+    }
   }
 }
-
-/* ====================================================================
-### <sorted [options]>strings</sorted>
-
-define_actor('sorted', 'content' => 'list', 
-	     'dscr' => "test tokens in  LIST (content) for sortedness;
-return null or IFFALSE if false, else '1' or IFTRUE. 
-Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC, REVERSE.");
-
-sub sorted_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $list = get_list($it);
-    my $reverse = $it->attr('reverse');
-    my $prep = prep_item_sub($it);
-    my $compare;
-
-    if ($it->attr('numeric')) {
-	$compare = $reverse? sub {$a >= $b} : sub {$a <= $b};
-    } elsif ($it->attr('text')) {
-	$compare = $reverse? sub {$a ge $b} : sub {$a le $b};
-    } else {
-	$compare = $reverse? sub {$a ge $b} : sub {$a le $b};
-    }
-
-    foreach $b (@$list) {
-	$b = &$prep($b);
-	if (defined $a && ! &$compare($a, $b)) {
-	    test_result('', $it, $ii);
-	    return;
-	}	    
-	$a = $b;
-    }
-    test_result(1, $it, $ii);
-}
-
-*/

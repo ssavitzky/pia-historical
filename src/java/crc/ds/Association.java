@@ -224,6 +224,28 @@ public class Association {
 			   doubleValue(aKey), false, isIntegralValue(aKey));
   }
 
+  /** Associate aValue with aKey and set up the Association to be
+   *	compared numerically.  The values are derived from the key;
+   *	if the key does not represent a number the Association's
+   *	isNumeric flag will <em>not</em> be set. */
+  public static Association associateNumeric(Object aValue, String aKey) {
+    return new Association(aValue, aKey, longValue(aKey), 
+			   doubleValue(aKey), isNumericValue(aKey),
+			   isIntegralValue(aKey));
+  }
+
+  /** Associate aValue with aKey and set up the Association to be
+   *   compared either numerically or lexically.  The values are
+   *   derived from the key; if the key does not represent a number
+   *   the Association's isNumeric flag will <em>not</em> be set. */
+  public static Association associate(Object aValue, String aKey,
+				      boolean numeric) {
+    return new Association(aValue, aKey,
+			   longValue(aKey), doubleValue(aKey),
+			   numeric && isNumericValue(aKey),
+			   isIntegralValue(aKey));
+  }
+
   /** Associate aValue with both aKey and aLong. */
   public static Association associate(Object aValue, String aKey, long aLong) {
     return new Association(aValue, aKey, aLong, (double)aLong, true, true);

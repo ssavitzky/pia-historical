@@ -14,6 +14,7 @@ import crc.sgml.Text;
 import crc.sgml.Attrs;
 import crc.sgml.AttrWrap;
 import crc.sgml.Token;
+import crc.sgml.Tokens;
 import crc.sgml.Element;
 
 import crc.ds.List;
@@ -155,7 +156,6 @@ public class Util extends crc.sgml.Util {
     return (v == null)? dflt : (int) v.numValue();
   }
 
-
   /************************************************************************
   ** Actor Result utilities:
   ************************************************************************/
@@ -163,12 +163,14 @@ public class Util extends crc.sgml.Util {
   /** Return a list as the result from expanding an element
    *	<code>it</code>.  The result will be a blank-separated string
    *	unless <code>it</code> has <code>sep</sep> or <code>tag</code>
-   *	attributes.
+   *	attributes, or <code>it</code> or its content is a list Element
    */
   public static SGML listResult(SGML it, Enumeration aList) {
 
     if (it.hasAttr("tag")) {
       return new Element(it.attrString("tag"), aList);
+    } else if (isList(it) || containsList(it)) {
+      return new Element(listTag(it, true), aList);
     } else {
       String sep = getString(it, "sep", " ");
       String s = "";

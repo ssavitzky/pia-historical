@@ -8,6 +8,7 @@ import crc.ds.List;
 import crc.ds.Table;
 import crc.ds.Index;
 import crc.ds.SortTree;
+import crc.ds.Association;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
@@ -448,16 +449,53 @@ public class Tokens extends List implements SGML {
     return results;
   }
 
-  /** Return a new Tokens containing the contents sorted as specified
-   *	by the two boolean parameters <code>reverse</code> and
-   *	<code>numeric</code>
+  /** Return a new Tokens containing the contents sorted as specified.
+   *
+   *  @param reverse sort in descending order
+   *  @param numeric sort numerically
+   *  @param caseSensitive lowercase all keys if false
+   *  @param textOnly remove markup from keys (implied by numeric).
    */
-  public Tokens sort(boolean reverse, boolean numeric) {
-    if (reverse) {
-      return numeric? sortDescendingNumeric() : sortDescending(); 
-    } else {
-      return numeric? sortAscendingNumeric() : sortAscending(); 
+  public Tokens sort(boolean reverse, boolean numeric,
+		     boolean caseSensitive, boolean textOnly) {
+    SortTree sorter = new SortTree();
+    Tokens results = new Tokens();
+    results.itemSeparator = itemSeparator;
+
+    if (numeric) textOnly = true;
+
+    for (int i = 0; i < nItems(); ++i) {
+      SGML item = itemAt(i);
+      String key = textOnly? item.contentText().toString() : item.toString();
+      if (! caseSensitive) key = key.toLowerCase();
+      sorter.insert(Association.associate(item, key, numeric));
     }
+
+    if (reverse) sorter.descendingValues(results);
+    else	 sorter.ascendingValues(results);
+    return results;
+  }
+
+  /** Return a List containing an Association for each item in this 
+   *	Tokens list.
+   *
+   *  @param numeric only numeric items are included
+   *  @param caseSensitive lowercase all keys if false
+   *  @param textOnly remove markup from keys (implied by numeric).
+   */
+  public List associations(boolean numeric, boolean caseSensitive,
+			   boolean textOnly) {
+    List results = new List();
+
+    for (int i = 0; i < nItems(); ++i) {
+      SGML item = itemAt(i);
+      String key = textOnly? item.contentText().toString() : item.toString();
+      if (! caseSensitive) key = key.toLowerCase();
+      Association a = Association.associate(item, key, numeric);
+      if (!numeric || a.isNumeric()) results.push(a);
+    }
+
+    return results;
   }
 
  }

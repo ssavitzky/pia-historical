@@ -7,6 +7,8 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
+import crc.interform.Util;
+
 import crc.sgml.SGML;
 import crc.sgml.Element;
 import crc.sgml.Tokens;
@@ -34,12 +36,9 @@ public class Actor_names extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    if (it.hasAttr("tag")) {
-      ii.replaceIt(new Element(it.attrString("tag"),
-			     ii.tagset().actorNames()));
-    } else {
-      // === toString should not be needed.
-      ii.replaceIt(new Tokens(ii.tagset().actorNames().elements(), " ").toString());
-    }
+    Tokens names = new Tokens(ii.tagset().actorNames().elements(), " ");
+    names = names.sortAscending();
+
+    ii.replaceIt(Util.listResult(it, names.elements()));
   }
 }

@@ -374,6 +374,30 @@ public SGML attr(Index name)
     if (content != null) list.append((SGML)content);
   }
 
+  /** Append an item, wrapping it in a suitable tag if this is a list. */
+  public void appendListItem(SGML sgml, String tag) {
+    String t1 = sgml.tag();
+    if (tag == null) append(sgml);
+    else if (t1 == null) {
+      Tokens list = sgml.content();
+      if (list != null) appendList(list.elements(), tag);
+    } else if (tag.equals("dt") && t1.equals("dd")) {
+      append(sgml);
+    } else if (tag.equals(t1)) {
+      append(sgml);
+    } else {
+      append(new Element(tag, sgml));
+    }
+  }
+
+  /** Append a list, wrapping each item in a suitable tag. */
+  public void appendList(Enumeration list, String tag) {
+    while (list.hasMoreElements()) 
+      appendListItem(Util.toSGML(list.nextElement()), tag);
+  }
+
+
+
   /************************************************************************
   ** Conversion to Tokens:
   ************************************************************************/
@@ -426,9 +450,7 @@ public SGML attr(Index name)
 
   public Element (String tag, Enumeration values) {
     this(tag);
-    while (values.hasMoreElements()) {
-      append(new Element("li", Util.toSGML(values.nextElement())));
-    }
+    appendList(values, Util.listItemTag(tag));
   }
 
   public Element (String tag, List content) {
