@@ -22,10 +22,10 @@ import crc.dom.Element;
  *	TreeIterator, the two interfaces are quite different.  A 
  *	TreeIterator is able to traverse a Document tree in any direction,
  *	whereas an Input is unidirectional and so is able to handle
- *	trees that are generated on-the-fly and that need not be retained.  <p>
+ *	trees that are generated on-the-fly and that need not be retained. <p>
  *	
- *	In addition, an Input has machinery for handling attribute lists,
- *	allowing attributes to be treated similarly to children. <p>
+ *	In addition, an Input has a ``current'' node (which the TreeIterator
+ *	explicitly does <em>not</em>), which can be queried and converted. <p>
  *
  *	With the use of <code>retainTree</code>, an Input parsing a document
  *	on the fly can also be forced to generate a complete Document (parse
