@@ -29,7 +29,7 @@ public final class isRespon implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      return new Boolean( trans.is_response() );
+      return new Boolean( trans.isRequest() );
     }
 }
 
