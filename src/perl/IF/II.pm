@@ -262,30 +262,6 @@ sub tagset {
     $self->state->{'_tagset'};
 }
 
-### Tagset components:
-
-sub actors {
-    my ($self) = @_;
-
-    ## actors
-    ##	  Reference to a hash table of Interform Actors, 
-    ##	  keyed by name.  Basically a symbol table.  Actors whose names
-    ##	  match tags are invoked directly.
-
-    $self->tagset->actors;
-}
-
-sub passive_actors {
-    my ($self) = @_;
-
-    ## passive_actors:
-    ##	Reference to an array of actors that have to be matched
-    ##	against attributes or other features of incoming tokens.  Must have 
-    ##  names that cannot match tags; for most tagsets this means names 
-    ##  starting with '-'.
-
-    $self->tagset->passive;
-}
 
 #############################################################################
 ###
@@ -381,6 +357,8 @@ sub expand_string_entities {
     ##	in the string with the corresponding entry in $ii's current 
     ##	entity table.  #hex is *not* expanded.
     ##	The string, passed by reference, is expanded in place.
+
+    ## === This is currently unused; it's kept around for historical reasons.
 
     my $ents = $ii->entities;
     $ents = \%entity2char unless defined $ents;
@@ -634,10 +612,10 @@ sub end_it {
 
 ### stolen from HTML::TreeBuilder === should be in Tagset.pm ===
 
-# Elements that should only be present in the header
+# Elements that should only be present in the header === not used
 %isHeadElement = map { $_ => 1 } qw(title base link meta isindex script);
 
-# Elements that should only be present in the body
+# Elements that should only be present in the body === not used
 %isBodyElement = map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6
 				    p div pre address blockquote
 				    xmp listing
@@ -677,18 +655,9 @@ sub in_token {
     my ($self) = @_;
 
     ## Return the token we are inside of.
+    ##	 === used only in Actors.pm to get context for element and attr. ===
     
     return $self->dstack->[-1];
-}
-
-sub in_tag {
-    my ($self) = @_;
-
-    ## Return the tag of the token we are inside of.
-    
-    my $in_it = $self->dstack->[-1];
-    return '' unless ref $in_it;
-    return $in_it->tag;
 }
 
 
@@ -759,7 +728,7 @@ sub resolve {
 
     $incomplete = 0 unless defined $incomplete;
 
-    if ($incomplete == 2) {
+    if ($incomplete == 2 || (ref $it && $it->is_list)) {
 	$self->push_into($it);
 	$it = $self->next_input;
 	$incomplete = 0;
@@ -771,6 +740,8 @@ sub resolve {
     ## === the ref($it) below shouldn't be needed ===
     $it = $self->expand_attrs($it) unless (ref($it) || $self->quoting);
 
+    ## === if we get a list for $it, it has problems. ===
+
     while ($it) {
 	## Loop as long as there are tokens to be processed.
 
@@ -781,7 +752,7 @@ sub resolve {
 	    $incomplete = $was_parsing? 0 : -1;
 	}
 	$self->token($it);
-	$it->status($incomplete) if ref($it);
+	$it->status($incomplete) if (ref($it) && ! $it->is_list);
 
 	print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
 	    if $main::debugging > 1;
@@ -937,20 +908,19 @@ sub push_it {
 sub check_for_interest {
     my ($self, $it, $incomplete) = @_;
     my $a;
-    my $passive_actors = $self->passive_actors;
     my $quoting = $self->quoting;
 
     ## We'd like to do this, but many actors use act_on for syntax.
     #return if $quoting;		# no action if quoting, by definition.
 
-    foreach $a (@$passive_actors) {
+    foreach $a (@{$self->tagset->passive}) {
 	if ($a->matches($it, $self, $incomplete, $quoting)) {
 	    $a->act_on($it, $self, $incomplete, $quoting);
 	    print "    actor ".$a->name." matched it\n" if $main::debugging>1;
 	}
     }
     my $t = ref($it)? $it->tag : '';
-    if (defined($a = $self->actors->{$t})) {
+    if (defined($a = $self->tagset->actors->{$t})) {
 	$a->act_on($it, $self, $incomplete, $quoting);
 	print "    actor ".$a->name." matched tag\n" if $main::debugging>1;
     }

@@ -217,6 +217,7 @@ sub get_handle {
     }
 
     my $name = $it->attr('name');
+    $name = $name->as_string if ref $name;
     my $result;
 
     if ($it->attr('pia')) {
@@ -277,12 +278,14 @@ sub set_handle {
 
     my $name = $it->attr('name');
     my $value = $it->attr('value');
-    $value = $it->content_string unless defined $value;
+
+    $value = $it->content unless defined $value;
     
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
 	local $request = IF::Run::request();
-	$name = '$' . $name; 
+	$name = "\$" . $name; 
+        $value = $value->as_string if ref $value;
 	my $status = $agent->run_code("$name='$value';", $request);
 	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	print "code status is $status\n" if  $main::debugging;
@@ -291,7 +294,9 @@ sub set_handle {
 	local $agent = IF::Run::agent();
         if ($it->attr('hook')) {
             $value = IF::IT->new()->push($it->content);
-        }
+        } else {
+            $value = $value->as_string if ref $value;
+	}
 	$agent->option($name, $value) if defined $agent;
     } elsif ($it->attr('trans')) {
 	local $trans = IF::Run::transaction();
@@ -574,10 +579,75 @@ sub sorted_handle {
 
 ###### Number Processing:
 
-### <eval>expression</eval> ???
 ### <sum>list</sum> <diff>list</diff> 
 ### <product>list</product> <quotient>list</quotient>
-###
+
+define_actor('sum', 'dscr' => "Return sum of numbers in CONTENT");
+
+sub sum_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = list_items($it);
+    my $result=0;
+
+    my $n;
+    foreach $n (@$list) {
+	$result += ref($n)? $n->content_text : $n;
+    }
+    $ii->replace_it($result);
+}
+
+define_actor('difference', 'dscr' => "Return difference of numbers in CONTENT");
+
+sub difference_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = list_items($it);
+    my $result=shift(@$list);
+    $result = $result->content-text if ref($result);
+
+    my $n;
+    foreach $n (@$list) {
+	$result -= ref($n)? $n->content_text : $n;
+    }
+    $ii->replace_it($result);
+}
+
+define_actor('product', 'dscr' => "Return product of numbers in CONTENT");
+
+sub product_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = list_items($it);
+    my $result=1;
+
+    my $n;
+    foreach $n (@$list) {
+	$result *= ref($n)? $n->content_text : $n;
+    }
+    $ii->replace_it($result);
+}
+
+define_actor('quotient', 'dscr' => "Return quotient of numbers in CONTENT");
+
+sub quotient_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = list_items($it);
+    my $result=shift(@$list);
+    $result = $result->content-text if ref($result);
+
+    my $n;
+    foreach $n (@$list) {
+	$n = $n->content_text if ref($n);
+	if ($n == 0) {
+	    $ii->replace_it('***');
+	    return;
+	}
+	$result /= $n;
+    }
+    $ii->replace_it($result);
+}
 
 
 ###### List Processing:
@@ -605,7 +675,7 @@ sub sort_handle {
     my $reverse = $it->attr('reverse');
     my $prep = prep_item_sub($it);
 
-    my @tmp = map { [&$prep($_), $_] } @$list;
+    my @tmp = map { [&{$prep}($_), $_] } @$list;
     my @out; 
 
     if ($it->attr('numeric')) {
@@ -754,7 +824,7 @@ sub actor_dscr_handle {
     $name = $it->content_string unless defined $name;
     my $link = $it->attr('link');
 
-    my $a = $ii->actors->{$name};
+    my $a = $ii->tagset->actors->{$name};
     if (!defined $a) {
 	$ii->replace_it('');
 	return;
@@ -782,7 +852,7 @@ sub actor_attrs_handle {
     $name = $it->content_string unless defined $name;
     my $link = $it->attr('link');
 
-    my $ia = $ii->actors->{$name};
+    my $ia = $ii->tagset->actors->{$name};
     if (!defined $ia) {
 	$ii->replace_it(' -unknown-');
 	return;

@@ -245,10 +245,11 @@ sub list_items {
 
     my ($x, @out);
 
+    $in = $in->content_text if (ref $in && $in->is_text);
     if (! ref $in) {
 	$x = $in;
 	$x =~ s/\n/ /s;
-	@out = split $x;
+	@out = split(' ', $x);
     } else {
 	$in = remove_spaces($in);
 	if (@$in == 1 && ref($in->[0]) 
@@ -502,11 +503,20 @@ sub test_result {
 
 sub list_result {
     my ($in, $it, $ii) = @_;
+
+    ## Return a list or array $in.
+    ## 	 === incomplete -- needs to look at $it ===
+
+    if (ref $in eq 'ARRAY') {
+	$in = join(' ', @$in);
+    }
+    $ii->replace_it($in);
 }
 
 sub pair_result {
     my ($in, $it, $ii) = @_;
 
+    $ii->replace_it($in);
 }
 
 #############################################################################
