@@ -92,11 +92,11 @@ sub compute_features{
     my($self,$request)=@_;
     my $features=$self->feature_computers();
     my %values;
-print "computing $features" if $main::debugging;
+    print "computing features in $features\n" if $main::debugging;
     foreach $feature (keys %$features){
-	print "computing $feature \n" if $main::debugging;
+	print "  computing $feature" if $main::debugging;
 	$values{$feature}=&{$$features{$feature}}($request);
-
+	print "  -> " . $values{$feature} . "\n" if $main::debugging;
     }
     return \%values;
     
