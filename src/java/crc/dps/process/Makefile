@@ -2,7 +2,7 @@
 # 	$Id$
 #	Copyright 1997, Ricoh California Research Center
 
-PACKAGE=crc.dps.handle
+PACKAGE=crc.dps.process
 TOPDIR=../../..
 
 

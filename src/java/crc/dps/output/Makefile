@@ -2,7 +2,7 @@
 # 	$Id$
 #	Copyright 1997, Ricoh California Research Center
 
-PACKAGE=crc.dps.input
+PACKAGE=crc.dps.output
 TOPDIR=../../..
 
 # The following Output classes construct trees, so the required state
