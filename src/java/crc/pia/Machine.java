@@ -198,7 +198,7 @@ public class Machine implements java.io.Serializable {
       out = outputStream();
 
       String outputString =
-	"HTTP/1.0 " + reply.statusCode() + " " + reply.reason() + "\r";
+	"HTTP/1.0 " + reply.statusCode() + " " + reply.reason() + "\n";
 
       String type = reply.contentType();
 
