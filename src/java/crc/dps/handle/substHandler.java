@@ -40,7 +40,7 @@ public class substHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    elementSyntax = -1;			// -1: non-empty 1: empty 0: check
+    syntaxCode = NORMAL;		// 1 empty; 2: non-empty; 0: check
   }
 
   public void action(Input in, Context aContext, Output out, String tag, 

@@ -53,12 +53,12 @@ public class testHandler extends GenericHandler {
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
 
-    if (dispatch(e, "zero")) 	 return new test_zero(e);
-    if (dispatch(e, "positive")) return new test_positive(e);
-    if (dispatch(e, "negative")) return new test_negative(e);
-    if (dispatch(e, "match")) 	 return new test_match(e);
-    if (dispatch(e, "null")) 	 return new test_null(e);
-    if (dispatch(e, "numeric"))	 return new test_numeric(e);
+    if (dispatch(e, "zero")) 	 return test_zero.handle(e);
+    if (dispatch(e, "positive")) return test_positive.handle(e);
+    if (dispatch(e, "negative")) return test_negative.handle(e);
+    if (dispatch(e, "match")) 	 return test_match.handle(e);
+    if (dispatch(e, "null")) 	 return test_null.handle(e);
+    if (dispatch(e, "numeric"))	 return test_numeric.handle(e);
 
     if (e.getAttributes() == null || e.getAttributes().getLength() == 0)
       return this;
@@ -128,7 +128,7 @@ public class testHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    elementSyntax = -1;			// -1: non-empty 1: empty 0: check
+    syntaxCode = EMPTY;
   }
 
   /** Construct a specialized action. */
@@ -149,7 +149,7 @@ public class testHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    elementSyntax = -1;			// -1: non-empty 1: empty 0: check
+    syntaxCode = EMPTY;
   }
 
   public testHandler(ActiveElement e) {
@@ -196,14 +196,17 @@ public class testHandler extends GenericHandler {
  *
  ************************************************************************/
 
-
+/** Test for zero.  Whitespace is considered zero, but non-blanks are not. */
 class test_zero extends testHandler {
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     Association a = Association.associateNumeric(null, cstring);
-    returnBoolean(a.isNumeric() && a.doubleValue() == 0.0, aContext, out);
+    returnBoolean(( (a.isNumeric() && a.doubleValue() == 0.0)
+		    || (!a.isNumeric() && Test.isWhitespace(cstring))),
+		  aContext, out);
   }
   public test_zero(ActiveElement e) { super(e, true, true); }
+  static Action handle(ActiveElement e) { return new test_zero(e); }
 }
 
 class test_positive extends testHandler {
@@ -213,6 +216,7 @@ class test_positive extends testHandler {
     returnBoolean(a.doubleValue() > 0.0, aContext, out);
   }
   public test_positive(ActiveElement e) { super(e, true, true); }
+  static Action handle(ActiveElement e) { return new test_positive(e); }
 }
 
 class test_negative extends testHandler {
@@ -222,15 +226,19 @@ class test_negative extends testHandler {
     returnBoolean(a.doubleValue() < 0.0, aContext, out);
   }
   public test_negative(ActiveElement e) { super(e, true, true); }
+  static Action handle(ActiveElement e) { return new test_negative(e); }
 }
 
+/** Test for numeric.  Although whitespace is considered equal to zero,
+ *	it is not considered numeric. */
 class test_numeric extends testHandler {
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     Association a = Association.associateNumeric(null, cstring);
-    returnBoolean(a.isNumeric());
+    returnBoolean(a.isNumeric(), aContext, out);
   }
   public test_numeric(ActiveElement e) { super(e, true, true); }
+  static Action handle(ActiveElement e) { return new test_numeric(e); }
 }
 
 class test_match extends testHandler {
@@ -265,6 +273,8 @@ class test_match extends testHandler {
     exactMatch = e.hasTrueAttribute("exact");
     caseSens   = e.hasTrueAttribute("case");
   }
+  static Action handle(ActiveElement e) { return new test_match(e); }
+
 }
 
 class test_null extends testHandler {
@@ -273,5 +283,6 @@ class test_null extends testHandler {
     returnBoolean(content == null || content.getLength() == 0, aContext, out);
   }
   public test_null(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new test_null(e); }
 }
 

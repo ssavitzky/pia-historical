@@ -33,7 +33,7 @@ import crc.dps.aux.*;
  * @see crc.dom.Node
  */
 
-public abstract class AbstractHandler extends ParseTreeElement
+public abstract class AbstractHandler extends ParseTreeGeneric
 implements Handler {
 
   /************************************************************************

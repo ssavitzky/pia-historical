@@ -39,7 +39,7 @@ public class elsfHandler extends GenericHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  public int action(Input in, Processor p) {
+  public int actionCode(Input in, Processor p) {
     return Action.COPY_NODE;
   }
 

@@ -96,7 +96,7 @@ public class EntityHandler extends AbstractHandler {
     else 
       value = aContext.getEntityValue(name, false);
 
-    // aContext.debug("&" + name + "; => " + value + "\n");
+    //aContext.debug("&" + name + "; => " + value + "\n");
 
     if (value == null) {
       out.putNode(n);

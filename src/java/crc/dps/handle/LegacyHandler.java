@@ -28,6 +28,15 @@ public class LegacyHandler extends GenericHandler {
   public crc.interform.Handler wrapped = null;
 
   /************************************************************************
+  ** Parse-Time Operations:
+  ************************************************************************/
+
+  public Action getActionForNode(ActiveNode n) {
+    Action a = wrapped.getActionForNode(n, this);
+    return (a == null)? this : a;
+  }
+
+  /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
 

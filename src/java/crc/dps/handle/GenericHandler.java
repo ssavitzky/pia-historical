@@ -73,6 +73,14 @@ public class GenericHandler extends BasicHandler {
     noCopyNeeded = value;
   }
 
+  /** Override to handle additional syntax codes. */
+  public void setSyntaxCode(int syntax) {
+    super.setSyntaxCode(syntax);
+    if (syntax != 0) {
+      expandContent = (syntax & Syntax.NO_EXPAND) == 0;
+    }
+  }
+  
 
   /** If <code>true</code>, the content is expanded. */
   protected boolean expandContent = true;
@@ -198,10 +206,11 @@ public class GenericHandler extends BasicHandler {
     if (!noCopyNeeded) Copy.appendNodes(content, element);
     if (hasChildren()) {
       // Create a suitable sub-context:
+      //    === not clear if entities should still be lowercase.  For now...
       //aContext.debug("expanding definition in sub-context\n");
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
-      ents.setEntityValue("CONTENT", content, true);
-      ents.setEntityValue("ELEMENT", new ParseNodeList(element), true);
+      ents.setEntityValue("content", content, true);
+      ents.setEntityValue("element", new ParseNodeList(element), true);
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
       Processor p = aContext.subProcess(def, out, ents);
@@ -238,21 +247,16 @@ public class GenericHandler extends BasicHandler {
 
   /** Construct a GenericHandler for a passive element. 
    *
-   * @param syntax 
-   *	<dl compact>
-   *	    <dt> -1 <dd> known to be empty.
-   *	    <dt>  0 <dd> unknown
-   *	    <dt>  1 <dd> known to be non-empty.
-   *	</dl>
-   * @param parseElts if <code>true</code> (default), recognize elements in
-   *	the content.
-   * @param parseEnts if <code>true</code> (default), recognize entities in
-   *	the content.
-   * @see #getElementSyntax
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
+   * @see #getSyntaxCode
    */
-  public GenericHandler(int syntax, boolean parseElts, boolean parseEnts) {
-    super(syntax, parseElts, parseEnts);
+  public GenericHandler(int syntax) {
+    super(syntax);
+    if (syntax != 0) {
+      expandContent = (syntax & Syntax.NO_EXPAND) == 0;
+    }
   }
+
   /** Construct a GenericHandler for a passive element. 
    *
    * @param empty     if <code>true</code>, the element has no content
@@ -262,7 +266,7 @@ public class GenericHandler extends BasicHandler {
    *	the content.
    * @param parseEnts if <code>true</code> (default), recognize entities in
    *	the content.
-   * @see #getElementSyntax
+   * @see #getSyntaxCode
    */
   public GenericHandler(boolean empty, boolean parseElts, boolean parseEnts) {
     super(empty, parseElts, parseEnts);

@@ -1,4 +1,4 @@
-////// TypicalHandler.java: <typical> Handler implementation
+////// getHandler.java: <get> Handler implementation
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -14,16 +14,21 @@ import crc.dps.active.*;
 import crc.dps.aux.*;
 
 /**
- * Handler for &lt;typical&gt;....&lt;/&gt;  <p>
+ * Handler for &lt;get&gt;  <p>
  *
- *	This is a sample implementation of a specialized subclass of
- *	GenericHandler for the ``typical'' case.
+ *	This is an approximation to the legacy &gt;get&gt;; it lacks many
+ *	of the old extraction modifiers, which have moved to &lt;find&gt;. <p>
+ *
+ *	It is permissible for the <code>name</code> attribute to be missing,
+ *	in which case the entire namespace will be returned.  The 
+ *	<code>keys</code>, <code>values</code>, and <code>bindings</code>
+ *	attributes are supported.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  */
 
-public class TypicalHandler extends GenericHandler {
+public class getHandler extends GenericHandler {
 
   /************************************************************************
   ** Semantic Operations:
@@ -33,6 +38,8 @@ public class TypicalHandler extends GenericHandler {
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     // Actually do the work. 
+    String name = atts.getAttributeString("name");
+    Copy.copyNodes(aContext.getEntityValue(name, false), out);
   }
 
   /** This does the parse-time dispatching. <p>
@@ -43,7 +50,19 @@ public class TypicalHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    //if (dispatch(e, "")) 	 return Typical_.handle(e);
+    //if (dispatch(e, "element"))	 return get_element.handle(e);
+    //if (dispatch(e, "local"))	 return get_local.handle(e);
+    //if (dispatch(e, "global")) return get_global.handle(e);
+    //if (dispatch(e, "index"))	 return get_index.handle(e);
+
+    //if (dispatch(e, "pia"))	 return get_pia.handle(e);
+    //if (dispatch(e, "env"))	 return get_env.handle(e);
+    //if (dispatch(e, "agent"))	 return get_agent.handle(e);
+    //if (dispatch(e, "trans"))	 return get_trans.handle(e);
+    //if (dispatch(e, "form"))	 return get_form.handle(e);
+
+    //if (dispatch(e, "file"))	 return read_file.handle(e);
+    //if (dispatch(e, "href"))	 return read_href.handle(e);
     return this;
   }
    
@@ -52,7 +71,7 @@ public class TypicalHandler extends GenericHandler {
   ************************************************************************/
 
   /** Constructor must set instance variables. */
-  public TypicalHandler() {
+  public getHandler() {
     /* Expansion control: */
     stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
@@ -63,6 +82,6 @@ public class TypicalHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    syntaxCode = NORMAL;  		// EMPTY, QUOTED, 0 (check)
+    syntaxCode = EMPTY; 		// NORMAL, QUOTED, 0 (check)
   }
 }

@@ -19,7 +19,9 @@ HANDLERS = \
 BASIC_ACTORS = \
 	elseHandler.java \
 	elsfHandler.java \
+	getHandler.java \
 	ifHandler.java \
+	setHandler.java \
 	substHandler.java \
 	testHandler.java \
 	thenHandler.java

@@ -66,42 +66,33 @@ public class BasicHandler extends AbstractHandler {
   ************************************************************************/
 
   /** If the handler corresponds to an Element, this determines its syntax.
-   *	<dl compact>
-   *	    <dt> &gt;0 <dd> known to be non-empty.
-   *	    <dt> =0 <dd> unknown
-   *	    <dt> &lt;0 <dd> known to be empty.
-   *	</dl>
    */
-  protected int elementSyntax = 0;
+  protected int syntaxCode = 0;
 
   /** What the Handler knows about a Token's syntax without looking at it.
    *
-   * @return
-   *	<dl compact>
-   *	    <dt> &gt;0 <dd> known to be non-empty.
-   *	    <dt> =0 <dd> unknown
-   *	    <dt> &lt;0 <dd> known to be empty.
-   *	</dl>
+   * @see crc.dps.Syntax
    */
-  public int getElementSyntax() { return elementSyntax; }
+  public int getSyntaxCode() { return syntaxCode; }
 
   /** Set what the Handler knows about a Token's syntax.
    *
-   * @param value 
-   *	<dl compact>
-   *	    <dt> &gt;0 <dd> known to be non-empty.
-   *	    <dt> =0 <dd> unknown
-   *	    <dt> &lt;0 <dd> known to be empty.
-   *	</dl>
+   * @see crc.dps.Syntax
    */
-  public void setElementSyntax(int value) { elementSyntax = value; }
+  public void setSyntaxCode(int syntax) {
+    syntaxCode = syntax;
+    if (syntax != 0) {
+      parseElementsInContent = (syntax & Syntax.NO_ELEMENTS) == 0;
+      parseEntitiesInContent = (syntax & Syntax.NO_ENTITIES) == 0;
+    }
+  }
   
   /** Called to determine whether the given Token (for which this is
    *	the Handler) is an empty element, or whether content is expected.
    *	It is assumed that <code>this</code> is the result of the Tagset
    *	method <code>handlerForTag</code>.
    *
-   *	If <code>elementSyntax</code> is zero, we look at the Token's 
+   *	If <code>syntaxCode</code> is zero, we look at the Token's 
    *	<code>hasEmptyDelimiter</code> flag.
    *
    * @param t the Token for which this is the handler, and for which the
@@ -110,8 +101,8 @@ public class BasicHandler extends AbstractHandler {
    * @see crc.dps.Tagset
    */
   public boolean isEmptyElement(Node n) {
-    if (elementSyntax != 0) return elementSyntax < 0;
-    else return false;
+    if (syntaxCode != 0) return (syntaxCode & Syntax.EMPTY) != 0;
+    else return false;		// === ought to look at node here.
   }
 
   /** Called to determine the correct Handler for a given Token.
@@ -222,23 +213,17 @@ public class BasicHandler extends AbstractHandler {
 
   /** Construct a BasicHandler for a passive element. 
    *
-   * @param syntax 
-   *	<dl compact>
-   *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown
-   *	    <dt>  1 <dd> known to be empty.
-   *	</dl>
-   * @param parseElts if <code>true</code> (default), recognize elements in
-   *	the content.
-   * @param parseEnts if <code>true</code> (default), recognize entities in
-   *	the content.
-   * @see #getElementSyntax
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
+   * @see #getSyntaxCode
    */
-  public BasicHandler(int syntax, boolean parseElts, boolean parseEnts) {
-    elementSyntax = syntax;
-    parseElementsInContent = parseElts;
-    parseEntitiesInContent = parseEnts;
+  public BasicHandler(int syntax) {
+    syntaxCode = syntax;
+    if (syntax != 0) {
+      parseElementsInContent = (syntax & Syntax.NO_ELEMENTS) == 0;
+      parseEntitiesInContent = (syntax & Syntax.NO_ENTITIES) == 0;
+    }
   }
+
   /** Construct a BasicHandler for a passive element. 
    *
    * @param empty     if <code>true</code>, the element has no content
@@ -248,10 +233,10 @@ public class BasicHandler extends AbstractHandler {
    *	the content.
    * @param parseEnts if <code>true</code> (default), recognize entities in
    *	the content.
-   * @see #getElementSyntax
+   * @see #getSyntaxCode
    */
   public BasicHandler(boolean empty, boolean parseElts, boolean parseEnts) {
-    elementSyntax = empty? -1 : 1;
+    syntaxCode = empty? Syntax.EMPTY : Syntax.NORMAL;
     parseElementsInContent = parseElts;
     parseEntitiesInContent = parseEnts;
   }
