@@ -188,7 +188,19 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 *
 ***********************************************************************/
 
-.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif .mif
+.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif .mif .fm
+
+/* .fm (frame5) to mif    put cmds in file then do fmbatch
+ */
+.fm.mif:
+	echo "Open $<" >> .tmp ;echo "SaveAs m $< $*.mif" >> .tmp; \
+ echo "Quit " >> .tmp ; fmbatch .tmp ; rm .tmp
+
+/* .fm (frame5) to ps    ../pia_temp.fm holds printer settings
+ * can go to file or printer...
+ */
+	echo "Open $<" >> .tmp ;echo "Open ../pia_temp.fm" >> .tmp; \
+ echo "Print $< ../pia_temp.fm" >> .tmp ; fmbatch .tmp ; rm .tmp
 
 /* .mif (framemaker) to html
  */
