@@ -79,7 +79,7 @@ holes.log::
 	-egrep -i -n -s $(HOLE_REGEXP) $(HOLE_FILES) /dev/null | tee holes.log
 
 lines.log::
-	wc *.java /dev/null | grep -v /dev/null > lines.log
+	-wc *.java /dev/null | grep -v /dev/null > lines.log
 
 clean::
 	@@rm -rf *~ *.class
