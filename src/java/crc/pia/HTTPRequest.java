@@ -287,8 +287,10 @@ public class  HTTPRequest extends Transaction {
 
      if( method().equals("POST")  ){
        String qs = queryString(); 
-       if( qs != null )
-	 out.print( queryString() );
+       if( qs != null ){
+	 Pia.instance().debug(this, "the content is ..." + qs);
+	 out.println( qs );
+       }
      }
      out.flush();
   }
