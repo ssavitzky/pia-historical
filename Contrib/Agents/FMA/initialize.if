@@ -1,0 +1,44 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Initialization file</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1> Initialization for &agentName;</h1>
+
+These actions happen automatically on initial load of agent.
+Reload this page to automatically reset values.
+
+<h2> Set user list</h2>
+<if><read file="users.html" info><then>
+<set name="users" agent><read file="users.html" process></set>
+<set name="quicklist" agent><read file="quicklist.html" process></set>
+<set name="types" agent><read file="faxtypes.html" process></set>
+</then>
+<else>
+<!-- example users -->
+<set name="users" agent><ul><li>Joe<li>Mary<li>Sean</li></ul></set>
+<set name="quicklist" agent><dl>
+  <dt> Joe
+  <dd> 555-9739
+  <dt> Karen
+  <dd> 555-1234
+  <dt> Crow
+  <dd> crow@nowhere.com
+</dl>
+</set>
+<set name="types" agent>
+<ul>
+<li> Contract
+<li> Sales
+<li> Form
+</ul>
+</set>
+</else>
+</if>
+
+<hr>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Sun Sep 14 19:16:35 1997
+<!-- hhmts end -->
+</body></html>

@@ -1,0 +1,74 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> Find Faxes</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+<!-- set user=username ? unknown -->
+<set name="user"><if><get name="user" form><then>&FORM.user;</then><else>unknown</else></if></set>
+<set name="sender"><if><get name="sender" form><then>&FORM.sender;</then><else>unknown</else></if></set>
+
+
+<!-- include the standard head banner -->
+
+<set entity name=title>Find Faxes for &user;</set>
+<read interform file="heading.inc" process>
+
+<!-- search form/ sorting -->
+<form action="&url;" method=POST>
+<input type="SUBMIT" value="Show">
+Faxes To/From: <select name="user">  <option>&user;</option>
+ <repeat list="&AGENT.users.li.Text;"> <option>&li;</option></repeat>
+</select>
+Sent To/By: <select name="from">  <option>&sender; </option>
+ <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat></select><br>
+Sort by: <select name="from">  <option>date</option>
+ <option>sender</option>
+ <option>versions</option>
+</select>
+</form>
+
+
+<!-- search form/ accounts -->
+<form action="&url;" method=POST>
+<input type="SUBMIT" value="Show">
+
+<set name="formtype"><if>&FORM.sender;<then>&FORM.sender;</then><else>unknown</else></if></set>
+
+Type: <select name="Type">  <option>&formtype;</option>
+ <repeat list="&AGENT.types.li.Text;"> <option>&li;</option></repeat>
+</select>
+Version: <select name="version">  <option>Latest </option>
+ <option>all</option>
+ <option>last3</option></select>
+Sort by: <select name="from">  <option>type</option>
+<option>date</option>
+ <option>sender</option>
+ <option>versions</option>
+</select>
+</form>
+
+ <HR>
+<!-- read list of incoming faxes - should be replaced by a get-->
+ <set name="faxes"><read file="incoming.html"><read file="outgoing.html"></set>
+
+<!-- filter and sort -->
+
+<!--  more data  should be shown in listing -->
+<table align=center>
+ <tr foreach list="&faxes;">
+  <TR><TD align=right> <a href="/&agentName;/view_fax.if?fax=&li;"><img src="&li;/small.gif"></a>
+   <TD align=left><a href="/&agentName;/view_fax.if?fax=&li;">&li;</a>
+   <TD align=left><a href="/&agentName;/find_fax.if?faxlike=&li;">More like this</a>
+ </tr>
+</table>
+
+
+<hr>
+
+<!-- $Id$ -->
+
+<!-- insert standard footer which usually includes controls -->
+<read interform file="footer.inc" process>
+
+</body></html>

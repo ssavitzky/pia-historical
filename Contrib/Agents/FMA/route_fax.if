@@ -1,0 +1,23 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Route fax</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<!-- include the standard head banner -->
+
+<set entity name=title>Route &fax;</set>
+<read interform file="heading.inc" process>
+<if> <get form name="user"> <then>
+ <write append file="users/&FORM.user;.html>&FORM.fax;</write>
+Routed &FORM.fax; to &FORM.user;
+</then></if>
+
+<hr>
+
+
+<!-- $Id$ -->
+
+<!-- insert standard footer which usually includes controls -->
+<read interform file="footer.inc" process>
+</body></html>
+
