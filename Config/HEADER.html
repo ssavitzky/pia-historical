@@ -9,7 +9,7 @@ This directory contains three kinds of configuration information:
   <li> configuration files for various kinds of web-enabled appliances.  Each
        appliance's configuration is in a directory with the name of the
        appliance's top-level agent.
-  <li> configuration files for various operating systems
+  <li> configuration files for various operating systems and environments.
   <li> makefiles and other configuration files for the standard ``Software
        Development Kit''. 
 </ol>
@@ -22,7 +22,7 @@ contents of the ``<code>~pia</code>'' directory, and ``<code>pia/my</code>''
 the contents of the ``<code>~pia/.pia</code>'' directory--the names are
 changed to avoid having special characters in the names.<p>
 
-Subdirectories may also contain a <code>setup</code> script.<p>
+Subdirectories may also contain a <code>setup</code> script or Makefile.<p>
 
 
 <h2>Annotated Contents</h2>
@@ -39,8 +39,10 @@ Subdirectories may also contain a <code>setup</code> script.<p>
   <dd> Configuration files for a ``generic'' web appliance.
 </dl>
 
-<h3>Operating Systems</h3>
+<h3>Operating Systems &amp; Environments</h3>
 <dl>
+  <dt> <a href="cdrom/">cdrom/</a>
+  <dd> Content and Makefile for various CD-ROM release formats.
   <dt> <a href="unix/">unix/</a>
   <dd> Configuration files for Unix or Linux users.  (This may eventually
        include multiple setups for ordinary user and developer.)
