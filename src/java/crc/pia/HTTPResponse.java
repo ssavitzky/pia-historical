@@ -186,7 +186,8 @@ public class  HTTPResponse extends Transaction {
   public void errorResponse(int code, String msg){
     msg = errorMessage(code, msg);
     StringReader inputStream = new StringReader( msg );
-    Content ct = new crc.content.text.html( inputStream );
+
+    Content ct = new crc.content.text.html( inputStream, this );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     toMachine(), ct, false);
     response.setStatus( code );

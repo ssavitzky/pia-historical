@@ -615,7 +615,7 @@ public class  HTTPRequest extends Transaction {
   public void errorResponse(int code, String msg){
     msg = errorMessage(code, msg);
     StringReader inputStream = new StringReader( msg );
-    Content ct = new crc.content.text.html( inputStream );
+    Content ct = new crc.content.text.html( inputStream, this );
     Transaction response = new HTTPResponse( this, Pia.instance().thisMachine,
 					     ct, false);    
     response.setStatus( code );
