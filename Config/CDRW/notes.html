@@ -1,0 +1,22 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Installation Notes</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Installation Notes</h1>
+
+<h2>Root Privileges Required</h2>
+
+<dl>
+  <dt> <code>chown root `which cdrecord`</code><br>
+       <code>chmod u+s `which cdrecord`</code>       
+  <dd> <code>cdrecord</code> cannot open the CDRW device without root
+       privileges. 
+  <dt> Java's <code>bin</code> directory must be in the default search path
+  <dd> ... in order for <code>run_pia</code> to work correctly.
+</dl>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
