@@ -28,16 +28,16 @@
 <h2>Banner for bottom of each page:</h2>
 
 <set agent name="banner"><table align=center>
-<TR><TD> <a href="/Agency/home.if">
-<img src="/Agency/Icons/pia20.gif" height=20 width=37 alt=PIA></a>
-<TD> <a href="/&agentName;/home.if">
+<TR><TD> <a href="/">
+<img src="/Icon/pia20.gif" height=20 width=37 alt=PIA></a>
+<TD> <a href="/&agentName;/home">
 <img src="/&agentName;/camera.gif"  height=20 width=20 alt="&agentName;"></a>
-<TD> <a href="/&agentName;/latest.if">
-<img src="/Agency/Icons/new.gif"  height=20 width=20 alt="New"></a>
-<TD> <a href="/&agentName;/catalog.if">
+<TD> <a href="/&agentName;/latest">
+<img src="/Icon/new.gif"  height=20 width=20 alt="New"></a>
+<TD> <a href="/&agentName;/catalog">
 <img src="/&agentName;/album.gif"  height=20 width=20 alt=album></a>
-<TD> <a href="/&agentName;/help.if">
-<img src="/Agency/Icons/help.gif"  height=20 width=40 alt=help></a>
+<TD> <a href="/&agentName;/help">
+<img src="/Icon/help.gif"  height=20 width=40 alt=help></a>
 </table><hr></set>
 
 <hr>

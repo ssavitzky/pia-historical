@@ -58,7 +58,7 @@ This online help page is automatically customized for every agent that makes a
 link to it; you can <em>always</em> find a link to it from an Agent's
 <a href="&agentPath;/">index page</a>.  More general information, including
 links to the documentation and to many useful InterForms, can be
-found on the <a href="/Agency">Agency's home page</a>.
+found on the <a href="/Admin">Admin Agent's home page</a>.
 
 <hr>
 <footer cvsid="$Id$">

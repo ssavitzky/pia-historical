@@ -17,7 +17,7 @@
 <tr><th width=170 valign=center>
 <td>
   <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+    <tr><th width=170><img src="/Icon/blank170x1.gif"
 	                   width=170 height=1></th><td>
     <tr><th align=right>
 	    <td> <a href="home.if">Home</a>
@@ -25,9 +25,8 @@
     		 <a href="help.if">Help</a>
     		 <a href="options.if">Options</a>
     <tr><th><td> <a href=actors.if>Actors</a>
-		 <a href=/Agency/entities>Entities</a>
-		 <a href="/Agency/agents">Agents</a>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+		 <a href=entities>Entities</a>
+    <tr><th align=right><img src="/Icon/dot-blue.gif"
 			     height=20 width=20 alt="*">
             <td> <b href="tag_man.if">Standard Tagset Manual</b>
     <tr><th><td> <a href=demo.if>Standard Tagset Examples</a>
@@ -601,7 +600,7 @@ Add spaces to <at>CONTENT</at> to fill it out to a specified number of spaces.
 <an>pad</an> can be useful for generating tables to be presented using the
 <an>pre</an> tag, which is supported by <em>all</em> browsers (unlike
 <an>table</an>, which some older browsers still don't support very well).
-Used, for example, on the <a href="/Agency/agents">PIA's agent index</a>.<p>
+Used, for example, on the <a href="/Admin/list-agents">PIA's agent index</a>.<p>
 
 <adscr>trim</adscr>
 
@@ -670,7 +669,7 @@ URL's. <p>
 
 <hr> <!-- ========================================================== -->
 <h2><a name="agents">PIA Agents</a></h2>
-<alist>agent-criteria agent-home agent-install agent-list agent-options
+<alist>agent-criteria agent-home agent-list agent-options
 	agent-remove agent-running agent-set-criterion agent-set-options</alist>
 
 <dl>
@@ -683,8 +682,6 @@ URL's. <p>
 <adscr>agent-criteria</adscr>
 
 <adscr>agent-home</adscr>
-
-<adscr>agent-install</adscr>
 
 <adscr>agent-list</adscr>
 

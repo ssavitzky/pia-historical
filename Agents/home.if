@@ -20,10 +20,10 @@
     <read quiet interform file="insert" process>
   <td>
     <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+    <tr><th width=170><img src="/Icon/blank170x1.gif"
 	                   width=170 height=1></th>
         <td><br>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+    <tr><th align=right><img src="/Icon/dot-blue.gif"
 			     height=20 width=20 alt="*">
 	    <td> <b href="home">Home</b>
     		 <a href="index">Index</a>
@@ -55,7 +55,7 @@
 <p>
 
 <hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
     <then><a href="/&agentType;/home">&agentType;</a>
           <a href="/&agentType;/"> / </a>

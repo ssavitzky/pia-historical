@@ -1,8 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
-
 <html><head>
 <title>Parse Handler Demo</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <h2>Parse Handler Examples:</h2>
@@ -22,7 +20,6 @@ This example does not work.<br><br>
 <br>
 <br>
 
-<a href="/Agency">Agency home page</a>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
 <b>User:</b> &piaUSER;

@@ -33,7 +33,7 @@
       <then>
          <set name=found>found</set>
 	 <set agent name=cardfile>&mydir;/&myfilename;</set>
-	 <read.href href="/Agency/Buss/Getcardpost.if" process>
+	 <read.href href="/Buss/Getcardpost.if" process>
       </then>
    </if>
 </repeat>

@@ -24,7 +24,7 @@
 <read interform process file=t-index.inc>
 
 <hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
     <then><a href="/&agentType;/home.if">&agentType;</a>
           <a href="/&agentType;/"> / </a>

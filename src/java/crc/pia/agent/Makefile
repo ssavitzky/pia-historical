@@ -11,9 +11,9 @@ OTHER = \
 	AgentInstallException.java
 
 AGENTS = \
-	Agency.java \
+	Admin.java \
+	Root.java \
 	Dofs.java \
-	Fallback.java \
 	Logo.java \
 	Cache.java \
 	Camera.java
@@ -32,6 +32,12 @@ include $(TOPDIR)/makefiles/file.make
 ### Dependencies:
 
 Agency.class: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
+	../Transaction.java ../Machine.java ../HTTPRequest.java
+
+Admin.class: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
+	../Transaction.java ../Machine.java ../HTTPRequest.java
+
+Root.class: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
 	../Transaction.java ../Machine.java ../HTTPRequest.java
 
 AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \

@@ -14,12 +14,13 @@ An agent is represented in the information agency by a persistent software
 object.  In order for the agency to know about an Agent and direct
 requests like <code> http://localhost:8888/Agent/home </code> to an
 <code>Agent</code>, the agent must be "installed" which creates the
-corresponding software object.  When the Agency is started, it looks in the Agency's
+corresponding software object.  When the Agency is started, it looks in the
+Agency's 
 <code> <a href=START-UP.html>START-UP.html </a> </code> and installs any
        agents found there.  (Like all agent files, the original file found in
        the agents directory, in this case
-       &piaDIR;/Agents/Agency/ can be overridden by local files in
-       &usrDIR;/Agents/Agency/.)
+       &piaDIR;/Agents/&AGENT:name;/ can be overridden by local files in
+       &usrDIR;/Agents/&AGENT:name;/.)
 Other agents can be installed using this form which contains ``canned''
 install forms for various agents.  You can paste sections out of
 this file into your own <code> START-UP.html </code> file.  When you design a
@@ -45,33 +46,33 @@ which allows you to type in the name an type of an agent directly.
 <dl> 
   <dt> <a name="History">History agent</a>
        <if><agent-running name=History><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="History">
        </form></if>
   <dt> <a name="View">View agent</a>
        <if><agent-running name=View><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="View">
        </form></if>
   <dt> <a name="Spy">Spy agent</a>
        <if><agent-running name=Spy><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="Spy">
        </form></if>
        <dl>
 	 <dt> <a name="CIA">CIA agent</a>
 	      <if><agent-running name=cia><then><em>installed</em></then><else>
-	 <dd> <form action="/Agency/install_agent" method="POST">
+	 <dd> <form action="/&AGENT:name;/install_agent" method="POST">
 	      <input type="submit" value="Install">
 	      name: <input name="agent" value="cia">
 	      type: <input name="type" value="Spy">
 	      </form></if>
 	 <dt> <a name="FBI">FBI agent</a>
 	      <if><agent-running name=fbi><then><em>installed</em></then><else>
-	 <dd> <form action="/Agency/install_agent" METHOD="POST">
+	 <dd> <form action="/&AGENT:name;/install_agent" METHOD="POST">
 	      <input type="submit" value="Install">
 	      name: <input name="agent" value="fbi">
 	      type: <input name="type" value="Spy">
@@ -79,13 +80,13 @@ which allows you to type in the name an type of an agent directly.
        </dl>
   <dt> <a name="logo">Logo agent</a>
        <if><agent-running name=Logo><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" METHOD="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <INPUT NAME="agent" value="Logo">
        </form></if>
   <dt> <a name="Cache">Cache agent</a> (keeps a copy of every external doc...)
        <if><agent-running name=Cache><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Cache"><br>
        (could add more options here, like update frequency: always, never,
@@ -94,21 +95,21 @@ which allows you to type in the name an type of an agent directly.
 
   <dt> <a name="demo">(new) InterForm Demonstration and Test agent</a>
        <if><agent-running name="demo"><then><em>installed</em></then><else>
-  <dd> <FORM ACTION="/Agency/install_agent" METHOD="POST">
+  <dd> <FORM ACTION="/&AGENT:name;/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="demo">
        </form></if>
 
   <dt> <a name="InterForm">(Old) InterForm Demonstration and Test agent</a>
        <if><agent-running name="InterForm"><then><em>installed</em></then><else>
-  <dd> <FORM ACTION="/Agency/install_agent" METHOD="POST">
+  <dd> <FORM ACTION="/&AGENT:name;/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="InterForm">
        </form></if>
 
   <dt> <a name="Swifty">Tutorial agent</a> (Illustrates how to create an agent)
        <if><agent-running name=Swifty><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Swifty"><br>
        </form> </if>
@@ -123,7 +124,7 @@ Provides basic file browsing capabilities.
   <dd> <if><agent-running name=DOFS>
        <then><em>is already running, as it should be.</em></then>
        <else> Really needs to be running, or lots of things won't work.
-       <form action="/Agency/install_agent" method="POST">
+       <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install NOW!">
        name:<input name="agent" value="DOFS">
        </form></if><p>
@@ -131,7 +132,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="My">DOFS/My</a>
        <if><agent-running name=My><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="My">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;">
@@ -140,7 +141,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="PIA">DOFS/PIA</a>
        <if><agent-running name=PIA><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="PIA">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="~/pia">
@@ -149,7 +150,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="Root">DOFS/Root</a>
        <if><agent-running name=Root><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="Root">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="/">
@@ -158,14 +159,14 @@ Provides basic file browsing capabilities.
   <dt> <a name="Home">DOFS/Home</a>
        <if><agent-running name=Home><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="Home">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="~/">
        <input type="submit" value="Install">
        </form></if>
   <dt> Generic DOFS form:
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="Name">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="/complete/path/">
@@ -182,7 +183,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="Photo_Album">Photo Album</a>
        <if><agent-running name="Photo_Album"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="Photo_Album"><br>
        <br>
        <input type="submit" value="Install"><br>
@@ -190,7 +191,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="PhotoNet">Photo Net</a>
        <if><agent-running name="PhotoNet"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="PhotoNet"><br>
        <br>
        <input type="submit" value="Install"><br>
@@ -199,7 +200,7 @@ Provides basic file browsing capabilities.
        <if><agent-running name="Photos"><then><em>installed</em></then>
        <else>
        (No longer useful...)
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name:<input name="agent" value="Photos">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;/Photo_Album/">
@@ -211,7 +212,7 @@ Provides basic file browsing capabilities.
   <dt> <a name="Printer">Printer agent</a>
        <if><agent-running name=WebPrinter><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        name: <input name="agent" value="WebPrinter"><br>
        type: <input name="type" value="Printer"><br>
        <input type="submit" value="Install">
@@ -223,7 +224,7 @@ Provides basic file browsing capabilities.
 
 <dl>
   <dt>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        <b>Name:</b><input name="agent" value="">
        <b>Type:</b><input name="type" value="">
@@ -240,21 +241,21 @@ Provides basic file browsing capabilities.
 <dl>
   <dt> <a name="RAWHO">RAWHO</a> (creates/manages a list of links and annotations) 
        <if><agent-running name=RAWHO><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="RAWHO">
        type:<input name="type" value="Discussion">
        </form></if>
  <dt> <a name="MB3">TalksBoard</a> (creates/manages a calendar of talks) 
        <if><agent-running name=TalksBoard><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="TalksBoard">
        type:<input name="type" value="MB3">
        </form></if>
  <dt> <a name="Workflow">Forms</a> (creates/manages a list of links and annotations) 
        <if><agent-running name=Forms><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent" method="POST">
+  <dd> <form action="/&AGENT:name;/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Forms">
        type:<input name="type" value="Workflow">

@@ -1,12 +1,11 @@
-// Agency.java
+// Root.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
 /**
- * This is the class for the ``Agency'' agent; i.e. the one that
- *	handles requests directed at agents.  It contains the specialized
- *	code that installs agents, and an <code>actOn</code> method that
- *	determines which agent should handle a request.
+ * This is the class for the ``Root'' agent; i.e. the one that handles
+ *	requests directed at the PIA.  It contains an <code>actOn</code>
+ *	method that determines which agent should handle a request.
  */
 
 package crc.pia.agent;
@@ -29,12 +28,62 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 
-public class Agency extends Admin {
+public class Root extends GenericAgent {
+
+  // === The proxy stuff is almost certainly obsolete; 
+  // === it was only used in Machine, and has been moved there.
+
+  /**
+   * return a string indicating the proxy to use for retrieving this request
+   * this is for standard proxy notions only, for automatic redirection
+   * or re-writes of addresses, use an appropriate agent
+   */
+  public String proxyFor(String destination, String protocol){
+    String s = null;
+    List list = noProxies();
+
+    if (list != null && destination != null) {
+      Enumeration e = list.elements();
+      while( e.hasMoreElements() ){
+	s = (String)e.nextElement();
+	if( s.indexOf(destination) != -1 )
+	  return null;
+      }
+    }
+    return proxy(protocol);
+  }
+
+  /**
+   * @return no proxies list from PIA
+   */
+  public List noProxies() {
+    return Pia.instance().noProxies();
+  }
+
+  /**
+   * @return proxy string given protocol
+   */
+  public String proxy(String protocol){
+    if( protocol == null ) return null;
+
+    Table ht = Pia.instance().proxies();
+
+    String myprotocol = protocol.toLowerCase().trim();
+    //    if( !ht.isEmpty() && ht.containsKey( myprotocol ) ){
+    if( ht.isEmpty() != false ){
+      if(ht.containsKey( myprotocol ) ){
+	String v = (String)ht.get( myprotocol );
+	return v;
+      }
+    }
+
+    return null;
+  }
 
   /**
    * Act on a transaction that we have matched. 
    *
-   * <p> Since the Agency matches all requests to agents, this means
+   * <p> Since the Root matches all requests to agents, this means
    * 	 that we need to find the agent that should handle this request
    * 	 and push it onto the transaction.
    */
@@ -62,8 +111,8 @@ public class Agency extends Admin {
     }
   }
 
-  /** The directory (under Agency) in which we keep root files. */
-  protected String rootPrefix = "ROOT";
+  /** The directory (under ROOT) in which we keep root files. */
+  protected String rootPrefix = null;
 
   /** Test path to see whether it is a valid root path. */
   protected boolean isValidRootPath(String path) {
@@ -73,30 +122,27 @@ public class Agency extends Admin {
   }
 
   /** Test path to see whether it is a possible root path. 
-   *	This is indicated by the absence of a leading <code>/Agency</code>.
-   *	Note that by this point we have already established (in Agency's
-   *	<code>actOn</code> method) that either Agency or no valid agent
+   *	This is indicated by the absence of a leading <code>/Root</code>.
+   *	Note that by this point we have already established (in Root's
+   *	<code>actOn</code> method) that either Root or no valid agent
    *	owns the path.
    */
   protected boolean isPossibleRootPath(String path) {
     // We've already checked for an agent at this point, so we know that if
-    // it starts with Agency it's not a root path.
+    // it starts with ROOT it's not a root path.
     return !path.startsWith("/" + name());
   }
 
   /** Rewrite a root path.  
    *	Correctly handle the case where a legacy <code>ROOTindex.if</code>
-   *	exists in the user's <code>.pia/Agents/Agency</code> directory.
-   *	Otherwise, rewrite to <code>Agency/ROOT/<em>path</em></code>.
+   *	exists in the user's <code>.pia/Agents/Root</code> directory.
+   *	Otherwise, rewrite to <code>Root/ROOT/<em>path</em></code>.
    */
   protected String rewriteRootPath(String path) {
     if (path.equals("/")) {
-      // root index directory -- might be ROOTindex
-      if (findInterform("ROOTindex") != null) return "/ROOTindex";
-      return "/" + rootPrefix + "/index";
-    } else {
-      return "/" + rootPrefix + path;
-    }
+      path = "/index";
+    } 
+    return (rootPrefix == null)? path : "/" + rootPrefix + path;
   }
 
   /** Perform any necessary rewriting on the given path. */
@@ -111,12 +157,12 @@ public class Agency extends Admin {
   /**
    * Constructor.
    */
-  public Agency(String name, String type){
+  public Root(String name, String type){
     super(name, type);
   }
 
   /** Default constructor. */
-  public Agency() {
+  public Root() {
     super();
   }
 

@@ -52,8 +52,8 @@ are available in the urlQuery string without a leading "?" -->
 	<input type="hidden" name=URL value="&myuq;">
 	</form>
 </td><td valign=top><a href="&myprinter;/home.if"><img
-src="http://&piaHOST;:&piaPORT;/Agency/Logo/A100.gif" border=0 height=32
-valign=top alt="&agentName;Home"></a></td></tr></table>
+src="http://&piaHOST;:&piaPORT;/&agentName;/Logo/A100.gif" border=0 height=32
+valign=top alt="&agentName; Home"></a></td></tr></table>
 <hr>
 </trans-control>
 </protect></set>

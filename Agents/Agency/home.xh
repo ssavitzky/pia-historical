@@ -22,17 +22,17 @@ you get a generic <em><a href="index">index</a></em> page.
 <table><tr><td width=340 valign=top>
 <h3>Useful Interforms:</h3>
 <ul>
-  <li> <a href=/Agency/agents>list running agents</a>
-  <li> <a href="/Agency/installers">install new agents</a>
-  <li> <a href=/Agency/options>view/change options</a>
+  <li> <a href=agents>list running agents</a>
+  <li> <a href="installers">install new agents</a>
+  <li> <a href=options>view/change options</a>
 <if><test not exact match='pia'>&piaUSER;</test><then>
-  <li> <a href=/Agency/debug>toggle debugging</a> (currently
+  <li> <a href=debug>toggle debugging</a> (currently
        <if><test zero><get pia name="main::debugging"></test>
            <then>off</then><else>on</else></if>)
-  <li> <a href=/Agency/remove_agent> remove agent</a>
-  <li> <a href="/Agency/os-cmd">run OS commands</a>
+  <li> <a href=remove_agent> remove agent</a>
+  <li> <a href="os-cmd">run OS commands</a>
 </then><else>
-  <li> <a href="/Agency/shutdown">Shut down the PIA or the computer</a>
+  <li> <a href="shutdown">Shut down the PIA or the computer</a>
 </else></if>       
 </ul>
 <td valign=top>
@@ -40,15 +40,15 @@ you get a generic <em><a href="index">index</a></em> page.
 <ul>
   <li> <a href="/PIA/Doc/"><b>Documentation</b> </a>
        <if><agent-running name=PIA><then></then>
-       <else><a href="/Agency/installers#PIA"><em>install needed!</em></a>
+       <else><a href="installers#PIA"><em>install needed!</em></a>
        </else></if>
        <ul>
 	 <li> <a href="/PIA/Doc/Tutorial">Tutorial</a>
 	 <li> <a href="/PIA/Doc/Release">Release Notes</a>
 	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
        </ul>
-  <li> <a href="/Agency/programming">Programming information</a>
-  <li> <a href="/Agency/help">Online Help</a>
+  <li> <a href="programming">Programming information</a>
+  <li> <a href="help">Online Help</a>
 </ul>
 </table>
 

@@ -28,7 +28,7 @@
     </if>
     <tr><th width=340>
 	<td>
-	   <form action="/Agency/remove_agent" method="POST">
+	   <form action="remove_agent" method="POST">
 	     <input name="agent" value="&name;" type=hidden>
 	     <input type="submit" value="Remove &name;">
 	   </form>
@@ -40,7 +40,7 @@
 <else>
 <hr>
 <h2> Form for installing an agent</h2>
-<form action="/Agency/install_agent" method="POST">
+<form action="install_agent" method="POST">
 <input type="submit" value="Install">
 <b>Name:</b><input name="agent" value="">
 <b>Type:</b><input name="type" value="">

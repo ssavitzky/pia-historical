@@ -12,8 +12,8 @@
 
 <sub-head page=index>
   <if><read info interform file="initialize.if"><then>
-    <tr><th><td><a href="options.if">Options</a>
-	    	      <a href="initialize.if">[re-initialize]</a></then></if>
+    <tr><th><td><a href="options">Options</a>
+	    	      <a href="initialize">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
   </if>
@@ -23,7 +23,7 @@
   </if>
   <if>&AGENT:do-not-remove;<then></then><else>
     <tr><th align=right>
-        <td><form action="/Agency/remove_agent.if" method="POST">
+        <td><form action="/Admin/remove-agent.if" method="POST">
               <input name="agent" value="&agentName;" type=hidden>
               <input type="submit" value="Remove &agentName;">
             </form>
@@ -48,7 +48,7 @@
 <dl>
   <dt> Note:
   <dd> This page does not have an option for removing the
-       <a href="home.if">&agentName;</a> agent.  It is required for the proper
+       <a href="home">&agentName;</a> agent.  It is required for the proper
        functioning of this <if><test exact match=pia>&piaUSER;</test>
        <then>appliance<else>Personal Information Agency</if>.
 </dl>
@@ -57,6 +57,10 @@
     <then><hr>
           <nav-bar/>
 </if>
+
+<!-- See whether there's an "about" file for this agent. -->
+<include src="about.inc">
+
 <if><get name=AGENT:criteria><then>
 <hr>
 <h3>&AGENT:name; Agent Match Criteria</h3>

@@ -90,11 +90,11 @@ Note that we only need these inside the PIA.
 <h3>Graphics</h3>
 
 <define entity=blank-170x1>
-  <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
+  <value><img src="/Icon/white170x1.gif" width=170 height=1
 		alt=" "></value>
 </define>
 <define entity=blue-dot>
-  <value><img src="/Agency/Icons/dot-blue.gif"
+  <value><img src="/Icon/dot-blue.gif"
 		height=20 width=20 alt="*"></value>
 </define>
 
@@ -162,17 +162,17 @@ Note that we only need these inside the PIA.
 
 <table cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
-	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	href="http://rsv.ricoh.com/"><img src="/Icon/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a></th>
     <th width=170 nowrap></th>
     <th align=left nowrap nobr valign=center width=170>
         <a href="/"><img width=85 height=45 border=0
-	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
+	    	         src="/Icon/pia45.gif" alt=PIA></a></th></tr>
 <tr height=2><td colspan=3  nowrap nobr
-    ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
-<!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
+    ><img src="/Icon/rule.gif" height=6 width=469></td></tr>
+<!--img src="/Icon/blackline425.gif" height=2 width=425-->
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
+	src="/Icon/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a></th>
     <th align=right valign=top width=170>&ltitle;&nbsp; </th>
     <th align=left colspan=2><if><get entity name=title>

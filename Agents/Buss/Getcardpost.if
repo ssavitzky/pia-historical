@@ -43,7 +43,7 @@
 
 
 <table>
-<tr><th><td valign=top><form method=POST action="/Agency/Buss/Delete.if">
+<tr><th><td valign=top><form method=POST action="/Buss/Delete.if">
 	<input type=hidden name="filename" value="&filename;">
 	<input type="submit" value="Delete">
  </form>

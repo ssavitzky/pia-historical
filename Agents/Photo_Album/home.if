@@ -65,7 +65,7 @@
     <tr><td align=right>
 	<td>
         <a href="&AGENT.CDwriter;">
-          <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
+          <img src="/Icon/cd.gif" height=32 width=32 border=0></a>
 	<!-- should test for CD-R/RW -->
 	<a href="&AGENT.CDwriter;">Create photo CD</a>
 	<br>

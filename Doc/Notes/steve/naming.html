@@ -17,17 +17,18 @@
   <li> Administration.  Clearly <code>Admin</code>
   <li> Handling the root pages.  Pretty clearly a new agent called
        <code>Default</code>, <code>PIA</code>, or <code>ROOT</code>.
-  <li> Serving default icons, and so on.  Probably <code>Default</code>.
+  <li> Serving default icons, and so on. <code>ROOT/Icon</code>.
+       An alternative would be a separate <code>Icon</code> agent; putting it
+       under ROOT means that it doesn't show up on agent listings.
   <li> Handling requests directed at agents (in its <code>actOn</code>
        method).  Possibly this should be done in the Resolver, or possibly
-       <code>Default</code>. 
+       in <code>ROOT</code>. 
 </ol>
 
-<p> Both <code>Default</code> and <code>Admin</code> could be constructed by
-    copying the code for <code>Agency</code>.  Renaming a directory is a major
-    pain but it probably needs to be done.
+<p> Both <code>ROOT</code> and <code>Admin</code> could be constructed by
+    copying the code for <code>Agency</code>.
 
-<p> <code>ROOT</code> seems to be preferred at the moment.  Note that it needs
+<p> <code>ROOT</code> seems to be preferred at the moment.  Note that it ought
     to be possible to <em>register</em> the default (root) agent.  Note that
     an appliance's main agent might typically do so.
 

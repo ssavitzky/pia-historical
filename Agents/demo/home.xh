@@ -1,22 +1,9 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
-
 <html><head>
-<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<header>
-</head>
-
-<set entity name=title>Demo &amp; Test Agent</set>
-<read interform file="heading.inc" process>
-
-<table cellspacing=0 cellpadding=0 border=0>
-<tr><th width=170 valign=center>
-<td>
-  <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
-	                   width=170 height=1></th><td><br>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	    <td> <b href="home.xh">Home</b>
+<title>The &AGENT:name; agent home page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Home Page</header>
+<sub-head page=home >
     <tr><th><td> <a href=demo_define.xh>Define Element and Attribute Examples</a>
     <tr><th><td> <a href=demo_text.xh>Text Examples</a>
     <tr><th><td> <a href=demo_num.xh>Numeric Examples</a>
@@ -30,9 +17,7 @@
     <tr><th><td> <a href=demo_test.xh>Test Handler Examples</a>
     <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
 		 <a href="/Agency/debug.if">[debug]</a>
-  </table>
-</table>
-
+</sub-head>
 
 
 <h2>About This Agent:</h2>
@@ -43,14 +28,6 @@ formatter/interpreter. Select any of the above demo pages to see examples
 of PIA tags.
 <p>
 
-
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
-<hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
-<b>$Id$</b><br>
-
+<footer cvsid="$Id$">
 </body></html>
 

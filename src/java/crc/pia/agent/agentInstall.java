@@ -36,15 +36,15 @@ public class agentInstall extends crc.dps.handle.GenericHandler {
     if (name == null) 
       name = form.has("name")? form.at("name").toString() : null;
 
-    crc.pia.agent.Agency agency = null;
+    crc.pia.agent.Admin admin = null;
     try {
-      agency = (crc.pia.agent.Agency) env.getAgent();
+      admin = (crc.pia.agent.Admin) env.getAgent();
     } catch (Exception e) {
-      reportError(in, aContext, "only works in the Agency agent");
+      reportError(in, aContext, "only works in the Admin agent");
       return;
     }
     try {
-      agency.install(form); 
+      admin.install(form); 
     } catch (crc.pia.agent.AgentInstallException e) {
       reportError(in, aContext, "Install exception: " + e.getMessage());
       return;

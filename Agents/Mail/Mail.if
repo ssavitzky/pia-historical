@@ -43,7 +43,7 @@
 <if><equal numeric>&count; 2</equal>
     <then>
         <set name=result>
-            <read.href method=POST href="/Agency/Buss/Search.if" query="?firstname=&fname;?lastname=&lname;" process>
+            <read.href method=POST href="/Buss/Search.if" query="?firstname=&fname;?lastname=&lname;" process>
 	</set>
 	<set name=code><get name=result findAll=code></set>
 	<set name=cardstuff><get index="code.text"></set>
@@ -51,7 +51,7 @@
 </if>
 
 <!-- append to index file -->
-<set name=trash><form method=POST action="/Agency/Mail/Deletemail.if">
+<set name=trash><form method=POST action="/Mail/Deletemail.if">
 	<input type=hidden name="dir" value="&year;/&month;/&day;">
 	<input type=hidden name="filename" value="&filename;">
 	<input type="image" src="images/trash.gif" name="submit" alt="delete">

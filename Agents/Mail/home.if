@@ -49,9 +49,9 @@ Year:<select name="year">
 </table>
 
 <if><agent-running name=Mail>
-  <else>see the <a href="/Agency/installers.if#Mail">installation page</a>
+  <else>see the <a href="/Admin/installers.if#Mail">installation page</a>
         or <br>
-        <form method=POST action="/Agency/install_agent.if">
+        <form method=POST action="/Admin/install-agent">
 		<input name="agent" value="Mail" size=30>
 		<input type="submit" value="Install Now">
         </form>
@@ -71,7 +71,7 @@ Year:<select name="year">
 <font size=3 face=times>
 <a name="searchcard">Search for a business card:</a>
 
-<set name=bussurl>/Agency/Buss/Search.if</set>
+<set name=bussurl>/Buss/Search.if</set>
 <form action="&bussurl;">
    First name:<input type="text" name="firstname" value="" size=15>
    Last name:<input type="text" name="lastname" value="" size=15>

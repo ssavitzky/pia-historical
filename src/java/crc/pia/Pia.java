@@ -21,11 +21,13 @@ import java.util.StringTokenizer;
 
 import crc.pia.PiaInitException;
 import crc.pia.Machine;
-import crc.pia.agent.Agency;
 import crc.pia.Resolver;
 import crc.pia.Logger;
 import crc.pia.Transaction;
+
 import crc.pia.agent.AgentInstallException;
+import crc.pia.agent.Admin;
+import crc.pia.agent.Root;
 
 import crc.ds.Table;
 import crc.ds.Tabular;
@@ -34,7 +36,7 @@ import crc.ds.List;
 import crc.pia.Configuration;
 
  /**
-  * Pia contains the Agency's main program, and serves as a repository
+  * Pia contains the PIA's main program, and serves as a repository
   *	for the system's global information.  Most initialization is done
   *	by the auxiliary class Setup.
   *
@@ -129,15 +131,20 @@ public class Pia implements Tabular {
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
-  /** 
-   * Property name of pia Agency class
-   */
-  public static final String PIA_AGENCY = "crc.pia.agency";
-
   /**
-   * Property name of pia logger class
+   * Property name of pia request timeout
    */
   public static final String PIA_REQTIMEOUT = "crc.pia.reqtimeout";
+
+  /**
+   * Property name of root agent name
+   */
+  public static final String ROOT_AGENT_NAME = "crc.pia.rootagent";
+
+  /**
+   * Property name of admin agent name
+   */
+  public static final String ADMIN_AGENT_NAME = "crc.pia.adminagent";
 
 
   /************************************************************************
@@ -196,13 +203,6 @@ public class Pia implements Tabular {
    */
   protected String loggerClassName 	= "crc.pia.Logger";
 
-  /** The name of the class that is our initial Agency.
-   *	If it can't be loaded, crc.pia.agents.Fallback is used.
-   *	@see crc.pia.agents.Agency
-   *	@see crc.pia.agents.Fallback
-   */
-  protected String agencyClassName 	= "crc.pia.agent.Agency";
-
   /** The command-line options passed to Java on startup.
    */
   protected String[] commandLine;
@@ -228,9 +228,24 @@ public class Pia implements Tabular {
   protected Resolver resolver;
 
   /**
-   *  Attribute index - Agency
+   *  Attribute index - Admin agent
    */
-  protected Agency agency;
+  protected Admin adminAgent;
+
+  /**
+   *  Attribute index - Root agent
+   */
+  protected Root rootAgent;
+
+  /**
+   *  Attribute index - Admin agent name
+   */
+  protected String adminAgentName = "Admin";
+
+  /**
+   *  Attribute index - Root agent name
+   */
+  protected String rootAgentName = "ROOT";
 
   /** 
    *  the verbosity level.
@@ -278,10 +293,31 @@ public class Pia implements Tabular {
   }
 
   /**
-   * @return agency
+   * @return admin agent
    */
-  public Agency agency(){
-    return agency;
+  public Admin adminAgent(){
+    return adminAgent;
+  }
+
+  /**
+   * @return root agent
+   */
+  public Root rootAgent(){
+    return rootAgent;
+  }
+
+  /**
+   * @return admin agent name
+   */
+  public String adminAgentName(){
+    return adminAgentName;
+  }
+
+  /**
+   * @return root agent name
+   */
+  public String rootAgentName(){
+    return rootAgentName;
   }
 
   /**
@@ -420,7 +456,7 @@ public class Pia implements Tabular {
 
   /**
    * List of sites not to proxy.  This is a List and not a Table because
-   *	Agency will iterate down it looking for a <em>prefix</em> of the
+   *	we need to iterate down it looking for a <em>prefix</em> of the
    *	URL we are trying to reach.
    * @return the list of sites not to proxy.
    */
@@ -700,8 +736,10 @@ public class Pia implements Tabular {
     realPort		= properties.getInteger(REAL_PORT, port);
     reqTimeout 		= properties.getInteger(PIA_REQTIMEOUT, 60000);
     loggerClassName 	= properties.getProperty(PIA_LOGGER, loggerClassName);
-    agencyClassName 	= properties.getProperty(PIA_AGENCY, agencyClassName);
     docurl 		= properties.getProperty(PIA_DOCURL, docurl);
+
+    rootAgentName    = properties.getProperty(ROOT_AGENT_NAME, rootAgentName);
+    adminAgentName   = properties.getProperty(ADMIN_AGENT_NAME, adminAgentName);
 
     /* Set proxy tables from properties that end in "_proxy" */
 
@@ -716,14 +754,14 @@ public class Pia implements Tabular {
     }
 
     /* Try to find the PIA's root directory.  If it doesn't exist, 
-     *	change the agency class to "Fallback" so that the user can be
-     *	queried. */
+     *	complain.
+     */
     piaRootDir = new File( piaRootStr );
     if (piaRootDir.exists() && piaRootDir.isDirectory()) {
       piaRootStr = piaRootDir.getAbsolutePath();
     } else {
       piaRootStr = null;
-      agencyClassName = "crc.pia.agency.Fallback";
+      throw new PiaInitException("Cannot locate PIA's root directory.");
     }
     
     //  we are at /pia/Agents -- this is for interform
@@ -735,13 +773,6 @@ public class Pia implements Tabular {
     usrRootDir = new File( usrRootStr );
     usrRootStr = usrRootDir.getAbsolutePath();
 	
-    if (piaRootDir.exists() && piaRootDir.isDirectory()) {
-      piaRootStr = piaRootDir.getAbsolutePath();
-    } else {
-      piaRootStr = null;
-      agencyClassName = "crc.pia.agency.Fallback";
-    }
-    
     usrAgentsStr = usrRootStr + filesep + "Agents";
     usrAgentsDir = new File( usrAgentsStr );
 
@@ -756,30 +787,22 @@ public class Pia implements Tabular {
     properties.setInteger(REAL_PORT, realPort);
     properties.setInteger(PIA_REQTIMEOUT, reqTimeout);
     properties.setProperty(PIA_LOGGER, loggerClassName);
-    properties.setProperty(PIA_AGENCY, agencyClassName);
 
     url = url();
   }
 
-  private void createPiaAgency() throws IOException{
+  private void createPiaAgents() throws IOException{
     thisMachine  = new Machine( host, port, null );
     threadPool   = new ThreadPool();
 
     resolver     = new Resolver();
     Transaction.resolver = resolver;
     
-    try {
-      agency = (Agency) Class.forName(agencyClassName).newInstance() ;
-      //agency = new Agency("Agency", null);
-      agency.name("Agency");
-      agency.type("Agency");
-    } catch (Exception e) {
-      errSys(e, "Cannot create Agency object with class name "
-	     + agencyClassName + "\n" + e.toString());
-    }
-      
+    rootAgent = new Root(rootAgentName, null);
+    adminAgent = new Admin(adminAgentName, null);
 
-    resolver.registerAgent( agency );
+    resolver.registerAgent( rootAgent );
+    resolver.registerAgent( adminAgent );
 
     try{
       accepter = new Accepter( realPort );
@@ -817,7 +840,7 @@ public class Pia implements Tabular {
   ** Shutdown and cleanup:
   ************************************************************************/
 
-  /** Perform cleanup operations, and possibly try to restart the Agency.
+  /** Perform cleanup operations, and possibly try to restart.
    *	@param restart - if true, try to restart operations.
    */
 
@@ -855,14 +878,14 @@ public class Pia implements Tabular {
 
   }
   
-  /** Shut down the Agency.
-   *	@param restart - If true, start the Agency back up again.
+  /** Shut down the PIA
+   *	@param restart - If true, start back up again.
    */
   public void shutdown(boolean restart){
     cleanup( restart );
   }
 
-  /** Call cleanup when the Agency is finalized. */
+  /** Call cleanup when is finalized. */
   protected void finalize() throws IOException{
     cleanup( false );
   }
@@ -884,7 +907,7 @@ public class Pia implements Tabular {
     else{
       String[] args = new String[1];
       args[0] ="PIA_DIR=../../../..";
-      makeInstance(args);
+      main(args);		// fake a call to main (GAAK!)
       return instance;
     }
   }
@@ -944,46 +967,6 @@ public class Pia implements Tabular {
     }
   }
 
-  private static void makeInstance(String[] args){
-
-    /* Create a PIA instance */
-
-    Pia pia = new Pia();
-    pia.commandLine = args;
-    pia.debug = false;
-    pia.debugToFile = false;
-    pia.properties = new Piaproperties(System.getProperties());
-
-    /** Configure it. */
-
-    Configuration config = Configuration.loadConfig(pia.setupClassName);
-    if (config.configure(args)) {
-      config.usage();
-
-      /** Continue with the initialization if the user requested props. */
-
-      verbose = pia.properties.getBoolean("crc.pia.verbose", false);
-      if (verbose) {
-	pia.reportProps(pia.properties, "Properties");
-      }
-      System.exit(1);
-    }
-
-    /** Initialize it from its properties. */
-    if (! pia.initialize()) System.exit(1);
-
-    reportProps(instance.properties, "System Properties:");
-    reportProps(instance.piaFileMapping, "File (MIME type) mapping");
-
-    try {
-      instance.createPiaAgency();
-      //new Thread( new Shutdown() ).start();
-    }catch(Exception e){
-      System.out.println ("===> Initialization failed, aborting !") ;
-      e.printStackTrace () ;
-    }
-  }
-
 
   /************************************************************************
   ** Main Program:
@@ -1021,7 +1004,7 @@ public class Pia implements Tabular {
     reportProps(instance.piaFileMapping, "File (MIME type) mapping");
 
     try {
-      instance.createPiaAgency();
+      instance.createPiaAgents();
       //new Thread( new Shutdown() ).start();
     }catch(Exception e){
       System.out.println ("===> Initialization failed, aborting !") ;

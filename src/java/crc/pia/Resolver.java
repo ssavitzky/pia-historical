@@ -220,10 +220,10 @@ public class Resolver extends Thread {
    */
   public Agent agentFromPath(String path) {
 
-    /* Empty path is handled by Agency. */
+    /* Empty path is handled by ROOT. */
 
     if (path == null || path.equals("/") || path.equals("")) {
-      return agent("Agency");
+      return agent(Pia.instance().rootAgentName());
     }
 
     /* Now check for either /name/ or /type/name */

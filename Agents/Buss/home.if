@@ -24,9 +24,9 @@
 </table>
 
 <if><agent-running name=Buss>
-  <else>see the <a href="/Agency/installers.if#Buss">installation page</a>
+  <else>see the <a href="/Admin/installers.if#Buss">installation page</a>
         or <br>
-        <form method=POST action="/Agency/install_agent.if">
+        <form method=POST action="/Admin/install-agent.if">
 		<input name="agent" value="Buss" size=30>
 		<input type="submit" value="Install Now">
         </form>
@@ -44,9 +44,9 @@
 
 <table>
 <tr><th><td><a href="/Buss/Card.if"><font size=3 face=times>Add card</font></a>
-<tr><th><td><a href="/My/Buss/im2.html"><IMG SRC="/Agency/Buss/images/smim3.gif" alt="Now Featuring" NAME="button1" BORDER=2><font size=3 face=times>Add card using most recent IM3 scan</font></a>
-<tr><th><td><a href="/My/Buss/im3.html"><IMG SRC="/Agency/Buss/images/im3.gif" alt="Now Featuring" NAME="button1" BORDER=2><font size=3 face=times>Add card from one of top-ten IM3 scan</font></a>
-<tr><th><td><form method=POST action="/Agency/Buss/Search.if">
+<tr><th><td><a href="/My/Buss/im2.html"><IMG SRC="/Buss/images/smim3.gif" alt="Now Featuring" NAME="button1" BORDER=2><font size=3 face=times>Add card using most recent IM3 scan</font></a>
+<tr><th><td><a href="/My/Buss/im3.html"><IMG SRC="/Buss/images/im3.gif" alt="Now Featuring" NAME="button1" BORDER=2><font size=3 face=times>Add card from one of top-ten IM3 scan</font></a>
+<tr><th><td><form method=POST action="/Buss/Search.if">
 <font size=3 face=times>
    First name:<input type="text" name="firstname" value="" size=15>
    Last name:<input type="text" name="lastname" value="" size=15>

@@ -26,20 +26,20 @@ automatically the first time it is needed; this form can be used to reload it
 
 
 <hr><!-- ============================================================= -->
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
     <then><a href="/&agentType;/home.if">&agentType;</a>
           <a href="/&agentType;/"> / </a>
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
-          <a href="/&agentType;/&agentName;/">help</a>
-	  <a href="/&agentType;/&agentName;/options.if">options</a>
-	  <a href="/&agentType;/&agentName;/tagload.if">tags</a>
-    <else><a href="/&agentName;/home.if">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/help">help</a>
+	  <a href="/&agentType;/&agentName;/options">options</a>
+	  <a href="/&agentType;/&agentName;/tagload">tags</a>
+    <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/">help</a>
-	  <a href="/&agentName;/options.if">options</a>
-	  <a href="/&agentName;/tagload.if">tags</a>
+	  <a href="/&agentName;/help">help</a>
+	  <a href="/&agentName;/options">options</a>
+	  <a href="/&agentName;/tagload">tags</a>
 </if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>

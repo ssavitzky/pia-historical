@@ -17,7 +17,7 @@
 <b>See Also:</b> <a href="&IFman;">PIA InterForm
 Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
        <if><agent-running name="InterForm"><then></then>
-       <else><a href="/Agency/installers#InterForm"><em>install
+       <else><a href="installers#InterForm"><em>install
        needed!</em></a></else></if>
 <hr>
 <dl>
@@ -45,7 +45,6 @@ Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
 </dl>
 <hr>
 
-<a href="/Agency">Agency home page</a>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
 <b>User:</b> &piaUSER;

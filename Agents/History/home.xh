@@ -11,9 +11,9 @@
 </sub-head>
 
 <if><agent-running name=History>
-  <else>see the <a href="/Agency/installers#History">installation page</a>
+  <else>see the <a href="/Admin/installers#History">installation page</a>
         or <br>
-        <form method=POST action="/Agency/install_agent">
+        <form method=POST action="/Admin/install-agent">
 		<input name="agent" value="History" size=30>
 		<input type="submit" value="Install Now">
         </form>
@@ -22,20 +22,20 @@
 <p>
 
 <hr>
-<a href="/Agency">PIA</a> | <a href="/">agents</a> | <a href="/cia">CIA</a> |
-<a href="/fbi">FBI</a> | <a href="/History">History</a> |
+<a href="/">PIA</a> | <a href="/Admin">Admin</a> |
+<a href="/Toolbar">Toolbar</a> | <a href="/History">History</a> |
 <a href="/~History/">/~History</a>
 		<a href="/~History/&year;">&year;</a> /
 		<a href="/~History/&year;/&month;">&month;</a> /
 		<a href="/~History/&year;/&month;/&day;.html">&day;</a>
 <hr>
 
-The <code>&agentName;</code> agent puts information into the history database,
-which is located in <a href="/My/history">/My/history</a>.  The <a
-href="/cia/">cia</a> and <a href="/fbi/">fbi</a> agents put a small control
-bar at the top of each page that refers to the history database.<p>
+<p>The <code>&agentName;</code> agent puts information into the history
+database, which is located in <a href="/~History">/~History</a>, the History
+agent's data directory.  Most <a href="/Toolbar/">Toolbar</a> agents put a
+small control bar at the top of each page that refers to the history database.
 
-The History control bar looks like this:<br>
+<p>The History control bar looks like this:<br>
 <dl>
   <dt> <expand><get agent=History name=controls></expand>
   <dd> 
@@ -65,8 +65,8 @@ The History control bar looks like this:<br>
   <li>Last link: <a  href="/~History/last.link">/~History/last.link</a>
 </ul>
 
-The ``last link'' file is particularly useful; the following Emacs code lets
-you define a key that inserts a link to the last page you visited:
+<p>The ``last link'' file is particularly useful; the following Emacs code
+lets you define a key that inserts a link to the last page you visited:
 
 <blockquote><pre><!-- listing doesn't work for some reason -->
 (global-set-key "\C-Cy"   'generic-insert-last-link)

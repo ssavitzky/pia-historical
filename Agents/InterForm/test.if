@@ -13,7 +13,7 @@
 <tr><th width=170 valign=center>
 <td>
   <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+    <tr><th width=170><img src="/Icon/blank170x1.gif"
 	                   width=170 height=1></th><td>
     <tr><th align=right>
 	    <td> <a href="home.if">Home</a>
@@ -21,16 +21,15 @@
     		 <a href="help.if">Help</a>
     		 <a href="options.if">Options</a>
     <tr><th><td> <a href=actors.if>Actors</a>
-		 <a href=/Agency/entities>Entities</a>
-		 <a href="/Agency/agents">Agents</a>
+		 <a href=entities>Entities</a>
     <tr><th align=right>
             <td> <a href="tag_man.if">Standard Tagset Manual</a>
     <tr><th><td> <a href=demo.if>Standard Tagset Examples</a>
     <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+    <tr><th align=right><img src="/Icon/dot-blue.gif"
 			     height=20 width=20 alt="*">
 	    <td> <b href=test.if>Test page</b>
-		 <a href="/Agency/debug.if">[debug]</a>
+		 <a href="/Admin/debug">[debug]</a>
   </table>
 </table>
 

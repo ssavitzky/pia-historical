@@ -595,6 +595,8 @@ bytesRead=c.writeTo(out);
     }
   }
 
+  // === The following proxy stuff came from Agency -- seems to be the only use
+
   /**
    * Set proxy string given protocol scheme and proxy string.
    *	If proxy string is not defined, retrieve it from the Pia.
@@ -612,9 +614,7 @@ bytesRead=c.writeTo(out);
     if (p==null) {
       String mainproxy = null;
 
-      crc.pia.agent.Agency mainagency = Pia.instance().agency;
-      if( mainagency !=null )
-	mainproxy = mainagency.proxyFor(hostName, scheme);
+      mainproxy = proxyFor(hostName, scheme);
       if ( mainproxy!= null ) p = mainproxy;
     }
 
@@ -630,6 +630,53 @@ bytesRead=c.writeTo(out);
     return null;
   }
 
+
+  /**
+   * return a string indicating the proxy to use for retrieving this request
+   * this is for standard proxy notions only, for automatic redirection
+   * or re-writes of addresses, use an appropriate agent
+   */
+  protected  String proxyFor(String destination, String protocol){
+    String s = null;
+    List list = noProxies();
+
+    if (list != null && destination != null) {
+      Enumeration e = list.elements();
+      while( e.hasMoreElements() ){
+	s = (String)e.nextElement();
+	if( s.indexOf(destination) != -1 )
+	  return null;
+      }
+    }
+    return proxyForProtocol(protocol);
+  }
+
+  /**
+   * @return no proxies list from PIA
+   */
+  protected List noProxies() {
+    return Pia.instance().noProxies();
+  }
+
+  /**
+   * @return proxy string given protocol
+   */
+  protected String proxyForProtocol(String protocol){
+    if( protocol == null ) return null;
+
+    Table ht = Pia.instance().proxies();
+
+    String myprotocol = protocol.toLowerCase().trim();
+    //    if( !ht.isEmpty() && ht.containsKey( myprotocol ) ){
+    if( ht.isEmpty() != false ){
+      if(ht.containsKey( myprotocol ) ){
+	String v = (String)ht.get( myprotocol );
+	return v;
+      }
+    }
+
+    return null;
+  }
   /************************************************************************
   ** Construction:
   ************************************************************************/

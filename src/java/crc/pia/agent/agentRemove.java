@@ -30,11 +30,11 @@ public class agentRemove extends crc.dps.handle.GenericHandler {
       return;
     }
 
-    crc.pia.agent.Agency agency = null;
+    crc.pia.agent.Admin admin = null;
     try {
-      agency = (crc.pia.agent.Agency) env.getAgent();
+      admin = (crc.pia.agent.Admin) env.getAgent();
     } catch (Exception e) {
-      reportError(in, aContext, "only works in the Agency agent");
+      reportError(in, aContext, "only works in the Admin agent");
       return;
     }
     env.getResolver().unRegisterAgent( name );
