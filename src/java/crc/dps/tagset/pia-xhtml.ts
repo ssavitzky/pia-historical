@@ -62,7 +62,7 @@ Note that we only need these inside the PIA.
 <if><get name=content><then><set name=title>&content;</set></if>
 <set name=agentNames><text sort case>&agentNames;</set>
 <if><get name=ltitle>
-    <else><set name=ltitle><a href="/&agentName;">&agentName;</a>:</if>
+    <else><set name=ltitle><a href="/&agentName;">&AGENT:name;</a>:</if>
 
 <table cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
@@ -83,6 +83,17 @@ Note that we only need these inside the PIA.
 	<then><get entity name=title></then>
 	<else>&fileName;</else></if></th></tr>
 </table>
+  </action>
+</define>
+
+<define element=nav-bar>
+  <doc> A navigation bar, usually placed just above the copyright notice in
+	the footer.  Usually fits in a single line.  Content is whatever you
+	want to put after the standard start.
+  </doc>
+  <action>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
+<a href="&agentName;/">index</a>
   </action>
 </define>
 
@@ -114,6 +125,8 @@ Note that we only need these inside the PIA.
     </doc>
   </define>
   <action>
+<hr>
+<nav-bar/>
 <hr>
 <set name=myear><subst match="/.* " result=", "><select>
     &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
