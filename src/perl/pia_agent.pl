@@ -1,13 +1,9 @@
-#superclass for agents, really just the interface
+#superclass for agents
 
 package PIA_AGENT;
 use HTML::Parse;
 use HTML::FormatPS;
 use HTML::Element;
-
-#fax and print agent stuff
-
-require("printer_agent.pl");
 
 sub new {
     my($class,$name) = @_;
@@ -27,7 +23,14 @@ sub new {
 }
 
 sub initialize{
-#sub classes override
+    my $self=shift;
+    #sub classes override
+#should emit a request for /$name/initialize.if
+    my $name=$self->name;
+    my $url="/$name/initialize.if";
+    my $request=$self->create_request('GET',$url);
+    $self->request($request);
+    
 }
 
 sub name{
@@ -87,15 +90,13 @@ sub criterion_computation{
 sub matches{
     my($self,$values)=@_;
     my $criterion=$self->match_criterion();
-    print "licking for criterion\n";
+    print $self->name if  $main::debugging;
     foreach $key (keys %$criterion){
-	print "$key value is ";
-	print $$values{$key};
-	print "wanted";print $$criterion{$key};
-	print " done\n";
-	
 	return 0 unless $$values{$key}==$$criterion{$key};
+	print "$key matched\n" if $main::debugging;
     }
+
+    print "matches request\n" if  $main::debugging;
     return 1;
 }
 
@@ -108,29 +109,48 @@ sub handle{
     my($self,$request)=@_;
 
     my $response;
-    my $path=$request->url()->path();
-    my $name=$self->name;
-    $path=~m:$name/(.*)$:;
-    my $form=$1;
-    my $root=$self->option(root);
-    my $file="$root$form";
-    print "parsing $file\n";
-    
-    my $string=$self->parse_interform_file($file,$request);
+    my $file=$self->find_interform($request->url);
+    print "$name parsing $file\n" if  $main::debugging;
+    if(! defined $file){
+	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "nointerform");
+	$response->content("no file found");
+	
+    } else {
+#TBD check for path parameters    
+	my $string=$self->parse_interform_file($file,$request);
 #air if file not found    
-    $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
+	$response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
+	$response->content_type("text/html");    
+	$response->header('Version',$self->version());
+	$response->content($string);
+    }
     $response->request($request);
     
-    $response->content_type("text/html");    
-    $response->header('Version',$self->version());
-    $response->content($string);
-
     $response=TRANSACTION->new($response,$main::this_machine,$request->from_machine());
     
     return $response;
     
 }
 
+sub find_interform{
+    my($self,$url)=@_;
+    return unless $url;
+    my $path=$url->path();
+    my $name=$self->name;
+    $path=~m:$name/(.*)$:;
+    my $form=$1 || "home.if";
+    my $root=$self->option(root);
+    my $file="$root$form";
+    return $file if -e $file;
+    #check if we an inherit form
+    $root =~ m:^(.*/)[^/]*/$:;
+    my $new_root=$1;
+    $file="$new_root$form";
+    print "inheriting $file\n" if $main::debugging;
+    return $file if -e $file;
+    return;
+    #found no file
+}
 
 ############################################################################
 #utility functions for changing, viewing options
@@ -151,9 +171,17 @@ sub options_as_html{
     
 }
 
-# need to and functions for multiple values and comments
+sub as_html{
+#returns html element which embodies this agent--appropriate for installing agent in future
+    my $name=$self->name;
+    my $element=$self->options_form("/agency/install_agent.if","install_$name");
+    return $element; 
+}
+
+# need to add functions for multiple values and comments
 sub options_form{
-    my($self,$url)=@_;
+    my($self,$url, $label)=@_;
+    $label ="change_options" unless defined $label;
     my $string;
     my $element=HTML::Element->new( 'form',method => "POST",action => $url);
     my %attributes,$particle;
@@ -170,7 +198,7 @@ sub options_form{
     }
     $particle=HTML::Element->new(input);
 	$particle->attr(type,submit);
-	$particle->attr(value,'change_options');
+	$particle->attr(value,$label);
     $element->push_content($particle);
     return $element;
     
@@ -178,10 +206,10 @@ sub options_form{
 
 sub  parse_options{
     my($self,$argument)=@_;
-    print "parse options PPP\n";
+    print "parsing  options \n" if  $main::debugging;
     my $hash=$argument->parameters;
     foreach $key (keys(%{$hash})){
-	print "changing $key \n\n";
+	print("changing $key to",$$hash{$key}," \n\n") if  $main::debugging;
 	$self->option($key,$$hash{$key});
     }
     
@@ -245,6 +273,44 @@ sub make_form{
     return $element;
 }
 
+
+sub request{
+#put request on stack for resolution
+    my($self,$request)=@_;
+    $request=TRANSACTION->new($request,$main::this_machine) unless ref($request) eq 'TRANSACTION';
+    $main::main_resolver->push($request);
+    
+}
+
+sub create_request{
+# create a new request object given method,  url, content
+ # TBD proper handling of content and types and headers
+    my($self,$method,$url,$content)=@_;
+    my $request=new HTTP::Request  $method,$url;
+    if (ref($content)){
+#treat as html element
+	my $string="";
+#create string out of form parameters, perhaps should check tag type
+	$content->traverse(
+	sub {
+	    my($self, $start, $depth) = @_;
+	    return 1 unless $start;
+	    my $tag = $self->tag;
+	    return 1 unless $tag =~ /input/;
+	    my $key = $self->attr('name');
+	    return 1 unless defined $key;
+	    my $value = $self->attr('value');
+	    return 1 unless defined $value;
+	    $string.="$key=$value&";
+	    1;
+	}, 1);
+	$request->content($string);
+    }else {
+	$request->content($content) if defined $content ;
+    }
+    return $request;
+}
+
 ############################################################################
 ############################################################################
 # interform processing
@@ -276,13 +342,13 @@ sub execute_interform{
 
 	my $code;
 	while($code=shift(@$code_array)){
-	    print "execing $code \n";
+	    print "execing $code \n" if  $main::debugging;
 	    if( ref( $code)){
 		$code_status=$code; #this is an html element
 	    }else{
 	    #evaluate string andreturnlast expression value
 		$code_status=eval $code;
-		print "code status is $code_status\n";
+		print "code status is $code_status\n" if  $main::debugging;
 	    }
 	    push(@new_elements,$code_status) if $code_status;
 	}

@@ -15,12 +15,12 @@ sub new{
     $request->is_request(1) if $old eq 'HTTP::Request';
     $request->is_response(1) if $old eq 'HTTP::Response';
 
-    print "request is $old\n";
+    print "request is $old\n" if $main::debugging;
 
     $request->from_machine($from);
     $request->to_machine($to);
     my $type=$request->method;
-print " typeis $type\n";    
+    print " typeis $type\n"  if $main::debugging;    
     if(($type eq "POST" || $type eq "PUT") && $request->is_request()){
 	$request->read_content($type);
 	$request->compute_form_parameters() if $type eq 'POST';
@@ -59,11 +59,14 @@ sub is_request{
 
 sub read_content{
     my($self,$type)=@_;
-	my $bytes=$self->header(content_length);
-	my $content;
-    my $input=$self->from_machine()->stream();
+    my $bytes=$self->header(content_length);
+    my $content;
+    my $from=$self->from_machine();
+    return unless defined $from;
     
-	my $bytes_read=0;
+    my $input=$from->stream();
+    return unless defined $input;
+    my $bytes_read=0;
 	while($bytes_read < $bytes){
 	    my $new_bytes=read($input,$content,$bytes-$bytes_read,$bytes_read);
 	    $bytes_read+=$new_bytes;
@@ -92,7 +95,7 @@ sub unescape {
 sub compute_form_parameters{
     my($self)=@_;
     my $tosplit=$self->content();
-print "computing form parameters\n $tosplit\n";    
+
     my(@pairs) = split('&',$tosplit);
     my($param,$value);
     my %hash;
@@ -101,13 +104,14 @@ print "computing form parameters\n $tosplit\n";
 	$param = &unescape($param);
 	$value = &unescape($value);
 	$hash{$param}=$value; #careful losing multiple values
-	print "$param as value $value \n";
+	print "$param as value $value \n"  if $main::debugging;
     }
     $$self{parameters}=\%hash;
     
 }
 sub parameters{
-    my $self=shift;
+    my ($self,$parameters)=@_;
+    $$self{parameters}=$parameters if defined $parameters;
     return $$self{parameters};
     
 }

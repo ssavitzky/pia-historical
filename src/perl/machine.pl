@@ -26,7 +26,7 @@ sub close_stream{
 
 sub send_response{
     my($self,$reply)=@_;
-    print "sending response to $self\n";
+    print "sending response to $self\n"  if  $main::debugging;
     my $output=$self->stream();
     warn("nowhere to send") unless defined    $output;
     return unless defined    $output;
@@ -36,7 +36,7 @@ sub send_response{
     $string.=" ";
     $string.=$reply->message;
     $string.="\n";
-    print $string;
+    print $string  if $main::debugging;
     
     print {$output} $string;
 #    print {$output} "Content-type: $ct\n\n" if defined $ct;

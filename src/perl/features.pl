@@ -1,6 +1,6 @@
  # class for computing features of transactions
  # this class should evolve as transaction model evolves
- # global hash contains pointers to code allowing agents to access for match computation
+
 
 package FEATURES;
 
@@ -31,6 +31,12 @@ sub is_local_source{
 sub is_response{
     my $request=shift;
     return $request->is_response;
+    
+}
+
+sub is_request{
+    my $request=shift;
+    return $request->is_request;
     
 }
 
@@ -72,8 +78,9 @@ sub is_proxy_request{
     return 0 unless $url;
     
     my $host=$url->host;
-    my $path=$url->path;
-    return defined $host;
+    return 1 if $host;
+    
+    return 0;
     
 }
 

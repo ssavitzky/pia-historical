@@ -92,9 +92,9 @@ sub compute_features{
     my($self,$request)=@_;
     my $features=$self->feature_computers();
     my %values;
-print "computing $features should be hash";
+print "computing $features" if $main::debugging;
     foreach $feature (keys %$features){
-	print "computing $feature \n";
+	print "computing $feature \n" if $main::debugging;
 	$values{$feature}=&{$$features{$feature}}($request);
 
     }
@@ -105,9 +105,9 @@ sub _feature_computers{
     my($self,$agent)=@_;
     my $computers=$$self{computers};
     my $hash=$agent->criterion_computation();
-    print "registering computers for $agent\n";
+    print "registering computers for $agent\n" if $main::debugging;
     while (($key,$value)=each %$hash){
-	print "registering feature $key $value\n";
+	print "registering feature $key $value\n" if $main::debugging;
 	$$computers{$key}=$value;
 	    #should check for clobber here
     }
@@ -140,7 +140,7 @@ sub run{
     my  $type =ref($response);
     my $name=$agent->name;
     
-    print "agent $name returnobject $type\n" if $debug;
+    print "agent $name returnobject $type\n" if $main::debugging;
     
 #    push(@$context,$response) if ref($response);
     $self->push($response) if ref($response);
@@ -150,32 +150,43 @@ sub run{
 
 #which agents go with which requests/responses
 #be careful stackmaychange in other threads while we are here
-$debug=1;
+#TBD  tracing of request,matches,responses
 sub resolve{
     my($self)=@_;
     my $count=0;
     my $stack=$self->stack();
     my @garbage;
+#temporary hack variable to determine if response hasbeen sent
+#TBD link requests and responses then test requests for response...
+    my $sent_response=0;
     
+
     while(@$stack && $count<100){
 	$count+=1;
 	
 	my $request=shift @$stack;
-	print "looking for match\n" if $debug;
+	my $numb=@$stack;
+	my $u=$request->url;
+	print "handling request $u  number $count, $numb left\n" if $main::debugging;
+	
+	print "looking for match\n" if $main::debugging;
 	my $handler=$self->match($request,$stack);
 	if(ref($handler)){
-	    print "runing request\n" if $debug;
+	    print "running request\n" if $main::debugging;
 	    my $status=$self->run($handler,$request);
 	}else{
 	    my $additions = $handler;
-	    print "only $additions added no agent found forrequest";
+	    print "$additions added no agent found for request" if $main::debugging;
 	    if($request->is_response()){
-		print "sending response\n";
+		print "sending response\n" if $main::debugging;
 		send_response($request);
-	    } else {
-
-#not founderror if additions are 0;
-		print "pushing error_response\n" if $debug;
+		$sent_response=1;
+		
+	    } 
+	    if($request->is_request() && ! $additions && ! $sent_response){
+		
+#not founderror if additions are 0;TBD
+		print "pushing error_response\n" if $main::debugging;
 		push(@$stack,$self->error_response($request)) unless $additions;
 	    }
 
@@ -187,7 +198,7 @@ earn    }
 }
 
 
-#return agent that gets this request or numberof transactions added
+#return number of transactions added orthe agent to whomrequest isdirected
 #we'll changein future to make efficient and use context
 sub match{
     my($self,$transaction,$stack)=@_;
@@ -195,20 +206,17 @@ sub match{
 #these could be done at push time TBD
     
     my $features=$self->compute_features($transaction);
-    print keys(%{$$self{computers}});
-    print " should be computers\n";
-    print keys(%$features);
-    print "only %$features Features\n";
-    my @requests;
+
 #allow agents to make requests in response to this transaction
     foreach $agent ($self->agents()){
-	@requests=$agent->new_requests($transaction) if $agent->matches($features);
+	my @requests=$agent->new_requests($transaction) if $agent->matches($features);
 	push(@$stack,@requests);
-	$additions+=@requests;
-	
+	my $new_requests=@requests;
+	$additions+=$new_requests;
+	print($agent->name,"added $new_requests \n") if $new_requests && $main::debugging;
     }
 
-    print "lookingfor agent\n" if $debug;
+    print "lookingfor agent\n" if $main::debugging;
     
     if(&FEATURES::is_agent_request($transaction)){
 	my $url=$transaction->url;
@@ -217,13 +225,9 @@ sub match{
 	$path =~ m:^/(\w+)/*:i;
 	my $name=$1;
 	my $agent=$self->agent($name);
-	print "found agent $name in $path\n" if $debug;
-	print ref($agent) if $debug;
+	print "found agent $name in $path\n" if $main::debugging;
+	print ref($agent) if $main::debugging;
 	
-	foreach $a ($self->agents){
-	    print $a->name;
-	    print " and agent\n";
-	}
 	return $agent if defined $agent;
     }
 
