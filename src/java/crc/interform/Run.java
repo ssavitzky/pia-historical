@@ -149,9 +149,10 @@ public class Run  extends Environment {
       if(transaction.hasQueryString()){
         ent("urlQuery",  (SGML)new Text(transaction.queryString()));
         ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
-       } else {
-            ent("urlQuery",  "");
-       }
+      } else {
+	ent("urlQuery",  "");
+	ent("FORM", "");
+      }
 
       if (transaction.test("agent-request") ||
 	   transaction.test("agent-response")) {

@@ -140,6 +140,9 @@ public class Environment {
 
       ent("dateString",	formatter.format(date));
 
+      // Form counter.  Increment as each <form> is passed to the output.
+      ent("forms", "0");
+
       if (filename != null) {
 	ent("filePath", filename);
 	ent("fileName", filenamePart(filename));
