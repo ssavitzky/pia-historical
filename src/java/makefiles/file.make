@@ -45,7 +45,9 @@ $(DOCDIR):
 	mkdir $(DOCDIR)
 
 doc::
-	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) $(FILES)
+	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) $(PACKAGE)
 
 clean::
 	@@rm -rf *~ *.class
+
+
