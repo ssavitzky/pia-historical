@@ -1,0 +1,10 @@
+XCOMM $Id$
+
+#define IHaveSubdirs
+#define PassCDebugFlags
+
+#include "pia.tmpl"
+
+SUBDIRS 	= Slides
+
+MakeSubdirs($(SUBDIRS))
