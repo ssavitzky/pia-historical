@@ -1,0 +1,112 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agency Start-up File</title>
+</head><body bgcolor="#ffffff">
+
+<h1><img src="http://agency/PIA/Doc/Graphics/sm_pent.gif" align=center>
+Prototype Agency Start-up File
+</h1>
+
+ Any links found in this file will be requested by the agency at start-up.
+ Most useful for doing things like initializing agents and the like.  Note
+ that the agency currently makes no attempt to save state across sessions.
+
+Customize with the commands:
+<pre>
+  mkdir ~/.pia ~/.pia/Agents ~/.pia/Agents/Agency
+  cp <em>pia</em>/Agents/Agency/START-UP.html ~/.pia/Agents/Agency/START-UP.html
+</pre>
+
+<h2>Start up agents</h2>
+<dl> 
+  <dt> DOFS agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="DOFS">
+       </form>
+       
+
+  <dt> Logo agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <Input type="submit" value="Install">
+       name: <input name="agent" size=30 value="Logo">
+       </form>
+</dl>
+
+<h3>And Document-Oriented File Systems</h3>
+
+<dl>
+  <dt> dofs/My
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="My">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia"> -- note the use of
+       "<code>~</code>", which expands to your home directory<br>
+       <input type="submit" value="install"><br>
+       </form>
+  <dt> dofs/PIA
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="PIA">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="&piaDIR;"> -- note the use of an
+       entity, ``&amp;piaDIR;'', which gets expanded in the startup file.<br>
+       <input type="submit" value="install"><br>
+       </form>
+</dl>
+
+<h3>Optional Agents</h3>
+
+<blockquote><em>
+  You may want to customize this section.
+</em></blockquote>
+<dl>
+ <dt>  CD-R/RW
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="CDRW"><br>
+       type:<input name="type" value="CDRW"><br>
+       Samba Name: (for mounting under windows) <input name="sambaName"
+       value="archive"><br>
+       SambaConfigFile: <input name="sambaConfig" value="/etc/smb.conf">
+       root: (relative to agent directory)<input name="rootDir" value="archive"\
+><br>
+       <input type="submit" value="Install"><br>
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="archive">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
+       <input type="submit" value="Install">
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="publish">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/publish">
+       <input type="submit" value="Install">
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="shared">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/shared">
+       <input type="submit" value="Install">
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="backup">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/backup">
+       <input type="submit" value="Install">
+       </form>
+
+</dl>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+
+</body></html>
