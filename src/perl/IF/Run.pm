@@ -28,6 +28,7 @@ use IF::Actors;
 	     'syntax' => $IF::IT::syntax,
 	     'active_actors' => {},
 	     'passive_actors' => [],
+	     'actors' => {},
 	     );
 
 local $entities;

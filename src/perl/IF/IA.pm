@@ -33,6 +33,7 @@ sub recruit {
     ##	  Re-bless and properly initialize an InterForm Token.
 
     bless $self, $class;
+    $self->tag('_actor_');
     $self->initialize;
 }
 
@@ -66,7 +67,7 @@ sub initialize {
     $self->attr('name', $name);
 
     if (! $self->attr('_handle')) {
-	$self->attr('_handle', \&generic_handle);
+	$self->{'_handle'} = \&generic_handle;
     }
     $self;
 }
@@ -277,6 +278,7 @@ sub generic_handle {
     ##	  using shallow binding.
 
     $ii->defvar("context", $it); # === not very satisfactory
+    $ii->defvar("content", $it->content);
     $ii->push_into($self->content);
     $ii->delete_it;
 }

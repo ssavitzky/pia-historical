@@ -63,7 +63,7 @@ sub parse
 		if ($text =~ s|(\s+)$||) {
 		    $$buf = $1;
                 # Same treatment for chopped up entites.
-		} elsif ($text =~ s/(&(?:(?:\#\d*)?|\w*))$//) {
+		} elsif ($text =~ s/(&(?:(?:\#\d*)?|[-.\w]*))$//) {
 		    $$buf = $1;
 		};
 		$self->text($text);

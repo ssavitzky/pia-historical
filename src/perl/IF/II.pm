@@ -424,7 +424,7 @@ sub expand_entities {
 
     for (@_) {
 #	s/(&\#(\d+);?)/$2 < 256 ? chr($2) : $1/eg;
-	s/(&(\w+);?)/(exists $ents->{$2})? $ents->{$2} : $1/eg;
+	s/(&([-.\w]+);?)/(exists $ents->{$2})? $ents->{$2} : $1/eg;
     }
     $_[0];
 }
@@ -536,12 +536,16 @@ sub push_into {
 
     my $in_stack = $self->in_stack;
     if (!ref($it)) {
+	print "pushing empty\n" if (! $it && $main::debugging > 1);
 	return unless $it;
+	print "pushing string\n" if $main::debugging > 1;
 	push(@$in_stack, $it);
     } elsif (ref($it) eq 'ARRAY') {
+	print "pushing array\n" if $main::debugging > 1;
 	push(@$in_stack, ['', 0, $it]);
 	return $st;
     } else {
+	print "pushing token, tag=" . $it->tag . "\n" if $main::debugging > 1;
 	push (@$in_stack, [$it->tag, 0, $it->content]);
 	return $st if defined $st;
 
@@ -949,6 +953,9 @@ sub pass_it {
     } elsif (! ref($it)) {
 	print "  passing $it \n" if $main::debugging > 1;
 	$out_queue->push($it);
+    } elsif (ref($it) eq 'ARRAY') {
+	print "  passing [...] \n" if $main::debugging > 1;
+	$out_queue->push(@$it);
     } else {
 	print "  passing ".$it->starttag."... \n" if $main::debugging > 1;
 	$out_queue->push($it->as_HTML);
@@ -1049,6 +1056,7 @@ sub open_actor_context {
 
     $active = $self->active_actors unless defined $active;
     $passive = $self->passive_actors unless defined $passive;
+    $actors = $self->actors;
 
     my %newactive = %$active;	# copy the active actor table
     $self->state->{_active_actors} = (\%newactive);
@@ -1056,7 +1064,8 @@ sub open_actor_context {
     my @newpassive = @$passive;	# copy the passive actor list
     $self->state->{_passive_actors} = (\@newpassive);
 
-    $self->state->{_actors} = {}; # make a new actor symbol table
+    my %newactors = %$actors;	# copy the actor name table
+    $self->state->{_actors} = (\%newactors); # make a new actor symbol table
 }
 
 
@@ -1095,7 +1104,7 @@ sub define_actor {
     if ($active) {
 	$self->active_actors->{$name} = $actor;
     } else {
-	$self->passive_actors->push($actor);
+	push(@{$self->passive_actors}, $actor);
     }
     $self->actors->{$name} = $actor;
 }

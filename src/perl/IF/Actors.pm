@@ -38,6 +38,7 @@ $passive_actors = [];
 	     'syntax' => $syntax,
 	     'active_actors' => $active_actors,
 	     'passive_actors' => $passive_actors,
+	     'actors' => $actors,
 	     );
 
 
@@ -109,7 +110,7 @@ sub eval_perl_match {
 
 define_actor('-foreach-', 'quoted' => 1, 'attr' => 'foreach',
 	     _match => \&foreach_match, _handle => \&foreach_handle,
-	     'dscr' => "repeat CONTENT for each ENTITY in LIST of words");
+	     'dscr' => "repeat ELEMENT for each ENTITY in LIST of words");
 
 sub foreach_match {
     my ($self, $it, $ii, $incomplete, $quoting) = @_;
@@ -167,7 +168,8 @@ define_actor('actor', 'active' => 1, 'quoted' => 1,
 
 sub actor_handle {
     my ($self, $it, $ii) = @_;
-    $ii->define_actor($it);
+    $ii->define_actor(IF::IA->recruit($it));
+    $ii->delete_it;
 }
 
 ### ===	it's not clear that we want entities and variables to be different ===
@@ -339,6 +341,47 @@ sub repeat_end_input {
 	$ii->entities($entities);
     }
     return $undefined;
+}
+
+### Expansion control: 
+###	protect, protect-result
+
+define_actor('protect', 'active' => 1, 'quoted' => 1, 
+	     _handle => \&protect_handle,
+	     'dscr' => "protect CONTENT from expansion.  Optionally protect
+MARKUP by converting special characters to entities.");
+
+define_actor('protect-result', 'active' => 1, 'parsed' => 1, 
+	     _handle => \&protect_handle,
+	     'dscr' => "protect results of expanding CONTENT from expansion.  
+Optionally protect MARKUP by converting special characters to entities.");
+
+%protected_chars = ('&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
+
+sub protect_handle {
+    my ($self, $it, $ii) = @_;
+
+    if ($it->attr('markup')) {
+	my $text = $it->content_string;
+	#$text =~ s/[&<>]/$protected_chars{$1}/g;
+	$text =~ s/\&/\&amp;/g;
+	$text =~ s/\</\&lt;/g;
+	$text =~ s/\>/\&gt;/g;
+	$ii->replace_it($text);
+    } else {
+	$ii->replace_it($it->content);
+    }
+}
+
+define_actor('expand', 'active' => 1, 'parsed' => 1,
+	     _handle => \&expand_handle,
+	     'dscr' => "(re-)expand CONTENT after parsing it.");
+
+sub expand_handle {
+    my ($self, $it, $ii) = @_;
+
+    $ii->push_into($it->content);
+    $ii->delete_it;
 }
 
 ### <parse [tagset="..."]>text to reparse</parse>
@@ -567,7 +610,6 @@ sub trim_handle {
     $ii->replace_it(IF::IT->new()->push($text));
 }
 
-
 ### 
 ### <pad width=N align=[left|right|center] [spaces]>string</pad>
 ###	If the "spaces" attribute is present, only the spaces are 
@@ -628,14 +670,14 @@ sub actor_dscr_handle {
     $name = $it->content_string unless defined $name;
     my $link = $it->attr('link');
 
-    my $a = $actors->{$name};
+    my $a = $ii->actors->{$name};
     if (!defined $a) {
-	$ii->replace_it('unknown');
+	$ii->replace_it('');
 	return;
     }
 
     my $dscr = $a->attr('dscr');
-    $dscr = $a->attr('active')? "active" : "passive" unless defined $dscr;
+    $dscr = '' unless defined $dscr;
     $ii->replace_it($dscr);
 }
 
@@ -657,9 +699,9 @@ sub actor_attrs_handle {
     $name = $it->content_string unless defined $name;
     my $link = $it->attr('link');
 
-    my $ia = $actors->{$name};
+    my $ia = $ii->actors->{$name};
     if (!defined $ia) {
-	$ii->replace_it('unknown');
+	$ii->replace_it(' -unknown-');
 	return;
     }
 

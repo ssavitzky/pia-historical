@@ -236,7 +236,7 @@ sub as_string {
 	    if (ref($_)) { 
 		if(ref($_) eq 'HTML::Element') {
 		    $string .= $_ -> as_HTML; } 
-		else {$string .= $_->as_string($contentOnly);}}
+		else {$string .= $_->as_string;}}
 	    else         { $string .= $_; }
 	    ## Note that we need as_HTML because legacy code is still
 	    ## generating HTML::Element's
@@ -345,8 +345,9 @@ sub starttag {
     for (@$list) {
 	next if /^_/;
 	my $val = $self->{$_};
-	if ($_ eq $val &&
-	    exists($boolean_attr{$name}) && $boolean_attr{$name} eq $_) {
+	if ($_ eq $val 
+	    ## && exists($boolean_attr{$name}) && $boolean_attr{$name} eq $_
+	    ) {
 	    $tag .= " $_";
 	} else {
 	    HTML::Entities::encode_entities($val, '&">'); #"
