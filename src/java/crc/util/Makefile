@@ -10,6 +10,7 @@ FILES = \
 	NameUtils.java \
 	Utilities.java \
 	NullOutputStream.java \
+	CacheTable.java \
 	Timer.java
 
 include $(TOPDIR)/makefiles/file.make
