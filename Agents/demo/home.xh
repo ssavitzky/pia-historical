@@ -38,10 +38,8 @@
 
 The <b><a href="/&agentName;/">&agentName;</a></b> agent is intended as a
 demonstration and testbed for the PIA's InterForm markup language and its
-formatter/interpretor. The <a href="&IFman;">PIA InterForm Manual</a>
-is a conventional programming manual for InterForms (in plain HTML); this
-agent contains active documents built largely from the actors' built-in online
-documentation.  Both are useful.
+formatter/interpreter. Select any of the above demo pages to see examples
+of PIA tags.
 <p>
 
 

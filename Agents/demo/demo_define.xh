@@ -6,8 +6,8 @@
 </head>
 
 
-<h2>Define an Element and an Entity Demo</h2>
-The <a name="define_demo">define element handler</a> shows how to define a simple element and
+<h2>Define Elements and Entities Demo</h2>
+The <a name="define_demo">define element handler</a> shows how to define some elements and
 a simple entity.
 <p>
 
@@ -41,10 +41,57 @@ between two horizontal rules.
 <p>
 <b>Result: </b><co_name/>
 <p>
-<b>attrName: </b> &attributes:co_name;
-<p>
 
 <hr>
+
+<h3> Using Namespace Entities</h3>
+
+<b>Description: </b> The example below shows how to set an attribute and how use some of the 
+entities that are available within the select namespace.  This example takes a list of space-separated
+words and formats them into a numbered list.  The attribute lstring takes a string as an argument.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;define element=ordered_list empty&gt;
+  &lt;doc&gt; Converts a series of space-separated words into a numbered list.
+  &lt;/doc&gt;
+  &lt;define attribute=lstring&gt;
+    &lt;doc&gt; String that is converted to an ordered list.
+    &lt;/doc&gt;
+  &lt;/define&gt;
+  &lt;action&gt;
+    &lt;ol&gt;
+	&lt;select&gt;&lt;from&gt;&attributes;&lt;name&gt;lstring&lt;eval/&gt;
+	   &lt;repeat&gt;&lt;foreach&gt;&selected;&lt;/foreach&gt;&lt;li&gt;&li;
+	   &lt;/repeat&gt;
+	&lt;/select&gt;
+    &lt;/ol&gt;
+  &lt;/action&gt;
+&lt;/define&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+<define element=ordered_list empty>
+  <doc> Converts a series of space-separated words into a numbered list.
+  </doc>
+  <define attribute=lstring>
+    <doc> String that is converted to an ordered list.
+    </doc>
+  </define>
+  <action>
+    <ol>
+	<select><from>&attributes;<name>lstring<eval/>
+	   <repeat><foreach>&selected;</foreach><li>&li;
+	   </repeat>
+	</select>
+    </ol>
+  </action>
+</define>
+
+<ordered_list lstring="one two">
+
+
 
 <h3> Define and Use an Entity </h3>
 <b> Description:</b> Define the entity "tomorrow", and set it to the value "Saturday".  Show
@@ -58,7 +105,6 @@ how it may be used in an XML document.
 <p>
 <b> Result:</b>Tomorrow is: &tomorrow;
 <p>
-
 
 <br>
 <br>
