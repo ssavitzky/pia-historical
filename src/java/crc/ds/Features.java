@@ -101,22 +101,30 @@ public class Features{
    * Test a named feature and return a boolean.
    */
   public boolean test(String feature, Object parent){
-    boolean result;
-
     Object value = featureTable.get( feature );
     
-    if( value == null )
-      value = compute(feature, parent);
+    if (value == null) value = compute(feature, parent);
 
-    if( value instanceof Boolean ){
-      Boolean v = (Boolean) value;
-      result = v.booleanValue();
-    }
-    else
-      result = (value != null) ? true : false;
-    return !!result;
+    return test(value);
   }
 
+  /** Test a value.  
+   *	@return false for null, False, and "", true otherwose.
+   */
+  public static final boolean test(Object value) {
+    if (value == null) return false;
+    else if (value instanceof Boolean) {
+      return ((Boolean)value).booleanValue();
+    } else if (value instanceof String) {
+      return ! "".equals(value);
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   *  Return the raw value of the feature.
+   */
   public Object feature( String featureName, Object parent ){
     Object val ;
 
@@ -143,7 +151,7 @@ public class Features{
    * Can be used to recompute features after changes
    */
   public Object compute(String feature, Object parent){
-  Object val;
+    Object val;
 
     try{
       if( parent instanceof Transaction )
@@ -158,24 +166,23 @@ public class Features{
 
 
   /**
-   * Create a new FEATURES.  We pass the parent, even though 
-   * no link is kept, so that we can compute a few features that
+   * Create a new Features for a Transaction.  Compute a few features that
    * are closely related and that we know are always needed.
    */
 
-  public Features( Object parent ){
+  public Features (Transaction parent) {
     featureTable = new Hashtable();
-
-    if( parent instanceof Transaction )
-      ((Transaction) parent).setFeatures( this );
-    else
-      ((Agent) parent).setFeatures( this );
-
+    parent.setFeatures( this );
     initialize( parent );
    }
 
+  public Features() {
+    featureTable = new Hashtable();
+    initialize(null);
+  }
+
   /**
-   *Matching.
+   * Matching.
    *
    *	The match criteria are a list (not a hash, because order might be
    *	significant), of sublists or name=>value pairs.
