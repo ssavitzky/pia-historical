@@ -35,7 +35,11 @@ public class Get_pia extends crc.interform.Handler {
     String name = getName(ia, it, ii);
     if (name == null) return;
     Run env = Run.environment(ii);
-
-    ii.replaceIt(crc.pia.Pia.instance().properties().getProperty(name));
+    crc.pia.Pia pia = crc.pia.Pia.instance();
+    if (pia == null) {
+      ii.deleteIt();
+    } else {
+      ii.replaceIt(pia.properties().getProperty(name));
+    }
   }
 }
