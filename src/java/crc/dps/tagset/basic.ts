@@ -812,12 +812,16 @@ example).
   <li> <define element=from parent=select handler>
          <doc> Contains a sequence of nodes which serves as the for the
 	       selection, or in other words from which the selection is made.
+	       Text nodes are split on whitespace.
          </doc>
        </define>
        
-  <li> <define element=in parent=select handler><!-- unimplemented -->
-         <doc> Contains the name of an entity or namespace which serves as the
-	       initial <em>current set</em> of nodes for the selection.
+  <li> <define element=in parent=select handler>
+         <doc> Elements in the content are simply added to the initial
+	       selection, as in <tag>from</tag>.  Text is split into
+	       identifiers which are looked up as entities, and the
+	       corresponding entity bindings are selected.  This permits their
+	       names and values to be manipulated.
          </doc>
        </define>
        
@@ -882,6 +886,9 @@ example).
 	       are matched by name; elements are matched by their tagname.
 	       Text and comments are ignored.  If the name starts with a
 	       pound sign (<code>#</code>) it represents a node type.
+
+       	       <p> If the content is empty, the name of each node in the
+		   selection becomes selected.
          </doc>
          <define attribute=case optional>
            <doc> A false value (<code>no</code>, <code>false</code>,
@@ -1039,12 +1046,44 @@ example).
 
 <h4>Sub-elements of <tag>select</tag>: Replacement</h4>
 <ul>
-  <li> <undefine element=replace parent=select handler>
-         <doc> Contains a list of nodes.
-       	       === need to elaborate on how replacement works.  Will need
-		   attributes. ===
+  <li> <define element=replace parent=select handler>
+         <doc> Contains a list of nodes.  The default action is for the entire
+	       list to replace the current content of each selected element,
+	       and the value of each selected entity or attribute.  (In most
+	       cases only one node will be selected.)
          </doc>
-       </undefine>
+         <define attribute=name optional>
+           <doc> The content of the <tag>replace</tag> element replaces the
+		 value of the named attribute of each selected element, and
+		 the value of each selected attribute or entity with a
+		 matching name.
+
+             <p> <b>Note</b> that there is no way to change the <em>name</em>
+		 of a node; this is deliberate.  Named nodes are used in hash
+		 tables, which would be rendered unuseable if nodes could be
+		 renamed. 
+           </doc>
+         </define>
+         <define attribute=case optional>
+           <doc> name matching is done on a case-sensitive basis.
+           </doc>
+         </define>
+         <undefine attribute=each optional><!-- unimplemented -->
+           <doc> The content of the <tag>replace</tag> element is split into a
+		 list of nodes, each of which replaces a corresponding
+		 selected item.
+           </doc>
+         </undefine>
+       </define>
+  <li> <define element=remove parent=select empty handler>
+         <doc> Removes each selected node from its parent.
+         </doc>
+         <note author=steve> This will not work for most cases in the current
+         	 system; it will become possible only after named nodes become
+         	 the children of their respective namespaces, and values
+         	 become the children of their containers.
+         </note>
+       </define>
 </ul>
 
 <h2>Expansion Control Elements</h2>

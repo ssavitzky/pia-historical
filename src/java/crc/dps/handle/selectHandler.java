@@ -315,6 +315,7 @@ class select_subHandler extends selectHandler {
 class fromHandler extends select_subHandler {
   protected void action(Input in, Context aContext, Output out, 
 			ActiveAttrList atts, NodeList content) {
+    content = new ParseNodeList(ListUtil.getListItems(content));
     putList(out, content);
   }
   fromHandler() { super(true, false); }
@@ -323,7 +324,16 @@ class fromHandler extends select_subHandler {
 class inHandler extends select_subHandler {
   protected void action(Input in, Context aContext, Output out, 
 			ActiveAttrList atts, NodeList content) {
-    unimplemented(in, aContext);
+    Enumeration items = ListUtil.getListItems(content);
+    while (items.hasMoreElements()) {
+      Node item = (Node) items.nextElement();
+      if (item.getNodeType() == NodeType.TEXT) {
+        Node binding = aContext.getEntityBinding(item.toString(), false);
+	if (binding != null) out.putNode(binding);
+      } else {
+	out.putNode(item);
+      }
+    }
   }
 
   /** Content is text only, because all we want is the name */
@@ -384,9 +394,11 @@ class nameHandler extends select_subHandler {
 			ActiveAttrList atts, NodeList content) {
     NodeList selected = getSelected(aContext);
     String name = content.toString();
-    if (name != null && name.startsWith("#"))
+    if (name == null) {
+      selectNames(selected, out); 
+    } else if (name.startsWith("#")) {
       selectByType(name, selected, out);
-    else selectByName(name, selected, out);
+    } else selectByName(name, selected, out);
   }
   nameHandler() { super(true, false); }
   public Action getActionForNode(ActiveNode n) {
@@ -394,6 +406,22 @@ class nameHandler extends select_subHandler {
     if (dispatch(e, "recursive")) 	return new name_recursive();
     if (dispatch(e, "all")) 	 	return new name_recursive();
     return this;
+  }
+  protected void selectNames(NodeList selected, Output out) {
+    NodeEnumerator items = selected.getEnumerator();
+    for (Node item = items.getFirst(); item != null; item = items.getNext()) {
+      int ntype = item.getNodeType();
+      if (ntype == NodeType.ELEMENT) {
+	Element elt = (Element) item;
+	out.putNode(new ParseTreeText(elt.getTagName()));
+      } else if (ntype == NodeType.ATTRIBUTE) {
+	Attribute attr = (Attribute) item;
+	out.putNode(new ParseTreeText(attr.getName()));
+      } else if (ntype == NodeType.ENTITY) {
+	Entity ent = (Entity) item;
+	out.putNode(new ParseTreeText(ent.getName()));
+      }
+    }
   }
 }
 
@@ -707,5 +735,69 @@ class evalHandler extends select_subHandler {
     }
   }
   evalHandler() { super(true, false); syntaxCode = EMPTY; }
+}
+
+/** &lt;replace&gt; replace every node's value or content. */
+class replaceHandler extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    NodeList selected = getSelected(aContext);
+    NodeEnumerator items = selected.getEnumerator();
+    String name = atts.getAttributeString("name");
+    boolean caseSens = atts.hasTrueAttribute("case");
+    for (Node item = items.getFirst(); item != null; item = items.getNext()) {
+      ActiveNode a = (ActiveNode)item;
+      switch (item.getNodeType()) {
+      case NodeType.ATTRIBUTE:
+	Attribute att = a.asAttribute();
+	if (name != null 
+	     && !(caseSens && name.equals(att.getName())
+		  || !caseSens && name.equalsIgnoreCase(att.getName())))
+	  continue;
+	att.setValue(content);
+	break;
+
+      case NodeType.ENTITY:
+	ActiveEntity ent = a.asEntity();
+	if (name != null 
+	     && !(caseSens && name.equals(ent.getName())
+		  || !caseSens && name.equalsIgnoreCase(ent.getName())))
+	  continue;
+	ent.setValueNodes(aContext, content);
+	break;
+
+      case NodeType.ELEMENT:
+	ActiveElement elt = (ActiveElement)item;
+	if (name != null) {
+	  elt.setAttributeValue(name, content);
+	} else {
+	  for (Node child = a.getFirstChild(); child != null; 
+	       child = a.getFirstChild()) 
+	    try { a.removeChild(child); } catch (Exception e) {}
+	  Copy.appendNodes(content, a);
+	  // === attributes in content should become attributes of a ===
+	}
+	break;
+      }
+    }
+  }
+  replaceHandler() { super(true, true); }
+}
+
+/** &lt;remove&gt; remove every selected node.
+ * <p> === unreliable until new DOM implementation in place.
+ */
+class removeHandler extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    NodeList selected = getSelected(aContext);
+    NodeEnumerator items = selected.getEnumerator();
+    for (Node item = items.getFirst(); item != null; item = items.getNext()) {
+      Node parent = item.getParentNode();
+      if (parent != null)
+	try { parent.removeChild(item); } catch (Exception e) {}
+    }
+  }
+  removeHandler() { super(true, false); syntaxCode = EMPTY; }
 }
 
