@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# pia           start/stop the PIA
+#
+# Version:      $Id$
+# Based On:     @(#) /etc/init.d/skeleton 1.01 26-Oct-1993
+#               Miquel van Smoorenburg, <miquels@drinkel.nl.mugnet.org>
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+export PATH=/usr/local/java/bin:$PATH
+
+# See how we were called.
+case "$1" in
+  start)
+        touch /var/lock/subsys/pia
+        daemon /home/pia/pia/bin/run_pia &
+        ;;
+  stop)
+        rm -f /var/lock/subsys/pia
+        killproc /home/pia/pia/bin/run_pia
+        ;;
+  *)
+        echo "Usage: skeleton {start|stop}"
+        exit 1
+esac
+
+exit 0
