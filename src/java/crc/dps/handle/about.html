@@ -200,9 +200,13 @@
 <h3>Getting Information</h3>
 
 <ul>
-  <li> If you need information about the current node (for example, its syntax
-       or tagname), use the current <code>Input</code> (usually passed as an
-       argument called <code>in</code>).
+  <li> If you need information about the current node (for example, its node
+       type or tagname), use the current <code>Input</code> (usually passed as
+       an argument called <code>in</code>).  The input is also the right place
+       to go for conversions, e.g.
+       <pre>
+           ActiveElement e = in.getActive().asElement();
+       </pre>
 
   <li> If you need the value of an entity, or need to set an entity, use the
        current <code>Context</code> (usually called either <code>cxt</code> or
