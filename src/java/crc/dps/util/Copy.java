@@ -74,6 +74,7 @@ public class Copy {
   /** Copy the content of a NodeList to an Output.
    */
   public static void copyNodes(NodeList aNodeList, Output out) {
+    if (aNodeList == null) return;
     NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       out.putNode(node);
