@@ -23,7 +23,7 @@ if len(SourceFiles) == 1 and os.path.isdir(os.path.join(SourceDir,SourceFiles[0]
 	SourceFiles = os.listdir(SourceDir)
 
 
-AGENT_BASE_DIR = "/pia1/home/marko/.pia/PhotoNet/"
+AGENT_BASE_DIR = "/home/pia/.pia/PhotoNet/"
 OLD_AGENT_BASE_DIR = "/home/pia/.pia/Photo_Album/"
 
 ImageFiles = []

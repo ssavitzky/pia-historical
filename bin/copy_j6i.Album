@@ -123,7 +123,7 @@ for $file (@jfiles){
 #create a table from a list of files
 $root = "";			# if the img files are in another dir put it here
 
-$formnotify = "http://localhost:8001/Photo_Album/add_new_pictures.if?dir=$todir";
+$formnotify = "http://localhost:8888/Photo_Album/add_new_pictures.if?dir=$todir";
 
 $formmaker = $formproc;
 $formdefault = "http://photos/Photo_Album/captions.if ";
