@@ -44,17 +44,25 @@ which is only useful for agents which have no options.
        <input type="submit" value="Install">
        name: <input name="agent" value="History">
        </form></if>
+  <dt> <a name="Spy">Spy agent</a>
+       <if><agent-running name=Spy><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="Spy">
+       </form></if>
   <dt> <a name="CIA">CIA agent</a>
        <if><agent-running name=cia><then><em>installed</em></then><else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="cia">
+       type: <input name="type" value="Spy">
        </form></if>
   <dt> <a name="FBI">FBI agent</a>
        <if><agent-running name=fbi><then><em>installed</em></then><else>
   <dd> <form action="/Agency/install_agent.if" METHOD="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="fbi">
+       type: <input name="type" value="Spy">
        </form></if>
   <dt> <a name="logo">Logo agent</a>
        <if><agent-running name=Logo><then><em>installed</em></then><else>
