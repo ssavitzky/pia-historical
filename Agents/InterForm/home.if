@@ -23,8 +23,8 @@
     <tr><th><td><a href="options.if">Options</a>
 	    	      <a href="initialize.if">[re-initialize]</a></then></if>
     <tr><th><td> <a href=actors.if>Actors</a>
-		 <a href=entities.if>Entities</a>
-		 <a href="/Agency/agents.if">Agents</a>
+		 <a href=/Agency/entities>Entities</a>
+		 <a href="/Agency/agents">Agents</a>
     <tr><th align=right>
             <td> <a href="tag_man.if">Standard Tagset Manual</a>
     <tr><th><td> <a href=demo.if>Standard Tagset Examples</a>

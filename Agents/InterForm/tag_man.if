@@ -25,8 +25,8 @@
     		 <a href="help.if">Help</a>
     		 <a href="options.if">Options</a>
     <tr><th><td> <a href=actors.if>Actors</a>
-		 <a href=entities.if>Entities</a>
-		 <a href="/Agency/agents.if">Agents</a>
+		 <a href=/Agency/entities>Entities</a>
+		 <a href="/Agency/agents">Agents</a>
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
             <td> <b href="tag_man.if">Standard Tagset Manual</b>
@@ -601,7 +601,7 @@ Add spaces to <at>CONTENT</at> to fill it out to a specified number of spaces.
 <an>pad</an> can be useful for generating tables to be presented using the
 <an>pre</an> tag, which is supported by <em>all</em> browsers (unlike
 <an>table</an>, which some older browsers still don't support very well).
-Used, for example, on the <a href="/Agency/agents.if">PIA's agent index</a>.<p>
+Used, for example, on the <a href="/Agency/agents">PIA's agent index</a>.<p>
 
 <adscr>trim</adscr>
 
