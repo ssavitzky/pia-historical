@@ -103,7 +103,7 @@
  <!--  generate the routeobject if does not exist -->
  <!-- need to know name of user on form -->	
   <set name=myuser><if> <get form name=name><then><get form name=name></then>
-  <else><get trans name=AuthenticatedUser></else></if></set>
+  <else><if> <get form name=employee><then><get form name=employee></then><else><get trans name=AuthenticatedUser></else></if></else></if></set>
 	
 <if> <get name=routeobject> <then></then>
   <else>

@@ -8,8 +8,7 @@
 
 <tagset-load name=Form-agent-actors>
 
-Click <a href=show_timecards.if>here for Timecard listings</a>
-<br>
+
 
 <repeat list=&AGENT.groups.keys; entity=grp>
 <if-in-group group=&grp;><set name=allow>true</set></if-in-group>
@@ -231,6 +230,6 @@ For access please contact someone in the admin group:
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Aug 11 09:43:30 1998
+Last modified: Fri Aug 14 12:08:40 1998
 <!-- hhmts end -->
 </body></html>
