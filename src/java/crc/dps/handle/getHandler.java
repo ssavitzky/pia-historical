@@ -61,8 +61,8 @@ public class getHandler extends GenericHandler {
     //if (dispatch(e, "trans"))	 return get_trans.handle(e);
     //if (dispatch(e, "form"))	 return get_form.handle(e);
 
-    //if (dispatch(e, "file"))	 return read_file.handle(e);
-    //if (dispatch(e, "href"))	 return read_href.handle(e);
+    //if (dispatch(e, "file"))	 return read_file.handle(e); OBSOLETE
+    //if (dispatch(e, "href"))	 return read_href.handle(e); OBSOLETE
     return this;
   }
    
