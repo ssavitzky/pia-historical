@@ -3,9 +3,8 @@
 <title>t6.xh</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body>
-<h1>InterForm test file t3.if</h1>
-<foo date="&date;"></foo>
-&date;
+<h1>InterForm test file t6.if</h1>
+
 <h2>Test &lt;if&gt; operation</h2>
 
 <if>test
