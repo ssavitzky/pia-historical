@@ -67,7 +67,8 @@ public class Actor extends crc.interform.Handler {
     if (content == null || content.getLength()==0)
       content = new ParseNodeList(new ParseTreeText(""));
     aContext.debug("Defining <" + tagname + "> " + content + "\n");
-    Action h = top.getTagset().defTag(tagname, notIn, syntax, handle, content);
+    Action h = top.getTagset().defTag(tagname, notIn, null,
+				      syntax, handle, content);
     return true;
   }
 }
