@@ -43,8 +43,8 @@ sub cy {
 
 ### Drawing Substrate:
 
-local $white, $black, $red, $blue;
-local $lw, $sp;			# line width, inter-word spacing.
+local ($white, $black, $red, $blue, $rred);
+local ($lw, $sp);			# line width, inter-word spacing.
 
 sub make_image  {
     my ($width, $height) = @_;
@@ -57,6 +57,7 @@ sub make_image  {
     $white = $im->colorAllocate(255,255,255);
     $black = $im->colorAllocate(0,0,0);       
     $red = $im->colorAllocate(255,0,0);      
+    $rred= $im->colorAllocate(196,0,38);
     $blue = $im->colorAllocate(0,0,255);
     # make the background transparent and interlaced
     $im->transparent($white);
@@ -78,7 +79,7 @@ sub make_pentagon {
     for ($i = 0; $i < $n; $i++) {
 	$next = $theta + $a;
 	$im->line(cx($r, $theta) + $x0, cy($r, $theta) + $y0,
-		  cx($r, $next) + $x0, cy($r, $next) + $y0, $red);
+		  cx($r, $next) + $x0, cy($r, $next) + $y0, $rred);
 	$theta = $next;
     }
 
@@ -95,7 +96,7 @@ sub make_lines {
 
     for ($i = 0; $i < 5; $i++) {
 	$im->line(cx($rmin, $theta) + $x0, cy($rmin, $theta) + $y0,
-		  cx($rmax, $theta) + $x0, cy($rmax, $theta) + $y0, $red);
+		  cx($rmax, $theta) + $x0, cy($rmax, $theta) + $y0, $rred);
 	$theta += $a;
     }
 
@@ -164,7 +165,7 @@ sub fill_pentagon_segments {
     for ($i = 0; $i < $n; $i++) {
 	my ($x1, $y1) = (cx($r0, $theta), cy($r0, $theta));
 	my ($x2, $y2) = (cx($r1, $theta+$a), cy($r1, $theta+$a));
-	$im->fill(($x1+$x2)/2 + $x0, ($y1+$y2)/2 + $y0, $red);
+	$im->fill(($x1+$x2)/2 + $x0, ($y1+$y2)/2 + $y0, $rred);
 	$theta += $a;
     }
 }
@@ -222,20 +223,20 @@ sub make_B {
 
     ## Make a w * h rectangle and fill it.
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red);
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred);
 
     ## make a semicircle of radius $r, $w + $d from the left.
 
-    $im->line($x0+$lw+$d, $y0, $x0+$lw+$d, $y0+$h, $red);
+    $im->line($x0+$lw+$d, $y0, $x0+$lw+$d, $y0+$h, $rred);
     $im->arc($x0+$lw+$d, $y0+$r, # center
 	     2*$r, 2*$r,	# w, h
-	     270, 90, $red);	# start, end, color
-    $im->fill($x0+$lw+$d+2, $y0+$r, $red);
+	     270, 90, $rred);	# start, end, color
+    $im->fill($x0+$lw+$d+2, $y0+$r, $rred);
 
     $im->arc($x0+$lw+$d, $y0+3*$r, # center
 	     2*$r, 2*$r,	# w, h
-	     270, 90, $red);	# start, end, color
-    $im->fill($x0+$lw+$d+2, $y0+3*$r, $red);
+	     270, 90, $rred);	# start, end, color
+    $im->fill($x0+$lw+$d+2, $y0+3*$r, $rred);
 
     return $lw + $d + $r;
 }
@@ -265,12 +266,12 @@ sub make_D {
     my $r = $h/2;
     return $r unless ref $im;
 
-    $im->line($x0, $y0, $x0, $y0+2*$r, $red);
+    $im->line($x0, $y0, $x0, $y0+2*$r, $rred);
     $im->arc($x0, $y0+$r,	# center
 	     2*$r, $h,		# w, h
-	     270, 90, $red);	# start, end, color
+	     270, 90, $rred);	# start, end, color
 
-    $im->fill($x0+$r/2, $y0+$r, $red);
+    $im->fill($x0+$r/2, $y0+$r, $rred);
 
     $r;
 }
@@ -287,10 +288,10 @@ sub make_E {
 
     return $lw + $ww unless ref $im;
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red);
-    $im->filledRectangle($x0+$lw, $y0, $x0+$lw+$ww, $y0+$lw, $red);
-    $im->filledRectangle($x0+$lw, $y0+$hh, $x0+$lw+$ww/2, $y0+$hh+$lw, $red);
-    $im->filledRectangle($x0+$lw, $y0+$h-$lw, $x0+$lw+$ww, $y0+$h, $red);
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred);
+    $im->filledRectangle($x0+$lw, $y0, $x0+$lw+$ww, $y0+$lw, $rred);
+    $im->filledRectangle($x0+$lw, $y0+$hh, $x0+$lw+$ww/2, $y0+$hh+$lw, $rred);
+    $im->filledRectangle($x0+$lw, $y0+$h-$lw, $x0+$lw+$ww, $y0+$h, $rred);
 
     $lw + $ww;
 }
@@ -306,9 +307,9 @@ sub make_F {
 
     return $lw + $ww unless ref $im;
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red);
-    $im->filledRectangle($x0+$lw, $y0, $x0+$lw+$ww, $y0+$lw, $red);
-    $im->filledRectangle($x0+$lw, $y0+$hh, $x0+$lw+$ww/2, $y0+$hh+$lw, $red);
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred);
+    $im->filledRectangle($x0+$lw, $y0, $x0+$lw+$ww, $y0+$lw, $rred);
+    $im->filledRectangle($x0+$lw, $y0+$hh, $x0+$lw+$ww/2, $y0+$hh+$lw, $rred);
 
     $lw + $ww;
 }
@@ -333,7 +334,7 @@ sub make_I {
 
     return $lw unless ref $im;
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red) if ref $im;
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred) if ref $im;
     $lw;
 
 }
@@ -348,8 +349,8 @@ sub make_L {
 
     return $lw + $ww unless ref $im;
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red);
-    $im->filledRectangle($x0+$lw, $y0+$h-$lw, $x0+$lw+$ww, $y0+$h, $red);
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred);
+    $im->filledRectangle($x0+$lw, $y0+$h-$lw, $x0+$lw+$ww, $y0+$h, $rred);
 
     $lw + $ww;
 }
@@ -377,16 +378,16 @@ sub make_P {
 
     ## Make a w * h rectangle and fill it.
 
-    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $red);
+    $im->filledRectangle($x0, $y0, $x0+$lw, $y0+$h, $rred);
 
     ## make a semicircle of radius $r, $w + $d from the left.
 
-    $im->line($x0+$lw+$d, $y0, $x0+$lw+$d, $y0+2*$r, $red);
+    $im->line($x0+$lw+$d, $y0, $x0+$lw+$d, $y0+2*$r, $rred);
     $im->arc($x0+$lw+$d, $y0+$r, # center
 	     2*$r, 2*$r,	# w, h
-	     270, 90, $red);	# start, end, color
+	     270, 90, $rred);	# start, end, color
 
-    $im->fill($x0+$lw+$d+2, $y0+$r, $red);
+    $im->fill($x0+$lw+$d+2, $y0+$r, $rred);
 
     return $lw + $d + $r;
 }
@@ -402,18 +403,18 @@ sub make_S {
 
     ## make a semicircle of radius $r, $r from the left.
 
-    $im->line($x0+$r, $y0, $x0+$r, $y0+$h, $red);
+    $im->line($x0+$r, $y0, $x0+$r, $y0+$h, $rred);
     $im->arc($x0+$r, $y0+$r,	# center
 	     2*$r, 2*$r,	# w, h
-	     90, 270, $red);	# start, end, color
-    $im->fill($x0+$r-2, $y0+$r, $red);
+	     90, 270, $rred);	# start, end, color
+    $im->fill($x0+$r-2, $y0+$r, $rred);
 
     ## Now one going the other way underneath.  Crude.
 
     $im->arc($x0+$r, $y0+3*$r,	# center
 	     2*$r, 2*$r,	# w, h
-	     270, 90, $red);	# start, end, color
-    $im->fill($x0+$r+2, $y0+3*$r, $red);
+	     270, 90, $rred);	# start, end, color
+    $im->fill($x0+$r+2, $y0+3*$r, $rred);
 
     return 2 * $r;
 }
