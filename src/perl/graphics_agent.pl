@@ -155,13 +155,13 @@ sub machine_callback{
     my $response;
 #    if(ref($image)){
 	$response=HTTP::Response->new(&HTTP::Status::RC_OK,"OK"); 
-	
-	$response=TRANSACTION->new($response,$self->machine,$destination);
 	$response->content_length(length($image));
 	$response->content_type('image/gif');
 	$response->content($image);
-	$response->request($original);
     $response->header($self->version);
+	$response->request($request);
+        ## === have to do all the above *before* the following:
+	$response=TRANSACTION->new($response,$self->machine,$destination);
 # #    } else {
 # 	$response=HTTP::Response->new(&HTTP::Status::RC_INTERNAL_SERVER_ERROR,"giffailed"); 
 	

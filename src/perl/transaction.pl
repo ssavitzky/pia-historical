@@ -242,7 +242,8 @@ sub send_response {
 	my $status=$machine->send_response($reply) if ref($machine);
 	return $status;
     } else {
-	print "sending response to $machine\n" if $main::debugging;
+	## responses to nowhere just get dropped on the floor.
+	print "dropping response to $machine\n" if $main::debugging;
 	return;
     }
 }
@@ -250,21 +251,29 @@ sub send_response {
 sub  get_request{
     my($self)=@_;
 
+    ## Default handling for a request:
+    ##	  ask the destination machine to get it.
+    ##	  complain if there's no destination to ask.
+
     my $destination=$self->to_machine;
     return $self->error_response unless $destination;
     
     my $response=$destination->get_request($self);
-    
-    $response=TRANSACTION->new($response);
-    $response->from_machine($destination);
-    
-    $response->to_machine($self->from_machine());
 
+    if (ref($response) !~ /TRANSACTION/) {
+	## If the destination machine returned an ordinary HTTP::Response,
+	##	make it into a proper transaction so it can get returned.
+	$response=TRANSACTION->new($response, $destination,
+				   $self->from_machine);
+    }
     return $response;	# push the response transaction
 }
 
 sub error_response{
     my($self)=@_;
+
+    ## Return a "not found" error for a request with no destination.
+
     my $response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "not found");
     $response->content_type("text/plain");    
     my $url=$self->url()->as_string();
@@ -274,7 +283,7 @@ sub error_response{
     $response->content("Agency could not find $url\n");
 
     $response=TRANSACTION->new($response,
-			       $main::this_machine,
+			       $main::this_machine,  # there was no to_machine
 			       $self->from_machine());
     return $response;
 }

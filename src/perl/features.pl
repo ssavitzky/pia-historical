@@ -239,12 +239,23 @@ $computers{proxy_request} = \&is_proxy_request;
 sub is_proxy_request{
     my $request=shift;    	return 0 unless $request->is_request;
     my $url=$request->url; 	return 0 unless $url;
-    
-    return  1  if ($url->path =~ /^\/http:/i );
-    my $host=$url->host;
+
+    my ($host, $port) = ($url->host, $url->port);
+    return 0 if ($host =~ /^agency/ || $host eq '');
+    return 0 if ($port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/i);
+    return 1;
+
+    # For some reason this test doesn't work!  Request must be outsmarting us.
+    return  0 unless ($url->path =~ m|^\/http://([\w.]+)|i );
+
+    $host = $1;
+    $port = 80;
+    if ($path =~ m|http://$host:([0-9]+)/|i) { $port = $1; }
+
+    print "possible proxy; $host:$port\n";
 
     return 0 if ($host =~ /^agency/ || $host eq '');
-    return 0 if ($url->port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/);
+    return 0 if ($port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/i);
 
     return 1 if $host;
     return 0;
@@ -254,13 +265,22 @@ $computers{agent_request} = \&is_agent_request;
 sub  is_agent_request{
     my $request=shift; 		return 0 unless $request->is_request;
     my $url=$request->url; 	return 0 unless defined $url;
-    my $host=$url->host;
+    my $host= lc $url->host;
 
+    my ($host, $port) = ($url->host, $url->port);
+    return 1 if ($host =~ /^agency/ || $host eq '');
+    return 1 if ($port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/i);
+    return 0;
 
-    if ($host=~/^agency/ || $host eq ''
-	|| $url->port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/) {
-	return 1;
-    }
+    return  1 unless ($url->path =~ m|^\/http://([\w.]+)|i );
+    $host = $1;
+    $port = 80;
+    if ($path =~ m|http://$host:([0-9]+)/|i) { $port = $1; }
+
+    print "possible proxy; $host:$port\n";
+
+    return 1 if ($host =~ /^agency/ || $host eq '');
+    return 1 if ($port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/i);
     return 0;
 }
 

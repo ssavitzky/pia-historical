@@ -826,7 +826,7 @@ sub respond_to_interform {
     
     $response->header('Version',$self->version()) unless $response->header('Version');
     $response=TRANSACTION->new($response,
-			       $main::this_machine,
+			       $main::this_machine, # $request->to_machine ?
 			       $request->from_machine());
 
     return $response;

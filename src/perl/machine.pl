@@ -99,7 +99,8 @@ sub send_response{
   #  local $SIG{PIPE}=sub {$abort = 1; die 'connection closed';};
 
     eval {
-	local $SIG{PIPE}=sub { die 'connection closed';};
+	local $SIG{PIPE}=sub { print 'connection closed';};
+	## never seems to print.  die, however, bombs completely.
 	## Use eval so we don't die if the browser closes the connnection.
 	print {$output} $string;
 	print {$output} $reply->headers_as_string();
