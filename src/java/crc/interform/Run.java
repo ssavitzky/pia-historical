@@ -218,7 +218,7 @@ public class Run  extends Environment {
   /** Run an already-parsed InterForm element as an Agent's actOn hook. */
   public static void interformHook(Agent agent, SGML code,
 				   Transaction trans, Resolver res) {
-    new Run(agent, trans, res, null).env.runCode(code, "Standard");
+    new Run(agent, trans, res, null).runCode(code, "Standard");
   }
 
   /************************************************************************
