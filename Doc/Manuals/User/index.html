@@ -30,7 +30,7 @@ command:
 </pre>
 
 in an <code>xterm</code> window.  (If the pia's binary directory is not in
-your path, you will need to preceed this command with
+your path, you will need to precede this command with
 <code><em>&lt;install-dir&gt;</em>/pia/bin/</code>.)<p>
 
 If you're using <code>telnet</code> to
@@ -68,16 +68,6 @@ Browse to the Agency's home page:
 <code>&lt;<a href="http://Agency/">http://Agency/</a></code>&gt;.
 <p>
 
-Many Unix browsers, such as Chimera and Arena, take their proxies from
-environment variables.  In this case you can have the PIA start your browser:
-
-<pre>
-  pia -c "chimera http://Agency/"&amp;
-</pre>
-
-<blockquote><em>
-  This feature may not be available in Release 1.0.
-</em></blockquote>
 
 The host ``<code>Agency</code>'' is shorthand for the hostname and port number
 of the agency your browser is using as a proxy.  It lets you refer to your
@@ -110,7 +100,7 @@ else's, or a printer's, PIA. <p>
   <dt> <code>-P</code>
   <dd> Listen on port =  8000 + your user ID, in case you're sharing a
        computer with other people.
-       <em>Not available in Release 1.0.</em>
+       <em>Not available in Release 2.0a.</em>
        <p>
   <dt> <code>-profile <em>configurationfile</em></code>
   <dd> The configuration file for the PIA.  The default file is stored under
@@ -121,7 +111,7 @@ else's, or a printer's, PIA. <p>
        </pre>
   <dt> <code>-q</code>
   <dd> Be quiet -- only print out error messages.
-        <em>Not available in Release 1.0.</em>
+        <em>Not available in Release 2.0a.</em>
   <dt> <code>-v</code>
   <dd> Be verbose.  Print out a little more information than usual.
   <dt> <code>-d</code>
@@ -129,7 +119,6 @@ else's, or a printer's, PIA. <p>
        <code>-d</code> and <code>-v</code> options are provided, also print
        debugging information from the InterForm parser.  Debugging printout
        makes the PIA run <em>very</em> slowly.
-  <dt> <code>-?</code>
   <dt> <code>-help</code>
   <dd> Print out command line options.  With <code>-v</code>, also prints out
        all the global properties defined by the combination of the
@@ -208,7 +197,7 @@ page, which is only useable after you install it.<p>
 
 The Agency's top-level home page is located inside the <code>Agency</code>
 agent, in the file <code><a
-href="/Agency/ROOTindex.if">/Agency/ROOTindex.if</a></code>. <p>
+href="/Agency/ROOT/index.xh">/Agency/ROOT/index.xh</a></code>. <p>
 
 <h3>DOFS</h3>
 
@@ -312,7 +301,7 @@ options. <p>
   By the way, it's perfectly acceptable for an agent's directory to contain
   ordinary HTML files, images, data, and even programs as well as
   InterForms. For example, the <code><a href="/Printer">Printer</a></code>
-  agent's printer icon, and the <code><a href="/Hotlist">Hotlist</a></code>
+  agent's printer icon, and the <code>Hotlist</code>
   agent's ``postit-note'' icon, are both ordinary <code>.gif</code> files in
   the agent's directories.
 </blockquote>
@@ -321,18 +310,22 @@ options. <p>
 
 <h3>Cache</h3>
 
+The <code><a href="/Cache">Cache</a></code> agent keeps a copy of the
+pages that you browse to outside the Agency.  Cached files are stored
+in $PIA_HOME/Cache.  Subsequent requests for a document will retrieve
+it from the cache rather than from the original source.
+
 <dl>
   <dt> <b>Note:</b>
-  <dd> This agent is currently under construction, and is not available in
-       Release 1.0.
+  <dd> This agent is currently under construction, and these features are not
+       available in Release 2.0a.
 </dl>
 
-The <code><a href="/Cache">Cache</a></code> agent keeps a copy of every page
-you browse to.  (You will eventually be able to tell it not to keep a copy of
-pages on your local system, and how long to retain the pages it <em>does</em>
-keep.)  From then on, whenever you browse to a page you've been to before you
-get the copy that was in the cache, and a ``C'' and ``F'' logo will appear in
-the CIA's toolbar.  <p>
+You will be able to tell it not to keep a copy of pages on your
+local system, and for those pages that it <em>does</em> keep, how long
+to retain them.  From then on, whenever you browse to a page you've
+been to before you get the copy that was in the cache, and a ``C'' and
+``F'' logo will appear in the CIA's toolbar.  <p>
 
 Clicking on the ``C'' logo will get you to a cache control page that gives you
 more information about the page and lets you pre-fetch pages it points to, or
@@ -351,16 +344,15 @@ different name so that you have a record but still see the newest version.
 When this happens you won't see the ``F'' logo, and there will be a ``U''
 instead of the ``C''.<p>
 
-
 <h3>Hotlist</h3>
 
 <dl>
   <dt> <b>Note:</b>
   <dd> This agent is currently under construction, and is not available in
-       Release 1.0.
+       Release 2.0a.
 </dl>
 
-The <code><a href="/Hotlist">Hotlist</a></code> agent is really more than
+The <code>Hotlist</code> agent is intended to be more than
 that--it lets you attach keywords and a short description to a page, locate
 pages by both keyword and description, and gather annotated links into new
 documents which you can then export to, for example, your public Web pages.
@@ -449,7 +441,7 @@ href="/Agency/installers.if">/Agency/installers.if</a></code>.<p>
 At some point we will make a collection of people's personal startup
 configurations and customizations (as much as they feel like making public),
 probably in <code><a
-href="/PIA/Contrib/Config/">/PIA/Contrib/Config/</a></code>.  This will be a
+href="/PIA/Contrib">/PIA/Contrib</a></code>.  This will be a
 good place to go for new ideas about using your PIA.<p>
 
 
