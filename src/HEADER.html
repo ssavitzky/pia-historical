@@ -11,10 +11,12 @@ here.<p>
 <h2>Annotated Contents</h2>
 
 <dl>
-  <dt> <a href="Agency">Agency</a>
-  <dd> Source code for various agencies.  They install into ../pub
-  <dt> <a href="Agent">Agent</a>
-  <dd> Source code for various agents (in subdirectories by category).
+  <dt> <a href="Agencies">Agencies</a>
+  <dd> Source code for various agencies.  They install into
+       <a href="../pub/">../pub</a>
+  <dt> <a href="Agents/">Agents</a>
+  <dd> Source code and InterForms for the agents.  Each agent is a
+       subdirectory. 
   <dt> <a href="app/">app</a>
   <dd> Separate applications, intended to be installed in /usr/local/bin or
        /usr/bin/X11.  Utilities.
@@ -22,8 +24,10 @@ here.<p>
   <dd> CGI scripts and programs, meant to be installed in .../cgi-bin on some
        server. 
   <dt> <a href="lib">lib</a>
-  <dd> Libraries indended to be installed in /usr/local/lib or one of its
-       subdirectories. 
+  <dd> Libraries intended to be installed in /usr/local/lib or one of its
+       subdirectories.   In particular, <a href="lib/perl/">lib/perl/</a>
+       contains the PERL code libraries for the only agency that currently
+       exists, the one in <a href="Agencies/perl_small/">perl_small/</a>.
 </dl>
 
 <h3>Typical Make Targets</h3>
@@ -41,6 +45,6 @@ here.<p>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Jul 22 16:45:14 1996
+Last modified: Wed Aug 14 17:25:17 1996
 <!-- hhmts end -->
 <hr>
