@@ -285,8 +285,6 @@ The following field types are defined:
        value, label, and ID to (<code><em>name</em>-values</code>.  Value
        and label default to the ID.
   <li> Gensym names if necessary.
-  <li> Speedup using agent-level tagset, so that <code>tagset.inc</code> is
-       parsed only once.
   <li> Agent template: make selects from lists of images and icons.
        Agency/Icons; Agency/Images.  (Many are presently in Logo).  Need
        <code>type=link</code> widget with a directory.
@@ -298,8 +296,8 @@ The following field types are defined:
   <li> Should be able to lock fields.
        needed to prevent confusion when customizing a template-derived object.
   <li> Separate data-file values for dest.
-       Want to be able to supply different data values and doc strings for the
-       new, customized data file.
+       Want to be able to supply different data values and doc strings for
+       some fields (e.g. title) in the output data file.
   <li> Make tDataFile, etc. consistent
        so we can have data files with arbitrary names, and targets that are
        files (forms or documents) rather than directories.
