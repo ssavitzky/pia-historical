@@ -26,8 +26,8 @@ public class Basic_ts extends HTML_ts {
   + " get tagset-include element actor-names calendar";
   static String parsedActors = "add-markup difference equal expand if"
   + " pad product protect-result quotient set sort sorted subst sum"
-  + " tagset test text trim user-message calendar-day";
-  static String quotedActors = "protect repeat foreach actor";
+  + " tagset test text trim user-message calendar-day form";
+  static String quotedActors = "protect repeat foreach actor process";
 
   public Basic_ts() {
     this("Basic", true);

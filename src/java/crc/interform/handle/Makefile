@@ -24,9 +24,11 @@ BASIC_ACTORS = \
 	Expand.java \
 	Foreach.java \
 	Foreach_.java \
+	Form.java \
 	Get.java \
 	If.java \
 	Pad.java \
+	Process.java \
 	Product.java \
 	Protect.java \
 	Protect_result.java \
