@@ -1,5 +1,6 @@
 package PIA::Accepter; ###### Accept and handle connections on a port
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 
 ######	Accept and handle connections on a port.
 ###

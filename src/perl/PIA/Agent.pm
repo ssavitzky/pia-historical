@@ -1,5 +1,6 @@
 package PIA::Agent; ###### superclass for PIA agents
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	Agents have both a name and a type.  
 ###	   An agent responds to requests for //agency/$name

@@ -1,5 +1,6 @@
 package PIA::Content; ###### content of a PIA::Transaction
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	content objects sit between inputs and outputs
 ###	and act as interfaces for different types of content

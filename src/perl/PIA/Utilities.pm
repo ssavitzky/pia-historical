@@ -1,5 +1,6 @@
 package PIA::Utilities; ###### Utilities for the PIA
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 
 use Exporter;
@@ -47,12 +48,6 @@ sub readFrom {
     close(FILE);
     return $str;
 }
-
-
-############################################################################
-###
-### Code Files:
-###
 
 
 ############################################################################

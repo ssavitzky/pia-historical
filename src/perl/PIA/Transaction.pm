@@ -1,5 +1,6 @@
 package PIA::Transaction; ###### HTTP Transactions
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	Transaction is a wrapper for the library classes Request and Response.
 ###	It is used in the rule-based resolver, which associates 

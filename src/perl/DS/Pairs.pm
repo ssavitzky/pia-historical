@@ -1,5 +1,6 @@
 package DS::Pairs; ###### List of Pairs
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A DS::Pairs is a list of objects.  Unlike a simple DS::List,
 ###	items are array references, which are interpreted as [name value] 

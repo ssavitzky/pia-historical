@@ -1,8 +1,10 @@
 package DS::Content; ###### Content mixin
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This package implements the shared behavior of DS::Thing and
-###	DS::List with respect to their content.
+###	DS::List with respect to their content.  It should have a different 
+###	name; possibly DS::Items.
 ###
 
 

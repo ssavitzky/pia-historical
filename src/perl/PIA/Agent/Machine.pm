@@ -1,8 +1,9 @@
-package PIA::Agent::Machine; ###### Machine Model for Agents
+package PIA::Agent::Machine; ###### ``Virtual'' Machine Model for Agents
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
-###	subclass of machine for agents, these are really virtual machines
-###	used by agents when they want to receive transactions
+###	subclass of Machine for agents, these are really virtual machines
+###	used by agents when they want to receive transactions.
 
 use PIA::Machine;
 push(@ISA,PIA::Machine);

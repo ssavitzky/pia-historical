@@ -1,5 +1,6 @@
 package DS::Thing; ###### Generic Objects
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A Thing is a very generic kind of data structure.  It has a
 ###	set of named ``attributes'' accessed with "attr($name)", and an

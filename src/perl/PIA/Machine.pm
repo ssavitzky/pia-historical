@@ -1,5 +1,6 @@
 package PIA::Machine; ###### Machine Model.
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	Ideally these should be persistent so that we can keep track of what
 ###	kind of browser or server we're talking to, but at the moment we

@@ -1,5 +1,6 @@
 package DS::List; ###### Generic Lists
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A List is an indexed collection if ``items'' accessed with 
 ###	"item($index)".  It has no attributes, but has tag and content 

@@ -1,5 +1,6 @@
 package PIA::Resolver; ###### the PIA's Resolver (main loop)
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A Resolver (i.e. an instance of PIA::Resolve) acts like a stack of
 ###	Transaction objects.  A resolver also has a list of agents which have

@@ -1,8 +1,10 @@
 package DS::Tokens; ###### List of InterForm Tokens
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A Token List is a List of IF::IT tokens.  Unlike a simple DS::List,
-###	strings and lists are merged when appended.
+###	strings and lists are merged when appended.  This should probably be 
+###	moved to the IF package.
 ###
 
 use DS::List;

@@ -1,5 +1,6 @@
 package DS::Features; ###### Lists of named features.
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A Features list is attached to a Thing when it is first 
 ###	needed.  It is used to perform lazy evaluation of named
