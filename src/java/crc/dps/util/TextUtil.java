@@ -114,6 +114,15 @@ public class TextUtil {
     return l;
   }
 
+  /** Convert a NodeList to a String in <em>internal</em> form.
+   *	Character entities are replaced by their equivalent characters;
+   *	all other markup is <em>also</em> converted to equivalent characters. 
+   */
+  public static String getCharData(NodeList nl) {
+    ToCharData out = new ToCharData();
+    Copy.copyNodes(nl, new FilterText(out));
+    return out.getString();
+  }
 
   /************************************************************************
   ** Trimming and padding:
