@@ -412,6 +412,7 @@ public class  HTTPRequest extends Transaction {
 	
       }
       
+      firstLineOk = true;
   }
 
 

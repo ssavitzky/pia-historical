@@ -52,6 +52,12 @@ public abstract class Transaction extends AttrBase
   public boolean DEBUG = false;
 
   /**
+   * Attribute index - indicates whether first line of transaction is correctly
+   * parsed
+   */
+  protected boolean firstLineOk = false;
+
+  /**
    * Attribute index - use to notify thread pool when this transaction is done
    */
   protected Athread executionThread;
@@ -668,17 +674,23 @@ public abstract class Transaction extends AttrBase
       firstLine = input.readLine();
     
       Pia.debug(this, "the firstline-->" + firstLine);
+      parseInitializationString( firstLine );
    
       headersObj  = hf.createHeader( in );
-      if( headersObj == null ){
+
+      if( headersObj != null ) return;
+
+      // we have bad header and bad first line
+      if( headersObj == null && !firstLineOk ){
 	 Pia.debug(this, "Can not parse header...");
 	 String msg = "Can not parse header...\n";
 	 throw new PiaRuntimeException (this
 					, "initializeHeader"
 					, msg) ;
       }
-	 
-      parseInitializationString( firstLine );
+      // someone just give us the first line
+      headersObj = new Headers();
+
 
     }catch(IOException e){
     }

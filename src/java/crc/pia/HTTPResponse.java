@@ -96,6 +96,8 @@ public class  HTTPResponse extends Transaction {
 
     if( tokens.hasMoreTokens() )
       reason = tokens.nextToken();
+
+    firstLineOk = true;
   }
   
   
