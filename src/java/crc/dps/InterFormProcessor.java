@@ -51,6 +51,13 @@ public class InterFormProcessor extends DocumentProcessor {
     return agent.name();
   }
 
+  /** Convenience function: return the name of the current agent as a 
+   *	default if the given name is null.
+   */
+  public String getAgentName(String name) {
+    return (name == null)? agent.name() : name;
+  }
+
   public String getAgentType(String name) {
     if (name == null) return agent.type();
     Agent ia = resolver.agent(name);
@@ -68,6 +75,10 @@ public class InterFormProcessor extends DocumentProcessor {
   public Resolver getResolver() {
     return resolver;
   }    
+
+  public Transaction getTransaction() {
+    return transaction;
+  }
 
   /************************************************************************
   ** Setup:
