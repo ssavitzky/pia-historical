@@ -17,5 +17,4 @@ include $(TOPDIR)/makefiles/file.make
 Default.class:	../StreamingContent.java
 
 html.class:  Default.java 
-
-
+ProcessedContent.class: ../../dps/process/ActiveDoc.java
