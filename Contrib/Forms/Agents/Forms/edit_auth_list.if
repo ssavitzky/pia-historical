@@ -31,25 +31,26 @@
   <set index=alist.authdescription insert=0 replace><get name=authdescription form></set>
   <set name=oldusers><get index=alist.users></set>
    <if> <get name=oldusers> <then>
-      <set name=newusers><repeat list=&oldusers.Text; entity=u><if> <get
-      name=delete&u; form><then> <set name=myflag>replace</set></then>
+      <set name=newusers><repeat list=&oldusers; entity=u><if><get name=u
+      attr=tag><then><set name=utext><get index=u.Text></set></then>
+      <else><set name=utext><get name=u></set></else></if><if> <get
+      name=delete&utext; form><then> <set name=myflag>replace</set></then>
       <else><get name=u></else> </if></repeat></set>
       <if><get name=myflag><then>
 	<set name=userelement>-1</set>
-	 <set name=counter>0</set><repeat list=&alist; entity=e> <if><test
-	 match=users> <get name=e attr=tag> </test>
-	 <then> <set name=userelement>&counter;</set></then> </if> <set
-		name=counter><sum digits=0>&counter; 1</sum></set> </repeat>
+	<set name=asize><get name=alist size></set> Size is &asize;
+	 <set name=counter>0</set><repeat start=1 stop=&asize; entity=e> 
+        <if><test
+	 match=users> <get index=alist.-&e; attr=tag> </test>
+	 <then> <set name=userelement><difference digits=0>&e; 1</difference></set></then>
+<else> <get index=alist.-&e; attr=tag> </else> </if> 
+         </repeat>
 	<set index=alist insert=&userelement; replace><users><get
       name=newusers></set></users></then> </if>
     </then>
     </if>
    <if><get form name=addusers><then>
-     <if> <get name=oldusers> <then>
-       <set index=alist.users insert=-1><get
-       form name=addusers></set></then>
-       <else> <set name=alist insert=-1><users> <get
-       form name=addusers> </users></set></else></if>
+      <add-user-to-authlist authlist=&idtoedit; user=&FORM.addusers;>
        </then></if>
  <if><get form name=createnewlist> <then>
    <set name=parentid><get name=idtoedit></set>
@@ -103,8 +104,11 @@
     </select> </td> </tr>
     
  <tr><th> Employees:<br>(check to remove)</th>
-   <if> <get index=alist.users> <then><td> <repeat list=&alist.users.Text;
-	entity=u><input name=delete&u; type="radio"><a href=edit_user.if?euser=&u;><get name=u></a> </repeat>       
+   <if> <get index=alist.users> <then><td> <repeat list=&alist.users;
+	entity=u><if><get name=u
+      attr=tag><then><set name=utext><get index=u.Text></set></then>
+      <else><set name=utext><get name=u></set></else></if>
+     <input name=delete&utext; type="radio"><a href=edit_user.if?euser=&utext;><get name=utext></a> </repeat>       
       </td></if> </tr>
     <tr><th>Add:<br> (select to add)<td> <select multiple size=5 name=addusers>
     <get name=userlist></select>     

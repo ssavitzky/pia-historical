@@ -29,16 +29,6 @@
        <set index=u.username replace><get name=username form></set>
        <set index=u.userext replace><get name=userext form></set>
 
-       <if><get name=manager form>
-	 <then>
-	   <if><test match=&FORM.manager; exact><manager user=&uid;></test>
-	     <else>
-	       <!-- add 2  managers authorization list -->
-	       <set name=alist><user-info user=&FORM.manager;
-	       attribute=authlist></set>
-	       <set index=alist.users insert=-1><get name=euser></set>
-	     </else></if>
-	   </then></if>
 	   <!-- Saving new data to disk -->
 	   <save-data data=users>
 
@@ -54,8 +44,7 @@
  <table>
 <TR><TD>user-id: <TD><get name=uid>
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
-<TR> <TD>Manager:<TD><select name=manager><option><manager user=&uid></option>
- <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat> </select >
+<TR> <a href=show_auth_list.if>Manager:</a><TD><manager user=&uid><TD>Manager:<TD><select name=manager></TD></TR>
   <TR> <TD>Phone:<TD><input name="userext" size="7" value=&u.userext.Text;>
 </table>
 

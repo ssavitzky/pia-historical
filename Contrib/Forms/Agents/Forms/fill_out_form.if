@@ -10,6 +10,11 @@
 <read interform file="heading.inc" process>
 
 <tagset-load name=Form-agent-actors>
+
+<set name=uid><get trans name=AuthenticatedUser></set>
+<if> <get name=users agent key=&uid;> <then>
+
+
 <if><read interform file=&formtype;/&formtype;.if  info>  <then>
  <!-- fully specified form -->
  <set name=myform><read interform file=&formtype;/&formtype;.if process></set>
@@ -76,6 +81,13 @@
 
 </else>
 </if>
+</then>
+<else>
+Please  <a href="add_user.if">click here</a> to  register user information for <get name=uid>.
+
+</else></if>
+
+
 
 <hr>
  

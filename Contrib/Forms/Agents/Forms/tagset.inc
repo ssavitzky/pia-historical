@@ -200,7 +200,33 @@ index=userdat.username.Text></then><else><get name=value></else></if></actor>
     </if> 
  </actor>	
 
+<actor tag="add-user-to-authlist" description="adds USER to list of users for
+AUTHLIST" empty>
+<set name="newuser" local><get name=user element></set>
+<set name="myalist" local><get name=authlist element></set>
+<if><get name=myalist attr=tag>
+ <else><set name="myalist"><find-tag-with-id tag=authlist idattr=&myalist;
+ agentname=authlist></find-tag-with-id></set> </else></if>
+<set local name=myusers><get index=myalist.users></set>
+     <if> <get name=myusers> <then>
+     <set name=mycount>0</set>
+    <repeat list="&myusers;" entity=myu>
+   <if><get name=myu attr=tag><then>
+              </then>
+       <else>
+      <set index=myalist.users insert=&mycount; replace><user><get
+       name=myu></user></set>
+       </else></if>
+       <set name=mycount><sum digits=0> 1 &mycount;</sum></set>
+    </repeat>
+    </then>
+     <else> <set name=alist insert=-1><users></users></set></else></if>
+    <repeat list="&newuser;" entity=myu>
+       <set index=myalist.users insert=-1><user><get name=myu></user></set>
+    </repeat>
+</actor>
 
+ 
 <actor tag=show-pending empty  dscr="  show pending forms for USER">
  <set  name=value local><get element name=user></set>
  <show-inbox inbox=&value;>
@@ -970,8 +996,10 @@ list computing route bindings">
    </then></if>
    
    <if><get  index=myalist.users><then>
-     <set name=myusers><dummy><get  index=myalist.users.Text></dummy></set>
-     <repeat list=&myusers; entity=myu>
+     <set name=myusers><get  index=myalist.users></set>
+     <repeat list=&myusers; entity=u>
+     <if><get name=u attr=tag><then><set name=myu><get index=u.Text></set></then>
+      <else><set name=myu><get name=u></set></else></if>
        <set name=myc key=&myu;><get name=mybindings></set></repeat>
      </then></if>
        
@@ -1023,7 +1051,10 @@ list computing route bindings">
     attr=type></set><b><get name=thistype>: <get name=a></b>
   </repeat>
   <if> <get index=myalist.users><then>
-    <br>  Employees:   <repeat list=&myalist.users.Text; entity=myu>
+    <br>  Employees:   <repeat list=&myalist.users; entity=u>
+     <if><get name=u attr=tag><then><set name=myu><get index=u.Text></set></then>
+      <else><set name=myu><get name=u></set></else></if>
+
       <a href=edit_user.if?euser=&myu;><get name=myu></a></repeat>
     </then>
   </if>

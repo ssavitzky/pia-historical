@@ -18,15 +18,24 @@
  <set agent name=users key=&uid;><user>
  <userid><get name=uid></userid>
  <username><get form name=username></username>
- <userdept><get form name=userdept></userdept>
  <userext><get form name=userext></userext>
  <userpublickey> </userpublickey>
 </user></set>
+    <if><get name=manager form>
+	 <then>
+	       <set name=alist><user-info user=&FORM.manager;
+	       attribute=authlistid></set>
+	       <add-user-to-authlist authlist=&alist; user=&uid;>
+	       <!-- set index=alist.users insert=-1 --><!-- get name=euser -->
+	       <save-data data=authlist>
+	       <create-route-cache>
+	   </then></if>
+	   <!-- Saving new data to disk -->
+	   <save-data data=users>
+
  Thanks for registering.  If this information is correct, please <a
  href="register.if?user=&uid;"> click here</a> to complete registration by creating your digital key.
- <save-data data=users>
- <dept-add-member department=&FORM.userdept; member=&uid;>
- <save-data data=departments>
+
  </process>
 <h2> Registering new user</h2>
  <set name=u><get agent name=users key=&uid;></set>
@@ -35,9 +44,8 @@
 <TR><TD>user-id: <TD><get name=uid><input name="uid" type=hidden value=&uid;>
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
 
-<TR> <TD> <a href=show_depts.if>Department:</a><TD><select
-     name="userdept"><option><get index=u.userdept.Text></option> <repeat list=&AGENT.departments.keys;> <option><get name=li></option></repeat>
-</select>
+<TR> <TD> <a href=show_auth_list.if>Manager:</a><TD><select name=manager><option><manager user=&uid></option>
+ <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat> </select >
 <TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
 </table>
 <input type="SUBMIT" value="Register User">
