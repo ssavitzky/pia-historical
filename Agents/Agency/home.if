@@ -13,23 +13,23 @@
     <th align=left nowrap nobr valign=center>
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
-<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+<tr height=2><td colspan=3 nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
 <tr nowrap nobr><th align=left><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
     <th>
-    <th align=left><font face=helvetica>&agentName home page</font>
+    <th align=left><font face=helvetica>&agentName home page
 for
 <if><test exact  match='pia'><get env name="USER"></test>
     <then> this </then>
-    <else> &piaUSER;'s</else></if>
-<tr><th><th><th align=left>
+    <else> &piaUSER;'s</else></if></font>
+<tr><th><th><th align=left><font face=helvetica>
 <if><test exact match='pia'><get env name="USER"></test>
     <then>Peripheral Interface </then>
-    <else>Personal Information </else></if> Agency
+    <else>Personal Information </else></if> Agency</font>
 <td>
-<tr><th width=170 rowspan=5>
+<tr><th width=170 rowspan=5 valign=center>
 	<if><agent-running name="Logo">
 	    <then><img src="/Logo/A100.gif" height=100 width=111></then>
 	    <else>&agentName;</else>

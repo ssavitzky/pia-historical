@@ -9,7 +9,7 @@
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a>
     <th width=170 nowrap>
-<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+<tr height=2><td colspan=2 bgcolor="#000000" nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=340><br></tr>
 <tr nowrap nobr><th align=left><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
@@ -18,6 +18,15 @@
     <th align=left nowrap nobr valign=center><font face=helvetica>
         <a href="/"><img width=85 height=45 border=0 alt=PIA
 	    	         src="/Agency/Icons/pia45.gif"></a></font><br></tr>
+ <tr><th><th valign=top align=right width=170><font face=helvetica>
+	    <if><test exact match='pia'><get env name="USER"></test>
+		<then></then>
+		<else><a href="/My/">&piaUSER;'s</a> </else></if></font></th>
+	<th align=left valign=top><font face=helvetica>
+	<if><test exact match='pia'><get env name="USER"></test>
+	    <then>An Information Appliance</then>
+	    <else>Personal Information Agency</else>
+	</if></font></th> <br>
 <tr><th><br>
 </table>
 
@@ -31,17 +40,8 @@
 	</if><br></tr>
     </table>
   <td valign=top>
-    <table cellspacing=0 cellpadding=0 border=0>
+    <table cellspacing=0 cellpadding=0 border=0 valign=top>
 
-    <tr><th valign=top align=right width=170>
-	    <if><test exact match='pia'><get env name="USER"></test>
-		<then></then>
-		<else><a href="/My/">&piaUSER;'s</a> </else></if>
-	<th align=left><font face=helvetica>
-	<if><test exact match='pia'><get env name="USER"></test>
-	    <then>An Information Appliance</then>
-	    <else>Personal Information Agency</else>
-	</if></font> <br>
     <tr><th valign=top align=right width=170>
 	    <a href="/Agency/home.if"><b>Agency:</b></a>
 	<td valign=top>
@@ -108,7 +108,4 @@
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="http://rsv.ricoh.com/~steve/"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
 </body></html>

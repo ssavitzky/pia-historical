@@ -8,7 +8,7 @@
     <th align=left nowrap nobr valign=center>
         <a href="/"><img width=85 height=45 border=0
 	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></th></tr>
-<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+<tr height=2><td colspan=3  nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></td></tr>
 <tr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
