@@ -235,15 +235,21 @@ public class ContentFactory extends ContentHandler
     }
   }
   
-  /** create a content object base on mime type.
-   * If the association between mime type and its content class name does not exist, 
-   * try to load from a package base on the given mime type's parent.
+  /** Create a content object base on mime type.  If the association
+   *	between mime type and its content class name does not exist,
+   *	try to load from a package base on the given mime type's
+   *	parent.
    */
   public Content createContent(String mimeType, InputStream input)
   {
     Content c = null;
     String className = null;
-    
+    mimeType = mimeType.toLowerCase();
+
+    // === eliminate semicolon-separated attribute=value list.
+    int semi = mimeType.indexOf(';');
+    if (semi > 0) mimeType = mimeType.substring(0, semi);
+
     Pia.debug(this, "Inside createContent");
 
     Object o = contentTypeTable.at( mimeType );
@@ -253,7 +259,7 @@ public class ContentFactory extends ContentHandler
     }else{
       // class mapping is not in the table. make from package
       c = makeContentFromPackage( mimeType );
-      if ( c != null )
+      if ( c != null && cacheEntry != null )
 	// cache new entry
 	contentTypeTable.at( mimeType, cacheEntry );
     }
