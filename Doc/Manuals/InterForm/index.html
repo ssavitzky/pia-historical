@@ -165,24 +165,148 @@ actors) is called ``<dfn>evaluating</dfn>'' it.<p>
 
 <h3>Syntax</h3>
 
+The syntax of the InterForm language is basically that of HTML; more
+specifically it is derived from the SGML reference syntax, which it follows
+<em>exactly</em>.  Any InterForm can be parsed using an SGML parser (with an
+appropriate Document Type Definition).   Most HTML editors can handle
+InterForms; all that is needed is the ability to enter non-standard element
+tags.  Most HTML editors can do this, because companies like Netscape and
+Microsoft keep adding tags faster than the editor vendors can keep up.<p>
 
-<h3>Entities</h3>
+===<p>
 
 
 <h3>Elements</h3>
 
+===<p>
+
 
 <h3>Lists</h3>
 
+Several actors (for example, &lt;repeat&gt;) operate on lists: sequences of
+``items'' usually represented by the &lt;li&gt; element.  Lists function very
+much like <em>arrays</em> in conventional programming languages, or
+<em>sets</em> in database languages.<p>
+
+The following elements are treated as simple lists:
+<blockquote>
+  &lt;ul&gt;, &lt;ol&gt;, &lt;table&gt;, &lt;tr&gt;
+</blockquote>
+
+Note that a &lt;table&gt; is therefore a list of lists.
+In addition, a description list (&lt;dl&gt;) can be treated as a list of
+two-element (&lt;dt&gt;, &lt;dd&gt;) lists.<p>
+
+A string, especially an attribute, is turned into a list by splitting it
+on whitespace; the &lt;split&gt; actor can be used to split on any text
+pattern.<p> 
+
+<em>Any</em> sequence of tokens can be treated as a list, again by splitting
+it on whitespace.<p>
+
+
+<h3>Associations</h3>
+
+The following elements can be treated as <em>key</em>=<em>value</em>
+associations:
+
+<blockquote>
+  &lt;dt&gt;, &lt;table&gt;
+</blockquote>
+
+The key in a table is normally just the first item in the row, but rows with a
+blank first element (normally a &lt;th&gt;) are appended to the previous
+row.  Tables with labeled columns (usually indicated by an initial row of
+&lt;th&gt; elements) can be turned into <em>lists</em> of associations.<p>
+
+In addition, any string in the proper form can be used; pairs can be separated
+either by whitespace or ``<code>&amp;</code>'' characters (as in query
+strings).<p>
+
+Ordinary lists can be turned into associations by the &lt;associate&gt;
+actor, which associates them in pairs.<p>
+
+Any <em>element</em> can be turned into an association (of attributes and
+values), optionally with its tag and content associated with special keys,
+normally ``<code>-tag-</code>'' and ``<code>-content-</code>'', that cannot be
+mistaken for attributes. This is also done using the the &lt;associate&gt;
+actor.<p>
+
+Sets of associations are found in conventional programming languages as hash
+tables (AWK and Perl), association-lists (LISP), and tuples (relational
+database languages).<p>
+
+
+<h3>Entities</h3>
+
+
+<h3>Tagsets</h3>
 
 
 <h2>The <a name="standard_tagset">Standard Tagset</a></h2>
 
 
+<h2><a name="other_tagsets">Other Tagsets</a></h2>
+
+<h3>Safe</h3>
+
+The <b>Safe</b> tagset consists of the subset of the <b>Standard</b> tagset
+that affects only the file being processed.  It is, consequently, safe to use
+the <b>Safe</b> tagset on InterForm files owned by some other user, received
+in e-mail, or retrieved from elsewhere in the Web.  The DOFS agent uses the
+<b>Safe</b> tagset to process <code>index.if</code> files.<p>
+
+<h3>HTML</h3>
+
+The <b>HTML</b> tagset consists of exactly those tags and entities required
+to parse HTML.  No processing is done.  This tagset is usually augmented with
+tags that perform specific processing tasks such as extracting links,
+submitting or updating forms, or formatting.  Specifically,
+
+<h4>Extraction</h4>
+
+These tagsets are used for extracting specific types of data from a file.
+They are usually used with the &lt;file parse tagset=<em>whatever</em>&gt;
+actor.
+
+<dl>
+  <dt> <b>Extract-HREF</b>
+  <dd> extract all <code>href=</code> attributes, returning a list of
+       URL's pointing at pages linked to. 
+  <dt> <b>Extract-SRC</b>
+  <dd> extract all <code>src=</code> attributes, returning a list of
+       URL's pointing at images.
+  <dt> <b>Extract-Text</b>
+  <dd> extract all the text (content), returning a single string.
+  <dt> <b>Extract-Links</b>
+  <dd> Returns a list of URL/text pairs.
+</dl>
+
+<h4>Updating</h4>
+
+These tagsets are usually used with the &lt;file edit
+tagset=<em>whatever</em>&gt; actor to perform specific modifications to
+files. 
+
+<dl>
+  <dt> <b>Update-Form</b>
+  <dd> Updates the &lt;input&gt; tags in a form with values in the
+       ``&amp;query;'' entity.  If there are several forms in the document,
+       the correct one is selected by matching the names and values of
+       &lt;input type=submit&gt; and &lt;input type=hidden&gt; elements.
+</dl>
+
+<h4>Other Operations</h4>
+
+<dl>
+  <dt> <b>Submit-Forms</b>
+  <dd> Submits every form in the file.
+</dl>
+
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Dec 24 11:22:59 1996
+Last modified: Wed Jan  8 18:12:29 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
