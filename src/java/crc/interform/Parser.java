@@ -89,6 +89,17 @@ class Parser extends Input {
   public boolean done = false;
 
   /************************************************************************
+  ** Debugging:
+  ************************************************************************/
+
+  /** Debugging flag. */
+  boolean debug;
+
+  public final void debug(String s) {
+    if (debug) { System.err.print(s); }
+  }
+
+  /************************************************************************
   ** Input (pull) Interface:
   ************************************************************************/
 
@@ -96,12 +107,11 @@ class Parser extends Input {
    *	for more input to appear.
    */
   public SGML nextInput() {
-    SGML it;
+    SGML it = null;
 
     if (next != null) {		// There's one hanging fire, so return it.
       it = next;
       next = null;
-      return it;
     } else try {		// We'll have to do some I/O for this one.
 
       // Get a character if the last one was already eaten (last == 0).
@@ -110,18 +120,26 @@ class Parser extends Input {
       if (last == 0) last = in.read();
       if (last < 0) return null;
 
+      debug("'" + (char)last + "'");
+
       if (endString != null) {
 	it = getLiteral();
       } else {
 	it = getToken();
       }
       
-      return it;
-
       // Protect this section against IO exceptions and other road hazards.
-    } catch (Exception e) {}
+    } catch (IOException e) {}
 
-    return null; // === for now
+    if (!debug) return it;
+
+    if (it == null) {
+      debug("(=eof=)\n");
+    } else {
+      debug("("+(it.incomplete()<0? "/" : it.incomplete()>0? "\\" : "|")+
+	    it.tag()+")");
+    }      
+    return it;
   }
 
   /** Return true if there is no more input. */
@@ -158,10 +176,10 @@ class Parser extends Input {
   /** True for every character that is part of an identifier.  Does not
    *	distinguish the characters ('-' and '.') that are not officially
    *	permitted at the <em>beginning</em> of an identifier. */
-  static BitSet isIdent;
+  static BitSet isIdent = new BitSet();
 
   /** True for every character that is whitespace. */
-  static BitSet isSpace;
+  static BitSet isSpace = new BitSet();
   
   /** Initialize the identifier and whitespace BitSet's.  Since we are only 
    *	concerned with the SGML reference syntax, we don't have to make these 
@@ -186,7 +204,7 @@ class Parser extends Input {
    *	up in <code>last</code>.
    *
    *	@return true if at least one character is eaten. */
-  boolean eatText() throws IOException {
+  final boolean eatText() throws IOException {
     if (last == 0) last = in.read();
     if (last < 0) return false;
     if (last == '&' || last == '<') return true;
@@ -204,14 +222,14 @@ class Parser extends Input {
    *	<code>last</code>, and the string in <code>ident</code>.
    *
    *	@return true if at least one character is eaten.  */
-  boolean eatIdent() throws IOException {
-    last = in.read();
+  final boolean eatIdent() throws IOException {
+    if (last == 0) last = in.read();
     String id = "";
-    if (! isIdent.get(last)) return false;
+    if (last < 0 || ! isIdent.get(last)) return false;
     do {
       id += (char)last;
       last = in.read();
-    } while (isIdent.get(last));
+    } while (last >= 0 && isIdent.get(last));
     ident = id;
     return true;    
   }
@@ -221,16 +239,14 @@ class Parser extends Input {
    *	quote) is seen.
    *
    *	@return false if end-of-file is reached before a match. */
-  boolean eatUntil(int aCharacter, boolean checkEntities) throws IOException {
+  final boolean eatUntil(int aCharacter, boolean checkEntities)
+       throws IOException {
     last = in.read();
-    if (last < 0) return false;
-    if (checkEntities && last == '&') return false;
-    if (last == aCharacter) return true;
-    do {
+    while (last >= 0 && last != aCharacter
+	   && !(checkEntities && last == '&')) {
       buf.append((char)last);
       last = in.read();
-    } while (last >= 0 && last != aCharacter
-	     && !(checkEntities && last == '&'));
+    } 
     return last >= 0;    
   }
 
@@ -239,7 +255,8 @@ class Parser extends Input {
    *	tag) is matched.
    *
    *	@return false if end-of-file is reached before a match. */
-  boolean eatUntil(String aString, boolean checkEntities) throws IOException {
+  final boolean eatUntil(String aString, boolean checkEntities)
+       throws IOException {
 
     return false;
   }
@@ -247,14 +264,14 @@ class Parser extends Input {
   /** Starting at the next available character, append spaces to 
    *	<code>buf</code> until a non-blank character is reached.
    */
-  boolean eatSpaces() throws IOException {
+  final boolean eatSpaces() throws IOException {
     last = in.read();
     if (last < 0) return false;
     if (last <= ' ') return true;
-    do {
+    while (last >= 0 && last <= ' ') {
       buf.append((char)last);
       last = in.read();
-    } while (last >= 0 && last <= ' ');
+    }
     return last >= 0;    
   }
 
@@ -308,20 +325,19 @@ class Parser extends Input {
     return list;
   }
 
-  /** Get a value (after an attribute name inside a tag.
+  /** Get a value (after an attribute name inside a tag).
    *	Returns true if <code>last</code> is an equal sign and is 
    *	followed by either an identifier or a quoted string.
+   *	=== should really allow any URL-permissible chars. ===
    *	@return the value in <code>next</code>
    */
   boolean getValue() throws IOException {
     if (last != '=') return false;
 
-    last = 0;
-    if (eatIdent()) {
-      next = new Text(ident);
-      return true;
-    } else if (last == '\'' || last == '"') {
+    last = in.read();
+    if (last == '\'' || last == '"') {
       int quote = last;
+      debug("" + (char)last);
       StringBuffer tmp = buf;
       buf = new StringBuffer();
       Tokens list = new Tokens();
@@ -339,23 +355,28 @@ class Parser extends Input {
       next = list.isText()? (SGML)list.toText() : (SGML)list;
       buf = tmp;
       return true;
+    } else if (eatIdent()) {
+      next = new Text(ident);
+      debug(ident);
+      return true;
     } else {
-      // === maybe should try nonblanks
       return false;
     }
   }
 
-  /** Get a tag starting with <code>last</code> and return it in
+  /** Get a tag starting with <code>last='&amp;'</code> and return it in
    *	<code>next</code>.  If what follows is not, in fact, a valid
    *	tag, it returns false and leaves the bad characters appended
    *	to <code>buf</code>.  getTag is only called from getText. <p>
    *
    *	One could argue that it should allow space after the &lt;. */
   boolean getTag() throws IOException {
+      int tagStart = buf.length(); // save position in case we lose
+      buf.append("<");		// append the "<" that we know is there
+      last = 0;			// force eatIdent to read the next char.
 
     if (eatIdent()) {		// <tag...	start tag
-      // Save our position in buf in case we lose.
-      int tagStart = buf.length();
+      buf.append(ident);
 
       Token it = new Token(ident);
       String a; StringBuffer v;
@@ -363,24 +384,35 @@ class Parser extends Input {
       // Now go after the attributes.
       //    They have to be separated by spaces.
 
-      while (last >= ' ') {
+      while (last >= ' ' && last != '>') {
 	// === need to be appending the identifier in case we lose ===
 	eatSpaces();	
 	if (eatIdent()) {
 	  a = ident;
-	  if (getValue()) it.attr(a, next);
-	  else		  it.attr(a, new Tokens());
+	  buf.append(ident);
+	  debug(" "+a+"=");
+	  if (getValue()) it.addAttr(a, next);
+	  else		  it.addAttr(a, Token.empty);
 	}
       }
+      if (last != '>') return false;
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
+      it.incomplete = (byte)1;
       next = it;
       if (last >= 0) last = 0;
     } else if (last == '/') {	// </...	end tag
-      eatIdent();
-      next = new Token(ident);
-      next.incomplete((byte)-1);
+      buf.append("/"); last = 0;
+      eatIdent(); buf.append(ident);
+      // eatSpaces();
+      if (last != '>') return false;
+      Token it = new Token(ident);
+      it.incomplete = (byte)-1;
+      it.endTagRequired = 1;
+      next = it;
+      buf.setLength(tagStart);
+      if (last >= 0) last = 0;
     } else if (last == '!') {	// <!...	comment or declaration
       StringBuffer tmp = buf;
       buf = new StringBuffer();
@@ -431,8 +463,10 @@ class Parser extends Input {
    *
    *	It would not simplify the parser to return text in chunks,
    *	breaking it at each &amp; or &lt;, because we'd only have to
-   *	run the full test next time around and we'd have to save more
-   *	state in order to do it.*/
+   *	run the full test next time around.  On the other hand, it
+   *	might be useful to return words, punctuation, etc. as separate
+   *	tokens, and the interpretor might appreciate getting entities
+   *	separately .*/
   SGML getToken() {
     buf = new StringBuffer(256);
     SGML it = null;
@@ -443,6 +477,8 @@ class Parser extends Input {
     if (it == null) {		// If that failed,
       it = next;		// 	a tag or entity must be in next
       next = null;		// 	so clear next for next time.
+    } else {
+      // debug("/" + buf + "/");
     }
     return it;
   }

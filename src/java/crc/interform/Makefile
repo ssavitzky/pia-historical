@@ -7,6 +7,7 @@ TOPDIR=../../..
 
 FILES = \
 	Actor.java \
+	Filter.java \
 	Handler.java \
 	Input.java \
 	Interp.java \
@@ -15,6 +16,7 @@ FILES = \
 	Tagset.java \
 	Text.java \
 	Token.java \
+	TokenStream.java \
 	Tokens.java
 
 include $(TOPDIR)/makefiles/file.make
@@ -25,6 +27,8 @@ include $(TOPDIR)/makefiles/file.make
 
 Actor.class: Actor.java Token.java Tokens.java SGML.java \
 	Interp.java Handler.java
+
+Filter.class: Filter.java Interp.java 
 
 Handler.class: Handler.java Actor.java Interp.java SGML.java ../ds/Table.java
 
@@ -40,4 +44,5 @@ Token.class: Token.java Tokens.java SGML.java ../ds/List.java ../ds/Table.java
 
 Tokens.class: Tokens.java SGML.java 
 
-Text.class: Text.java SGML.java
+TokenStream.class: TokenStream.java Tokens.java 
+

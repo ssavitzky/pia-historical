@@ -169,7 +169,7 @@ public class Tokens implements SGML {
   public Text linkText(String tag) {
     Text t = new Text();
     for (int i = 0; i < nItems(); ++i) {
-      if (itemAt(i).tag() == tag) t.append(itemAt(i).contentText());
+      if (itemAt(i).tag().equals(tag)) t.append(itemAt(i).contentText());
     }
     return t;
   }

@@ -33,9 +33,10 @@ public class Tagset extends Token {
   static Table tagsets = new Table();
 
   /** Return a Tagset with a given name.
-   *	If one doesn't exist, it is created.
+   *	If it doesn't exist or the name is null, a new Tagset is created.
    */
   public static Tagset tagset(String name) {
+    if (name == null) return new Tagset();
     Tagset t = (Tagset)tagsets.at(name);
     if (t == null) {
       t = new Tagset(name);
@@ -49,16 +50,16 @@ public class Tagset extends Token {
   ************************************************************************/
 
   /** Table of actors by name. */
-  public Table actors;
+  public Table actors = new Table();
 
   /** List of passive actors. */
-  public List passive;
+  public List passive = new List();
 
   /** Table of local entity definitions. */
-  public Table entities;
+  public Table entities = new Table();
 
   /** Table of syntax actors. */
-  public Table syntax;
+  public Table syntax = new Table();
 
   /** Names of all actors. */
   public String[] actorNames() {
@@ -99,7 +100,7 @@ public class Tagset extends Token {
     String name = a.name();
     String tag  = a.tag();
 
-    if (tag == "-element-") {
+    if (tag.equals("-element-")) {
       syntax.at(name, a);
     } else {
       actors.at(name, a);

@@ -19,13 +19,16 @@ import crc.interform.Text;
  *	a tag of null and is equivalent to a Tokens list.  A Token with 
  *	a tag of "&amp;" is an entity reference. <p>
  *
- *	Attributes can be retrieved either by name (forced to lowercase)
- *	or by the order received.  Attributes that are defined but have
- *	no associated value have an empty list for their value.
+ *	Attributes can be retrieved either by name (forced to
+ *	lowercase) or by the order received.  Attributes that are
+ *	defined but have no associated value have an empty token for
+ *	their value; a static constant is provided for the purpose.
  *
- *	@see Tokens.
- */
+ *	@see Tokens.  */
 public class Token implements SGML {
+
+  /** An empty token, used as the value for an attribute with no value */
+  public static final Token empty = new Token();
 
   /************************************************************************
   ** Components:
@@ -59,7 +62,7 @@ public class Token implements SGML {
   List attrNames = null;
 
   /** Attribute values, in order defined.  */
-  Tokens attrValues = null;
+  List attrValues = null;
 
 
   /************************************************************************
@@ -109,12 +112,12 @@ public class Token implements SGML {
 
   /** Return true for a list of tokens. */
   public boolean isList() {
-    return tag == null;
+    return tag == null && incomplete == 0;
   }
 
   /** Test whether the Token consists only of text. */
   public boolean isText() {
-    return tag == "";
+    return tag.equals("");
   }
 
   /** Return true for an empty list or a token with no content. */
@@ -124,12 +127,12 @@ public class Token implements SGML {
 
   /** Return true if the token has an end tag */
   public boolean hasEndTag() {
-    return incomplete < 0 && (! isEmpty() || endTagRequired != 0);
+    return incomplete < 0 || ! isEmpty() || endTagRequired > 0;
   }
 
   /** Return the name of the entity to which this is a reference. */
   public String entityName() {
-    return (tag == "&")? content.itemAt(1).toString() : null;
+    return (tag.equals("&"))? content.itemAt(1).toString() : null;
   }
 
 
@@ -155,11 +158,11 @@ public class Token implements SGML {
     if (attrs == null) {
       attrs = new Table();
       attrNames = new List();
-      attrValues= new Tokens();
+      attrValues= new List();
     }
     if (! attrs.has(name)) {
       attrNames.push(name);
-      attrValues.append(value);
+      attrValues.push(value);
     }
     attrs.at(name, value);
     return this;
@@ -178,10 +181,10 @@ public class Token implements SGML {
     if (attrs == null) {
       attrs = new Table();
       attrNames = new List();
-      attrValues= new Tokens();
+      attrValues= new List();
     }
     attrNames.push(name);
-    attrValues.append(value);
+    attrValues.push(value);
     attrs.at(name, value);
     return this;
   }
@@ -198,14 +201,14 @@ public class Token implements SGML {
 
   /** Retrieve an attribute's value by its index in attrNames */
   public SGML attrValueAt(int i) {
-    return (i >= nAttrs())? null : attrValues.itemAt(i);
+    return (i >= nAttrs())? null : (SGML)attrValues.at(i);
   }
 
   /** Change an attribute's value by its index in attrNames.  Both the 
    *	value in attrValues and the one in the attrs Table are changed.
    */
   public Token attrValueAt(int i, SGML value) {
-    attrValues.itemAt(i, value);
+    attrValues.at(i, value);
     attr((String)attrNames.at(i), value);
     return this;
   }
@@ -344,17 +347,15 @@ public class Token implements SGML {
    */
 
   public Text startTag() {
-    if (tag == null || tag == "") {
+    if (tag == null || tag.equals("") || specialFormat) {
       return null;
-    } else if (tag == "&") {
-      return new Text("&");
     } else {
       Text t = new Text("<" + tag);
       for (int i = 0; i < nAttrs(); ++i) {
 	t.append(" ");
 	t.append(attrNameAt(i));
 	SGML v = attrValueAt(i);
-	if (! v.isList() || ! v.isEmpty()) {
+	if (v != null && !(v.isList() && v.isEmpty())) {
 	  t.append("=");
 	  v.appendTextTo(t);
 	}
@@ -365,10 +366,8 @@ public class Token implements SGML {
   }
 
   public Text endTag() {
-    if (tag == null || tag == "") {
+    if (tag == null || tag.equals("") || specialFormat) {
       return null;
-    } else if (tag == "&") {
-      return new Text(";");
     } else {
       return new Text("</" + tag + ">");
     }
@@ -385,7 +384,7 @@ public class Token implements SGML {
   }
 
   public void appendTextTo(SGML t) {
-    if (isToken() && incomplete >= 0) t.append(startTag());
+    if (incomplete >= 0) t.append(startTag());
     if (content != null && incomplete == 0) content.appendTextTo(t);
     if (hasEndTag() && incomplete <= 0) t.append(endTag());
   }
@@ -421,66 +420,4 @@ public class Token implements SGML {
     return (content == null)? null : content.toToken();
   }
 
-
-/* ========================================================================
-
-=== Handlers omitted -- not used ===
-
-### Handlers:
-###	There are two kinds of handlers: enter and leave.  Both are
-###	called by the Interform Interpretor to perform semantic actions
-###	on an already-parsed subtree.
-
-=== as_HTML omitted -- use toText or toString
-
-=== traverse removed -- used only in Agent::create_request.  
-===	use simple recursive descent -- java doesn't do blocks well.
-
-#############################################################################
-###
-### Syntax:
-###
-###	...
-###	It's not clear what to do when we see an end tag for something
-###	that shouldn't need it.  We really need to get the full SGML
-###	parser running.
-
-@empty_tags = (	
-	       '!', '!--', '?', 
-	       'img', 'hr', 'br', 'link', 'input',
-
-	       ## The following are dubious; there's no good way to
-	       ##    handle implicit end tags yet.
-	        'p', # 'li', 'dt', 'dd',
-
-	       );
-
-
-%empty_elements = {};
-foreach $e (@empty_tags) {
-    $empty_elements{$e} = 1;
-}
-
-%internal_content_tags = ('!' => '',
-			  '!--' => '--',
-			  '?' => '',
-			  );
-
-sub needs_end_tag {
-    my ($self, $interp) = @_;
-
-    return 0 unless $self->tag;
-    return 0 if $self->{_endless};
-    (defined $empty_elements{$self->tag})? 0 : 1;
-}
-
-sub internal_content {
-    my ($self, $interp) = @_;
-
-    return 0 unless $self->tag;
-    return exists $internal_content_tags{$self->tag};
-}
-
-
-============================================================= */
 }

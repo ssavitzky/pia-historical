@@ -31,6 +31,9 @@ public class Interp {
    */
   State state;
 
+  /** Parser/interpretor state stack depth. */
+  int	depth;
+
   /** Entity table for this document. */
   Table entities;
 
@@ -45,6 +48,16 @@ public class Interp {
    */
   Input input;
 
+  /************************************************************************
+  ** Debugging:
+  ************************************************************************/
+
+  /** Debugging flag. */
+  boolean debug;
+
+  public final void debug(String s) {
+    if (debug) { System.err.print(s); }
+  }
 
   /************************************************************************
   ** Access to global state:
@@ -58,6 +71,7 @@ public class Interp {
     return entities;
   }
 
+
   /************************************************************************
   ** State stack operations:
   ************************************************************************/
@@ -66,6 +80,55 @@ public class Interp {
     State s = state;
     for ( ; level > 0 && s != null; --level) { s = s.next; }
     return s;
+  }
+
+  /** Pop the parse state stack.  (We actually leave the final state
+   *	on the stack and zap its token, to avoid null-reference
+   *	problems.)
+   * @return true if we did not pop the last state.  */
+  final boolean popState() {
+    if (state.next == null) {
+      state.token = null;
+      return false;
+    }
+    state = state.next;
+    depth--;
+    if (debug && depth != state.depth) debug("!!depth mismatch\n");
+    return true;
+  }
+
+  final void pushState() {
+    state = new State(state);
+    depth++;
+    if (debug && depth != state.depth) debug("!!depth mismatch\n");
+  }
+
+  /************************************************************************
+  ** Syntax Checking:
+  ************************************************************************/
+
+  /** Return true if we are currently nested inside an element with
+   *  the given tag. */
+  public final boolean insideElement(String tag) {
+    for (State s = state; s != null; s = s.next) {
+      if (tag.equals(s.tag())) return true;
+    } 
+    return false;
+  }
+
+  /** Return the tag of the Element the current token is nested inside of.
+   *	Looks at state.next, not state, because state contains
+   *	whatever token we are currently working on. */
+  public final String elementTag() {
+    return (state.next != null && state.next.token != null) ?
+      state.next.token.tag() : null;
+  }
+
+  /** Return true if there is an element with the given tag at the
+   *  given level in the stack (with zero being the top). */
+  public final boolean isElementAt(String tag, int level) {
+    State s = context(level);
+    return s != null && tag.equals(s.tag());
   }
 
   /************************************************************************
@@ -249,14 +312,16 @@ public class Interp {
    *	(token lists) and Token elements with a tag of ampersand.
    */
   public SGML expandEntities(SGML it) {
+    if (it == Token.empty) return it;
     if (it.isList()) {
       Tokens old = it.content();
+      if (old.nItems() == 0) return it;
       Tokens tl = new Tokens();
       for (int i = 0; i < old.nItems(); ++i) {
 	tl.append(expandEntities(old.itemAt(i)));
       }
       return tl;
-    } else if (it.tag() == "&") {
+    } else if (it.tag().equals("&")) {
       SGML v = getEntity(it.entityName());
       return (v == null)? it : v;
     } else {
@@ -322,228 +387,6 @@ public class Interp {
     return s;
   }
 
-
-/* ========================================================================
-
-
-   ===> nextInput needs to check need_start_tag, most likely.
-
-	do {
-	    $it = $self->next_input;
-	    return unless $it;
-	    if (is_list($it)) {
-		## The end of some tag's content.
-		if (ref $it->[0]) {
-		    $it = $it->[0]->end_input($it, $self);
-		} else {
-		    $it = $it->[0];
-		}
-		$incomplete = $it? -1 : 0;
-	    } elsif ($self->need_start_tag($it)) {
-		## Something that needs processing on its contents.
-		$it = $self->push_into($it);
-		$incomplete = 1;
-	    } else {
-		## Complete token which is either empty, a string, or quoted
-		$it = $self->expand_attrs($it) if ! $self->quoting;
-		$incomplete = 0;
-	    }
-	} until ($it);
-    }
-}
-
-
-sub need_start_tag {
-    my ($self, $it) = @_;
-
-    ## Return true if we need to generate a start tag for $it.
-    ##	  We only need a start tag (processed with $incomplete=1)
-    ##	  if the token needs an end tag, and only if it's not being
-    ##	  quoted (in which case we won't be doing anything to it).
-
-    return 0 unless ref $it;
-    return 0 if $self->quoting;
-    return 0 unless $it->needs_end_tag($self);
-    return 1;
-}
-
-
-============================================================= */
-
-  /************************************************************************
-  ** Pushing Input:
-  ************************************************************************/
-
-  /** Start work on an HTML element.  
-   *	  If we are expecting more input, push the element onto the
-   *	  stack.  Otherwise, handle it appropriately for a completed
-   *	  element.
-   */
-  public void startIt(SGML t) {
-
-  }
-
-  /** End an element with a given tag.
-   *	  The tag is optional.  If equal to "", it pops a single item;
-   *	  if null, it pops the entire stack.
-   */
-  public void endIt(String tag) {
-
-  }
-
-/* ========================================================================
-
-sub start_it {
-    my ($self, $it) = @_;
-
-
-    my $syntax = $self->tagset->syntax;
-    my $tag = $it->tag;
-    while ($self->implicit_end($tag)) {
-	$self->end_it('', 'one');
-    }
-
-    $self->resolve($it, $it->needs_end_tag);
-    return;
-
-    ## === doesn't work ===
-    my $elt = $syntax->{$tag};
-    if (ref $elt && $elt->attr('empty')) {
-	$self->resolve($it, 0);
-    } else {
-	$self->resolve($it, 1);
-    }
-}
-
-sub start_tag {
-    my ($self, $tag, $attrs) = @_;
-
-    ## Start tag.
-    ##	The tag and attribute names have been lowercased.
-
-    my $it = IF::IT->new($tag);
-    my ($attr, $val);
-    while (($attr, $val) = splice(@$attrs, 0, 2)) {
-	$val = $self->expand_entities($val) unless $self->quoting;
-	$it->attr($attr, $val);
-	print " $attr=$val " if $main::debugging>1;
-    }
-    $self->start_it($it);
-}
-
-sub end_it {
-    my ($self, $tag, $one) = @_;
-
-    ## End an element.
-    ##	  The tag is optional.  If $one is true, only pop one item
-    ##	  whether or not it matches.  With no arguments, it pops the
-    ##	  entire stack.
-
-    my $dstack = $self->dstack;
-    my $cstack = $self->cstack;
-    my $it, $t;
-    print " </$tag> " if $main::debugging > 1;
-    while (defined($it = pop(@$dstack))) {
-	my $was_parsing = $self->parsing;
-	$self->state(pop(@$cstack));
-	$t = $it->tag;
-	$self->resolve($it, $was_parsing? 0 : -1);
-	return if ($t eq $tag) or $one;
-    }    
-}
-
-### stolen from HTML::TreeBuilder === should be in Tagset.pm ===
-
-# Elements that should only be present in the header === not used
-%isHeadElement = map { $_ => 1 } qw(title base link meta isindex script);
-
-# Elements that should only be present in the body === not used
-%isBodyElement = map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6
-				    p div pre address blockquote
-				    xmp listing
-				    a img br hr
-				    ol ul dir menu li
-				    dl dt dd
-				    cite code em kbd samp strong var dfn strike
-				    b i u tt small big
-				    table tr td th caption
-				    form input select option textarea
-				    map area
-				    applet param
-				    isindex script
-				   ),
-                          # Also known are some Netscape extentions elements
-                                 qw(wbr nobr center blink font basefont);
-
-# The following elements must be directly contained in some other
-# element than body.
-
-%isPhraseMarkup = map { $_ => 1 } qw(cite code em kbd samp strong var b i u tt
-				     a img br hr
-				     wbr nobr center blink
-				     small big font basefont
-				     table
-				    );
-
-%isList         = map { $_ => 1 } qw(ul ol dir menu dl);
-%isTableElement = map { $_ => 1 } qw(tr td th caption);
-%isInTableRow   = map { $_ => 1 } qw(td th caption);
-%isFormElement  = map { $_ => 1 } qw(input select option textarea);
-
-%notP           = map { $_ => 1 } qw(p h1 h2 h3 h4 h5 h6 pre textarea);
-%notList	= map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6);
-
-sub in_token {
-    my ($self) = @_;
-
-    ## Return the token we are inside of.
-    ##	 === used only in Actors.pm to get context for element and attr. ===
-    
-    return $self->dstack->[-1];
-}
-
-
-sub implicit_end {
-    my ($self, $tag) = @_;
-
-    ## Test for implicit end tag.
-    ##	  returns true if $tag implicitly ends whatever is on the stack
-    
-    my $in_it = $self->dstack->[-1];
-    return unless defined $in_it;
-    my $in = $in_it->tag;
-    print " implicit_end $tag in $in?\n" if $main::debugging > 1;
-
-    ## This needs to be done with syntax, but for now we'll ad-hoc it.
-
-    # Handle implicit endings and insert based on <tag> and position
-    if ($tag eq 'p' || $tag =~ /^h[1-6]/ || $tag eq 'form') {
-	# Can't have <p>, <h#> or <form> inside these
-	return $notP{$in};
-    } elsif ($isList{$tag}) {
-	# Can't have lists inside <h#>
-	return $notList{$in};
-    } elsif ($tag eq 'li') {
-	print "li inside $in\n" if $main::debugging > 1;
-	return $in eq 'li';
-	## === can't handle li outside list.
-    } elsif ($tag eq 'dt' || $tag eq 'dd') {
-	return $in eq 'dt' || $in eq 'dd';
-	## === can't handle li outside list.
-    } elsif ($isFormElement{$tag}) {
-	if ($tag eq 'option') {
-	    # return unless $ptag eq 'select';
-	    return $in eq 'option';
-	}
-    } elsif ($isTableElement{$tag}) {
-	return $isInTableRow{$in} || ($tag eq 'tr' && $in eq 'tr');
-    } elsif ($isPhraseMarkup{$tag}) {
-	## should insert missing <p> after 'body'
-    }
-    return 0;
-}
-
-============================================================= */
   /************************************************************************
   ** The Resolver (interpretor) itself:
   ************************************************************************/
@@ -554,8 +397,8 @@ sub implicit_end {
    *	stack and processes them.  This allows the interpretor to be
    *	used either in ``push'' or in ``pull'' mode.
    */
-  public final void resolve(SGML it) {
-    if (it == null) { it = nextInput(); }
+  public final void resolve(SGML token) {
+    SGML it = (token == null)? nextInput() : token;
 
     /* Loop on incoming tokens.  This and "incomplete" used to be passed 
      *	as function arguments; it's better to use the input stack.
@@ -563,69 +406,109 @@ sub implicit_end {
     for ( ; it != null; ) {
       byte incomplete = it.incomplete();
 
+      debug(" ["+(incomplete<0? "/" : incomplete>0? "\\" : "")+it.tag()+"]");
+      
       if (incomplete < 0) {
-	/* We just popped an end tag. 
-	 *	Pop the stack, marking the token we find there as
+	/* We just got an end tag. 
+	 *	Pop the parse stack, marking the token we find there as
 	 *	complete if we were actually parsing, otherwise change
 	 *	it to an end tag.  (It will still have its attributes.)
 	 */
-	boolean was_parsing = state.parsing;
-	state = state.next;
-	it = state.token;
-	incomplete = (byte)(was_parsing? 0 : -1);
-	it.incomplete(incomplete);
+	String tag = it.tag();
+	if (tag == null) {
+	  /* End of file -- end whatever's open */
+	  // === not clear what to do here.
+	  debug("eof ");
+	  if (depth > 0) pushInput(it);
+	} else if (tag.equals("") || tag.equals(elementTag())) {
+	  /* just end the current element */
+	  debug("current ");
+	} else if (insideElement(tag)) {
+	  /* End the current element, but keep the tag */
+	  debug("inside ");
+	  pushInput(it);
+	} else {
+	  /* Unmatched end tag.  Discard it. */
+	  debug("unmatched\n");
+	  it = null;
+	}
+	if (it != null) {
+	  boolean was_parsing = state.parsing;
+	  if (! popState()) {
+	    debug("Stack empty.\n");
+	    return; 		// We're done.
+	  }
+	  it = state.token;
+	  incomplete = (byte)(was_parsing? 0 : -1);
+	  if (it != null) it.incomplete(incomplete);
+	}
       } else if (state.quoting == 0) {
+	/* At this point even empty tokens are marked as start tags,
+	 *    in order to make expandAttrs suppress the copy.
+	 */
+	// === worry about that.  Add checkForSyntax? ===
 	it = expandAttrs(it);
+	state.token = it;
       }
-	
-      /* At this point even empty tokens are marked as start tags,
-       *    in order to make expandAttrs suppress the copy.
-       */
-      // === worry about that.  Add checkForSyntax? ===
 
-      state.token = it;
-
-      // print " (" . (ref($it)? $it->tag : "...") . " $incomplete) " if $main::debugging > 1;
-      
       if (incomplete > 0) {
 	/* Start tag.  Check for interested actors.
 	 *	keep track of any that register as handlers.
 	 */
 	state.handlers = new List();
-	state = new State(state);
+	pushState();		// state = new State(state);
+	state.token=it;
+
+	debug("depth="+depth+" ");
+	debug("start ");
+
 	checkForInterest(it, incomplete);
 
 	it = state.token;	// See if any actor has modified the token
 	if (it == null) {
 	  // Some actor has deleted the token: pop the stack.
-	  state = state.next;
+	  popState();		// state = state.next;
+	  debug("deleted\n");
 	} else if (it.incomplete() == 0) {
 	  // Some actor has marked it as finished: pop it.
-	  state = state.next;
+	  debug("completed\n");
+	  popState();		// state = state.next;
 	  continue;
 	} else {
 	  // Nothing happened; it stays pushed.
 	  //	Clean out the state for the content.
+	  debug("pushed\n");
 	  state.variables = null;
 	  state.handlers = new List();
 	  if (state.passing) passToken(it);
 	}
-      } else {
+      } else if (it != null) {
 	/* End tag or complete token. */
+	debug("depth="+depth+" ");
+	debug(it.incomplete()<0?"end " : "comp ");
 	checkForInterest(it, incomplete);
 	checkForHandlers(it);
 
-	it = state.token;
+	//it = state.token;
 	if (it != null) {
+	  debug("passed\n");
 	  if (state.parsing) pushToken(it);
 	  if (state.passing) passToken(it);
+	} else {
+	  debug("deleted\n");
 	}
       }
 
-      /* Get another token.  Do it here rather than in the for loop
-       *    so that a "continue" above will keep the token that's there. 
+      /* Get another token, unless called to resolve a single token.
+       *    Do it here rather than in the for loop so that a
+       *    "continue" above will keep the token that's there.  
        */
-      it = nextInput();
+      it = (token == null)? nextInput() : null;
+    }
+
+    if (token == null) {
+      debug("No more input\n");
+      /* There is no more input */
     }
   }
 
@@ -683,7 +566,7 @@ sub implicit_end {
   /** Flush the interpretor's input queue, running it to completion.
    */
   public void flush() {
-    endIt(null);
+    resolve(Token.endTagFor(null));
   }
 
   /* Step: undefined; may not be needed. */
@@ -758,38 +641,29 @@ sub implicit_end {
   ** Constructors:
   ************************************************************************/
 
-/* ========================================================================
+  public Interp() {
+    state = new State();
+    setParsing();
+    output = new Tokens();
+  }
 
-%kludge = ('tagset'  =>1,	# attributes we need to set directly
-	   'entities'=>1);
+  public Interp(Tagset tagset, Table entities, boolean parse) {
+    state = new State();
+    state.tagset = tagset;
+    output = new Tokens();
+    this.entities = entities;
+    if (parse) setParsing(); else setPassing();
+  }
 
-sub new {
-    my ($class, @attrs) = @_;
-    my $self = IF::Parser->new;
+  public Interp(Tagset tagset, Table entities, Input in, Tokens out) {
+    state = new State();
+    state.tagset = tagset;
+    output = (out != null)? out : new Tokens();
+    this.entities = entities;
+    setPassing();
+    if (in != null) pushInput(in);
+  }
 
-    $self->{_dstack} =  [];	# The stack of items under construction.
-    $self->{_cstack} =  [];	# The control stack.
-    $self->{_out_queue} = DS::Tokens->new(); # a queue of tokens to be output.
-    $self->{_in_stack} =  [];	# a stack of tokens to be input.
-    $self->{_state} = {};	# A ``stack frame''
-
-    bless $self, $class;
-
-    my $attr, $val;
-    while (($attr, $val) = splice(@attrs, 0, 2)) {
-	$val = 1 unless defined $val;
-	if ($kludge{$attr}) {
-	    $self->$attr($val);
-	} else {
-	    $self->{_state}->{"_$attr"} = $val;
-	}
-	print "  $attr = $val\n" if $main::debugging > 1;
-    }
-
-    $self;
-}
-
- ======================================================================== */
 }
 
 /**
@@ -799,7 +673,7 @@ sub new {
  */
 class State {
   SGML	token;
-  List	handlers;
+  List	handlers = new List();
   Table variables;
 
   boolean passing;
@@ -807,16 +681,25 @@ class State {
   boolean skipping;
   boolean streaming;
   int quoting;
+  int depth;
 
   boolean hasLocalTagset;
   Tagset tagset;
 
+  /** Tag of the current token */
+  final String tag() {
+    return (token == null) ? null : token.tag();
+  }
+
   /** Link to previous state */
   State next;
 
+  /** Default constructor */
   State() {
+    depth=0;
   }
 
+  /** Construct from a previous state. */
   State(State s) {
     token 	= s.token;
     handlers 	= s.handlers;
@@ -828,7 +711,7 @@ class State {
     quoting 	= s.quoting;
     hasLocalTagset = s.hasLocalTagset;
     tagset 	= s.tagset;
-
+    depth	= s.depth+1;
     next 	= s;
   }
 }
