@@ -849,14 +849,14 @@ public class Pia {
 
 	  zFileMapping.put( k.toLowerCase(), v.toLowerCase() );
 	}
-
       }
     } catch (FileNotFoundException ex) {
-      zFileMapping.put("html", "text/html");
-      zFileMapping.put("gif", "image/gif");
     } catch (IOException exp){
-      zFileMapping.put("html", "text/html");
-      zFileMapping.put("gif", "image/gif");
+    } finally{
+      if (zFileMapping.size() == 0){
+	zFileMapping.put("html", "text/html");
+	zFileMapping.put("gif", "image/gif");
+      }
     }
 
    instance.piaFileMapping = zFileMapping;
