@@ -207,6 +207,12 @@ public class Handler implements java.io.Serializable {
     return true;
   }
 
+  /** Legacy action: return a NodeList. */
+  protected boolean putList(crc.dps.Output out, crc.dom.NodeList nl) {
+    crc.dps.aux.Copy.copyNodes(nl, out);
+    return true;
+  }
+
   /** Legacy action: return a string. */
   protected boolean putText(crc.dps.Output out, String s) {
     out.putNode(new crc.dps.active.ParseTreeText(s));
