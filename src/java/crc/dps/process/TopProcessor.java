@@ -7,6 +7,7 @@ package crc.dps.process;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Enumeration;
 import java.text.DateFormat;
 
 import java.io.PrintStream;
@@ -23,7 +24,9 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
 import crc.dom.NodeList;
+
 import crc.ds.List;
+import crc.ds.Tabular;
 
 /**
  * A top-level Processor, implementing the TopContext and Processor
@@ -289,9 +292,22 @@ public class TopProcessor extends BasicProcessor implements TopContext
     return s;
   }
 
+  /** Make an entity-table entry for a lookup table. */
+  protected void define(String n, Tabular v) {
+    getLocalNamespace().setBinding(n, new NamespaceWrap(n, v));
+  }
+
   /** Make an entity-table entry for a String. */
   protected void define(String n, Object v) {
-    setEntityValue(n, Create.createNodeList(v.toString()), false);
+    if (v == null)
+      setEntityValue(n, new ParseNodeList(), false);
+    else
+      setEntityValue(n, Create.createNodeList(v.toString()), false);
+  }
+
+  /** Make an entity-table entry for a List. */
+  protected void define(String n, Enumeration v) {
+    setEntityValue(n, new ParseNodeList(v), false);
   }
 
   static List dayNames = List.split("Sunday Monday Tuesday Wednesday"

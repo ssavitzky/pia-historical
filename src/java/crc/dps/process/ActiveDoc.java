@@ -100,6 +100,9 @@ public class ActiveDoc extends TopProcessor {
   public void initializeLegacyEntities() {
     Transaction transaction = getTransaction();
     if (transaction != null) {
+      define("TRANS", transaction);
+      //define("HEADERS",transaction.getHeaders());
+
       URL url = transaction.requestURL();
       if (url != null) {
 	define("url", transaction.requestURL().toString());
@@ -108,10 +111,10 @@ public class ActiveDoc extends TopProcessor {
       // form parameters might be either query string or POST data
       if(transaction.hasQueryString()){
         define("urlQuery",  transaction.queryString());
-	define("FORM", new NamespaceWrap("FORM", transaction.getParameters()));
+	define("FORM", transaction.getParameters());
       } else {
 	define("urlQuery",  "");
-	define("FORM", new NamespaceWrap("FORM", new Table()));
+	define("FORM", new Table());
       }
       // if no parameters this is an empty table
 
@@ -129,9 +132,9 @@ public class ActiveDoc extends TopProcessor {
 	  define("transAgentPath", "/"+atype+"/"+aname);
 	}
       } else {
-	define("transAgentName", null);
-	define("transAgentType", null);
-	define("transAgentPath", null);
+	define("transAgentName", (Object)null);
+	define("transAgentType", (Object)null);
+	define("transAgentPath", (Object)null);
       }
     }
 
@@ -159,14 +162,14 @@ public class ActiveDoc extends TopProcessor {
     }
 
     try {
-      define("AGENT", new NamespaceWrap("AGENT", (Tabular)agent));
+      define("AGENT", (Tabular)agent);
     } catch (Exception e) {
     }
 
-   define("agentNames", new ParseNodeList(resolver.agentNames()));
+   define("agentNames", resolver.agentNames());
 
    define("entityNames", "");
-   define("entityNames", new ParseNodeList(entities.entityNames()));
+   define("entityNames", entities.entityNames());
   }
 
   /************************************************************************
