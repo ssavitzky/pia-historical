@@ -42,7 +42,7 @@
  </else>
 
 </if>
- <write file=&myfile;><get name=newpending></write>
+ <write file=&myfile; append><get name=newpending></write>
  <set name=pending><get name=newpending></set>
   </process>
 <h2> Pending forms for <get name=user></h2>
@@ -57,7 +57,7 @@
  keep all unselected forms on your pending list)<br>
   <b>or</b> <input type="SUBMIT" value="Keep" name=buttonaction> selected
   forms (and remove all unselected forms from your pending list).
- Forms will be removed from your pending list will.  They will remain on the
+ Forms will be removed from your pending list.  They will remain on the
   system, but will not be routed to any other users.
  </form>
 

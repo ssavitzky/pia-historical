@@ -69,7 +69,13 @@ as dd value -->
 
 <actor tag=save-data empty desc="save DATA from agent into file DATA.dat">
 <set local name=dataname><get element name=data></set>
-<write file=&dataname;.dat process><get agent name=&dataname;></write>
+<if><read file=&dataname;.lck info> <then> <h2> &dataname; file is LOCKED
+</h2>Please  report this error</then> <else>
+<write file=&dataname;.lck>Lock file for &dataname; on &date;</write>
+<file name=&dataname;.dat dst=&dataname;.bak rename></file>
+<write file=&dataname;.dat><get agent name=&dataname;></write>
+<file file=&dataname;.lck remove></file>
+</else> </if>
 </actor>
 
 <!-- tags for dealing with departments -->	 
@@ -86,7 +92,7 @@ as dd value -->
  <set local name=dept><get element name=department></set>
  <set local name=mem><get element name=member></set>
  <set local name=d><get agent name=departments key=&dept;></set>
- <set local name=newd><dept> </dept></set>
+ <set local name=newd><department> </department></set>
   <repeat list=&d.-; entity=myel> <if><test match=deptmembers><get name=myel attr=tag></test> <then></then> <else><set name=newd insert=-1><get name=myel></else> </if> </repeat>
  <set name=newm><deptmembers> </deptmembers></set>
  <repeat list=&d.deptmembers.-; entity=myel><if><test match=&mem; exact><get index=myel.Text></test> <then></then> <else><set name=newm insert=-1>&myel;</else> </if> </repeat>

@@ -6,9 +6,11 @@
 <read interform file="heading.inc" process>
 
 <tagset-load name=Form-agent-actors>
- <set name=uid><get trans name=AuthenticatedUser></set>
-<if-in-group group=admin><if><get form name=uid><then>
-<set name=uid><get form name=uid></set></then></if>
+<if><get form name=uid><then>
+<set name=uid><get form name=uid></set></then>
+<else> <set name=uid><get trans name=AuthenticatedUser></set></else>
+</if>
+<if-in-group group=admin>
 </if-in-group>
 
 <form action="&url;" process copy method=post>
@@ -16,7 +18,6 @@
  <set agent name=users key=&uid;><user>
  <userid><get name=uid></userid>
  <username><get form name=username></username>
- <usermanager><get form name=usermanager></usermanager>
  <userdept><get form name=userdept></userdept>
  <userext><get form name=userext></userext>
  <userpublickey> </userpublickey>
@@ -24,7 +25,7 @@
  Thanks for registering.  If this information is correct, please <a
  href="register.if?user=&uid;"> click here</a> to complete registration by creating your digital key.
  <save-data data=users>
- <dept-add-member dept=&FORM.userdept; user=&uid;>
+ <dept-add-member department=&FORM.userdept; member=&uid;>
  <save-data data=departments>
  </process>
 <h2> Registering new user</h2>
@@ -33,11 +34,10 @@
  <table>
 <TR><TD>user-id: <TD><get name=uid><input name="uid" type=hidden value=&uid;>
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
-<TR><TD> Manager:<TD><select name="usermanager">
- <option>&u.usermanager.Text;</option>
- <repeat list=&AGENT.users.keys;> <option><get name=li></option></repeat>
+
+<TR> <TD> <a href=show_depts.if>Department:</a><TD><select
+     name="userdept"><option><get index=u.userdept.Text></option> <repeat list=&AGENT.departments.keys;> <option><get name=li></option></repeat>
 </select>
-<TR> <TD> Department:<TD><input name="userdept" size="10" value=&u.userdept.Text;>
 <TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
 </table>
 <input type="SUBMIT" value="Register User">

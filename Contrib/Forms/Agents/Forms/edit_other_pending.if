@@ -1,0 +1,128 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; pending </title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+ 
+ <if><get form name=uid> <then><set name=user><get form name=uid></set></then>
+ <else><set name=user><get trans name=AuthenticatedUser></set></else></if>
+<set entity name=title> Pending forms for &user;</set>
+<read interform file="heading.inc" process>
+ 
+<tagset-load name=Form-agent-actors>
+
+ <if> <test match=&user; exact><get trans name=AuthenticatedUser></test> <then>
+ <set name=allow>true</set></then></if>
+<if-in-group group=admin><set name=allow>true</set></if-in-group>
+ <set name=myfile>users/&user;.html</set>
+ <if><get name=allow> <then>
+ <set name=pending><read file="&myfile;"  process></set>
+ <set name=pending><b><get name=pending findall=a></b></set>
+ <if> <test positive> <get name=pending size></test> <then>
+ <form action="&url;" process method=post copy>
+  <process copy>
+
+ <file name=&myfile; dst=.temp.&user;.pending rename base=&usrDIR;/&agentName;/></file>
+ <if> <test match=reroute><get form name=buttonaction></test>
+ <then>
+  <set name=newpending><b>  </b></set>
+  <set name=reroute><dummy>  </dummy></set>
+  <repeat list=&pending; entity=myform>
+  <set name=furl><get name=myform attr=href></set>
+  <if><get form name=&furl;> <then><set name=reroute insert=-1>&furl;</set></then>
+
+  <else><set name=newpending insert=-1><a href=&furl;>&furl;</a> </set></else>
+  </if>
+  </repeat>
+ 
+
+<!-- reroute specified forms -->
+  <repeat list=&reroute; entity=aurl>
+    <set name=theform><read file=&aurl; process></set>
+     <set name=formhead><get name=theform findall=formhead></set>
+     <set name=formtype><get index=formhead.formtype.Text></set>
+     <set name=formuser><get index=formhead.formoriginator.Text></set>
+     <set name=formroutefile><subst match="\.html " result=".route.html"><get
+     name=aurl> </set>
+
+ <!-- setup variables for processing route -->
+    <set name=myuser><get name=formuser></set>
+  <!-- ignoring variables in form for now -->
+
+     <process-route><read process file="&formtype;/route.inc"
+     interform></process-route>
+    <br> New route for &aurl; is:
+    <get name=routeobject>
+    <br> saving to <get name=formroutefile><p>
+    <write file="&formroutefile;">&routeobject;</write>
+
+   <!-- Find the first user who has not signed -->
+   <set name=routeusers><get name=routeobject findall=routeuser></set>
+   <set name=signed> <read file=&aurl;.sig process></set>
+<set name=signers><dummy><get name=signed findall=signer></dummy></set>
+    <set name=donesig><dummy>
+    <repeat list=&signers;><get index=li.Text></repeat></dummy></set>
+   
+   <set name=nextsigner></set>
+    <repeat list=&routeusers; entity=r>
+  
+     <if><get name=nextsigner> <then></then> <else>
+     <set name=signed>false</set>
+     <repeat list=&donesig; entity=s>
+        <if><test match=&r.Text; exact><get name=s></test><then><set
+        name=signed>true</set> </then></if>
+     </repeat>
+        <if><test match=false><get name=signed></test> <then><set
+        name=nextsigner>&r.Text;</set></then><else> Already signed by &r.Text;</else> </if>
+     </else> </if>
+    </repeat>
+    Adding &aurl; to pending list for &nextsigner;
+    <notify-user user=&nextsigner; form=&aurl;>
+    
+  </repeat>
+ </then>
+ <else>
+  <set name=newpending><b>
+  <repeat list=&pending; entity=myform>
+  <set name=furl><get name=myform attr=href></set>
+  <if><get form name=&furl;> <else><a href=&furl;>&furl;</a></else></if>
+  </repeat>
+  </b></set>
+ 
+
+</else>
+
+</if>
+ <write file=&myfile; append><get name=newpending></write>
+ <set name=pending><get name=newpending></set>
+  </process>
+<h2> Pending forms for <get name=user></h2>
+  <ul foreach list="&pending;" entity=myli>
+     <set local name=myurl><get name=myli attr=href></set>
+     <li> <a href=sign_form.if?formurl=&myurl;><get index=myli.Text></a>
+     <input type="checkbox" name="&myurl;">
+     </li>
+  </ul>
+  <input type=hidden name=uid value=&user;>
+  <input type="SUBMIT" value="Remove" name=buttonaction> selected forms (and
+ keep all unselected forms on your pending list)<br>
+  <b>or</b> <input type="SUBMIT" value="reroute" name=buttonaction> selected
+  forms (All selected forms will be rerouted according to current route for
+  that type of form).
+ Forms will be removed from &user; pending list.  They will remain on the
+  system, but will not be routed to any other users.
+ </form>
+
+</then> <else>No forms pending for &user;</else></if>
+</then> <else><h2>Not Authorized</h2>
+<get trans name=AuthenticatedUser> is not authorized for
+&user;
+</else>
+</if>
+	     
+      
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

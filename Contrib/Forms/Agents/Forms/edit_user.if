@@ -108,13 +108,15 @@
    <repeat list=&AGENT.groups.keys;>
    <group-remove-user user=&duser; group=&li;>
    </repeat>
-    <b>  Deleted &duser; </b>
+    <b>  Deleted &duser; </b><br>
     <save-data data=users>
     <save-data data=groups>
   </process>
  Delete userid:
   
  <select name="deluser">
+    <if> <get form name=euser>
+ <then><option><get form name=euser></option></then></if>
  <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
  </select>
 <input type="SUBMIT" value="DELETE USERID">
@@ -127,6 +129,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 14:03:52 1998
+Last modified: Fri Jun 19 11:47:57 1998
 <!-- hhmts end -->
 </body></html>

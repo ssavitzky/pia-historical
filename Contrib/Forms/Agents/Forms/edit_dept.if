@@ -9,7 +9,7 @@
 <tagset-load name=Form-agent-actors>
 
  <if-in-group  group=admin> <set name=allow> true</set> </if-in-group>
- <set name=dadmin><dept-get-admin dept=&FORM.dept;></set>
+ <set name=dadmin><dept-get-admin department=&FORM.dept;></set>
 <!-- deptadmin can be a user or a group -->
  <if-in-group  group=&dadmin;> <set name=allow> true</set> </if-in-group>
  <if> <test match=&dadmin; exact><get trans name=AuthenticatedUser></test>
@@ -88,6 +88,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 14:03:52 1998
+Last modified: Fri Jun 19 12:08:02 1998
 <!-- hhmts end -->
 </body></html>
