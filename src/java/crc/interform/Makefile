@@ -13,6 +13,7 @@ FILES = \
 	Interp.java \
 	Parser.java \
 	SGML.java \
+	State.java \
 	Tagset.java \
 	Text.java \
 	Token.java \
@@ -35,6 +36,8 @@ Handler.class: Handler.java Actor.java Interp.java SGML.java ../ds/Table.java
 Interp.class: Interp.java Actor.java Input.java Token.java Tokens.java SGML.java
 
 Parser.class: Parser.java Input.java Token.java Tokens.java SGML.java
+
+Stack.class: ../ds/List.java ../ds/Table.java
 
 Tagset.class: Tagset.java Token.java SGML.java
 

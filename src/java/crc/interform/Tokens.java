@@ -4,18 +4,13 @@
 
 package crc.interform;
 import java.util.Vector;
+import crc.ds.List;
 
 /**
  * A List (sequence) of SGML Token's.  
  *	Unlike a simple List, Strings and Lists are merged when appended.
  */
-public class Tokens implements SGML {
-
-  /************************************************************************
-  ** Components:
-  ************************************************************************/
-
-  Vector content = new Vector();
+public class Tokens extends List implements SGML {
 
   /************************************************************************
   ** Object operations:
@@ -24,7 +19,7 @@ public class Tokens implements SGML {
   public String toString() {
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < nItems(); ++i) {
-      s.append(content.elementAt(i).toString());
+      s.append(at(i).toString());
     }
     return s.toString();
   }
@@ -33,14 +28,12 @@ public class Tokens implements SGML {
   ** SGML list interface:
   ************************************************************************/
 
-  public int nItems() {
-    return content.size();
-  }
   public SGML itemAt(int i) {
-    return i >= nItems() ? null : (SGML)content.elementAt(i);
+    return (SGML)at(i);
   }
+
   public SGML itemAt(int i, SGML v) {
-    content.setElementAt(v, i);
+    at(i, v);
     return this;
   }
 
@@ -74,7 +67,7 @@ public class Tokens implements SGML {
 
   /** Return true for an empty list or a token with no content. */
   public boolean isEmpty() {
-    return content.isEmpty();
+    return nItems() == 0;
   }
 
   /** Return true if the SGML is pure text, or a 
@@ -119,8 +112,14 @@ public class Tokens implements SGML {
     } else if (sgml.isText() && nItems() > 0 && itemAt(nItems()-1).isText()) {
       itemAt(nItems()-1).appendText(sgml.toText());
     } else {
-      content.addElement(sgml);
+      push(sgml);
     }
+    return this;
+  }
+
+  /** The result of appending a single item.  No merging is done. */
+  public SGML addItem(SGML sgml) {
+    push(sgml);
     return this;
   }
 
@@ -198,6 +197,7 @@ public class Tokens implements SGML {
   ************************************************************************/
 
   public Tokens() {
+    super();
   }
 
   public Tokens(SGML s) {
@@ -205,5 +205,23 @@ public class Tokens implements SGML {
     this.append(s);
   }
 
+  public Tokens(Tokens s) {
+    this();
+    copyContentFrom(s);
+  }
+
+  /************************************************************************
+  ** Copying:
+  ************************************************************************/
+
+  /** Copy a token's content. */
+  void copyContentFrom(Tokens it) {
+    for (int i = 0; i < it.nItems(); ++i) 
+      addItem(it.itemAt(i));
+  }
+
+  public Object clone() {
+    return new Tokens(this);
+  }
 
 }

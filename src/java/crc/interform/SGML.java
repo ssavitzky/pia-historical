@@ -8,7 +8,7 @@ package crc.interform;
  * Interface for SGML tokens and collections of tokens.
  *	At some point this may become a subinterface of Stuff.
  */
-public interface SGML {
+public interface SGML extends java.lang.Cloneable {
 
   /** Return true if the object is an individual SGML token. */
   boolean isToken();

@@ -7,19 +7,32 @@ import crc.interform.Token;
 import crc.interform.Tokens;
 import crc.interform.Handler;
 import crc.interform.Interp;
+import crc.ds.List;
+import crc.ds.Table;
 
 /**
  * The representation of an InterForm <em>actor</em>.
  *	This is the parent class for actors that operate inside of
  *	Interforms.  An actor is basically an active SGML element;
  *	indeed, it would be more correct to say that an element is an
- *	especially trivial and passive actor.
- */
+ *	especially trivial and passive actor.<p>
+ *
+ *	Actors may carry both semantic and syntactic information.
+ *	Those that are purely syntactic have the tag
+ *	<code>-syntax-</code>, and do not have a <code>name</code>
+ *	attribute.  */
 public class Actor extends Token {
 
-  /** Name attribute. */
+  /** Cache for name attribute. */
+  String name = null;
+
+  /** Name attribute, as a string.  The string is cached for speed, so
+   *  don't try to change the attribute after calling this function! */
   public String name() {
-    return this.attr("name").toString();
+    if (name == null) {
+      name = attrString("name");
+    }
+    return name;
   }
 
 
@@ -29,8 +42,8 @@ public class Actor extends Token {
 
   /** List of match criteria, as a sequence of attribute, value, etc.
    *	Attribute names are Text; values are Text or List.  A value of
-   *	null matches if the attribute is present; an empty list
-   *	matches if it is missing.  (This seems backwards, but testing
+   *	null matches if the attribute is missing; an empty list
+   *	matches if it is present.  (This seems backwards, but testing
    *	for presence is very common and this speeds it up.) Text
    *	matches the value converted to lowercase.  A null criteria
    *	list matches anything. */
@@ -68,11 +81,14 @@ public class Actor extends Token {
 
 
   /************************************************************************
-  ** Syntactic Actions:
+  ** Syntactic Flags:
   ************************************************************************/
 
-  /** Handler for this actor's actOn method. */
-  Handler action = null;
+  /** True if content should be parsed, false if it should be streamed. */
+  boolean parseContent = false;
+
+  /** True if the tags should be passed */
+  boolean passTags = false;
 
   /** Tell the default action routine whether to quote the content. */
   int quoteContent = 0;
@@ -80,6 +96,31 @@ public class Actor extends Token {
   /** True if there is no content, i.e. the Actor matches an empty tag. 
    *	=== This should really be done with syntax. */
   boolean noContent = false;
+
+  /** Set of elements inside which this tag is not permitted. */
+  Table implicitlyEnds = null;
+
+  /** Return true if this kind of token implicitly ends the given one. */
+  public boolean implicitEnd(String tag) {
+    return implicitlyEnds != null && implicitlyEnds.has(tag);
+  }
+
+  /** List of elements this kind of token must occur inside of, from
+   *  the outside in. */
+  List implicitlyBegins = null;
+
+  /** List of elements the start tags of which are missing. */
+  public List implicitBegin() {
+    // ===
+    return null;
+  }
+
+  /************************************************************************
+  ** Syntactic Actions:
+  ************************************************************************/
+
+  /** Handler for this actor's actOn method. */
+  Handler action = null;
 
   /** Act on a matching token.  Normally what this does is push the
    *	actor itself as a handler, and set the interpretor to parse
@@ -89,18 +130,28 @@ public class Actor extends Token {
   public void actOn(SGML it, Interp ii, byte incomplete, int quoting) {
     if (action != null) {
       action.actOn(this, it, ii, incomplete, quoting);
-    } else if (quoting != 0 || incomplete <= 0) {
+    } else {
+      defaultAction(it, ii, incomplete, quoting);
+    }
+  }
+
+  /** The purely syntactic action taken if no action handler is
+   *  present.  Provided as a separate function for the benefit of the
+   *  majority of action handlers that need to combine special
+   *  semantics with the standard syntax.  */
+  public final void defaultAction(SGML it, Interp ii,
+				  byte incomplete, int quoting) {
+    if (incomplete <= 0) {
       return;
-    } else if (handler != null || !isEmpty()) {
+    } else {
       if (noContent) {
 	ii.completeIt();
       } else {
-	ii.setQuoting(quoteContent);
-	ii.setParsing();
+	if (quoting == 0 || quoteContent < 0) ii.setQuoting(quoteContent);
+	if (parseContent) ii.setParsing();
       }
-      ii.addHandler(this);
-    } else if (noContent) {
-      ii.completeIt();
+      if (quoting != 0) return;
+      if (handler != null || !isEmpty()) ii.addHandler(this);
     }
   }
 
@@ -109,7 +160,7 @@ public class Actor extends Token {
   ** Semantic Handle:
   ************************************************************************/
 
-  /** Handler for this actor. */
+  /** Handler for this actor's <code>handle</code> method. */
   Handler handler;
 
   /** Perform the actions associated with a completed token.  The
@@ -121,12 +172,15 @@ public class Actor extends Token {
   public void handle(SGML it, Interp ii) {
     if (handler != null) { handler.handle(this, it, ii); }
     else if (! isEmpty()) {
+      ii.pushInto(content());
+
+      // === Should save context on input stack, otherwise we lose at the end.
+
       ii.defvar("element", it);
       ii.defvar("content", it.content());
-      ii.pushInto(content());
-      SGML ts = (Tagset) attr("tagset");
-      if (ts != null) { ii.useTagset(ts.toString()); }
-      ii.deleteIt();
+      String ts = attrString("tagset");
+      if (ts != null) { ii.useTagset(ts); }
+      if (!passTags) ii.deleteIt();
     }
   }
 
@@ -134,255 +188,192 @@ public class Actor extends Token {
   ** Construction:
   ************************************************************************/
 
-  public Actor(String tag) {
+  /** Create an actor out of an SGML element (typically an &lt;actor&gt;
+   * element) */
+  public Actor(Token it) {
     super("-actor-");
-    initialize(null, tag, null);
+    initialize(it, null, null);
   }
 
-  public Actor(Tokens attrs) {
+  /** Create an actor with the given name, tag, syntax, and handler. */
+  public Actor(String name, String tag, String syntax, String handle) {
     super("-actor-");
-    initialize(null, null, attrs);
+    if (syntax != null) attr(syntax, Token.empty);
+    if (handle != null) attr("handle", handle);
+
+    initialize(null, name, tag);
   }
 
-  public Actor(Token source) {
-    super("-actor-");
-    initialize(source, null, null);
+  /** Create a syntax actor from the given token. */
+  public Actor(Token it, String syntax) {
+    super("-syntax-");
+    if (syntax != null) attr(syntax, Token.empty);
+    initialize(it, null, null);
   }
 
-/* ========================================================================
+  /** Create a syntax actor with the given tag and syntax. */
+  public Actor(String tag, String syntax) {
+    super("-syntax-");
+    if (syntax != null) attr(syntax, Token.empty);
+    initialize(null, null, tag);
+  }
 
-#############################################################################
-###
-### Creation:
-###
-
-sub new {
-    my ($class, $name, @attrs) = @_;
-    my $self = IF::IT->new('-actor-', @attrs);
-    bless $self, $class;
-    $self->initialize($name);
-}
-
-sub recruit {
-    my ($class, $self) = @_;
-
-    ## Recruit a new actor:
-    ##	  Re-bless and properly initialize an InterForm Token.
-
-    bless $self, $class;
-    $self->initialize;
-}
-
-=========================================================================== */
+  /** Create a syntax actor with the given characteristics. */
+  public Actor(String tag, String syntax, Table notInside) {
+    super("-syntax-");
+    if (syntax != null) attr(syntax, Token.empty);
+    implicitlyEnds = notInside;
+    initialize(null, null, tag);
+  }
 
   /************************************************************************
   ** Initialization:
   ************************************************************************/
 
-  /** Initialize from a Token (typically an &ltactor&gt element)
-   *	and/or a tag and attribute list.  If the attribute list has an
-   *	odd number of elements, the last is the content.  The
-   *	arguments are processed from left to right, so attributes of
-   *	the Token may be overridden by the tag string and attribute
-   *	list. */
-  void initialize(Token source, String tag, Tokens attrs) {
+  /** Initialize from a Token (typically an &lt;actor&gt; element)
+   *	and/or a name and tag. */
+  void initialize(Token it, String name, String tag) {
+    if (it != null) {
+      copyAttrsFrom(it);
+      copyContentFrom(it);
+      if (name == null) name = it.attrString("name");
+      if (tag == null) tag = it.attrString("tag");
+    }
+    if (name == null && tag != null) {
+      name=tag;
+      this.name=tag;
+      addAttr("name", tag);
+    }
 
+    if (tag != null) {
+      tag = tag.toLowerCase();
+      attr("tag", tag);
+    }
+
+    /* Initialize the handler, actOn, and match.  Do the handler first
+     * in case it wants to do some initialization. */
+    initHandle();
+    initSyntax(this.tag.equals("-syntax-"));
+    initAction();
+    initMatch();    
   }
-
 
   /** Initialize the <code>handle</code> object. */
   void initHandle() {
+    SGML s = attr("handle");
+    if (s == null) return;
 
+    String h;
+    if (s == Token.empty) h = attrString("name");
+    else {
+       h = attrString("handle");
+       if ("".equals(h)) h = attrString("name"); 
+    }
+    handler = loadHandler(h, "crc.interform.handle.");
+    if (handler != null) handler.initializeActor(this);
+  }
+
+  /** Load a named handler class.  The prefix is prepended only if the
+   *  handle name contains no "." characters. */
+  public static Handler loadHandler(String h, String prefix) {
+    if (h.indexOf(".") < 0) h = prefix + h;
+    try {
+      Class handleClass = Class.forName(h);
+      return (Handler) handleClass.newInstance();
+    } catch (Exception e) { }
+    return null;
+  }
+
+  /** Initialize the <code>action</code> object. */
+  void initAction() {
+    SGML s = attr("action");
+    if (s == null) return;
+
+    String h;
+    if (s == Token.empty) h = attrString("name");
+    else {
+       h = attrString("action");
+       if ("".equals(h)) h = attrString("name"); 
+    }
+    action = loadHandler(h, "crc.interform.handle.");
   }
 
   /** Initialize the match <code>criteria</code> list. */
   void initMatch() {
+    String m = attrString("match");
+    if (m == null) return;
 
+    // === 
   } 
 
-/* ========================================================================
-sub handler {
-    my ($name, $pkg) = @_;
+  /** Initialize the syntax flags. */
+  void initSyntax(boolean isSyntax) {
+    parseContent = !isSyntax;
+    passTags = isSyntax;
+    if (hasAttr("quoted")) {
+      quoteContent = 1;
+    } else if (hasAttr("literal")) {
+      quoteContent = -1;
+    } else if (hasAttr("empty")) {
+      noContent = true;
+      parseContent = false;
+      quoteContent = 0;
+    }
+    if (hasAttr("parsed")) {
+      parseContent = true;
+    } else if (hasAttr("passed")) {
+      parseContent = false;
+      passTags = true;
+    } 
+    if (implicitlyEnds != null) return;
+    String s = attrString("not-inside");
+    if (s == null) return;
+    
+    // ===
+  }
 
-    ## Return a handler for $name in package $pkg.
-    ##	  Requires major disgusting hacks to get around perl weirdness.
+  /************************************************************************
+  ** Bootstrapping:
+  ************************************************************************/
 
-    my $foo = "${pkg}::$name";
-    return \&{$foo} if defined &{$foo};
-    return \&{$foo . "_handle"} if defined &{$foo . "_handle"};
+  public static Actor actor() {
+    return new Actor("actor", "actor", "quoted",
+		     "crc.interform.DoActor");
+  }
 
-    ## The first part will do the job UNLESS the handle we want is inside 
-    ##	 a package that isn't loaded yet.  So load it.  This is _still_ not
-    ##	 good enough, because it might be defined in a package that _uses_
-    ##	 Actors.pm, (e.g. IF::Run) so the handle might not actually get 
-    ##	 defined until after we need it.  You don't want to know.
+  public static Actor tagset() {
+    return new Actor("tagset", "tagset", "streamed",
+		     "crc.interform.DoTagset");
+  }
 
-    my $file = $pkg;
-    $file =~ s@::@/@g;
-    eval { 
-	require $file . '.pm';
-	print "$file loaded, looking for '$foo'\n" if $main::debugging;
-	return \&{$foo} if defined \&{$foo};
-	## Note that the blasted thing might not be defined.  
-	##    It appears, though, that this will succeed anyway, so you 
-	##    croak later if the name is never defined.
-    };
+  public static Actor element() {
+    return new Actor("element", "element", "empty",
+		     "crc.interform.DoElement"); 
+  }
+
 }
 
-sub initialize {
-    my ($self, $name) = @_;
-
-    ## Initialize an actor.
-    ##	  Force the actor to obey the standard conventions:
-    ##	    force name lowercase to match tag if active
-    ##	    'active' attribute if active.
-
-    ## If there's an 'element' attribute, this ``actor'' is just a 
-    ## 	  syntactic description of an HTML element, and is not active.
-    ##	  It's not used for anything at the moment.
-
-    my $element = $self->attr('element');
-    $self->tag($element? '-element-' : '-actor-');
-
-    $name = $self->attr('name') unless defined $name;
-    my $tag = $self->attr('tag');
-    my $active = $self->attr('active');
-    $active = ($tag || $name !~ /^-/ ) unless defined $active;
-    my $hook = '_action';
-
-    if ($self->attr('content')) {
-	$self->hook($hook, \&act_generic);
-    } elsif ($self->attr('empty')) {
-	$self->hook($hook, \&act_empty);
-    } else {
-	$self->hook($hook, \&act_parsed) unless $self->attr('unparsed');
-	$self->hook($hook, \&act_quoted) if $self->attr('quoted');
-	$self->hook($hook, \&act_streamed) if $self->attr('streamed');
-    }
-
-    if ($active) {
-	$name = lc $name;
-	$self->attr('tag', $name) unless defined $tag;
-    }
-    $self->attr('name', $name);
-
-    ## Handle match='name=value...'  Should handle attr=, value= as well.
-    ## 	  List is encoded as a query string.
-    my $match = $self->attr('match');
-    if ($match) {
-	my @list = split(/\&/, $match);
-	my @pairs = ();
-	for $item (@list) {
-	    if ($item =~ /(.+)=(.*)/) {
-		$2 =~ s/\+/ /g;
-		push(@pairs, $1, $2);
-	    } else {
-		push(@pairs, $item, $item);
-	    }
-	}
-	$self->{'_match'} = \@pairs;
-    }
-
-    my $handle = $self->attr('handle');
-    if (lc $handle eq 'handle' || $handle eq '1') {
-	$handle = $name;
-    } elsif (lc $handle eq 'null') {
-	$handle = '';
-    }
-    if ($handle) {
-	$handle =~ s/^[-.]//;
-	$handle =~ s/[-.]$//;
-	$handle =~ s/[-.]/\_/g;
-	my $package = $self->attr('package') || 'IF::Actors';
-	my $handler = handler($handle, $package);
-	if ($handler) {
-	    $self->{'_handle'} = $handler;
-	} else {
-	    print "Cannot find handler $handle in package $package\n";
-	}
-    } elsif (! $self->is_empty) {
-	$self->{'_handle'} = \&generic_handle;
-    }
-    $self;
-}
-
-
-=========================================================================== */
-
-}
 
 /************************************************************************
-** ActOn Handlers:
+** Actor Handlers:
 ************************************************************************/
 
-/** Parse and evaluate the matching element's contents */
-class ActParsed extends Handler {
-  public void actOn(Actor ia, SGML it, Interp ii, byte inc, int quot) {
-    if (quot != 0 || inc <= 0) return;
-    if (ia.handler != null || ! ia.isEmpty()) ii.addHandler(ia);
-    ii.parseIt();
+class DoActor extends Handler {
+  public void handle(Actor ia, SGML it, Interp ii) {
+    ii.tagset().define(new Actor(it.toToken()));
+    ii.deleteIt();
   }
 }
 
-/** Parse but do not evaluate the matching element's content. */
-class ActQuoted extends Handler {
-  public void actOn(Actor ia, SGML it, Interp ii, byte inc, int quot) {
-    if (quot != 0 || inc <= 0) return;
-    if (ia.handler != null || ! ia.isEmpty()) ii.addHandler(ia);
-    ii.setQuoting(ia.quoteContent);
+class DoTagset extends Handler {
+  public void handle(Actor ia, SGML it, Interp ii) {
+
   }
 }
-
-/** Handle an empty element. */
-class ActEmpty extends Handler {
-  public void actOn(Actor ia, SGML it, Interp ii, byte inc, int quot) {
-    if (inc > 0) {
-      ii.completeIt();
-      // === shouldn't need this anyway === it.attr("_endless", new Tokens());
-    } else if (quot != 0) {
-      if (ia.handler != null || ! ia.isEmpty()) ii.addHandler(ia);
-    }
+class DoElement extends Handler {
+  public void handle(Actor ia, SGML it, Interp ii) {
+    Token t = it.toToken();
+    ii.tagset().define(new Actor(t, t.attrString("syntax")));
+    ii.deleteIt();
   }
 }
-
-/** Perform the handler immediately on the start tag. */
-class ActStreamed extends Handler {
-  public void actOn(Actor ia, SGML it, Interp ii, byte inc, int quot) {
-    if (quot != 0 || inc <= 0) return;
-    ia.handle(it, ii);
-  }
-}
-
-
-/* ========================================================================
-
-=== Not clear anything needs actGeneric anymore.  Many actors have it
-set, but there are few if any actual uses of it. ===
-
-sub act_generic {
-    my ($self, $it, $ii, $incomplete, $quoting) = @_;
-
-    ## Generic:
-    ##	  Presence of end tag is based on whether there's a content attribute. 
-    ##	  The name of the attribute is the value of 'content'
-
-    if ($incomplete > 0) { 
-	my $content = $self->attr('content');
-	if (defined $content && defined $it->attr($content)) {
-	    $ii->complete_it($it);
-	    $it->attr(_endless, 1);
-	} elsif (!$quoting) {
-	    my $quoted = $self->attr('quoted');
-	    if (defined $quoted) {
-		$ii->quote_it($quoted);
-	    } else {
-		$ii->parse_it;
-	    }
-	}
-    } elsif (! $quoting) {
-	$ii->add_handler($self) if $self->{_handle};
-    }
-}
-=========================================================================== */
-
-

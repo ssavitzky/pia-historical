@@ -32,15 +32,16 @@ public class TokenStream extends Tokens {
    *	blocked for some reason or the output stream is null.
    */
   public SGML append(SGML sgml) {
+    if (sgml == null) return this;
     if (nItems() == 0 && ostream != null && !blocked) {
       ostream.print(sgml.toString());
     } else {
       super.append(sgml);
       if (ostream != null && !blocked) {
 	for (int i = 0; i < nItems(); ++i) {
-	  ostream.print(content.elementAt(i).toString());
+	  ostream.print(at(i).toString());
 	}
-	content.removeAllElements();
+	items.removeAllElements();
       }
     }
     return this;
@@ -48,6 +49,7 @@ public class TokenStream extends Tokens {
 
   /** Append some text.  */
   public SGML appendText(Text t) {
+    if (t == null) return this;
     if (ostream != null && !blocked) {
  	ostream.print(t.toString());
 	return this;

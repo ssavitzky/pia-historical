@@ -7,6 +7,7 @@ import crc.interform.Actor;
 import crc.interform.Token;
 import crc.interform.Tokens;
 import crc.interform.Input;
+import crc.interform.State;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -19,20 +20,11 @@ import crc.ds.Table;
  *	possible to execute a saved parse tree.  This is a good thing,
  *	because actors are *stored* as parse trees.
  */
-public class Interp {
+public class Interp extends State {
 
   /************************************************************************
   ** Components:
   ************************************************************************/
-
-  /** Parser/interpretor state stack.  
-   *	Contains everything that needs to be pushed when the interpretor
-   *	starts processing a start tag.  State objects form a linked list.
-   */
-  State state;
-
-  /** Parser/interpretor state stack depth. */
-  int	depth;
 
   /** Entity table for this document. */
   Table entities;
@@ -77,30 +69,26 @@ public class Interp {
   ************************************************************************/
 
   final State context(int level) {
-    State s = state;
-    for ( ; level > 0 && s != null; --level) { s = s.next; }
+    State s = this    ;
+    for ( ; level > 0 && s != null; --level) { s = s.stack; }
     return s;
   }
 
-  /** Pop the parse state stack.  (We actually leave the final state
-   *	on the stack and zap its token, to avoid null-reference
-   *	problems.)
-   * @return true if we did not pop the last state.  */
+  /** Pop the parse state stack.
+   * @return true if the stack was already null.  */
   final boolean popState() {
-    if (state.next == null) {
-      state.token = null;
+    if (stack == null) {
+      debug("stack empty!\n");
+      it = null;
       return false;
     }
-    state = state.next;
-    depth--;
-    if (debug && depth != state.depth) debug("!!depth mismatch\n");
+    copyFrom(stack);
     return true;
   }
 
   final void pushState() {
-    state = new State(state);
+    stack = new State(this);
     depth++;
-    if (debug && depth != state.depth) debug("!!depth mismatch\n");
   }
 
   /************************************************************************
@@ -110,18 +98,15 @@ public class Interp {
   /** Return true if we are currently nested inside an element with
    *  the given tag. */
   public final boolean insideElement(String tag) {
-    for (State s = state; s != null; s = s.next) {
+    for (State s = stack; s != null; s = s.stack) {
       if (tag.equals(s.tag())) return true;
     } 
     return false;
   }
 
-  /** Return the tag of the Element the current token is nested inside of.
-   *	Looks at state.next, not state, because state contains
-   *	whatever token we are currently working on. */
+  /** Return the tag of the immediately-surrounding Element. */
   public final String elementTag() {
-    return (state.next != null && state.next.token != null) ?
-      state.next.token.tag() : null;
+    return (stack != null) ? stack.tag() : null;
   }
 
   /** Return true if there is an element with the given tag at the
@@ -136,45 +121,45 @@ public class Interp {
   ************************************************************************/
 
   public final SGML token() {
-    return state.token;
+    return it;
   }
   public final void token(Token t) {
-    state.token = t;
+    it = t;
   }
 
   public final List handlers() {
-    return state.handlers;
+    return handlers;
   }
 
   public final Table variables() {
-    return state.variables;
+    return variables;
   }
 
   public final boolean isPassing() {
-    return state.passing;
+    return passing;
   }
   public final void setPassing() {
-    state.passing = true;
-    state.parsing = false;
-    state.skipping= false;
+    passing = true;
+    parsing = false;
+    skipping= false;
   }
 
   public final boolean isParsing() {
-    return state.parsing;
+    return parsing;
   }
   public final void setParsing() {
-    state.parsing = true;
-    state.passing = false;
-    state.skipping= false;
+    parsing = true;
+    passing = false;
+    skipping= false;
   }
 
   public final boolean isSkipping() {
-    return state.skipping;
+    return skipping;
   }
   public final void setSkipping() {
-    state.parsing = false;
-    state.passing = false;
-    state.skipping= true;
+    parsing = false;
+    passing = false;
+    skipping= true;
   }
 
   /** Test the streaming flag.  
@@ -182,10 +167,10 @@ public class Interp {
    *	putting them on the output queue.
    */
   public final boolean isStreaming() {
-    return state.streaming;
+    return streaming;
   }
   public final void setStreaming() {
-    state.streaming= true;
+    streaming= true;
     setPassing();
   }
 
@@ -194,13 +179,13 @@ public class Interp {
    *	If negative, the current tag contains unparsed character data.
    */
   public final boolean isQuoting() {
-    return state.quoting != 0;
+    return quoting != 0;
   }
   public final boolean isUnparsed() {
-    return state.quoting < 0;
+    return quoting < 0;
   }
   public final void setQuoting(int i) {
-    state.quoting = i;
+    quoting = i;
   }
 
   /** Test to see if we can define actors in the current tagset.  If
@@ -209,20 +194,20 @@ public class Interp {
    *	actors in it.  Otherwise, we're in a global tagset that has to
    *	be copied if we want to change it.  */
   public final boolean tagsetUnlocked() {
-    return ! state.tagset.isLocked;
+    return ! tagset.isLocked;
   }
 
   /** Get the current tagset */
   public final Tagset tagset() {
-    return state.tagset;
+    return tagset;
   }
 
   /** Use a tagset.  Make a copy of the current one if tagset is null. */
   public final void useTagset(Tagset t) {
     if (t != null) {
-      state.tagset = t;
+      tagset = t;
     } else {
-      state.tagset = (Tagset)state.tagset.clone();
+      tagset = (Tagset)tagset.clone();
     }
   }
 
@@ -231,23 +216,23 @@ public class Interp {
   public final void useTagset(String name) {
     // === Ignore documentation for now -- do it with tags.
     if (name != null) {
-      state.tagset = Tagset.tagset(name);
+      tagset = Tagset.tagset(name);
     } else {
-      state.tagset = (Tagset)state.tagset.clone();
+      tagset = (Tagset)tagset.clone();
     }
   }
 
   /** Make a copy of the current tagset if we don't already have one. */
   public final void useTagset() {
-    if (state.tagset.isLocked) {
-      state.tagset = (Tagset)state.tagset.clone();
+    if (tagset.isLocked) {
+      tagset = (Tagset)tagset.clone();
     }
   }
 
   /** Define an actor.  Clone the current tagset if necessary. */
   public final void defineActor(Actor anActor) {
     useTagset();
-    state.tagset.define(anActor);
+    tagset.define(anActor);
   }
 
   /************************************************************************
@@ -260,7 +245,7 @@ public class Interp {
    *	binding.  Returns null if no local binding is found.
    */
   public final SGML getvar (String name) {
-    for (State context = state; state != null; state = state.next) {
+    for (State state = this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
 	return (SGML)state.variables.at(name);
       }
@@ -273,8 +258,9 @@ public class Interp {
    *	stack frame.
    */
   public final void  setvar (String name, SGML value) {
-    for (State context = state; state != null; state = state.next) {
+    for (State state = this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
+	if (value == null) value = Token.empty;
 	state.variables.at(name, value);
 	return;
       }
@@ -285,8 +271,9 @@ public class Interp {
   /** Define a new local variable (entity) with a given name and value.
    */
   public final void  defvar (String name, SGML value) {
-    if (state.variables == null) state.variables = new Table();
-    state.variables.at(name, value);
+    if (variables == null) variables = new Table();
+    if (value == null) value = Token.empty;
+    variables.at(name, value);
   }
 
   /** Get the value of a named variable (entity).
@@ -295,7 +282,7 @@ public class Interp {
    *	document's global entity table is used.
    */
   public final SGML getEntity (String name) {
-    for (State context = state; state != null; state = state.next) {
+    for (State state=this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
 	return (SGML)state.variables.at(name);
       }
@@ -395,26 +382,40 @@ public class Interp {
    *	If passed a token it processes just that token, otherwise it
    *	pulls incoming tokens or completed subtrees off the input
    *	stack and processes them.  This allows the interpretor to be
-   *	used either in ``push'' or in ``pull'' mode.
+   *	used either in ``push'' or in ``pull'' mode.<p>
+   *
+   * Debugging output: "[" + flag + tag + "]" + actions + EOL.  The
+   *	flag is "/" for end tags, "\" for start tags, and "|" for
+   *	completed elements.  Actions include <em>name</em>? for every
+   *	``interested'' actor, and <em>name</em>! for every actor
+   *	called as a handler.<p>
    */
   public final void resolve(SGML token) {
-    SGML it = (token == null)? nextInput() : token;
+
+    /* Get the next incoming token and make it current. */
+    it = (token == null)? nextInput() : token;
 
     /* Loop on incoming tokens.  This and "incomplete" used to be passed 
      *	as function arguments; it's better to use the input stack.
      */
     for ( ; it != null; ) {
       byte incomplete = it.incomplete();
+      String tag = it.tag();
 
-      debug(" ["+(incomplete<0? "/" : incomplete>0? "\\" : "")+it.tag()+"]");
+      debug(" ["+(incomplete<0? "/": incomplete==0? "|": "\\")+it.tag()+"] ");
       
+      /* At this point, it is the new incoming token, and stack.token
+       * is whatever it is nested inside of (the current element under
+       * construction).  */
+
+      handlers = null;
       if (incomplete < 0) {
 	/* We just got an end tag. 
+	 *	Note that at this point, state.token is top-of-stack.
 	 *	Pop the parse stack, marking the token we find there as
 	 *	complete if we were actually parsing, otherwise change
 	 *	it to an end tag.  (It will still have its attributes.)
 	 */
-	String tag = it.tag();
 	if (tag == null) {
 	  /* End of file -- end whatever's open */
 	  // === not clear what to do here.
@@ -425,75 +426,73 @@ public class Interp {
 	  debug("current ");
 	} else if (insideElement(tag)) {
 	  /* End the current element, but keep the tag */
-	  debug("inside ");
+	  debug("inside "+elementTag()+" (faked) ");
 	  pushInput(it);
 	} else {
 	  /* Unmatched end tag.  Discard it. */
-	  debug("unmatched\n");
+	  debug("unmatched in "+elementTag()+" (discarded) ");
 	  it = null;
 	}
 	if (it != null) {
-	  boolean was_parsing = state.parsing;
-	  if (! popState()) {
-	    debug("Stack empty.\n");
-	    return; 		// We're done.
+	  popState();
+	  if (it != null) {
+	    incomplete = (byte)(parsing? 0 : -1);
+	    it.incomplete(incomplete);
+	  } else {
+	    debug("popped null\n");
 	  }
-	  it = state.token;
-	  incomplete = (byte)(was_parsing? 0 : -1);
-	  if (it != null) it.incomplete(incomplete);
 	}
-      } else if (state.quoting == 0) {
+      } else if (quoting == 0) {
 	/* At this point even empty tokens are marked as start tags,
 	 *    in order to make expandAttrs suppress the copy.
 	 */
 	// === worry about that.  Add checkForSyntax? ===
 	it = expandAttrs(it);
-	state.token = it;
+	debug("expanded ");
       }
 
-      if (incomplete > 0) {
+      // === Not clear how to deal with implicit end ===
+
+      if (it == null) {
+	debug("deleted\n");
+      } else if (incomplete > 0) {
 	/* Start tag.  Check for interested actors.
 	 *	keep track of any that register as handlers.
 	 */
-	state.handlers = new List();
-	pushState();		// state = new State(state);
-	state.token=it;
-
 	debug("depth="+depth+" ");
 	debug("start ");
+	boolean wasPassing = passing;
 
 	checkForInterest(it, incomplete);
 
-	it = state.token;	// See if any actor has modified the token
 	if (it == null) {
-	  // Some actor has deleted the token: pop the stack.
-	  popState();		// state = state.next;
+	  // Some actor has deleted the token.
 	  debug("deleted\n");
 	} else if (it.incomplete() == 0) {
-	  // Some actor has marked it as finished: pop it.
-	  debug("completed\n");
-	  popState();		// state = state.next;
+	  // Some actor has marked it as finished.
+	  debug("completed in "+elementTag()+"\n");
 	  continue;
 	} else {
-	  // Nothing happened; it stays pushed.
-	  //	Clean out the state for the content.
-	  debug("pushed\n");
-	  state.variables = null;
-	  state.handlers = new List();
-	  if (state.passing) passToken(it);
+	  // Nothing happened; push it.
+	  debug("pushed in "+elementTag()+"\n");
+	  pushState();
+	  // === some trouble if actor has passTags = false
+	  if (wasPassing) passToken(it);
 	}
-      } else if (it != null) {
+      } else {
 	/* End tag or complete token. */
 	debug("depth="+depth+" ");
 	debug(it.incomplete()<0?"end " : "comp ");
+
 	checkForInterest(it, incomplete);
 	checkForHandlers(it);
 
-	//it = state.token;
 	if (it != null) {
-	  debug("passed\n");
-	  if (state.parsing) pushToken(it);
-	  if (state.passing) passToken(it);
+	  if (parsing) { 
+	    debug("appended to "+elementTag()+"\n");
+	    pushToken(it);
+	  }
+	  if (passing) { passToken(it); debug("passed\n"); }
 	} else {
 	  debug("deleted\n");
 	}
@@ -522,19 +521,18 @@ public class Interp {
    */
   final void checkForInterest(SGML it, byte incomplete) {
     Tagset ts 	  = tagset();
-    List handlers = state.handlers;
-    int nPassive  = ts.nPassive();
-    int quoting   = state.quoting;
-    Actor a 	  = ts.activeFor(it.tag());
+    Actor a 	  = ts.forTag(it.tag());
 
     /* Find the actor interested in this tag, if any */
     if (a != null) {
+      debug(" " + a.name() + "?");
       a.actOn(it, this, incomplete, quoting);
-    }
+    } 
 
     /* now find anything that matches the token */
-    for (int i = 0; i < nPassive; ++i) {
-      a = ts.passiveAt(i);
+    int nMatching  = ts.nMatching();
+    for (int i = 0; i < nMatching; ++i) {
+      a = ts.matchingAt(i);
       if (a.matches(it, this, incomplete, quoting)) {
 	a.actOn(it, this, incomplete, quoting);
       }
@@ -543,9 +541,10 @@ public class Interp {
 
   /** Run the handle method of any actor that has registered its interest. */
   final void checkForHandlers(SGML it) {
-    List handlers = state.handlers;
+    if (handlers == null) return;
     Actor a;
     while ((a = (Actor)handlers.pop()) != null) {
+      debug(" " + a.name() + "!");
       a.handle(it, this);
     }
   }
@@ -569,7 +568,8 @@ public class Interp {
     resolve(Token.endTagFor(null));
   }
 
-  /* Step: undefined; may not be needed. */
+  /* Step: undefined; may not be needed.  If needed, could be done
+   *   with resolve(nextInput). */
 
 
   /************************************************************************
@@ -578,7 +578,7 @@ public class Interp {
 
   /** Pass a token or tree to the output. */
   void passToken(SGML it) {
-    if (! state.streaming) {	// Not streaming: just pass the tree
+    if (! streaming) {		// Not streaming: just pass the tree
       output.append(it);
     } else {
       /* The PERL version used to elaborately check "incomplete" and 
@@ -594,10 +594,10 @@ public class Interp {
    */
   void pushToken(SGML it) {
     if (it == null) return;
-    if (state.next == null) {
+    if (stack == null || stack.it == null) {
       passToken(it);
     } else {
-      state.next.token.append(it);
+      stack.it.append(it);
     }
   }
 
@@ -607,12 +607,13 @@ public class Interp {
 
   /** Add an actor as a handler for the current token. */
   public final void addHandler(Actor a) {
-    state.handlers.push(a);
+    if (handlers == null) handlers = new List();
+    handlers.push(a);
   }
 
   /** Mark the current token as completed. */
   public final void completeIt() {
-    state.token.incomplete((byte)0);
+    it.incomplete((byte)0);
   }
 
   /** Parse (i.e. construct a parse tree for) the contents of the
@@ -628,12 +629,12 @@ public class Interp {
     setQuoting(ignoreMarkup? -1 : 1);
   }
 
-  public final void replaceIt(SGML it) {
-    state.token = it;
+  public final void replaceIt(SGML t) {
+    it = t;
   }
 
   public final void deleteIt() {
-    state.token = null;
+    it = null;
   }
     
 
@@ -642,80 +643,29 @@ public class Interp {
   ************************************************************************/
 
   public Interp() {
-    state = new State();
+    super();
     setParsing();
     output = new Tokens();
   }
 
   public Interp(Tagset tagset, Table entities, boolean parse) {
-    state = new State();
-    state.tagset = tagset;
-    output = new Tokens();
+    super();
+    this.tagset = tagset;
     this.entities = entities;
+    output = new Tokens();
     if (parse) setParsing(); else setPassing();
   }
 
   public Interp(Tagset tagset, Table entities, Input in, Tokens out) {
-    state = new State();
-    state.tagset = tagset;
-    output = (out != null)? out : new Tokens();
+    super();
+    this.tagset = tagset;
     this.entities = entities;
     setPassing();
+    output = (out != null)? out : new Tokens();
     if (in != null) pushInput(in);
   }
 
 }
-
-/**
- * Interpretor state (parse/execution stack frame).
- *	State objects don't have many methods; they're really local
- *	to the interpretor.
- */
-class State {
-  SGML	token;
-  List	handlers = new List();
-  Table variables;
-
-  boolean passing;
-  boolean parsing;
-  boolean skipping;
-  boolean streaming;
-  int quoting;
-  int depth;
-
-  boolean hasLocalTagset;
-  Tagset tagset;
-
-  /** Tag of the current token */
-  final String tag() {
-    return (token == null) ? null : token.tag();
-  }
-
-  /** Link to previous state */
-  State next;
-
-  /** Default constructor */
-  State() {
-    depth=0;
-  }
-
-  /** Construct from a previous state. */
-  State(State s) {
-    token 	= s.token;
-    handlers 	= s.handlers;
-    variables 	= null;
-    passing 	= s.passing;
-    parsing 	= s.parsing;
-    skipping 	= s.skipping;
-    streaming 	= s.streaming;
-    quoting 	= s.quoting;
-    hasLocalTagset = s.hasLocalTagset;
-    tagset 	= s.tagset;
-    depth	= s.depth+1;
-    next 	= s;
-  }
-}
-
 
 
 /**

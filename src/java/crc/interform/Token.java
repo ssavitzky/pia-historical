@@ -9,6 +9,8 @@ import crc.ds.Table;
 import crc.interform.Tokens;
 import crc.interform.Text;
 
+/* === Should be the superclass for Text, Element, Entity, and Declaration */
+
 /**
  * The representation of an SGML <em>element</em> or text.  Each Token
  *	has both a set of named <em>attributes</em>, and a set of
@@ -22,7 +24,7 @@ import crc.interform.Text;
  *	Attributes can be retrieved either by name (forced to
  *	lowercase) or by the order received.  Attributes that are
  *	defined but have no associated value have an empty token for
- *	their value; a static constant is provided for the purpose.
+ *	their value; a static constant is provided for the purpose. <p>
  *
  *	@see Tokens.  */
 public class Token implements SGML {
@@ -39,7 +41,7 @@ public class Token implements SGML {
   String tag;
 
   /** Parser state.  0 for a complete element, 1 for a start tag, -1
-   *	for an end tag. */
+   *	for an end tag.  2 or -2 for a tag that has just been scanned. */
   byte incomplete = 0;
 
   /** Syntax flag: 0 if an end tag is optional, 1 if an end tag is
@@ -140,14 +142,16 @@ public class Token implements SGML {
   ** Access to attributes:
   ************************************************************************/
   
-  /* === Not clear what to do about types.  It's plausible to require
-   *	attr, etc. to return Token, and do the conversion from Object
-   *	if necessary.
-   */
-
   /** Retrieve an attribute by name. */
   public SGML attr(String name) {
-    return (SGML)attrs.at(name);
+    return (attrs == null)? null : (SGML)attrs.at(name.toLowerCase());
+  }
+
+  /** Retrieve an attribute by name, returning its value as a String. */
+  public String attrString(String name) {
+    if (attrs == null) return null;
+    Object attr = attrs.at(name.toLowerCase());
+    return (attr == null)? null : attr.toString();
   }
 
   /** Set an attribute's value, recording its name if it has not yet
@@ -160,9 +164,12 @@ public class Token implements SGML {
       attrNames = new List();
       attrValues= new List();
     }
-    if (! attrs.has(name)) {
+    if (!attrs.has(name)) {	// New: append name and value to lists
       attrNames.push(name);
       attrValues.push(value);
+    } else {			// Old: fix up last occurrance in attrValues
+      int i = attrNames.lastIndexOf(name);
+      attrValues.at(i, value);
     }
     attrs.at(name, value);
     return this;
@@ -189,9 +196,19 @@ public class Token implements SGML {
     return this;
   }
 
+  /** Add an attribute to an arbitrary object */
+  public Token addAttr(String name, Object value) {
+    return addAttr(name, new Text(value));
+  }
+
   /** Return the number of recorded attributes */
   public int nAttrs() {
     return (attrNames == null)? 0 : attrNames.nItems();
+  }
+
+  /** Test whether an attribute exists. */
+  public boolean hasAttr(String name) {
+    return attrs != null && attrs.has(name.toLowerCase());
   }
 
   /** Retrieve an attribute's name by its index in attrNames */
@@ -244,6 +261,13 @@ public class Token implements SGML {
     return this;
   }
 
+  /** The result of appending a single item.  No merging is done. */
+  public SGML addItem(SGML sgml) {
+    if (content == null) { content = new Tokens(); }
+    content.addItem(sgml);
+    return this;
+  }
+
   public SGML appendText(Text v) {
     if (content == null) { content = new Tokens(); }
     content.appendText(v);
@@ -252,7 +276,7 @@ public class Token implements SGML {
 
   /** Append contents to a Tokens list. */
   public void appendContentTo(Tokens list) {
-    if (content != null) list.append(content);
+    if (content != null) list.append((SGML)content);
   }
 
   /************************************************************************
@@ -299,6 +323,12 @@ public class Token implements SGML {
     append(new Text(content));
   }
 
+  public Token (Token it) {
+    this.tag = it.tag;
+    copyAttrsFrom(it);
+    copyContentFrom(it);
+  }
+
   /** Make a Token with a special format, in which the first and last
    *	content items are really the start and end ``tag'' respectively. */
   public Token (String tag, String content, String end) {
@@ -325,16 +355,47 @@ public class Token implements SGML {
     specialFormat = true;
   }
 
+  public Token (String tag, String start, String content, String end) {
+    this.tag = tag;
+    if (start != null) append(new Text(start));
+    append(new Text(content));
+    if (end != null) append(new Text(end));
+    specialFormat = true;
+  }
+
+  /** Construct an end tag. */
   public static Token endTagFor(String tag) {
     Token t = new Token(tag);
     t.incomplete = (byte)-1;
     return t;
   }
 
+  /** Construct a start tag. */
   public static Token startTagFor(String tag) {
     Token t = new Token(tag);
     t.incomplete = (byte)1;
     return t;
+  }
+
+  /************************************************************************
+  ** Copying:
+  ************************************************************************/
+
+  /** Copy a token's attributes. */
+  void copyAttrsFrom(Token it) {
+    for (int i = 0; i < it.nAttrs(); ++i) 
+      addAttr(it.attrNameAt(i), it.attrValueAt(i));
+  }
+
+  /** Copy a token's content. */
+  void copyContentFrom(Token it) {
+    if (content == null && it.nItems() > 0) { content = new Tokens(); }
+    for (int i = 0; i < it.nItems(); ++i) 
+      content.addItem(it.itemAt(i));
+  }
+
+  public Object clone() {
+    return new Token(this);
   }
 
   /************************************************************************
@@ -346,6 +407,7 @@ public class Token implements SGML {
    *	 as the starting and ending strings, respectively.
    */
 
+  /** Return an SGML start tag for the given token. */
   public Text startTag() {
     if (tag == null || tag.equals("") || specialFormat) {
       return null;
@@ -365,6 +427,7 @@ public class Token implements SGML {
     }
   }
 
+  /** Return an SGML end tag for the given token. */
   public Text endTag() {
     if (tag == null || tag.equals("") || specialFormat) {
       return null;

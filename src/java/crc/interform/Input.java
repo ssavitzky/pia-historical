@@ -29,7 +29,7 @@ public abstract class Input implements Enumeration {
   ************************************************************************/
 
   /** Return the next item in this frame and advances to the next. 
-   *	nextInput() should never return null.
+   *	nextInput should never return null.
    */
   public abstract SGML nextInput();
 

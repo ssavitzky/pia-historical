@@ -30,7 +30,7 @@ public class Filter {
   static String infile = null;
   static String outfile = null;
   static String propfile = null;
-  static String tsname = null;
+  static String tsname = "Basic";
   static boolean tree = false;
   static boolean debug = false;
 

@@ -27,6 +27,10 @@ public class Text implements SGML {
     return content == null? "" :  content.toString();
   }
 
+  public Object clone() {
+    return new Text(this);
+  }
+
   /************************************************************************
   ** SGML interface:
   ************************************************************************/
@@ -153,6 +157,13 @@ public class Text implements SGML {
   ************************************************************************/
 
   public Text() {
+  }
+
+  public Text(Text t) {
+    content = t.content;
+    isStringBuffer = t.isStringBuffer;
+    isString = t.isString;
+    if (isStringBuffer) content = new StringBuffer(t.toString());
   }
 
   public Text(String s) {

@@ -30,6 +30,10 @@ public class Handler {
   public void actOn(Actor ia, SGML it, Interp ii, byte inc, int quot) {
   }
 
+  /** Initialize a new Actor object. */
+  public void initializeActor(Actor ia) {
+  }
+
   /************************************************************************
   ** Global handler table:
   ************************************************************************/
