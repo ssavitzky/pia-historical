@@ -68,7 +68,7 @@ if ($#files < 0) { print " not j6i disc \n"; exit 0; }
 $copystatus = system("cp -p $from/*  $to ");
 die " copy failed" if $copystatus;
 				# remove files now before card gets removed
-$copystatus = system("rm -f $from/* ");
+$copystatus = system("rm -f $from/* ") unless -e "/home/pia/.pia/Photo_Album/no_erase";
 
 
 #unmount ?
@@ -121,7 +121,7 @@ $jpegs=join(" ",@jpegs);
 
 	     
 $formheader = "<form method=POST action=\"$formmaker\"> <input type=hidden name=directory value=\"$dirnam\"> <input type=hidden name=files value=\"$jpegs\"> ";
-$formender = "<input name=captTitle value=\"Images from the DC1\"> <input type=submit value=\"Submit Captions\"> </form>";
+$formender = "<input name=captTitle value=\"Images from the DC\"> <input type=submit value=\"Submit Captions\"> </form>";
 
 $captionsize = 15;
 $addcaptionbox = 1;		# Adds an entry box for adding a caption
