@@ -39,7 +39,7 @@ public class getHandler extends GenericHandler {
   		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     String name = atts.getAttributeString("name");
-    Copy.copyNodes(aContext.getEntityValue(name, false), out);
+    Copy.copyNodes(Index.getIndexValue(aContext, name), out);
   }
 
   /** This does the parse-time dispatching. <p>
