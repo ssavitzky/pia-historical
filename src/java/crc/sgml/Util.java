@@ -147,7 +147,7 @@ public class Util {
 	trimmed = true;
       }
     }
-    for (int i = list.nItems(); i >= 0; --i) {
+    for (int i = list.nItems(); --i >= 0; ) {
       SGML s = list.itemAt(i);
       if (! s.isText()) {
 	if ("!".equals(s.tag()) && ! "!--".equals(s.tag())) {
