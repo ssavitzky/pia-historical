@@ -153,7 +153,7 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
    *	with special significance, such as ampersand.
    */
   public String contentString() {
-    return getData();		// insert character entities ===
+    return TextUtil.protectMarkup(getData()); // insert character entities
     //return (getChildren() == null)? getData() : getChildren().toString();
   }
 
