@@ -35,17 +35,19 @@ MAIN_TAGSETS = \
 ### Auxiliary tagsets: used internally..
 AUX_TAGSETS = \
 	tagset.ts \
-	tsdoc.ts
+	tsdoc.ts \
+	tsstrip.ts
 
 TAGSETS = $(MAIN_TAGSETS) $(AUX_TAGSETS)
 
 TAGSET_DOCS = $(TAGSETS:.ts=.html)
 TAGSET_TSOS = $(TAGSETS:.ts=.tso)
+TAGSET_TSSS = $(TAGSETS:.ts=.tss)
 
 include $(TOPDIR)/makefiles/file.make
 
 
-.SUFFIXES: .ts .html .obj .tso
+.SUFFIXES: .ts .html .obj .tso .tss
 
 ### Convert tagsets to serialized object (.tso) files
 ### Strictly speaking we would like this to be done by "all::", but
@@ -55,7 +57,12 @@ include $(TOPDIR)/makefiles/file.make
 .ts.tso:
 	process -t tagset -p $< > $@
 
+.ts.tss:
+	process -t tsstrip -q $< > $@
+
 ts-tsos:: $(TAGSET_TSOS)
+
+ts-tsss:: $(TAGSET_TSSS)
 
 ### Extract the documentation comments:
 
