@@ -18,6 +18,12 @@ import java.util.Enumeration;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import crc.ds.Sorter;
+import crc.ds.SortTree;
+import crc.ds.Association;
+import crc.ds.List;
+
+import crc.sgml.Tokens;
 
 import crc.util.regexp.RegExp;
 import crc.util.regexp.MatchInfo;
@@ -26,7 +32,6 @@ import crc.util.Utilities;
 import java.util.Properties;
 import w3c.www.http.HTTP;
 
-import crc.ds.List;
 public class FileAccess {
 
   /** If this flag is true, fix &lt;BASE&gt; tags in HTML files.  Expensive. */
@@ -82,7 +87,9 @@ public class FileAccess {
       File f = null;
       String filepath = null;
       String head = null;
-      Vector url = new Vector();
+
+      SortTree entries = new SortTree();
+
       RegExp re = null;
       MatchInfo mi = null;
       boolean noTrailingSlash = false;
@@ -128,17 +135,13 @@ public class FileAccess {
 	  if ( f.isDirectory() )
 	    entry += " <a href=\"" + mybase+zfile + "/\">" + " / " + "</a>";
 
-	  url.addElement( entry );
+	  entries.insert(Association.associate(entry, zfile));
 	}
       }
 
       if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
 
-      String allurls = new String();
-      for(int j = 0; j < url.size(); j++){
-	allurls += (String)url.elementAt( j );
-	allurls += "\n";
-      }
+      String allurls = entries.ascendingValues(new Tokens("\n")).toString();
 
       String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + mypath + "</TITLE>"
 	+ "<BASE href=\"" + mybase + "\">"
