@@ -515,6 +515,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
   ************************************************************************/
 
   // === file attributes: used only in Dofs (for root) ===
+  // === ... should really use the regular attributes.
 
   /**
    * set a file attribute
@@ -597,12 +598,18 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
   /**
    *  Returns a path to a directory that we can write data into.
-   *  creates one if necessary, starts with the following directory in order:
-   *  usrRoot/agentName/  --> example, ~/Joe/pia/myHistory/ ( ~/Joe/pia is usrRoot ) 
-   *  usrRoot/agentType/  --> example, ~/Joe/pia/History/   ( ~/Joe/pia is usrRoot ) 
-   *  /tmp/myHistory/    
+   *  <p> Searches for a writeable directory in the following order:
+   *  <ol>
+   *    <li> usrRoot/agentName/
+   *    <li> usrRoot/agentType/
+   *    <li> /tmp/agentName/  
+   *  </ol>
+   *  A directory is created if none of the above exist.
+   *
+   * <p> === This needs to use agent-specific and global defaults.
+   *	 === should probably try usrRoot/agentType/agentName first.
+   *
    * @return the first qualified directory out of the possible three above.
-   * A directory is qualified if it can be writen into.
    */
   public String agentDirectory(){
     List directories = dirAttribute("agent_directory");
@@ -1188,9 +1195,13 @@ public class GenericAgent implements Agent, Registered, Serializable {
     if ( path == null ) return null;
     List if_path = forWriting? writeSearchPath(): interformSearchPath();
     String found =  findInterform(path, name(), type(), if_path, suffixPath);
-    if (found != null || !forWriting) return found;
+    if (found != null) return found;
     // Didn't find anything, but it may be ok to create it.
-    return null;		// === for now ===
+    if (forWriting) {
+      // === this will fail for files with a leading path ===
+      return agentDirectory() + path;       
+    }
+    return null;
   }
 
   /**
