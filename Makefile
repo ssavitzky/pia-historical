@@ -73,7 +73,7 @@ rm_bin_tar::
 	 rm -f $(PIALIBDIR)/crc.zip
 rm_pia_tar::
 	rm -f pia.toc
-	rm -f pia.tgz
+	rm -f pia_src.tgz
 	rm -f $(PIALIBDIR)/crc.zip
 
 prep_rel::
@@ -100,22 +100,20 @@ crfixbat::
 
 ### Binary release
 
-pia_bin.toc:: rm_bin_tar prep_rel crfixbat cp_build_noa
+pia_bin.toc:: 
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
-	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
-	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
-	    | grep -v src/app/webfax | grep -v src/tex \
-	    | grep -v pia.tgz | grep -v pia.toc \
+	    | grep -v Contrib/Forms \
+	    | grep -v pia_src.tgz | grep -v pia.toc \
 	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
 
-pia_bin.tar:	pia_bin.toc
+pia_bin.tar:	rm_bin_tar prep_rel crfixbat cp_build_noa pia_bin.toc
 	cd ..; $(TAR) cfT pia/pia_bin pia/pia_bin.toc ;  /bin/gzip -S .tgz pia/pia_bin
 
 ### Source release
 
-pia.toc:: rm_pia_tar prep_rel crfixbat cp_build_noa
+pia.toc:: 
 	cd ..;	find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
@@ -125,29 +123,11 @@ pia.toc:: rm_pia_tar prep_rel crfixbat cp_build_noa
 	    | grep -v pia_bin.tgz | grep -v pia_bin.toc \
 	    | grep -v Doc/Slides > pia/pia.toc 
 
-pia.tar:	pia.toc
+pia.tar:	rm_pia_tar prep_rel crfixbat cp_build_noa pia.toc
 	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src
 
 ### Binary and source release
-pia_bin_src.toc:: rm_bin_tar rm_pia_tar prep_rel crfixbat cp_build_noa
-	cd ..; find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
-	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
-	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
-	    | grep -v src/app/webfax | grep -v src/tex \
-	    | grep -v pia.tgz | grep -v pia.toc \
-	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
-	cd ..;	find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
-	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
-	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
-	    | grep -v src/app/webfax | grep -v src/tex \
-	    | grep -v pia_bin.tgz | grep -v pia_bin.toc \
-	    | grep -v Doc/Slides > pia/pia.toc 
-
-pia_bin_src: 	pia_bin_src.toc
+pia_bin_src: 	rm_bin_tar rm_pia_tar prep_rel crfixbat cp_build_noa pia_bin.toc pia.toc
 	cd ..; $(TAR) cfT pia/pia_bin pia/pia_bin.toc ;  /bin/gzip -S .tgz pia/pia_bin
 	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src
 
