@@ -170,6 +170,14 @@ class State {
   ** Syntax Checking:
   ************************************************************************/
 
+  /** Return the innermost enclosing element with the given tag. */
+  public final SGML enclosingElement(String tag) {
+    for (State s = stack; s != null; s = s.stack) {
+      if (tag.equals(s.tag())) return s.it;
+    } 
+    return null;
+  }
+
   /** Return true if we are currently nested inside an element with
    *  the given tag. */
   public final boolean insideElement(String tag) {
