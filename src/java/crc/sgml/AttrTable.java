@@ -203,29 +203,35 @@ public class AttrTable extends Table implements Attrs {
     String k = null;
     SGML v;
     String tag;
+    boolean dl = false;
     for (int i = 0; i < t.nItems(); ++i) {
       v = t.itemAt(i);
       tag = v.tag();
+      //System.err.println("v=" + v + " tag=" + tag + " k=" + k + " i=" + i);
       if (tag == null) {
 	if (k != null) attr(k, v); else append(v);
-      } else if (v.isText()) {
-	if (k != null) attr(k, v); else append(v.toString());
       } else if (tag.equals("li")) {
 	v = v.content();
 	if (v != null) v = v.simplify();
 	if (k != null) attr(k, v); else append(v);
       } else if (tag.equals("dt")) {
+	dl = true;
+	v = Util.removeSpaces(v);
+	k = v.contentText().toString();
 	if (i == t.nItems()-1 || "dt".equals(t.itemAt(i+1).tag())) {
 	  // missing dd : goes in as Token.empty
-	  attr(v.contentText().toString(), Token.empty);
-	} else {
-	  // otherwise just save the key for the next item.
-	  k = v.contentText().toString();
-	}
+	  //attr(k, Token.empty);
+	} 
+      } else if (tag.equals("dd")) {
+	dl = true;
+	v = Util.removeSpaces(v);
+	// dl's seem to be very odd indeed.
+	if (k != null && attr(k) == null) attr(k, v);
+      } else if (dl) {
+	// ignore extraneous text in dl's
+      } else if (v.isText()) {
+	if (k != null) attr(k, v); else append(v.toString());
       } else {
-	if (tag.equals("dd")) {
-	  v = v.content().simplify();
-	}
 	if (k != null) attr(k, v); else append(v);
       }
     }
