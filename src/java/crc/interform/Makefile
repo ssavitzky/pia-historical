@@ -17,6 +17,7 @@ FILES = \
 	Interp.java \
 	Parser.java \
 	Run.java \
+	SecureAttrs.java \
 	State.java \
 	Tagset.java \
 	TokenStream.java \
@@ -48,6 +49,9 @@ Parser.class: Parser.java Input.java ../sgml/Entity.java ../sgml/Element.java \
 	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java
 
 Run.class: Run.java Environment.java Interp.java ../ds/Table.java
+
+SecureAttrs.class: Environment.java Interp.java ../sgml/SGML.java \
+	../sgml/Attrs.java ../sgml/AttrWrap.java ../sgml/AttrTable.java
 
 State.class: ../ds/List.java ../ds/Table.java
 
