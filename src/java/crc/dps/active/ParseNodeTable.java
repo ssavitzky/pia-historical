@@ -19,12 +19,15 @@ import java.util.Enumeration;
  */
 public abstract class ParseNodeTable implements Serializable {
 
+  protected boolean caseSensitive = true;
+
   /**
    * Retreive a value base on key.
    * @param name Key used to retreive value.
    * @return Value associated with name.
    */
   public Node getItem(String name) {
+    name = cannonizeName(name);
     return (Node) nameSpace.get( name );
   }
 
@@ -43,7 +46,8 @@ public abstract class ParseNodeTable implements Serializable {
    * @return Previous value associated with name; otherwise null.
    */
   public Node setItem(String name, Node o) {
-    // never exist before
+    name = cannonizeName(name);
+
     if( getItem( name ) == null ){
       itemList.append( o ); 
       nameSpace.put(name, o);
@@ -65,6 +69,8 @@ public abstract class ParseNodeTable implements Serializable {
    * @exception NoSuchNodeException if name does not exist. 
    */
   public Node removeItem(String name) throws NoSuchNodeException {
+    name = cannonizeName(name);
+
     if( ! nameSpace.containsKey( name ) ) 
       throw new NoSuchNodeException("No such node exists.");
 
@@ -124,7 +130,13 @@ public abstract class ParseNodeTable implements Serializable {
   }
   protected Hashtable nameSpace = new Hashtable();
   protected ParseNodeArray itemList = new ParseNodeArray();
+
+  /************************************************************************
+  ** Namespace Operations (not a complete set):
+  ************************************************************************/
+
+  public boolean isCaseSensitive() { return caseSensitive; }
+  public String cannonizeName(String name) {
+    return caseSensitive? name.toLowerCase() : name;
+  }
 }
-
-
-

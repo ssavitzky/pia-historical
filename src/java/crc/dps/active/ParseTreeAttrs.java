@@ -22,6 +22,7 @@ public class ParseTreeAttrs extends ParseNodeTable
 {
 
   public ParseTreeAttrs(){
+    caseSensitive=false;
   }
 
   /**
@@ -29,6 +30,7 @@ public class ParseTreeAttrs extends ParseNodeTable
    * Deep copy.
    */
   public ParseTreeAttrs(AttributeList l){
+    this();
     if( l != null )
       initialize( l );
   }
@@ -215,8 +217,6 @@ public class ParseTreeAttrs extends ParseNodeTable
     return null; // === getNames
   }
 
-  public boolean isCaseSensitive() { return true; }
-  public String cannonizeName(String name) { return name; }
   public boolean containsNamespaces() { return false; }
 }
 
