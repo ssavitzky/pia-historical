@@ -8,11 +8,15 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
+import crc.interform.Run;
 
 import crc.sgml.SGML;
 import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
+
+import crc.ds.List;
+import crc.ds.Criterion;
 
 
 /** Handler class for &lt;agent-set-criteria&gt tag 
@@ -36,34 +40,18 @@ public class Agent_set_criteria extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    String s = it.contentText().toString();
+    String aname= Util.getString(it, "agent", Run.getAgentName(ii));
+    String value= Util.getString(it, "value", null);
 
-    ii.unimplemented(ia);	// === never worked -- delete? ===
-  }
-}
+    Run env = Run.environment(ii);
+    crc.pia.Agent a = env.getAgent(aname);
 
-/* ====================================================================
-
-### <agent-set-criteria>query_string</agent-set-criteria>
-
-if (0) { #=== buggy!
-define_actor('agent-set-criteria', 'unsafe' => 1, 'content' => 'criteria',
-	     'dscr' => "Sets CRITERIA for agent NAME" );
-}
-sub agent_set_criteria_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $criteria = get_list($it, 'criteria');
-    my $name = $it->attr('name');
-    my $agent;
-
-    if ($name) {
-	$agent = IF::Run::resolver()->agent($name);
-    } else {
-	$agent = IF::Run::agent();
-	$name = $agent->name;
+    List l = Util.split(s);
+    for (int i = 0; i < l.nItems(); ++i) {
+      a.matchCriterion(l.at(i).toString());
     }
 
-    $agent->criteria($criteria); # === almost certainly wrong ===
-    $ii->delete_it();
+    ii.deleteIt();
+  }
 }
-*/
