@@ -154,9 +154,19 @@ public class ArrayNodeList implements EditableNodeList {
       elements.addElement( n );
   }
 
-  /** Append a new Token.
+  /** Append a new element.
    */
   public void append(Node newChild) { elements.addElement(newChild); }
+
+  /** Append a list of elements.
+   */
+  public void append(NodeList aNodeList) {
+    if (aNodeList == null) return;
+    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      append(node);
+    }
+  }
 
   /** 
    * @return string corresponding to content
