@@ -36,3 +36,24 @@ clean::
 setup::
 	@echo "Setup in" $(MYNAME)
 	@echo "     You will probably need to edit the Makefile"
+
+HEADER.html:
+	echo "<h1>$(MYPATH)</h1>"					 > $@
+	echo "<a href=\"../\">[..]</a>"					>> $@
+	echo "<a href=\"#files\">[files]</a><p>"			>> $@
+	echo "<!-- brief description goes here -->"			>> $@
+	echo "<h2>Annotated Contents</h2>"				>> $@
+	echo "<h3>Directories</h3>"					>> $@
+	echo "<dl>"							>> $@
+	echo "  <dt> <a href=\"\"></a>"					>> $@
+	echo "  <dd> "							>> $@
+	echo "</dl>"							>> $@
+	echo "<h3>Files</h3>"						>> $@
+	echo "<dl>"							>> $@
+	echo "  <dt> <a href=\"\"></a>"					>> $@
+	echo "  <dd> "							>> $@
+	echo "</dl>"							>> $@
+	echo "<hr>"							>> $@
+	echo "<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>"	>> $@
+	echo "<b>$$"Id"$$</b>"						>> $@
+	echo "<a name=\"files\"><hr></a>"				>> $@
