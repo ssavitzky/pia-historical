@@ -42,7 +42,6 @@ class State {
   int quoting;
 
   Table variables;
-  boolean hasLocalTagset;
   Tagset tagset;
 
   /** Tag of the current token */
@@ -66,7 +65,6 @@ class State {
     passing 	= s.passing;
     parsing 	= s.parsing;
     quoting 	= s.quoting;
-    hasLocalTagset = s.hasLocalTagset;
     tagset 	= s.tagset;
     variables 	= s.variables;
   }
@@ -83,7 +81,6 @@ class State {
     passing 	= s.passing;
     parsing 	= s.parsing;
     quoting 	= s.quoting;
-    hasLocalTagset = s.hasLocalTagset;
     tagset 	= s.tagset;
 
     /* null out s's object variables to speed up garbage collection */
