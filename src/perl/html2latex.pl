@@ -12,7 +12,7 @@ $timeout = undef;
 #$UJPEG = "djpeg ";
 $JPEG2PNM = "djpeg ";
 $GIFTOPNM = "giftopnm ";
-$DEFAULTIMG = "/tmp/printer/wflogo.ps";#In case an image cant be found
+$DEFAULTIMG = $PIA_ROOT . "/printer/wflogo.ps";#In case an image cant be found
 
 $latexheading = "\\batchmode\\pagestyle{myheadings}\\setlength{\\parskip4ex plus1ex minus1ex} \\setlength{\\parindent0em} \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\addtolength{\\headsep}{0.3cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
 $latexparams = "\\\\addtolength{\\\\baselineskip}{.75mm}\\\\footnotetext{$newurl}\\\\fboxrule 2.5pt ";

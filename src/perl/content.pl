@@ -142,7 +142,8 @@ sub pull{
     return $self->end unless $more;
     
     
-    $self->source->read_chunk($self);
+    my $bytes=$self->source->read_chunk($self);
+    print "read $bytes content\n";
 }
 
 #outgoing data

@@ -36,9 +36,9 @@ sub new {
     my $code = $self->code;
     print "  type is $type\n"  if defined($type) && $main::debugging;    
     print "  code is $code\n"  if defined($code) && $main::debugging;    
-    if(($type eq "POST" || $type eq "PUT") && $self->is_request()){
-##automatically done	$self->read_content($type);
+    if($self->is_request()){
 	$self->compute_form_parameters() if $type eq 'POST';
+	$self->compute_form_parameters($self->url->query) if $type eq 'GET';
     }
 
 ###need to compute form parameters if encoded in url
@@ -181,7 +181,8 @@ sub pop{
 sub handle {
     my ($self, $request, $resolver) = @_;
 
-    $resolver -> push($self);
+#    $resolver -> push($self);
+    $resolver -> unshift($self);  ##deliver responses before processingmore request
     return 1;
 }
 
@@ -370,8 +371,8 @@ sub unescape {
 
 
 sub compute_form_parameters{
-    my($self)=@_;
-    my $tosplit=$self->content();
+    my($self,$tosplit)=@_;
+    $tosplit=$self->content() unless $tosplit;
 
     my(@pairs) = split('&',$tosplit);
     my($param,$value);

@@ -43,7 +43,6 @@ sub has_more_data{
     my($self,$argument)=@_;
     return unless exists $$self{stream};
     my $remaining=$$self{_stream_length} - $$self{_bytes_read};
-    
     return $remaining;
     
 }
@@ -52,7 +51,6 @@ $chunksize=1; #defaulttoread
 sub read_chunk{
     my($self,$content)=@_;
     my $offset=0 unless $offset;
-   
     my $foo;
     my $input=$self->stream;
     return unless $input;
@@ -89,21 +87,33 @@ sub send_response{
     $string.=$reply->message;
     $string.="\n";
     print $string  if $main::debugging;
+    my $control;
+    $control=join(" ",$reply->controls)	if $reply->content_type =~ /text/;
+    $reply->content_length($reply->content_length + length($control)) if $control;
+    
+    print "content type ". $reply->content_type . "\n"  if $main::debugging;
+    	print $reply->headers_as_string() ."\n"  if $main::debugging;
+##What to do if connection dies?
+    # this doesn't work...
+  #  local $SIG{PIPE}=sub {$abort = 1; die 'connection closed';};
 
     eval {
+	local $SIG{PIPE}=sub { die 'connection closed';};
 	## Use eval so we don't die if the browser closes the connnection.
 	print {$output} $string;
 	print {$output} $reply->headers_as_string();
 	print {$output} "\n";
 ##Temporary
 
-	$control=join(" ",$reply->controls);
-	print {$output} $control;
-	print "sent controls $control" if $main::debugging;
+	
+	print {$output} $control if $control;
+	print "sent controls $control" if $control && $main::debugging;
 	##$reply->content_object->add_hook(sub { shift =~ s/<body>/$controls/i});
 	print {$output} $reply->content;
 	$self->close_stream;
-    }
+    };
+    warn $@ if $@;
+
 }
 
 # TBD accommodate multiple schemes in cached value

@@ -596,6 +596,7 @@ sub make_form{
 
 
 ### === Appears to be used only in run_init_file;
+### use retrieve for the moment to actually get a response returned to you
 sub request{
 #put request on stack for resolution
     my($self,$request)=@_;
@@ -643,13 +644,16 @@ sub create_request {
 }
 
 sub retrieve {
-    my($self,$request)=@_;
+    my($self,$request,$file)=@_;
 
     ## simple utility to grab a file or other URL.
     ##	  Because it uses LWP::UserAgent it gets the content type right.
+#if file exists, writes  content to the file
 
+##should be using proxy...
+## user agent should remain in existence
     my $ua = new LWP::UserAgent;
-    $response=$ua->simple_request($request); 
+    $response=$ua->simple_request($request,$file); 
     return $response;
 }
 

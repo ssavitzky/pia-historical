@@ -37,7 +37,7 @@ sub send_response{
     my($self,$response)=@_;
     my $callback=$self->callback;
     if(ref($callback) eq 'CODE'){
-	&$callback($agent,$response);
+	&$callback($self->agent,$response);
     }
 #otherwise just drop it
 

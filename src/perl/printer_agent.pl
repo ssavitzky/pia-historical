@@ -5,7 +5,9 @@
 require HTML::Parse;
 require HTML::FormatPS;
 
-
+##making books
+require "make_book.pl";
+require "book.pl";
 
 #Two main sections
 # first deals with retrieving and converting URL's to postscript & previews
