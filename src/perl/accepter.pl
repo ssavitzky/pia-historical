@@ -13,7 +13,9 @@ use Socket;
 use Carp;
 
 
-sub logmsg { print "$0 $$: @_ at ", scalar localtime, "\n" }
+sub logmsg { 
+    print "$0 $$: @_ at ", scalar localtime, "\n" unless $main::quiet;
+}
 
 sub acceptconnections {
  # starts listening on specified port
