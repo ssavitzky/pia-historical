@@ -51,14 +51,13 @@
 
 <set name="Count"><sum digits="0">&Count; 1</sum></set>
 
-
 <set name="LocalFile"><get index="photodata.photoid.Text"></set>
 
 <set name="Output2">
 &Output2;
 <image
 	handle = "&Count;"
-	name="&LocalFile;.jpg"/>
+	name="&LocalFile;l.jpg"/>
 </set>
 
 
@@ -127,9 +126,10 @@
         author = "PIA Group"
         copyright = "(c) 1998 Ricoh Silicon Valley Inc"
         duration = "&FinalDuration;"
-        bitrate = "100000"
-        width = "400"
-        height = "400"
+        bitrate = "20000"
+	preroll = "10000"
+        width = "350"
+        height = "350"
         timeformat = "milliseconds"/>
 </set>
 
@@ -145,7 +145,14 @@
 </imfl>
 </write>
 
-Redirecting to presentation...
-
+<!--
+<EMBED SRC="http://jaguar:8550/ramgen/Photos/Presentation.smi?embed" WIDTH="500" HEIGHT="400">
+<NOEMBED>
+-->
+Playing with <A HREF="http://www.real.com/products/player/downloadrealplayer.html">RealPlayer G2</A>...
 <meta HTTP-EQUIV="Refresh" CONTENT="1; URL=http://jaguar:8550/ramgen/Photos/Presentation.smi">
+
+<!--
+</NOEMBED>
+-->
 </body></html>
