@@ -11,7 +11,7 @@ import crc.pia.ContentOperationUnavailable;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
-
+import crc.gnu.regexp.RegExp;
 /**
  * a simple class for wrapping a string as content
  */
@@ -59,7 +59,10 @@ public class StringContent extends GenericContent{
       throw( new ContentOperationUnavailable(" no string defined"));
     }
     enterState(WRITING);
-   sink.write(myString);
+    setSink(out);
+    sink.write(myString);
+    sink.flush();
+    unsetSink();
     exitState(WRITING);
    return -1; // done writing
  }
@@ -73,6 +76,26 @@ public class StringContent extends GenericContent{
      return false; // nothing to do for strings
   }
 
+  /**
+   * replace target with replacement
+   * subject to interpretation.
+   * null  replacement implies removal of target
+   * subclass should override
+   */
+  public  void replace(Object target, Object replacement) throws ContentOperationUnavailable{
+    // Check and see if java does the right thing for more specific argument classes
+    if( target == null || replacement == null )
+      return;
+    if( !(target instanceof String) || !(replacement instanceof String)  )
+      return;
+    try{
+      String tmp = myString;
+      RegExp re = new RegExp( (String)target );
+      myString = re.substitute(tmp, (String)replacement, true);
+    }catch(Exception e){ return;}
+    
+  }
+
   public boolean isPersistent(){
     return true;
   }
@@ -83,3 +106,4 @@ public class StringContent extends GenericContent{
   // translate into regular expression operations
 
 }
+
