@@ -7,7 +7,7 @@
 <set entity  name=latest><read file=".latest"></set>
 <table align=center>
 <TR><TD><a href="http://&piaHOST;:&piaPORT;/&agentName;/latest.if">
-<if><agent-running name="Logo"><then><img src="/photos/&latest;/r0100001.small.gif"  height=32 width=32 alt=new><br></then></if>
+<if><agent-running name="Logo"><then><img src="/Photos/&latest;/r0100001.small.gif"  height=32 width=32 alt=new><br></then></if>
 Newest Photos</a>
 <TD>
 <a href="http://&piaHOST;:&piaPORT;/&agentName;/catalog.if">
