@@ -18,7 +18,7 @@ package IF::IT;
 sub new {
     my ($class, $tag, @attrs) = @_;
 
-    ## IF::IT->new($tag, $attr => $val, ...)
+    ## IF::IT->new($tag, $attr => $val, ..., [$content...])
     ##	 Make a new token.  
     ##	 $tag may take on the following special values:
     ##	    "!"	  -- SGML declaration
@@ -41,7 +41,13 @@ sub new {
 
     my($attr, $val);
     while (($attr, $val) = splice(@attrs, 0, 2)) {
-	$val = $attr unless defined $val;
+	if (! defined $val) {
+	    unshift(@attrs, $attr);
+	    while ($val = shift(@attrs)) {
+		$self->push($val);
+	    }
+	    return $self;
+	}
 	$attr = lc $attr;
 	$self->{$attr} = $val;
 	push(@$list, lc $attr) unless $attr =~ /^\_/;
@@ -120,7 +126,7 @@ sub attr_list {
     ## return all the attributes in a list of pairs
 
     my $attrs = [];
-    my @list = $self->attr_list;
+    my $list = $self->attr_names;
     for (@$list) {
 	push(@$attrs, $_);
 	push(@$attrs, $self->{$_});
@@ -163,6 +169,39 @@ sub is_active {
     return 0;
 }
 
+### Handlers:
+###	There are two kinds of handlers: enter and leave.  Both are
+###	called by the Interform Interpretor to perform semantic actions
+###	on an already-parsed subtree.
+
+sub enter_handlers {
+    my ($self, @v) = @_;
+
+    ## Returns a reference to the list of enter handlers.  
+    ##	  Any additional arguments are pushed onto the list.
+
+    my $list = $self->{'_enter_handlers'};
+    return $list unless @v;
+
+    $self->{'_enter_handlers'} = $list = [] unless defined $list;
+    push(@$list, @v);
+    return $list;
+}
+
+sub leave_handlers {
+    my ($self, @v) = @_;
+
+    ## Returns a reference to the list of enter handlers.  
+    ##	  Any additional arguments are pushed onto the list.
+
+    my $list = $self->{'_leave_handlers'};
+    return $list unless @v;
+
+    $self->{'_leave_handlers'} = $list = [] unless defined $list;
+    push(@$list, @v);
+    return $list;
+}
+
 ### Content:
 ###	We use the simplified syntax of push, pop, unshift, and shift
 ###	rather than the clumsier push_content, and provide a complete set.
@@ -174,7 +213,9 @@ sub push {
     $self->{'_content'} = [] unless exists $self->{'_content'};
     my $content = $self->{'_content'};
     for (@_) {
-	if (ref $_) {
+	if (ref($_) eq 'ARRAY') {
+	    $self->push(@$_);
+	} elsif (ref $_) {
 	    push(@$content, $_);
 	} else {
 	    # The current element is a text segment
@@ -277,7 +318,7 @@ sub content_string {
 sub content_token {
     my ($self) = @_;
 
-    ## Returns the content as a single token.
+    ## Returns the content as a single token (or string).
     ##	 This means making a tagless node if necessary.
 
     my $content = $self->content;

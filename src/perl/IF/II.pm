@@ -451,6 +451,79 @@ sub process_it {
 
 #############################################################################
 ###
+### Input from the input stack:
+###
+###	The input stack contains either strings, tokens, or lists.
+###	Lists have the form [tag, pc, [token...]] and are used for
+###	stepping through the content of a token without excessive copying.
+###	When the end of the token list is reached, the entire list is returned.
+###
+
+sub next_input {
+    my ($self) = @_;
+
+    ## Return the next item on the input stack.  Pop if necessary.
+
+    my $in_stack = $self->in_stack;
+    my $input = pop @$in_stack;
+
+    return $input unless ref($input) eq 'ARRAY';
+
+    my ($tag, $pc, $tokens) = @$input;
+    print "bizarre content = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
+    return $input unless ref $tokens eq 'ARRAY';
+    my $out = $tokens->[$pc++];
+
+    return $input unless defined $out;
+    
+    $input->[1] = $pc;
+    push @$in_stack, [$tag, $pc, $tokens];
+    return $out;
+}
+
+sub push_input {
+    my ($self, @input) = @_;
+
+    ## Push a single item or list onto the input stack
+
+    return unless defined @input;
+    my $in_stack = $self->in_stack;
+    push @$in_stack, @input;
+}
+
+sub push_into {
+    my ($self, $it) = @_;
+
+    ## Push the content of a token onto the input stack
+    ##	  Return a copied start tag for the token.
+
+    my $in_stack = $self->in_stack;
+    if (ref($it) eq 'ARRAY') {
+	push(@$in_stack, ['', 0, $it]);
+	return undef;
+    } else {
+	push (@$in_stack, [$it->tag, 0, $it->content]);
+	my $attrs = $it->attr_list;
+	return IF::IT->new($it->tag, @$attrs);
+    }
+}
+
+sub need_start_tag {
+    my ($self, $it) = @_;
+
+    ## Return true if we need to generate a start tag for $it.
+    ##	  We only need a start tag (processed with $incomplete=1)
+    ##	  if the token needs an end tag, and only if it's not being
+    ##	  quoted (in which case we won't be doing anything to it).
+
+    return 0 unless ref $it;
+    return 0 if $self->quoting;
+    return 0 unless $it->needs_end_tag($self);
+    return 1;
+}
+
+#############################################################################
+###
 ### Processing:
 ###
 
@@ -558,7 +631,6 @@ sub end_it {
 ###	   2.	apply any interested agents
 ###	   3.	put the token in the right place.
 ###
-### ===	Really needs to do process_it iteratively.
 
 sub resolve {
     my ($self, $it, $incomplete) = @_;
@@ -571,12 +643,18 @@ sub resolve {
 
     my $dstack = $self->dstack;
     my $cstack = $self->cstack;
+    $incomplete = 0 unless defined $incomplete;
 
     while ($it) {
 	## Loop as long as there are tokens to be processed.
 
+	if ($incomplete < 0 && ! ref($it)) {
+	    my $was_parsing = $self->parsing;
+	    $self->state(pop(@$cstack));
+	    $it = pop(@$dstack);
+	    $incomplete = $was_parsing? 0 : -1;
+	}
 	$self->token($it);
-	$incomplete = 0 unless defined $incomplete;
 	$it->status($incomplete) if ref($it);
 
 	print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
@@ -585,18 +663,21 @@ sub resolve {
 	if ($incomplete > 0) {
 
 	    ## Start tag: 
-	    ##	 Push $it onto the data stack, and push $state onto the 
-	    ##	 control stack.
+	    ## check for interested agents.
+	    ##	keep track of any that register as handlers.
 
 	    $self->handlers([]);	# Clear the handler list.
+
+	    ## Push $it onto the data stack, 
+	    ## and push $state onto the control stack.
+	    ##	  We push here instead of waiting, because the handlers
+	    ##	  want to control the parse in the new context, so we need
+	    ##	  local parsing and quoting flags for them to set.
+
 	    my $state = $self->state;
 	    my %newstate = %$state; 	# copy the state
 	    push(@$cstack, \%newstate);	# Push it on the control stack
-	    $self->variables({});	# clear the variable table.
 	    push(@$dstack, $it);	# push token on the data stack
-
-	    ## check for interested agents.
-	    ##	keep track of any that register as handlers.
 
 	    $self->check_for_interest($it, 1) unless $self->quoting;
 
@@ -608,7 +689,6 @@ sub resolve {
 		print " deleted " if $main::debugging > 1;
 		$self->state(pop(@$cstack));
 		pop(@$dstack);
-		return;
 	    } elsif (!ref($it) || !$it->status) {
 		## Some agent has marked the token as finished
 		##	so pop it and go 'round again.
@@ -618,11 +698,11 @@ sub resolve {
 		$incomplete = 0;
 		next;
 	    } else {
-		## Nothing serious happened, so we're done.
-		##	Clear the handler lisst in the new state.
+		## Nothing serious happened--it stays pushed.
+		##	Clean up the new state.
+		$self->variables({});	# clear the variable table.
 		$self->handlers([]);
 		$self->pass_it($it, 1) if $self->passing;
-		return;
 	    }
 	} elsif ($incomplete <= 0) {
 	    ## End tag or complete token (already popped)
@@ -631,12 +711,27 @@ sub resolve {
 	    $self->check_for_interest($it) unless $self->quoting;
 	    $self->check_for_handlers($it);
 
-	    $it = $self->token;	# might have been changed.
-	    return if (!defined($it) || $it eq ''); # might have been deleted.
+	    $it = $self->token;	# might have been changed or even deleted.
+	    if (defined($it) && $it ne '') {
+		$self->push_it($it) if $self->parsing;
+		$self->pass_it($it, $incomplete) if $self->passing;
+	    }
+	}
 
-	    $self->push_it($it) if $self->parsing;
-	    $self->pass_it($it, $incomplete) if $self->passing;
-	    return;
+	## get another token and figure out what it was.
+
+	$it = $self->next_input;
+	if (ref($it) eq 'ARRAY') {
+	    ## The end of some tag's content.
+	    $it = $it->[0];
+	    $incomplete = -1;
+	} elsif ($self->need_start_tag($it)) {
+	    ## Something that needs processing on its contents.
+	    $it = $self->push_into($it);
+	    $incomplete = 1;
+	} else {
+	    ## Complete token which is either empty or quoted
+	    $incomplete = 0;
 	}
     }
 }
@@ -822,39 +917,11 @@ sub replace_it {
     $self->token($it);
 }
 
-sub eval_perl {
-    my ($self, $it) = @_;
+sub delete_it {
+    my ($self) = @_;
 
-    ## This bit of legacy crud evaluates the contents of $it as PERL code.
-    ##	  The local variables $agent and $request will already have been
-    ##	  set up by run_interform.
-
-    local $agent = IF::Run::agent();
-    local $request = IF::Run::request();
-
-    print "II Error: missing token\n" unless defined $it;
-    print "II Error: $it not a token\n" unless ref($it);
-    return unless ref($it);
-
-    my $foo = $it->content;
-    print "II Error: missing content\n" unless defined $foo;
-    my @code_array=@$foo;
-    my $result = IF::IT->new($it->tag);
-    my $code, $status;
-    while($code=shift(@code_array)){
-	print "execing $code \n" if $main::debugging > 1;
-	if (ref($code)){
-	    $status = $code;	# this is an html element
-	} else {
-	    #evaluate string and return last expression value
-	    $status= $agent->run_code($code, $request);
-	    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-	    print "code status is $status\n" if  $main::debugging;
-	}
-	$result->push($status) if $status;
-    }
-
-    $self->token($result);    
+    $self->token('');
 }
+
 
 1;

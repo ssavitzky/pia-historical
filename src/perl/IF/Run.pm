@@ -170,4 +170,29 @@ sub request {
     return $request;
 }
 
+sub eval_perl {
+    my ($ia, $it, $ii) = @_;
+
+    ## This bit of legacy crud evaluates the contents of $it as PERL code.
+    ##	  The local variables $agent and $request will already have been
+    ##	  set up by run_interform.
+
+    ## These aren't needed as long as we're inside IF::Run
+    ## local $agent = agent();
+    ## local $request = request();
+
+    print "II Error: missing token\n" unless defined $it;
+    print "II Error: $it not a token\n" unless ref($it);
+    return unless ref($it);
+
+    my $status = $agent->run_code($it->content_string, $request);
+    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
+    print "code result is $status\n" if  $main::debugging;
+
+    $ii->token(IF::IT->new($it->tag, $status));    
+    return;
+}
+
 1;
+
+

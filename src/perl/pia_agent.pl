@@ -10,9 +10,8 @@ package PIA_AGENT;
 
 ### === HTML::Element and HTML::AsSubs are now used only in 
 ### === legacy InterForms and in the printer agent.
-use HTML::Element;
-use HTML::AsSubs;		# defines element constructor functions.
-				# very useful for interforms.
+#use HTML::Element;
+#use HTML::AsSubs;		# defines element constructor functions.
 
 use IF::Run;			# The new InterForm interpretor.
 
@@ -518,30 +517,27 @@ sub run_hook {
 ### Utility functions for responding to requests:
 ###
 
-
-
-
 sub make_list{
     my ($reference,@rest)=@_;
     my $element;
     my $particle;
     my $key;
     if(ref($reference)){
-	$element=HTML::Element->new( 'dl');
+	$element=IF::IT->new( 'dl');
 	foreach $key (keys(%{$reference})){
-	   $particle= HTML::Element->new( 'dt');
+	   $particle= IF::IT->new( 'dt');
 	   $particle->push_content($key);
 	   $element->push_content($particle);
-	   $particle= HTML::Element->new( 'dd');
+	   $particle= IF::IT->new( 'dd');
 	   $particle->push_content($$reference{$key});
 	   $element->push_content($particle);
        }
     } else {
 	unshift(@rest,$reference);
 	
-	$element=HTML::Element->new( 'ul');
+	$element=IF::IT->new( 'ul');
 	foreach $key (@rest){
-	   $particle= HTML::Element->new( 'li');
+	   $particle= IF::IT->new( 'li');
 	   $particle->push_content($key);
 	   $element->push_content($particle);
        }
@@ -583,9 +579,9 @@ sub make_form{
 sub request{
 #put request on stack for resolution
     my($self,$request)=@_;
-    $request=TRANSACTION->new($request,$main::this_machine) unless ref($request) eq 'TRANSACTION';
+    $request=TRANSACTION->new($request,$main::this_machine)
+	unless ref($request) eq 'TRANSACTION';
     $main::main_resolver->push($request);
-    
 }
 
 sub create_request {
