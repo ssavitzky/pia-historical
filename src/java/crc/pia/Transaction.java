@@ -789,9 +789,12 @@ public abstract class Transaction extends AttrBase
    * resolved:
    * called by resolver when we are ready to be satisfied
    */
-  public void resolved() 
+  public synchronized void resolved() 
   {
     resolved = true;
+    notify();  //wake up if sleeping
+    
+   
     
   }
 
@@ -923,25 +926,25 @@ public abstract class Transaction extends AttrBase
     // loop until we get resolution, filling content object
     // (up to some memory limit)
     while(!resolved){
-      //contentobject returns false when object is complete
-      //if(!contentObj.processInput(fromMachine)) 
-
       Pia.debug(this, "Waiting to be resolved");
+      long delay = 100;
 
-      long delay = 1000;
-      /*
       try{
-	Thread.currentThread().sleep(delay);
-      }catch(InterruptedException ex){;}
-      */
-
-      if(!contentObj.processInput()) {
-	try{
-	  Thread.currentThread().sleep(delay);
-	}catch(InterruptedException ex){;}
+        // process incoming data
+        if(!contentObj.processInput()) synchronized (this){
+          //  no more data to process, so wait for resolution
+          if(! resolved) wait();
+        }
+        else  synchronized (this){
+	  // sleep for a while
+          if(! resolved) wait(delay);
+          //	  Thread.currentThread().sleep(delay);
+	}
       }
-
+      catch(InterruptedException ex){;}
+      
     }
+    
     
     // resolved, so now satisfy self
     satisfy( resolver);
