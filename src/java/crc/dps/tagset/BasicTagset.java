@@ -212,9 +212,10 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   /**Creates an ActiveElement; otherwise identical to CreateElement. */
   public ActiveElement createActiveElement(String tagname,
-				   AttributeList attributes){
+					   AttributeList attributes, 
+					   boolean hasEmptyDelim){
     Handler h = getHandlerForTag(tagname);
-    return new ParseTreeElement(tagname, attributes, h);
+    return h.createElement(tagname, attributes, hasEmptyDelim);
   }
 
   /** Creates an ActiveNode of arbitrary type with (optional) data. */
@@ -225,16 +226,14 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   /** Creates an ActiveNode of arbitrary type with name and (optional) data. */
   public ActiveNode createActiveNode(int nodeType, String name, String data) {
     Handler h = getHandlerForType(nodeType);
-    ActiveNode n = Create.createActiveNode(nodeType, name, data);
-    n.setHandler(h);
-    return n;
+    return h.createNode(nodeType, name, data);
   }
 
   /** Creates an ActivePI node with name and data.
    */
   public ActivePI createActivePI(String name, String data) {
     Handler h = getHandlerForType(NodeType.PI);
-    return new ParseTreePI(name, data, h);
+    return (ActivePI) h.createNode(NodeType.PI, name, data);
   }
 
   /** Creates an ActiveAttribute node with name and value.
@@ -248,7 +247,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    */
   public ActiveEntity createActiveEntity(String name, NodeList value) {
     Handler h = getHandlerForType(NodeType.ENTITY);
-    return new ParseTreeEntity(name, value, h);
+    return (ActiveEntity) h.createNode(NodeType.ENTITY, name, value);
   }
 
   /** Creates an ActivePI node.
