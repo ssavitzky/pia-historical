@@ -207,7 +207,7 @@ public class BasicProcessor extends ContextStack implements Processor {
   public void expandEntity(Entity n, Output dst) {
     String name = n.getName();
     NodeList value = null;
-    if (name.indexOf('.') >= 0) value = getIndexValue(name);
+    if (name.indexOf('.') >= 0) value = Index.getIndexValue(this, name);
     else 
       value = getEntityValue(name, false);
     if (value == null) {

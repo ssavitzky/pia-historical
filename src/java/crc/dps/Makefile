@@ -20,6 +20,7 @@ FILES = \
 	BasicProcessor.java \
 	Context.java \
 	DocumentProcessor.java \
+	InterFormProcessor.java \
 	EntityTable.java \
 	Filter.java \
 	Handler.java \
@@ -27,6 +28,7 @@ FILES = \
 	NodeType.java \
 	Output.java \
 	Parser.java \
+	ProcessException.java \
 	Processor.java \
 	ProcessorInput.java \
 	Syntax.java \

@@ -82,18 +82,9 @@ public interface Context {
    */
   public NodeList getEntityValue(String name, boolean local);
 
-  /** Get the value of an index, i.e. a dotted list of entity names. 
-   * @return <code>null</code> if the value is undefined.
-   */
-  public NodeList getIndexValue(String index);
-
   /** Set the value of an entity. 
    */
   public void setEntityValue(String name, NodeList value, boolean local);
-
-  /** Set the value of an index, i.e. a dotted list of entity names. 
-   */
-  public void setIndexValue(String index, NodeList value);
 
 
   /************************************************************************

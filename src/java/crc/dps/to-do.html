@@ -5,30 +5,57 @@
 </head><body>
 <h1>To-Do List</h1>
 
+<blockquote><em>
+  This file contains pending tasks for the DPS system. 
+</em></blockquote>
+
+See also: <a href="done.html">Completed tasks</a>.
+
 <ul>
-  <li> <b>Check:</b> 1998/6/15 | copying <br>
+  <li> <b>Bug:</b> Bugs with independent ParseTree DOM <br>
+       After making ParseTreeElement, etc. descend from ParseTreeNode, empty
+       elements are not identified, and &lt;test match&gt; produces odd
+       results.
+       (1998/6/17) <br>
+
+  <li> <b>Hole:</b> NamedNodeList from Table <br>
+       Want to be able to wrap a Table as a NamedNodeList.  This will provide
+       the DPS equivalent of <code>crc.sgml.AttrWrap</code>.
+       (1998/6/16) <br>
+
+  <li> <b>Impr:</b>  tag handler classes need loader methods <br>
+       Tagset shouldn't have to know how to load classes for handlers.  Having
+       static methods for this would allow tag handlers to manage their own
+       name spaces. 
+       (1998/6/16) <br>
+
+  <li> <b>Check:</b>  copying <br>
        Non-processed parse trees (e.g. &lt;else&gt;) should never be copied.
        Copying should use <code>putNode</code> if the node actually has
        children; recursion if the children are unparsed.
+       (1998/6/15)<br>
 
-  <li> <b>Impr:</b> 1998/6/15 | <code>EntityHandler</code> needed <br>
+  <li> <b>Impr:</b>  <code>EntityHandler</code> needed <br>
        having a specific handler for expandable entities would help a lot.
+       (1998/6/15) <br>
 
-  <li> <b>Impr:</b> 1998/6/15 | <code>Filter</code> parse tree input <br> 
+  <li> <b>Impr:</b> <code>Filter</code> parse tree input <br> 
        Filter should  be able to read a serialized parse tree.
-       <br>
-       It should do so if the input file ends in ``<code>.obj</code>''.
+       (1998/6/15) <br>
+       -- It should do so if the input file ends in ``<code>.obj</code>''.
        
-  <li> <b>Query:</b> 1998/6/15 | &lt;test zero&gt; non-number&lt;/&gt; = ?<br>
+  <li> <b>Query:</b>  &lt;test zero&gt; non-number&lt;/&gt; = ?<br>
        Not clear whether non-numerics should test as zero or not.  The most
        consistant thing would be for whitespace to return <code>true</code>,
        non-whitespace to return <code>false</code>.
+       (1998/6/15)
 
-  <li> <b>Impr:</b> 1998/6/15 | Dispatching: create fewer instances <br>
+  <li> <b>Impr:</b> Dispatching: create fewer instances <br>
        Dispatching should create a new handler instance only when necessary;
        normally it should cache instances with standard attributes.
+       (1998/6/15) <br>
 
-  <li> <b>Hole:</b> | Legacy Handlers <br>
+  <li> <b>Hole:</b> Legacy Handlers <br>
        actor-attrsQ actor-dscrQ actor-docQ actor-syntaxQ getQ tagset-existsQ
        tagset-loadQ tagset-includeQ elementQ actor-namesQ calendarQ fileQ
        readQ get.envQ read.fileQ read.hrefQ authenticateQ agent-criteriaQ
@@ -41,43 +68,35 @@
        password-file-entryX agent-set-criteriaX agent-set-optionsX
        agent-installX submit-formsX trans-controlX set.agentX set.formX
        set.piaX set.transX protectQ repeatQ foreachQ actorQ processQ
-       <br>
+       (1998/6/15) <br>
        <b>done:</b> subst if else then test
 
-  <li> <b>Hole:</b> | New Handlers <br>
+  <li> <b>Hole:</b> New Handlers <br>
        <br>
        <b>done:</b> subst if else then elsf test
 
-  <li> <b>Hole:</b> | {get/set)IndexValue  <br>
-       Should do this using utils in <code>crc.dps.aux.Index</code>.
-
-  <li> <b>Check:</b> | attribute and tag case sensitivity <br>
+  <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
 
-  <li> <b>Impr:</b> | <code>NamedActiveNode</code> names <br>
+  <li> <b>Impr:</b> <code>NamedActiveNode</code> names <br>
        Named nodes should have defined, assigned and default values. Only
        defined value should be the children; it would be used for the
        <em>definition</em> of a name.  Want to be able to share assigned
        values; the NodeList of an assigned value would be a copy (just like we
        presently do for attribute lists, and for the same reason). 
 
-  <li> <b>Hole:</b> | <code>crc.dps.active</code> DOM implementation <br>
-       Fairly soon we will want to expand ParseTree* to a full DOM
-       implementation, and make it completely independent from the
-       implementations in <code>crc.dom</code>. 
-
-  <li> <b>Impr:</b> | <code>AbstractActiveNode</code> deepCopy <br>
+  <li> <b>Impr:</b> <code>AbstractActiveNode</code> deepCopy <br>
        <code>deepCopy</code> should use a method in the abstract parent to
        copy the children.  The reason it doesn't now is that the existing
        method meant for that purpose is in <code>crc.dom.AbstractNode</code>,
        and doesn't constructive active nodes.  It uses <code>clone</code>, and
        it's broken.
 
-  <li> <b>Hole:</b> | <code>BasicParser</code>: content parse control <br>
+  <li> <b>Hole:</b> <code>BasicParser</code>: content parse control <br>
        Currently Parser does not check syntax of current node to see whether
        to look for entities or elements in the content.  
 
-  <li> <b>Impr:</b> | <code>ParseTreeElement</code> hasActiveAttributes <br>
+  <li> <b>Impr:</b> <code>ParseTreeElement</code> hasActiveAttributes <br>
        ParseTreeElement should keep information about whether any of its
        attributes contain entities that need to be expanded.  Should be much
        faster, since most don't and it's known at parse time. <p>
@@ -85,17 +104,17 @@
        The other possibility is lazy evaluation -- don't even look at them
        until they're needed when converting an attribute's value to a string.<p>
 
-  <li> <b>Wish:</b> | <code>toNextNode</code>  <br>
+  <li> <b>Wish:</b> <code>toNextNode</code>  <br>
        Might want flag in Input's that tells whether the current node has been
        processed yet.  (really relevant only for toNextNode, to keep track of
        whether we've enumerated the children yet)
 
-  <li> <b>Wish:</b> | <code>ParseTreeIterator</code> <br>
+  <li> <b>Wish:</b> <code>ParseTreeIterator</code> <br>
        We will want a ParseTreeIterator that implements both Input and
        Output (and of course TreeIterator).  The main use would be
        constructing an node and then processing it.
 
-  <li> <b>Wish:</b> | <code>ParseTreeGenericNode</code> <br>
+  <li> <b>Wish:</b> <code>ParseTreeGenericNode</code> <br>
        Eventually there should be a ParseTreeGenericNode, basically Token, so
        that we can build trees with arbitrary node types.
 </ul>

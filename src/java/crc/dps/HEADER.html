@@ -2,28 +2,34 @@
 
 <a href="../">[..]</a>
 <a href="#files">[files]</a>
-( <a href="about.html">about</a>,
+(
+  <a href="#Packages">Packages</a>
+  <a href="#Interfaces">Interfaces</a>
+  <a href="#Classes">Classes</a>
+  <a href="#Exceptions">Exceptions</a> ||
+  <a href="about.html">about</a>,
   <a href="to-do.html">to-do</a>,
   <a href="done.html">done</a>
 )
 <p>
 
 This directory contains the all-new, all-singing, all-dancing,
-SGML-based, buzzword-compliant Document Processing System. <p>
+SGML-based, XML-ready, buzzword-compliant Document Processing System. <p>
 
 Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
 
 <h2>Annotated Contents</h2>
 
-<h3>Packages</h3>
+<h3><a name="Packages">Packages</a></h3>
 
 <dl>	
   <dt> <a href="active/">active/</a>
-  <dd> Parse trees made out of ``active nodes''.
+  <dd> Parse trees made out of ``<a href="Active.java">Active</a> nodes''.
   <dt> <a href="aux/">aux/</a>
   <dd> Auxiliary classes, not meant for use by the casual programmer.
+       Includes implementations of several <code>crc.dps</code> interfaces.
   <dt> <a href="handle/">handle/</a>
-  <dd> The Handle subclasses that implement actions (operations) attached to
+  <dd> The Handler subclasses that implement actions (operations) attached to
        actors.  It turns out that <code>tags</code> is a bad name for a
        subdirectory, since it's the name used for the ``tag file'' created by
        the <code>ctags</code> utility.  CVS ignores it, and various cleanup
@@ -33,7 +39,8 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="output/">output/</a>
   <dd> Destinations for nodes.
   <dt> <a href="parse/">parse/</a>
-  <dd> Parsers (i.e. Readers for nodes).
+  <dd> Parsers (i.e. Readers for nodes).  The <code>Parser</code> interface
+       extends <code>Input</code>.
   <dt> <a href="tagset/">tagset/</a>
   <dd> Tagsets (lookup tables for syntax and semantic Handlers).
   <dt> <a href="test/">test/</a>
@@ -41,7 +48,8 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
        <p>
 </dl>
 
-<h3>Interfaces</h3>
+<hr>
+<h3><a name="Interfaces">Interfaces</a></h3>
 
 <h4>Contexts</h4>
 <dl>
@@ -65,7 +73,8 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="Syntax.java">Syntax</a>
   <dd> Interface for node syntax handlers. 
   <dt> <a href="Handler.java">Handler</a>
-  <dd> Combination of Syntax and Action handlers.
+  <dd> Combination of <a href="Syntax.java">Syntax</a> and
+       <a href="Action.java">Action</a> handlers.
 </dl>
 
 <h4>Bindings</h4>
@@ -85,11 +94,15 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dd> A source of nodes, essentially a tree traverser.
   <dt> <a href="Parser.java">Parser</a>
   <dd> An Input that parses nodes from a character stream.
+  <dt> <a href="ProcessorInput.java">ProcessorInput</a>
+  <dd> An Input that has a reference to the Processor to which it is supplying
+       input.  Probably not needed anymore.
   <dt> <a href="Output.java">Output</a>
   <dd> A tree constructor.
 </dl>
 
-<h3>Classes</h3>
+<hr>
+<h3><a name="Classes">Classes</a></h3>
 ``Abstract'' in a name marks an abstract base class; ``Basic'' marks a class
 with full but perhaps limited functionality.
 <p>
@@ -102,6 +115,14 @@ with full but perhaps limited functionality.
   <dt> <a href="Filter.java">Filter</a>
   <dd> A main-program wrapper that allows a DocumentProcessor to be used as a
        filter for (<em>gasp!</em>) processing documents. 
+</dl>
+
+<hr>
+<h3><a name="Exceptions">Exceptions</a></h3>
+
+<dl>
+  <dt> <a href="ProcessException.java">ProcessException</a>
+  <dd> Generic RuntimeException for the DPS.
 </dl>
 
 <hr>

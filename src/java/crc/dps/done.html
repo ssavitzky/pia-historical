@@ -9,53 +9,64 @@
   This file contains completed tasks. 
 </em></blockquote>
 
-<a href="#end">Most Recent Last.</a>
+See also: <a href="to-do.html">Pending tasks</a><p>
+
+&gt;&gt; <a href="#end">Most Recent Entry</a> (at end.)
 
 <ul>
-  <li> 1998/6/12 <b>Bug:</b> 1998/6/11 | true branch of &lt;if&gt; failing.
-       <br>
-       This turned out to be due to the fact that, unlike
-       <code>java.util.Enumeration</code>, a <code>NodeEnumerator</code> skips
-       the first item if you start with <code>getNext</code> instead of
-       <code>getFirst</code>.
+  <li> 1998/6/12 <b>Bug:</b>  true branch of &lt;if&gt; failing. <br>
+       (1998/6/11) <br>
+       -- This turned out to be due to the fact that, unlike
+          <code>java.util.Enumeration</code>, a <code>NodeEnumerator</code>
+          skips the first item if you start with <code>getNext</code> instead
+          of <code>getFirst</code>.
 
-  <li> 1998/6/12 <b>Check:</b> 1998/6/12 | Loops with NodeEnumerator <br>
+  <li> 1998/6/12 <b>Check:</b>  Loops with NodeEnumerator <br>
        Loops involving a <code>NodeEnumerator</code> have to
        start with <code>getFirst</code> -- <code>getNext</code> skips the
        first element (unlike a <code>java.util.Enumeration</code>)!
+       (1998/6/12)
        
-  <li> 1998/6/12 <b>Bug:</b>  1998/6/11 | <code>testHandler</code> <br>
+  <li> 1998/6/12 <b>Bug:</b> <code>testHandler</code> <br>
        &lt;test&gt;foo&lt;/test&gt; returns 11 -- extra put, perhaps.
-       <br>
-       Missing return, actually, after the test for null attribute list.
+       (1998/6/11) <br>
+       -- Missing return, actually, after the test for null attribute list.
 
-  <li> 1998/6/15 <b>Bug:</b> 1998/6/11 | entity substitution <br>
+  <li> 1998/6/15 <b>Bug:</b> entity substitution <br>
        &amp;date; not getting substituted (i.e. not getting looked up) in
        running text, but substituted correctly in attributes.
-       <br>
-       Caused by AbstractHandler not checking for NodeType == ENTITY.
+       (1998/6/11) <br>
+       -- Caused by AbstractHandler not checking for NodeType == ENTITY.
 
-  <li> 1998/6/15 <b>Bug:</b> 1998/6/12 | nested &lt;if&gt; <br>
+  <li> 1998/6/15 <b>Bug:</b> nested &lt;if&gt; <br>
        The correct branch is selected, but appears twice in the output.
-       <br>
-       [copying a node that actually has children should just do a putNode and
-       not recurse.]
+       (1998/6/12) <br>
+       -- [copying a node that actually has children should just do a putNode
+	  and not recurse.]
 
-  <li> 1998/6/15 <b>Bug:</b> 1998/6/12 | &lt;if text&gt; <br>
+  <li> 1998/6/15 <b>Bug:</b> &lt;if text&gt; <br>
        any element in the condition appears to be considered true.
-       <br>
-       Incorrect dispatching -- Wasn't dispatching if no subtype attr.
-       This meant that <code>text</code>, specifically, wasn't handled.
+       (1998/6/12) <br>
+       -- Incorrect dispatching:  wasn't dispatching if no subtype attr.
+          This meant that <code>text</code>, specifically, wasn't handled.
 
-  <li> 1998/6/15 <b>Hole:</b> 1998/6/15 | <code>Filter</code> parse tree
-       output <br> 
+  <li> 1998/6/15 <b>Hole:</b> <code>Filter</code> parse tree output <br> 
        parse tree input &amp; output should use serialized object streams.
-       <br>
-       The <code>-n</code> option was added to permit parsing but not
-       expanding an input file.
+       (1998/6/15) <br>
+       -- The <code>-n</code> option was added to permit parsing but not
+          expanding an input file.
+
+  <li> 1998/6/16 <b>Hole:</b> get/set)IndexValue  <br>
+       Should do this using utils in <code>crc.dps.aux.Index</code>.
+
+  <li> 1998/6/17 <b>Hole:</b> <code>crc.dps.active</code> DOM implementation <br>
+       Fairly soon we will want to expand ParseTree* to a full DOM
+       implementation, and make it completely independent from the
+       implementations in <code>crc.dom</code>. <br>
+       -- completed 6/17 with some bugs remaining.
 
 </ul>
-<a name="end">Most Recent.</a>
+<a name="end">End of list.</a>
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

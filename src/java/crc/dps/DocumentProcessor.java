@@ -19,7 +19,7 @@ import crc.ds.List;
  * A top-level Processor, implementing the TopContext and Processor
  *	interfaces.
  *
- *	A top context is the root of a document-processing Context stack. 
+ *	A TopContext is the root of a document-processing Context stack. 
  *	As such, it contains the tagset, global entity table, and other
  *	global information. <p>
  *
@@ -88,51 +88,49 @@ public class DocumentProcessor extends BasicProcessor implements TopContext
 				     + " May June July August"
 				     + " September October November December");
 
+  /** Initialize date-dependentent entities. */
+  public void initializeDateEntities(Date date) {
+    // The Calendar instance performs all the necessary extraction.
+    Calendar today = new GregorianCalendar();
+    String yyyy	   = pad(today.get(Calendar.YEAR), 4);
+    int    m	   = today.get(Calendar.MONTH);
+    String mm	   = pad(m+1, 2);
+    String dd      = pad(today.get(Calendar.DAY_OF_MONTH), 2);
+    String hh	   = pad(today.get(Calendar.HOUR_OF_DAY), 2);
+    String min     = pad(today.get(Calendar.MINUTE), 2);
+    String sec     = pad(today.get(Calendar.SECOND), 2);
+
+    // Handle any reasonable value of Sunday.  We need Sunday = 0.
+    int wday	   = (today.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
+
+    // Define the entities:
+    define("second",		sec);
+    define("minute",		min);
+    define("hour",		hh);
+    define("day",		dd);
+    define("month",		mm);
+    define("year",		yyyy);
+    define("weekday",		pad(wday, 1));
+    define("dayName",		dayNames.at(wday));
+    define("monthName",		monthNames.at(m));
+    define("yearday",		pad(today.get(Calendar.DAY_OF_YEAR), 3));
+    define("date",		yyyy+mm+dd);
+    define("time",		hh+":"+min);
+
+    // Get a formatter to create a properly-formatted date.
+    DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL,
+							  DateFormat.LONG);
+    define("dateString",	formatter.format(date));
+  }
+
   public void initializeEntities() {
-      Date date = new Date();
-      DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL,
-							    DateFormat.LONG);
+    // Extract formatted information from today's Date.
+    initializeDateEntities(new Date());
 
-      /*
-      String yyyy = pad(date.getYear()+1900, 4);
-      String mm	  = pad(date.getMonth()+1, 2);
-      String dd   = pad(date.getDate(), 2);
-      String hh	  = pad(date.getHours(), 2);
-      String min  = pad(date.getMinutes(), 2);
-      String sec  = pad(date.getSeconds(), 2);
-      int wday	  = Util.getWeekday(date); // date.getWeekday())
-      */
+    // Form counter.  Increment as each <form> is passed to the output.
+    define("forms", 		"0");
 
-      Calendar today = new GregorianCalendar();
-      String yyyy = pad(today.get(Calendar.YEAR), 4);
-      int    m	  = today.get(Calendar.MONTH);
-      String mm	  = pad(m+1, 2);
-      String dd   = pad(today.get(Calendar.DAY_OF_MONTH), 2);
-      String hh	  = pad(today.get(Calendar.HOUR_OF_DAY), 2);
-      String min  = pad(today.get(Calendar.MINUTE), 2);
-      String sec  = pad(today.get(Calendar.SECOND), 2);
-      int wday	  = (today.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
-      // We want Sunday = 0.  This handles any reasonable value of SUNDAY;
-
-      define("second",		sec);
-      define("minute",		min);
-      define("hour",		hh);
-      define("day",		dd);
-      define("month",		mm);
-      define("year",		yyyy);
-      define("weekday",		pad(wday, 1));
-      define("dayName",		dayNames.at(wday));
-      define("monthName",	monthNames.at(m));
-      define("yearday",		pad(today.get(Calendar.DAY_OF_YEAR), 3));
-      define("date",		yyyy+mm+dd);
-      define("time",		hh+":"+min);
-
-      define("dateString",	formatter.format(date));
-
-      // Form counter.  Increment as each <form> is passed to the output.
-      define("forms", 		"0");
-
-      /*
+    /*
       if (filename != null) {
 	define("filePath", 	filename);
 	define("fileName", 	filenamePart(filename));
@@ -143,11 +141,11 @@ public class DocumentProcessor extends BasicProcessor implements TopContext
       }
       */
 
-      define("piaUSER",		System.getProperty("user.name"));
-      define("piaHOME",		System.getProperty("user.home"));
+    define("piaUSER",		System.getProperty("user.name"));
+    define("piaHOME",		System.getProperty("user.home"));
 
-      define("entityNames", 	"");
-      //=== define("entityNames", new Tokens(entities.keys(), " "));
+    define("entityNames", 	"");
+    //=== define("entityNames", new Tokens(entities.keys(), " "));
   }
 
   /************************************************************************
