@@ -83,7 +83,7 @@ public SGML lookup(SGML datum)
   {
 
      while(currentItem < size() && datum != null){
-       debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() );
+       //debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() );
        
       datum = datum.attr(this);  //delegate to SGML
       next();  // shift counter up
