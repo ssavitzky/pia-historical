@@ -19,6 +19,10 @@ public class Criterion {
     return name;
   }
 
+  public String toString() {
+    return name;
+  }
+
   /************************************************************************
   ** Matching:
   ************************************************************************/
@@ -42,10 +46,6 @@ public class Criterion {
   ** Construction:
   ************************************************************************/
 
-  public Criterion() {
-    name = null;
-  }
-
   public Criterion(String nm) {
     name = Features.cannonicalName(nm);
   }
@@ -59,11 +59,13 @@ public class Criterion {
   public static Criterion toMatch(String s) {
     int i = s.indexOf('=');
     if (i < 0) return new Criterion(s);
-    return new ValueCriterion(s.substring(0, i),
-			      (i == s.length()-1) ? null : s.substring(i+1));
+    String value = (i == s.length()-1) ? null : s.substring(i+1);
+    if (! Features.test(value)) value = null;
+    return new ValueCriterion(s.substring(0, i), value);
   }
 
-  /** Return a Criterion subclass suitable for matching the given value. */
+  /** Return a Criterion subclass suitable for matching the given value.
+   */
   public static Criterion toMatch(String name, Object value) {
     return new ValueCriterion(name, value);
   }

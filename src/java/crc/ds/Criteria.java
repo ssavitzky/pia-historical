@@ -14,7 +14,11 @@ public class Criteria extends List {
   public boolean match(Features features, HasFeatures parent) {
     for (int i = 0; i < nItems(); ++i) {
       Criterion c = (Criterion)at(i);
-      if (! c.match(features, parent)) return false;
+      crc.pia.Pia.debug(this, "         "+c.toString()+"?");
+      if (! c.match(features, parent)) {
+	crc.pia.Pia.debug(this, "         failed");
+	return false;
+      }
     }
     return true;
   }

@@ -15,6 +15,7 @@ FILES = \
 	HasFeatures.java \
 	Index.java \
 	List.java \
+	Nil.java \
 	Queue.java \
 	Sorter.java \
 	SortTree.java \

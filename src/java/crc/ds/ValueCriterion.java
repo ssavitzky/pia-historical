@@ -17,6 +17,11 @@ public class ValueCriterion extends Criterion {
     return value;
   }
 
+  /** Convert to a string. */
+  public String toString() {
+    return (value == null)? "!" + name() : name()+"=="+value;
+  }
+
   /** Match the feature's value.  The default is to match if the
    *	feature has a non-null value that exactly matches.  A null value
    *	will match any object for which Features.test returns false. */
@@ -25,8 +30,12 @@ public class ValueCriterion extends Criterion {
     else return (s != null) && s.equals(value);
   }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   public ValueCriterion(String nm, Object v) {
-    name = nm;
+    super(nm);
     value = v;
   }
 }

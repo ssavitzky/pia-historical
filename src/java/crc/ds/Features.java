@@ -61,7 +61,7 @@ public class Features {
    * Assert a named feature, i.e. assign it a value of true. 
    */
   public Object assert(String feature){
-    return assert(feature, new Boolean(true));
+    return assert(feature, True);
   }
 
 
@@ -69,7 +69,7 @@ public class Features {
    * Deny a named feature, i.e. assign it a value of false
    */
   public Object deny(String feature){
-    return assert(feature, new Boolean(false));
+    return assert(feature, False);
   }
 
   /************************************************************************
@@ -77,7 +77,7 @@ public class Features {
   ************************************************************************/
 
   /**
-   *Test for the presence of a named feature
+   * Test for the presence of a named feature
    */
   public final boolean has(String feature){
     return featureTable.containsKey( feature );
@@ -87,11 +87,7 @@ public class Features {
    * Test a named feature and return a boolean.
    */
   public final boolean test(String feature, HasFeatures parent){
-    Object value = featureTable.get( feature );
-    
-    if (value == null) value = compute(feature, parent);
-
-    return testCannonical(value);
+    return testCannonical(getFeature(feature, parent));
   }
 
   /**
@@ -99,9 +95,7 @@ public class Features {
    */
   public final Object feature( String featureName, HasFeatures parent ){
     Object val = featureTable.get(featureName);
-    if (val == null)
-      return compute(featureName, parent); 
-    return val;
+    return (val == null)? compute(featureName, parent) : val;
   }
 
 
@@ -129,14 +123,7 @@ public class Features {
    * Can be used to recompute features after changes
    */
   public final Object compute(String feature, HasFeatures parent){
-    Object val;
-
-    try {
-      val = parent.computeFeature( feature );
-      return setFeature( feature, val );
-    }catch(Exception e){
-      return deny(feature);
-    }
+    return setFeature(feature, parent.computeFeature(feature));
   }
 
 
@@ -146,12 +133,12 @@ public class Features {
 
   public static final Boolean True       = new Boolean(true);
   public static final Boolean False      = new Boolean(false);
-  public static final Object  Nil        = new Object();
+  public static final Object  Nil        = crc.ds.Nil.value;
   public static final String  NullString = "";
 
   /** Convert name to cannonical form. */
   public static final String cannonicalName(String name) {
-    return crc.interform.Util.javaName(name);
+    return crc.interform.Util.javaName(name.toLowerCase());
   }
 
   /** Convert value to cannonical form. */
@@ -172,11 +159,11 @@ public class Features {
    *	@return false for null, False, and "", true otherwise.
    */
   public static final boolean test(Object value) {
-    if (value == null) return false;
+    if (value == null || value == Nil) return false;
     else if (value instanceof Boolean) {
       return ((Boolean)value).booleanValue();
     } else if (value instanceof String) {
-      return ! "".equals(value);
+      return ! ("".equals(value) || "0".equals(value));
     } else {
       return true;
     }
@@ -204,26 +191,10 @@ public class Features {
   ************************************************************************/
 
   /**
-   * Create a new Features for a Transaction.  Compute a few features that
-   * are closely related and that we know are always needed.
+   * Create a new Features for a Transaction.
    */
-
-  public Features (Transaction parent) {
-    featureTable = new Hashtable();
-    parent.setFeatures( this );
-   }
-
   public Features() {
     featureTable = new Hashtable();
   }
 
 }
-
-
-
-
-
-
-
-
-
