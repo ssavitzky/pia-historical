@@ -103,6 +103,11 @@ public interface Context {
    */
   public void setEntityValue(String name, NodeList value, boolean local);
 
+  /** Get the namespace containing an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public Namespace locateEntityBinding(String name, boolean local);
+
   /** Get the binding (Entity node) of an entity, given its name. 
    * @return <code>null</code> if the entity is undefined.
    */

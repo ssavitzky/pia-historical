@@ -12,7 +12,11 @@ import crc.dps.active.*;
 import crc.dps.output.*;
 
 import java.io.File;
+import java.io.IOException;
+
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
 
 /**
  * Utilities to determine the status (properties) of resources. 
@@ -28,6 +32,7 @@ public class Status {
   ************************************************************************/
 
   protected static NodeList nodes(String v) {
+    if (v == null) return null;
     return new ParseNodeList(new ParseTreeText(v));
   }
 
@@ -153,8 +158,33 @@ public class Status {
     name = name.toLowerCase();
 
     if (name.equals("entity")) return nodes(true);
+    if (name.equals("name")) return nodes(res.getName());
 
+    ParseTreeExternal ext = (res instanceof ParseTreeExternal) 
+      ? (ParseTreeExternal) res : null;
 
+    if (ext != null) {
+      if (name.equals("system")) return nodes(ext.getResourceName());
+      if (ext.resourceURL != null) {
+	if (name.equals("url"))	return nodes(ext.resourceURL.toString());
+      }
+      if (ext.resourceConnection != null) {
+	URLConnection rc = ext.resourceConnection;
+	if (name.equals("content-type")) return nodes(rc.getContentType());
+	if (name.equals("last-modified")) return nodes(rc.getLastModified());
+	if (rc instanceof HttpURLConnection) try {
+	  HttpURLConnection hc = (HttpURLConnection) rc;
+	  if (name.equals("method")) return nodes(hc.getRequestMethod());
+	  if (name.equals("code")) return nodes(hc.getResponseCode());
+	  if (name.equals("message")) return nodes(hc.getResponseMessage());
+	} catch (IOException ex) {}
+      } 
+      if (ext.resourceFile != null) {
+	if (name.equals("file")) return nodes(ext.resourceFile.getPath());
+	if (name.equals("last-modified"))
+	  return nodes(ext.resourceFile.lastModified());
+      }
+    }
     return null;
   }
 
@@ -165,12 +195,15 @@ public class Status {
   public static ActiveAttrList getStatusItems(ActiveEntity res,
 					      String items[]) {
     ParseTreeAttrs list = new ParseTreeAttrs();
-    for (int i = 0; i < items.length; ++i) 
-      list.setAttributeValue(items[i], getStatusItem(res, items[i]));
+    for (int i = 0; i < items.length; ++i) {
+      NodeList v = getStatusItem(res, items[i]);
+      if (v != null) list.setAttributeValue(items[i], v);
+    }
     return list;
   }
 
   public static String entityItems[] = {
-    "entity", "name", 
+    "name", "system", "url", "code", "message", "method", 
+    "file", "last-modified", "content-type"
   };
 }

@@ -1,4 +1,4 @@
-// ParseTreeNamed.java
+// ParseTreeGeneric.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 

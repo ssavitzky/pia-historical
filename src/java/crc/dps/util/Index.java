@@ -78,8 +78,10 @@ public class Index {
 
     // If we wanted the whole space, return its list of bindings.
     if (name == null) return new ParseNodeList(ns.getBindings());
-
-    return ns.getValue(name);
+    ActiveNode b = ns.getBinding(name);
+    if (b == null) return null;
+    if (b.asEntity() != null) return b.asEntity().getValueNodes(c);
+    return new ParseNodeList(b);
   }
 
   public static void setValue(Context c, String space, String name,
@@ -87,17 +89,20 @@ public class Index {
     Namespace ns = c.getNamespace(space);
     Tagset ts = c.getTopContext().getTagset();
 
-    // If there's nothing there, make a namespace and populate it.
     if (ns == null) {
-      System.err.println("Creating new namespace currently unimplemented");
+      // If there's nothing there, make a namespace and populate it.
+      BasicEntityTable ents = new BasicEntityTable(space);
+      ents.setEntityValue(c, name, value, ts);
+      return;
+    } 
+
+    ActiveNode b = ns.getBinding(name);
+    if (b == null) {
+      ns.setBinding(name, new ParseTreeEntity(name, value));
     } else {
-      ns.setValue(name, value, ts);
+      b.asEntity().setValueNodes(c, value);
     }
+
   }
-
-  /************************************************************************
-  ** Auxiliary Methods:
-  ************************************************************************/
-
 
 }

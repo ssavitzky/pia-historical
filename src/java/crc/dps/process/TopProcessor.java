@@ -104,8 +104,23 @@ public class TopProcessor extends BasicProcessor implements TopContext
     ActiveEntity ent = (entities == null)
       ? null : entities.getEntityBinding(name);
     if (ent == null && tagset != null) ent = tagset.getEntityBinding(name);
+    if (debug() && ent != null)
+      debug("Binding found for " + name + " " + ent.getClass().getName());
     return (local || ent != null || nameContext == null)
       ? ent : nameContext.getEntityBinding(name, local);
+  }
+
+  /** Get the namespace containing an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public Namespace locateEntityBinding(String name, boolean local) {
+    ActiveEntity ent = (entities == null)
+      ? null : entities.getEntityBinding(name);
+    if (ent != null) return entities;
+    ent = tagset.getEntityBinding(name);
+    if (ent != null) return tagset.getEntities();
+    return (local || nameContext == null)
+      ? null : nameContext.locateEntityBinding(name, local);
   }
 
   /** Return a namespace with a given name.  If the name is null, 
@@ -218,13 +233,13 @@ public class TopProcessor extends BasicProcessor implements TopContext
     if (documentLocation == null && !isRemotePath(path)) {
       File f = locateSystemResource(path, true);
       if (f != null) {
-	// === worry about the booleans here!
-	return new java.io.FileOutputStream(f);
+	// === worry about createIfAbsent/doNotOverwrite here!
+	return new java.io.FileOutputStream(f.getAbsolutePath(), append);
       }
     } else {
       URL u = locateRemoteResource(path, true);
       if (u != null) {
-	return null; // === writeExternalResource
+	return null; // === writeExternalResource remote unimplemented
       }
     }
     return null;

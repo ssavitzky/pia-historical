@@ -49,7 +49,7 @@ public class ToCharData extends ToExternalForm {
     if (aNode.getNodeType() == NodeType.ENTITY && expandEntities) {
       ActiveEntity e = (ActiveEntity)aNode;
       // === Should really check value in the entity itself as well ===
-      NodeList value = entityTable.getValue(e.getName());
+      NodeList value = entityTable.getEntityValue(null, e.getName());
       if (value != null) write(value.toString());
       else write(aNode.toString());
     } else if (aNode.getNodeType() == NodeType.TEXT) {

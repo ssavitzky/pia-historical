@@ -79,17 +79,14 @@ public interface Action {
   /** Returns the value associated with the given Node in the given context.
    *	The node need not be the current one, but it must be the one to which
    *	this Action applies.
-   *
-   * === getValue is currently unused; it is expected that it will 
-   *	 eventually be used for expanding, e.g., Entities.
    */
-  public NodeList getValue(Node aNode, Context aContext);
+  public void getValue(Node aNode, Context aContext, Output out);
 
   /** Returns the value associated with the given name in a given Node and
    *	context.  The node need not be the current one, but it must be the one
    *	to which this Action applies.
    */
-  public NodeList getValue(String aName, Node aNode, Context aContext);
+  public void getValue(String aName, Node aNode, Context aContext, Output out);
 
   /************************************************************************
   ** Processing Control Flags:

@@ -73,7 +73,7 @@ public class repeatHandler extends GenericHandler {
   /** Perform one iteration through the content. */
   public void iterate(Processor p, ActiveNode n,
 		      ActiveEntity var, FromParseNodes src) {
-    var.setValue(new ParseNodeList(n));
+    var.setValueNodes(p, new ParseNodeList(n));
     p.run();
     src.toFirstNode();
   }

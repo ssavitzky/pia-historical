@@ -85,15 +85,6 @@ public interface Tagset  {
   /** Set the current Entity bindings. */
   public void setEntities(EntityTable bindings);
 
-  /** Get the value of an entity, given its name. 
-   * @return <code>null</code> if the entity is undefined.
-   */
-  public NodeList getEntityValue(String name);
-
-  /** Set the value of an entity. 
-   */
-  public void setEntityValue(String name, NodeList value);
-
   /** Get the binding (Entity node) of an entity, given its name. 
    * @return <code>null</code> if the entity is undefined.
    */

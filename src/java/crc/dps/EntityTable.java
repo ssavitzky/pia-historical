@@ -35,6 +35,8 @@ public interface EntityTable extends Namespace {
   /** Look up a name and return the corresponding Entity. */
   public ActiveEntity getEntityBinding(String name);
 
+  public NodeList getEntityValue(Context cxt, String name);
+
   /************************************************************************
   ** Documentation Operations:
   ************************************************************************/

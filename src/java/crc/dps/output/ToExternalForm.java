@@ -65,7 +65,7 @@ public abstract class ToExternalForm extends CursorStack implements Output {
     } else if (aNode.getNodeType() == crc.dps.NodeType.ENTITY) {
       // Convert character entities back to characters.
       Entity e = (Entity)aNode;
-      NodeList value = defaultEntityTable.getValue(e.getName());
+      NodeList value = defaultEntityTable.getEntityValue(null, e.getName());
       // === new DOM: check entity's value first. 
       if (value != null) write(value.toString());
       else write(aNode.toString());

@@ -171,7 +171,7 @@ public class selectHandler extends GenericHandler {
     }
   }
 
-  /** Match a node's name. */
+  /** Return a node's name. */
   public String getNodeName(Node node, boolean caseSens) {
     // === This is kludgy, but will be fixed in the new DOM
     // === not handling node type yet!
@@ -182,6 +182,23 @@ public class selectHandler extends GenericHandler {
     } else if (node instanceof Element) {
       Element elt = (Element)node;
       name = elt.getTagName();
+    }
+    if (name != null && !caseSens) name = name.toLowerCase();
+    return name;
+  }
+
+  /** Return a node's ID (name or id attribute). */
+  public String getNodeId(Node node, boolean caseSens) {
+    // === This is kludgy, but will be fixed in the new DOM
+    // === not handling node type yet!
+    String name = null;
+    if (node instanceof ParseTreeNamed) {
+      ParseTreeNamed nnode = (ParseTreeNamed)node;
+      name = nnode.getName();
+    } else if (node instanceof ActiveElement) {
+      ActiveElement elt = (ActiveElement)node;
+      name = elt.getAttributeString("id");
+      if (name == null) name = elt.getAttributeString("name");
     }
     if (name != null && !caseSens) name = name.toLowerCase();
     return name;
@@ -486,6 +503,60 @@ class key_recursive extends select_subHandler {
   key_recursive() { super(true, false); }
 }
 
+/** &lt;id&gt;<em>k</em>&lt;/&gt; selects every node with a matching id. */
+class idHandler extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    NodeList selected = getSelected(aContext);
+    boolean caseSens = atts.hasTrueAttribute("case");
+    String id = content.toString();
+    if (id != null && !caseSens) id = id.toLowerCase();
+    NodeEnumerator items = selected.getEnumerator();
+    for (Node item = items.getFirst(); item != null; item = items.getNext()) {
+      String k = getNodeId(item, caseSens);
+      if (id == null || id.equals(k))	out.putNode(item);
+    }    
+  }
+  idHandler() { super(true, true); } // text only
+  public Action getActionForNode(ActiveNode n) {
+    ActiveElement e = n.asElement();
+    if (dispatch(e, "recursive")) 	return new id_recursive();
+    if (dispatch(e, "all")) 	 	return new id_recursive();
+    return this;
+  }
+}
+
+/** &lt;id recursive&gt;<em>n</em>&lt;/&gt; 
+ *	selects every node with a matching id; recurses into content.
+ */
+class id_recursive extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    NodeList selected = getSelected(aContext);
+    boolean caseSens = atts.hasTrueAttribute("case");
+    boolean all = atts.hasTrueAttribute("all");
+    String  id = content.toString();
+    if (id != null && !caseSens) id = id.toLowerCase();
+    select(selected, id, caseSens, all, out);
+  }
+  protected void select(NodeList selected, String id, boolean caseSens,
+			boolean all, Output out) {
+    NodeEnumerator items = selected.getEnumerator();
+    for (Node item = items.getFirst(); item != null; item = items.getNext()) {
+      String k = getNodeId(item, caseSens);
+      if (id == null || (k != null && id.equals(k))) {
+	out.putNode(item);
+      } else if (!all && item.hasChildren()) {
+	select(item.getChildren(), id, caseSens, all, out);
+      }
+      if (all && item.hasChildren()) {
+	select(item.getChildren(), id, caseSens, all, out);
+      }
+    }
+  }
+  id_recursive() { super(true, false); }
+}
+
 /** &lt;attr&gt;<em>n</em>&lt;/&gt; selects every Attribute with matching name.
  */
 class attrHandler extends select_subHandler {
@@ -624,8 +695,7 @@ class evalHandler extends select_subHandler {
 
       case NodeType.ENTITY:
 	ActiveEntity ent = a.asEntity();
-	v = ent.getValue();
-	if (v == null) v = Index.getIndexValue(aContext, ent.getName());
+	v = ent.getValueNodes(aContext);
 	if (v != null) putList(out, v);
 	break;
 

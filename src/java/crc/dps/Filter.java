@@ -146,7 +146,7 @@ public class Filter {
       java.util.Enumeration names = ii.getEntities().getNames();
       while (names.hasMoreElements()) {
 	String name = names.nextElement().toString();
-	crc.dom.NodeList v = ii.getEntities().getValue(name);
+	crc.dom.NodeList v = ii.getEntityValue(name, false);
 	System.err.println(" " + name + "=" + v);
       }
       System.err.print("\n");

@@ -15,7 +15,9 @@ import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
 import crc.dps.*;
+import crc.dps.Active.*;
 import crc.dps.util.Copy;
+import crc.dps.util.Status;
 import crc.dps.input.FromParseNodes;
 import crc.dps.output.ToNodeList;
 import crc.dps.output.ToWriter;
@@ -73,10 +75,15 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public int	 readCount	= 0;
   public int	 writeCount	= 0;
 
+  // access functions
+
   /** Date last modified.  Can be used to determine whether the resource needs
    *	to be re-read.
    */
   public long	 lastModified	= 0;
+
+  public boolean isReadable() { return readable; }
+  public boolean isWritable() { return writeable; }
 
   public void setMode(String mode) {
     if (mode != null) mode = mode.toLowerCase();
@@ -139,11 +146,13 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public volatile File    resourceFile	= null;
   public volatile URL     resourceURL	= null;
   public volatile URLConnection resourceConnection	= null;
+  public volatile ParseTreeElement	   headers	= null;
+  public volatile ActiveAttrList	   status	= null;
 
-  protected volatile OutputStream outStream = null;
-  protected volatile InputStream inStream = null;
-  protected volatile Reader reader = null;
-  protected volatile Writer writer = null;
+  protected volatile OutputStream outStream 	= null;
+  protected volatile InputStream  inStream 	= null;
+  protected volatile Reader       reader 	= null;
+  protected volatile Writer       writer 	= null;
 
   /** The context in which to read it.  Set up by the handler. */
   public  volatile Context context 	= null;
@@ -165,19 +174,50 @@ public class ParseTreeExternal extends ParseTreeEntity {
       local = true;
     } else {
       resourceURL = top.locateRemoteResource(url, writeable);
-      // === Should really make a URLConnection at this point.
+      try {
+	resourceConnection = resourceURL.openConnection();
+	resourceConnection.setDoOutput(writeable);
+	// === there are other things we need to be able to set.
+      } catch (IOException ex) {
+	// error. 
+	resourceConnection = null;
+      }
       local = false;
     }
     located = true;
   }
 
-  protected Input readResource(Context cxt) {
-    // === getting status on input requires a URLConnection ===
-    // === readResource should locate the resource.
+  protected void getHeaders(Context cxt) {
     TopContext top  = cxt.getTopContext();
+    if (resourceConnection == null) return;
+    headers = new ParseTreeElement("HEADERS");// should be active
+    int i = 0;
+    // === MASSIVE KLUDGE!  There's no way to tell how many headers there are!
+    for (; i < 100; ++i) {
+      String key = resourceConnection.getHeaderFieldKey(i);
+      if (key == null) continue;
+      String val = resourceConnection.getHeaderField(key);
+      ParseTreeElement hdr = new ParseTreeElement("HEADER");
+      hdr.setAttributeValue("name", key);
+      hdr.addChild(new ParseTreeText(val));
+      System.err.println(key + ": " + val);
+      headers.addChild(hdr);
+      headers.addChild(new ParseTreeText("\n", true));
+    }
+    if (i == 0) headers.addChild(new ParseTreeComment("empty headers"));
+  }
+
+  protected Input readResource(Context cxt) {
+    TopContext top  = cxt.getTopContext();
+
+    locateResource(cxt);
     inStream = null;
     try {
-      inStream = top.readExternalResource(resourceName);
+      if (local) {
+	inStream = new java.io.FileInputStream(resourceFile);
+      } else {
+	inStream = resourceConnection.getInputStream();
+      }
     } catch (IOException e) {
       cxt.message(-2, e.getMessage(), 0, true);
       return null;
@@ -192,7 +232,8 @@ public class ParseTreeExternal extends ParseTreeEntity {
   }
 
   protected ToWriter writeResource(Context cxt) {
-    // === getting status on output requires a URLConnection ===
+    // === getting status or setting method requires a URLConnection ===
+    // === worry about append in writeExternalResource
     TopContext top  = cxt.getTopContext();
     outStream = null;
     try {
@@ -208,7 +249,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
 
   protected void writeValueToResource(Context cxt) {
     Output out = writeResource(cxt);
-    Copy.copyNodes(getValue(), out);
+    Copy.copyNodes(getValueNodes(cxt), out);
     closeOutput();
   }
 
@@ -239,25 +280,33 @@ public class ParseTreeExternal extends ParseTreeEntity {
    */
   public Input getValueInput(Context cxt) { 
     context = cxt;
-    if (value != null) return new FromParseNodes(getValue());
+    // if (value != null) === only works if we check timestamps too
     if (resourceName != null && wrappedInput == null) {
       return readResource(cxt);
+    } else if (wrappedInput != null) {
+      return getWrappedInput();
+    } else {
+      return new FromParseNodes(getValueNodes(cxt));
     }
-    return getWrappedInput();
   }
 
   public Output getValueOutput(Context cxt) {
-    return null; // === getValueOutput
+    context = cxt;
+    if (resourceName != null) {
+      return writeResource(cxt);
+    } else {
+      return null; // === getValueOutput should return wrapped Output
+    }
   }
 
   /** Get the node's value. 
    *
    * <p> There will be problems if this is called while reading the value.
    */
-  public NodeList getValue() {
-    if (value != null || wrappedInput == null) return value;
+  public NodeList getValueNodes(Context cxt) {
+    if (resourceName == null && wrappedInput == null) return value;
     ToNodeList out = new ToNodeList();
-    Input in = getValueInput(context);
+    Input in = getValueInput(cxt);
     Copy.copyNodes(in, out);
     value = out.getList();
     closeInput();
@@ -270,9 +319,26 @@ public class ParseTreeExternal extends ParseTreeEntity {
    *
    * === WARNING! This will change substantially when the DOM is updated!
    */
-  public void setValue(NodeList newValue) {
-    super.setValue(newValue);
-    if (resourceName != null) writeValueToResource(context);
+  public void setValueNodes(Context cxt, NodeList newValue) {
+    super.setValueNodes(cxt, newValue);
+    if (resourceName != null) {
+      Output out = writeResource(cxt);
+      Copy.copyNodes(newValue, out);
+      closeOutput();
+    }
+  }
+
+  /************************************************************************
+  ** Access to Document:
+  ************************************************************************/
+
+  public ParseTreeDocument getDocument(Context cxt) {
+    NodeList value = getValueNodes(cxt); // force the connection to be made.
+    getHeaders(cxt);
+    status = Status.getStatusItems(this);
+    ParseTreeDocument doc = new ParseTreeDocument("DOCUMENT",
+						  status, headers, value);
+    return doc;
   }
 
   /************************************************************************

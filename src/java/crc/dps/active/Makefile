@@ -26,6 +26,7 @@ NODE_CLASSES = \
 	ParseTreeAttribute.java \
 	ParseTreeComment.java \
 	ParseTreeDecl.java \
+	ParseTreeDocument.java \
 	ParseTreeElement.java \
 	ParseTreeEntity.java \
 	ParseTreeExternal.java \

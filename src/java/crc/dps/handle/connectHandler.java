@@ -38,7 +38,12 @@ public class connectHandler extends GenericHandler {
     String   tsname = atts.getAttributeString("tagset");
     String   method = atts.getAttributeString("method");
     String     mode = atts.getAttributeString("mode");
-    boolean  status = atts.hasTrueAttribute("status");
+    String   result = atts.getAttributeString("result");
+
+    result = (result == null)? "" : result.toLowerCase();
+    boolean  status = result.equals("status");
+    boolean    hide = result.equals("none");
+    boolean     doc = result.equals("document");
 
     Tagset       ts = top.loadTagset(tsname);	// correctly handles null
     TopContext proc = null;
@@ -60,14 +65,29 @@ public class connectHandler extends GenericHandler {
 
     ent.tagsetName = tsname;
 
-    // At this point, we have the entity.  All we really have to do is 
+    // At this point, we have the entity.  Perform output operations.
+
+    if (ent.isWritable()) {
+      Output xout = ent.getValueOutput(cxt);
+      if (xout != null) {
+	Copy.copyNodes(content, xout);
+	ent.closeOutput();
+      } else {
+	// === should report an error if we can't output.
+      }
+    }
+
+    // Having made the connection, all we really have to do is 
     // return either its value or its status.
 
     if (status) {
       putList(out, Status.getStatusItem(ent, null));
-    } else {
+    } else if (doc) {
+      out.putNode(ent.getDocument(cxt));
+    } else if (!hide) {
       Input xin = ent.getValueInput(cxt);
       Copy.copyNodes(xin, out);
+      ent.closeInput();
     }
   }
 

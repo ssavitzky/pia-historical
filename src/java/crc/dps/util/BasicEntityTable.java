@@ -42,17 +42,18 @@ public class BasicEntityTable extends BasicNamespace implements EntityTable {
   /** Return the value for a given name.  Performs recursive lookup in the
    *	context if necessary. 
    */
-  public NodeList getValue(String name) {
+  public NodeList getEntityValue(Context cxt, String name) {
     ActiveEntity binding = getEntityBinding(name);
-    return (binding != null)? binding.getValue() :  null;
+    return (binding != null)? binding.getValueNodes(cxt) :  null;
   }
 
   /** Set the value for a given name.
    */
-  public void setValue(String name, NodeList value, Tagset ts) {
+  public void setEntityValue(Context cxt, String name,
+			     NodeList value, Tagset ts) {
     ActiveEntity binding = getEntityBinding(name);
     if (binding != null) {
-      binding.setValue(value);
+      binding.setValueNodes(cxt, value); 
     } else {
       newBinding(name, value, ts);
     } 

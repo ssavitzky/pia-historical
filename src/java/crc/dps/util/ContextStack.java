@@ -124,7 +124,8 @@ public class ContextStack  implements Context {
    */
   public NodeList getEntityValue(String name, boolean local) {
     ActiveEntity binding = getEntityBinding(name, local);
-    return (binding != null)? binding.getValue() :  null;
+    if (binding == null) return null;
+    return binding.getValueNodes(this);
   }
 
   /** Set the value of an entity. 
@@ -132,11 +133,12 @@ public class ContextStack  implements Context {
   public void setEntityValue(String name, NodeList value, boolean local) {
     ActiveEntity binding = getEntityBinding(name, local);
     if (binding != null) {
-      binding.setValue(value);
+      binding.setValueNodes(this, value);
     } else {
       if (entities == null && (local || nameContext == null))
 	entities = new BasicEntityTable();
-      getEntities().setValue(name, value, this.getTopContext().getTagset());
+      Tagset ts = this.getTopContext().getTagset();
+      getEntities().setBinding(name, ts.createActiveEntity(name, value));
     } 
   }
 
@@ -146,18 +148,35 @@ public class ContextStack  implements Context {
   public ActiveEntity getEntityBinding(String name, boolean local) {
     ActiveEntity ent = (entities == null)
       ? null : entities.getEntityBinding(name);
+    if (debug() && ent != null) 
+      debug("Binding found for " + name + " " + ent.getClass().getName());
     return (local || ent != null || nameContext == null)
       ? ent : nameContext.getEntityBinding(name, local);
+  }
+
+  /** Get the namespace containing an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public Namespace locateEntityBinding(String name, boolean local) {
+    ActiveEntity ent = (entities == null)
+      ? null : entities.getEntityBinding(name);
+    if (ent != null) return entities;
+    return (local || nameContext == null)
+      ? null : nameContext.locateEntityBinding(name, local);
   }
 
   /** Set the binding (Entity node) of an entity, given its name. 
    *	Note that the given name may include a namespace part. 
    */
   public void setEntityBinding(String name, ActiveEntity ent, boolean local) {
-    // === currently hard to implement.  Fake it. ===
-    setEntityValue(name, ent.getValue(), local);
+    Namespace ns = locateEntityBinding(name, local);
+    if (ns == null) {
+      if (entities == null && (local || nameContext == null))
+	entities = new BasicEntityTable();
+      ns = getEntities();
+    } 
+    ns.setBinding(name, ent);
   }
-
 
 
   /************************************************************************
@@ -177,6 +196,8 @@ public class ContextStack  implements Context {
     s += text;
     if (endline) log.println(s); else log.print(s);
   }
+
+  public final boolean debug() { return verbosity >= 2; }
 
   public final void debug(String message) {
     if (verbosity >= 2) log.print(message);

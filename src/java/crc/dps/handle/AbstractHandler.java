@@ -63,12 +63,11 @@ implements Handler {
     }
   }
 
-  public NodeList getValue(Node aNode, Context aContext) {
-    return null;
+  public void getValue(Node aNode, Context aContext, Output out) {
+    out.putNode(aNode);
   }
 
-  public NodeList getValue(String aName, Node aNode, Context aContext) {
-    return null;
+  public void getValue(String aName, Node aNode, Context aContext, Output out) {
   }
 
 

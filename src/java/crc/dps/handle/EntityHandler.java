@@ -87,6 +87,8 @@ public class EntityHandler extends AbstractHandler {
    */
   public void action(Input in, Context aContext, Output out) {
     ActiveEntity n = in.getActive().asEntity();
+    //System.err.println("Action called for " + (active? "active" : "passive")
+    //		       + " entity " + n.getName());
     if (!active) {
       out.putNode(n);
       return;

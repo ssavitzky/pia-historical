@@ -42,7 +42,7 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
   public boolean getIsParameterEntity() { return isParameterEntity; }
 
   public Input getValueInput(Context cxt) {
-    return new FromParseNodes(getValue());
+    return new FromParseNodes(getValueNodes(cxt));
   }
 
   public Output getValueOutput(Context cxt) {
@@ -50,6 +50,15 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
     ToNodeList out = new ToNodeList();
     setValue(out.getList());
     return out;
+  }
+
+  public NodeList getValueNodes(Context cxt) {
+    return getValue();
+  }
+
+  public void setValueNodes(Context cxt, NodeList v) {
+    // === changes when value becomes children ===
+    setValue(v);
   }
 
   /************************************************************************

@@ -51,19 +51,11 @@ public interface Namespace {
   /** Look up a name and get a binding (node). */
   public ActiveNode getBinding(String name);
 
-  /** Look up a name and get a value (nodelist). */
-  public NodeList getValue(String name);
-
   /** Add a new binding or replace an existing one.  Returns the old binding,
    *	if any.  Removes existing binding if the new binding is
    *	<code>null</code>
    */
   public ActiveNode setBinding(String name, ActiveNode binding);
-
-  /** Associate a new value with a name.  Construct a new binding of the
-   *	appropriate type if necessary.
-   */
-  public void setValue(String name, NodeList value, Tagset ts);
 
   /************************************************************************
   ** Information Operations:

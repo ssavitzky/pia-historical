@@ -25,6 +25,7 @@ PRIM_HANDLERS = \
 	  valueHandler.java \
 	connectHandler.java \
 	expandHandler.java \
+	headersHandler.java \
 	hideHandler.java \
 	ifHandler.java \
 	  elseHandler.java \

@@ -28,8 +28,8 @@ import crc.dps.Context;
 
 public interface ActiveEntity extends Entity, ActiveNode {
 
-  public NodeList getValue();
-  public void setValue(NodeList value);
+  public NodeList getValueNodes(Context cxt);
+  public void setValueNodes(Context cxt, NodeList value);
 
   /** Get the node's value as an Input. */
   public Input getValueInput(Context cxt);

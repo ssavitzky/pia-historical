@@ -57,20 +57,6 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
     return (ActiveNode)itemsByName.at(name);
   }
 
-  public NodeList getValue(String name) {
-    ActiveNode binding = getBinding(name);
-    if (binding == null) {
-      return null;
-    } else if (binding instanceof ParseTreeNamed) {
-      return ((ParseTreeNamed)binding).getValue();
-    } else if (binding.hasChildren()) {
-      return binding.getChildren();
-    } else {
-      return new ParseNodeList(binding);
-    }
-  }
-
-
   /** Add a new local binding or replace an existing one. */
   public ActiveNode setBinding(String name, ActiveNode binding) {
     if (!caseSensitive) name = cannonizeName(name);
@@ -102,19 +88,6 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
     }
     return old;
   }
-
-  public void setValue(String name, NodeList value, Tagset ts) {
-    ActiveNode binding = getBinding(name);
-    if (binding == null) {
-      addBinding(name, ts.createActiveEntity(name, value));
-    } else if (binding instanceof ParseTreeNamed) {
-      ((ParseTreeNamed)binding).setValue(value);
-    } else {
-      // === we're out of luck.
-      setBinding(name, ts.createActiveEntity(name, value));
-    }
-  }
-
 
   /** Add a new local binding.  Assumes that the name has already been
    *	cannonized if necessary.   Can be useful for initialization.

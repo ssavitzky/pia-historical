@@ -246,7 +246,6 @@ class define_entity extends defineHandler {
       ext.setMode(mode);
       ext.setMethod(method);
 
-      // === use tagset to set the handler. 
       Handler h = ts.getHandlerForType(NodeType.ENTITY);
       ext.setHandler(h);
       ext.setAction(h.getActionForNode(ext));

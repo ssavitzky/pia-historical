@@ -139,27 +139,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   public EntityTable getEntities() { return entities; }
   public void setEntities(EntityTable bindings) { entities = bindings; }
 
-  /** Get the value of an entity, given its name. 
-   * @return <code>null</code> if the entity is undefined.
-   */
-  public NodeList getEntityValue(String name) {
-    ActiveEntity binding = getEntityBinding(name);
-    return (binding != null)? binding.getValue() :  null;
-  }
-
-  /** Set the value of an entity. 
-   */
-  public void setEntityValue(String name, NodeList value) {
-    ActiveEntity binding = getEntityBinding(name);
-    if (binding != null) {
-      binding.setValue(value);
-    } else {
-      if (entities == null) 
-	entities = new BasicEntityTable();
-      getEntities().setValue(name, value, this);
-    } 
-  }
-
   /** Get the binding (Entity node) of an entity, given its name. 
    * @return <code>null</code> if the entity is undefined.
    */

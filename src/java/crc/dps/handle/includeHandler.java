@@ -43,13 +43,14 @@ public class includeHandler extends GenericHandler {
     Tagset      ts  = top.loadTagset(tsname);	// correctly handles null
     TopContext proc = null;
     InputStream stm = null;
+    ActiveEntity ent= null;
 
     // Check the entity.  If it's already defined, we can just use its value
 
     if (entname != null) {
-      NodeList nl = cxt.getEntityValue(entname, false);
-      if (nl != null) {
-	proc = top.subDocument(new FromParseNodes(nl), cxt, out, ts);
+      ent = cxt.getEntityBinding(entname, false);
+      if (ent != null) {
+	proc = top.subDocument(ent.getValueInput(cxt), cxt, out, ts);
 	proc.run();
 	return;
       }
@@ -83,7 +84,6 @@ public class includeHandler extends GenericHandler {
 
     // If we're caching in an entity, tell the parser to save the tree in it.
 
-    ActiveEntity ent = null;
     if (entname != null) {
       ent = ts.createActiveEntity(entname, null);
       p.setDocument(ent);

@@ -816,10 +816,15 @@ example).
          </doc>
        </define>
        
-  <li> <undefine element=id parent=select text handler><!-- unimplemented -->
+  <li> <define element=id parent=select text handler>
          <doc> Contains an identifier.  The element with the given
 	       <code>name</code> or <code>id</code> attribute (it is supposed
 	       to be unique) is selected.
+
+       	       <p>If the <tag>id</tag> element is the first element in the
+	       <tag>select</tag>, the element with the given ID in the entire
+	       input document is <em>(supposed to be)</em> selected.
+	       <b><em>This feature is currently unimplemented!</em></b>
          </doc>
          <define attribute=case optional>
            <doc> Causes the name matching to be case-sensitive, even if the
@@ -836,7 +841,7 @@ example).
 		 identifiers are supposed to be unique, they may not be.
            </doc>
          </define>
-       </undefine>
+       </define>
 </ul>
 
 <h4>Sub-elements of <tag>select</tag>: Selection</h4>
@@ -847,7 +852,7 @@ example).
        <ul>
 	 <li> If the text is a number <em>N</em>, it selects the
 	      <em>N<sup>th</sup></em> node in the current set.  The first node
-	      is zero, and negative numbers count from the last node.
+	      is zero, and negative numbers are counted from the last node.
 
 	 <li> If the text starts with a pound sign (<code>#</code>), it is
 	      matched as a node type.  The list of node types is defined in
@@ -1476,7 +1481,8 @@ open-ended; tagset authors are free to define new ones as needed.
   <doc> Perform an HTTP request to connect to a remote or local resource.  The
 	content of the element becomes the data content of a <code>PUT</code>
 	(write) or <code>POST</code> (append) request.  The result is the
-	document returned from the request.
+	document returned from the request, <em>as a <tag>document</tag>
+	element</em>.
 
 	<p>If a <tag>URL</tag> and/or <tag>headers</tag> element appear before
 	any nonblank content, they are used for the connection.
@@ -1507,17 +1513,27 @@ open-ended; tagset authors are free to define new ones as needed.
   <define attribute=entity optional>
     <doc> Specifies the name of an entity to be defined, effectively caching
 	  the resource.  If not specified, no entity will be defined and the
-	  resource will not be cached.
+	  resource will not be cached.  If the entity has already been defined
+	  as an external entity, the <code>src</code> attribute may be omitted.
     </doc>
   </define>
-  <define attribute=status optional>
-    <doc> If present, the result returned is an attribute list identical to
-	  that returned by the <tag>status</tag> operation.  A connection is
-	  established, if possible.  The content of the connected resource can
-	  be found in the entity specified by the <code>entity</code>
-	  attribute. 
+  <define attribute=result optional>
+    <doc> Specifies the result to be returned:
+	  <dl>
+	    <dt> <code>content</code> (default)
+	    <dd> The content of the document is returned. 
+	    <dt> <code>status</code>
+	    <dd> an attribute list identical to that returned by the
+		 <tag>status</tag> operation.  A connection is established, if
+		 possible.  The content of the connected resource can be found
+		 in the entity specified by the <code>entity</code> attribute.
+	    <dt> <code>document</code>
+	    <dd> The entire document is returned as a <tag>DOCUMENT</tag>
+		 element. 
+	    <dt> <code>none</code>
+	    <dd> Nothing is returned. 
+	  </dl> 
     </doc>
-  </define>
 </define>
 
 
@@ -1567,21 +1583,84 @@ open-ended; tagset authors are free to define new ones as needed.
   ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
 </em></blockquote>
 
-<h3>Headers and its components</h3>
-<undefine element=headers handler>
-  <doc> Contains a standard e-mail header string consisting of
-	<code><em>key</em>:<em>value</em></code> pairs.  Each pair in its
-	content is a separate Text node.  Lines can be selected using
-	<tag>key sep=':'</tag>.
+<h3>DOCUMENT and its components</h3>
+<define element=DOCUMENT>
+  <doc> Corresponds to a DOM <code>Document</code> object.  The attributes
+	correspond to the data present in the first line of the response
+	returned from an HTTP request; the headers are the first element in
+	the content. 
   </doc>
-  <note author=steve> === Not at all clear what the content of a headers
-	node should be.  Sub-elements?
-  </note>
+  <define attribute=protocol optional>
+    <doc> If present, the protocol (typically HTTP).  If the document
+	  corresponds to a file, this will be <code>file</code>.
+    </doc>
+  </define>
+  <define attribute=version optional>
+    <doc> If present, the protocol version.
+    </doc>
+  </define>
+  <define attribute=code optional>
+    <doc> If present, the result code returned from the HTTP request. 
+    </doc>
+  </define>
+  <define attribute=message optional>
+    <doc> If present, the message corresponding to the result code.
+    </doc>
+  </define>
 </undefine>
 
 
+<h3>Headers and its components</h3>
+<define element=HEADERS handler=headersHandler>
+  <doc> Corresponds to a standard set of e-mail headers consisting of
+	<code><em>name</em>: <em>value</em></code> pairs.  Each pair in its
+	content is a separate <tag>header</tag> element.  Lines can be
+	selected using the <tag>id</tag> sub-element of <tag>select</tag>.
+
+	<p>This is an active element.  If the content is initially a text node
+	in <code><em>name</em>: <em>value</em><b>\n</b></code> format, it will
+	be converted.
+  </doc>
+  <define attribute=element optional>
+    <doc> If present, the element will be left as an element; otherwise it
+	  will be converted to text when output or converted to a string.
+    </doc>
+  </define>
+</define>
+
+<define element=header parent=headers>
+  <doc> Corresponds to a standard e-mail header line containing a
+	<code><em>name</em>:<em>value</em></code> pair.  The name is contained
+	in the <code>name</code> attribute; the value is the content.
+  </doc>
+  <define attribute=name required>
+    <doc> The value of this attribute is the name (key) portion of the header
+	  line. 
+    </doc>
+  </define>
+
+</define>
+
+
+<h3>Query</h3>
+<define element=QUERY handler=queryHandler>
+  <doc> Corresponds to a URL-converted query, consisting of
+	<code><em>name</em>=<em>value</em></code> pairs.  Each pair in its
+	content is a separate Attribute node.
+
+	<p>This is an active element.  If the content is initially a text node
+	in <code><em>name</em>=<em>value</em><b>\n</b></code> format, a form,
+	or a description list, it will be converted.
+  </doc>
+  <define attribute=element optional>
+    <doc> If present, the query will be left as an element; otherwise it
+	  will be converted to text when output or converted to a string.
+    </doc>
+  </define>
+</define>
+
 <h3>URL and its components</h3>
-<undefine element=URL handler>
+<undefine element=URL handler=urlHandler>
   <doc> Represents a URL or, more generally, a URI.  When expanded, its
 	content and attributes are ``synchronized'' so that all attributes
 	corresponding to portions of the complete URL are set correctly, and

@@ -10,8 +10,6 @@ import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.util.Index;
-import crc.dps.util.Copy;
 
 import crc.ds.Table;
 
