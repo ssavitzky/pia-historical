@@ -15,6 +15,6 @@ FILES = \
 	PiaInitException.java \
 	PiaProperties.java \
 	PiaRunEx.java \
-	ParamPropList 
+	FormContent.java 
 
 include $(MAKEDIR)/file.make
