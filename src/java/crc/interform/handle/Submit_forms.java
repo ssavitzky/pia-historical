@@ -8,11 +8,14 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
+import crc.interform.Run;
 
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
+import crc.pia.Agent;
+import java.util.Enumeration;
 /* Syntax:
  *	<submit-forms [hour=hh] [minute=mm] [day=dd]
  *		      [month=["name"|mm]] [weekday=["name"|n]]
@@ -33,9 +36,41 @@ import crc.sgml.Text;
 /** Handler class for &lt;submit-forms&gt tag */
 public class Submit_forms extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.unimplemented(ia); // === needs Agent.createRequest
+    String name = Util.getString(it, "agent", Util.getString(it, "name", null));
+    if (ii.missing(ia, "name or agent attribute", name)) return;
+    
+    Run env = Run.environment(ii);
+    crc.pia.Agent a = env.getAgent(name);
+    
+    if ( it.tag().equalsIgnoreCase("form") ){
+      String url = it.attrString("action");
+      String method = it.attrString("method");
+      a.createRequest(method, url, it.contentString());
+    } 
+    else
+      handleContent(a, it);
   }
+
+  public void handleContent(Agent a, SGML it) {
+    if ( it.tag().equalsIgnoreCase("form") ){
+      String url = it.attrString("action");
+      String method = it.attrString("method");
+      a.createRequest(method, url, it.contentString());
+    }else
+      { 
+	Tokens content = it.content();
+	if (content != null){
+	  Enumeration tokens = content.elements();
+	  while( tokens.hasMoreElements() ){
+	    try{
+	      SGML e = (SGML)tokens.nextElement();
+	      handleContent(a, e);
+	    }catch(Exception excep){}
+	  }
+	}
+      }
+  }
+
 }
 
 /* ====================================================================
@@ -130,3 +165,7 @@ sub timed_submission {
    
 }
 */
+
+
+
+
