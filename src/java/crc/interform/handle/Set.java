@@ -48,7 +48,7 @@ public class Set extends crc.interform.Handler {
   static String syntaxStr=
     "<set name=\"name\" | index=\"index\" [copy] [attr=attr | insert=where [replace] ]\n" +
     "[ pia | agent | trans [feature] | env \n" +
-    "| [element [tag=ident]] | entity [global | local] ]>...</set>\n" +
+    "| [element [tag=ident]] | entity [global | local] [asToken] ]>...</set>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -63,6 +63,7 @@ public class Set extends crc.interform.Handler {
     "ELEMENT may have a TAG.  TRANSaction item\n" +
     "may be FEATURE.  \n" +
     "Optionally COPY content as result.\n" +
+    "ASTOKEN forces the CONTENT to be a single token (rather than a list of tokens)\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -155,12 +156,14 @@ public class Set extends crc.interform.Handler {
 
 
   /**
-   * return the contents of it  as a token
+   * return the contents of it
    */
   protected SGML getValue(SGML it){
     SGML result = it.isEmpty()? new Text("") : it.content().simplify();
-    if(result instanceof Tokens)
-       result = new Element("", result);
+       if(it.hasAttr("asToken") && result instanceof Tokens)
+         result = new Element("", result);
+
+
     return result;
   }
 
@@ -297,9 +300,15 @@ public class Set extends crc.interform.Handler {
 
     if(where < 0 || where >  content.nItems()){
       // setting beyond end of list fails.. so just append
-      // use push so that text does not get smashed
-       content.push(value);
+      // could use push so that text does not get smashed
+// but that causes other problems
+       // content.push(value);
+// append value -- text will get smashed
+      content.append(value);
+      
     } else {
+
+//This is still not right if value is a Tokens...
       if( request.hasAttr("replace"))
 	content.itemAt(where,value); 
       else content.insertAt(value,where);
