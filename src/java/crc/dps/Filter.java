@@ -22,6 +22,8 @@ import crc.dps.Processor;
 import crc.dps.Tagset;
 
 import crc.dps.process.TopProcessor;
+import crc.dps.tagset.TagsetProcessor;
+
 import crc.dps.output.*;
 import crc.dps.active.*;
 import crc.dps.handle.GenericHandler;
@@ -41,6 +43,7 @@ public class Filter {
   static boolean parsing = false;
   static int verbosity = 0;
   static boolean noaction = false;
+  static boolean loadTagset = false;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -89,7 +92,7 @@ public class Filter {
     if (verbose) {
       System.err.println("infile = " + infile );
       System.err.println("outfile= " + outfile);
-      // System.err.println("propfile= " + propfile); === unused.
+      System.err.println("tagset= " + tsname);
     }
 
     /* Initialize and run the interpretor */
@@ -100,6 +103,13 @@ public class Filter {
     if (ts == null) {
       System.err.println("Unable to load Tagset " + tsname);
       System.exit(-1);
+    }
+
+    if (tsname.equals("tagset")) loadTagset = true;
+    if (tsname.equals("BOOT")) loadTagset = true;
+
+    if (verbose && loadTagset) {
+      System.err.println("We appear to be defining a tagset. ");
     }
 
     if (debug) {
@@ -128,11 +138,11 @@ public class Filter {
     p.setReader(new InputStreamReader(in));
 
     /* Finally, create a Processor and set it up. */
-    TopContext ii = new TopProcessor();
+    TopContext ii = loadTagset? new TagsetProcessor() : new TopProcessor();
     ii.setInput(p);
     ii.setTagset(ts);
 
-    if (debug) {
+    if (debug && (ii.getEntities() != null)) {
       System.err.println("Entities defined: ");
       java.util.Enumeration names = ii.getEntities().allEntityNames();
       while (names.hasMoreElements()) {
