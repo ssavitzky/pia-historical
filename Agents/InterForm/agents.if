@@ -1,10 +1,10 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>&agentName; Entity Index</title>
+<title>&agentName; Agent Index</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>Entity Index</set>
+<set entity name=title>Agent Index</set>
 <read interform file="heading.inc" process>
 
 <set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
@@ -22,20 +22,20 @@
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
             <td> <a href=actors.if>Actors</a>
-		 <b href=entities.if>Entities</b>
-		 <a href=agents.if>Agents</a>
+		 <a href=entities.if>Entities</a>
+		 <b href=agents.if>Agents</b>
     <tr><th><td> <a href="tag_man.if">Standard Tagset Manual</a>
     <tr><th><td> <a href=demo.if>Standard Tagset Examples</a>
     <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
   </table>
 </table>
  
-<h2>Defined Entities</h2>
+<h2>Running Agents</h2>
 
-<pre><i>Name		 Value</i>
-<repeat list="&entityNames;"> <b><pad width=15 spaces>&li:</pad><a
-		href="&IFman;#e-&li;">&li;</a>:</b><!--
-    			--> <get entity name="&li;">
+    <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
+<repeat list="&agentNames;"
+	   ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+	   >	<agent-home link name="&li;">
 </repeat></pre>
 
 <hr>

@@ -1,31 +1,37 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Standard Tagset Manual</title>
+<title>&agentName; Standard Tagset Manual</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <if><agent-running name=InterForm>
 <then>
 <!-- normal mode; running from the InterForm agent. -->
-<set entity name=title>&agentName; Agent<br>Actor Demonstration Page</set>
+<set entity name=title>Standard Tagset Manual</set>
 <read interform file="heading.inc" process>
-
+<!-- references that change depending on where we are: -->
 <set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
 <set entity name=IFdemo>demo.if</set>
+
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170 valign=center>
 <td>
-  <table cellspacing=0 BORDER=0>
-  <tr><th align=right width=170>&nbsp;<td>
-  <tr>
-    <th valign=top align=right width=170>
-    <td valign=top> Demonstration and Test agent
-  <tr><th align=right><a href="/&agentName;"><b>&agentName;:</b></a>
-          <td> <a href=demo.if>Demo page</a>
-  <tr><th><td> <a href=actors.if>Defined InterForm Actors</a>
-  <tr><th><td> <a href=entities.if>Defined Entities</a>
-  <tr><th><td> <a href=/Agency/agents.if>Running PIA Agents</a>
-  <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
+  <table cellspacing=0 cellpadding=0 border=0>
+    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
+	                   width=170 height=1></th><td>
+    <tr><th align=right>
+	    <td> <a href="home.if">Home</a>
+    		 <a href="index.if">Index</a>
+    		 <a href="help.if">Help</a>
+    		 <a href="options.if">Options</a>
+    <tr><th><td> <a href=actors.if>Actors</a>
+		 <a href=entities.if>Entities</a>
+		 <a href="/Agency/agents.if">Agents</a>
+    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*">
+            <td> <b href="tag_man.if">Standard Tagset Manual</b>
+    <tr><th><td> <a href=demo.if>Standard Tagset Examples</a>
+    <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
   </table>
 </table>
 </then>
@@ -119,7 +125,7 @@ cross-referenced to the manual.">
   <dl>
     <if><actor-dscr name="&name;"><then>
     <dt> <b>Syntax:</b>
-    <dd> <pre><add-markup><actor-syntax name="&name;"></add-markup></pre>
+    <dd> <add-markup><actor-syntax name="&name;"></add-markup>
     <dt> <b>Description:</b>
     <dd> <add-markup><actor-dscr name="&name;"></add-markup>
     </then></if>
