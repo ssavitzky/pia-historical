@@ -35,6 +35,7 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
     int total = 0;
 
     try{
+
       f = new File( fileName );
       long len = f.length();
       buffer = new byte[ (int)len ];
@@ -162,80 +163,51 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
    * @return the unescaped string.
    */
 
-  /*
+
   public static synchronized String unescape (String s) {
 
-    crc.pia.Pia.instance().debug( "The input string-->"+s);
+    crc.pia.Pia.debug( "The input string-->"+s);
 
 	StringBuffer digitBuf = null;
 	int hb = -1;
 	int lb = -1;
 	StringBuffer sbuf = new StringBuffer () ;
 	int l  = s.length() ;
-    crc.pia.Pia.instance().debug( "The string len is-->"+ Integer.toString( l ));
+	crc.pia.Pia.debug( "The string len is-->"+ Integer.toString( l ));
 	int ch = -1 ;
 
 	for (int i = 0 ; i < l ; i++) {
-
+	  
 	  digitBuf = new StringBuffer();
-	    switch (ch = s.charAt(i)) {
-	      case '%':
-		if( ++i < l ){
-		  ch = s.charAt (++i) ;
-		  digitBuf.append( (char)ch );
-
-		if( ++i < l )
-		  ch = s.charAt (++i) ;
+	  switch (ch = s.charAt(i)) {
+	  case '%':
+	      int j = i;
+	      int k = i+1; 
+	      int kk = i+2;
+	      if( k < l-1 && kk < l-1 ){
+		ch = s.charAt (++i) ;
+		digitBuf.append( (char)ch );
+		
+		ch = s.charAt (++i) ;
 		digitBuf.append( (char)ch );
 		
 		if( digitBuf.length() > 0 ){
 		  int foo = Integer.parseInt( new String( digitBuf ), 16 );
 		  sbuf.append( (char)foo );
 		}
-		break ;
-	      case '+':
-		sbuf.append (' ') ;
-		break ;
-	      default:
-		sbuf.append ((char) ch) ;
-	    }
+	      }
+	      break ;
+	  case '+':
+	    sbuf.append (' ') ;
+	    break ;
+	  default:
+	    sbuf.append ((char) ch) ;
+	  }
 	}
-    crc.pia.Pia.instance().debug( "The out string-->"+sbuf.toString());
+	crc.pia.Pia.debug( "The out string-->"+sbuf.toString());
 	return sbuf.toString() ;
-    }
-    */
-
-public static String unescape (String s) {
-	StringBuffer sbuf = new StringBuffer () ;
-	int l  = s.length() ;
-	int ch = -1 ;
-	for (int i = 0 ; i < l ; i++) {
-	    switch (ch = s.charAt(i)) {
-	      case '%':
-		int j = ++i;
-		if( j < l && ++j < l ){
-		  ch = s.charAt (++i) ;
-		  int hb = (Character.isDigit ((char) ch) 
-			    ? ch - '0'
-			    : Character.toLowerCase ((char) ch) - 'a') & 0xF ;
-		  ch = s.charAt (++i) ;
-		  int lb = (Character.isDigit ((char) ch)
-			    ? ch - '0'
-			    : Character.toLowerCase ((char) ch) - 'a') & 0xF ;
-		  sbuf.append ((char) ((hb << 4) | lb)) ;
-		}
-		break ;
-	      case '+':
-		sbuf.append (' ') ;
-		break ;
-	      default:
-		sbuf.append ((char) ch) ;
-	    }
-	}
-	return sbuf.toString() ;
-    }
-    
-
+  }
+  
 
   public static void main(String[] args){
     String fn = args[0];
