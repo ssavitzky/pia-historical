@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
 
 import crc.ds.Queue;
 import crc.ds.Features;
+import crc.ds.List;
 import crc.pia.Machine;
 import crc.pia.Content;
 import crc.pia.Transaction;
@@ -44,7 +45,7 @@ public class  HTTPResponse extends Transaction {
    * Attribute index - controls to be insert into a response
    *
    */
-  protected Vector controls = new Vector();
+  protected List controls = new List();
 
 
 
@@ -233,24 +234,15 @@ public class  HTTPResponse extends Transaction {
    * @param aThing any control
    */
   public void addControl( Object aThing ){
-    controls.addElement( aThing );
+    controls.push( aThing );
   }
 
   /**
    * Return controls as an array of Objects.
    * @return an array of Objects
    */
-  public Object[] controls(){
-    int size = 0;
-
-    size = controls.size();
-    if( size > 0 ){
-      Object[] c = new Object[ size ];
-      for(int i = 0; i < size; i++ ) 
-	c[i] = controls.elementAt(i);
-      return c;
-    }
-    return null;
+  public List controls(){
+    return controls;
   }
 
 
