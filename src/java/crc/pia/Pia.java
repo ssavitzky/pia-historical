@@ -791,7 +791,14 @@ public class Pia {
 
   /** Return the Pia's only instance.  */
   public static Pia instance() {
-    return instance;
+    if( instance != null )
+      return instance;
+    else{
+      String[] args = new String[1];
+      args[0] ="PIA_DIR=../../../..";
+      makeInstance(args);
+      return instance;
+    }
   }
 
 
@@ -846,6 +853,47 @@ public class Pia {
       }
     }
   }
+
+  private static void makeInstance(String[] args){
+
+    /* Create a PIA instance */
+
+    Pia pia = new Pia();
+    pia.commandLine = args;
+    pia.debug = false;
+    pia.debugToFile = false;
+    pia.properties = new Piaproperties(System.getProperties());
+
+    /** Configure it. */
+
+    Configuration config = Configuration.loadConfig(pia.setupClassName);
+    if (config.configure(args)) {
+      config.usage();
+
+      /** Continue with the initialization if the user requested props. */
+
+      verbose = pia.properties.getBoolean("crc.pia.verbose", false);
+      if (verbose) {
+	pia.reportProps(pia.properties, "Properties");
+      }
+      System.exit(1);
+    }
+
+    /** Initialize it from its properties. */
+    if (! pia.initialize()) System.exit(1);
+
+    reportProps(instance.properties, "System Properties:");
+    reportProps(instance.piaFileMapping, "File (MIME type) mapping");
+
+    try {
+      instance.createPiaAgency();
+      //new Thread( new Shutdown() ).start();
+    }catch(Exception e){
+      System.out.println ("===> Initialization failed, aborting !") ;
+      e.printStackTrace () ;
+    }
+  }
+
 
   /************************************************************************
   ** Main Program:
