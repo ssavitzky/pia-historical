@@ -3,3 +3,4 @@ gif=image/gif
 jpg=image/jpeg
 jpeg=image/jpeg
 exe=application/octet-stream
+tgz=application/octet-stream
