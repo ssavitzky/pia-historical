@@ -34,7 +34,6 @@ import crc.ds.List;
   */
 
 public class Pia{
-  public boolean DEBUG = false; 
   /**
    * where to proxy
    */
@@ -100,10 +99,10 @@ public class Pia{
 
 
   private Properties    piaFileMapping = null;
-  private Piaproperties properties   = null;
-  private static Pia     instance    = null;
-  private String  docurl      = null;
-  private Logger  logger      = null;
+  private Piaproperties properties     = null;
+  private static Pia     instance      = null;
+  private String  docurl               = null;
+  private static Logger  logger        = null;
   private String  loggerClassName = "crc.pia.Logger";
   
   
@@ -118,8 +117,8 @@ public class Pia{
   private int     port       = 8001;
   private int     reqTimeout = 50000;
   private boolean verbose    = true;
-  private boolean debug      = false;
-  private boolean debugToFile= false;
+  private static boolean debug  = true;  // always print to screen or file if debugToFile is on
+  private static boolean debugToFile= false;
   
 
   private Table proxies           = new Table();
@@ -275,15 +274,16 @@ public class Pia{
   /**
    * @toggle debug flag 
    */
-  public void debug(boolean onoff){
+  public static void debug(boolean onoff){
     debug = onoff;
   } 
 
   /**
    * @toggle debug to file flag
    * true if you want debug message to trace file.
+   * Note: this method will not print to file if the Pia is not running
    */
-  public void debugToFile(boolean onoff){
+  public static void debugToFile(boolean onoff){
     debugToFile = onoff;
   } 
 
@@ -339,8 +339,8 @@ public class Pia{
    * Fatal system error -- print message and throw runtime exception.
    * Do a stacktrace.
    */
-  public void errSys(Exception e, String msg){
-    System.err.println(this.getClass().getName() +": " + msg);
+  public static void errSys(Exception e, String msg){
+    System.err.println("Pia: " + msg);
     e.printStackTrace();
     
     throw new RuntimeException(msg);
@@ -350,8 +350,8 @@ public class Pia{
    * Fatal system error -- print message and throw runtime exception
    *
    */
-  public void errSys(String msg){
-    System.err.println(this.getClass().getName() +": " + msg);
+  public static void errSys(String msg){
+    System.err.println("Pia: " + msg);
     throw new RuntimeException(msg);
   }
 
@@ -359,7 +359,7 @@ public class Pia{
    * Print warning message
    *
    */
-  public void warningMsg( String msg ){
+  public static void warningMsg( String msg ){
     System.err.println( msg );
   }
 
@@ -367,7 +367,7 @@ public class Pia{
    * Print warning message
    *
    */
-  public void warningMsg(Exception e, String msg ){
+  public static void warningMsg(Exception e, String msg ){
     System.err.println( msg );
     e.printStackTrace();
     
@@ -377,7 +377,7 @@ public class Pia{
    * Dump a debugging statement to trace file
    *
    */
-  public void debug( String msg )
+  public static void debug( String msg )
   {
     if( debug && logger != null && debugToFile )
 	logger.trace ( msg );
@@ -390,7 +390,7 @@ public class Pia{
      * Dump a debugging statement to trace file on behalf of
      * an object
      */
-  public void debug(Object o, String msg )
+  public static void debug(Object o, String msg )
   {
     if( debug && logger != null && debugToFile )
 	logger.trace ("[" +  o.getClass().getName() + "]-->" + msg );
@@ -403,7 +403,7 @@ public class Pia{
    * message to log
    *
    */
-  public void log( String msg )
+  public static void log( String msg )
   {
     if( logger != null )
 	logger.log ( msg );
@@ -413,7 +413,7 @@ public class Pia{
    * error to log
    *
    */
-  public void errLog( String msg )
+  public static void errLog( String msg )
   {
     if( logger != null )
 	logger.errlog ( msg );
@@ -423,7 +423,7 @@ public class Pia{
    * error to log on behalf of an object
    *
    */
-  public void errLog(Object o, String msg )
+  public static void errLog(Object o, String msg )
   {
     if( logger != null )
 	logger.errlog ("[" +  o.getClass().getName() + "]-->" + msg );
@@ -647,7 +647,7 @@ public class Pia{
     agency       = new Agency("Agency", null);
     resolver.registerAgent( agency );
     
-    
+    /*
     debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
     Table ht = new Table();
     ht.put("agent", "PIA");
@@ -659,6 +659,7 @@ public class Pia{
     }catch(AgentInstallException e){
       debug(this, "Unable to install: " + e.getMessage() );
     }
+    */
 
     if( verbose )
       verboseMessage();
@@ -727,7 +728,7 @@ public class Pia{
       instance = new Pia();
       try{
 	piaprops = instance.loadProperties(null);
-	instance.loadFileMapping(null);
+	instance.piaFileMapping = instance.loadFileMapping(null);
 	instance.initialize(piaprops);
       }catch(Exception e){
 	  System.out.println( e.toString() );
