@@ -519,6 +519,30 @@ See also:
   <li> 1998-11-25 <b>Bug:</b> not propagating verbosity from pia to dps <br>
        (1998-10-9) <br>
 
+  <li> 1998-12-04 <b>Hole</b> &lt;put&gt; operation <br>
+       <code>&lt;put&gt;&lt;name&gt;...&lt;value&gt;...</code> -- this can
+       work with the existing bindings of &lt;name&gt; and &lt;value&gt;
+       (1998-11-02)<br>
+       -- -&gt; output
+
+  <li> 1998-12-11 <b>Note</b> External Entities. <br>
+       <code>crc.dps.active.ParseTreeExternal</code> is supposed to correspond
+       to an external entity.  &lt;define entity=<em>foo</em>
+       system=<em>url</em>&amp;... should define one.  See
+       <code>basic.ts</code> for the relevant attributes: <code>mode</code>,
+       and <code>write-mode</code>.
+       (1998-11-09) <br>
+
+  <li> 1998-12-11 <b>Hole</b> &lt;connect&gt; and &lt;status&gt;<br>
+       It seems pretty clear at this point that &lt;connect&gt; needs to use an
+       external entity as a ``file handle''.  The &lt;status&gt; tag can then
+       return the status of the connection, or of an external entity defined
+       using &lt;define entity=<em>name</em> external=<em>url</em>&gt;.
+       (1998-11-09) <br>
+
+  <li> <b>Impr</b> piaUSER, etc should become PIA:user, etc. <br>
+       (1998-10-11) <br>
+       -- done, but the old names are still around for a while.
 </ol>
 <a name="end">End of list.</a>
 <hr>

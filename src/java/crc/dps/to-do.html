@@ -23,6 +23,11 @@ See also:
        parser to construct arbitrary classes for elements.
        (1998-12-04) <br>
 
+  <li> <b>Impr</b> force tagset reloading <br>
+       Is there a convenient way to force an Agent to reload its tagsets?
+       Checking last-modified dates would also work, but it could get slow.
+       (1998-12-04) <br>
+
   <li> <b>Impr</b> Persistent namespaces <br>
        There are actually two ways to make a namespace persistent:  make it
        the value of an external entity, and make its bindings be external
@@ -56,21 +61,6 @@ See also:
   <li> <b>Bug</b> HTML attribute names not case-insensitive. <br>
        (1998-11-17) <br>
 
-  <li> <b>Note</b> External Entities. <br>
-       <code>crc.dps.active.ParseTreeExternal</code> is supposed to correspond
-       to an external entity.  &lt;define entity=<em>foo</em>
-       system=<em>url</em>&amp;... should define one.  See
-       <code>basic.ts</code> for the relevant attributes: <code>mode</code>,
-       and <code>write-mode</code>.
-       (1998-11-09) <br>
-
-  <li> <b>Hole</b> &lt;connect&gt; and &lt;status&gt;<br>
-       It seems pretty clear at this point that &lt;connect&gt; needs to use an
-       external entity as a ``file handle''.  The &lt;status&gt; tag can then
-       return the status of the connection, or of an external entity defined
-       using &lt;define entity=<em>name</em> external=<em>url</em>&gt;.
-       (1998-11-09) <br>
-
   <li> <b>Bug</b> Boolean attributes should eval. to name <br>
        ...following the ancient SGML tradition.  Best done by fixing what the
        parser does when no = is present. 
@@ -80,11 +70,6 @@ See also:
 	  handlers need to distinguish between an entity which is present but
 	  has no value, and one which is present with a non-default value.
        
-  <li> <b>Hole</b> &lt;put&gt; operation <br>
-       <code>&lt;put&gt;&lt;name&gt;...&lt;value&gt;...</code> -- this can
-       work with the existing bindings of &lt;name&gt; and &lt;value&gt;
-       (1998-11-02)<br>
-
   <li> <b>Impr</b> Pipelined &lt;select&gt; <br>
        Should be possible to stream selection through a series of
        processors.  Bind &amp;item; to current item; evaluate
@@ -169,9 +154,6 @@ Results: &lt;pre&gt;cat                                                         
        definition. 
        (1998-10-12) <br>
 
-  <li> <b>Impr</b> piaUSER, etc should become PIA:user, etc. <br>
-       (1998-10-11) <br>
-
   <li> <b>Impr</b> the convertToString methods are unused. <br>
        We should either use them, or drop them.
        (1998-10-11) <br>
@@ -206,6 +188,7 @@ Results: &lt;pre&gt;cat                                                         
   <li> <b>Hole:</b> Some &lt;select&gt; subs unimplemented. <br>
        id, xptr, replace; some attributes (e.g. <code>recursive</code>)
        (1998-09-08)<br>
+       -- all but xptr and replace now done
 
   <li> <b>Bug:</b> Passive Entities needed. <br>
        Passive entities (character entities) and some normal entities have to
