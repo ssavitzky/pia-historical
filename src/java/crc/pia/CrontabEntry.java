@@ -16,10 +16,10 @@ import crc.ds.Registered;
 import crc.ds.List;
 import crc.ds.Tabular;
 
-import crc.sgml.SGML;
-import crc.sgml.Element;
-import crc.sgml.Attrs;
-import crc.sgml.Util;
+// import crc.sgml.SGML;
+// import crc.sgml.Element;
+// import crc.sgml.Attrs;
+// import crc.sgml.Util;
 
 import crc.util.Utilities;
 
@@ -146,7 +146,7 @@ public class CrontabEntry implements Serializable {
     }
 
     if (itt.get("until") != null) {
-      List until = Util.split(itt.get("until").toString(), '-');
+      List until = List.split(itt.get("until").toString(), "-", false);
       untilMonth = untilEntry(until, 0);
       untilDay   = untilEntry(until, 1);
       untilHour  = untilEntry(until, 2);

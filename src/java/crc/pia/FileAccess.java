@@ -34,12 +34,12 @@ import crc.ds.SortTree;
 import crc.ds.Association;
 import crc.ds.List;
 
-import crc.sgml.Tokens;
+// import crc.sgml.Tokens;
 
 import crc.content.ByteStreamContent;
 
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import java.util.Properties;
@@ -166,7 +166,9 @@ public class FileAccess {
 
       if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
 
-      String allurls = entries.ascendingValues(new Tokens("\n")).toString();
+      List sortList = new List();
+      entries.ascendingValues(sortList);
+      String allurls = sortList.join("\n");
 
       String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + mypath + "</TITLE>"
 	+ "<BASE href=\"" + mybase + "\">"

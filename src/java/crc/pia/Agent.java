@@ -19,8 +19,8 @@ import crc.ds.Criterion;
 import crc.ds.Registered;
 import crc.ds.Tabular;
 
-import crc.sgml.SGML;
-import crc.sgml.Attrs;
+// import crc.sgml.SGML;
+// import crc.sgml.Attrs;
 
 import crc.tf.UnknownNameException;
 

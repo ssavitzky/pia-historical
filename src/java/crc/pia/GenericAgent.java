@@ -45,7 +45,7 @@ import crc.dps.process.ActiveDoc;
 
 import crc.dom.NodeList;
 
-import crc.sgml.SGML;
+// import crc.sgml.SGML;
 import crc.util.NullOutputStream;
 
 import crc.util.Utilities;
@@ -54,7 +54,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.io.Serializable;
 
-import crc.interform.Run;
+// import crc.interform.Run;
 import w3c.www.http.HTTP;
 
 /** The minimum concrete implementation of the Agent interface.  A
@@ -291,9 +291,6 @@ public class GenericAgent implements Agent, Registered, Serializable {
       if (RESOLVE_INITIALIZE) {	
 	// We can force initialization to use the resolver if necessary.
 	createRequest("GET", url, null, null );
-      } else if (fn.endsWith(".if")) { 
-	// Run a legacy initialization file.
-	Run.interformSkipFile(this, fn, req, res);
       } else {
 	// Run an XHTML initialization file.
 	if (proc == null) {
@@ -804,10 +801,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    */
   public void actOn(Transaction ts, Resolver res){
     if (actOnHook == null) return;
-    else if (actOnHook instanceof SGML) {
-      Pia.debug(this, name()+".actOnHook", "="+actOnHook.toString());
-      Run.interformHook(this, (SGML)actOnHook, name()+".act-on", ts, res);
-    } else if (actOnHook instanceof NodeList) {
+    else if (actOnHook instanceof NodeList) {
       Pia.debug(this, name()+".actOnHook", "= DPS:"+actOnHook.toString());
       runDPSHook((NodeList)actOnHook, ts, res); 
     } else {
@@ -826,11 +820,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    */
   public boolean handle(Transaction ts, Resolver res) {
     if (handleHook == null)  return false;
-    else if (handleHook instanceof SGML) {
-      Pia.debug(this, name()+".handleHook", "="+handleHook.toString());
-      Run.interformHook(this, (SGML)handleHook, name()+".handle", ts, res);
-      return true;
-    } else if (handleHook instanceof NodeList) {
+    else if (handleHook instanceof NodeList) {
       Pia.debug(this, name()+".handleHook", "= DPS: "+handleHook.toString());
       runDPSHook((NodeList)handleHook, ts, res); 
       return true;
@@ -1526,30 +1516,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
       return true; //not clear-returning true because response has been set
     }
       
-    if( file.endsWith(".if") ){
-      // If find_interform substituted .../home.if for .../ 
-      // we have to tell what follows that it's an interform.
-      request.assert("interform");
-    }
-    if( request.test("interform") ){
-      try{
-	InputStream in;
-
-	in = ( destFileName != null )
-	  ? Run.interformFile(this, file, destFileName, request, res)
-	  : Run.interformFile(this, file, request, res);
-	sendStreamResponse(request, in);
-      }catch(PiaRuntimeException ee ){
-	throw ee;
-      } catch (Exception e) {
-	System.err.println(e.toString());
-	e.printStackTrace();
-	System.err.println("PIA recovering.");
-	throw new PiaRuntimeException(this, "respondToInterform",
-				      "Exception in InterForm: "
-				      + e.toString());
-      }
-    } else if( file.endsWith(".cgi") ){
+    if( file.endsWith(".cgi") ){
       try{
 	execCgi( request, file );
       }catch(PiaRuntimeException ee ){
