@@ -74,13 +74,7 @@ add a default start-up form to this file.  <p>
        <input type="submit" value="Install">
        name: <input name="agent" value="InterForm">
        </form></if>
-  <dt> <a name="Printer">Printer agent</a>
-       <if><agent-running name=Printer><then><em>installed</em></if>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
-       <input type="submit" value="Install">
-       name: <input name="agent" value="Printer">
-       type: <input name="type" value="Printer">
-       </form>
+
 </dl>
 
 <hr>
@@ -215,6 +209,22 @@ add a default start-up form to this file.  <p>
        root:<input name="root" value="~/.pia/Photo_Album/">
        <input type="submit" value="Install">
        </form></if>
+
+  <dt> <a name="Printer">Printer agent</a>
+       <if><agent-running name=WebPrinter><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="WebPrinter">
+       type: <input name="type" value="Printer">
+       </form>
+<dt>  spool
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="spool">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia/WebPrinter/spool/">
+       <input type="submit" value="Install">
+       </form></else></if>
 
 </dl>
 <hr>
