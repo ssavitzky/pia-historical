@@ -27,8 +27,8 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
 
 import crc.pia.agent.Agency;
 public class T_agency {
