@@ -15,6 +15,7 @@ import crc.pia.Agent;
 import crc.pia.agent.AgentMachine;
 import crc.pia.Transaction;
 import crc.pia.HTTPRequest;
+import crc.pia.HTTPResponse;
 import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
@@ -314,7 +315,6 @@ public class GenericAgent extends AttrBase implements Agent {
    * attached to each transaction.
    */
   public Criteria criteria(){
-    if(criteria == null) criteria = new Criteria();
     return criteria;
   }
 
