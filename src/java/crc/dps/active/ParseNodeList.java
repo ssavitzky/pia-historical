@@ -5,7 +5,10 @@
 package crc.dps.active;
 
 import crc.dom.ArrayNodeList;
+import crc.dom.NodeList;
 import crc.dom.Node;
+
+import java.util.Enumeration;
 
 /**
  * A list or sequence of ActiveNode objects.  
@@ -43,5 +46,16 @@ public class ParseNodeList extends ArrayNodeList implements ActiveNodeList {
 
   public ParseNodeList(ActiveNode initialChild) {
     super((Node)initialChild);
+  }
+  public ParseNodeList(NodeList initialChildren) {
+    super(initialChildren);
+  }
+
+  public ParseNodeList(Enumeration elements) {
+    while (elements.hasMoreElements()) {
+      Object o = elements.nextElement();
+      if (o instanceof ActiveNode) append((ActiveNode) o);
+      else append(new ParseTreeText(o.toString()));
+    }
   }
 }
