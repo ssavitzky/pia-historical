@@ -5,12 +5,7 @@
 package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.Attribute;
-import crc.dom.AttributeList;
-import crc.dom.BasicElement;
 import crc.dom.Element;
-import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
@@ -37,6 +32,8 @@ import crc.dps.aux.*;
  * @see crc.dom.Node */
 
 public class GenericHandler extends BasicHandler {
+
+  protected static final ParseTreeAttrs NO_ATTRS = new ParseTreeAttrs();
 
   /************************************************************************
   ** State Used for Syntax:
@@ -86,13 +83,22 @@ public class GenericHandler extends BasicHandler {
   /** If <code>true</code>, the content is expanded. */
   public void setExpandContent(boolean value) { expandContent = value; }
 
+  /** If <code>true</code>, only Text in the content is retained. */
+  protected boolean textContent = false;
+
+  /** If <code>true</code>, only Text in the content is retained. */
+  public boolean textContent() { return textContent; }
+
+  /** If <code>true</code>, only Text in the content is retained. */
+  public void setTextContent(boolean value) { textContent = value; }
+
   /** If <code>true</code>, the content is delivered as a string. */
   protected boolean stringContent = false;
 
-  /** If <code>true</code>, the content is expanded. */
+  /** If <code>true</code>, the content is delivered as a string. */
   public boolean stringContent() { return stringContent; }
 
-  /** If <code>true</code>, the content is expanded. */
+  /** If <code>true</code>, the content is delivered as a string. */
   public void setStringContent(boolean value) { stringContent = value; }
 
  
@@ -122,28 +128,44 @@ public class GenericHandler extends BasicHandler {
   /** This routine does the setup for the ``7-argument'' action routine. 
    *
    *	It obtains the expanded attribute list and content, and will rarely
-   *	have to be overridden. 
+   *	have to be overridden.  At some point it may be copied into an
+   *	implementation of Processor.
    */
   public void action(Input in, Context aContext, Output out) {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
     if (atts != null) aContext.debug("   atts: " + atts.toString() + "\n");
+    else atts = NO_ATTRS;
     ParseNodeList content = null;
     String cstring = null;
     if (!in.hasChildren()) {
       aContext.debug("   no children...\n");
     } else if (stringContent) {
-      aContext.debug("   getting content as "
+      aContext.debug("   getting content as " + (textContent? "text in " : "")
 		     + (expandContent? "" : "un") + "expanded string\n");
-      cstring = expandContent? Expand.getProcessedContentString(in, aContext)
-	: Expand.getContentString(in, aContext);
+      if (textContent) {
+	cstring = expandContent
+	  ? Expand.getProcessedTextString(in, aContext)
+	  : Expand.getTextString(in, aContext);
+      } else {
+	cstring = expandContent
+	  ? Expand.getProcessedContentString(in, aContext)
+	  : Expand.getContentString(in, aContext);
+      }
       aContext.debug("     -> '" + cstring + "'\n");
     } else {
-      aContext.debug("   getting content as "
+      aContext.debug("   getting content as " + (textContent? "text in " : "")
 		     + (expandContent? "" : "un") + "expanded parse tree\n");
-      content = expandContent
-	? Expand.getProcessedContent(in, aContext)
-	: Expand.getContent(in, aContext);
-      aContext.debug("     -> " + content.toString() + content.getLength() + " nodes\n");
+      if (textContent) {
+	content = expandContent
+	  ? Expand.getProcessedText(in, aContext)
+	  : Expand.getText(in, aContext);
+      } else {
+	content = expandContent
+	  ? Expand.getProcessedContent(in, aContext)
+	  : Expand.getContent(in, aContext);
+      }
+      aContext.debug("     -> '" + content.toString() + "' "
+		     + content.getLength() + " nodes\n");
     }
     String tag = in.getTagName();
     aContext.debug("   Performing action for <" + tag + ">\n");
@@ -181,8 +203,8 @@ public class GenericHandler extends BasicHandler {
       // Create a suitable sub-context:
       aContext.debug("expanding definition in sub-context\n");
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
-      ents.setValueForEntity("CONTENT", content, true);
-      ents.setValueForEntity("ELEMENT", new ParseNodeList(element), true);
+      ents.setEntityValue("CONTENT", content, true);
+      ents.setEntityValue("ELEMENT", new ParseNodeList(element), true);
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
       Processor p = aContext.subProcess(def, out, ents);

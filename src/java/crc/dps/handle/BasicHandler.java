@@ -149,6 +149,27 @@ public class BasicHandler extends AbstractHandler {
     implicitlyEnds.at(tag, tag);
   }
 
+  protected boolean mayContainText = true;
+
+  /** Return <code>true</code> if Text nodes are permitted in the content.
+   */
+  public boolean mayContainText() { return mayContainText; }
+
+  public void setMayContainText(boolean value) { mayContainText = value; }
+
+  protected boolean mayContainParagraphs = true;
+
+  /** Return <code>true</code> if paragraph elements are permitted in the
+   *	content.  If this is <code>true</code> and <code>mayContainText</code>
+   *	is false, whitespace is made ignorable and non-whitespace is dropped.
+   */
+  public boolean mayContainParagraphs() { return mayContainParagraphs; }
+
+  public void setMayContainParagraphs(boolean value) {
+    mayContainParagraphs = value;
+  }
+
+
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/

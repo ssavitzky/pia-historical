@@ -1,4 +1,4 @@
-////// TypicalHandler.java: <typical> Handler implementation
+////// LegacyHandler.java: Node Handler legacy implementation
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -14,25 +14,36 @@ import crc.dps.active.*;
 import crc.dps.aux.*;
 
 /**
- * Handler for <typical>....</>  <p>
+ * Wrapper for legacy handlers from <code>crc.interform.handle</code>.
  *
  *	This is a sample implementation of a specialized subclass of
- *	GenericHandler for the ``typical'' case.
+ *	GenericHandler for the ``legacy'' case.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  */
 
-public class TypicalHandler extends GenericHandler {
+public class LegacyHandler extends GenericHandler {
+
+  public crc.interform.Handler wrapped = null;
 
   /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
 
-  /** This will normally be the only thing to customize. */
+  /** Perform the operation by passing it off to the wrapped legacy 
+   *	handler.  It's unfeasible to use the old action routines, because
+   *	the paradigms are so different, so instead we just re-implement
+   *	the action as needed.
+   */
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
-    // Actually do the work. 
+    if (wrapped.action(aContext, out, tag, atts, content,
+		       ((content == null)? null : content.toString()))) {
+      return;
+    }
+    aContext.message(-1, "unimplemented action for <" + tag + ">", 0, true);
+    super.action(in, aContext, out, tag, atts, content, cstring);
   }
 
   /************************************************************************
@@ -40,17 +51,7 @@ public class TypicalHandler extends GenericHandler {
   ************************************************************************/
 
   /** Constructor must set instance variables. */
-  public TypicalHandler() {
-    /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
-    expandContent = true;	// false	Expand content?
-    textContent = false;	// true		extract text from content?
-    noCopyNeeded = true;	// false 	don't copy parse tree?
-    passElement = false;	// true 	pass while expanding?
-
-    /* Syntax: */
-    parseElementsInContent = true;	// false	recognize tags?
-    parseEntitiesInContent = true;	// false	recognize entities?
-    elementSyntax = -1;			// -1: non-empty 1: empty 0: check
+  public LegacyHandler(crc.interform.Handler h) {
+    wrapped = h;
   }
 }

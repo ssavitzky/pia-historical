@@ -10,12 +10,17 @@ HANDLERS = \
 	AbstractHandler.java \
 	BasicHandler.java \
 	GenericHandler.java \
+	LegacyHandler.java \
 	TypicalHandler.java
 
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
+	elseHandler.java \
+	elsfHandler.java \
 	ifHandler.java \
-	substHandler.java
+	substHandler.java \
+	testHandler.java \
+	thenHandler.java
 
 ### The effect of these actors is local; they do not require a PIA, 
 ###	but may have an effect on the local system. 

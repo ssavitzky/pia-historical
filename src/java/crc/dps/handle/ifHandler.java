@@ -16,12 +16,11 @@ import crc.dps.active.*;
 import crc.dps.aux.*;
 
 /**
- * Handler for <if>...<then>...<else-if>... <else>...</if>. <p>
+ * Handler for &lt;if&gt;. <p>
  *
- *	This would actually be more efficient if startAction built a
+ *	This would actually be more efficient if the parser built a
  *	node of type if_node that cached the <code>then</code> and
- *	<code>else</code> children.  Even more if it built an if_token
- *	while parsing.
+ *	<code>else</code> children.  
  *	<p>
  *
  * @version $Id$
@@ -36,6 +35,10 @@ import crc.dps.aux.*;
 
 public class ifHandler extends GenericHandler {
 
+  protected static Class elseHandlerClass = new elseHandler().getClass();
+  protected static Class thenHandlerClass = new thenHandler().getClass();
+  protected static Class elsfHandlerClass = new elsfHandler().getClass();
+
   /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
@@ -49,16 +52,21 @@ public class ifHandler extends GenericHandler {
     for (Node child = enum.getNext() ;
 	 child != null;
 	 child = enum.getNext()) {
+      /* 
+       * Use a fast, efficient test for determining the syntactic class of
+       * the children:  simply compare the classes of their handlers.
+       */
       if (child.getNodeType() == NodeType.ELEMENT) {
 	ActiveElement ct = (ActiveElement)child;
-	if ("then".equalsIgnoreCase(ct.getTagName())) {
+	Class cl = ct.getSyntax().getClass();
+	if (cl == thenHandlerClass) {
 	  aContext.debug("     <then> with condition " + 
 			 (trueCondition? "true" : "false") + "\n");
 	  if (trueCondition) {
 	    Expand.processChildren(ct, aContext, out);
 	    return;
 	  }
-	} else if ("else-if".equalsIgnoreCase(ct.getTagName())) {
+	} else if (cl == elsfHandlerClass) {
 	  aContext.debug("     <else-if> with condition " + 
 			 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
@@ -67,7 +75,7 @@ public class ifHandler extends GenericHandler {
 	    action(in, aContext, out, "else-if", null, content, null);
 	    return;
 	  }
-	} else if ("else".equalsIgnoreCase(ct.getTagName())) {
+	} else if (cl == elseHandlerClass) {
 	  aContext.debug("     <else> with condition " + 
 			 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
