@@ -20,7 +20,9 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
-import crc.util.regexp;
+import crc.util.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
+
 
 public final class Agent implements UnaryFunctor{
 
