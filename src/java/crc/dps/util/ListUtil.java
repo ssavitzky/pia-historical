@@ -99,6 +99,28 @@ public class ListUtil {
     return results.elements();
   }
 
+  /** Return an enumeration of nodes.  Ignores whitespace and splits
+   *	text nodes containing whitespace. */
+  public static Enumeration getListItems(NodeList nl) {
+    NodeEnumerator enum = nl.getEnumerator();
+    List results = new List();
+    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
+      if (n.getNodeType() == NodeType.TEXT) {
+	Text t = (Text)n;
+	String s = t.toString();
+	if (s == null || s.equals("") || Test.isWhitespace(s)) continue;
+	if (s.indexOf(" ") >= 0 || s.indexOf('\t') >= 0) {
+	  results.append(getTextItems(s));
+	} else {
+	  results.push(t);
+	}
+      } else {
+	results.push(n);
+      }
+    }
+    return results.elements();
+  }
+
   /************************************************************************
   ** Conversion:
   ************************************************************************/
