@@ -26,6 +26,9 @@
  *		 more efficient.
  *	</ol>
  *
+ *	A Processor will normally ensure that any element started inside
+ *	an Input is ended when that Input is popped off the stack.<p>
+ *
  * === NOTE: Both Parser and Processor need DTD and parse stack info. ===
  * === it's up to the Parser to associate Handler, etc. with Token. ===
  *
@@ -40,23 +43,8 @@ package crc.dps;
 public interface Processor extends Input {
 
   /************************************************************************
-  ** Getting Output from the Processor:
+  ** Pushing Output from the Processor:
   ************************************************************************/
-
-  /** Returns the next processed Token. 
-   *	The Processor will process input until either a Token is generated
-   *	or the end of input is reached.  Note that it is possible for nextToken
-   *	to return <code>null</code> even if <code>endInput</code> has returned
-   *	false. 
-   *
-   * @return next Token, 
-   *	or <code>null</code> if and only if processing is complete. 
-   */
-  public Token nextToken();
-
-  /** Returns true if processing is complete. 
-   */
-  public boolean atEnd();
 
   /** Registers an Output object for the Processor.  The Processor 
    *	will call the Output's <code>nextToken</code> method with
@@ -85,9 +73,52 @@ public interface Processor extends Input {
   /** Obtain the value associated with a given entity. */
   public NodeList getEntityValue(String name);
 
+
   /************************************************************************
-  ** State Operations:
+  ** Input Stack Operations:
   ************************************************************************/
+
+  /** Push an Input onto the input stack. */
+  public void pushInput(Input anInput);
+
+
+  /************************************************************************
+  ** Parse Stack Operations:
+  ************************************************************************/
+
+  /** Push a Node onto the parse stack. */
+  public void pushNode(Node aNode);
+
+  /** Push a Token onto the parse stack. */
+  public void pushToken(Token aToken);
+
+  /** Test whether a parse tree is under construction. */
+  public boolean isParsing();
+
+  /** Test whether the output is receiving separate tokens for start tags,
+   *	content, and end tags. 
+   */
+  public boolean isPassing();
+
+  /** Test whether handler actions associated with tokens are being called.
+   */
+  public boolean isExpanding();
+
+  /** Set the flag that determines whether a parse tree is being constructed. 
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setParsing(boolean value);
+
+  /** Set the flag that determines whether a parse tree is being constructed. 
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setPassing(boolean value);
+
+  /** Set the flag that determines whether handlers are being called.
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setExpanding(boolean value);
+
 
   /************************************************************************
   ** Control Operations:

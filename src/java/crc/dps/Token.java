@@ -21,7 +21,9 @@
  *	The Token interface provides some of the operations provided by 
  *	subclasses of Node (e.g. Text and Element), making it possible to 
  *	operate on a sequence of Tokens without incurring the overhead of
- *	type-casting and exception handling.
+ *	type-casting and exception handling.  <p>
+ *
+ * ===	May want extensions: StartToken, EndToken, EmptyToken, ...
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
