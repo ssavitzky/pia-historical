@@ -74,7 +74,8 @@ public class Pia{
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
-
+  private Properties properties   = null;
+  private Pia     instance    = null;
   private String  docurl      = null;
   private Logger  logger      = null;
   private Logger  loggerClassName = null;
@@ -101,6 +102,8 @@ public class Pia{
   private String piaAgentsDir    = null;
 
   private String piaUsrAgentsStr = null;
+  private String piaUsrAgentsDataStr = null;
+  private String piaUsrAgentsDataDir = null;
   private String piaUsrAgentsDir = null;
   /**
    *  Attribute index - this machine
@@ -225,6 +228,21 @@ public class Pia{
   } 
 
   /**
+   * @return the directory where user agents live
+   */
+  public String piaUsrAgentsData(){
+    return piaUsrAgentsDataStr;
+  }
+
+ /**
+  * @return the directory where user agents live
+  */
+  public String piaUsrAgentsDataDir(){
+    return piaUsrAgentsDataDir;
+  }
+
+
+  /**
 
   /**
    * @return the directory where user agents live
@@ -249,6 +267,7 @@ public class Pia{
 
 
   public Pia(){
+    instance = this;
   }
 
 
@@ -486,7 +505,7 @@ public class Pia{
     if( rootStr == null ){
 	    File piafile = new File(".","Pia.java");
 	    if( piafile.exists() )
-	      rootStr = ".."+filesep;
+	      rootStr = "..";
 	    else{
 	      File piadir = new File(home, "pia");
 
@@ -500,11 +519,15 @@ public class Pia{
 	    }
     }
 
+    if ( rootStr.startsWith("~") ){
+        RegExp re = new RegExp();
+	rootStr = re.simpleSubstitute("~", home);
+    }
         // Now the directories that depend on it:
         rootDir = new File( rootStr );
     
 	//  we are at /pia/Agents -- this is for interform
-	piaAgentsStr = rootStr+"Agents";
+	piaAgentsStr = rootStr + filesep + "Agents";
 	piaAgentsDir = new File( piaAgentsStr );
 	
 
@@ -518,7 +541,7 @@ public class Pia{
 	    File usersDir = new File(rootStr,"Users");
 	    if( usersDir.exists() ){
 	      if( userName && userName != "" )
-		pisUsrRootStr = usersDir + userName; 
+		piaUsrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
 	    }
 	    else throw new PiaInitException(this.getClass().getName()
 					    +"[initializeProperties]: "
@@ -527,18 +550,26 @@ public class Pia{
 	    
 	  }
 	}
+
+	if ( piaUsrRootStr.startsWith("~") ){
+	  RegExp re = new RegExp();
+	  piaUsrRootStr = re.simpleSubstitute("~", home);
+	}
+
 	piaUsrRootDir = new File( piaUsrRootStr );
 	
-
-	piaUsrAgentsStr = piaUsrRootStr + "/Agents";
+	piaUsrAgentsStr = piaUsrRootStr + filesep + "Agents";
 	piaUsrAgentsDir = new File( piaUsrAgentsStr );
-	
+
+	piaUsrAgentsDataStr = piaUsrAgentsStr + filesep + "Data";
+	piaUsrAgentsDataDir = new File( piaUsrAgentsDataStr );
+		
 
 	url = url();
 	
   }
 
-  private void initializePiaAgency(){
+  private void createPiaAgency(){
     thisMachine  = new Machine( host, port, null );
     resolver     = new Resolver();
     agency       = new Agency("agency", null);
@@ -554,13 +585,53 @@ public class Pia{
 
     initializeProperties();
     initializeLogger();
-    initializePiaAgency();
+
 
   }
 
+  protected void cleanup(boolean restart){
+    try {
+      resolver.shutdown();
+      accepter.shutdown();
+      // Finally close the log
+      if ( logger != null )
+	logger.shutdown() ;
+      logger = null;
+    } catch(IOException ex){
+       errlog ("[cleanup]: IOException while closing server socket.");
+    }
+
+    Properties initProps = properties ;
+    properties = null;
+
+    if ( restart ){
+      try {
+	initialize( initProps );
+	accepter.restart();
+	resolver.restart();
+      } catch(Exception ex){
+	System.out.println("*** restart failed.") ;
+	ex.printStackTrace() ;
+      }
+    }
+  }
+  
+  public void shutdown(boolean restart){
+    cleanup( restart );
+  }
+
   protected void finalize() throws IOException{
-    //tell logger to close files
-    //close port
+    cleanup( false );
+  }
+
+  public static Pia instance(){
+    if( instance == null ){
+      instance = new Pia();
+      // what should i do about this
+      // instance.initialize(piaprops);
+      // createPiaAgency();
+    }
+    return instance;
   }
 
   public static void main(String[] args){
@@ -601,8 +672,16 @@ public class Pia{
 	
 	Properties piaprops = new Properties(System.getProperties());
 
-	// sucks in the property file and set properties here
+	// guessing /pia/config is where it is at
 
+	if (cmdprop == null) {
+	    
+	    if (cmdroot == null)
+		cmdroot = filesep+"Pia";
+	    // Try to guess it, cause it is really required:
+	    File guess = new File (new File(cmdroot, "config"),"pia.props");
+	    cmdprop = guess.getAbsolutePath() ;
+	}
 	if ( cmdprop != null ) {
 	    System.out.println ("loading properties from: " + cmdprop) ;
 	    try {
@@ -637,6 +716,7 @@ public class Pia{
 	  {
 	    Pia piaAgency = new Pia();
 	    piaAgency.initialize(piaprops);
+	    createPiaAgency();
 	  }catch(Exception e)
 	    {
 	       System.out.println ("===> Initialization failed, aborting !") ;
