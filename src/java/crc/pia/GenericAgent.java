@@ -139,6 +139,11 @@ public class GenericAgent extends AttrBase implements Agent {
    */
  protected Authenticator authPolicy;
 
+  /**
+   * Name of file to store content in a PUT request
+   */
+  protected String destFileName;
+  
 
   /************************************************************************
   ** Initialization:
@@ -1083,6 +1088,29 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
+   * Strip off destination file name for put
+   * @return path with interform or cgi
+   * Store destination file name in destFileName
+   */
+  protected String stripDestFile(String path){
+    // If there is a destination file name after the interform file, strip it
+    
+    int pos = path.indexOf(".if/");
+    if( pos > 0 ){
+      destFileName = path.substring(pos+".if/".length());
+      return path.substring(0, pos+3);
+    }
+
+    pos = path.indexOf(".cgi/");
+    if( pos < 0 ) return path;
+    else {
+      destFileName = path.substring(pos+".cgi/".length());
+      return path.substring(0, pos+4);
+    }
+
+  }
+
+  /**
    * Respond to a request directed at one of an agent's interforms, 
    * with a (possibly-modified) path.
    *
@@ -1097,7 +1125,12 @@ public class GenericAgent extends AttrBase implements Agent {
     // If the path includes a query string, remove it now
     int end = path.indexOf('?');
     if(end > 0) path = path.substring(0, end);
-      
+
+    // If there is a destination file name after the interform file, strip it
+    if( !path.endsWith(".if") || !path.endsWith(".cgi") ){
+      path = stripDestFile( path );
+    }
+     
 
     // Find the file.  If not found, return false.
     String file = findInterform( path );
@@ -1122,7 +1155,9 @@ public class GenericAgent extends AttrBase implements Agent {
     }
     if( request.test("interform") ){
       try{
-	InputStream in =  Run.interformFile(this, file, request, res);
+	InputStream in;
+
+	in = ( destFileName != null )? Run.interformFile(this, file, destFileName, request, res): Run.interformFile(this, file, request, res);
 	sendStreamResponse(request, in);
       }catch(PiaRuntimeException ee ){
 	throw ee;
