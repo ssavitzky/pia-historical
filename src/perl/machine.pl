@@ -38,7 +38,7 @@ sub send_response{
 
     if (! defined $output) {
 	warn("nowhere to send") if $main::debugging;
-	print $reply->content if $main::debugging;
+	print $reply->content if $main::debugging > 1;
 	return;
     }
     
