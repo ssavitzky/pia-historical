@@ -152,10 +152,9 @@ add a default start-up form to this file.  <p>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
-       Samba Name: (for mounting under windows) <input name="sambaName"
-       value="archive"><br>
+       Samba Names and dirs are: publish, shared, backup, archive
        SambaConfigFile: <input name="sambaConfig" value="/etc/sbm.conf">
-       root: (relative to agent directory)<input name="rootDir" value="archive"><br>
+       <br>
        <input type="submit" value="Install"><br>
        </form></if>
   <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
