@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
+import java.net.URL;
+
 import java.util.Date;
 
 import crc.interform.Parser;
@@ -135,8 +137,11 @@ public class Run  extends Environment {
     if (entities == null) {
       super.initEntities();
 
-      ent("url", transaction.requestURL().toString());
-      ent("urlPath", transaction.requestURL().getFile());
+      URL url = transaction.requestURL();
+      if (url != null) {
+	ent("url", transaction.requestURL().toString());
+	ent("urlPath", transaction.requestURL().getFile());
+      }
 
     // form parameters have 2 access methods
       if(transaction.hasQueryString()){
@@ -245,7 +250,7 @@ public class Run  extends Environment {
    *      given SGML. */
   public String lookupFile(String fn, SGML it, boolean write) {
     return (write)? Util.makePath(agent.agentIfDir(), fn) 
-      		  : agent.findInterform(fn, false);
+      		  : agent.findInterform(fn);
   }
 
   /** Retrieve a URL. */

@@ -49,7 +49,7 @@ public class Set_agent extends crc.interform.Handler {
       ii.debug("setting hook "+name+" on agent "+a.name()+"\n");
       a.attr(name, value);	// security unimplemented! ===
     } else {
-      a.option(name, value.toString());
+      a.attr(name, value.toString());
     }
 
     if (it.hasAttr("copy")) {
