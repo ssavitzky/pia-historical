@@ -648,12 +648,17 @@ public class Transaction extends Thing{
    * actual final form determined by machine
    * NOTE: not implemented
    */
-  public String[] getControls(){
-    int size = controls.size();
-    String[] c = new String[ size ];
-    for(int i = 0; i < size; i++ ) 
-      c[i] = controls[i];
-    return c;
+  public Thing[] getControls(){
+    int size 0;
+
+    size = controls.size();
+    if( size > 0 ){
+      Thing[] c = new Thing[ size ];
+      for(int i = 0; i < size; i++ ) 
+	c[i] = (Thing) controls[i];
+      return c;
+    }
+    return null;
   }
 
   /**
