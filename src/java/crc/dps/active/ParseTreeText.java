@@ -82,6 +82,8 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
     super(e, copyChildren);
     handler = e.handler;
     action = e.action;
+    data = e.data;
+    ignorableWhitespace = e.ignorableWhitespace;
     isWhitespace = e.isWhitespace;
   }
 
@@ -106,8 +108,8 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
   public ParseTreeText(String data, boolean isIgnorable,
 		       boolean isWhitespace, Handler handler) {
     this.data = data;
-    setIsIgnorableWhitespace(isIgnorable);
-    setIsWhitespace(isWhitespace);
+    ignorableWhitespace = isIgnorable;
+    this.isWhitespace = isWhitespace;
     setHandler(handler);
   }
 
