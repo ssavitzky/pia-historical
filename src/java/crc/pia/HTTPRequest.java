@@ -337,7 +337,7 @@ public class  HTTPRequest extends Transaction {
    */
   protected void  parseInitializationString( String firstLine )throws IOException, MalformedURLException{
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
-    
+
     try{
       httpMethod = tokens.nextToken();
     }catch( NoSuchElementException e ){
@@ -362,14 +362,17 @@ public class  HTTPRequest extends Transaction {
       throw e;
     }
     
-    if( httpMethod == "GET" ){
+
+    if( httpMethod.equalsIgnoreCase("GET") ){
       int pos;
-      if( (pos = zurlandmore.indexOf("?")) == -1 )
+
+      if( (pos = zurlandmore.indexOf('?')) == -1 )
 	url = zurlandmore;
       else{
 	String zurl = zurlandmore.substring(0, pos);
 	url = zurl;
-	String qs = zurl.substring(pos+1);
+	String qs = zurlandmore.substring(pos+1);
+	
 	if( qs!= null )
 	  queryString = Utilities.unescape( qs );
       }
@@ -652,7 +655,7 @@ public class  HTTPRequest extends Transaction {
 	Pia.debug(this, "Got a head...");
 
 	// and the content
-	if( method().equalsIgnoreCase( "POST" ) ){
+	if( method().equalsIgnoreCase( "POST" ) || method().equalsIgnoreCase( "GET" )){
 	  if(contentObj ==  null) initializeContent();
 	  Pia.debug(this, "Got a body...");
 	  // incase body needs to update header about content length

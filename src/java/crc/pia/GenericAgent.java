@@ -933,6 +933,11 @@ public class GenericAgent extends AttrBase implements Agent {
     // If the request needs to be redirected, do so now.
     if (isRedirection( request, path )) return true;
 
+    // If the path includes a query string, remove it now
+    int end = path.indexOf('?');
+    if(end > 0) path = path.substring(0, end);
+      
+
     // Find the file.  If not found, return false.
     String file = findInterform( path );
     if( file == null ) return false;
