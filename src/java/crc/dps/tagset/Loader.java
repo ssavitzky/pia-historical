@@ -245,12 +245,12 @@ public class Loader {
 	s = null;
       }
       boot = true;
-    } else {
+    } else if (tsUC != null) {
       try { s = tsUC.getInputStream(); } catch (IOException ex) {
 	ex.printStackTrace(log);
 	s = null;
       }
-    }
+    } else return null;
 
     ts = (s == null)? null : loadTagsetFromStream(s, boot);
     close(tsUC); close(tssUC); close(tsoUC);
@@ -310,7 +310,7 @@ public class Loader {
     try {
       s = new FileInputStream(name);
     } catch (FileNotFoundException ex) {
-      ex.printStackTrace(log);
+      return null;
     }
     ts = (s == null)? null : loadTagsetFromStream(s, boot);
     if (s != null) try { s.close(); } catch (Exception ex) {}

@@ -23,19 +23,13 @@ JAVA_TAGSETS = \
 	tagset.java \
 	legacy.java
 
-### Obsolete Java tagsets.
-OBS_TAGSETS = \
-	basic.java \
-	standalone.java \
-	standard.java
-
 FILES = $(BASE_CLASSES) $(JAVA_TAGSETS)
 
 ### Main tagsets: the ones people will actually use.
 MAIN_TAGSETS = \
 	basic.ts \
-	standalone.ts \
-	standard.ts
+	xxml.ts \
+	xhtml.ts
 
 ### Auxiliary tagsets: used internally..
 AUX_TAGSETS = \

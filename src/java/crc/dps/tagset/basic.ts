@@ -795,7 +795,7 @@ example).
          </doc>
        </define>
        
-  <li> <define element=id parent=select text handler><!-- unimplemented -->
+  <li> <undefine element=id parent=select text handler><!-- unimplemented -->
          <doc> Contains an identifier.  The element with the given
 	       <code>name</code> or <code>id</code> attribute (it is supposed
 	       to be unique) is selected.
@@ -815,7 +815,7 @@ example).
 		 identifiers are supposed to be unique, they may not be.
            </doc>
          </define>
-       </define>
+       </undefine>
 </ul>
 
 <h4>Sub-elements of <tag>select</tag>: Selection</h4>
@@ -942,12 +942,12 @@ example).
 	       current set.
          </doc>
        </define>
-  <li> <define element=xptr parent=select handler><!-- unimplemented -->
+  <li> <undefine element=xptr parent=select handler><!-- unimplemented -->
          <doc> Contains an XPointer expression and selects the corresponding
 	       nodes. See <a
 	       href="http://www.w3.org/TR/WD-xptr">www.w3.org/TR/WD-xptr</a>
          </doc>
-       </define>
+       </undefine>
   <li> <define element=eval parent=select empty handler>
          <doc> Evaluates each selected node, i.e. replaces it by its value.
 	       (We use <code>eval</code> for this because <code>value</code>
@@ -992,12 +992,12 @@ example).
 
 <h4>Sub-elements of <tag>select</tag>: Replacement</h4>
 <ul>
-  <li> <define element=replace parent=select handler>
+  <li> <undefine element=replace parent=select handler>
          <doc> Contains a list of nodes.
        	       === need to elaborate on how replacement works.  Will need
 		   attributes. ===
          </doc>
-       </define>
+       </undefine>
 </ul>
 
 <h2>Expansion Control Elements</h2>
@@ -1257,21 +1257,20 @@ example).
 
 <h4>Sub-elements of <tag>subst</tag></h4>
 <ul>
-  <li> <define element=match parent=subst handler>
+  <li> <undefine element=match parent=subst handler>
          <doc> Contains the regular expression to match against.
          </doc>
-       </define>
-  <li> <define element=result parent=subst handler>
+       </undefine>
+  <li> <undefine element=result parent=subst handler>
          <doc> Contains the replacement text.
          </doc>
-       </define>
+       </undefine>
 </ul>
 
 
 <h3>Parse</h3>
 <define element=parse handler>
-  <doc> Strips passive markup (assumed to be decorative) from the text in the
-	content to convert it to a single string.  Character and other
+  <doc> Converts the content to a single string.  Character and other
 	entities are expanded.  Runs of consecutive whitespace characters are
 	converted to single spaces, and leading and trailing whitespace are
 	trimmed. 
@@ -1296,20 +1295,20 @@ example).
 	  sign are italicized.  
     </doc>
   </define>
-  <define attribute=header optional>
+  <undefine attribute=header optional>
     <doc> The input text is parsed as a mail or HTML header. 
     </doc>
-  </define>
-  <define attribute=entities optional>
+  </undefine>
+  <undefine attribute=entities optional>
     <doc> Special characters are replaced by their corresponding entities, but
 	  no other parsing is done.
     </doc>
-  </define>
-  <define attribute=url optional>
+  </undefine>
+  <undefine attribute=url optional>
     <doc> The text is parsed as a URL.  Characters escaped by
 	  <code>%<em>nn</em></code> are decoded. 
     </doc>
-  </define>
+  </undefine>
   <define attribute=query optional>
     <doc> The text is parsed as a query string.  Characters escaped by
 	  <code>%<em>nn</em></code> are decoded. 
@@ -1358,7 +1357,7 @@ The set of attributes used in <tag>parse</tag> and <tag>to-text</tag> is
 open-ended; tagset authors are free to define new ones as needed.
 
 <h3>To-text</h3>
-<define element=to-text handler>
+<undefine element=to-text handler>
   <doc> Converts the marked-up content into one or more Text nodes (strings).
 	If no other operation is specified in an attribute, the marked-up
 	content is simply converted to its external representation.
@@ -1379,7 +1378,7 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> The text is rendered as a query string, including URL-encoding.
     </doc>
   </define>
-</define>
+</undefine>
 
 <h2>External Resources</h2>
 
@@ -1452,8 +1451,20 @@ open-ended; tagset authors are free to define new ones as needed.
   </define>
 </define>
 
+
+<h2>Data Structure Elements</h2>
+
+<blockquote><em>
+  Data structure elements perform no operations; they exist to represent
+  common forms of complex structured data.  Strictly speaking,
+  <code><tag>tagset</tag></code> and <code><tag>namespace</tag></code> are
+  data structure elements.  Often a data structure element will have a
+  representation that is a <em>subclass</em> of the representation of an
+  ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
+</em></blockquote>
+
 <h3>Headers and its components</h3>
-<define element=headers handler>
+<undefine element=headers handler>
   <doc> Contains a standard e-mail header string consisting of
 	<code><em>key</em>:<em>value</em></code> pairs.  Each pair in its
 	content is a separate Text node.  Lines can be selected using
@@ -1462,11 +1473,11 @@ open-ended; tagset authors are free to define new ones as needed.
   <note author=steve> === Not at all clear what the content of a headers
 	node should be.  Sub-elements?
   </note>
-</define>
+</undefine>
 
 
 <h3>URL and its components</h3>
-<define element=URL handler>
+<undefine element=URL handler>
   <doc> Represents a URL or, more generally, a URI.  When expanded, its
 	content and attributes are ``synchronized'' so that all attributes
 	corresponding to portions of the complete URL are set correctly, and
@@ -1505,19 +1516,7 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> The query portion of the URL.
     </doc>
   </define>
-</define>
-
-
-<h2>Data Structure Elements</h2>
-
-<blockquote><em>
-  Data structure elements perform no operations; they exist to represent
-  common forms of complex structured data.  Strictly speaking,
-  <code><tag>tagset</tag></code> and <code><tag>namespace</tag></code> are
-  data structure elements.  Often a data structure element will have a
-  representation that is a <em>subclass</em> of the representation of an
-  ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
-</em></blockquote>
+</undefine>
 
 
 <!--template 

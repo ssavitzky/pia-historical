@@ -41,6 +41,14 @@ documented in <a href="tagset.html">tagset.html</a>.
   </doc>
 </define>
 
+<define element=undefine>
+  <action> (<em>(undefine <repeat list="&attributes;"> &li; </repeat>) </em>
+  </action>
+  <doc> Just by changing a <tag>define</tag> to <tag>undefine</tag> one can
+	make it disappear from the documentation.
+  </doc>
+</define>
+
 <define element=action quoted>
   <action> &lt;action&gt;
 	   <pre><protect markup>&content;</protect></pre>

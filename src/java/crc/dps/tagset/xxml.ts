@@ -1,19 +1,13 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=standalone parent=basic recursive>
+<tagset name=xxml parent=basic recursive>
 
-<h1>Standard Tagset</h1>
+<h1>XXML Tagset</h1>
 
 <doc> This tagset consists of the primitive operations from the <a
       href="basic.html">basic</a> tagset, plus additional non-primitive
-      convenience functions.  It is intended to ``stand alone'' as a basis for
-      active XML.
+      convenience functions.  It is intended for use with eXtended XML.
 </doc>
 
-<note author=steve>
-  Unlike the legacy ``Standalone'' tagset, which was meant for HTML document
-  processing outside the PIA, this tagset is meant to ``stand alone'' without
-  HTML, and so is intended as the basis for XML document processing.
-</note>
 
 <h2>Definition Tags</h2>
 
