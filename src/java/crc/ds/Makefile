@@ -14,6 +14,7 @@ FILES = \
 	Features.java \
 	HasFeatures.java \
 	Index.java \
+	InvalidIndex.java \
 	List.java \
 	Nil.java \
 	Queue.java \
