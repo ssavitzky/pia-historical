@@ -11,7 +11,9 @@
 <form method=POST action="timecard_process.if">
 
 Pay Period including or ending on:
-<select name=paydate><set entity name=paydate><read file="paydate.dat"></set><repeat list="&paydate;"><option> &li;</repeat></select><p>
+<select name=paydate>
+<option>&month;/&day;
+<set entity name=paydate><read file="paydate.dat"></set><repeat list="&paydate;"><option> &li;</repeat></select><p>
 
 Username:
 <select name=name><set entity name=namelist><read file="namelist.dat"></set><repeat list="&namelist;"><option> &li;</repeat></select><p>
