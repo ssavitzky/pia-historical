@@ -505,7 +505,7 @@ sub respond_to_interform {
     $url = $request->url unless defined $url;
     my $path = $url->path;
     $path =~ m:/([a-zA-Z]+)([0-9]+)(.[a-zA-Z]*)?$:;
-    if (defined $1 && defined $1) {
+    if (defined $1 && defined $2) {
 	$hash{'type'} = $1;
 	$hash{'height'} = $2;
 	$hash{'ext'} = $3 if defined $3;
@@ -520,7 +520,8 @@ sub respond_to_interform {
 
     ## Get parameters out of query string:
 
-    my $height = $hash{'height'} || $self->option('default-height');
+    my $height = $hash{'height'};
+    $height = $self->option('default-height') if $height == 0;
     my $width = $hash{'width'};
     my $type = $hash{'type'};
 
