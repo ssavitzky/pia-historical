@@ -191,6 +191,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /** Register the Agent with the Resolver. */
   public void register() {
+    //    System.err.println("Registering "+ type() + "/" + name());
     Pia.instance().resolver().registerAgent( this );
   }
 

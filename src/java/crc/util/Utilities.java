@@ -32,6 +32,7 @@ import crc.gnu.regexp.RegExp;
 
 import crc.ds.List;
 import crc.ds.Registered;
+import crc.ds.Table;
 
 public class Utilities {
 
@@ -168,6 +169,92 @@ public class Utilities {
       }catch(IOException e3){
 	throw e3;
       }
+    }
+  }
+
+
+  /************************************************************************
+  ** File copy and replace:
+  ************************************************************************/
+
+  /**
+   * Copy a file.
+   */
+  public static synchronized void copyFile( String srcFileName,
+					    String dstFileName )
+       throws IOException
+  {
+    copyFile(new File(srcFileName), new File(dstFileName));
+  }
+
+  public static synchronized void copyFile( File src, File dst )
+       throws IOException{
+
+    FileWriter destination = null;
+    FileReader source      = null;
+
+    try{
+      source      = new FileReader( src );
+      destination = new FileWriter( dst );
+      for (int i = source.read(); i != -1; i = source.read()) {
+	destination.write((char)i);
+      }
+      destination.flush();
+    }catch(IOException e1){
+      // either from open or write.
+      throw e1;
+    }finally{
+      if (source != null)      source.close();
+      if (destination != null) destination.close();
+    }
+  }
+
+
+  /** Copy a file, replacing keys in the <code>subst</code> table with their
+   *	values.  Look for keys only after an instance of <code>beg</code>
+   *	and end them with <code>end</code>. 
+   */
+  public static synchronized void substFile( File src, File dst,
+					     Table subst, char beg, char end)
+       throws IOException{
+
+    FileWriter destination = null;
+    FileReader source      = null;
+    StringBuffer buf 	   = new StringBuffer(100);
+
+    try{
+      source      = new FileReader( src );
+      destination = new FileWriter( dst );
+      for (int i = source.read(); i != -1; i = source.read()) {
+	if (i == (int)beg) {
+	  buf.setLength(0);
+	  for (i = source.read();
+	       i != -1 && i != (int)end;
+	       i = source.read()) {
+	    buf.append((char)i);
+	  } 
+	  if (buf.length() != 0) {
+	    Object o = subst.at(buf.toString());
+	    if (o != null) {
+	      destination.write(o.toString());
+	      continue;
+	    }
+	  } else {
+	    destination.write(beg);
+	    destination.write(buf.toString());
+	    if (i != 0) destination.write((char)i);
+	  }
+	} else {
+	  destination.write((char)i);
+	}
+      }
+      destination.flush();
+    }catch(IOException e1){
+      // either from open or write.
+      throw e1;
+    }finally{
+      if (source != null)      source.close();
+      if (destination != null) destination.close();
     }
   }
 
