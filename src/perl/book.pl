@@ -128,7 +128,7 @@ sub bookmaker_callback{
 	return 0; #for now only html
 	print "$type is not html\n";
     }
-    my $old_request=$response->request;
+    my $old_request=$response->response_to;
     my $reference=$$old_request{'_book_reference'};
     my $reference_url=$old_request->url;
     $reference=$self->reference($reference_url) unless $reference;
@@ -152,8 +152,8 @@ sub bookmaker_callback{
     if($old_depth < $$self{_max_depth}){
 	for (@{ $html->extract_links(qw(a)) }) {
 	    my ($urltext, $element) = @$_;
-	    my $url=URI::URL->new($urltext,$response->request->url);
-#	    print "new: " . $url->abs->as_string . " base: " . $response->request->url->as_string ." \n";
+	    my $url=URI::URL->new($urltext,$response->url);
+#	    print "new: " . $url->abs->as_string . " base: " . $response->url->as_string ." \n";
 	    $url=$url->abs;
 	    if($url->host && $url->scheme eq 'http'){
 		($new_key,$new)=$self->add_link($url,$old_depth+1) ;

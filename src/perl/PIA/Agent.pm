@@ -168,7 +168,7 @@ sub agent_url{
 
 ############################################################################
 ###
-### Matching Requests:
+### Matching Transactions:
 ###
 ###	Agents maintain a list of feature names and expected values;
 ###	the features themselves are maintained by a FEATURES object
@@ -208,7 +208,7 @@ sub match_criterion {
 ### Machine: 
 ###
 ###	agents are associated with a virtual machine which is an
-###	interface for actually getting and sending requests.  Posts
+###	interface for actually getting and sending transactionss.  Posts
 ###	explicitly to an agent get sent to the agent's machine (then to
 ###	the agent's interform_request method). Other requests can be
 ###	handled implicitly by the agent.
@@ -248,7 +248,7 @@ sub act_on {
 }
 
 sub handle {
-    my($self, $request, $resolver)=@_;
+    my($self, $transaction, $resolver)=@_;
 
     ## Handle a transaction matched by an act_on method.  
     ##	  Requests directly _to_ an agent are handled by its Machine;
@@ -259,14 +259,14 @@ sub handle {
 }
 
 sub respond {
-    my($self, $request, $resolver)=@_;
+    my($self, $trans, $res)=@_;
 
     ## Respond to a direct request.  
     ##	This is called from the agent's Agent::Machine
 
-    my $url = $request->url;
-    local $current_resolver = $resolver;
-    respond_to_interform($self, $request, $url, $resolver);
+    my $url = $trans->url;
+    local $resolver = $res;
+    respond_to_interform($self, $trans, $url, $resolver);
 }
 
 ############################################################################
@@ -360,8 +360,6 @@ local $request;
 local $response;
 local $url;
 local $path;
-local $current_self;		# old name for $agent
-local $current_request;		# old name for $request
 
 ### === no longer used ===
 sub load_file {
@@ -436,19 +434,15 @@ sub run_code {
     local $resolver;	
     local $context = $trans;
     local $request = $trans;
-    local $url;
+    local $url = $trans->url;
     local $path;
 
     $resolver = $res if defined $res;
     if (defined $trans && $trans->is_response) {
 	$response = $trans;
-	$request  = $trans->request;
+	$request  = $trans->response_to;
     }
-    $url = $request->url if defined $request;
     $path = $url->path if defined $url;
-
-    local $current_self = $agent;		# old name for $agent
-    local $current_request = $request;		# old name for $request
 
     if (ref($code) eq 'CODE') {
 	$status = &$code($trans, $res);
@@ -654,7 +648,7 @@ sub respond_to_interform {
     my $file=$self->find_interform($url);
 
     local $response;		# available for interforms.
-    local $resolver = defined($res)? $res : $current_resolver;
+    local $resolver = defined($res)? $res : $main::resolver;
 
     my $string;
     if(! defined $file){
@@ -681,7 +675,7 @@ sub respond_to_interform {
 	    my $new_url= newlocal URI::URL $file;
 ### I don't think we need to clone the request,url should be enough
 	    
-	    my $new_request=$request->clone;
+	    my $new_request=$request->request->clone;
 	    print $self->name . " looking up $new_url\n" if $main::debugging;
 	    $new_request->url($new_url);
 	    $response=$self->retrieve($new_request);
@@ -700,12 +694,8 @@ sub respond_to_interform {
 	}
     }
     return unless ref($response);
-    $response->request($request);
-    
     $response->header('Version',$self->version()) unless $response->header('Version');
-    return PIA::Transaction->new($response,
-				 $main::this_machine, # $request->to_machine ?
-				 $request->from_machine());
+    return $request->respond_with($response, $main::this_machine);
 }
 
 ##Puts need a slightly different processing...

@@ -41,6 +41,8 @@ sub install {
 
     $type = $name unless defined $type;
 
+    return unless $name;
+
     if ($class =~ /PIA_AGENT/) {
 	print "obsolete class $class for agent $agent\n";
 	$class = lc $class;

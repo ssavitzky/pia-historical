@@ -118,8 +118,7 @@ sub create_postscript{
     }else{
 	html_ps($self,$response,$request,$docId);
     }
-return $response;    
-    
+    return $request->respond_with($response);    
 }
 
 sub create_preview{

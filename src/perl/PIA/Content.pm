@@ -81,14 +81,12 @@ sub add_start_hook{
 sub add_end_hook{
     my($self,$hook,$key)=@_;
     return $self->add_hook($hook,$key,'_end_hooks');
-        
 }
 
 sub string{
     my($self,$string)=@_;
     $$self{_bytes}.=$string if $string;
     return $$self{_bytes};
-    
 }
 
 sub as_string{
@@ -98,8 +96,8 @@ sub as_string{
 	$self->pull;
    }
     return $self->string;
-
 }
+
 sub is_at_end{
     my($self)=@_;
     return $$self{_ended} || ! $self->source;
@@ -108,14 +106,12 @@ sub end{
     my($self,$argument)=@_;
     	$self->run_hooks($$self{_end_hooks});
 	$$self{_ended}=1;
-
-
 }
+
 ##incoming data
 ## no data signals end
 sub push{
     my($self,$data)=@_;
-
 
     if(!$$self{_started}){
 	$self->run_hooks($$self{_start_hooks});
@@ -129,15 +125,17 @@ sub push{
     $self->run_hooks($$self{_hooks},$data);
     push(@{$$self{_buffer}},$data);
     $self->string($data) if $$self{_make_copy};
-    
 }
+
 sub pull {
     my($self,$argument)=@_;
     return unless $self->source;
     my $more=$self->source->has_more_data;
 
     return $self->end unless $more;
-    
+
+    ## === This point never appears to be reached! 
+
     my $bytes=$self->source->read_chunk($self);
     print "read $bytes content\n" if $main::debugging;
 }

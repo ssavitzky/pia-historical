@@ -73,13 +73,14 @@ sub read_chunk{
 
 
 sub send_response{
-    my($self, $reply, $resolver)=@_;
+    my($self, $trans, $resolver)=@_;
 
     ## Send a response to whatever this machine refers to.
     ##	  $resolver is unused; it's here for subclasses (i.e. agents)
 
     print "sending response to $self\n" if  $main::debugging;
     my $output=$self->stream();
+    my $reply = $trans->response;
 
     if (! defined $output) {
 	warn("nowhere to send") if $main::debugging;
@@ -90,15 +91,16 @@ sub send_response{
     my $string="HTTP/1.0 " . $reply->code . " " . $reply->message . "\n";
     print $string  if $main::debugging;
     my ($control, $content);
-    $control=join(" ",$reply->controls)	if $reply->content_type =~ /text/;
+    $control=join(" ",$trans->controls) if $reply->content_type =~ /text/;
 
     if ($control) {
-	$content = $reply->content;
+	### === should treat content as a stream unless we have to ===
+	$content = $trans->content;
 	$reply->content_length($reply->content_length + length($control))
 	    if $reply->content_length;
     }
     
-    print $reply->headers_as_string() ."\n"  if $main::debugging;
+    print $reply->headers_as_string ."\n"  if $main::debugging;
 ##What to do if connection dies?
     # this doesn't work...
   #  local $SIG{PIPE}=sub {$abort = 1; die 'connection closed';};
@@ -108,7 +110,7 @@ sub send_response{
 	## never seems to print.  die, however, bombs completely.
 	## Use eval so we don't die if the browser closes the connnection.
 	print {$output} $string;
-	print {$output} $reply->headers_as_string();
+	print {$output} $reply->headers_as_string;
 	print {$output} "\n";
 
 ##Temporary because hooks don't work
@@ -140,9 +142,9 @@ sub proxy {
 }
 
 sub get_request {
-    my($self, $request, $resolver)=@_;
+    my($self, $trans, $resolver)=@_;
 
-    ## Pass a request on to whatever this machine refers to.
+    ## Pass a request transaction on to whatever this machine refers to.
     ##	  $resolver is unused; it's here for subclasses (i.e. agents)
 
     if(!$ua) {
@@ -153,28 +155,26 @@ sub get_request {
 	$ua->timeout($main::timeout) if $main::timeout; #testing 
 ###Configuration --is proxy necessary?
 ### Should Be careful not to proxy through ourselves
-	my $proxy=$self->proxy($request->url->scheme);
-    
+	my $proxy=$self->proxy($trans->url->scheme);
     
 #### if agency returns negative number, generate error
 ###    network unavailable, or denied
 
 	if ($proxy < 0) {
-	    return $request->error_response("negative proxy specified: network available?");
+	    return $trans->error_response("negative proxy specified: network available?");
 	}
-	print "getting request" . $request->url . " through $proxy \n" . $request->headers_as_string() . "\n" if $main::debugging;
-	
+	print "getting request" . $trans->url . " through $proxy \n" . 
+	    $trans->request->headers_as_string() . "\n" if $main::debugging;
 
-	$ua->proxy($request->url->scheme,$proxy) if $proxy;
+	$ua->proxy($trans->url->scheme,$proxy) if $proxy;
     }
 
     ## Actually make the request.
     ##	  We _must_ use simple_request and pass the results, whatever they
     ##	  are, to the browser.  Otherwise it never finds out about redirects.
 
-    my $response=$ua->simple_request($request); 
-    return $response;
-    
+    my $response=$ua->simple_request($trans->request); 
+    return $trans->respond_with($response);
 }
 
 1;

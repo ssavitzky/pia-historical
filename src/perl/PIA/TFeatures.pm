@@ -96,41 +96,41 @@ sub register {
 ###	These are computed by default when a transaction is created;
 ###	they may have to be recomputed if the transaction is modified.
 
-$computers{response} = \&is_response;
+$computers{'response'} = \&is_response;
 sub is_response{
-    my $request=shift;
-    return $request->is_response;
+    my $trans=shift;
+    return $trans->is_response;
 }
 
-$computers{request} = \&is_request;
+$computers{'request'} = \&is_request;
 sub is_request{
-    my $request=shift;
-    return $request->is_request;
+    my $trans=shift;
+    return $trans->is_request;
 }
 
-$computers{agent_response} = \&is_agent_response;
+$computers{'agent_response'} = \&is_agent_response;
 sub is_agent_response{
-    my $response=shift; 		
-    return 0 unless $response->is_response;
-    my $agent=$response->header('Version');
-    my $request = $response->request;
+    my $trans=shift; 		
+    return 0 unless $trans->is_response;
+    my $agent=$trans->response->header('Version');
+    my $request = $trans->response_to;
     my $url = $request->url if defined $request;
 
     return 0 if defined $url && ($url->path =~ /^\/http:/i );
 
     if ($agent =~ /^PIA/i) {
 	return 1 unless defined $request;
-	return 1 unless ref($request) =~ /TRANSACTION/;
+	return 1 unless ref($request) =~ /PIA::Transaction/;
 	return 1 if $request->is('agent_request');
     }
 
     return 0;
 }
 
-$computers{proxy_request} = \&is_proxy_request;
+$computers{'proxy_request'} = \&is_proxy_request;
 sub is_proxy_request{
-    my $request=shift;    	return 0 unless $request->is_request;
-    my $url=$request->url; 	return 0 unless $url;
+    my $trans=shift;    	return 0 unless $trans->is_request;
+    my $url=$trans->url; 	return 0 unless $url;
 
     my ($host, $port) = ($url->host, $url->port);
     return 0 if ($host =~ /^agency/ || $host eq '');
@@ -153,10 +153,10 @@ sub is_proxy_request{
     return 0;
 }
 
-$computers{agent_request} = \&is_agent_request;
+$computers{'agent_request'} = \&is_agent_request;
 sub  is_agent_request{
-    my $request=shift; 		return 0 unless $request->is_request;
-    my $url=$request->url; 	return 0 unless defined $url;
+    my $trans=shift; 		return 0 unless $trans->is_request;
+    my $url=$trans->url; 	return 0 unless defined $url;
     my $host= lc $url->host;
 
     my ($host, $port) = ($url->host, $url->port);
@@ -164,6 +164,7 @@ sub  is_agent_request{
     return 1 if ($port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/i);
     return 0;
 
+    ## === this attempts to detect proxying; it fails. ===
     return  1 unless ($url->path =~ m|^\/http://([\w.]+)|i );
     $host = $1;
     $port = 80;
@@ -179,28 +180,28 @@ sub  is_agent_request{
 
 ### Non-default Features:
 
-$computers{text} = \&is_text;
+$computers{'text'} = \&is_text;
 sub is_text{
-    my($request)=shift;
-    return $request->content_type() =~ /^text/i;
+    my($trans)=shift;
+    return $trans->content_type() =~ /^text/i;
 }
 
-$computers{html} = \&is_html;
+$computers{'html'} = \&is_html;
 sub is_html{
-    my($request)=shift;
-    return $request->content_type() =~ /^text\/html/i;
+    my($trans)=shift;
+    return $trans->content_type() =~ /^text\/html/i;
 }
 
-$computers{image} = \&is_image;
+$computers{'image'} = \&is_image;
 sub is_image{
-    my($request)=shift;
-    return $request->content_type() =~ /^image/i;
+    my($trans)=shift;
+    return $trans->content_type() =~ /^image/i;
 }
 
-$computers{local} = \&is_local;
+$computers{'local'} = \&is_local;
 sub is_local{
-    my $request=shift;
-    my $url=$request->url; 	return 1 unless $url;
+    my $trans=shift;
+    my $url=$trans->url; 	return 1 unless $url;
     my $host=$url->host;
 
     return 1 if ($host =~ /^agency/ || $host eq '');
@@ -209,48 +210,46 @@ sub is_local{
     return 0;
 }
 
-$computers{local_source} = \&is_local_source;
+$computers{'local_source'} = \&is_local_source;
 sub is_local_source{
-    my $request=shift;
+    my $trans=shift;
     ##need to fill transaction model first
 }
 
-$computers{client_is_netscape} = \&client_is_netscape;
+$computers{'client_is_netscape'} = \&client_is_netscape;
 sub client_is_netscape{
-    my($request)=shift;
-    return $request->header()->header('User-Agent') =~ /netscape/i;
+    my($trans)=shift;
+    return 0 unless $trans->is_request;
+    return $trans->request->header('User-Agent') =~ /netscape/i;
 }
 
-$computers{file_request} = \&is_file_request;
+$computers{'file_request'} = \&is_file_request;
 sub is_file_request{
-    my $request=shift;
-    my $url=$request->url;
+    my $trans=shift;
+    return 0 unless $trans->is_request;
+    my $url=$trans->url;
     my $scheme=$url->scheme;
     return $scheme=~/file/i;
 }
 
-$computers{interform} = \&is_interform;
+$computers{'interform'} = \&is_interform;
 sub is_interform{
-   my $request=shift;
-    my $url=$request->url;
- 
+   my $trans=shift;
+   my $url=$trans->url;
    my $path=$url->path;
    return $path=~/\.if$/i;
- 
 }
 
 
 ### Features with values:
 
-$computers{agent} = \&agent;
-sub agent {
-    my($request)=shift;
-    $request = $request->request if $request->is_response;
-    return unless defined $request;
-    my $url=$request->url;
+$computers{'agent'} = \&get_agent;
+sub get_agent {
+    my($trans)=shift;
+    my $url=$trans->url;
     return unless defined $url;
-    my $path=$url->path;
-    return unless defined $url;
+    my $path=$url->path if ref $url;
+    return unless defined $path;
     my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : 'agency';
     return $name;
 }

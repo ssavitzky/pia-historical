@@ -140,9 +140,7 @@ sub handle_response{
     ##	Create a directory for it, and stash headers and content there.
 
     return unless $response->code eq '200';
-    my $request=$response->request;
-    return unless ref($request) eq 'PIA::Transaction';
-    my $url=$request->url;
+    my $url=$response->url;
     return unless $url;
     my $directory=$self->url_to_filename($url);
     return unless $directory;
@@ -157,7 +155,7 @@ sub handle_response{
     ## Cache the header.
 
     open(FILE,">$directory/.header");
-    print FILE $response->headers_as_string;
+    print FILE $response->response->headers_as_string;
     close FILE;
 
     ## Cache the content.
@@ -175,18 +173,20 @@ sub handle_response{
     ##	 === at some point we may need to see whether it's different.
     ##	 some servers give different results for different browsers.
 
+    my $request = $response->respond-to;
+
     open(FILE,">$directory/.request-header");
     print FILE $request->method . " " . $url->as_string . "\n";
-    print FILE $request->headers_as_string;
+    print FILE $request->request->headers_as_string;
     close FILE;
     if($request->test('has_parameters')){
-	my $form=$response->parameters;
+	my $form=$request->parameters;
 	open(FILE,">$directory/.request-parameters");
 	for (keys(%{$form})) {print FILE $_ . "=" . $$form{$_} . "\n";}
 	close FILE;
     }
 
-    $request->header('Cache-Location',$directory);
+    $request->request->header('Cache-Location',$directory);
     return;  # we don't satisfy responses, just cache them.
 }
 
@@ -207,7 +207,6 @@ sub handle_request{
     ## OK, we have it.  Cook up a response.
 
     my $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
-    $response->request($request);
     
     open(FILE,"<$directory/.header");
     while (<FILE>){
@@ -218,7 +217,6 @@ sub handle_request{
     close FILE;
 
     if(! ($self->option("check_frequency") eq 'never')){
-	$response->assert('cache_response');
 	my $date = $response->header('Last-Modified');
 	$date = $response->header('Date') unless $date;
 	$date = $response->header('Client-Date') unless $date;
@@ -228,10 +226,13 @@ sub handle_request{
 		= stat("$directory/.content");
 	    $date=HTTP::Date::time2str($mtime);
 	}
-	$request->header('If-Modified-Since',$date);
-	my $newresponse=$main::resolver->simple_request($request);
+	$request->request->header('If-Modified-Since',$date);
+	my $newresponse=$main::resolver->simple_request($request->request);
 	if($newresponse->code eq '200'){
-	    $resolver->push($newresponse);
+	    my $transaction=$request->respond_with($newresponse,$machine,
+						   $request->from_machine);
+	    $transaction->assert('cache_response');
+	    $resolver->push($transaction);
 	    return 1; ##request is satisfied
 	}
     }
@@ -252,8 +253,8 @@ sub handle_request{
 #    print $string;
 #    $response->add_content($string);
 
-    my $transaction=PIA::Transaction->new($response,$machine,
-					  $request->from_machine);
+    my $transaction=$request->respond_with($response,$machine,
+					   $request->from_machine);
     $transaction->assert('cache_response');
     $resolver->push($transaction);
     return 1; ##request is satisfied

@@ -72,11 +72,11 @@ sub make_icon_html{
 	my $element=shift;
 	my $url=$element->attr('src');
 	return unless $url;
-	$url=URI::URL->new($url,$transaction->request->url);
+	$url=URI::URL->new($url,$transaction->url);
 	print "url is $url \n"  if $main::debugging;
 	my $newrequest=$self->create_request('GET',$url);
 #	my $newresponse=$self->retrieve($newrequest,"/tmp/graphics_agent.gif");
-	my $newresponse=$main::resolver->simple_request(PIA::Transaction->new($newrequest),"/tmp/graphics_agent.gif");
+	my $newresponse=$main::resolver->simple_request($newrequest),"/tmp/graphics_agent.gif");
 	return 1 unless ($newresponse->code eq '200' && -e "/tmp/graphics_agent.gif");
 	open(IMAGE,"</tmp/graphics_agent.gif");
 	my $image=GD::Image->newFromGif(IMAGE);
@@ -143,7 +143,7 @@ sub machine_callback{
     my($self,$newresponse)=@_;
     print "\nProcessing called back for thumbnail\n";
 #    my $newresponse=$self->retrieve($newrequest);
-    my $request=$newresponse->request;
+    my $request=$newresponse->response_to;
     my $destination=$$request{_thumbnail_requestor}; #hack for now
     my $original=$$request{_thumbnail_request}; #hack for now
     my $image=$self->make_icon($newresponse);
@@ -159,10 +159,9 @@ sub machine_callback{
 	$response->content_length(length($image));
 	$response->content_type('image/gif');
 	$response->content($image);
-    $response->header($self->version);
-	$response->request($request);
+        $response->header($self->version);
         ## === have to do all the above *before* the following:
-	$response=PIA::Transaction->new($response,$self->machine,$destination);
+	$response=$request->respond_with($response,$self->machine,$destination);
 # #    } else {
 # 	$response=HTTP::Response->new(&HTTP::Status::RC_INTERNAL_SERVER_ERROR,"giffailed"); 
 	

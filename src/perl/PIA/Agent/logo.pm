@@ -562,10 +562,7 @@ sub respond {
     $response->content_type('image/gif');
     $response->content($im->gif);
     $response->header('Version', $self->version);
-    $response->request($request);
-    $response=PIA::Transaction->new($response, $request->to_machine,
-				    $request->from_machine);
-    return $response;
+    return $request->respond_with($response);
 }
 
 

@@ -59,10 +59,10 @@ sub html2latex{
 	$imagefile = "$GWtempdir/htmlIMG.$imagenum.gif";
 	$imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
 
-#	my $response=$ua->request($request,$imagefile);
-	my $response=$ua->simple_request(PIA::Transaction->new($request),$imagefile);
+	## There is no need for a Transaction at all here.
+	my $response=$ua->request($request,$imagefile);
+#	my $response=$ua->simple_request($request,$imagefile);
 	my $image_type=$response->content_type;
-	
 
 	system("rm $imagefile.pnm") if -f $imagefile.pnm ; 
 

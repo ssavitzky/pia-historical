@@ -65,17 +65,16 @@ sub retrieve_file {
     my $response;
 
     if (-d $filename) {
-	$response = $self->retrieve_directory($filename, $request);
+	return $self->retrieve_directory($filename, $request);
     } else {
 	my $new_url= newlocal URI::URL $filename;
-	my $new_request=$request->clone;
+	my $new_request=$request->request->clone;
 	print "DOFS looking up $new_url\n" if $main::debugging;
 	$new_request->url($new_url);
 	my $ua = new LWP::UserAgent;
 	$response=$ua->simple_request($new_request); 
 
 	## Show the original request, not the redirected one.
-	$response->request($request->clone);
 
 	## If the content is a directory, the UserAgent will have 
 	##	  given it a base.  Fix it.
@@ -85,13 +84,7 @@ sub retrieve_file {
     }
 
     $response->header('Version', $self->version());
-    $response=PIA::Transaction->new($response);
-    $response->to_machine($request->from_machine());
-
-#    $resolver->push($response);	# push the response transaction
-
-#    return 1;
-    return $response;
+    return $request->respond_with($response);
 }
 
 
@@ -117,7 +110,7 @@ sub retrieve_directory {
     # XXX should check Accept headers?
 
     # check if-modified-since
-    my $ims = $request->header('If-Modified-Since');
+    my $ims = $request->request->header('If-Modified-Since');
     if (defined $ims) {
 	my $time = HTTP::Date::str2time($ims);
 	if (defined $time and $time >= $mtime) {
@@ -168,9 +161,8 @@ sub retrieve_directory {
     $response->header('Content-Type',   'text/html');
     $response->header('Content-Length', length $html);
     $response->content($html);
-    $response->request($request->clone);
-    #return $request->collect_once($arg, $response, $html);
-    return $response;
+    $response->header('Version', $self->version());
+    return $request->respond_with($response);
 }
 
 

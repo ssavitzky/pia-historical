@@ -29,7 +29,6 @@ sub callback{
 
     $$self{_callback}=$callback if $callback;
     return $$self{_callback};
-    
 }
 
 

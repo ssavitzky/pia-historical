@@ -1,8 +1,8 @@
 package PIA::Transaction; ###### HTTP Transactions
 ###	$Id$
 ###
-###	Transactions generalize the HTTP classes Request and Response.
-###	They are used in the rule-based resolver, which associates 
+###	Transaction is a wrapper for the library classes Request and Response.
+###	It is used in the rule-based resolver, which associates 
 ###	transactions with the interested agents.
 ###
 ###	A Transaction has a queue of ``handlers'', which are called
@@ -10,43 +10,54 @@ package PIA::Transaction; ###### HTTP Transactions
 ###	have acted on it.  At least one must return true, otherwise
 ###	the transaction will ``satisfy'' itself.
 ###
-###	In a proper implementation, Transaction would be a subclass of 
-###	DS::Thing, and Response and Request would be subclasses of it.
-###	It's done backwards here in order to re-use existing libraries.
 
 use HTTP::Request;
 use HTTP::Response;
-use HTTP::Message;
-
-push(@ISA,HTTP::Request);
-push(@ISA,HTTP::Response);
-push(@ISA,HTTP::Message);
 
 use PIA::TFeatures;
 use PIA::Content;
+use DS::Thing;
+push(@ISA, DS::Thing);
+
 
 sub new {
-    my($class, $self, $from, $to)=@_;
+    my($class, $t, $from, $to, $response)=@_;
 
-    ## take request or response and make a transaction out of it
+    ## Make a request transaction.  $t may be:
+    ##	  HTTP::Request -- make a request transaction
+    ##	  PIA::Transaction -- make $response a response to $t.
 
-    my $old=ref($self);
-    $self = new HTTP::Request unless $old;
-    bless $self, $class;
-    $self->initialize_content;   #content now an object
-    $self->is_request(1) if $old eq 'HTTP::Request';
-    $self->is_response(1) if $old eq 'HTTP::Response';
-
+    my $old=ref($t);
+    my $self = {};
     $$self{queue} = [];
 
-    print "Making $self from $old\n" if $main::debugging;
+    bless $self, $class;
 
+    if ($old eq 'PIA::Transaction') {
+	$self->is_response(1);
+	$self->response_to($t);
+	print "Bogus response $response\n" unless ref($response) eq 'HTTP::Response';
+	$response = new HTTP::Response unless $response;
+	$self->response($response);
+	$$self{_message} = $response;
+    } else {
+	print "Bogus request $t\n" unless ref($t) eq 'HTTP::Request';
+	$self->is_request(1);
+	$self->request($t);
+	$$self{_message} = $t;
+    }
+
+    $self->url($t->url) if defined $t;
+    $self->initialize_content;   #content now an object
+
+    print "Making $self from $old\n" if $main::debugging;
     $self->from_machine($from);
     $self->to_machine($to);
-    my $type=$self->method;
+
+    my $type = $self->method;
     my $code = $self->code;
-    print "  type is $type\n"  if defined($type) && $main::debugging;    
-    print "  code is $code\n"  if defined($code) && $main::debugging;    
+    print "  type is $type\n"  if (defined($type) && $main::debugging);    
+    print "  code is $code\n"  if (defined($code) && $main::debugging);    
 
     ## Initialize features and compute a few that we already know.
 
@@ -55,15 +66,27 @@ sub new {
     ## get any parameters from url or post
 
     if($self->is_request()){
-	$self->compute_form_parameters() if $type eq 'POST';
-	$self->compute_form_parameters($self->url->equery) if $type eq 'GET';
+	$self->compute_form_parameters($self->content) if $type eq 'POST';
+	$self->compute_form_parameters($self->url->equery) 
+	    if ($type eq 'GET' && $self->url->equery);
 	## === url->query dies if there are both + and %2b characters ===
     }
 
     ## need to compute form parameters if encoded in url
-
     return $self;
 }
+
+sub respond_with {
+    my ($self, $response, $from, $to) = @_;
+
+    ## Make a response Transaction out of a response.
+    ##	 The recipient is the corresponding request.
+
+    $from = $self->to_machine unless $from;
+    $to = $self->from_machine unless $to;
+    return PIA::Transaction->new($self, $from, $to, $response);
+}
+
 
 ##temporary treatment of content objects
 # while transitioning to full objectivity...
@@ -72,7 +95,7 @@ sub initialize_content{
     my($self)=@_;
     #content source set in from_machine method
     $$self{_content_object}=PIA::Content->new;
-    $self->content_object->string($$self{_content});
+    $self->content_object->string($$self{_message}->{_content});
 }
 
 sub content_object{
@@ -84,9 +107,9 @@ sub content_object{
 sub content {
     my($self,$string)=@_;
 #    $self->read_content unless $self->content_object->is_at_end;
-    
     return $self->content_object->as_string($string);
 }
+
 
 ########################################################################
 ###
@@ -113,6 +136,71 @@ sub to_machine{
 	$$self{_to_machine}=$machine;
     }
     return $$self{_to_machine};
+}
+
+sub request {
+    my ($self, $value) = @_;
+
+    ## an HTTP::Request object.  If this is a response, request points to the 
+    ##	  request that this is a response _to_.  The corresponding 
+    ##	 _transaction_ is in response_to.
+
+    $$self{_request} = $value if defined $value;
+    return $$self{_request};
+}
+
+sub response {
+    my ($self, $value) = @_;
+
+    ## an HTTP::Response object.
+
+    $$self{_response} = $value if defined $value;
+    return $$self{_response};
+}
+
+sub response_to {
+    my ($self, $value) = @_;
+
+    ## the PIA::Transaction object for the request to which this transaction
+    ##	 is a response.
+
+    if (defined $value) {
+	$$self{_response_to} = $value;
+	$self->url($value->url);
+    }
+    return $$self{_response_to};
+}
+
+sub url {
+    my ($self, $value) = @_;
+    $$self{_url} = $value if defined $value;
+    return $$self{_url};
+}
+
+sub method {
+    my ($self) = @_;
+    return uc $self->request->method if $self->request;
+}
+
+sub code {
+    my ($self) = @_;
+    return $self->response->code if $self->response;
+}
+
+sub content_length {
+    my ($self) = @_;
+    return $self->message->content_length;
+}
+
+sub content_type {
+    my ($self) = @_;
+    return $self->message->content_type;
+}
+
+sub message {
+    my ($self, $v) = @_;
+    $$self{_message} = $v if defined $v;
+    return $$self{_message};
 }
 
 sub is_response{
@@ -201,7 +289,7 @@ sub pop{
 ###
 
 sub handle {
-    my ($self, $request, $resolver) = @_;
+    my ($self, $trans, $resolver) = @_;
 
     ## Satisfy _another_ transaction.
 
@@ -250,18 +338,18 @@ sub satisfy {
 ###	work, because it might belong to an agent.
 
 sub send_response {
-    my($reply, $resolver)=@_;
+    my($self, $resolver)=@_;
 
     ## Default handling for a response:
     ##	  send it to the to_machine.  If the destination is not a reference 
     ##	  to a machine, the response just gets dropped.  'Nowhere' is a good
     ##	  non-reference to use in this case.
 
-    my $machine=$reply->to_machine();
+    my $machine=$self->to_machine();
 
     if (ref($machine)) {
 	print "sending response.\n" if $main::debugging;
-	return $machine->send_response($reply, $resolver);
+	return $machine->send_response($self, $resolver);
     } else {
 	## responses to nowhere just get dropped on the floor.
 	print "dropping response to $machine\n" if $main::debugging;
@@ -281,11 +369,11 @@ sub  get_request{
     
     my $response=$destination->get_request($self, $resolver);
 
-    if (ref($response) ne /PIA::Transaction/) {
+    if (ref($response) ne 'PIA::Transaction') {
 	## If the destination machine returned an ordinary HTTP::Response,
 	##	make it into a proper transaction so it can get returned.
-	$response=PIA::Transaction->new($response, $destination,
-					$self->from_machine);
+	$response=$self->respond_with($response, $destination,
+				      $self->from_machine);
     }
     return $response;	# push the response transaction
 }
@@ -303,9 +391,9 @@ sub error_response{
 
     $response->content("Agency could not find $url.\n$message\n");
 
-    return PIA::Transaction->new($response,
-				 $main::this_machine,  # no to_machine
-				 $self->from_machine());
+    return $self->respond_with($response,
+			       $main::this_machine,  # no to_machine
+			       $self->from_machine());
 }
 
 
@@ -362,7 +450,7 @@ sub title {
     return unless $self->is_response();
     return $self->{'_title'} if defined $self->{'_title'};
 
-    my $ttl  = $self->request->url();
+    my $ttl  = $self->url();
     my $type = $self->content_type();
     return unless $type;
     return $ttl unless $type =~ m:text/html:;
@@ -403,20 +491,25 @@ sub unescape {
 
 sub compute_form_parameters{
     my($self,$tosplit)=@_;
+
+    ## Split a urlencoded query string or content into pairs,
+    ##	  and store the result as a DS::Thing (usable as a hash table)
+    ##	  on $self's "parameters" attribute.
+
     $tosplit=$self->content() unless $tosplit;
     $self->deny('has_parameters');
     my(@pairs) = split('&',$tosplit);
     my($param,$value);
-    my %hash;
+    my $hash = DS::Thing->new;
     foreach (@pairs) {
 	($param,$value) = split('=');
 	$param = &unescape($param);
 	$value = &unescape($value);
-	$hash{$param}=$value; #careful losing multiple values
+	$hash->attr($param, $value); #careful losing multiple values
 	print "  $param=$value.\n"  if $main::debugging;
 	$self->assert('has_parameters');#if any times through
     }
-    $$self{parameters}=\%hash;
+    $$self{parameters}=$hash;
 }
 
 sub parameters{
