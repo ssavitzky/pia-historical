@@ -1,0 +1,8 @@
+<!-- This gets inserted in the Agency's home page -->
+<if><agent-running name="Photo_Album">
+    <then><a href="/Photo_Album/home.if">
+	  <b>Photo Album</b><br>
+          <img src="/Photo_Album/rdc2esmall.gif"
+	       width=144 height=99></a></then>
+    <else>
+</if>
