@@ -36,7 +36,7 @@ public class Filter {
   static String infile = null;
   static String outfile = null;
   static String propfile = null;
-  static String tsname = "Basic";
+  static String tsname = "standard";
   static boolean tree = false;
   static boolean entities = true;
   static boolean parsing = false;
