@@ -71,7 +71,10 @@ public class Resolver extends Thread {
    * returns the number of elements
    */ 
   public final synchronized int unshift( Transaction obj ){
-    return transactions.unshift( obj );
+    Pia.instance().debug(this, "unshift()");
+    int i = transactions.unshift( obj );
+    notify();
+    return i;
   }
 
   /**
