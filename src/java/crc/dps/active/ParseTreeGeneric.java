@@ -7,6 +7,7 @@ package crc.dps.active;
 import java.io.*;
 import crc.dom.*;
 import crc.dps.Handler;
+import crc.dps.Namespace;
 
 /** 
  * Abstract base class for nodes with names, attributes, and a variable 
@@ -24,6 +25,7 @@ public class ParseTreeGeneric extends ParseTreeElement  {
   protected int nodeType = NodeType.ELEMENT;
 
   protected NodeList value;
+  protected Namespace names = null;
   protected boolean isAssigned = false;
 
   protected String name;
@@ -49,6 +51,8 @@ public class ParseTreeGeneric extends ParseTreeElement  {
    */
   public String getName()		{ return name; }
   
+  /** Get the associated namespace, if any. */
+  public Namespace asNamespace() { return names; }
 
   public void setIsAssigned(boolean value) { isAssigned = value; }
 
@@ -74,7 +78,10 @@ public class ParseTreeGeneric extends ParseTreeElement  {
     } else {
       isAssigned = true;
     }
-    value = new ParseNodeList(newValue);
+    if (newValue instanceof Namespace) {
+      names = (Namespace)newValue;
+      value = newValue;
+    } else value = new ParseNodeList(newValue);
   }
 
   /************************************************************************

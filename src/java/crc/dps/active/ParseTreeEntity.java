@@ -29,7 +29,6 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
 
   public ActiveEntity 	 asEntity() 	{ return this; }
 
-
   /************************************************************************
   ** Entity Interface:
   ************************************************************************/

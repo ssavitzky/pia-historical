@@ -128,8 +128,8 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
     long length = getLength();
     for (long i = 0; i < length; ++i) try {
       Attribute attr = (Attribute)item(i);
+      if (i != 0) result += " ";
       result += attr.toString();
-      if (i < length - 1) result += " ";
     }catch(NoSuchNodeException e){
     }
     return result;

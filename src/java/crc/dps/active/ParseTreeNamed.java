@@ -49,9 +49,10 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
       return;
     } else {
       isAssigned = true;
-      value = newValue;
-      if (newValue instanceof Namespace) names = (Namespace)newValue;
-      else value = new ParseNodeList(newValue);
+      if (newValue instanceof Namespace) {
+	names = (Namespace)newValue;
+	value = newValue;
+      } else value = new ParseNodeList(newValue);
     }
     //setChildren(newValue);
   }
