@@ -3,27 +3,27 @@
 <title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>Printer initialization for <code language=perl> $current_self->name; </code></h1>
+<h1>Printer initialization for &agentName;</h1>
 
 <code language=perl>
 
-$current_self->option('render_method',"latex");
-$current_self->option('preview_number',"100");
-$current_self->option('thumbsize',"72");
-$current_self->option('thumb_width',"100");
-$current_self->option('thumb_height',"140");
-$current_self->option('book_depth',"2");
-$current_self->option('cache_only',"1");
-$current_self->option('max_pages',"2000");
-$current_self->option('device',"lp");
+$agent->option('render_method',"latex");
+$agent->option('preview_number',"100");
+$agent->option('thumbsize',"72");
+$agent->option('thumb_width',"100");
+$agent->option('thumb_height',"140");
+$agent->option('book_depth',"2");
+$agent->option('cache_only',"1");
+$agent->option('max_pages',"2000");
+$agent->option('device',"lp");
 
-my $name= $current_self->name;
-my $printer_root_directory=$current_self->agent_directory . "spool/";
-$current_self->option('printer_root_directory',$printer_root_directory);
+my $name= $agent->name;
+my $printer_root_directory=$agent->agent_directory . "spool/";
+$agent->option('printer_root_directory',$printer_root_directory);
 
 mkdir($printer_root_directory, 0777) unless -d $printer_root_directory;
 
-$self->option('printer_base_url',$current_self->agent_url . "spool/");
+$agent->option('printer_base_url',$agent->agent_url . "spool/");
 
 "initialized $name";
 </code>
@@ -34,6 +34,6 @@ $self->option('printer_base_url',$current_self->agent_url . "spool/");
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Sun Nov 24 16:36:00 1996
+Last modified: Fri Jan 24 09:42:41 1997
 <!-- hhmts end -->
 </body></html>

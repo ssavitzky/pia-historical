@@ -5,7 +5,7 @@
 <body>
 <h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a>Documents printed by`<a href="home.if">&agentName;</a>'</h1>
 <code language=perl>
-my $dir=$current_self->option('printer_root_directory');
+my $dir=$agent->option('printer_root_directory');
 my @files=glob($dir . "preview*.*.gif");
 
 my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;

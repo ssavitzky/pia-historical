@@ -7,7 +7,7 @@
 </h1>
 
 <code language=perl>
-my $book=$current_self->current_book;
+my $book=$agent->current_book;
 my $contents=$book->table_of_contents;
 
 return $contents;

@@ -5,8 +5,8 @@
 <body>
 <h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a> previewing document`<a href="home.if">&agentName;</a>'</h1>
 <code language=perl>
-my $dir=$current_self->option('printer_root_directory');
-my $imgfile= ${$current_request->parameters()}{imgfile};
+my $dir=$agent->option('printer_root_directory');
+my $imgfile= ${$request->parameters()}{imgfile};
 $imgfile =~ /(preview\d+)\.(\d+)\.gif/;
 my $psfile = $dir . $1 . ".ps";
 my $next = $2 + 1;
