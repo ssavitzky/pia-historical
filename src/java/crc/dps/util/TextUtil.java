@@ -142,12 +142,12 @@ public class TextUtil {
       else if (Character.isUpperCase(c) && ! inUC &&
 	       Character.isUpperCase(nc)) {
 	inUC = true;
-	n += "<b>";
+	n += "<tt>";
 	n += Character.toLowerCase(c);
       } else if (Character.isUpperCase(c) && inUC) {
 	n += Character.toLowerCase(c);
 	if (! Character.isUpperCase(nc)) {
-	  n += "</b>";
+	  n += "</tt>";
 	  inUC = false;
 	}
       }
