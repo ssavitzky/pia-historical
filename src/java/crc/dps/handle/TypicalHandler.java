@@ -3,20 +3,17 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps.handle;
-import crc.dom.Node;
+
 import crc.dom.NodeList;
-import crc.dom.Attribute;
-import crc.dom.AttributeList;
-import crc.dom.Element;
 
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
 
 /**
- * Handler for &lt;typical&gt;....&lt;/&gt;  <p>
+ * Handler for &lt;typical&gt;....&lt;/&gt;  
  *
- *	
+ * <p>	
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
