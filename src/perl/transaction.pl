@@ -59,7 +59,9 @@ sub is_request{
 
 sub read_content{
     my($self,$type)=@_;
-    my $bytes=$self->header(content_length);
+    
+    my $bytes=$self->content_length;
+        
     my $content;
     my $from=$self->from_machine();
     return unless defined $from;
@@ -70,7 +72,7 @@ sub read_content{
 	while($bytes_read < $bytes){
 	    my $new_bytes=read($input,$content,$bytes-$bytes_read,$bytes_read);
 	    $bytes_read+=$new_bytes;
-	    
+	
 	    last unless defined $new_bytes;
 	}
   #  print "number of bytes = $bytes_read \n";
