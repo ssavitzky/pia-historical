@@ -788,6 +788,28 @@ sub agent_remove_handle {
     $ii->replace_it($name);
 }
 
+define_actor('agent-list', 'active' => 1, 'parsed' => 1,
+	     'content' => 'type', _handle => \&agent_list_handle,
+	     'dscr' => "List the agents with given TYPE. Possibly SUBS only." );
+
+sub agent_list_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $type = get_text($it, 'type');
+    my $subs = $it->attr('subs');
+
+    my $resolver = IF::Run::resolver();
+    my @names = sort($resolver->agent_names);
+    my @list = ();
+
+    foreach $name (@names) {
+	my $agent = $resolver->agent($name);
+	next if ($subs && $agent->type eq $agent->name);
+	push (@list, $name) if $agent->type eq $type;
+    }
+    $ii->replace_it(join(' ', @list));
+}
+
 
 ### Operating System:
 
