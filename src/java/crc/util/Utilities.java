@@ -254,6 +254,11 @@ public class Utilities {
       report(e); //throw e;
     }catch(OptionalDataException  e){
       report(e); //throw e;
+    }catch(java.io.EOFException e){
+      if ( list.nItems() == 0 ) {
+	report(e);
+	throw e;
+      } // expected.
     }catch(IOException e){
       if ( list.nItems() > 0 ) report(e);
       else throw e;
@@ -319,6 +324,10 @@ public class Utilities {
       ObjectOutputStream destination = new ObjectOutputStream(f);
       destination.writeObject( o );
       destination.flush();
+      destination.close();
+      f.flush();
+      f.close();
+      f = null;
     }catch(IOException e1){
       throw e1;
     }finally{
@@ -344,6 +353,8 @@ public class Utilities {
       ObjectOutputStream destination = new ObjectOutputStream(ff);
       destination.writeObject( o );
       destination.flush();
+      destination.close();
+      f = null;
     }catch(NullPointerException e1){
       // bad file name
       throw e1;
