@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.ByteArrayInputStream;
 
 import crc.pia.Headers;
-import crc.pia.HttpBuffer;
 import crc.ds.Table;
 import crc.ds.List;
 import crc.util.Utilities;
@@ -62,6 +61,10 @@ public class T_formContent{
   private static void test1(String filename){
 
     HeaderFactory hf = new HeaderFactory();
+    System.out.println("Testing form content class by creating a header and a form content.");
+    System.out.println("Content is then pointed at header from which it will get content length.");
+    System.out.println("Input is read from a file input/postno1line.txt.");
+    System.out.println("Output is a dump of the form content's parameters.\n\n");
 
     try{
       InputStream in = (new BufferedInputStream
@@ -86,8 +89,13 @@ public class T_formContent{
   * 
   */ 
   private static void test2(String filename){
-    System.out.println( "in test2" );
     HeaderFactory hf = new HeaderFactory();
+
+    System.out.println("Testing form content class by creating a header and a form content.");
+    System.out.println("Content is then pointed at header from which it will get content length.");
+    System.out.println("This case test processInput function.\n");
+    System.out.println("Input is read from a file input/postno1line.txt.");
+    System.out.println("Output is a dump of the form content's parameters.\n\n");
 
     try{
       InputStream in = (new BufferedInputStream
@@ -117,6 +125,9 @@ public class T_formContent{
   * 
   */ 
   private static void test3(String filename){
+    System.out.println("Testing form content class by creating a form content with no header.");
+    System.out.println("Input is read from a file input/postbody.txt.");
+    System.out.println("Output is a dump of the form content's parameters.\n\n");
 
     try{
       String s = Utilities.readStringFrom( filename );
