@@ -1,7 +1,7 @@
-README: The Information Agency Alpha release 2.0
+README: The Information Agency Beta release 2.0
 ==================================================
 
-This is 2.0 (Alpha) release of the Information Agency.
+This is the 2.0b release of the Information Agency.
 An Information Agency is a kind of proxy web server that provides an
 environment for document processing agents.  A Personal Information Agency
 sits between you and the rest of the web world, providing a place for agents
