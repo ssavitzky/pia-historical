@@ -504,7 +504,7 @@ public class FormContent extends Properties implements Content{
     }
     i = 0;
     String param = null;
-    String value = null;
+    Object value = null;
 
     for(; i < pairs.length; i++){
       String s = pairs[i];
