@@ -16,8 +16,16 @@ install forms for various agents.  You are encouraged to paste sections out of
 this file into your own start-up file.  When you design a new agent, please
 add a default start-up form to this file.  <p>
 
+<h3>Contents:</h3>
 
-<h2>Start up agents</h2>
+<ul>
+  <li> <a href="#agents">Agents</a>
+  <li> <a href="#DOFS">Document-Oriented File Systems</a>
+  <li> <a href="#exp">Experimental</a>
+</ul>
+
+<hr>
+<h3><a name="agents">Agents</a></h3>
 <dl> 
   <dt> <a name="History">History agent</a>
        <if><agent-running name=History><then><em>installed</em></then><else>
@@ -74,7 +82,9 @@ add a default start-up form to this file.  <p>
        type: <input name="type" value="Printer">
        </form>
 </dl>
-<h3>And Document-Oriented File Systems</h3>
+
+<hr>
+<h3><a name="DOFS">Document-Oriented File Systems</a></h3>
 
 <dl>
   <dt> <a name="dofs">the DOFS agent</a>
@@ -132,27 +142,32 @@ add a default start-up form to this file.  <p>
 
 </dl>
 
-<h3> experimental</h3>
+<hr>
+<h3><a name="exp">Experimental</a></h3>
 
 <dl>
-  <dt>  CD-R/RW
+  <dt> CD-R/RW
+       <if><agent-running name=CDRW><then><em>installed</em></then>
+       <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
        Samba Name: (for mounting under windows) <input name="sambaName"
        value="user_files"><br>
        SambaConfigFile: <input name="sambaConfig" value="/etc/sbm.conf">
-       root: (relative to agent directory)<input name="rootDir" value="user_files"><br>
+       root: <input name="rootDir" value="user_files"> (relative to agent
+       directory) <br>
        <input type="submit" value="Install"><br>
-       </form>
-<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+       </form></if>
+  <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+       <if><agent-running name=CDRW><then><em>installed</em></then>
+       <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="user_files">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="~/.pia/CDRW/user_files">
        <input type="submit" value="Install">
-       </form>
-       
+       </form></if>       
 </dl>
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
