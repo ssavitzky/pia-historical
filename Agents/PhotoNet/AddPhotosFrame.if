@@ -17,6 +17,9 @@ function Restart(UserID) {
     top.location = "Reset.if?userid=" + UserID;
   }
 }
+function Record(UserID) {
+  top.ViewFrame.location = "record.if?View=all&userid=" + UserID;
+}
 </SCRIPT>
 </head>
 <body BGCOLOR="#000099" TEXT="#FFFFFF">
@@ -48,6 +51,7 @@ function Restart(UserID) {
 <INPUT &onClick;="top.Reset();" TYPE="button"  NAME="Home" VALUE="Home">
 <INPUT &onClick;="Restart('&UserID;');" TYPE="button"  NAME="Clear" VALUE="Clear">
 <INPUT &onClick;="MakePres('&UserID;');" TYPE="button"  NAME="Present" VALUE="Present">
+<INPUT &onClick;="Record('&UserID;');" TYPE="button"  NAME="Record" VALUE="Record">
 </FORM>
 </FONT>
 </NOBR>
