@@ -317,7 +317,7 @@ public class Tokens extends List implements SGML {
   public Text contentText() {
     Text t = new Text();
     for (int i = 0; i < nItems(); ++i) {
-      t.append(itemAt(i).contentText());
+      t=(Text)t.append(itemAt(i).contentText());// creates a new Text for each append
     }
     return t;
   }
