@@ -94,4 +94,27 @@ public class Create {
     }
   }
 
+  /** Create an arbitrary ActiveNode with optional name and data. */
+  public static ActiveNode createActiveNode(int nodeType,
+					    String name, NodeList value) {
+    switch (nodeType) {
+    case NodeType.COMMENT:
+      return new ParseTreeComment("");
+    case NodeType.PI:
+      return new ParseTreePI(name, "");
+    case NodeType.ATTRIBUTE:
+      return new ParseTreeAttribute(name, value);
+    case NodeType.ENTITY:
+      return new ParseTreeEntity(name, value);
+    case NodeType.ELEMENT:
+      return new ParseTreeElement(name, null);
+    case NodeType.DECLARATION:
+      return new ParseTreeDecl(name, null, null);
+    default:
+      return new ParseTreeComment("Undefined type " + nodeType
+				  + " name=" + name + " value=" + value);
+      //return null;
+    }
+  }
+
 }
