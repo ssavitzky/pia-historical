@@ -8,94 +8,526 @@ import crc.ds.Table;
 import crc.sgml.SGML;
 import crc.sgml.Util;
 import crc.sgml.AttrWrap;
+import crc.sgml.Text;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
+import crc.sgml.Element;
+
+import crc.sgml.DescriptionList;
 
 import java.util.Enumeration;
+import java.util.StringTokenizer;
 
-
+import crc.pia.Pia;
 
 /** An index object is used for indexing SGML objects.
- *      foo.bar should return the bar element of foo.
  *       Semantics depend upon SGML type.
  *	 indexes behave somewhat like enumerations-- asking for the next
  *       element moves a pointer up one.
  *       this class also implements the recursive lookup by delegating
  *       to each SGML object in secession.
- *       In general, 'foo' should return an SGML object, 'foo.' should return the contents of an SGML object (the tokens). 'foo.bar' should return the 'bar' item from contents of foo, ...
- *     For  complicated expressions use an SGMLquery object.
- *     Possible indices:
- *       'bar' is a simple attribute name  : isString
- *       '1'  is a numeric index           : isNumeric
- *       '1-5'  is a numeric range '1-' == '1-END'  :isRange
- *       '-tag-value' return all elements with the tag=value :isExpression
- *       '-attr-value' return all elements with the attr=value :isExpression
+ *Syntax for accessing html elements.
+ *
+ *SGML.xxx[[-]start#[-end#]]
+ *	xxx	
+ *		tag name		means tag name
+ *		null			any tag
+ *		Text			means text only
+ *
+ *	-	
+ *	[start#-end#]
+ *		start#			
+ *			number		start at indicated index
+ *			null		start at the first index
+ *		end#
+ *			number		end at indicated index (inclusive)
+ *			null		end at end
+ *
+ * To retrieve all of dts'text, xxx should be "keys"
+ * To retrieve all of dds'text, xxx should be "values"
+ *
+ *Examples:
+ *		xxx == xxx- == xxx-- == xxx-1-	means all tags whose name are xxx
+ *		xxx-start#-end#			means a range of element
+ *		xxx-start#			means an element at start#
+ *		xxx--end#                       means first element to end
+ *		xxx-start#-			means a range of elements from the start index to the end
+ *
+ *		-				means all tags of any kind
+ *		xxx..				means a token with the current SGML contents if current token
+ *                                              isinstance of Tokens.  Otherwise, current token
+ *					       
+ *Examples for dl:
+ *            foo
+ *             |
+ *             dl
+ *        dt   dd   dt     dd
+ *      "aaa" "car" "bbb"  "train"
+ *  
+ * foo.dl.aaa                         returns "car"
+ * foo.dl.keys                        returns "aaabbb"
+ * foo.dl.values                      returns "cartrain" 
  */
 public class Index {
 
   /************************************************************************
   ** Components:
   ************************************************************************/
+  public static final String ANY="empty";
+  public static final String TEXT="text";
+  public static final String KEYS="keys";
+  public static final String VALS="values";
+
+  static final int INVALIDNUMBER = -100;
+  static final int FIRST=1;
+  public static final int LAST=-1;
+
+  static final int EOFINPUT=-1;
+  static final int DOTS=-2;
+  static final int NORMAL=0;
+  int currentItem = -1;
+
+  /**
+   * original path
+   */
+  String path;
+  
+  /**
+   * tag name, could be null, tag-name or Text
+   */
+  protected String tag = ANY;
+  
+  /**
+   * start index
+   */
+  protected int start = INVALIDNUMBER;
+  
+  /**
+   * end index
+   */
+  protected int end = LAST;
+
+  protected boolean defaultStart = false;
+
+  protected int processState = NORMAL;
 
   /** The actual items. */
   protected  List  items;
-  protected int  currentItem = 0;
-  String range[] = new String[2];
+  protected List positionParam;
+
+  class InvalidInput extends Exception{
+    public InvalidInput() { super(); }
+    public InvalidInput(String s) {super(s);}
+  }
+
+  /**********************************************************************
+   * Accessors to tag, start and end Index
+   **********************************************************************/
+  public String getTag(){
+    return tag;
+  }
+
+  public int getStart(){
+    return start;
+  }
+
+  public int getEnd(){
+    return end;
+  }
+
+  public void setTag(String t){
+    tag = t;
+  }
+
+  public void setStart(int s){
+   start = s;
+  }
+
+  public void setEnd(int e){
+    end = e;
+  }
+  
+  public boolean isNormal(){
+    return processState == NORMAL;
+  }
+
+  public boolean isDots(){
+    return processState == DOTS;
+  }
+
+  public boolean isNumeric(String n)
+  {
+    try {
+      int number = java.lang.Integer.valueOf(n).intValue();
+      return true;
+    } catch (Exception e) {
+      return false;  //not legal index
+    }
+  }
+    
+  /** return just the current item as string
+   */
+  
+  public String myString()
+  {
+    return (String)items.at(currentItem);
+  }
   
 
-  /** The number of indexed items. */
-  public int nItems() {
-    return items == null? 0 : items.nItems();
+  /************************************************************************
+  ** Construction and copying:
+  ************************************************************************/
+  
+  public Index( String path) {
+    if( path.indexOf(".") == -1 && path.length() != 0 ){
+      items = new List();
+      items.push( path );
+    }else{
+      items = Util.split(path,'.');
+      if( path.endsWith(".") && !path.endsWith("..") ){
+	items.push("");
+	System.out.println("Index-->pushing a blank, end in dot");
+      }
+    }
   }
+  
+  public Index(List l) {
+    items = l; // we don't manipulate items, so no need to copy
+  }
+  
+  /************************************************************************
+  /**  operations  to provide index positioning and determine tag, start and end */
+  /************************************************************************/
 
   /** The number of indexed items. */
   public int size() {
     return items == null? 0 : items.size();
   }
 
-  /** Access an individual item */
-  public Object at(int i) {
-    if (i >= items.size()) { return null; }
-    return items.at(i);
+  public int nextPositions() {
+    positionParam = new List();
+
+    currentItem += 1;
+
+    if( currentItem >= size() ){
+      resetPositionAttr();
+      return EOFINPUT;
+    }
+
+    String item = (String)items.at( currentItem );
+    if( item.equals("") ){
+	processState = DOTS;
+	return DOTS;
+    }
+
+    //System.out.println("nextPosition's item: "+item+ " length-->"+ Integer.toString(item.length()));
+
+    StringTokenizer ts = new StringTokenizer(item, "-", true);
+    try{
+      while( ts.hasMoreElements() )
+	positionParam.push( ts.nextToken() );
+    }catch(Exception e){}
+
+    processState = NORMAL;
+
+    return 1;
   }
 
-  /** Replace an individual item <em>i</em> with value <em>v</em>. */
-  public void at(int i, Object v) {
-    items.at(i,v);
-  }
-    
-  /************************************************************************
-  ** Construction and copying:
-  ************************************************************************/
 
-  public Index( String path) {
-    items = Util.split(path,'.');
+  public String nextToken(){
+    Object o = positionParam.shift();
+    if( o == null ) return null;
+    return (String) o;
   }
 
-  public Index(List l) {
-    items = l; // we don't manipulate items, so no need to copy
-    
+  public void pushBackToken( String s ){
+    positionParam.unshift( s );
+  }
+
+  protected boolean isDash(String s){
+    if( s == null ) return false;
+    return ( s.length() == 1 && s.indexOf("-") != -1 ) ? true : false;
+  }
+
+  protected void resetPositionAttr(){
+    processState = NORMAL;
+    tag = ANY;
+    setStart( INVALIDNUMBER );
+    setEnd( LAST );
+    defaultStart = false;
+  }
+
+  protected void dumpPositionParam(){
+    String s;
+    Object o;
+
+    List tmp = (List)positionParam.clone();
+    while( !tmp.isEmpty() ){
+      o = tmp.shift();
+      if( o != null )
+	System.out.println("[" + (String) o + "]");
+    }
   }
   
+  protected boolean isTextOrDigit(String s){
+    boolean result = true;
+
+    if( s == null ) return false;
+    int len = s.length();
+
+    if( !Character.isLetter(s.charAt(0) ) )
+      return false;
+      
+    for(int i=1; i < len; i++){
+      if( !Character.isLetterOrDigit( s.charAt(i) ) ){
+	result = false;
+	break;
+      }
+    }
+
+    return result;
+  }
+
+  /* return INVALIDNUMBER if not a number */
+  protected int parseNumber(String s){
+    if( s == null ) return INVALIDNUMBER;
+
+    try{
+      int startPos = Integer.parseInt( s );
+      return startPos;
+    }catch(NumberFormatException e){
+      return INVALIDNUMBER;
+    }
+  }
+
+  protected void parseTag(){
+    //System.out.println( "Entering parseTag...");
+
+    String t = nextToken();
+    //System.out.println("Token-->"+t);
+
+    // missing tag and dash, tag is ANY.  current token is number
+    if( parseNumber( t ) != INVALIDNUMBER ){
+      tag = ANY;
+      pushBackToken( t );
+      return;
+    }
+      
+    // tag is not specified could be a dash
+    if( !isTextOrDigit(t) ){
+      tag = ANY;
+      pushBackToken( t );
+    }else{
+      tag = t;
+    }
+
+    //System.out.println("Exiting parseTag...");
+  }
+
+  protected void parseStart() throws InvalidInput{
+    int number;
+    //System.out.println("Entering parseStart...");
+
+    //dumpPositionParam();
+    // getting dash
+    String t = nextToken();
+    //System.out.println("Starting token-->"+t);
+    // no positions are specified
+    if( t == null ){
+      setStart( FIRST );
+      defaultStart = true;
+      return;
+    }
+
+    if( (number = parseNumber( t )) != INVALIDNUMBER  ){
+      setStart( number );
+      return;
+    }
+
+    if( isDash( t ) ){
+      // get start position
+      t = nextToken();
+      //System.out.println("Token-->"+t);
+      
+      // this should be number or empty
+      if ( (number = parseNumber( t )) != INVALIDNUMBER ){
+	setStart( number );
+	return;
+      }
+      if ( t == null || isDash( t ) ){
+	// empty case; no start and end are given
+	// just a dash
+	setStart( FIRST );
+	defaultStart = true;
+	if ( isDash(t) ) pushBackToken( t );
+      }else if ( number == INVALIDNUMBER ){
+	// bad input
+	throw new InvalidInput("Invalid starting index.");
+      }
+    } else if ( number == INVALIDNUMBER ){
+      throw new InvalidInput("Invalid starting index.");
+    }
+
+    //System.out.println(this, "Exiting parseStart...");
+  }
+
+  protected void parseEnd() throws InvalidInput{
+    int number;
+
+    //dumpPositionParam();
+
+    // getting dash
+    String t = nextToken();
+    // just one item only
+    if( t == null ){
+      setEnd( ( defaultStart ) ? LAST : getStart() );
+    }
+    else 
+      if( !isDash(t) )
+	throw new InvalidInput("Missing dash before end.");
+      else{
+	t = nextToken();
+	
+	if( t == null )
+	  setEnd( LAST );
+	else  if( (number = parseNumber( t )) != INVALIDNUMBER )
+	  setEnd( number );
+	else throw new InvalidInput("Invalid ending index.");
+      }
+  }
+
+  protected void parsePositions() throws InvalidInput{
+    int s, e;
+
+    parseTag();
+
+
+    try{
+      parseStart();
+      parseEnd();
+
+      System.out.println("The tag-->"+ getTag());
+      System.out.println("The start-->"+ Integer.toString(getStart()));
+      System.out.println("The end-->"+ Integer.toString(getEnd()));
+
+      s = getStart();
+      e = getEnd();
+      if( s < 1 )
+	throw new InvalidInput("Start index must start at 1 or larger.");
+      if( s > e && e != LAST )
+	throw new InvalidInput("Start index is larger than end index."); 
+
+    }catch(InvalidInput ee){
+      //System.out.println("The error is-->"+ee.toString());
+      throw ee;
+    }
+  }
+
+  protected boolean isAllSameTag(String myTag, Tokens ts){
+    if( tag == null || ts == null ) return false;
+    
+    SGML item;
+    end = ts.nItems();
+
+    for ( int i = 0 ; i < end; i++ ){
+      item = ts.itemAt( i );
+      if( !item.tag().equalsIgnoreCase( myTag ) )
+	return false;
+    }
+
+    return true;
+  }
+
+  protected SGML merge( SGML s ){
+    SGML result;
+    String myTag = getTag();
+
+    if( s.isToken() ) {
+      System.out.println("In merge -- token case "+s.toString());
+      return s;
+    }
+    else{
+      if( !isAllSameTag( myTag, s.content() ) )
+	result = new Element();
+      else{
+	if( s.content().nItems() > 0 ){
+	  Class c = (s.content().itemAt( 0 )).getClass();
+	  System.out.println("the class-->"+c.toString());
+	  try{
+	    result = (SGML)c.newInstance();
+	  }catch(Exception e){e.toString();}
+	}
+	result = new Element( myTag );
+      }
+
+      result.append( s.content() );	
+
+      System.out.println("In merge -- tokens case "+result.toString());
+    }
+    return result;
+  }
+
+  protected SGML doProcess(int what, SGML datum) throws InvalidInput{
+    try{
+      if( isDots() ){
+	// either . or ..
+	System.out.println("processing dots case.");
+	datum = merge( datum );
+      }else{
+	// normal indexing case
+	System.out.println("processing normal case.-->"+ datum.toString());
+	parsePositions();
+        datum = datum.attr( this );
+      }
+    }catch(InvalidInput e){
+      //System.out.println(e.toString());
+      throw e;
+    }
+
+    return datum;
+  }
     
 
   /************************************************************************
   ** Lookups: instance methods
   ************************************************************************/
+  
+  public SGML lookup(SGML datum) throws InvalidInput, IllegalArgumentException{
+    int what;
 
-public SGML lookup(SGML datum)
-  {
+    if( datum == null ) throw new IllegalArgumentException("Datum is null.");
+    System.out.println("lookup-->"+datum.toString());
 
-     while(currentItem < size() && datum != null){
-      crc.pia.Pia.debug("Looking up: " + items.join(" ") + " on #:" +currentItem + "of" + size() + "in" + datum.getClass().getName());
-       
-      datum = datum.attr(this);  //delegate to SGML
-      next();  // shift counter up
-      
+    what = nextPositions();
+    
+    while ( what != EOFINPUT ){
+      try{
+	datum = doProcess( what, datum ); 
+      }catch( InvalidInput e ){
+	System.out.println(e.toString());
+	throw e;
+      }
+      resetPositionAttr();
+      what = nextPositions(); 
     }
+    
+    /*
+    if( datum instanceof Tokens && datum.content().nItems() == 1 ){
+      // datum is a Tokens.  return a Token instead with the datum's content
+      
+      System.out.println("Datum is a Tokens with 1 content");
+      
+      SGML element = datum.content().itemAt(0);
+      if( element instanceof Token )
+	System.out.println("Datum is return as a Token");
+
+      return element;
+    }
+    */
     return datum;
   }
 
-public SGML lookup(Table datum)
-  {
+  public SGML lookup(Table datum) throws InvalidInput, IllegalArgumentException{
     if(datum == null){
       return null;
     }
@@ -103,203 +535,254 @@ public SGML lookup(Table datum)
     SGML data = (SGML)datum.at((String)items.shift());
     return lookup(data);
   }
+
   
-  /**  operations  to provide data to sgml attr */
- public String next() {
-  if( currentItem<size()){
-    currentItem++;
-  } else {
-    return null;
-  }
-  String item = (String)items.at(currentItem);
-  return item;
- }
-
-/**  add an entry to this table
- */
-public void lookupSet(Table context, SGML value)
-  {
-    String s= (String)items.shift();
-    if(items.isEmpty()){
-      context.at(s,value);
-      return;
-    }
-    
-    SGML data = (SGML)context.at(s);
-    if(data == null){
-      //create SGML AttrTable to hold data structures
-      data = new AttrWrap();   
-      context.at(s,data);
-    }
-    lookupSet(data,value);
-    
-  }
-
   /**  recursive function for setting path to value for SGML objects
-        semantics of set, attr(name,value), depend on object
-      same  inner loop as lookup except that missing objects get created
-	*/
+    semantics of set, attr(name,value), depend on object
+    same  inner loop as lookup except that missing objects get created
+    */
 
-public void lookupSet(SGML context,SGML value)
-  {
-    SGML mycontext = context;
-    SGML context1 = context;
+  public SGML path(SGML datum) throws InvalidInput, IllegalArgumentException {
+    int what;
+    SGML  path      = datum;
+    SGML  curLoc    = datum;
+    int pPathIndex;
     
-    while(currentItem < size()){
-      mycontext=context1;
-      // now move down to next level
-      context1 = mycontext.attr(this);  //delegate to SGML
-      next();  // shift counter up
-      //check for emptiness
-      if(context1==null && currentItem < size()){
-	String s  =  string();
-	context1= new AttrWrap();   
-        mycontext.attr(s,context1);
+    if( datum == null ) throw new IllegalArgumentException("Datum is null.");
+    System.out.println("path-->"+datum.toString());
+
+    what = nextPositions();
+    
+    while ( what != EOFINPUT ){
+      path = curLoc;
+
+      curLoc = doProcess( what, curLoc ); 
+      if( curLoc.content().nItems() == 0 ){
+	System.out.println(" not successfull ");
+	
+	SGML e = null;
+	Tokens ts = path.content();
+	System.out.println("the path content is-->"+path.toString()+ Integer.toString( ts.nItems() ));
+	if ( ts.nItems() > 0 )
+	  e = ts.itemAt( 0 );
+
+	SGML foo = new Element("foobar","");
+
+	if( e != null )
+	  e.append( foo );
+	
+	System.out.println("the dummy path is-->"+path.toString());
       }
+
+
+      resetPositionAttr();
+      what = nextPositions(); 
     }
-    // at this point, my context should be the last SGML object
-    // specified by my path -- add  value to it under last name
-    if(currentItem != size() - 1){
-      //problem -- indexing off
-      //quick fix
-      currentItem=size()-1;
-    }
-    mycontext.attr(string(),value);
-  }
-  
-    
-
-  /************************************************************************
-  ** Tests and accesses: what type of indexing
-  ************************************************************************/
-
-public boolean isNumeric()
-  {
-    return numeric() >= 0;
-  }
-  
-  
-/** return just the current item as string
- */
- public String string()
-  {
-    return (String)items.at(currentItem);
+    System.out.println("The path is-->"+path.toString());
+    return curLoc;
   }
 
-/**  return the entire path as string
- */
-public String toString()
-  {
-    Enumeration e  = items.elements();
-    String result=(String)e.nextElement();
-    while(e.hasMoreElements()){
-      result+="." + (String)e.nextElement();
-    }
-    return result;
-  }
-  
-    
-
- public int numeric()
-  {
-    String s = (String)items.at(currentItem);
-    try {
-      return java.lang.Integer.valueOf(s).intValue();
-    } catch (Exception e) {
-      return -1;  //not legal index
-    }
-  }
-  
- public boolean isRange() {
-   String s=string();
-   return !s.startsWith("-") && s.indexOf('-') > 0;
-
- }
-  
- public int[] range(int max) {
-   String s = string();
-   
-   List words  = Util.split(s,'-');
-   int size=words.nItems();
-   if(s.endsWith("-")) size++;
-   
-
-   int result[]= new int[size];
-   int last=0;
-   
-   for(int i=0;i<words.nItems();i++){
-     try{
-      last=java.lang.Integer.valueOf((String)words.at(i)).intValue();
-      last=(last>max) ? max : last;
-      
-      } catch (Exception e) {
-      //use previous value  
-    }
-     result[i]=last;
-   }
-   if(s.endsWith("-") &&size>1) result[size-1]=max;
-   return result;
- }
-
-public boolean isExpression()
-  {
-    return string().startsWith("-");
-  }
-  
-/** return a list of keys, values -- semantics depend upon SGML object
-  -tag-li   should return all list items from a list
-  -attr-href  should return all items with an href attribute
-  -size   should return number of elements in object
-  -columns  should return number of columns in a table, etc
- */
-public List expression()
-  {
-    return Util.split(string(),'-');    
-  }
-  
   
   /************************************************************************
   ** Lookups class methods
   ************************************************************************/
+  
+  public static SGML get(String path, SGML data) throws InvalidInput, IllegalArgumentException{
+    if(path == null)
+      return data;
 
- public static SGML get(String path, SGML data) {
-   if(path == null){
-     return data;
-   }
-   if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
-     Index i = new Index(path);
-     return i.lookup(data);
-   }
-   
-   return data.attr(path); //simple string lookup  
- }
+    //if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
+      Index i = new Index(path);
+      return i.lookup(data);
+      //return i.path(data);
+      //}else return data.attr(path);
+  }
+  
+  
+  public static SGML get(String path, Table data) throws InvalidInput, IllegalArgumentException{
+    if(path == null){
+      return null;
+    }    
+    //if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
+      Index i = new Index(path);
+      return i.lookup(data);
+      //}
+      //return (SGML)data.at(path);
+  }
+
+  public static SGML makeHtml0(){
+    SGML foo = new Element();
+    
+    SGML u1 = new Element("ul");
+    SGML u2 = new Element("ul"); 
+    
+    SGML c1 = new Element("li");
+    c1.append("Hello world");
+    
+    SGML c2 = new Element("li");
+    c2.append("I love u. U love me");
+    
+    u1.append( c1 );
+    u2.append( c2 );
+    foo.append( u1 );
+    foo.append( u2 );
+
+    return foo;
+  }
+  
+  public static SGML makeHtml1(){
+    SGML foo = new Element();
+    SGML dl = new DescriptionList(new Element("dl"));
+    
+    SGML dt1 = new Element("dt", "aaa");
+    SGML dt2 = new Element("dt", "bbb"); 
+    
+    SGML dd1 = new Element("dd", "no sex");
+    SGML dd2 = new Element("dd", "in nirvana");
+    
+    dl.append( dt1 );
+    dl.append( dd1 );
+    dl.append( dt2 );
+    dl.append( dd2 );
+
+    foo.append( dl );
+
+    return foo;
+  }
+
+  public static SGML makeHtml2(){
+    SGML foo = new Element();
+    SGML dl = new DescriptionList(new Element("dl"));
+    
+    SGML dt1 = new Element("dt", "aaa");
+    SGML dt2 = new Element("dt", "bbb"); 
+    
+    SGML dd1 = new Element("dd", "no sex");
+    SGML dd2 = new Element("dd", "in nirvana");
+    
+    //dl.append( dt1 );
+    dl.append( dd1 );
+    dl.append( dt2 );
+    dl.append( dd2 );
+
+    foo.append( dl );
+
+    return foo;
+  }
+
+  public static SGML makeHtml3(){
+    SGML foo = new Element();
+    SGML dl = new DescriptionList(new Element("dl"));
+    
+    SGML dt1 = new Element("dt", "aaa");
+    SGML dt2 = new Element("dt", "bbb"); 
+    
+    SGML dd1 = new Element("dd", "no sex");
+    SGML dd2 = new Element("dd", "in nirvana");
+    
+    dl.append( dt1 );
+    //dl.append( dd1 );
+    dl.append( dt2 );
+    dl.append( dd2 );
+
+    foo.append( dl );
+
+    return foo;
+  }
 
 
- public static SGML get(String path, Table data) {
-   if(path == null){
-     return null;
-   }    
-   if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
-     Index i = new Index(path);
-     return i.lookup(data);
-   }
-   return (SGML)data.at(path);
-   
- }
+  public static SGML makeHtml4(){
+    SGML foo = new Element();
+    SGML dl = new DescriptionList(new Element("dl"));
+    
+    SGML dt1 = new Element("dt", "aaa");
+    SGML dt2 = new Element("dt", "bbb"); 
+    
+    SGML dd1 = new Element("dd", "no sex");
+    SGML dd2 = new Element("dd", "in nirvana");
+    SGML dd3 = new Element("dd", "Barney is a dork");
+    
+    dl.append( dt1 );
+    dl.append( dd1 );
+    dl.append( dd2 );
+    dl.append( dt2 );
+    dl.append( dd3 );
 
- public static void set(Table context, String path, SGML data) {
-   if(path == null || context == null){
-     return;
-   }
-   if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
-     Index i = new Index(path);
-     i.lookupSet(context,data);
-     return;
-   }
-   context.at(path,data); //simple string lookup  
- }
+    foo.append( dl );
+
+    return foo;
+  }
+  
+  public static SGML makeHtml5(){
+    SGML foo = new Element();
+    SGML dl = new DescriptionList(new Element("dl"));
+    
+    SGML dt1 = new Element("dt", "aaa");
+    SGML dt2 = new Element("dt", "aaa"); 
+    
+    SGML dd1 = new Element("dd", "no sex");
+    SGML dd2 = new Element("dd", "in nirvana");
+    
+    dl.append( dt1 );
+    dl.append( dd1 );
+    dl.append( dt2 );
+    dl.append( dd2 );
+
+    foo.append( dl );
+
+    return foo;
+  }
+
   
 
+  public static void main(String argv[]){
+    String s = null;
+
+    if(argv.length <2 )
+      System.out.println("need doc# and path.");
+
+    SGML foo = new Text("");
+    int what = 0;
+    try{
+      what = Integer.parseInt( argv[0] );
+    }catch(Exception e){}
+
+    switch( what ){
+    case 0:
+      foo = makeHtml0();
+      break;
+    case 1 :
+      foo = makeHtml1();
+      break;
+    case 2:
+      foo = makeHtml2();
+      break;
+    case 3:
+      foo = makeHtml3();
+      break;
+    case 4:
+      foo = makeHtml4();
+      break;
+    case 5:
+      foo = makeHtml5();
+      break;
+    default:
+      break;
+    }
+	
+    System.out.println("original foo-->"+foo.toString());
+
+    try{
+      //SGML result = Index.get(argv[1], foo);
+
+      Index i = new Index( argv[1] );
+      SGML result = i.path( foo );
+
+      System.out.println("Here is the result-->"+result.toString());
+    }catch(Exception e){
+    } 
+  }
 }
+
 
 
