@@ -65,6 +65,9 @@ sub initialize {
     }
     $self->attr('name', $name);
 
+    if (! $self->attr('_handle')) {
+	$self->attr('_handle', \&generic_handle);
+    }
     $self;
 }
 
@@ -264,5 +267,18 @@ sub act_generic {
     }
 }
 
+
+sub generic_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## This is the handler for a generic agent with content.
+    ## === not really clear what to do about context ($it)
+    ## => use an attribute for the name (or parts), and define entities
+    ##	  using shallow binding.
+
+    $ii->defvar("context", $it); # === not very satisfactory
+    $ii->push_into($self->content);
+    $ii->delete_it;
+}
 
 1;
