@@ -4,7 +4,9 @@
 
 
 package crc.pia;
+import java.io.IOException;
 import crc.pia.Content;
+
 
 public class ByteStreamContent implements Content
 {
