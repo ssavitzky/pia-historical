@@ -23,11 +23,15 @@ crc.dps.Handler) for use as actor handles.  They are loaded dynamically. <p>
 
 <h2>Handler Classes</h2>
 
-Tag handler classes have <em>lowercase</em> names, with periods and hyphens
-replaced by underscores.  If the name of a tag happens to match a Java keyword
-(for example, <code>if</code>) the string <code>Handler</code> must be
-suffixed to the name.  It is optional otherwise. <p>
+Tag handler classes have <em>lowercase</em> names, with periods replaced by
+underscores, and hyphens elided by capitalizing the next letter.  If the name
+of a tag happens to match a Java keyword (for example, <code>if</code>) the
+string <code>Handler</code> must be suffixed to the name.  It is optional
+otherwise. <p>
 
+The class names reflect the structure of the naming scheme:  period is used to
+separate a ``package'' or namespace from an associated name, while hyphen is
+used as a word-separator within names. <p>
 
 
 <hr>
