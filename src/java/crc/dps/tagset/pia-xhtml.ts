@@ -61,6 +61,9 @@ Note that we only need these inside the PIA.
   <action>
 <if><get name=content><then><set name=title>&content;</set></if>
 <set name=agentNames><text sort case>&agentNames;</set>
+<if><get name=ltitle>
+    <else><set name=ltitle><a href="/&agentName;">&agentName;</a>:</if>
+
 <table cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
@@ -75,8 +78,7 @@ Note that we only need these inside the PIA.
 <tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
 	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
 	border=0 width=170 height=21></a></th>
-    <th align=right valign=top width=170><a
-	href="/&agentName;">&agentName;</a>: </th>
+    <th align=right valign=top width=170>&ltitle; </th>
     <th align=left colspan=2><if><get entity name=title>
 	<then><get entity name=title></then>
 	<else>&fileName;</else></if></th></tr>
@@ -87,6 +89,25 @@ Note that we only need these inside the PIA.
 <define element=footer empty>
   <doc> This expands into a standard footer.  Go to some lengths to extract
 	the year the file was modified from the cvs id. 
+  </doc>
+  <define attribute=cvsid>
+    <doc> The CVS id string of the file.
+    </doc>
+  </define>
+  <action>
+<hr>
+<set name=myear><subst match="/.* " result=", "><select>
+    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
+    </select> </set>
+<b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
+<em><select>&attributes;<name>cvsid<eval/></em>
+
+  </action>
+</define>
+
+<define element=short-footer empty>
+  <doc> This expands into a short-form footer: just the CVS id and copyright
+	notice. 
   </doc>
   <define attribute=cvsid>
     <doc> The CVS id string of the file.
