@@ -281,10 +281,11 @@ public class  HTTPRequest extends Transaction {
     myurl = requestURL();
     if ( myurl == null || method() == null ) return null;
 
-    Machine m = fromMachine();
+    Machine m = toMachine();
     if( m != null )
       proxy = m.proxy( protocol() );
 
+    Pia.debug(this, "proxy for this request is" + proxy );
     // === AUTHORIZATION KLUDGE === 
     // Requires properties http_proxy-auth = userid:passwd
     // Set http_proxy-auth-encode = non-null to encode the auth string.
@@ -297,8 +298,11 @@ public class  HTTPRequest extends Transaction {
 	  auth.getBytes(0, bytes.length, bytes, 0) ;
 	  auth = crc.util.Utilities.encodeBase64(bytes);
 	}
+	Pia.debug(this, "Setting proxy authorization");
 	setHeader("Proxy-Authorization", "Basic " + auth);
       }
+    } else {
+      Pia.debug(this, "NO proxy");
     }
 
     buf = new StringBuffer();
