@@ -1,0 +1,4 @@
+#define 1x1_width 1
+#define 1x1_height 1
+static unsigned char 1x1_bits[] = {
+   0x00};
