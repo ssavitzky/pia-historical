@@ -37,10 +37,10 @@ public final class IsAgentResponse implements UnaryFunctor{
       if ( !trans.isResponse() )
 	return new Boolean( false );
 
-      String agent = trans.getHeader("Version");
-      if( (request = trans.getRequestTrans()) ){
+      String agent = trans.header("Version");
+      if( (request = trans.requestTrans()) ){
 	defineRequest = true;
-	url = request.getRequestURL();
+	url = request.requestURL();
       }
 
       if( url && url.getFile().toLowerCase().startsWith("/http:") )
