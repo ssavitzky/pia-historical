@@ -54,16 +54,12 @@
 </define>
 
 <define element=action quoted>
-  <action> &lt;action&gt;
-	   <pre><protect markup>&content;</protect></pre>
-	   &lt;/action&gt;
+  <action> &lt;action&gt; ... &lt;/action&gt; <p> 
   </action>
 </define>
 
 <define element=value quoted>
-  <action> &lt;value&gt;
-	   <pre><protect markup>&content;</protect></pre>
-	   &lt;/value&gt;
+  <action> &lt;value&gt; ... &lt;/value&gt; <p> 
   </action>
 </define>
 
@@ -75,7 +71,7 @@
   <action>
   <dl>
     <dt> <strong>Note: </strong> (&attributes;)
-    <dd> <em>&content;</em>
+    <dd> <em>&content;</em> <p> 
   </dl></action>
 </define>
 
