@@ -344,11 +344,11 @@ public class Util extends crc.sgml.Util {
     int inc;
     if(step != null){
       inc = (int) step.numValue();
-      if(inc == 0 || (inc < 0 &&  positive)) return result;
+      if(inc == 0 || (inc < 0 &&  positive) || (inc > 0 && !positive)) return result;
     } else {
      inc = ( positive) ? 1 : -1;
     }
-    for(int i= begin; (positive && i<end) || (!positive && i>end); i+=inc){
+    for(int i= begin; (positive && i<=end) || (!positive && i>=end); i+=inc){
        result.append(toSGML(new Integer(i)));
     }
     return result;
