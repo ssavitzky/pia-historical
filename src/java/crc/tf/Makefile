@@ -1,10 +1,15 @@
+###### tf/Makefile:	Transaction Feature computation classes
+# 	$Id$
+#	Copyright 1997, Ricoh California Research Center
+
 PACKAGE=crc.tf
+TOPDIR=../../..
 
 FILES = \
 	 Title.java \
 	 Agent.java \
          IsAgentRequest.java \
- 	 IsAgentResponse.java \
+	 IsAgentResponse.java \
 	 IsClientNetscape.java \
 	 IsFileRequest.java \
 	 IsHtml.java \
@@ -18,9 +23,9 @@ FILES = \
 	 IsText.java \
 	 Registry.java \
 	 UnknownNameException.java
-	 
 
-include $(MAKEDIR)/file.make
+
+include $(TOPDIR)/makefiles/file.make
 
 
 

@@ -1,4 +1,9 @@
+###### pia/Makefile:	Platform for Information Appliances
+#	$Id$
+#	Copyright 1997, Ricoh California Research Center
+
 PACKAGE=crc.pia
+TOPDIR=../../..
 
 FILES = \
 	Accepter.java \
@@ -16,4 +21,4 @@ FILES = \
 	PiaRuntimeException.java \
 	FormContent.java 
 
-include $(MAKEDIR)/file.make
+include $(TOPDIR)/makefiles/file.make

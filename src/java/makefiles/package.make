@@ -1,6 +1,7 @@
-# package.make
-# $Id$
-# COPYRIGHT
+### package.make
+# 	$Id$
+# 	COPYRIGHT 1997, Ricoh California Research Center
+# 	Portions COPYRIGHT 1997, Sun Microsystems
 
 # This makefile should be included in all packages Makefiles. To use it, define
 # the PACKAGES variable to the set of packages defined in your directory,
@@ -10,7 +11,9 @@
 # ----------
 # PACKAGE=w3c.foo
 # PACKAGES=bar1 bar2
-# include $(MAKEDIR)/package.make
+# TOPDIR=../..
+# include $(TOPDIR)/makefiles/package.make
+# (formerly) include $(MAKEDIR)/package.make
 # ----------
 #
 # This make file defines the following targets:
@@ -20,21 +23,25 @@
 # The 'doc' target uses DESTDIR variable that should point to the absolute 
 # path of the target directory (in which doc files will be created).
 
+# <steve@crc.ricoh.com>
+#	The Sun originals require MAKEDIR and DESTDIR to be absolute.
+#	This has serious problems when you're trying to use source control.
+
 all::
-	for p in $(PACKAGES); do \
+	for p in `ls -d $(PACKAGES)`; do \
 		echo 'building ' $(PACKAGE).$$p; \
-		(cd $$p; make MAKEDIR=$(MAKEDIR) VPATH=$(VPATH)/$$p); \
+		(cd $$p; make TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
 	done
 
 doc::
-	@@for p in $(PACKAGES); do \
+	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'doc ' $(PACKAGE).$$p; \
-		(cd $$p; make MAKEDIR=$(MAKEDIR) DESTDIR=$(DESTDIR) doc); \
+		(cd $$p; make TOPDIR=../$(TOPDIR)  doc); \
 	done
 
 clean::
-	@@for p in $(PACKAGES); do \
+	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'cleaning ' $(PACKAGE).$$p; \
-		(cd $$p ; make MAKEDIR=$(MAKEDIR) clean) ; \
+		(cd $$p ; make TOPDIR=../$(TOPDIR) clean) ; \
 	done
 

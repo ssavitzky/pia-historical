@@ -1,6 +1,7 @@
-# file.make
+### file.make
 # $Id$
-# COPYRIGHT
+# COPYRIGHT 1997, Ricoh California Research Center
+# Portions COPYRIGHT 1997, Sun Microsystems
 
 # This makefile should be included in all leaves packages directory. It uses
 # the FILES variable to know what are the files to be compiled.
@@ -9,7 +10,8 @@
 # ----------
 # PACKAGE=foo
 # FILES=a.java b.java
-# include $(MAKEDIR)/files.make
+# TOPDIR=../../..
+# include $(TOPDIR)/makefiles/files.make
 # ----------
 #
 # This file defines the following targets:
@@ -19,15 +21,28 @@
 # The 'doc' target uses DESTDIR variable that should point to the absolute 
 # path of the target directory (in which doc files will be created).
 
+# <steve@crc.ricoh.com>
+#	The Sun originals require MAKEDIR and DESTDIR to be absolute.
+#	This has serious problems when you're trying to use source control.
+
+CLASSDIR= $(TOPDIR)/classes
+DOCDIR  = $(TOPDIR)/Doc
+
 .SUFFIXES: .java .class
 
 .java.class:
-	javac -d /home/rithy/pia/src/lib/java/classes -O $<
+	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(CLASSPATH) -O $<
 
 all:: $(FILES:.java=.class)
 
+doc::	$(DOCDIR)
+	@echo $(DOCDIR) made
+
+$(DOCDIR):
+	mkdir $(DOCDIR)
+
 doc::
-	javadoc -d $(DESTDIR) $(FILES)
+	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(CLASSPATH) $(FILES)
 
 clean::
 	@@rm -rf *~ *.class
