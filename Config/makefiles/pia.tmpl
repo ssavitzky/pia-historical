@@ -24,12 +24,12 @@ XCOMM $Id$
 *
 ***********************************************************************/
 
-PIATOPDIR	= PiaDir
-PIASRCDIR	= PiaDir/src
-PIAINCSRC	= PiaDir/src/lib
-PIATOOLDIR	= PiaDir/src/tools
-PIALIBS	        = PiaDir/src/lib
-PIAAPPS	        = PiaDir/src/apps
+PIATOPDIR	= TOPDIR
+PIASRCDIR	= TOPDIR/src
+PIALIBS	        = TOPDIR/src/lib
+PIAAPPS	        = TOPDIR/src/apps
+PIAINCSRC	= TOPDIR/src/lib
+PIATOOLDIR	= TOPDIR/src/tools
 
 /* System libraries for C++ only; don't need SYSTEM_LIBRARIES for non-X11 */
 /* -Lusr/local/lib required after installing a new gcc in /usr/local */
@@ -164,6 +164,7 @@ target::								@@\
 
 #endif /* MakeMakeSubdirs */
 
+
 /**********************************************************************
 *
 * Imake rules for PIA
@@ -188,7 +189,7 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 *
 ***********************************************************************/
 
-.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif .mif .fm
+.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif .mif .fm .ppm
 
 /* .fm (frame5) to mif    put cmds in file then do fmbatch
  */
@@ -215,7 +216,7 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 .fig.gif:	 
 	fig2dev -Lps -P $< \
 	| gs -q -dNOPAUSE -sDEVICE=ppmraw -sOutputFile=- - \
-	| pnmcrop | ppmtogif > $@
+	| pnmcrop | ppmtogif -transparent white > $@
 
 .fig.ps:	 
 	fig2dev -Lps -P $< > $@
@@ -226,7 +227,10 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 /* Other image format conversions */
 .ps.gif:	 
 	gs -q -dNOPAUSE -sDEVICE=ppmraw -sOutputFile=- $< </dev/null\
-	| pnmcrop | ppmtogif > $@
+	| pnmcrop | ppmtogif -transparent white > $@
+
+.ppm.gif:	 
+	ppmtogif -transparent white $< > $@
 
 .gif.eps:
 	giftopnm $< | pnmtops -noturn -rle -nocenter > $@
