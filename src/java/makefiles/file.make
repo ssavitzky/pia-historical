@@ -38,8 +38,8 @@ DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
-#JAVACLASSES= /usr/local/java/lib/classes.zip
-JAVACLASSES=
+JAVACLASSES= /usr/local/java/lib/classes.zip
+#JAVACLASSES=
 JAVASOURCE=  /usr/local/java/src
 
 CLASSPATH=$(JAVACLASSES)
@@ -56,6 +56,8 @@ BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 	javac -d $(CLASSDIR) -classpath $(BUILDCLASSES) -g $(JAVAFLAGS) $<
 
 all:: $(FILES:.java=.class)
+
+all-l:: $(FILES:.java=.class)
 
 doc:: holes.log lines.log
 	@echo Documenting.
@@ -78,6 +80,9 @@ lines.log::
 	wc *.java /dev/null | grep -v /dev/null > lines.log
 
 clean::
+	@@rm -rf *~ *.class
+
+clean-l::
 	@@rm -rf *~ *.class
 
 
