@@ -657,6 +657,12 @@ sub start_it {
     ##	  stack.  Otherwise, handle it appropriately for a completed
     ##	  element.
 
+    if (ref($it)) {
+	my $tag = $it->tag;
+	while ($self->implicit_end($tag)) {
+	    $self->end_it('', 'one');
+	}
+    }
     if ($it->needs_end_tag($self)) {
 	$self->resolve($it, 1);
     } else {
@@ -683,6 +689,87 @@ sub end_it {
 	$self->resolve($it, $was_parsing? 0 : -1);
 	return if ($t eq $tag) or $one;
     }    
+}
+
+### stolen from HTML::TreeBuilder
+
+# Elements that should only be present in the header
+%isHeadElement = map { $_ => 1 } qw(title base link meta isindex script);
+
+# Elements that should only be present in the body
+%isBodyElement = map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6
+				    p div pre address blockquote
+				    xmp listing
+				    a img br hr
+				    ol ul dir menu li
+				    dl dt dd
+				    cite code em kbd samp strong var dfn strike
+				    b i u tt small big
+				    table tr td th caption
+				    form input select option textarea
+				    map area
+				    applet param
+				    isindex script
+				   ),
+                          # Also known are some Netscape extentions elements
+                                 qw(wbr nobr center blink font basefont);
+
+# The following elements must be directly contained in some other
+# element than body.
+
+%isPhraseMarkup = map { $_ => 1 } qw(cite code em kbd samp strong var b i u tt
+				     a img br hr
+				     wbr nobr center blink
+				     small big font basefont
+				     table
+				    );
+
+%isList         = map { $_ => 1 } qw(ul ol dir menu dl);
+%isTableElement = map { $_ => 1 } qw(tr td th caption);
+%isInTableRow   = map { $_ => 1 } qw(td th caption);
+%isFormElement  = map { $_ => 1 } qw(input select option textarea);
+
+%notP           = map { $_ => 1 } qw(p h1 h2 h3 h4 h5 h6 pre textarea);
+%notList	= map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6);
+
+sub implicit_end {
+    my ($self, $tag) = @_;
+
+    ## Test for implicit end tag.
+    ##	  returns true if $tag implicitly ends whatever is on the stack
+    
+    my $in_it = $self->dstack->[-1];
+    return unless defined $in_it;
+    my $in = $in_it->tag;
+    print "implicit_end $tag in $in\n" if $main::debugging > 1;
+
+    ## This needs to be done with syntax, but for now we'll ad-hoc it.
+
+    # Handle implicit endings and insert based on <tag> and position
+    if ($tag eq 'p' || $tag =~ /^h[1-6]/ || $tag eq 'form') {
+	# Can't have <p>, <h#> or <form> inside these
+	return $notP{$in};
+    } elsif ($isList{$tag}) {
+	# Can't have lists inside <h#>
+	return $notList{$in};
+    } elsif ($tag eq 'li') {
+	print "li inside $in\n" if $main::debugging > 1;
+	return $in eq 'li';
+	## === can't handle li outside list.
+    } elsif ($tag eq 'dt' || $tag eq 'dd') {
+	return $in eq 'dt' || $in eq 'dd';
+	## === can't handle li outside list.
+    } elsif ($isFormElement{$tag}) {
+	if ($tag eq 'option') {
+	    # return unless $ptag eq 'select';
+	    return $in eq 'option';
+	}
+    } elsif ($isTableElement{$tag}) {
+	return $isInTableRow{$in} || ($tag eq 'tr' && $in eq 'tr');
+    } elsif ($isPhraseMarkup{$tag}) {
+	## should insert missing <p> after 'body'
+    }
+    return 0;
 }
 
 #############################################################################

@@ -498,7 +498,7 @@ sub extract_links
 
 	       ## The following are dubious; there's no good way to
 	       ##    handle implicit end tags yet.
-	       'li', 'dt', 'dd', 'p',
+	        'p', # 'li', 'dt', 'dd',
 
 	       );
 
