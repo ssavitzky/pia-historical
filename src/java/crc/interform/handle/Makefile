@@ -47,7 +47,8 @@ BASIC_ACTORS = \
 	Test.java \
 	Text.java \
 	Then.java \
-	Trim.java	
+	Trim.java \
+	Url_parse.java 
 
 ### The effect of these actors is local; they do not require a PIA, 
 ###	but may have an effect on the local system. 
