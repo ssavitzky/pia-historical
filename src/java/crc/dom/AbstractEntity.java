@@ -2,6 +2,7 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 package crc.dom;
+import java.lang.reflect.*;
 
 /**
  * AbstractEntity implements DOM's entity and
@@ -57,9 +58,27 @@ public class AbstractEntity extends AbstractNode implements Entity{
   /**
    * Get isExternal
    */
-  public boolean getIsExternal(boolean isExternal){
+  public boolean getIsExternal(){
     return isExternal;
   }
+
+
+  /**
+   * set isBound
+   */
+  public void setIsBound(boolean bound){
+    isBound = bound;
+  }
+
+
+  /**
+   * Get isBound
+   */
+  public boolean getIsBound(){
+    return isBound;
+  }
+
+
 
   /**
    * @return Node type.
@@ -131,6 +150,19 @@ public class AbstractEntity extends AbstractNode implements Entity{
     return systemIdentifier;
   }
 
+  public void dump()
+  {
+    Report.debug("isNDATA -->"+getpIsNDATA());
+    Report.debug("isPublic -->"+getpIsPublic());
+    Report.debug("publicIdentifier -->"+getpPublicIdentifier());
+    Report.debug("systemIdentifier -->"+getpSystemIdentifier());
+    Report.debug("name -->"+getName());
+    Report.debug("isBound -->"+getIsBound());
+    Report.debug("isExternal--->"+getIsExternal());
+    Report.debug("isParameter--->"+getIsParameterEntity());
+  }
+
+
 
   /* Attributes====================================*/
 
@@ -149,8 +181,8 @@ public class AbstractEntity extends AbstractNode implements Entity{
   /* name of this entity */
   protected String name = null;
 
-  /* whether this entity's value is defined
-  protected boolean bound = false;
+  /* whether this entity's value is defined */
+  protected boolean isBound = false;
 
   /* whether this entity is external */
   protected boolean isExternal = false;
