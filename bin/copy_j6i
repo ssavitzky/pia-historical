@@ -5,6 +5,10 @@
 $quantfile = "~/.pia/Photo_Album/.quant";  # saves time for thumbnails
 $tmpfile = "/tmp/pnm"; # not used currently
 
+###should directory be unmounted afterwards?
+$unmount = 1;
+
+
 ##should make stats same for new file as for j6i
 
 sub cvj6i {
@@ -66,6 +70,12 @@ die " copy failed" if $copystatus;
 				# remove files now before card gets removed
 $copystatus = system("rm -f $from/* ");
 
+
+#unmount ?
+$unmountstatus = system("umount  $from ") if $unmount;
+
+
+
 				#  convert to jpg
 chdir $to;
 
@@ -110,7 +120,7 @@ $jpg{"jpeg"} = 1;
 $jpegs=join(" ",@jpegs);
 
 	     
-$formheader = "<form method=POST action=$formmaker> <input type=hidden name=directory value=$dirnam> <input type=hidden name=files value=\"$jpegs\"> ";
+$formheader = "<form method=POST action=\"$formmaker\"> <input type=hidden name=directory value=\"$dirnam\"> <input type=hidden name=files value=\"$jpegs\"> ";
 $formender = "<input name=captTitle value=\"Images from the DC1\"> <input type=submit value=\"Submit Captions\"> </form>";
 
 $captionsize = 15;
@@ -190,7 +200,7 @@ open(LOG,">.latest");
 print LOG "$to";
 close LOG;
 open(LOG,">>.catalog");
-print LOG "$to";
+print LOG "$to\n";
 close LOG;
 
 
