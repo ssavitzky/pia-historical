@@ -7,6 +7,7 @@ TOPDIR=../../..
 
 FILES = \
 	Actor.java \
+	Handler.java \
 	Input.java \
 	Interp.java \
 	Parser.java \
@@ -18,18 +19,25 @@ FILES = \
 
 include $(TOPDIR)/makefiles/file.make
 
-Actor.class: Token.java Tokens.java SGML.java
+### Dependencies.  Making a class may automatically build
+###	the classes it depends on.  This happens quietly (unfortunately),
+###	but make seems to cope with it and not build anything twice.
 
-Interp.class: Actor.java Input.java Token.java Tokens.java SGML.java
+Actor.class: Actor.java Token.java Tokens.java SGML.java \
+	Interp.java Handler.java
 
-Parser.class: Input.java Token.java Tokens.java SGML.java
+Handler.class: Handler.java Actor.java Interp.java SGML.java ../ds/Table.java
 
-Tagset.class: Token.java SGML.java
+Interp.class: Interp.java Actor.java Input.java Token.java Tokens.java SGML.java
 
-Text.class: Token.java SGML.java
+Parser.class: Parser.java Input.java Token.java Tokens.java SGML.java
 
-Token.class: Tokens.java SGML.java ../ds/List.java ../ds/Table.java
+Tagset.class: Tagset.java Token.java SGML.java
 
-Tokens.class: SGML.java 
+Text.class: Text.java Token.java SGML.java
 
-Text.class: SGML.java
+Token.class: Token.java Tokens.java SGML.java ../ds/List.java ../ds/Table.java
+
+Tokens.class: Tokens.java SGML.java 
+
+Text.class: Text.java SGML.java

@@ -140,13 +140,13 @@ public class Interp {
     state.quoting = i;
   }
 
-  /** Test the hasLocalTagset flag.
-   *	If true, we are using a local copy of a named tagset, and it's OK
-   *	to define local actors in it.  Otherwise, we're in a global tagset
-   *	that has to be copied if we want to change it.
-   */
-  public final boolean hasLocalTagset() {
-    return state.hasLocalTagset;
+  /** Test to see if we can define actors in the current tagset.  If
+   *	true, we are using a local copy of a named tagset or we're
+   *	inside a &gt;tagset&lt; element, and it's OK to define local
+   *	actors in it.  Otherwise, we're in a global tagset that has to
+   *	be copied if we want to change it.  */
+  public final boolean tagsetUnlocked() {
+    return ! state.tagset.isLocked;
   }
 
   /** Get the current tagset */
@@ -154,16 +154,37 @@ public class Interp {
     return state.tagset;
   }
 
-  /** Use a named tagset. */
+  /** Use a tagset.  Make a copy of the current one if tagset is null. */
+  public final void useTagset(Tagset t) {
+    if (t != null) {
+      state.tagset = t;
+    } else {
+      state.tagset = (Tagset)state.tagset.clone();
+    }
+  }
+
+  /** Use a named tagset.  Make a copy of the current one if the name
+   *	is null. */
   public final void useTagset(String name) {
     // === Ignore documentation for now -- do it with tags.
     if (name != null) {
       state.tagset = Tagset.tagset(name);
-      state.hasLocalTagset = false;
     } else {
       state.tagset = (Tagset)state.tagset.clone();
-      state.hasLocalTagset = true;
     }
+  }
+
+  /** Make a copy of the current tagset if we don't already have one. */
+  public final void useTagset() {
+    if (state.tagset.isLocked) {
+      state.tagset = (Tagset)state.tagset.clone();
+    }
+  }
+
+  /** Define an actor.  Clone the current tagset if necessary. */
+  public final void defineActor(Actor anActor) {
+    useTagset();
+    state.tagset.define(anActor);
   }
 
   /************************************************************************
@@ -303,6 +324,34 @@ public class Interp {
 
 
 /* ========================================================================
+
+
+   ===> nextInput needs to check need_start_tag, most likely.
+
+	do {
+	    $it = $self->next_input;
+	    return unless $it;
+	    if (is_list($it)) {
+		## The end of some tag's content.
+		if (ref $it->[0]) {
+		    $it = $it->[0]->end_input($it, $self);
+		} else {
+		    $it = $it->[0];
+		}
+		$incomplete = $it? -1 : 0;
+	    } elsif ($self->need_start_tag($it)) {
+		## Something that needs processing on its contents.
+		$it = $self->push_into($it);
+		$incomplete = 1;
+	    } else {
+		## Complete token which is either empty, a string, or quoted
+		$it = $self->expand_attrs($it) if ! $self->quoting;
+		$incomplete = 0;
+	    }
+	} until ($it);
+    }
+}
+
 
 sub need_start_tag {
     my ($self, $it) = @_;
@@ -580,36 +629,6 @@ sub implicit_end {
     }
   }
 
-/* ========================================================================
-
-
-   ===> nextInput needs to check need_start_tag, most likely.
-
-	do {
-	    $it = $self->next_input;
-	    return unless $it;
-	    if (is_list($it)) {
-		## The end of some tag's content.
-		if (ref $it->[0]) {
-		    $it = $it->[0]->end_input($it, $self);
-		} else {
-		    $it = $it->[0];
-		}
-		$incomplete = $it? -1 : 0;
-	    } elsif ($self->need_start_tag($it)) {
-		## Something that needs processing on its contents.
-		$it = $self->push_into($it);
-		$incomplete = 1;
-	    } else {
-		## Complete token which is either empty, a string, or quoted
-		$it = $self->expand_attrs($it) if ! $self->quoting;
-		$incomplete = 0;
-	    }
-	} until ($it);
-    }
-}
-
-============================================================= */
   /************************************************************************
   ** Checking for actors:
   ************************************************************************/
@@ -703,87 +722,38 @@ sub implicit_end {
   ** Routines called by Actors:
   ************************************************************************/
 
+  /** Add an actor as a handler for the current token. */
   public final void addHandler(Actor a) {
     state.handlers.push(a);
   }
 
-/* ========================================================================
+  /** Mark the current token as completed. */
+  public final void completeIt() {
+    state.token.incomplete((byte)0);
+  }
 
-sub complete_it {
-    my ($self, $it) = @_;
+  /** Parse (i.e. construct a parse tree for) the contents of the
+   *	current token. */
+  public final void parseIt() {
+    setParsing();
+  }
 
-    ## Mark the token as completed.
-    ##	  This tells the parser not to expect an end tag.
-    if (ref ($it)) {
-	$it->status(0);
-	$it->empty(1);
-	print "  Completed " . $it->tag . " status " . $it->status . "\n"
-	    if $main::debugging > 1;
-    }
-}
+  /** Parse the contents of the current token, but don't expand actors
+   *	or entities.  Optionally ignore all markup and suck in the
+   *	content as a single Text. */
+  public final void quoteIt(boolean ignoreMarkup) {
+    setQuoting(ignoreMarkup? -1 : 1);
+  }
 
-sub parse_it {
-    my ($self) = @_;
+  public final void replaceIt(SGML it) {
+    state.token = it;
+  }
 
-    $self->parsing(1);
-}
+  public final void deleteIt() {
+    state.token = null;
+  }
+    
 
-sub quote_it {
-    my ($self, $v) = @_;
-
-    $v = 1 unless defined $v;
-    $self->parsing(1);
-    $self->quoting($v);
-}
-
-sub replace_it {
-    my ($self, $it) = @_;
-
-    $self->state->{_token} = ($it);	# handles undefined
-    $incomplete = 0;
-}
-
-sub delete_it {
-    my ($self) = @_;
-
-    $self->token('');
-}
-
-
-sub open_actor_context {
-    my ($self, $tagset) = @_;
-
-    ## Start using a new set of actors.
-    ##	  The old set is cloned unless a new one is supplied
-
-    if ($tagset) {
-	$tagset = $self->tagset($tagset);
-	$self->has_local_tagset(0);
-    } else {
-	$tagset = $self->tagset($self->tagset->clone);
-	$self->has_local_tagset(1);
-    }
-    $tagset;
-}
-
-
-sub define_entity {
-    my ($self, $name, $value) = @_;
-    $self->{_entities}->{$name} = $value;
-}
-
-sub define_actor {
-    my ($self, $actor, @attrs) = @_;
-
-    ## Define an actor local to the current interpretor.
-    ##	  Exactly what to do with names and tags is unsettled so far.
-
-    $self->open_actor_context unless $self->has_local_tagset;
-    $self->tagset->define_actor($actor, @attrs);
-}
-
-
-============================================================= */
   /************************************************************************
   ** Constructors:
   ************************************************************************/

@@ -65,6 +65,10 @@ public class Tagset extends Token {
     return actors.keyList();
   }
 
+  /** True if the tagset is locked, so that new actors cannot be
+   *	defined in it. */
+  public boolean isLocked = true;
+
   /** Name attribute. */
   public String name() {
     return this.attr("name").toString();
@@ -133,6 +137,10 @@ public class Tagset extends Token {
   }
 
   public Object clone() {
+    Tagset t = new Tagset();
+    // === copy the attrs ===
+
+    t.isLocked = false;
     return null; // === clone
   }
 
