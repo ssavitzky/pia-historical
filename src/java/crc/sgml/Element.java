@@ -243,7 +243,7 @@ public SGML attr(Index name)
 
   /** Set an attribute to an arbitrary object */
   public void attr(String name, Object value) {
-    attr(name, new Text(value));
+    attr(name, new TextWrap(value));
   }
 
   /** Append an attribute name and value to attrNames and attrValues, and
@@ -270,7 +270,7 @@ public SGML attr(Index name)
 
   /** Add an attribute with an arbitrary object as value. */
   public Attrs addAttr(String name, Object value) {
-    return addAttr(name, new Text(value));
+    return addAttr(name, new TextWrap(value));
   }
 
   /** Return the number of recorded attributes */
@@ -502,7 +502,7 @@ public SGML attr(Index name)
     this(tag);
     content = new Tokens();
     content.push(new Text(tag));
-    content.push(new Text(s));
+    content.push(new Text(s.toString()));
     if (end != null) content.push(new Text(end));
     specialFormat = true;
   }
@@ -511,7 +511,7 @@ public SGML attr(Index name)
     this(tag);
     content = new Tokens();
     if (start != null) content.addItem(new Text(start));
-    content.addItem(new Text(s));
+    content.addItem(new Text(s.toString()));
     if (end != null) content.addItem(new Text(end));
     specialFormat = true;
   }
@@ -608,7 +608,7 @@ public SGML attr(Index name)
   }
 
   public Text toText() {
-    Text t = new Text();
+    Text t = new TextBuffer();
     appendTextTo(t);
     return t;
   }

@@ -175,7 +175,7 @@ public class Run  extends Environment {
 
       // === shouldn't have to convert these to text.
       Tokens anames = new Tokens(resolver.agentNames(), " ").sortAscending();
-      ent("agentNames", anames.toText());
+      ent("agentNames", anames);
     }
 
     /* Set these even if we retrieved the entity table from the */
@@ -186,7 +186,7 @@ public class Run  extends Environment {
 
     ent("entityNames", "");
     Tokens enames = new Tokens(entities.keys(), " ").sortAscending();
-    ent("entityNames", enames.toText());
+    ent("entityNames", enames);
 
     return entities;
   }

@@ -17,6 +17,7 @@ FILES = \
 	SGML.java \
 	TableElement.java \
 	Text.java \
+	TextBuffer.java \
 	Token.java \
 	Tokens.java \
 	Util.java

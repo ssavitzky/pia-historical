@@ -11,6 +11,7 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Element;
 import crc.sgml.Text;
+import crc.sgml.TextBuffer;
 import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Entity;
@@ -343,7 +344,7 @@ public class Interp extends State {
     if (it.isList()) {
       Tokens old = it.content();
       if (old == null || old.nItems() == 0) return it;
-      Tokens tl = new Tokens();
+      Tokens tl = new Tokens(old.itemSeparator);
       for (int i = 0; i < old.nItems(); ++i) {
 	tl.append(expandEntities(old.itemAt(i)));
       }
@@ -379,7 +380,7 @@ public class Interp extends State {
 	Element itt = (Element)it;
 	for (int i = 0; i < itt.nAttrs(); ++i) 
 	  t.addAttr(itt.attrNameAt(i), expandEntities(itt.attrValueAt(i)));
-	it = t;			// but just to make sure...
+	it = t;
       } else {
 	it = expandEntities(it);
       }
@@ -397,13 +398,16 @@ public class Interp extends State {
     if (it.isList()) {
       Tokens old = it.content();
       if (old.nItems() == 0) return it;
-      Tokens tl = new Tokens();
+      Tokens tl = new Tokens(old.itemSeparator);
       for (int i = 0; i < old.nItems(); ++i) {
 	tl.addItem(expandEntities(old.itemAt(i), tbl));
       }
       return tl;
     } else if (it instanceof Entity) {
       SGML v = (SGML) tbl.at(((Entity)it).entityName());
+      if (v != null && v.isList() && v.content().nItems() == 1) {
+	v = v.content().itemAt(0);
+      }
       return (v == null)? it : v.isText()? new Text(v) : v;
     } else if (it.isElement()) {
       Element itt = (Element)it;
@@ -466,7 +470,7 @@ public class Interp extends State {
 
   public void pushInto(Tokens t) {
     debug("Expanding ["+t.nItems()+"]");
-    input = new InputList(t.content(), input);
+    input = new InputList(t, input);
   }
 
   /** Repeatedly expand content, with the given entity bound to each
@@ -522,6 +526,11 @@ public class Interp extends State {
 
     /* Loop on incoming tokens. */
     for ( ; it != null; it = nextInput()) {
+      if (it.isList()) {
+	pushInto(it);
+	continue;
+      }
+
       byte incomplete = it.incomplete();
       String tag = it.tag();
 
@@ -586,19 +595,22 @@ public class Interp extends State {
 	 *    in order to make expandAttrs suppress the copy.
 	 */
 	// === worry about that.  Add checkForSyntax? ===
-	// === should only expand start tags and entities.
-	// === what happens if an entity expands into a list at this point?
 	if (incomplete > 0 || ! it.isElement()) {
 	  it = expandAttrs(it);
 	  debug("expanded ");
 	} else if (incomplete == 0) {
-	  input = new InputExpand(it, input);
+	  if (it.isList()) input = new InputList(it.content(), input);
+	  else 		   input = new InputExpand(it, input);
 	  continue;
 	}
       }
 
       if (it == null) {
 	debug("deleted\n");
+      } else if (it.isList()) {
+	input = new InputList(it.content(), input);
+	debug("expand list");
+	continue;
       } else if (incomplete > 0) {
 	/* Start tag.  Check for interested actors.
 	 *	keep track of any that register as handlers.
@@ -747,7 +759,7 @@ public class Interp extends State {
       if ( output.nItems() == 0) {
 	/* Using a StringBuffer here is more efficient and avoids
 	 *	appending to a Text already in use somewhere else. */
-	output.push(new Text(new StringBuffer()));
+	output.push(new TextBuffer());
       } 
       it.appendTextTo(output);
     }
@@ -1030,8 +1042,15 @@ class InputList extends Input {
   Tokens 	it;
   int 		item;
   int		limit;
+  boolean	between = false;
+  Text		sep;
 
   public SGML nextInput() {
+    if (sep != null && item < limit && between) {
+      between = false;
+      return 	sep;
+    }
+    between = true;
     return (item < limit)? it.itemAt(item++) : null;
   }
   public boolean endInput() {
@@ -1043,6 +1062,7 @@ class InputList extends Input {
     it    = t;
     item  = 0;
     limit = it.nItems();
+    sep	  = it.itemSeparator == null? null : new Text(it.itemSeparator);
   }
 }
 

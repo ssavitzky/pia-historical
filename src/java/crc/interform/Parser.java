@@ -7,6 +7,8 @@ import crc.interform.Input;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
+import crc.sgml.TextBuffer;
+
 import crc.sgml.Token;
 import crc.sgml.Element;
 import crc.sgml.Entity;
@@ -413,7 +415,7 @@ public class Parser extends Input {
       for ( ; ; ) {
 	if (eatUntil(endString, !ignoreEntities)) {
 	  if (list.isEmpty() || ! (buf.length() == 0)) 
-	    list.append(new Text(buf));
+	    list.append(new TextBuffer(buf));
 	  break;
 	}
 	if (last == '&' && getEntity()) {
@@ -445,7 +447,7 @@ public class Parser extends Input {
       for ( ; ; ) {
 	if (eatUntil(quote, true)) {
 	  if (list.isEmpty() || ! (buf.length() == 0)) {
-	    list.append(new Text(buf));
+	    list.append(new TextBuffer(buf));
 	    buf = new StringBuffer();
 	  }
 	  if (last == quote) break;
@@ -472,7 +474,7 @@ public class Parser extends Input {
       for ( ; ; ) {
 	if (eatUntil(notAttr, true)) {
 	  if (list.isEmpty() || ! (buf.length() == 0)) {
-	    list.append(new Text(buf));
+	    list.append(new TextBuffer(buf));
 	    buf = new StringBuffer();
 	  }
 	} else break;
@@ -591,7 +593,7 @@ public class Parser extends Input {
 	  (last == '<' && getTag()) ||
 	  (last < 0)) break;
     }
-    return (buf.length() > 0)? new Text(buf) : null;
+    return (buf.length() > 0)? new Text(buf.toString()) : null;
   }
 
   /** Get the SGML token starting with <code>last</code>.  If the

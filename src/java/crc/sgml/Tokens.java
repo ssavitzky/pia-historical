@@ -64,6 +64,11 @@ public class Tokens extends List implements SGML {
     return this;
   }
 
+  public crc.ds.Stuff push(Object o) {
+    return super.push(Util.toSGML(o));
+  }
+
+
   /************************************************************************
   ** SGML interface:
   ************************************************************************/
@@ -163,9 +168,11 @@ public class Tokens extends List implements SGML {
 
   /** The result of appending some SGML tokens.  Same as this if isList(). */
   public SGML append(SGML sgml) {
+    if (sgml == null) return this;
     if (sgml.isList()) {
       sgml.appendContentTo(this);
-    } else if (sgml.isText() && nItems() > 0 && itemAt(nItems()-1).isText()) {
+    } else if (sgml.isText() && nItems() > 0
+	       && itemAt(nItems()-1) instanceof TextBuffer) {
       itemAt(nItems()-1).appendText(sgml.toText());
     } else {
       push(sgml);
@@ -175,23 +182,38 @@ public class Tokens extends List implements SGML {
 
   /** The result of appending a single item.  No merging is done. */
   public SGML addItem(SGML sgml) {
+    if (sgml == null) return this;
     push(sgml);
     return this;
   }
 
-  /** The result of appending some text.  */
+  /** The result of appending some text.  Always done in place.  Text
+   *	is always converted to a TextBuffer for speed. */
   public SGML appendText(Text t) {
-    return append(t);
+    if (t == null) return this;
+    if (nItems() > 0 && itemAt(nItems()-1) instanceof TextBuffer) {
+      itemAt(nItems()-1).append(t.toString());
+    } else {
+      push(new TextBuffer(t));
+    }
+    return this;
   }
 
   /** The result of appending a string. */
   public SGML append(String s) {
-    return append(new Text(s));
+    if (s == null) return this;
+    if (nItems() > 0 && itemAt(nItems()-1) instanceof TextBuffer) {
+      itemAt(nItems()-1).append(s);
+    } else {
+      push(new Text(s));
+    }
+    return this;
   }
 
   /** Append this as text. */
   public void appendTextTo(SGML t) {
     for (int i = 0; i < nItems(); ++i) {
+      if (itemSeparator != null && i != 0) t.append(itemSeparator);
       itemAt(i).appendTextTo(t);
     }
   }
@@ -402,11 +424,8 @@ public class Tokens extends List implements SGML {
   }
 
   public Tokens(java.util.Enumeration e, String sep) {
-    this();
+    this(e);
     itemSeparator = sep;
-    while (e.hasMoreElements()) {
-      push(Util.toSGML(e.nextElement()));
-    }
   }
 
   public Tokens(String sep) {
@@ -436,23 +455,23 @@ public class Tokens extends List implements SGML {
 
   /** copy specified items into a new tokens */
    public Tokens copy(int[] indices) {
-     Tokens result = new Tokens();
+     Tokens result = new Tokens(itemSeparator);
      
-    for (int i = 0; i <  indices.length; ++i) 
-      result.addItem(itemAt(indices[i]));
+     for (int i = 0; i <  indices.length; ++i) 
+       result.addItem(itemAt(indices[i]));
 
-   return result;
- }
+     return result;
+   }
 
   /** copy specified items into a new tokens */
    public Tokens copy(int  start, int stop) {
-     Tokens result = new Tokens();
+     Tokens result = new Tokens(itemSeparator);
 //     System.out.println("copying from " + start + stop);
      
-    for (int i =  start; i <   stop; ++i) 
-      result.addItem(itemAt(i));
-   return result;
- }
+     for (int i =  start; i <   stop; ++i) 
+       result.addItem(itemAt(i));
+     return result;
+   }
 
 
   /** Return a new Tokens object with the same content.  Shallow copying 

@@ -24,14 +24,17 @@ public class Util {
 
   /** Wrap an object in something appropriate if it isn't already SGML. */
   public static final SGML toSGML(Object o) {
+    if (o == null) return new Text();
     if (o instanceof SGML) return (SGML)o;
     if (o instanceof Attrs) return new AttrWrap((Attrs)o);
+    if (o instanceof String) return new Text((String)o);
+    if (o instanceof StringBuffer) return new TextBuffer((StringBuffer)o);
     if (o instanceof Boolean) {
       // === should probably return Token.empty or Tokens.empty ===
       //return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
       return ((Boolean)o).booleanValue() ? (SGML)Token.empty : (SGML)Tokens.nil;
     }
-    return new Text(o);
+    return new Text(o.toString());
   }
 
   /** Test an SGML object for boolean truth.  Null, the null list, and
@@ -55,6 +58,8 @@ public class Util {
   /** Pick an SGML object apart into Tokens.  Text is split on 
    *	whitespace.  Lists have spaces removed. */
   public static final Tokens listItems(SGML it) {
+    it = it.simplify();
+
     if (it.isText()) {
       return splitTokens(it.toString());
     } 
@@ -244,7 +249,7 @@ public class Util {
 
   /** Split a String on whitespace and return Text Tokens. */
   public static final Tokens splitTokens(String s) {
-    return new Tokens(new java.util.StringTokenizer(s));    
+    return new Tokens(new java.util.StringTokenizer(s), " ");    
   }
 
   /** Split a String on a given character. */

@@ -165,7 +165,7 @@ public class Environment {
 
   /** Make an entity-table entry for a String. */
   protected void ent(String n, Object v) {
-    entities.at(n, new Text(v));
+    entities.at(n, Util.toSGML(v));
   }
 
   /** Make an entity-table entry for an SGML object. */
