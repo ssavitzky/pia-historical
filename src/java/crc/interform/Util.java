@@ -410,9 +410,12 @@ public class Util extends crc.sgml.Util {
     if(i.size()>0){
       try{
 	return i.lookup(context);
-      } catch(Exception e){}
+      } catch(Exception e){
+	// if lookup fails assume value is null
+	 return null;
+      }
     }
-    return context;
+    return  context;
   }
   
 
