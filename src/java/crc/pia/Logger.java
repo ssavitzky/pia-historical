@@ -141,7 +141,7 @@ public class Logger {
 	    File root_dir = agency.rootDir();
 	    if ( root_dir == null ) {
 		String msg = "unable to get the agency root directory\n";
-		throw new PiaRuntimeException (this.getClass().getName()
+		throw new PiaRuntimeException (this
 						, "getFileName"
 						, msg) ;
 	    }
@@ -162,7 +162,7 @@ public class Logger {
 	    if ( old != null )
 		old.close () ;
 	} catch (IOException e) {
-	    throw new PiaRuntimeException (this.getClass().getName()
+	    throw new PiaRuntimeException (this
 					    , "openLogFile"
 					    , "unable to open "+logname);
 	}
@@ -181,7 +181,7 @@ public class Logger {
 	    if ( old != null )
 		old.close() ;
 	} catch (IOException e) {
-	    throw new PiaRuntimeException (this.getClass().getName()
+	    throw new PiaRuntimeException (this
 					    , "openErrorLogFile"
 					    , "unable to open "+errlogname);
 	}
@@ -200,7 +200,7 @@ public class Logger {
 	    if ( old != null )
 		old.close() ;
 	} catch (IOException e) {
-	    throw new PiaRuntimeException (this.getClass().getName()
+	    throw new PiaRuntimeException (this
 					    , "openTraceFile"
 					    , "unable to open "+tracename);
 	}
