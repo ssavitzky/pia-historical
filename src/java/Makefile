@@ -47,11 +47,14 @@ crc.zip: pia_class.toc
 	$(BINDIR)/jarcrc
 	mv $@ $(LIBDIR)
 
-#
-# Non-recursive documentation.
+### Recursive documentation:
+
+doc:: alldoc
+	@echo Java documentation complete
+
+# Non-recursive JavaDoc documentation -- the whole shebang.
 #	We do this because javadoc doesn't append to existing index files,
 #	it smashes them.  This makes it useless when run recursively.
-#
 
 JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR):$(CLASSPATH):$(JAVASOURCE)
 

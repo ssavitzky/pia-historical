@@ -10,8 +10,7 @@ include $(MF_DIR)/file.make
 
 include $(MF_DIR)/text.make
 
-all:: java_docs
-
-# === This should really be done by "make doc" in src ===
+# This is normally done via "make doc" at the top level instead.
+#
 java_docs: 
 	cd $(PIADIR)/src/java; make alldoc PIADIR=../..
