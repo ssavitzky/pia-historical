@@ -81,12 +81,12 @@ sub book_ps{
     local (@image_files)=glob "$image_file.*.gif";
     print "made $#image_files from $image_file.*.gif" . @image_files . "..\n" if $main::debugging;
     my $image_url = $book->base->as_string;
-    my $element=HTML::Element->new('a',href => $image_url);
+    my $element=IF::IT->new('a',href => $image_url);
 #   x my $img_url="file:$image_file";
     foreach $image_url (@image_files) {
 	$image_url=~/\/([^\/]*)$/;
 	my $img_url=$image_URL . $1;
-	my $particle=HTML::Element->new('img', src => $img_url );
+	my $particle=IF::IT->new('img', src => $img_url );
 	$element->push_content($particle);
     }
 

@@ -143,6 +143,7 @@ $response=TRANSACTION->new($response,$self->machine,$destination);
     $response->content_length(length($image));
     $response->content_type('image/gif');
     $response->content($image);
+    $response->request($request);
     $main::main_resolver->push($response);
     
     return $response;

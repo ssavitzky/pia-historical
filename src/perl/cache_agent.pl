@@ -20,6 +20,16 @@ sub url_to_filename{
     return $name;
 }
 
+sub filename_to_url{
+    my($self,$directory)=@_;
+    open(HEADER,"<$directory/.request-header");
+    my $header=<HEADER>;
+    $header =~ /^(\w*)\s+(.*)/;
+    close HEADER;
+    return $2;
+    
+}
+
 ##maintain hash of directories that we know  about
 # maybe should use url as key, not  directory name
 ## also should check modified date
@@ -98,7 +108,7 @@ sub handle_response{
     ##	 some servers give different results for different browsers.
 
     open(HEADER,">$directory/.request-header");
-    print HEADER $request->method . $url->as_string;
+    print HEADER $request->method . " " . $url->as_string . "\n";
     print HEADER $request->headers_as_string;
     close HEADER;
     if($request->test('has_parameters')){
@@ -125,6 +135,8 @@ sub handle_request{
     ## OK, we have it.  Cook up a response.
 
     my $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
+    $response->request($request);
+    
     open(HEADER,"<$directory/.header");
     while (<HEADER>){
 	/^([^:]*):(.*)$/;
