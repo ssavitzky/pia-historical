@@ -10,8 +10,9 @@ public class AttrList extends AbstractNamedList implements AttributeList {
 
   public AttrList(){
   }
-  public AttrList(AbstractNamedList l){
-    initialize( l );
+  public AttrList(AttributeList l){
+    if( l != null )
+      initialize( l );
   }
 
   public Attribute getAttribute(String name)
@@ -48,8 +49,29 @@ public class AttrList extends AbstractNamedList implements AttributeList {
       throw e;
     }
   }
-       
+  
+
+  protected void initialize(AttributeList l){
+    if( l == null ) return;
+    long i = 0;
+    Attribute attr = null;
+
+    try{
+      attr = (Attribute)l.item( i );
+      while( attr != null ){
+	if( attr instanceof AbstractNode )
+	  setItem( attr.getName(), ((AbstractNode)attr).clone() );
+	else
+	  // If it is a foreign attribute, do nothing but refers to it
+	  setItem( attr.getName(), attr );
+	attr = (Attribute)l.item( ++i );  
+      }
+    }catch(NoSuchNodeException e){
+    }
+  }
+
   public long getLength(){ return getItemListLength();}
 }
+
 
 
