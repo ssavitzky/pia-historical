@@ -23,6 +23,7 @@
 package crc.ds;
 
 import java.util.Hashtable;
+import java.lang.String;
 
 import crc.ds.HasFeatures;
 import crc.ds.Criterion;
@@ -135,7 +136,7 @@ public class Features implements java.io.Serializable {
 
   /** Convert name to cannonical form. */
   public static final String cannonicalName(String name) {
-    return crc.interform.Util.javaName(name.toLowerCase());
+      return name.toLowerCase();
   }
 
   /** Convert value to cannonical form. */

@@ -4,6 +4,8 @@
 
 package crc.ds;
 
+import crc.dps.util.ListUtil;
+
 /**
  *  A Criteria performs a matching operation on a Features object.
  *	It consists of a List the elements of which are Criterion objects.
@@ -32,7 +34,8 @@ public class Criteria extends List {
    *	"=" matches null, "", or False.
    */
   public Criteria(String str) {
-    this(crc.sgml.Util.split(str));
+      // this(crc.sgml.Util.split(str));
+      this(List.split(str));
   }
 
   /** Initialize from a list of String or Criterion objects.  Anything else

@@ -13,7 +13,6 @@ FILES = \
 	ValueCriterion.java \
 	Features.java \
 	HasFeatures.java \
-	Index.java \
 	InvalidIndex.java \
 	List.java \
 	Nil.java \
