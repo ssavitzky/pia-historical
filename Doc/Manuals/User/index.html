@@ -147,7 +147,24 @@ The <code><a href="/agency">agency</a></code> agent, as you might expect, is
 the agent that you use to control the Agency itself--it lets you install and
 delete agents, restart or shut down the Agency, even shut down your 
 computer.  It is used <em>inside</em> the Agency for many purposes, including
-installing and removing agents.  It contains many useful InterForms.<p>
+installing and removing agents.  It contains many useful InterForms:<p>
+
+<ul>
+  <li> <a href="/agency/agents.if">list running agents</a>
+  <li> <a href="/agency/installers.if">install new agents</a>
+  <li> <a href="/agency/entities.if">list defined entities</a>
+  <li> <a href="/agency/options.if">view/change options</a>
+  <li> <a href="/agency/debug.if">toggle debugging</a> (currently 
+       <code>off</code> );
+  <li> <a href="/agency/remove_agent.if"> remove agent</a>
+  <li> <a href="/agency/shutdown.if">Shut down the computer</a>
+</ul>
+
+The <a href="/agency/installers.if">install new agents</a> form is
+particularly useful if you want to try out unfamiliar agents.  At the moment
+the only way to get up-to-date documentation on an agent is from its home
+page, which is only useable after you install it.<p>
+
 
 The Agency's top-level home page is located inside the <code>agency</code>
 agent, in the file <code><a
@@ -407,7 +424,7 @@ be a <code><a href="/proxy">proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Sat Nov 23 18:40:31 1996
+Last modified: Mon Dec 16 16:13:33 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
