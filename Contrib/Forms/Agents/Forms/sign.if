@@ -1,4 +1,7 @@
+<html><head>
+<base href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/">
 <title>&FORM.dir; Signature Result</title>
+</head>
 <body bgcolor="#ffffff">
 
 <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="http://&piaHOST;:&piaPORT;/&agentName;/feedbackbutton.gif"></a></center><p>
@@ -60,3 +63,5 @@ Remaining Pending Forms:
 <ul>
  <read file="users/&FORM.name;.html">
 </ul>
+
+</body></html>
