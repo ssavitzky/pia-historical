@@ -12,7 +12,7 @@
 
 Pay Period including or ending on:
 <select name=paydate>
-<option>&month;/&day;
+<option>&month;/&day;</option>
 <set entity name=paydate><read file="paydate.dat"></set><repeat list="&paydate;"><option> &li;</repeat></select><p>
 
 Username:
