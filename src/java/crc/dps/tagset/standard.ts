@@ -41,7 +41,7 @@ declaration be the outermost element in the document.
 <define element=submit handler >
   <doc>
   </doc>
-  <define attribute= implied>
+  <define attribute= optional>
     <doc> 
     </doc>
   </define>
@@ -51,7 +51,7 @@ declaration be the outermost element in the document.
 <define element=form >
   <doc>
   </doc>
-  <define attribute= implied>
+  <define attribute= optional>
     <doc> 
     </doc>
   </define>

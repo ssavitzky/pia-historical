@@ -84,7 +84,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	single <tag>define</tag> tag.
   </em></blockquote>
 
-  <define attribute=element implied>
+  <define attribute=element optional>
     <doc> Specifies that an element (tag) is being defined.  The value of the
 	  attribute is the tagname of the element being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -94,7 +94,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  processed.
     </doc>
   </define>
-  <define attribute=attribute implied>
+  <define attribute=attribute optional>
     <doc> Specifies that an attribute is being defined.    The value of the
 	  attribute is the name of the attribute being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -107,7 +107,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  element's definition.
     </doc>
   </define>
-  <define attribute=entity implied>
+  <define attribute=entity optional>
     <doc> Specifies that an entity is being defined.    The value of the
 	  attribute is the name of the entity being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -117,7 +117,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  document.
     </doc>
   </define>
-  <define attribute=notation implied>
+  <define attribute=notation optional>
     <doc> Specifies that a notation is being defined.    The value of the
 	  attribute is the name of the notation being defined.  The associated
 	  value, if any, should be the MIME type of the data.
@@ -126,7 +126,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
   <h4>General modifiers:</h4>
 
-  <define attribute=handler implied>
+  <define attribute=handler optional>
     <doc> Specifies the action handler class for the node being defined.
 
 	  <p> If no value is specified, the handler class name is assumed to
@@ -148,16 +148,16 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  Element.  It is impossible to represent this constraint in SGML.
   </em></blockquote>
 
-  <define attribute=quoted implied>
+  <define attribute=quoted optional>
     <doc> Indicates that the content of the element being defined should be
 	  parsed, but not expanded before invoking the action.
     </doc>
   </define>
-  <define attribute=literal implied>
+  <define attribute=literal optional>
     <doc> Indicates that the content of the element is unparsed (#CDATA).
     </doc>
   </define>
-  <define attribute=empty implied>
+  <define attribute=empty optional>
     <doc> Indicates that the element being defined will never have any
 	  content. 
     </doc>
@@ -166,17 +166,20 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <h4>Modifiers for <code><tag>define attribute</tag></code>:</h4>
 
 
-  <define attribute=implied implied>
+  <define attribute=optional optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
 	  implied (optional).
     </doc>
+    <note author=steve> === I'm not certain of the semantics of SGML
+	  ``implied'' attributes, and in any case ``optional'' is unambiguous.
+    </note>
   </define>
-  <define attribute=required implied>
+  <define attribute=required optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
 	  required.
     </doc>
   </define>
-  <define attribute=fixed implied>
+  <define attribute=fixed optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute's
 	  value is invariant (and must be given in its definition).
     </doc>
@@ -184,25 +187,25 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
   <h4>Modifiers for <code><tag>define entity</tag></code>:</h4>
 
-  <define attribute=system implied>
+  <define attribute=system optional>
     <doc> The value of this attribute is the ``system identifier'' (URI) of
 	  an ``external entity''.  Usually it will be a filename relative to
 	  the document containing the definition being processed.
     </doc>
   </define>
-  <define attribute=public implied>
+  <define attribute=public optional>
     <doc> The value of this attribute is the ``public identifier'' of an
 	  external entity.  In a DTD, an alternative system identifier must be
 	  provided; that should be specified via the <code>system</code>
 	  attribute. 
     </doc>
   </define>
-  <define attribute=NDATA implied>
+  <define attribute=NDATA optional>
     <doc> This specifies that the entity contains non-parsed data; the value
 	  specifies the name of the data's <em>notation</em>.
     </doc>
   </define>
-  <define attribute=retain implied>
+  <define attribute=retain optional>
     <doc> This specifies that the a reference to the entity should be replaced
 	  by its value when conversion to a string is desired, but otherwise
 	  should be retained in the tree and passed through to the output.
@@ -339,27 +342,27 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   </note>
 
   <define attribute=name required/>
-  <define attribute=parent implied>
+  <define attribute=parent optional>
     <doc> The <code>parent</code> attribute specifies the tagset in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.
     </doc>
   </define>
-  <define attribute=include implied>
+  <define attribute=include optional>
     <doc> The <code>include</code> attribute specifies a list of tagsets,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>tagset</tag>.  This is different from <tag>context</tag>, which
 	  effectively includes by reference.
     </doc>
   </define>
-  <define attribute=tagset implied>
+  <define attribute=tagset optional>
     <doc> The <code>tagset</code> attribute specifies the tagset to be used
 	  when <em>parsing</em> the tagset being defined.  It specifies the
 	  syntax of documentation elements and the operations permitted in
 	  <tag>value</tag> and <tag>action</tag> elements.
     </doc>
   </define>
-  <define attribute=recursive implied>
+  <define attribute=recursive optional>
     <doc> If present, this attribute indicates that elements defined in the
 	  tagset can be used in the <tag>action</tag> and <tag>value</tag>
 	  definitions of other elements.  The default is to restrict
@@ -378,19 +381,19 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 <define element=namespace handler>
   <doc> This defines a namespace for entities. 
   </doc>
-  <define attribute=name implied>
+  <define attribute=name optional>
     <doc> Note that the <code>name</code> attribute is optional; it is
 	  perfectly meaningful to have an anonymous <tag>namespace</tag>.
     </doc>
   </define>
-  <define attribute=context implied>
+  <define attribute=context optional>
     <doc> The <code>context</code> attribute specifies the namespace in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.  If no
 	  value is specified, the innermost namespace is assumed.
     </doc>
   </define>
-  <define attribute=include implied>
+  <define attribute=include optional>
     <doc> The <code>include</code> attribute specifies a list of namespaces,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>namespace</tag>.  This is different from <tag>context</tag>,
@@ -483,31 +486,31 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	implicit local namespace is created in which the iteration variables
 	are defined.
   </doc>
-  <define attribute=list implied>
+  <define attribute=list optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
 	  <code><tag>foreach</tag></code> sub-element.
     </doc>
   </define>
-  <define attribute=start implied>
+  <define attribute=start optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
 	  <code><tag>for</tag></code> sub-element.
     </doc>
   </define>
-  <define attribute=stop implied>
+  <define attribute=stop optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
 	  <code><tag>for</tag></code> sub-element.
     </doc>
   </define>
-  <define attribute=step implied>
+  <define attribute=step optional>
     <doc> If present, this results in a simplified
 	  <code><tag>repeat</tag></code> with an implied
 	  <code><tag>for</tag></code> sub-element.
     </doc>
   </define>
-  <define attribute=entity implied>
+  <define attribute=entity optional>
     <doc> If present, this specifies the name of the iteration variable for an
 	  implied <code><tag>foreach</tag></code> or
 	  <code><tag>for</tag></code> sub-element.
@@ -528,7 +531,7 @@ example).
 	       the specified element (default <code>&amp;li;</code>) is
 	       replaced by an item from the list.
          </doc>
-         <define attribute=entity implied>
+         <define attribute=entity optional>
            <doc> If present, this specifies the name of the iteration variable
 		 used by the <tag>foreach</tag> sub-element.  
     	   </doc>
@@ -541,22 +544,22 @@ example).
 	       default).  Iteration is stopped when the iteration variable
 	       exceeds the final value.
          </doc>
-         <define attribute=entity implied>
+         <define attribute=entity optional>
            <doc> If present, this specifies the name of the iteration variable
 		 used by the <tag>for</tag> sub-element.  
     	   </doc>
          </define>
-         <define attribute=start implied>
+         <define attribute=start optional>
            <doc> If present, this specifies the starting value for the
 		 iteration variable, replacing a <tag>start</tag> sub-element.  
     	   </doc>
          </define>
-         <define attribute=stop implied>
+         <define attribute=stop optional>
            <doc> If present, this specifies the final value for the
 		 iteration variable, replacing a <tag>stop</tag> sub-element.  
     	   </doc>
          </define>
-         <define attribute=step implied>
+         <define attribute=step optional>
            <doc> If present, this specifies the step value for the
 		 iteration variable, replacing a <tag>step</tag> sub-element.  
     	   </doc>
@@ -613,7 +616,7 @@ example).
 	component that has a true value.  This can be used, for example, to
 	remove whitespace from the content.
   </doc>
-  <define attribute=and implied>
+  <define attribute=and optional>
     <doc> If present, this specifies that a ``logical AND'' operations will be
 	  performed.  Each child of the <tag>logical</tag> element is expanded
 	  in turn.  Declarations, comments, processing instructions, and
@@ -623,7 +626,7 @@ example).
 	  to the output.  Otherwise no output is generated.
     </doc>
   </define>
-  <define attribute=or implied>
+  <define attribute=or optional>
     <doc> If present, this specifies that a ``logical OR operations will be
 	  performed.  Each child of the <tag>logical</tag> element is expanded
 	  in turn.  Declarations, comments, processing instructions, and
@@ -648,48 +651,48 @@ example).
 	operation, but it is used almost exclusively inside control-flow
 	operations for computing conditions.
   </doc>
-  <define attribute=text implied>
+  <define attribute=text optional>
     <doc> Performs the indicated test on the text portion of the content,
 	  discarding the markup.  In some cases, this has no effect.
     </doc>
   </define>
-  <define attribute=not implied>
+  <define attribute=not optional>
     <doc> Inverts the sense of the indicated test.
     </doc>
   </define>
-  <define attribute=zero implied>
+  <define attribute=zero optional>
     <doc> Tests for the content being numerically equal to zero.  Whitespace
 	  is considered to be zero, but nonblank text that cannot be converted
 	  to a number is not.
     </doc>
   </define>
-  <define attribute=positive implied>
+  <define attribute=positive optional>
     <doc> Tests for the content being numerically greater than zero.
     </doc>
   </define>
-  <define attribute=negative implied>
+  <define attribute=negative optional>
     <doc> Tests for the content being numerically less than zero.
     </doc>
   </define>
-  <define attribute=numeric implied>
+  <define attribute=numeric optional>
     <doc> Tests for the content being convertable to a number.
     </doc>
   </define>
-  <define attribute=match implied>
+  <define attribute=match optional>
     <doc> The value of the attribute is a regular expression which is matched
 	  against the content, converted to a string.   
     </doc>
   </define>
-  <define attribute=exact implied>
+  <define attribute=exact optional>
     <doc> With the <code>match</code> attribute, performs an exact match. 
     </doc>
   </define>
-  <define attribute=case implied>
+  <define attribute=case optional>
     <doc> With the <code>match</code> attribute, performs a case-sensitive
 	  match.  
     </doc>
   </define>
-  <define attribute=null implied>
+  <define attribute=null optional>
     <doc> Tests for the content being totally empty, even of whitespace.
     </doc>
   </define>
@@ -736,7 +739,7 @@ example).
          <doc>
          </doc>
        </define>
-  <li> <define element=entity parent=select handler>
+  <li> <define element=name parent=select handler>
          <doc>
          </doc>
        </define>
@@ -784,7 +787,7 @@ example).
 	done in order to compute some active content and then expand it as if
 	it had been in the input document.
   </doc>
-  <define attribute=hide implied>
+  <define attribute=hide optional>
     <doc> The content is processed as usual, but the results are not passed to
 	the output.  The effect is to process the content for side-effects
 	only. 
@@ -797,12 +800,12 @@ example).
   <doc> The content is not expanded (unless the <code>result</code> attribute
 	is present), but passed to the output as-is. 
   </doc>
-  <define attribute=result implied>
+  <define attribute=result optional>
     <doc> The content is expanded (once); this makes <tag>protect</tag> a
 	  no-op unless the <code>markup</code> attribute is present.
     </doc>
   </define>
-  <define attribute=markup implied>
+  <define attribute=markup optional>
     <doc> Markup in the content is ``protected'' from further expansion by
 	  converting it to text, replacing markup-specific characters with the
 	  corresponding entity references.
@@ -816,13 +819,13 @@ example).
 	the output.  The effect is to process the content for side-effects
 	only. 
   </doc>
-  <define attribute=markup implied>
+  <define attribute=markup optional>
     <doc> Only markup in the content is ``hidden'' -- text is passed through
 	  to the output.  References to passive entities (including character
 	  entities) are expanded.
     </doc>
   </define>
-  <define attribute=text implied>
+  <define attribute=text optional>
     <doc> Only text in the content is ``hidden'' -- markup is passed through
 	  to the output.  References to passive entities (including character
 	  entities) are expanded.
@@ -847,44 +850,44 @@ example).
 	specified in the attributes, this sequence is returned as a
 	space-separated list of Text nodes.
   </doc>
-  <define attribute=sum implied>
+  <define attribute=sum optional>
     <doc> The numbers in the content are added.
     </doc>
   </define>
-  <define attribute=difference implied handler>
+  <define attribute=difference optional handler>
     <doc> The difference  <em>n<sub>0</sub> - n<sub>1</sub> - ...</em> is
 	  computed. 
     </doc>
   </define>
-  <define attribute=product implied handler>
+  <define attribute=product optional handler>
     <doc> The numbers in the content are multiplied.
     </doc>
   </define>
-  <define attribute=quotient implied handler>
+  <define attribute=quotient optional handler>
     <doc> The quotient <em>n<sub>0</sub> / n<sub>1</sub> / ...</em> is
 	  computed. 
     </doc>
   </define>
-  <define attribute=remainder implied handler>
+  <define attribute=remainder optional handler>
     <doc> The remainder <em>n<sub>0</sub> % n<sub>1</sub> % ...</em> is
 	  computed.  
     </doc>
   </define>
-  <define attribute=power implied handler>
+  <define attribute=power optional handler>
     <doc> The power <em>n<sub>0</sub> ^ n<sub>1</sub> ^ ...</em> is
 	  computed. 
     </doc>
   </define>
-  <define attribute=sort implied handler>
+  <define attribute=sort optional handler>
     <doc> The content is taken to be a list of items each of which must
 	  contain a numeric value in its text. 
     </doc>
   </define>
-  <define attribute=reverse implied>
+  <define attribute=reverse optional>
     <doc> Causes a sort to be done in reverse order.
     </doc>
   </define>
-  <define attribute=pairs implied>
+  <define attribute=pairs optional>
     <doc> Sorts a list of key and value pairs according to the keys.
 	  Typically this is used for the contents of <code>&lt;dl&gt;</code>
 	  lists, in which the <code>&lt;dt&gt;</code> and
@@ -892,27 +895,27 @@ example).
 	  being hierarchical as they are in a table.
     </doc>
   </define>
-  <define attribute=sep implied>
+  <define attribute=sep optional>
     <doc> Specifies the separator to be used between sorted or split (no
 	  operation specified) numbers.
     </doc>
   </define>
-  <define attribute=digits implied>
+  <define attribute=digits optional>
     <doc> The value is the number of digits to the right of the decimal point
 	  to preserve in the output.  The default is zero if the result is an
 	  integer, the maximum possible otherwise.
     </doc>
   </define>
-  <define attribute=integer implied>
+  <define attribute=integer optional>
     <doc> All computation is done with (64-bit, signed) integer arithmetic.
 	  Results of division operations are truncated.
     </doc>
   </define>
-  <define attribute=extended implied>
+  <define attribute=extended optional>
     <doc> All computation is done with extended-precision integer arithmetic.  
     </doc>
   </define>
-  <define attribute=modulus implied>
+  <define attribute=modulus optional>
     <doc> All computation is done with modular arithmetic with the specified
 	  modulus.  Combined with extended-precision, this can be used for
 	  cryptographic calculations.
@@ -929,12 +932,12 @@ example).
 	is specified in the attributes, this sequence is returned as a
 	space-separated list of Text nodes.
   </doc>
-  <define attribute=pad implied handler>
+  <define attribute=pad optional handler>
     <doc> Pad the text to the specified <code>width</code> with the specified
 	  <code>align</code>ment (default is <code>left</code>).
     </doc>
   </define>
-  <define attribute=trim implied handler>
+  <define attribute=trim optional handler>
     <doc> Trim the text to the specified <code>width</code> with the specified
 	  <code>align</code>ment.  The default is <code>left</code>, meaning
 	  that characters are trimmed from the right.  If no
@@ -942,27 +945,27 @@ example).
 	  trimmed.
     </doc>
   </define>
-  <define attribute=width implied>
+  <define attribute=width optional>
     <doc> Specifies a width to pad or trim to.  If neither <code>pad</code>
 	  nor <code>trim</code> is specified, padding or trimming is done as
 	  needed. 
     </doc>
   </define>
-  <define attribute=align implied>
+  <define attribute=align optional>
     <doc> Specifies alignment when padding.  Permissible values are
 	  <code>left</code>, <code>right</code>, <code>center</code>
     </doc>
   </define>
-  <define attribute=sort implied handler>
+  <define attribute=sort optional handler>
     <doc> The list of items in the content is sorted according to their text
 	  content.  Markup is ignored for sorting, but retained for output.
     </doc>
   </define>
-  <define attribute=reverse implied>
+  <define attribute=reverse optional>
     <doc> Causes a sort to be done in reverse order.
     </doc>
   </define>
-  <define attribute=pairs implied>
+  <define attribute=pairs optional>
     <doc> Sorts a list of key and value pairs according to the keys.
 	  Typically this is used for the contents of <code>&lt;dl&gt;</code>
 	  lists, in which the <code>&lt;dt&gt;</code> and
@@ -970,23 +973,23 @@ example).
 	  being hierarchical as they are in a table.
     </doc>
   </define>
-  <define attribute=sep implied>
+  <define attribute=sep optional>
     <doc> Specifies the separator to be used between sorted or split items.
 	  If not specified, the implied separator is a single space.
     </doc>
   </define>
-  <define attribute=split handler implied>
+  <define attribute=split handler optional>
     <doc> Splits the text into ``tokens'' (words) using the specified
 	  separator.  
     </doc>
   </define>
-  <define attribute=join handler implied>
+  <define attribute=join handler optional>
     <doc> Joins items in the content by separating them with the given
 	  separator.  The items, and the separators, remain distinct Text
 	  nodes. 
     </doc>
   </define>
-  <define attribute=merge handler implied>
+  <define attribute=merge handler optional>
     <doc> Merges items in the content by separating them with the given
 	  separator, then concatenating them into a single Text node.
     </doc>
@@ -1009,7 +1012,7 @@ example).
 	characters [<code>&amp;&lt;&gt;</code>] are replaced with entities,
 	and line breaks are inserted to limit line lengths to 72 characters.
   </doc>
-  <define attribute=usenet implied>
+  <define attribute=usenet optional>
     <doc> Markup is added according to the conventions of Usenet mail and news
 	  articles:  <code>_<i>italics</i>_</code>,
 	  <code>*<b>bold</b>*</code>, and so on, similar to the old
@@ -1018,7 +1021,7 @@ example).
 	  sign are italicized.  
     </doc>
   </define>
-  <define attribute= implied>
+  <define attribute= optional>
     <doc> 
     </doc>
   </define>
@@ -1033,7 +1036,7 @@ open-ended; tagset authors are free to define new ones as needed.
 	If no other operation is specified in an attribute, the marked-up
 	content is simply converted to its external representation.
   </doc>
-  <define attribute= implied>
+  <define attribute= optional>
     <doc> 
     </doc>
   </define>
@@ -1056,7 +1059,7 @@ open-ended; tagset authors are free to define new ones as needed.
 <define element=xxx >
   <doc>
   </doc>
-  <define attribute= implied>
+  <define attribute= optional>
     <doc> 
     </doc>
   </define>

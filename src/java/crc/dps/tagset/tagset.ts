@@ -138,7 +138,7 @@
 	<tag>tagset</tag> element because there is always a ``current''
 	namespace and tagset in effect.
   </doc>
-  <define attribute=element implied>
+  <define attribute=element optional>
     <doc> Specifies that an element (tag) is being defined.  The value of the
 	  attribute is the tagname of the element being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -148,7 +148,7 @@
 	  processed.
     </doc>
   </define>
-  <define attribute=attribute implied>
+  <define attribute=attribute optional>
     <doc> Specifies that an attribute is being defined.    The value of the
 	  attribute is the name of the attribute being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -161,7 +161,7 @@
 	  element's definition.
     </doc>
   </define>
-  <define attribute=entity implied>
+  <define attribute=entity optional>
     <doc> Specifies that an entity is being defined.    The value of the
 	  attribute is the name of the entity being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -171,7 +171,7 @@
 	  document.
     </doc>
   </define>
-  <define attribute=notation implied>
+  <define attribute=notation optional>
     <doc> Specifies that a notation is being defined.    The value of the
 	  attribute is the name of the notation being defined.  The associated
 	  value, if any, should be the MIME type of the data.  A ``notation''
@@ -183,7 +183,7 @@
   <doc> <strong>General modifiers:</strong>
   </doc>
 
-  <define attribute=handler implied>
+  <define attribute=handler optional>
     <doc> Specifies the action handler class for the node being defined.
 
 	  <p> If no value is specified, the handler class name is assumed to
@@ -209,16 +209,16 @@
 	</em></blockquote>
   </doc>
 
-  <define attribute=quoted implied>
+  <define attribute=quoted optional>
     <doc> Indicates that the content of the element being defined should be
 	  parsed, but not expanded before invoking the action.
     </doc>
   </define>
-  <define attribute=literal implied>
+  <define attribute=literal optional>
     <doc> Indicates that the content of the element is unparsed (#CDATA).
     </doc>
   </define>
-  <define attribute=empty implied>
+  <define attribute=empty optional>
     <doc> Indicates that the element being defined will never have any
 	  content. 
     </doc>
@@ -227,17 +227,17 @@
   <doc> <strong>Modifiers for <code><tag>define attribute</tag></code>:</strong>
   </doc>
 
-  <define attribute=implied implied>
+  <define attribute=optional optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
-	  implied (optional).
+	  optional (optional).
     </doc>
   </define>
-  <define attribute=required implied>
+  <define attribute=required optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
 	  required.
     </doc>
   </define>
-  <define attribute=fixed implied>
+  <define attribute=fixed optional>
     <doc> Only meaningful for attributes.  Specifies that the attribute's
 	  value is invariant (and must be given in its definition).
     </doc>
@@ -246,25 +246,25 @@
   <doc> <strong>Modifiers for <code><tag>define entity</tag></code>:</strong>
   </doc>
 
-  <define attribute=system implied>
+  <define attribute=system optional>
     <doc> The value of this attribute is the ``system identifier'' (URI) of
 	  an ``external entity''.  Usually it will be a filename relative to
 	  the document containing the definition being processed.
     </doc>
   </define>
-  <define attribute=public implied>
+  <define attribute=public optional>
     <doc> The value of this attribute is the ``public identifier'' of an
 	  external entity.  In a DTD, an alternative system identifier must be
 	  provided; that should be specified via the <code>system</code>
 	  attribute. 
     </doc>
   </define>
-  <define attribute=NDATA implied>
+  <define attribute=NDATA optional>
     <doc> This specifies that the entity contains non-parsed data; the value
 	  specifies the name of the data's <em>notation</em>.
     </doc>
   </define>
-  <define attribute=retain implied>
+  <define attribute=retain optional>
     <doc> This specifies that the a reference to the entity should be replaced
 	  by its value when conversion to a string is desired, but otherwise
 	  should be retained in the tree and passed through to the output.
@@ -352,20 +352,20 @@
 	inside another by using <tag>select</tag>.
   </note>
 
-  <define attribute=context implied>
+  <define attribute=context optional>
     <doc> The <code>context</code> attribute specifies the tagset in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.
     </doc>
   </define>
-  <define attribute=include implied>
+  <define attribute=include optional>
     <doc> The <code>include</code> attribute specifies a list of tagsets,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>tagset</tag>.  This is different from <tag>context</tag>, which
 	  effectively includes by reference.
     </doc>
   </define>
-  <define attribute=recursive implied>
+  <define attribute=recursive optional>
     <doc> If present, this attribute indicates that elements defined in the
 	  tagset can be used in the definitions of other elements.  The
 	  default is for definitions to be in terms of elements and entities
@@ -378,19 +378,19 @@
 <define element=namespace handler>
   <doc> This defines a namespace for entities. 
   </doc>
-  <define attribute=name implied>
+  <define attribute=name optional>
     <doc> Note that the <code>name</code> attribute is optional; it is
 	  perfectly meaningful to have an anonymous <tag>namespace</tag>.
     </doc>
   </define>
-  <define attribute=context implied>
+  <define attribute=context optional>
     <doc> The <code>context</code> attribute specifies the namespace in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.  If no
 	  value is specified, the innermost namespace is assumed.
     </doc>
   </define>
-  <define attribute=include implied>
+  <define attribute=include optional>
     <doc> The <code>include</code> attribute specifies a list of namespaces,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>namespace</tag>.  This is different from <tag>context</tag>,
