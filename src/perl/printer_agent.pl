@@ -6,6 +6,9 @@
 ##making books
 require "make_book.pl";
 require "book.pl";
+require "formatLatex.pm";
+require "html2latex.pl";
+
 
 #Two main sections
 # first deals with retrieving and converting URL's to postscript & previews
@@ -58,14 +61,12 @@ sub ps_file_name{
 
 sub html_latex_ps{
 
-    require "html2latex.pl";
-
     my $self=shift;
     my $response=shift;
     my $request=shift;
     my $docId=shift;
     my $directory=$self->option('tempdirectory');
-    $directory=$self->agent_directory . "temp/" unless $directory;
+    $directory=$self->agent_directory . "/temp" unless $directory;
     
     my $status=html2latex($response->content,$ps_file,$request->url,$docId,$directory);
     print "latex status is $status \n" if $main::debugging;
@@ -116,8 +117,11 @@ sub create_preview{
     $ps_file=shift @files;
     
     my $response=create_postscript($self,$request);
+
+
     my $thumbsize=$self->option('thumbsize');
-    
+    my $thumb_width=$self->option('thumb_width');
+    my $thumb_height=$self->option('thumb_height');
 #    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
 #    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r$thumbsize -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
 #broken if gs not support gif....
@@ -149,13 +153,75 @@ sub create_preview{
 
 # === the following fails; apparently $request->url isn't a reference: (steve)
 #    my $image_url = $request->url->as_string;
-    my $element=IF::IT->new('a', href => $image_url);
+    my $element=IF::IT->new('p');
+#    $element->attr( 'href',$image_url);
 #   x my $img_url="file:$image_file";
     foreach $image_url (@image_files) {
 	$image_url=~/\/([^\/]*)$/;
 	my $img_url=$image_URL . $1;
+	my $anchor=IF::IT->new('a', href => $img_url);
 	my $particle=IF::IT->new('img', src => $img_url );
-	$element->push_content($particle);
+	$particle->attr('width',$thumb_width);
+	$particle->attr('height',$thumb_height);
+	$anchor->push_content($particle);
+	$element->push_content($anchor);
+    }
+
+#This returns the postscript    return $response;
+    return $element;#an html element which is linked to preview image
+}
+
+
+sub generate_preview_element{
+
+    my($self,$image_file,$ps_file)=@_;
+    
+    my $thumbsize=$self->option('thumbsize');
+    my $thumb_width=$self->option('thumb_width');
+    my $thumb_height=$self->option('thumb_height');
+#    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
+#    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r$thumbsize -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
+#broken if gs not support gif....
+
+
+    my $cmd="rm -f $image_file.*.$GSEXT $image_file.*.$GIFEXT; cat /dev/null | $GS -sOutputFile=$image_file.%d.$GSEXT -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
+#    $cmd.="$GS2GIF";
+#    $cmd.=" > $image_file";  Multipage files cause us some pain
+    
+
+#    print $cmd;
+    print $cmd  if $main::debugging;
+    
+    my $status=system ($cmd);
+    #shouldgetstatushere & check for multiple pages...put %d in output filename
+    print "Status is $status\n" if $main::debugging;
+    local (@image_files)=glob "$image_file.*.$GSEXT";
+    if($GS2GIF) {
+#need step to convert to gif
+	foreach $image_url (@image_files) {
+	    my $file = $image_url;
+	    $image_url =~ s/$GSEXT$/$GIFEXT/;
+	    $status=system("cat $file $GS2GIF > $image_url");
+	}
+    }
+
+    print "made $#image_files from $image_file.*.gif" . @image_files . "..\n" 
+	if $main::debugging;
+
+# === the following fails; apparently $request->url isn't a reference: (steve)
+#    my $image_url = $request->url->as_string;
+    my $element=IF::IT->new('p');
+#    $element->attr( 'href',$image_url);
+#   x my $img_url="file:$image_file";
+    foreach $image_url (@image_files) {
+	$image_url=~/\/([^\/]*)$/;
+	my $img_url=$image_URL . $1;
+	my $anchor=IF::IT->new('a', href => $img_url);
+	my $particle=IF::IT->new('img', src => $img_url );
+	$particle->attr('width',$thumb_width);
+	$particle->attr('height',$thumb_height);
+	$anchor->push_content($particle);
+	$element->push_content($anchor);
     }
 
 #This returns the postscript    return $response;

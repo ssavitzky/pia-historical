@@ -12,10 +12,12 @@ sub make_book{
     local @book_new_links;
     $book_base=URI::URL->new($url);
     local $book = BOOK->new($book_base,$book_depth);
+    
     $self->current_book($book);
     
     my $element=IF::IT->new('a', href => "showbook.if");
     $element->push("link to book...");
+#    my $element=book_toc($book);
     return $element;
 
 }
@@ -54,43 +56,26 @@ sub book_ps{
     my $ps_file=shift @files;
 
     my $directory=$self->option('tempdirectory');
-    $directory=$self->agent_directory . "temp/" unless $directory;
+    $directory=$self->agent_directory . "/temp" unless $directory;
     
 #    my $status=html2latex($string,$ps_file,$book->base,"011",$directory);
 ##011 is dummy docid
 #    print "latex status is $status \n" if $main::debugging;
-
+    if($self->option('render_method') =~ /latex/i){
+	my $status=html2latex($html,$ps_file,$book->base,011,$directory);
+    }else {
 #    require HTML::FormatPS;
-    require "Format_PS.pm";
-    my $f = HTML::Format_PS->new;
-    open(PSFILE,">$ps_file");
-    print "putting ps in $ps_file\n";
-    print PSFILE $f->format($html);
-    close PSFILE;
-
-
-    my $thumbsize=20;
-    my $cmd="cat /dev/null | $GS -sOutputFile=$image_file.%d.gif -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
-    $cmd.="$GS2GIF";
-
-    print $cmd  if $main::debugging;
-    
-    my $status=system ($cmd);
-    #shouldgetstatushere & check for multiple pages...put %d in output filename
-    print "Status is $status\n" if $main::debugging;
-    local (@image_files)=glob "$image_file.*.gif";
-    print "made $#image_files from $image_file.*.gif" . @image_files . "..\n" if $main::debugging;
-    my $image_url = $book->base->as_string;
-    my $element=IF::IT->new('a',href => $image_url);
-#   x my $img_url="file:$image_file";
-    foreach $image_url (@image_files) {
-	$image_url=~/\/([^\/]*)$/;
-	my $img_url=$image_URL . $1;
-	my $particle=IF::IT->new('img', src => $img_url );
-	$element->push_content($particle);
+	require "Format_PS.pm";
+	my $f = HTML::Format_PS->new;
+	open(PSFILE,">$ps_file");
+	print "putting ps in $ps_file\n";
+#    print PSFILE $f->format_book($book);
+	print PSFILE $f->format($html);
+	close PSFILE;
     }
 
-    return $element;#an html element which is linked to preview image
+    return $self->generate_preview_element($image_file,$ps_file);
+	
 
 }
 
