@@ -59,6 +59,7 @@ PIALIBDIR=lib/java
 PIABINDIR=bin
 INTERFORM=Doc/Manuals/InterForm
 DOCRELEASE=Doc/Release
+DOCPAPER=Doc/Papers
 CDROMDIR=../cdrom
 
 cvs.tar::
@@ -80,6 +81,10 @@ prep_rel::
 	cd $(INTERFORM); make
 	cd $(CLASSDIR);make crc.zip; make alldoc
 	cd $(CLASSDIR);rm -fr java
+
+cp_build_noa::
+	cp /pia1/home/wolff/pia/Doc/Papers/BuildingNOA/BuildingNOA.ps $(DOCPAPER)/BuildingNOA
+	cp -R /pia1/home/wolff/pia/Doc/Papers/BuildingNOA/BuildingNOA $(DOCPAPER)/BuildingNOA
 
 ### add crln
 crfixbat:: 
