@@ -23,14 +23,14 @@
 <p>
 <hr>
 <h2> Form for installing another agent</a>
-<form action="/agency/install_agent.if" method="POST">
+<form action="/Agency/install_agent.if" method="POST">
 <input type="submit" value="Install">
 Name:<input name="agent" value="agent_name" size=30>
-Type:<input name="type" value="agent_type">
+Type:<input name="type" value="">
 </form>
 
 You can usually leave the <em>type</em> blank and it will default to the name.
-If a class-declaration module <code>PIA::Agent::<em>type</em></code> exists,
+If a class-declaration module <code>PIA::Agent::<em>Type</em></code> exists,
 it will be loaded if necessary.  The standard ones are in <code><a
 href="/PIA/src/lib/perl/PIA/Agent/"
 >/PIA/src/lib/perl/PIA/Agent/</a></code><p>
@@ -40,6 +40,6 @@ href="/PIA/src/lib/perl/PIA/Agent/"
 <hr><a href=/agency/home.if> Agency Home</a> 
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Fri Dec 20 16:29:47 1996
+Last modified: Tue Mar 11 18:06:25 1997
 <!-- hhmts end -->
 </body></html>
