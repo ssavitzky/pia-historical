@@ -20,7 +20,7 @@ public class AttrWrap extends AttrSGML {
   ** Attrs interface:  Abstract:
   ************************************************************************/
 
-  /** Return the number of defined. */
+  /** Return the number of defined attributes. */
   public int nAttrs() {
     return (attributes == null)? 0 : attributes.nAttrs();
   }

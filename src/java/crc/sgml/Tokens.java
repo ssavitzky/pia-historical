@@ -6,6 +6,9 @@ package crc.sgml;
 
 import crc.ds.List;
 
+import crc.sgml.SGML;
+import crc.sgml.Element;
+
 /**
  * A List (sequence) of SGML Token's.  
  *	Unlike a simple List, Strings and Lists are merged when appended.
@@ -93,10 +96,6 @@ public class Tokens extends List implements SGML {
     return null;
   }
 
-  public String entityName() {
-    return null;
-  }
-
   /** Convert the entire object to text. */
   public Text toText() {
     if (isText()) {
@@ -108,13 +107,6 @@ public class Tokens extends List implements SGML {
   /** Convert to a number (double, being the most general form available). */
   public double numValue() {
     return contentText().numValue();
-  }
-
-  /** Convert the object to a single token. */
-  public Token toToken() {
-    return (nItems() == 1)
-      ? itemAt(0).toToken()
-      : new Token(null, (SGML)this);
   }
 
   /** Convert to a single token if it's a singleton. */

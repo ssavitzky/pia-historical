@@ -199,7 +199,7 @@ public class Util {
     if (j < s.length()) 
       l.push(s.substring(j));
     return l;
-
+    // === splitEntities unimplemented: incomplete!
   }
 
   /** Capitalize a string.  All characters except the first are

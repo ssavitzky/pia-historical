@@ -49,11 +49,8 @@ public abstract class AttrSGML extends AttrBase implements SGML {
   public void incomplete(byte i) {}
 
   /** A string ``tag'' that is guaranteed to be null if isList(),
-   *	"" if istext(), and "&amp;" if entityName is non-null. */
+   *	"" if istext(), and "&amp;" if instanceof Entity. */
   public String tag() { return null; }
-
-  /** Return the name of the entity to which this is a reference. */
-  public String entityName() { return null; }
 
   /** Convert the entire object to text.  The result for an Attrs is a
    *  query string.
@@ -86,10 +83,10 @@ public abstract class AttrSGML extends AttrBase implements SGML {
     return t;
   }
 
-  /** Convert the object to a single Token.  The result is a &gt;dl&lt;
+  /** Convert the object to a single Element.  The result is a &gt;dl&lt;
    * 	element. */
-  public Token toToken() {
-    return new Token("dl", (Attrs)this);
+  public Element toElement() {
+    return new Element("dl", (Attrs)this);
   }
 
   /** Convert to a single token if it's a singleton list. */
@@ -98,10 +95,10 @@ public abstract class AttrSGML extends AttrBase implements SGML {
 
   /** The object's content.  This is the same as <code>this</code> 
    *	if isList(); it is null if isEmpty(). */
-  public Tokens content() { return toToken().content(); }
+  public Tokens content() { return toElement().content(); }
 
   /** The text part of the object's content. */
-  public Text contentText() { return toToken().contentText(); }
+  public Text contentText() { return toElement().contentText(); }
 
   /** The object's content as a String.  Always returns a valid String,
    *	which may be null. */

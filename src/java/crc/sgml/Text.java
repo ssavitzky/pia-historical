@@ -80,11 +80,6 @@ public class Text implements SGML {
     return "";
   }
 
-  /** Return null: the name of the entity to which this is a reference. */
-  public String entityName() {
-    return null;
-  }
-
   /** Convert the entire object to text */
   public Text toText() {
     return this;
@@ -152,11 +147,6 @@ public class Text implements SGML {
   /** Append contents to a Tokens list. */
   public void appendContentTo(Tokens list) {
     list.append(this);
-  }
-
-  /** Convert the object to a single token. */
-  public Token toToken() {
-    return new Token("", this);
   }
 
   /** Convert to a single token if it's a singleton. */

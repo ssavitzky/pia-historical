@@ -11,6 +11,8 @@ FILES = \
 	AttrSGML.java \
 	AttrTable.java \
 	AttrWrap.java \
+	Element.java \
+	Entity.java \
 	SGML.java \
 	Text.java \
 	Token.java \
@@ -34,13 +36,18 @@ AttrWrap.class: Attrs.java AttrBase.java AttrSGML.java SGML.java ../ds/List.java
 
 Attrs.class: Attrs.java SGML.java
 
+Element.class: Token.java Tokens.java SGML.java \
+	../ds/List.java ../ds/Table.java
+
+Element.class: Token.java SGML.java
+
 SGML.class: SGML.java Attrs.java
 
 Text.class: Text.java Token.java SGML.java
 
 Token.class: Token.java Tokens.java SGML.java ../ds/List.java ../ds/Table.java
 
-Tokens.class: Tokens.java SGML.java 
+Tokens.class: Tokens.java Element.java SGML.java 
 
 Util.class: SGML.java ../ds/List.java ../ds/Table.java
 

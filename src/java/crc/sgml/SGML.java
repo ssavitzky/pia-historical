@@ -39,18 +39,11 @@ public interface SGML extends java.lang.Cloneable {
   void incomplete(byte i);
 
   /** A string ``tag'' that is guaranteed to be null if isList(),
-   *	"" if istext(), and "&amp;" if entityName is non-null. */
+   *	"" if istext(), and "&amp;" if instanceof Entity. */
   String tag();
-
-  /** Return the name of the entity to which this is a reference. */
-  String entityName();
 
   /** Convert the entire object to text */
   Text toText();
-
-  /** Convert the object to a single Token.  
-   *	A List is converted to a Token with a null tag. */
-  Token toToken();
 
   /** Convert to a single token if it's a singleton list. */
   public SGML simplify();
