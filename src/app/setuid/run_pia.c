@@ -14,9 +14,9 @@
 #include <stdio.h>
 
 char *args[] = {
-#if 0
-  "/bin/sh", "run_pia", "-c",
-  "./pia/bin/pia -l ./.pia/log",
+#if 1
+  "/bin/sh", "./pia/bin/pia", "-c",
+  "./pia/bin/pia &> ./.pia/log",
 #else
   "/usr/bin/perl", "run_pia", 
   "./pia/lib/perl/pia.pl",
