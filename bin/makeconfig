@@ -1,0 +1,51 @@
+#!/bin/sh
+# 	$Id$
+# 	Generate property file for the PIA
+#
+# Usage: 
+#	makeconfig
+
+HOST=$(uname -n)
+
+PORT=8888
+
+#find out where the pia_wrapper is
+BINDIR=$(pwd)
+PIA_HOME=${BINDIR%/*}
+echo $PIA_HOME
+
+#property file name
+TEMP=$PIA_HOME/Config/pia.props
+
+#determine where the documentation is
+DOCURL=$PIA_HOME/Doc/Manuals/Api/JavaDoc
+
+#determine if we have proxy environment variable
+if [ -n "$http_proxy" ] ; then
+    HPROXLINE=crc.pia.proxy_http=$http_proxy
+elif [ -n "$HTTP_PROXY" ] ; then
+    HPROXLINE=crc.pia.proxy_http=$HTTP_PROXY
+fi
+
+if [ -d "$HOME/pia" ] ; then
+	echo "userroot exist at :"
+	echo $HOME/pia
+	USRROOT=crc.pia.usrroot=$HOME/pia
+elif [ -d "$PIA_HOME/users/whoami" ] ; then
+	echo "userroot exist at :"
+	echo $HOME/users/whoami
+	USRROOT=crc.pia.usrroot=$HOME/users/whoami
+fi
+
+cat > $TEMP << EOF
+$HPROXLINE
+crc.pia.no_proxy=$HOST
+crc.pia.docurl=$DOCURL
+crc.pia.root=$PIA_HOME
+crc.pia.port=$PORT
+crc.pia.debug=true
+crc.pia.verbose=false
+crc.pia.logger=crc.pia.Logger
+crc.pia.reqtimeout=40000
+$USRROOT
+EOF
