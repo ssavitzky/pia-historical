@@ -20,14 +20,16 @@
 
 <ul>
   <li> <a href="../Author/index.html">Agent Author's Manual</a>
-  <li> <a href="Tagset/standard.html">Standard Tagset Manual</a>
+  <li> <a href="Tagset/basic.html">Basic (Primitive) Tagset Manual</a>
+  <li> <a href="Tagset/standalone.html">Standalone (XXML) Tagset Manual</a>
+  <li> <a href="Tagset/standard.html">Standard (XHML) Tagset Manual</a>
        <p>
   <li> <a href="/InterForm/home.if">InterForm Demonstration Agent</a> (from PIA
-       only) (
-       <a href="/InterForm/tag_man.if">Standard Tagset Manual</a> and
-       <a href="/InterForm/demo.if">Examples</a> )
+       only)
   <li> <a href="/Agency/entities.if">Entities</a> (from PIA only)
   <li> <a href="/Agency/actors.if">Actors</a> (from PIA only)
+  <li> <a href="tag_man.if">legacy tagset</a>
+  <li> <a href="examples.if">legacy Examples</a>
 </ul>
 
 <h3>Contents:</h3>
@@ -74,9 +76,9 @@ last period character.  The defined extensions are:
   <dd> ``eXtended-MIME -- the MIME type (optionally, the whole HTML header) is
        in the document. [currently unimplemented]
   <dt> .lif
-  <dd> ``legacy'' InterForm processed with the new DPS.  Since the legacy
-       tagset is incomplete, these won't work in all cases.  [Soon to be
-       obsolete. ]
+  <dd> ``legacy'' InterForm processed with the new DPS using a tagset largely
+       compatible with the old interpretor.  Since the legacy tagset is
+       incomplete, these won't work in all cases.  [Soon to be obsolete. ]
   <dt> .if
   <dd> InterForm processed with the <em>old</em> interpretor.  [Soon to be
        obsolete. ]
@@ -120,23 +122,20 @@ used as ``iteration variables''--you can repeat a piece of text for every item
 in a list, with the <code>&amp;li;</code> entity replaced by each list item in
 turn.<p>
 
-<h3>Actors</h3>
+<h3>Actions</h3>
 
-Finally, new, <em>active</em> ``elements'' can be defined, complete with their
-own start tag, end tag, attributes, and content.  Whenever such an element
-appears in a document, a corresponding piece of InterForm data called an
-``<dfn>actor</dfn>'' is expanded, with entities bound to the element's
-attributes and content.<p>
+Finally, ``<dfn>actions</dfn>'' can be associated with ``active'' elements.
+Whenever such an element appears in a document, a corresponding piece of
+InterForm code called its ``<dfn>action</dfn>'' is expanded, with entities
+bound to the element's attributes and content.  An active element is sometimes
+called an ``<dfn>actor</dfn>.''<p>
 
-It is also possible to define ``<dfn>passive</dfn>'' actors, which match
-particular ``features'' in a document, usually special attributes or
-particular attribute values.<p>
-
-A collection of predefined actors designed to work together should really be
-called a ``cast,'' but in fact is called a ``<dfn>tagset</dfn>,'' in part
-because it's less likely to be misunderstood--``cast'' has a quite different
-meaning in programming languages like C++.  (MetaHTML also uses ``tagset'' in
-this sense.)<p>
+A collection of entities and elements designed to work together in an active
+document is called a ``<dfn>tagset</dfn>,'' largely for historical reasons
+(MetaHTML also uses ``tagset'' in this sense.)  A tagset is essentially an
+extension of the SGML and XML <dfn>Document Type Definition</dfn> (DTD),
+although tagsets are usually defined using an XML-based notation which is
+easier to parse and to extend. <p>
 
 The PIA defines a <a href="#standard_tagset">standard tagset</a> for use in
 InterForms.  Some agents may define special tagsets to be loaded alongside the
@@ -164,62 +163,57 @@ of formatting or typesetting engine.  Readers with programming experience
 might instead choose to regard them as ``functions'' and ``variables,'' and
 expect to find a kind of interpretor.  Both would be perfectly correct.<p>
 
-The InterForm Interpretor (II) operates almost exactly like any other SGML
-text-processing application.  It takes in a stream of characters from a file,
-an HTTP server, or an input device and turns it into a stream of
+The Document Processing System (DPS) operates almost exactly like any other
+SGML text-processing application.  It takes in a stream of characters from a
+file, an HTTP server, or an input device and splits it into a stream of
 ``<dfn>tokens</dfn>.''  Each token is either ``<dfn>text</dfn>'' (a string of
 ordinary characters), an entity name, or a piece of ``<dfn>markup</dfn>'' -- a
-start tag, end tag, or SGML declaration.<p>
+start tag, end tag, or SGML declaration.  The tagset is consulted to determine
+the syntax of each element, and to locate any associated actions. <p>
 
-Next, any end tags are paired with their corresponding start tag.
-Any end tags that may have been omitted (hardly anyone codes ``&lt;/li&gt;,''
-the end tag for a list item, for example) are generated automatically. <p>
+This splitting and identifying is called ``<dfn>parsing</dfn>'', and in most
+systems results in a data structure called a ``<dfn>parse tree</dfn>'' -- a
+hierarchical collection of objects called ``<dfn>nodes</dfn>.''  These nodes
+are described further in the <a href="http://www.w3.org/">World Wide Web
+Consortium</a>'s <a href="http://www.w3.org/DOM/">Document Object Model</a>.
+<p>
 
-Also, any entities in the input stream are expanded, which means that input
-starts coming from the entity instead of from the original input stream.
-(Entities that are not defined, i.e. that have no meaning known to the system,
-are simply passed through unchanged.)<p>
+The InterForm DPS is not exactly typical.  Instead of actually building a
+parse tree, the Parser looks like a tree <em>traverser</em> -- a ``device''
+that can be commanded to travel to the next node in a tree, or up or down a
+level.  It can provide information about the current node or any of its direct
+ancestors, but not about the <em>children</em> of any node.  This means that
+the DPS can process documents that are too large to fit in the computer's
+memory all at once.<p>
 
-Finally the resulting tokens are turned back into characters and sent to an
-output stream, usually a user's Web browser.<p>
+The DPS ``<dfn>Processor</dfn>'' takes nodes from an ``<dfn>Input</dfn>''
+source (typically a Parser) and performs the action associated with each node
+it encounters.  The default, if no action is specified, is to simply copy the
+node to the Processor's ``<dfn>Output</dfn>'', performing any specified
+actions in its children along the way.
 
-<em>Actually, things are a little more complicated than that.  But only a
-little.</em> <p>
+The Output is essentially a <em>constructor</em> for parse trees, except that
+instead of constructing an actual data structure it might instead convert
+nodes back into characters and send them to an output stream, usually attached
+to a user's Web browser.<p>
 
-The complication comes in because of actors.  At any point in the process some
-actor might ``recognize its cue'' and start expanding.  Unlike entities, which
-are simply replaced by a corresponding chunk of text, actors can
-<em>process</em> text.  They can, for example, <p>
-
-<ul>
-  <li> tell the interpretor to divert incoming tokens to someplace where the
-       actor can look at them later
-  <li> tell the interpretor to stop expanding entities and recognizing actors
-  <li> define new entities, or redefine existing ones
-  <li> perform some operations on the current ``element''
-  <li> tell the interpretor to replace the current element, its contents,
-       or any of its attributes, with new data.
-</ul>
 
 <h3>Terminology</h3>
-
-Diverting incoming tokens is called ``<dfn>parsing</dfn>;''  the result
-is that the interpretor constructs a compound object consisting of the start
-tag and its content--in other words the entire element.<p>
 
 Replacing an element, attribute, or entity with new data is called
 ``<dfn>expanding</dfn>'' it, because it often (not always) gets bigger as a
 result.<p>
 
-Allowing an actor to perform processing on an element is called
-``<dfn>applying</dfn>'' the actor to the element.<p>
+Performing an action on its corresponding element is often called
+``<dfn>applying</dfn>'' the action to the element.<p>
 
 Associating an entity or attribute name with a value is called
 ``<dfn>binding</dfn>'' the name to the value.  A value may be anything from a
 single character to an entire document with markup.<p>
 
-Processing a stream of incoming tokens (parsing, expanding, and applying
-actors) is called ``<dfn>evaluating</dfn>'' it.<p>
+Parsing an incoming character stream, expanding entities, applying actions,
+and putting them into an output stream is called ``<dfn>processing</dfn>.''
+<p>
 
 
 <hr>
@@ -241,66 +235,77 @@ to validate the syntactic structure of an InterForm.<p>
 
 There are two, slightly different kinds of names (identifiers) in the
 InterForm system.  Element tags and attributes start with a letter and contain
-any sequence of letters, digits, ``<code>.</code>'' (period) and
-``<code>-</code>'' (hyphen) characters.  Case is ignored.  Entities come from
-the same character set, but case is significant (the original reason being to
-make it easy to represent upper- and lower-case letters in foreign
-alphabets).<p>
+any sequence of letters, digits, ``<code>.</code>'' (period),
+``<code>-</code>'' (hyphen) ``<code>_</code>'' (underscore), and
+``<code>:</code>'' (colon) characters.  Case is ignored in HTML, but
+significant in XML.  Entities come from the same character set, but case is
+<em>always</em> significant (the original reason being to make it easy to
+represent upper- and lower-case letters in foreign alphabets).<p>
 
 The practical effect of the case-sensitivity rules is that you can use case to
 distinguish entities, where it matters.  On the other hand, you can use case
 to improve the readability of different kinds of tags and attributes, for
-example special InterForm tags and HTML tags, because it doesn't matter to the
-system which ones you use.<p>
+example to distinguish betweem ordinary HTML tags and attributes, which can be
+in any case, and the special <em>active</em> tags and their attributes, which
+are always lowercase (because they're basically XML).  You can use UPPERCASE
+or MixedCase for your own active tags and be certain that there will never be
+a system tag that conflicts. <p>
 
 URL's and filenames have their own sets of rules, of course, and filenames
 differ from one operating system to another.  Other names may refer to
 environment variables and software objects in the PIA (agents, for example);
 these names are usually case sensitive. <p>
 
-By convention, actors that do not correspond directly to tags (for example,
-the one that matches the ``<code>foreach</code>'' attribute) should have names
-starting with ``<code>-</code>''; they usually end with it as well.  Within
-actor names, ``<code>-</code>'' is used to separate words.  Often the first
-word names the PIA data structure acted upon, as in
-``<code>agent-running</code>'', which tests whether an agent with a given name
-is running.<p>
+Within entity names and active element tag names, ``<code>-</code>'' (hyphen)
+is usually used to separate words.  The ``<code>:</code>'' (colon) character
+is special: the portion of the name before the colon designates a
+``<dfn>namespace</dfn>,'' and the portion after it a name <em>within</em> that
+space.  Each user-defined active element, for example, defines a namespace
+with the element's tag name as its namespace name, and the names
+<code>attributes</code> and <code>content</code> defined within it. <p>
 
 Many actors accept a large variety of special attributes that modify their
-behavior; for example ``<code>&lt;get entity&gt;</code>'' and ``<code>&lt;get
-actor&gt;</code>''.  Many specialized versions exist with names like
-``<code>get.entity</code>''--the tag and attribute separated by a
-``<code>.</code>'' (usually read as ``dot'' or ``point'' in this context).  It
-is somewhat more efficient to use these specialized actors, since less work
-has to be done by the interpretor in figuring out which action to take.<p>
+behavior; for example ``<code>&lt;test zero&gt;</code>'' and
+``<code>&lt;numeric sort&gt;</code>''.  Some, notably <code>&lt;if&gt;</code>,
+<code>&lt;select&gt;</code> and <code>&lt;repeat&gt;</code> also have
+specialized ``sub-elements'' that are used noplace else (for example,
+<code>&lt;then&gt;</code> and <code>&lt;else&gt;</code> inside
+<code>&lt;if&gt;</code>).  <p>
 
 
 <h3>Entities</h3>
 
 <dl>
-  <dt> entity ::= '&amp;' path ';'?
+  <dt> entity ::= '&amp;' name ';'
   <dd> 
-  <dt> path ::= identifier ['.' path]?
+  <dt> name ::= [identifier ':']? identifier
   <dd> 
-  <dt> identifier := [letter | digit | '-']+
+  <dt> identifier := [letter | digit | '-' | '_' | '.']+
   <dd> 
 </dl>
 
 An entity reference consists of the character ``<code>&amp;</code>''
 (ampersand) followed by a name, followed by the character ``<code>;</code>''
-(semicolon).  The semicolon can be omitted if the name of the entity is
-followed by a character that is not permitted in a name, but it is good
-practice to include it anyway.  Case is <em>significant</em> in entity names.
-<p>
+(semicolon).  The semicolon is always required.  Case is <em>significant</em>
+in entity names.  <p>
 
-An entity name may consist of several sub-names separated by
-``<code>.</code>'' (period).  These sub-names form a path (similar to a file
-path) through a sequence of ``namespaces'' (which may be Agents, &lt;table&gt;
-or &lt;dl&gt; elements, forms, and so on).  If no namespace is given, the
+An entity name may consist of a pair of sub-names separated by
+``<code>:</code>'' (period).  These sub-names form a path (similar to a file
+path) through a sequence of ``namespaces''.  If no namespace is given, the
 interpretor will search through any locally-defined entities (for example, the
 list element entity defined by the &lt;repeat&gt; tag) and the top-level
-(global) entity table associated with the InterForm being interpreted.  This
-is pre-loaded with a number of useful entities:<p>
+(global) entity table associated with the InterForm being interpreted.
+<p>
+
+<strong>The InterForm language and its interpretor have undergone major
+changes, and the documentation is not yet up to date.  The new interpretor can
+be found in <a
+href="../../../src/java/crc/dps/"><code>../../../src/java/crc/dps/</code></a>
+and its subdirectories; JavaDoc documentation will be in the <a
+href="../Api/index.html">API Manual</a> if it has been built.  The namespaces
+and entities mentioned below may change as a result. </strong> <p>
+
+The following entities are pre-defined in the PIA:<p>
 
 <dl>
 
@@ -392,7 +397,6 @@ is pre-loaded with a number of useful entities:<p>
 A complete list can be obtained from the PIA via the <a
 href="/Agency/entities.if">/Agency/entities.if</a> InterForm.<p>
 
-
 The following namespaces are defined:
 
 <dl>
@@ -421,12 +425,14 @@ string, depending on the context.
 The syntax of an Element is:
 
 <dl>
-  <dt> element ::= start-tag [content end-tag]
+  <dt> element ::= start-tag [content end-tag] | empty-tag
   <dd> (An element that consists only of a start tag is called <em>empty</em>;
        empty elements are distinguished by their tags.
   <dt> start-tag ::= '<' tag [attribute]* '>'
   <dd> 
   <dt> end-tag ::= '</' tag '>' 
+  <dd> 
+  <dt> empty-tag ::= '<' tag [attribute]* '/>'
   <dd> 
   <dt> content ::= [text | element]*
   <dd> 
@@ -449,30 +455,34 @@ The syntax of an Element is:
   <dd> 
 </dl>
 
-HTML tags do not contain '-' or '.' characters.  Normally in the InterForm
-language '.' is used as a path separator, as in entities, whereas '-' is used
-to separate words in a single identifier.  Unlike entities, however, the
-namespace for actors is flat, so that this usage is purely a naming
-convention. <p>
-
-<blockquote><em>
-  Eventually we will want to go to entity-style hierarchical lookup on actor
-  tags, possibly with a '<code>-</code>' prefix or some such.  This will
-  permit &lt;dl&gt; lists to function as objects.  There may be alternative
-  ways of doing this; suggestions would be appreciated.
-</em></blockquote>
+HTML tags do not contain '-', '.', or '_' characters.  Normally in the
+InterForm language '-' is used to separate words in a single identifier, and
+the other special characters are not used.  Namespaces (designated by a
+namespace identifier followed by a colon) are not currently used for tags.
+<p>
 
 The order of attributes in a start tag is retained, but is not significant for
 any of the predefined actors (or for any of the standard HTML tags, for that
-matter).<p>
+matter).  The usual convention is to list the attributes in whatever order
+makes the tag easiest to read. <p>
 
+Strictly speaking, the form of attribute value consisting of nonblank
+characters is incorrect.  It can make it hard to distinguish the final
+`<code>/</code>' character that marks an XML empty tag, with odd results but
+no error message.  <p>
+
+<blockquote><em>
+  Eventually we need to make certain parser parameters, such as whether to
+  accept XML empty-tag delimiters or loosely-specified nonblank attribute
+  values, options that can be set in the tagset.
+</em></blockquote>
 
 <h3>Lists</h3>
 
-Several actors (for example, &lt;repeat&gt;) operate on lists: sequences of
-``items'' usually represented by the &lt;li&gt; element.  Lists function very
-much like <em>arrays</em> in conventional programming languages, or
-<em>sets</em> in database languages.<p>
+Several actors (for example, &lt;foreach&gt; and &lt;select&gt;) operate on
+lists: sequences of ``items'' usually represented by the &lt;li&gt; element.
+Lists function very much like <em>arrays</em> in conventional programming
+languages, or <em>sets</em> in database languages.<p>
 
 The following elements are treated as simple lists:
 <blockquote>
@@ -485,10 +495,9 @@ description list (&lt;dl&gt;) can be treated as a list of two-element
 and values.<p>
 
 A text string, especially an attribute, is turned into a list by splitting it
-on whitespace; the &lt;split&gt; actor can be used to split on any text
-pattern.<p> 
+on whitespace.  Whitespace between list item elements is ignored. <p> 
 
-<em>Any</em> sequence of tokens can be treated as a list, by splitting
+<em>Any</em> sequence of nodes can be treated as a list, by splitting
 it either on whitespace, or on token boundaries.<p>
 
 
@@ -526,10 +535,11 @@ database languages).<p>
 
 <h3>Tagsets</h3>
 
-A named collection of actors is called a <dfn>tagset</dfn> (it could have been
-called a ``cast,'' since it's a set of actors that work together, but ``cast''
-usually means something quite different in the context of a programming
-language).<p>
+A <dfn>tagset</dfn> contains the definitions of the entities, elements and
+attributes that can be used in a document, along with their values, associated
+actions, and details of their syntax.  A tagset specifies a superset of the
+information in a document's DTD (Document Type Definition), and is contained
+in a file with a ``<code>.ts</code>'' extension. <p>
 
 <strong>The InterForm language and its interpretor have undergone major
 changes, and the documentation is not yet up to date.  Documentation for the
@@ -581,26 +591,34 @@ the handler's <code>javadoc</code> documentation.<p>
 <hr>
 <h2><a name="tagsets">Tagsets</a></h2>
 
-<strong>This section is obsolete.  Tagset manuals can be found in
-the <a href="Tagset">Tagset/</a> subdirectory.</strong>
-
 The following tagsets are currently predefined:
 <ol>
   <li> HTML<br>
        The syntax of standard HTML 3.2
-  <li> <a href="Tagset/Basic-tagset.html">Basic</a><br>
-       The ``lowest common denominator'' InterForm tagset, consisting of those
-       tags with effects entirely confined to the document being expanded.
-  <li> <a href="Tagset/StandAlone-tagset.html">StandAlone</a><br>
-       A tagset suitable for stand-alone use in document-processing or CGI
-       applications. 
+  <li> <a href="Tagset/tagset.html">tagset</a><br>
+       This defines the syntax of tagset definition files.  Read it first,
+       since it explains the syntactic constructs used in the other tagset
+       definition files.
+  <li> <a href="Tagset/basic.html">basic</a><br>
+       The definitions of the ``primitive'' tags -- the ones that <em>all</em>
+       tagsets use.
+  <li> <a href="Tagset/standalone.html">standalone</a><br>
+       The tagset intended for stand-alone XML processing. 
+  <li> <a href="Tagset/standard.html">standard</a><br>
+       The tagset used in the PIA for HTML processing. 
   <li> <a href="Tagset/Standard-tagset.html">Standard</a><br>
-       The tagset used for expanding agent InterForms in the PIA.
+       The ``legacy'' (old) tagset used for expanding agent InterForms in the
+       PIA. 
 </ol>
 
 These documents are derived automatically from the tagsets themselves, so
 although the documentation of each actor may be slightly sketchy in places, it
-is at least complete and up-to-date.<p>
+is at least complete and up-to-date.  Several other, special-purpose tagsets
+are also defined; a complete set of documentation can be found in the <a
+href="Tagset">Tagset/</a> subdirectory.  <p>
+
+<strong>This following is obsolete.  Tagset manuals can be found in
+the <a href="Tagset">Tagset/</a> subdirectory.</strong>
 
 A more detailed set of documents on the Standard Tagset exists in this
 directory: 
@@ -659,12 +677,12 @@ submitting or updating forms, or formatting.  It is the base from which the
 <hr>
 <h2><a name="invoke">Program Invocation</a></h2>
 
-The InterForm Interpretor is invoked either stand-alone as a CGI or filter
-(formatter), or as part of the PIA.  The command for invoking the InterForm
-interpretor as a filter is: 
+The Document Processor is invoked either stand-alone as a CGI or filter
+(formatter), or as part of the PIA.  The command for invoking the Document
+Processor as a filter is: 
 
 <pre>
-  iffilter <em>[option]...</em> <em>input_filename</em>
+  process <em>[option]...</em> <em>input_filename</em>
 </pre>
 
 The command-line options are:
@@ -677,7 +695,7 @@ The command-line options are:
   <dt> <code>-o <em>filename</em></code>
   <dd> specify output file
   <dt> <code>-t <em>tagset-name</em></code>
-  <dd> specify tagset
+  <dd> specify tagset (default <code>standard</code>).
   <dt> <code>-v</code>
   <dd> verbose messages
   <dt> <code>-d</code>
