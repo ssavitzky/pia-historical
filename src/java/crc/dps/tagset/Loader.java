@@ -317,6 +317,8 @@ public class Loader {
 	theFile = tsFile;
       }
     }
+    if (theFile == null) return null;
+
     FileInputStream s = null;
     try {
       s = new FileInputStream(theFile);
