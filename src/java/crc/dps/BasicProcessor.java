@@ -201,7 +201,7 @@ public class BasicProcessor extends ContextStack implements Processor {
     NodeList value = null;
     if (name.indexOf('.') >= 0) value = getIndexValue(name);
     else 
-      value = getEntityValue(name);
+      value = getEntityValue(name, false);
     if (value == null) {
       dst.putNode(n);
     } else {
@@ -215,8 +215,7 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   public BasicProcessor() {}
 
-  public BasicProcessor(Input in, Context prev, Output out,
-			EntityTable ents) {
+  public BasicProcessor(Input in, Context prev, Output out, EntityTable ents) {
     super(in, prev, out, ents);
   }
 
