@@ -28,20 +28,24 @@
   entities.
 </em></blockquote>
 
-<define element=get >
-  <doc> 
+<define element=get empty handler >
+  <doc> The main advantage of <tag>get</tag> over the equivalent entity
+	reference is that the name can be computed by entity substitution, and
+	is not limited to strict entity syntax.  
   </doc>
-  <define attribute=entity implied>
-    <doc> 
+  <define attribute=entity required>
+    <doc> Specifies the name of the entity to be retrieved.
     </doc>
   </define>
 </define>
 
-<define element=set >
-  <doc>
+<define element=set handler >
+  <doc> The main advantages of <tag>set</tag> over the equivalent
+	<tag>select</tag> are compactness and simplicity.  These also
+	translate into a considerable increase in run-time efficiency.
   </doc>
-  <define attribute= implied>
-    <doc> 
+  <define attribute=entity required>
+    <doc> Specifies the name of the entity to be set.
     </doc>
   </define>
 </define>

@@ -608,6 +608,10 @@ example).
   <doc> This element is essentially a convenient shorthand for a nested set of
 	<tag>if</tag> elements.  It performs functions that are equivalent to
 	the LISP functions <code>AND</code> and <code>OR</code>.
+
+	<p>With no attributes, this simply returns the value of every
+	component that has a true value.  This can be used, for example, to
+	remove whitespace from the content.
   </doc>
   <define attribute=and implied>
     <doc> If present, this specifies that a ``logical AND'' operations will be
