@@ -104,9 +104,9 @@ public class CurrentNode implements Cursor {
   protected void setNode(ActiveNode aNode) {
     node   = aNode;
     active = aNode;
-    action = active.getAction();
+    action = (active == null)? null : active.getAction();
 
-    if (node.getNodeType() == NodeType.ELEMENT) {
+    if (node != null && node.getNodeType() == NodeType.ELEMENT) {
       element = active.asElement();
       tagName = element.getTagName();
     } else {
@@ -268,35 +268,6 @@ public class CurrentNode implements Cursor {
     return node;
   }
 
-  /** Returns the next attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  protected Attribute toFirstAttribute() {
-    if (element == null) return null;
-    crc.dom.AttributeList atts = element.getAttributes();
-    if ((atts == null) || (atts.getLength() == 0)) return null;
-    Node n;
-    try {
-      n = atts.item(0);
-    } catch (crc.dom.NoSuchNodeException e) {
-      return null;
-    }
-    setNode(n);
-    atFirst = true;
-    return (Attribute)n;
-  }
-
-  /** Returns the next attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  protected Attribute toNextAttribute() {
-    if (node.getNodeType() != NodeType.ATTRIBUTE) return null;
-    else return (Attribute) toNextNode();
-  }
-
-
   /************************************************************************
   ** Processing Operations:
   ************************************************************************/
@@ -333,23 +304,19 @@ public class CurrentNode implements Cursor {
    *	Attribute, it is added to the attribute list of the curren node.
    */
   protected void putNode(Node aNode) {
-    if (aNode.getNodeType() == NodeType.ATTRIBUTE 
-	&& element != null) putAttribute((Attribute) aNode);
-    else {
-      Node p = aNode.getParentNode();
-      if (p == node) {
-	if (p != null) return;	// already a child.  Nothing to do.
-	else setNode(aNode);	// no current node: make it current
-      } else if (p != null) {	// someone else's child: deep copy.
-	startNode(aNode);
-	for (Node n = aNode.getFirstChild();
-	     n != null;
-	     n = aNode.getNextSibling()) 
-	  putNode(n);
-	endNode();
-      } else {
-	Util.appendNode(aNode, node);
-      }
+    Node p = aNode.getParentNode();
+    if (p == node) {
+      if (p != null) return;	// already a child.  Nothing to do.
+      else setNode(aNode);	// no current node: make it current
+    } else if (p != null) {	// someone else's child: deep copy.
+      startNode(aNode);
+      for (Node n = aNode.getFirstChild();
+	   n != null;
+	   n = aNode.getNextSibling()) 
+	putNode(n);
+      endNode();
+    } else {
+      Util.appendNode(aNode, node);
     }
   }
 
@@ -357,10 +324,6 @@ public class CurrentNode implements Cursor {
    *	makes it the current node.
    */
   protected void startNode(Node aNode) {
-    if (aNode.getNodeType() == NodeType.ATTRIBUTE 
-	&& element != null)
-      startAttribute(((Attribute) aNode).getName());
-    else {
       Node p = aNode.getParentNode();
       if (p == node) {		// already a child.  descend.
 	if (p != null) descend();
@@ -373,7 +336,6 @@ public class CurrentNode implements Cursor {
       Util.appendNode(aNode, node);
       descend();
       setNode(aNode);
-    }
   }
 
   /** Ends the current Node and makes its parent current.
@@ -383,12 +345,9 @@ public class CurrentNode implements Cursor {
     return toParent() != null;
   }
 
-  /** Adds <code>anElement</code> to the document under construction,
-   *	and makes it the current node.  The attribute list is not
-   *	copied; instead, putAttribute, etc. are used.  An element
-   *	may be ended with either <code>endElement</code> or
-   *	<code>endNode</code>. 
-   */
+  /** Adds <code>anElement</code> to the document under construction, and
+   *	makes it the current node.  An element may be ended with either
+   *	<code>endElement</code> or <code>endNode</code>.  */
   protected void startElement(Element anElement) {
     Element e = shallowCopyElt(anElement);
     Util.appendNode(anElement, node);
@@ -402,35 +361,6 @@ public class CurrentNode implements Cursor {
   public boolean endElement(boolean optional) {
     // === set optional end-tag flag if the element has one. ===
     return toParent() != null;
-  }
-
-  /** Adds the attribute and its value to the element under construction.
-   *	If the value is <code>null</code> the attribute will be marked as
-   *	unspecified.
-   */
-  protected void putAttribute(Attribute anAttribute) {
-    putAttribute(anAttribute.getName(), anAttribute.getValue());
-  }
-
-  /** Adds the attribute and its value to the element under construction.
-   *	If the value is <code>null</code> the attribute will be marked as
-   *	unspecified.
-   */
-  protected void putAttribute(String name, NodeList value) {
-    Attribute attr = createAttr(name, value);
-    element.getAttributes().setAttribute(name, attr);
-  }
-
-  /** Adds a named attribute to the element under construction,
-   *	and makes it the current node.  Subsequent calls on
-   *	<code>putNode</code> add nodes to the attribute's value.
-   *	The attribute is ended with <code>endNode</code>
-   */
-  protected void startAttribute(String name) {
-    Attribute attr = createAttr(name, null);
-    element.getAttributes().setAttribute(name, attr);
-    descend();
-    setNode(attr);
   }
 
   /** Perform any necessary actions before descending a level. 

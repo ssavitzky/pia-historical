@@ -10,10 +10,13 @@ import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
+import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
+import crc.dom.Entity;
 
 import crc.dps.NodeType;
 import crc.dps.active.*;
+import crc.dps.output.*;
 
 import crc.ds.Table;
 
@@ -131,69 +134,44 @@ public class Util {
   }
 
 
-  /** Copy the next Node from the given Input to the given Output, 
-   *	expanding entities in the process.
+  /** Copy the content of a NodeList to an Output.
    */
-  public static void expandEntities(Node n, Input in, Output out,
-				    EntityTable ents) {
-    if (n == null) n = in.toNextNode();
-    if (in.hasChildren() || in.hasAttributes()) {
-      out.startNode(n);		// ===
-      for (Node c = in.toFirstChild(); c != null; c = in.toNextNode()) {
-	expandEntities(c, in, out, ents);
-      }
-      out.endNode();
-    } else {
-      out.putNode(n);
+  public static void copyNodes(NodeList aNodeList, Output out) {
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      out.putNode(node);
     }
   }
 
-  /** Expand entities in the attribute list of the current Node.
-   */
-  public static void expandAttributes(Input in, Output out, EntityTable ents) {
-    Node n = in.toNextNode();
-    if (in.hasChildren()) {
-      out.startNode(n);
-      copyChildren(in, out);
-      out.endNode();
-    } else {
-      out.putNode(n);
+  public static ActiveNode copyNodeAsActive(Node node) {
+    if (node instanceof ActiveNode) 
+      return ((ActiveNode)node).shallowCopy();
+    int nodeType = node.getNodeType();
+    switch (nodeType) {
+    case NodeType.ELEMENT: 
+      crc.dom.Element e = (crc.dom.Element)node;
+      return new ParseTreeElement(e.getTagName(), e.getAttributes());
+
+    case NodeType.TEXT:
+      crc.dom.Text t = (crc.dom.Text)node;
+      return new ParseTreeText(t.getData(), t.getIsIgnorableWhitespace());
+
+    case NodeType.COMMENT: 
+      crc.dom.Comment c = (crc.dom.Comment)node;
+      return new ParseTreeComment(c.getData());
+
+    case NodeType.PI:
+      crc.dom.PI pi = (crc.dom.PI)node;
+      return new ParseTreePI(pi.getName(), pi.getData());
+
+    case NodeType.ATTRIBUTE: 
+      crc.dom.Attribute attr = (crc.dom.Attribute)node;
+      return new ParseTreeAttribute(attr.getName(), attr.getValue());
+
+    default: 
+      return null;		// node.shallowCopy();
     }
   }
-
-
- 
-  // === The following don't expand entities in attributes correctly yet. ===
-
-  /** Process a Node.  */
-  public static void processNode(Node n, Context c, Input in, Output out) {
-    if (n == null) return;
-    Action h = in.getAction();
-    if (h != null) {
-      h.action(in, c, out);
-    } else if (in.hasChildren()) {
-      out.startNode(n);
-      // context for children? ===
-      processChildren(c, in, out);
-      out.endNode();
-    } else {
-      out.putNode(n);
-    }
-  }
-
-  /** Process the next Node. */
-  public static void processNextNode(Context c, Input in, Output out) {
-    processNode(in.toNextNode(), c, in, out);
-  }
-
-  /** Process the children of the current Node */
-  public static void processChildren(Context c, Input in, Output out) {
-    for (Node n = in.toFirstChild() ; n != null; n = in.toNextNode()) {
-      processNode(n, c, in, out);
-    }
-    in.toParent();
-  }
-
 
   /** Create a shallow copy of a given Node using a given DOMFactory. 
    */
@@ -275,6 +253,44 @@ public class Util {
   ** Expansion:
   ************************************************************************/
 
+  public static AttributeList expandAttrs(Context c, AttributeList nl) {
+    ToAttributeList dst = new ToAttributeList();
+    expandNodes(c, nl, dst);
+    return dst.getList();
+  }
+
+  public static NodeList expandNodes(Context c, NodeList nl) {
+    ToNodeList dst = new ToNodeList();
+    expandNodes(c, nl, dst);
+    return dst.getList();
+  }
+
+  public static void expandNodes(Context c, NodeList nl, Output dst) {
+    for (int i = 0; i < nl.getLength(); i++) { 
+      try {
+	Node n = nl.item(i);
+	if (n.getNodeType() == NodeType.ENTITY) {
+	  expandEntity(c, (Entity) n, dst);
+	} else {
+	  dst.putNode(n);
+	}
+      } catch (crc.dom.NoSuchNodeException ex) {}
+    }
+  }
+
+  /** Expand a single entity. */
+  public static void expandEntity(Context c, Entity n, Output dst) {
+    String name = n.getName();
+    NodeList value = null;
+    if (name.indexOf('.') >= 0) value = c.getIndexValue(name);
+    else 
+      value = c.getEntityValue(name);
+    if (value == null) {
+      dst.putNode(n);
+    } else {
+      Util.copyNodes(value, dst);
+    }
+  }
 
   /************************************************************************
   ** Tests:

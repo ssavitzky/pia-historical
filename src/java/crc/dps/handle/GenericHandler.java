@@ -4,6 +4,9 @@
 
 package crc.dps.handle;
 import crc.dom.Node;
+import crc.dom.NodeList;
+import crc.dom.Attribute;
+import crc.dom.AttributeList;
 import crc.dom.BasicElement;
 import crc.dom.Element;
 import crc.dom.NodeList;
@@ -38,16 +41,6 @@ public class GenericHandler extends BasicHandler {
   ** State Used for Syntax:
   ************************************************************************/
 
-  /** If <code>true</code>, a parse tree is built for the content. */
-  protected boolean parseContent = true;
-
-  /** If <code>true</code>, a parse tree is built for the content. */
-  public boolean parseContent() { return parseContent; }
-
-  /** If <code>true</code>, a parse tree is built for the content. */
-  public void setParseContent(boolean value) { parseContent = value; }
-
-
   /** If <code>true</code>, the element is passed to the output while
    *	being processed.
    */
@@ -70,7 +63,7 @@ public class GenericHandler extends BasicHandler {
    * @see #computeResult
    * @see #expandAction
    */
-  protected boolean noCopyNeeded = false;
+  protected boolean noCopyNeeded = true;
 
   /** If <code>true</code>, it is not necessary to copy a parse tree
    *	before calling <code>computeResult</code>.
@@ -93,6 +86,15 @@ public class GenericHandler extends BasicHandler {
   /** If <code>true</code>, the content is expanded. */
   public void setExpandContent(boolean value) { expandContent = value; }
 
+  /** If <code>true</code>, the content is delivered as a string. */
+  protected boolean stringContent = false;
+
+  /** If <code>true</code>, the content is expanded. */
+  public boolean stringContent() { return stringContent; }
+
+  /** If <code>true</code>, the content is expanded. */
+  public void setStringContent(boolean value) { stringContent = value; }
+
  
   /************************************************************************
   ** State Used for Semantics:
@@ -109,8 +111,78 @@ public class GenericHandler extends BasicHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  public int action(Input in, Context aContext, Output out) {
-    return 1;
+  /** We're assuming that this is an <em>active</em> node, so call
+   *	the three-input <code>action</code> routine to do the work.
+   */
+  public int action(Input in, Processor p) {
+    action(in, p, p.getOutput());
+    return 0;
+  }
+
+  /** This routine does the setup.  It obtains the expanded attribute list
+   *	and content; it will rarely have to be overridden.  
+   *	It will, however, die horribly if the current node is not an 
+   *	ActiveElement. 
+   */
+  public void action(Input in, Context aContext, Output out) {
+    AttributeList atts = getExpandedAttrs(in, aContext);
+    ParseNodeList content = null;
+    String cstring = null;
+    if (stringContent) {
+      cstring = expandContent? getProcessedContentString(in, aContext)
+	: getContentString(in, aContext);
+    } else {
+      content = expandContent
+	? getProcessedContent(in, aContext)
+	: getContent(in, aContext);
+    }
+    ActiveElement e = in.getActive().asElement();
+    action(e, aContext, out, e.getTagName(), atts, content, cstring);
+  }
+
+  /** This routine does the work.
+   *
+   *	Note that the element we construct (in order to bind &amp;ELEMENT;) is
+   *	empty, and the expanded content is kept in a separate NodeList, unless
+   *	noCopyNeeded is <code>true</code>.  This means that unexpanded nodes
+   *	don't have to be reparented.
+   */
+  public void action(ActiveElement e, Context aContext, Output out, String tag, 
+  		     AttributeList atts, NodeList content, String cstring) {
+    ParseTreeElement element = new ParseTreeElement(e);
+    element.setAttributes(atts);
+    if (!noCopyNeeded) Util.appendNodes(content, element);
+    if (hasChildren()) {
+      // Create a suitable sub-context:
+      EntityTable ents = new BasicEntityTable(aContext.getEntities());
+      ents.setValueForEntity("CONTENT", content, true);
+      ents.setValueForEntity("ELEMENT", new ParseNodeList(element), true);
+      Input in = new crc.dps.input.FromParseTree(this);
+      BasicProcessor p = new BasicProcessor(in, aContext, out, ents);
+      // expand children in the sub-context.
+      p.processChildren();
+    } else if (content == null) {
+      out.putNode(element);
+    } else {
+      out.startElement(e);
+      if (atts != null) {
+	for (int i = 0; i < atts.getLength(); i++) { 
+	  try {
+	    out.putNode(atts.item(i));
+	  } catch (crc.dom.NoSuchNodeException ex) {}
+	}
+      }
+      Util.copyNodes(content, out);
+      out.endElement(element.isEmptyElement() || element.implicitEnd());
+    }
+  }
+
+  public NodeList getValue(Node aNode, Context aContext) {
+    return null;
+  }
+
+  public NodeList getValue(String aName, Node aNode, Context aContext) {
+    return null;
   }
 
   /************************************************************************

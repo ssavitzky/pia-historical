@@ -78,10 +78,16 @@ public class CurrentActive implements Cursor {
   /** Set the current node.  Set <code>active</code> and <code>element</code>
    *	if applicable. */
   protected final void  setNode(Node aNode) {
-    active = (aNode instanceof ActiveNode)? (ActiveNode)aNode : null;
-
-    if (active == null)  throw(new NotActiveNodeException());
-
+    if (aNode == null) {
+      action = null;
+      element = null;
+      active = null;
+      tagName = null;
+      return;
+    } else if (! (aNode instanceof ActiveNode)) {
+      throw(new NotActiveNodeException());
+    }
+    active = (ActiveNode)aNode;
     action = active.getAction();
     if (aNode.getNodeType() == NodeType.ELEMENT) {
       element = active.asElement();
@@ -97,7 +103,8 @@ public class CurrentActive implements Cursor {
     element= anElement;
     active = element;
 
-    if (active == null)  throw(new NotActiveNodeException());
+    if (active == null)
+      throw(new NotActiveNodeException("Non-null ActiveElement expected"));
 
     action = active.getAction();
     tagName = (aTagName == null)? element.getTagName() : aTagName;
@@ -264,33 +271,6 @@ public class CurrentActive implements Cursor {
     return active;
   }
 
-  /** Returns the next attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  protected Attribute toFirstAttribute() {
-    if (element == null) return null;
-    crc.dom.AttributeList atts = element.getAttributes();
-    if ((atts == null) || (atts.getLength() == 0)) return null;
-    Node n;
-    try {
-      n = atts.item(0);
-    } catch (crc.dom.NoSuchNodeException e) {
-      return null;
-    }
-    setNode(n);
-    atFirst = true;
-    return (Attribute)n;
-  }
-
-  /** Returns the next attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  protected Attribute toNextAttribute() {
-    if (active.getNodeType() != NodeType.ATTRIBUTE) return null;
-    else return (Attribute) toNextSibling();
-  }
 
 
   /************************************************************************
@@ -329,23 +309,19 @@ public class CurrentActive implements Cursor {
    *	Attribute, it is added to the attribute list of the curren node.
    */
   protected void putNode(Node aNode) {
-    if (aNode.getNodeType() == NodeType.ATTRIBUTE 
-	&& element != null) putAttribute((Attribute) aNode);
-    else {
-      Node p = aNode.getParentNode();
-      if (active == p) {
-	if (p != null) return;	// already a child.  Nothing to do.
-	else setNode(aNode);	// no current node: make it current
-      } else if (p != null) {	// someone else's child: deep copy.
-	startNode(aNode);
-	for (Node n = aNode.getFirstChild();
-	     n != null;
-	     n = aNode.getNextSibling()) 
-	  putNode(n);
-	endNode();
-      } else {
-	Util.appendNode(aNode, active);	// === should have some convenience fns
-      }
+    Node p = aNode.getParentNode();
+    if (active == p) {
+      if (p != null) return;	// already a child.  Nothing to do.
+      else setNode(aNode);	// no current node: make it current
+    } else if (p != null) {	// someone else's child: deep copy.
+      startNode(aNode);
+      for (Node n = aNode.getFirstChild();
+	   n != null;
+	   n = aNode.getNextSibling()) 
+	putNode(n);
+      endNode();
+    } else {
+      appendNode(aNode, active);
     }
   }
 
@@ -353,23 +329,20 @@ public class CurrentActive implements Cursor {
    *	makes it the current node.
    */
   protected void startNode(Node aNode) {
-    if (aNode.getNodeType() == NodeType.ATTRIBUTE 
-	&& element != null)
-      startAttribute(((Attribute) aNode).getName());
-    else {
-      Node p = aNode.getParentNode();
-      if (active == p) {	// already a child.  descend.
-	if (p != null) descend();
-	setNode(aNode);
-	return;
-      }
-      if (p != null || aNode.hasChildren()) {
-	p = ((ActiveNode)aNode).shallowCopy();
-      }
-      Util.appendNode(aNode, active);  // === should have some convenience fns
-      descend();
+    Node p = aNode.getParentNode();
+    if (active == p) {	// already a child.  descend.
+      if (p != null) descend();
       setNode(aNode);
+      return;
     }
+    if (p != null || aNode.hasChildren()) {
+      // === The following chokes on an attribute with an unspecified value!
+      // System.err.println("about to copy " + aNode.getClass().getName());
+      aNode = Util.copyNodeAsActive(aNode);
+    }
+    appendNode(aNode, active);
+    descend();
+    setNode(aNode);
   }
 
   /** Ends the current Node and makes its parent current.
@@ -387,7 +360,7 @@ public class CurrentActive implements Cursor {
    */
   protected void startElement(Element anElement) {
     ActiveNode e = ((ActiveElement)anElement).shallowCopy();
-    Util.appendNode(e, active); // === should have some convenience fns
+    appendNode(e, active);
     descend();
     setNode(e, null);
   }
@@ -398,34 +371,6 @@ public class CurrentActive implements Cursor {
   public boolean endElement(boolean optional) {
     // === set optional end-tag flag if the element has one. ===
     return toParent() != null;
-  }
-
-  /** Adds the attribute and its value to the element under construction.
-   *	If the value is <code>null</code> the attribute will be marked as
-   *	unspecified.
-   */
-  protected void putAttribute(Attribute anAttribute) {
-    putAttribute(anAttribute.getName(), anAttribute.getValue());
-  }
-
-  /** Adds the attribute and its value to the element under construction.
-   *	If the value is <code>null</code> the attribute will be marked as
-   *	unspecified.
-   */
-  protected void putAttribute(String name, NodeList value) {
-    element.setAttribute(name, value);
-  }
-
-  /** Adds a named attribute to the element under construction,
-   *	and makes it the current node.  Subsequent calls on
-   *	<code>putNode</code> add nodes to the attribute's value.
-   *	The attribute is ended with <code>endNode</code>
-   */
-  protected void startAttribute(String name) {
-    Attribute attr = new ParseTreeAttribute(name, (NodeList)null);
-    element.setAttribute(name, attr);
-    descend();
-    setNode(attr);
   }
 
   /** Perform any necessary actions before descending a level. 
@@ -439,6 +384,10 @@ public class CurrentActive implements Cursor {
   /** === Subclasses that need it MUST override shallowCopy === */
   protected ActiveNode shallowCopy(Node aNode) {
     return ((ActiveNode)aNode).shallowCopy();
+  }
+
+  protected void appendNode(Node aNode, Node aParent) {
+    Util.appendNode(aNode, aParent);
   }
 
 }

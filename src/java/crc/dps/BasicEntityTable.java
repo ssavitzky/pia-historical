@@ -106,4 +106,13 @@ public class BasicEntityTable extends BasicElement implements EntityTable {
     return null;		// ===
   }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public BasicEntityTable() {}
+  public BasicEntityTable(EntityTable parent) {
+    context = parent;
+  }
+
 }

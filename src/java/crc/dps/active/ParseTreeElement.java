@@ -92,6 +92,15 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     setAttribute(attr);
   }
 
+  public void setAttribute(String name, NodeList value) {
+    Attribute attr = getAttribute(name);
+    if (attr != null) attr.setValue(value);
+    else setAttribute(new ParseTreeAttribute(name, value));
+  }
+
+  public void setAttribute(String name, String value) {
+    setAttribute(name, new ParseTreeText(value));
+  }
 
   /************************************************************************
   ** Syntax:  DTD entry:
@@ -127,6 +136,18 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     isEmptyElement = e.isEmptyElement;
     hasEmptyDelim  = e.hasEmptyDelim;
     implicitEnd = e.implicitEnd;
+  }
+
+  public ParseTreeElement(Element e) {
+    super(e);
+    if (e instanceof ParseTreeElement) {
+      ParseTreeElement ee = (ParseTreeElement)e;
+      handler = ee.handler;
+      action = ee.action;
+      isEmptyElement = ee.isEmptyElement;
+      hasEmptyDelim  = ee.hasEmptyDelim;
+      implicitEnd = ee.implicitEnd;
+    }
   }
 
   /** Construct a ParseTreeElement with given tagname and syntax. 

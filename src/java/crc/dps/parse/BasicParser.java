@@ -194,7 +194,6 @@ public class BasicParser extends AbstractParser {
       if (last != '>') return false;
 
       it.setAction(it.getSyntax().getActionForNode(it));
-
       // === Check for content entity and element handling ===
 
       // Done.  Clean up the buffer and return the new tag in next.

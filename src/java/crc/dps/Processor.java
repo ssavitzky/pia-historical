@@ -77,9 +77,8 @@ public interface Processor extends Context {
   ** Processing:
   ************************************************************************/
 
-  /** Run the Processor, pushing a stream of Token objects at its
-   *	registered Output, until the Output's <code>nextToken</code>
-   *	method returns <code>false</code>.
+  /** Run the Processor, obtaining nodes from its Input and performing
+   *	their actions, usually involving copying to the Output.
    */
   public void run();
 
@@ -90,4 +89,17 @@ public interface Processor extends Context {
   /** Turn off the Processor's ''running'' flag. */
   public void stop();
 
+  /************************************************************************
+  ** SubProcessing:
+  ************************************************************************/
+
+  /** Create a sub-processor with a given input and output. */
+  public Processor subProcess(Input in, Output out);
+
+  /** Create a sub-processor with a given output. 
+   *
+   *	Commonly used to obtain an expanded version of the attributes
+   *	and content of the parent's current node.
+   */
+  public Processor subProcess(Output out);
 }

@@ -5,6 +5,8 @@
 package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.Attribute;
+import crc.dom.AttributeList;
 import crc.dom.Element;
 import crc.dom.DOMFactory;
 
@@ -38,8 +40,11 @@ public class TypicalHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(Input in, Context c, Output out) {
-
+  public void action(ActiveElement e, Context aContext, Output out, String tag, 
+  		     AttributeList atts, NodeList content, String cstring) {
+    ParseTreeElement element = new ParseTreeElement(e);
+    element.setAttributes(atts);
+    if (!noCopyNeeded) Util.appendNodes(content, element);
   }
 
   /************************************************************************
@@ -49,7 +54,7 @@ public class TypicalHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public TypicalHandler() {
     /* Expansion control: */
-    parseContent = true;	// false 	Build parse tree?
+    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     passElement = false;	// true 	pass while expanding?
     noCopyNeeded = false;	// true 	don't copy parse tree?

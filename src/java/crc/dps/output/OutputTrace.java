@@ -84,18 +84,8 @@ public class OutputTrace implements Output {
   }
   public boolean endElement(boolean optional) {
     depth --;
-    debug("end(" + (optional? "true" : "false") + NL, depth);
+    debug("end(" + (optional? "true" : "false") +")" + NL, depth);
     return (target != null)? target.endElement(optional) : depth >= 0;
-  }
-  public void putAttribute(String name, NodeList value) {
-    debug("put " + name + "=" + value.toString() + NL, depth);
-    depth++;
-    if (target != null) target.putAttribute(name, value);
-  }
-  public void startAttribute(String name) {
-    debug("put " + name + "=\\" + NL, depth);
-    depth++;
-    if (target != null) target.startAttribute(name);
   }
 
   /************************************************************************

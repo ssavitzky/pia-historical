@@ -6,13 +6,12 @@ package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.BasicElement;
 import crc.dom.NodeList;
+import crc.dom.Attribute;
+import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 
-import crc.dps.NodeType;
-import crc.dps.Handler;
-import crc.dps.Processor;
-import crc.dps.Context;
-import crc.dps.Util;
+import crc.dps.*;
+import crc.dps.active.*;
 
 /**
  * Handler for <if>...<then>...<else-if>... <else>...</if>. <p>
@@ -38,6 +37,13 @@ public class ifHandler extends GenericHandler {
   /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
+
+  public void action(ActiveElement e, Context aContext, Output out, String tag, 
+  		     AttributeList atts, NodeList content, String cstring) {
+    ParseTreeElement element = new ParseTreeElement(e);
+    element.setAttributes(atts);
+    if (!noCopyNeeded) Util.appendNodes(content, element);
+  }
 
   /** endAction must assume that the contents have been expanded.
   public Token endAction(Token t, Processor p, Node n) {
@@ -108,7 +114,7 @@ public class ifHandler extends GenericHandler {
 
   /** Constructor must set instance variables. */
   public ifHandler() {
-    parseContent = true;
+    stringContent = false;	// true 	want content as string?
     expandContent = true;
   }
 }

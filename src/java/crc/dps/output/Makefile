@@ -9,8 +9,11 @@ FILES = \
 	AbstractOutput.java \
 	ActiveOutput.java \
 	OutputTrace.java \
+	ToAttributeList.java \
 	ToDocument.java \
+	ToNodeList.java \
 	ToParseTree.java \
+	ToString.java \
 	ToWriter.java
 
 include $(TOPDIR)/makefiles/file.make

@@ -25,10 +25,4 @@ public abstract class AbstractOutput extends CurrentNode implements Output {
   public boolean endElement(boolean optional) {
     return super.endElement(optional);
   }
-  public void putAttribute(String name, NodeList value) {
-    super.putAttribute(name, value);
-  }
-  public void startAttribute(String name) {
-    super.startAttribute(name);
-  }
 }

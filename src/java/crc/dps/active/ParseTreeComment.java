@@ -119,7 +119,7 @@ public class ParseTreeComment extends BasicComment implements ActiveComment {
    *	Otherwise it uses  <code>basicToString</code>.
    */
   public String toString() {
-    return startString();
+    return startString() + contentString() + endString();
   }
 
   /************************************************************************

@@ -4,7 +4,6 @@
 
 package crc.dps.output;
 
-import crc.dps.Token;
 import crc.dps.Output;
 
 import crc.dom.Node;
@@ -35,26 +34,6 @@ public class ToDocument extends AbstractOutput {
   protected Node current = null;
   protected Document root = null;
 
-
-  /************************************************************************
-  ** Pull Mode Operations:
-  ************************************************************************/
-
-  /** Accepts the next token from the associated Processor, and splices
-   *	it into the Document under construction. 
-   *
-   *	@return <code>true</code> if the Output is willing to accept more
-   *		output, <code>false</code> to pause the Processor.
-   */
-  public boolean nextToken(Token theToken) {
-    // === should create a node.
-    return true;
-  }
-
-  /** Informs the Output that no more Tokens are available.
-   */
-  public void endOutput() {
-  }
 
   /************************************************************************
   ** Construction:

@@ -67,16 +67,18 @@ in a single depth-first, left-to-right traversal.
 <h3>To Be Done</h3>
 
 <ul>
-  <li> One problem:  attributes don't have a next sibling.
-       When we get to the end of a list we mustn't call advanceParser,
-       so we need a flag that says whether we're in a list.  Could be done by
-       depth, but a flag might be easier.
+  <li> Current problem:  hangs at EOF instead of terminating. Probably some
+       other problems, too.  Should have startElement(e, AttrList).
+
+  <li> It will probably be necessary to add Tagset to Context, so we can have
+       &lt;read&gt; (for example) use the same tagset.
+
+  <li> Currently Parser does not check syntax of current node to see whether
+       to look for entities or elements in the content.
 
   <li> Need flag that tells whether the current node has been processed yet.
        (really relevant only for toNextNode, to keep track of whether we've
        enumerated the children yet)
-
-  <li> Context needs getEntityValue, getIndexValue
 
   <li> ParseTreeElement should keep information about whether any of its
        attributes contain entities that need to be expanded.  Should be much
@@ -103,35 +105,14 @@ in a single depth-first, left-to-right traversal.
        latter requires more hacking in the parser, but is clearly the
        <em>Right Thing<sup>TM</sup></em>.
 
-  <li> Tagset needs to be (effectively) a DOMFactory for <em>parse trees</em>. 
-
   <li> Rename ParseTree* -&gt; Tree*  (A*??) and move to a separate subdir (?)
 
   <li> Eventually there should be a ParseTreeGenericNode, basically Token, so
        that we can build trees with arbitrary node types.  
 
-  <li> The various stack and other auxiliary types should get moved into aux
-       or eliminated altogether.  (later)
-
-  <li> Want an interface for peering back up the nested elements to
-       see what we're in.  Possibly just add to Cursor, since any
-       implementation has a stack or a tree available.  A little lighter than
-       Context, since it doesn't have bindings.
-
   <li> We probably need a Continuation interface as well as a Context.
        It is probably possible for an ActiveNode to function as a
        Continuation as well as, perhaps, a Handler.  Action may do.
-
-  <li> It seems reasonable that the Context stack should <em>not</em> be
-       identical to <em>either</em> the Input parse stack nor the Output
-       construction stack: it should instead be the <em>actor invocation
-       stack</em>.  
-
-  <li> ... This makes it fairly  clear what needs to be added to make a
-       Context.  Entities, at least.  Bindings could be passed down the eval
-       stack along with in and out, so a full-bore context might not be needed
-       at all.  (All three need to be in the processing stack, though, if we
-       want an iterative processor.)
 
   <li> It's not impossible that a Processor might be functional as both an
        Input and an Output, so it might be able to do process-in-place.

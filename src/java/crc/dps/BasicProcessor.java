@@ -5,25 +5,18 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.Attribute;
+import crc.dom.AttributeList;
 import crc.dom.Element;
+import crc.dom.Entity;
+import crc.dom.Text;
 
 import crc.dps.aux.*;
+import crc.dps.active.*;
+import crc.dps.output.ToNodeList;
 
 /**
  * A minimal implementation for a document Processor. <p>
- *
- *	BasicProcessor extends ParseStack, which makes it somewhat
- *	more efficient to maintain the corresponding information.  It
- *	implements the Input interface but not InputStack; if it did,
- *	there would be conflicts between the Input stack that it
- *	<em>uses</em> and any that it might be linked <em>onto</em> as
- *	part of a chain of processors. <p>
- *
- * ===	In order to generate a parse tree, we need to start with 
- *	<code>node</code> being the Document.
- *
- * ===	The bottom thing on the input stack needs to be a guard that makes
- *	sure that all unmatched start tags get ended.
  *
  * === NOTE: Both Parser and Processor need DTD and parse stack info. ===
  * === it's up to the Parser to associate Handler, etc. with Token. ===
@@ -31,8 +24,10 @@ import crc.dps.aux.*;
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
- * @see crc.dps.Token
- * @see crc.dps.Input */
+ * @see crc.dps.Output
+ * @see crc.dps.Input 
+ * @see crc.dps.Action
+ */
 
 public class BasicProcessor extends ContextStack implements Processor {
 
@@ -45,42 +40,52 @@ public class BasicProcessor extends ContextStack implements Processor {
   public void processNode() {
     Action action = input.getAction();
     if (action != null) {
-      additionalAction(action.action(input, this, output));
+      additionalAction(action.action(input, this));
     } else {
-      expandNode();
+      defaultProcessNode();
     }
   }
 
   /** Perform any additional action requested by the action routine. */
   protected final void additionalAction(int flag) {
+    debug("!! action -> " + flag + " for " + lognode(input.getNode()) + "\n");
+
     switch (flag) {
-    case -1: copyNode(); return;
+    case -1: copyCurrentNode(); return;
     case  0: return;
-    case  1: expandNode(); return;
+    case  1: defaultProcessNode(); return;
     }
   }
 
-  public void expandNode() {
+  /** Process the current node in the default manner, expanding entities
+   *	in its attributes and processing its children re-entrantly.
+   */
+  public void defaultProcessNode() {
     Node node = input.getNode();
     if (node.getNodeType() == NodeType.ENTITY) {
-      // === expand entity.  Very simple:  copy value to output.
-      output.putNode(node);	// === for now ===
+      expandEntity((Entity) node, output);
     } else if (input.hasChildren() || input.hasActiveAttributes()) {
-      if (/*===*/false && input.hasActiveAttributes()) {
-	output.startElement(input.getElement());
-	processAttributes();
+      if (input.hasActiveAttributes()) {
+	ActiveElement e = new ParseTreeElement(input.getActive().asElement());
+	expandAttributesInto(e);
+	output.startElement(e);
+	if (input.hasChildren()) processChildren();
+	output.endElement(e.isEmptyElement() || e.implicitEnd());
       } else {
 	output.startNode(node);
+	if (input.hasChildren()) processChildren();
+	output.endNode();
       }
-      if (input.hasChildren()) processChildren();
-      // === if element and no end tag, need endElement(true)
-      output.endNode();
     } else {
       output.putNode(node);
     }
   }
 
-  public void copyNode() {
+  /** Copy the current node to the output.  
+   *
+   *	This is done by recursively traversing its children.
+   */
+  public void copyCurrentNode() {
     if (input.hasChildren()) {
       output.startNode(input.getNode());
       copyChildren();
@@ -100,38 +105,74 @@ public class BasicProcessor extends ContextStack implements Processor {
     input.toParent();
   }
 
-  /** Process the children of the current Node */
+  /** Copy the children of the current Node */
   public void copyChildren() {
     for (Node node = input.toFirstChild() ;
 	 node != null;
 	 node = input.toNextSibling()) {
-      copyNode();
+      copyCurrentNode();
     }
     input.toParent();
   }
 
-  /** Process the attributes  of the current Node */
-  public void processAttributes() {
-    for (Node node = input.toFirstAttribute() ; node != null;
-	 node = input.toNextAttribute()) { 
-      processNode();
-    }
-    input.toParentElement();
+  /* === Many of the following could be done using a suitable Input. === */
+
+  /** Copy nodes in a nodelist. */
+  public void copyNodes(NodeList nl) {
+    Util.copyNodes(nl, output);
   }
 
+  /** Expand entities in the attributes of the current Node.
+   */
+  public void expandAttributesInto(ActiveElement e) {
+    Element elt =  input.getElement();
+    AttributeList atts = elt.getAttributes();
+    for (int i = 0; i < atts.getLength(); i++) { 
+      try {
+	expandAttribute((Attribute) atts.item(i), e);
+      } catch (crc.dom.NoSuchNodeException ex) {}
+    }
+  }
 
-  /************************************************************************
-  ** Input and Output:
-  ************************************************************************/
+  /** Expand entities in the value of a given attribute. */
+  public void expandAttribute(Attribute att,  ActiveElement e) {
+    e.setAttribute(att.getName(), expandNodes(att.getValue()));
+  }
 
-  protected Input input = null;
-  public Input getInput() { return input; }
-  public void setInput(Input anInput) { input = anInput; }
+  /** Expand nodes in a nodelist. */
+  public NodeList expandNodes(NodeList nl) {
+    if (nl == null) return null;
+    ToNodeList dst = new ToNodeList();
+    expandNodes(nl, dst);
+    return dst.getList();
+  }
 
-  protected Output output = null;
-  public Output getOutput() { return output; }
-  public void setOutput(Output anOutput) { output = anOutput; }
+  public void expandNodes(NodeList nl, Output dst) {
+    for (int i = 0; i < nl.getLength(); i++) { 
+      try {
+	Node n = nl.item(i);
+	if (n.getNodeType() == NodeType.ENTITY) {
+	  expandEntity((Entity) n, dst);
+	} else {
+	  dst.putNode(n);
+	}
+      } catch (crc.dom.NoSuchNodeException ex) {}
+    }
+  }
 
+  /** Expand a single entity. */
+  public void expandEntity(Entity n, Output dst) {
+    String name = n.getName();
+    NodeList value = null;
+    if (name.indexOf('.') >= 0) value = getIndexValue(name);
+    else 
+      value = getEntityValue(name);
+    if (value == null) {
+      dst.putNode(n);
+    } else {
+      Util.copyNodes(value, dst);
+    }
+  }
 
   /************************************************************************
   ** Processing:
@@ -151,7 +192,6 @@ public class BasicProcessor extends ContextStack implements Processor {
     processNode();
     while (running && input.toNextSibling() != null) processNode();
   }
-
 
   /************************************************************************
   ** Debugging:
@@ -175,9 +215,64 @@ public class BasicProcessor extends ContextStack implements Processor {
     System.err.print(s);
   }
 
+  public String lognode(Node aNode) {
+    switch (aNode.getNodeType()) {
+    case crc.dom.NodeType.ELEMENT:
+      Element e = (Element)aNode;
+      AttributeList atts = e.getAttributes();
+      return "<" + e.getTagName()
+	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
+	+ ">";
+
+    case crc.dom.NodeType.TEXT: 
+      Text t = (Text)aNode;
+      return t.getIsIgnorableWhitespace()? "space" : "text";
+
+    default: 
+      return aNode.toString();      
+    }
+  }
+
+
   public void setDebug() 	{ verbosity = 2; }
   public void setVerbose() 	{ verbosity = 1; }
   public void setNormal() 	{ verbosity = 0; }
   public void setQuiet() 	{ verbosity = -1; }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public BasicProcessor() {}
+
+  public BasicProcessor(Input in, Context prev, Output out,
+			EntityTable ents) {
+    super(prev, in, out, ents);
+  }
+
+  public BasicProcessor(Input in, Context prev, Output out) {
+    this(in, prev, out, prev.getEntities());
+  }
+
+  /** Return a new BasicProcessor copied from an old one. */
+  public BasicProcessor(BasicProcessor p) {
+    input = p.input;
+    output = p.output;
+    entities = p.entities;
+    stack = p;
+  }
+
+  /** Create a sub-processor with a given input and output. */
+  public Processor subProcess(Input in, Output out) {
+    return new BasicProcessor(in, this, out, entities);
+  }
+
+  /** Create a sub-processor with a given output. 
+   *
+   *	Commonly used to obtain an expanded version of the attributes
+   *	and content of the parent's current node.
+   */
+  public Processor subProcess(Output out) {
+    return new BasicProcessor(input, this, out, entities);
+  }
 }

@@ -188,9 +188,9 @@ public class CursorStack implements Cursor {
   protected void setNode(ActiveNode aNode) {
     node   = aNode;
     active = aNode;
-    action = active.getAction();
+    if (active != null) action = active.getAction();
 
-    if (node.getNodeType() == NodeType.ELEMENT) {
+    if (node != null && node.getNodeType() == NodeType.ELEMENT) {
       element = active.asElement();
       tagName = element.getTagName();
     } else {

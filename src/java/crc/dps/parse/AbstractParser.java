@@ -335,7 +335,9 @@ public abstract class AbstractParser extends CursorStack implements Parser
     if (nextText == null && next == null && nextEnd == null) try {
       buf.setLength(0);
       nextText = getText();	// Try to get some text.
-    } catch (IOException e) {};
+    } catch (IOException e) {
+      return null;
+    }
     if (nextText != null) {
       n = nextText;
       nextText = null;
@@ -444,7 +446,9 @@ public abstract class AbstractParser extends CursorStack implements Parser
   /************************************************************************
   ** Construction:
   ************************************************************************/
-  
+
+  protected void initialize() { advanceParser(); }
+
   public AbstractParser() {
     if (isIdent == null) initializeTables();
   }
@@ -463,13 +467,17 @@ public abstract class AbstractParser extends CursorStack implements Parser
   ** Traversal:
   ************************************************************************/
   
-  public Node toNextSibling() {
+  /** Advance the parser to the next Node in the input. 
+   *	Used internally in cases where we know there is no possible
+   *	sibling, i.e. most of the time.
+   */
+  protected Node advanceParser() {
     // Need to know whether we've seen all the children...
     ActiveNode n = nextToken();
     if (n != null) {
       setNode(n);
       return n;
-    } else {
+    } else if (nextEnd != null) {
       // End tag, in nextEnd.
       int i = checkEndTag(nextEnd);
       if (i < 0) { 
@@ -482,12 +490,38 @@ public abstract class AbstractParser extends CursorStack implements Parser
       if (i == 0) nextEnd = null;
       atLast = true;
       return null;
+    } else {
+      // end of file. 
+      return null;
+    }
+  }
+
+  /** toNextSibling has to check for the possibility that we already
+   *	have the node in question; this happens when we're in an attribute 
+   *	list.  It might also happen if we somehow manage to parse several
+   *	nodes at once. 
+   */
+  public Node toNextSibling() {
+    // If the current node has a next sibling, just go there.
+    Node nn = getNode().getNextSibling();
+    if (nn != null) {		// There's a real sibling.  Go there.
+      setNode(nn);
+      return nn;
+    } else if (getNode().getParentNode() != null) {
+      // === The above test fails if we are building a tree!!!!! ===
+      return null;		// parent exists.  Just return null.
+    } else {
+      return advanceParser();	// No parent, just go.
     }
   }
 
   public Node toFirstChild() {
     pushInPlace();
-    return toNextSibling();
+    if (node.hasChildren()) {
+      setNode(node.getFirstChild());
+      return node;
+    } else 
+      return advanceParser();
   }
 
   public Node toNextNode() {
@@ -502,11 +536,30 @@ public abstract class AbstractParser extends CursorStack implements Parser
   }
   
   public Attribute toFirstAttribute() {
-    return null;		// ===
+    // We already have the whole attribute list.  Push.
+    crc.dom.AttributeList atts = element.getAttributes();
+    if ((atts == null) || (atts.getLength() == 0)) return null;
+    Node n;
+    try {
+      n = atts.item(0);
+    } catch (crc.dom.NoSuchNodeException e) {
+      return null;
+    }
+    pushInPlace();		// The critical step: push in place.
+    setNode(n);
+    atFirst = true;
+    return (Attribute)n;
   }
 
   public Attribute toNextAttribute() {
-    return null;		// ===
+    if (node != null && active == null) System.err.println("Null node");
+    if (active.getNodeType() != NodeType.ATTRIBUTE) return null;
+    else {
+      Node n = active.getNextSibling();
+      if (n == null) return null;
+      setNode(n);
+      return (Attribute)n;
+    }
   }
 
   public boolean atLast() {

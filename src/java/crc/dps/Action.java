@@ -6,6 +6,7 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
+import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 
 import crc.dps.active.*;
@@ -30,7 +31,8 @@ public interface Action {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** Performs the action associated with the current Node in a given Context. 
+  /** Performs the action associated with the current Node in a given
+   *	Processor.
    *
    *	The current node is the one obtainable from the Input via 
    *	<code>getNode</code>.  The action routine is free to make any 
@@ -39,14 +41,54 @@ public interface Action {
    *	more efficient than copying the input node into yet another
    *	cursor to operate on it. <p>
    *
-   * @return integer indicating what additional action to take:
+   * @return integer ``action code'' indicating what additional action to take:
    *	<dl compact>
    *	   <dt> -1 <dd> Copy node without expansion.
    *	   <dt>  0 <dd> No additional action required.
-   *	   <dt>  1 <dd> Copy node with expansion.
+   *	   <dt>  1 <dd> Copy node, expanding attributes and content.
+   *	   <dt>  2 <dd> Copy node, expanding attributes but not content.
+   *	</dl>
    */
-  public int action(Input in, Context c, Output out);
+  public int action(Input in, Processor p);
 
+  public static final int COPY_NODE   = -1;
+  public static final int COMPLETED   =  0;
+  public static final int EXPAND_NODE =  1;
+  public static final int EXPAND_ATTS =  2;
+
+  /** Performs the action associated with the current Node in a given Context. 
+   */
+  public void action(Input in, Context aContext, Output out);
+
+  /** Performs the action associated with the current ActiveElement, after
+   *	``pre-processing'' its components.  <p>
+   *
+   *	This is normally invoked from the ``three-argument'' 
+   *	<code>action</code> method, but may eventually be called directly
+   *	from a Processor.
+   *
+   * @param e the <em>original</em> element obtained from the Input.
+   * @param aContext the context in which to look up entity bindings
+   * @param out the Output to which to send results
+   * @param tag the element's tagname
+   * @param atts the (processed) attribute list.
+   * @param content the (possibly-processed) content.
+   * @param cstring the (possibly-processed) content as a string. 
+   */
+  public void action(ActiveElement e, Context aContext, Output out, String tag, 
+  		     AttributeList atts, NodeList content, String cstring);
+
+  /** Returns the value associated with the given Node in the given context.
+   *	The node need not be the current one, but it must be the one to which
+   *	this Action applies.
+   */
+  public NodeList getValue(Node aNode, Context aContext);
+
+  /** Returns the value associated with the given name in a given Node and
+   *	context.  The node need not be the current one, but it must be the one
+   *	to which this Action applies.
+   */
+  public NodeList getValue(String aName, Node aNode, Context aContext);
 
   /** === probably want start, end actions for elements. === */
 
@@ -55,16 +97,13 @@ public interface Action {
   ************************************************************************/
 
   /** If <code>true</code>, the content is expanded (processed). 
-   *	Otherwise, a parse tree is built out of Token nodes.
+   *	Otherwise, it is simply copied.
    */
   public boolean expandContent();
 
-  /** If <code>true</code>, begin constructing a parse tree even if the parent
-   *	is not building one. If <code>expandContent</code> is true, a
-   *	<em>processed</em> parse tree will be produced; otherwise, an
-   *	<em>unprocessed</em> parse tree of Token nodes will be produced.
+  /** If <code>true</code>, collect the content in the form of a string.
    */
-  public boolean parseContent();
+  public boolean stringContent();
 
   /** If <code>true</code>, the element is passed to the output while being
    *	processed.  In general this will be <code>true</code> for passive

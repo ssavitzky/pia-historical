@@ -78,6 +78,21 @@ public interface Context {
   public void setOutput(Output out);
 
   /************************************************************************
+  ** Bindings:
+  ************************************************************************/
+
+  /** Get the value of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public NodeList getEntityValue(String name);
+
+  /** Get the value of an index, i.e. a dotted list of entity names. 
+   * @return <code>null</code> if the value is undefined.
+   */
+  public NodeList getIndexValue(String index);
+
+
+  /************************************************************************
   ** Context Stack:
   ************************************************************************/
 

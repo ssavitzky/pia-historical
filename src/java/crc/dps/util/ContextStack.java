@@ -41,7 +41,7 @@ public class ContextStack  implements Context {
   ** State:
   ************************************************************************/
 
-  protected ContextStack stack = null;
+  protected Context stack = null;
   protected int depth = 0;
   protected EntityTable entities;
   protected Input input;
@@ -63,6 +63,28 @@ public class ContextStack  implements Context {
   public int getDepth() { return depth; }
 
   /************************************************************************
+  ** Bindings:
+  ************************************************************************/
+
+  /** Get the value of an entity, given its name. 
+   * @return <code>null</code> if the entity is undefined.
+   */
+  public NodeList getEntityValue(String name) {
+    EntityTable ents = getEntities();
+    return (ents == null)? null : ents.getValueForEntity(name, false);
+  }
+
+  /** Get the value of an index, i.e. a dotted list of entity names. 
+   * @return <code>null</code> if the value is undefined.
+   */
+  public NodeList getIndexValue(String index) {
+    EntityTable ents = getEntities();
+    // === getIndexValue currently broken ===
+    return (ents == null)? null : ents.getValueForEntity(index, false);
+  }
+
+
+  /************************************************************************
   ** Construction and Copying:
   ************************************************************************/
 
@@ -75,13 +97,12 @@ public class ContextStack  implements Context {
 
   public ContextStack() {}
 
-  public ContextStack(ContextStack prev, Input in, Output out,
-		      EntityTable ents) {
+  public ContextStack(Context prev, Input in, Output out, EntityTable ents) {
     stack    = prev;
     input    = in;
     output   = out;
     entities = ents;
-    depth    = prev.depth + 1;
+    depth    = prev.getDepth() + 1;
   }
 
 

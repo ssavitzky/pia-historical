@@ -42,10 +42,6 @@ public class BasicHandler extends AbstractHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  public int action(Input in, Context aContext, Output out) {
-    return 1;
-  }
-
   // All inherited.
 
   /************************************************************************

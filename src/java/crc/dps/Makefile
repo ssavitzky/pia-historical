@@ -12,8 +12,7 @@ PACKAGES = \
 	input \
 	output \
 	parse \
-	tagset \
-	test
+	tagset
 
 FILES = \
 	Action.java \

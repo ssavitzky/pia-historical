@@ -46,17 +46,6 @@ import crc.dom.Element;
 public interface Input extends Cursor {
 
   /************************************************************************
-  ** State Accessors:
-  ************************************************************************/
-
-  /** Returns the current Node. <p>
-   *
-   * @return  <code>null</code> if and only if no more nodes are
-   *	available at this level. 
-   */
-  public Node getNode();
-
-  /************************************************************************
   ** Navigation Operations:
   ************************************************************************/
 
@@ -93,19 +82,6 @@ public interface Input extends Cursor {
    *	second child, if any.
    */
   public Node toFirstChild();
-
-  /** Returns the first attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  public Attribute toFirstAttribute();
-
-  /** Returns the next attribute of the current Node. 
-   *	A subsequent call on <code>toNextNode</code> or 
-   *	<code>toNextAttribute</code> will return the second attribute.
-   */
-  public Attribute toNextAttribute();
-
 
   /** Returns <code>true</code> if and only if the current node has no
    *	previous siblings.  This occurs only with a node returned by
