@@ -17,7 +17,8 @@ FILES = \
 	T_ArrayNodeList.java \
 	T_BasicElement.java \
 	T_DOM.java \
-	T_OtherElement.java
+	T_OtherElement.java \
+	T_Entity.java
 
 
 include $(TOPDIR)/makefiles/package.make
@@ -37,7 +38,10 @@ CASEFILES = \
 	TestBasicElement1.case \
 	TestBasicElement2.case \
 	TestDOM1.case \
-	TestOtherElement1.case
+	TestOtherElement1.case \
+	TestEntity1.case \
+	TestEntity2.case \
+	TestEntity3.case
 
 .SUFFIXES: .case .txt .html .if .out .ok .diff .run .java .class
 
