@@ -121,6 +121,7 @@ dps-check::
 	@echo 'TOTAL	' `ls -l $(ACTORS) | wc -l` handlers':' \
 		`grep 'action(' $(ACTORS) | wc -l` worked on \
 		`grep 'bogusL' $(ACTORS) | wc -l` superceded \
+		`grep 'omittedL' $(ACTORS) | wc -l` omitted \
 		`grep 'buggyL' $(ACTORS) | wc -l` buggy
 	@for f in `ls $(ACTORS)`; do \
 	  grep -q 'action(' $$f || echo $$f:`wc -l $$f` no action ; done
