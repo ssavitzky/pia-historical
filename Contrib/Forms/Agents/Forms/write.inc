@@ -1,3 +1,7 @@
+<if><test match="-" exact>&FORM.name;</test><then>
+<h1> NO Username entered</h1> Please use the BACK button on your browser to
+go back to the form and enter your name.</then>
+<else>
 <write file="&dir;/&year;/&month;/&day;/&timesec;.route.html">&routeobject;</write> 
 <set name=path>&dir;/&year;/&month;/&day;/&timesec;</set>
 <write append file="&path;.html">
@@ -43,3 +47,4 @@
 &FORM.name; &dateString;</a><br></write> 
 
 <read file="&path;.html" process>
+</else></if>
