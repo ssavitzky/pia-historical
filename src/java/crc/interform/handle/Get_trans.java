@@ -11,7 +11,9 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.pia.Transaction;
-
+import crc.pia.Content;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import crc.sgml.SGML;
 
 
@@ -57,10 +59,44 @@ public class Get_trans extends Get {
 	ii.replaceIt(trans.headersAsString());
       else
 	ii.replaceIt(trans.header(name));
-    } else {
+    }else if(it.hasAttr("content")){
+      String cont = getContent(trans);
+      if( cont != null )
+        ii.replaceIt( cont );
+    }else {
       SGML result = env.transaction.attr(name);
       result = processResult(result, it);
       ii.replaceIt(result);
     }
   }
+
+ protected String getContent(Transaction trans){
+    String myType = trans.contentType();
+    Content cont = null;
+    String data = null;
+    ByteArrayOutputStream ba = null;
+
+    if( myType != null ){
+      if( myType.equalsIgnoreCase("text/html") ||
+	  myType.equalsIgnoreCase("text/plain") ||
+	  myType.equalsIgnoreCase("application/x-www-form-urlencoded") )
+	{
+	  cont = trans.contentObj();
+	  if( cont != null ){
+	    try{
+	      ba = new ByteArrayOutputStream();
+	      cont.writeTo( ba );
+	      data = ba.toString();
+	    }catch(crc.pia.ContentOperationUnavailable e){}
+	    catch(IOException ee){}
+	    finally{
+	      return data;
+	    }
+	  }
+	}
+      return null;
+    }else
+      return null;
+  }
+
 }
