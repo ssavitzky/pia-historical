@@ -37,7 +37,7 @@ all::
 	for p in $(PACKAGES); do if test -d $$p; then \
 		echo 'building ' $(PACKAGE).$$p; \
 		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
-		 VPATH=$(VPATH)/$$p); fi\
+		 VPATH=$(VPATH)/$$p); fi ;\
 	done
 
 
@@ -46,7 +46,7 @@ doc::
 	@@for p in `ls -d $(PACKAGES)`; do if test -d $$p; then \
 		echo 'doc ' $(PACKAGE).$$p; \
 		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) 
-		 doc); fi \
+		 doc); fi ; \
 	done
 
 clean::
