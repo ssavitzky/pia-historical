@@ -52,19 +52,23 @@ public class Features{
     */
   }
 
+  /************************************************************************
+  ** Setting Feature Values:
+  ************************************************************************/
+
   /**
    * Assert a named feature, with a value. 
    */
   public Object assert(String feature, Object v){
     Object value;
 
-    if(v==null){
+    if (v == null) {
       value = new Boolean( true );
       featureTable.put( feature, value );
-    }else if( v instanceof String && v == "" ){
+    } else if (v instanceof String && "".equals(v)) {
       value = new Boolean( false );
       featureTable.put( feature, value );
-    }else {
+    } else {
         featureTable.put( feature, v );
 	value = v;
     }
@@ -72,7 +76,7 @@ public class Features{
   }
 
   /**
-   * Assert a named feature. 
+   * Assert a named feature, i.e. assign it a value of true. 
    */
   public Object assert(String feature){
     Object value = new Boolean( true );
@@ -83,30 +87,87 @@ public class Features{
 
 
   /**
-   *Deny a named feature, i.e. assign it a value of false
+   * Deny a named feature, i.e. assign it a value of false
    */
   public boolean deny(String feature){
     featureTable.put( feature, new Boolean( false ) );
     return false;
   }
 
+  /************************************************************************
+  ** Computing Feature Values:
+  ************************************************************************/
+
   /**
    *Test for the presence of a named feature
    */
-  public boolean has(String feature){
+  public final boolean has(String feature){
     return featureTable.containsKey( feature );
   }
 
   /**
    * Test a named feature and return a boolean.
    */
-  public boolean test(String feature, Object parent){
+  public final boolean test(String feature, Object parent){
     Object value = featureTable.get( feature );
     
     if (value == null) value = compute(feature, parent);
 
     return test(value);
   }
+
+  /**
+   *  Return the raw value of the feature.
+   */
+  public final Object feature( String featureName, Object parent ){
+    Object val = featureTable.get(featureName);
+    if (val == null)
+      return compute(featureName, parent); 
+    return val;
+  }
+
+
+  /**
+   *  Return the raw value of the feature.
+   */
+  public final Object getFeature( String featureName, Object parent ){
+    Object val = featureTable.get(featureName);
+    if (val == null)
+      return compute(featureName, parent); 
+    return val;
+  }
+
+
+  /**
+   * Associate a named feature with an arbitrary value.
+   */
+  public Object setFeature( String featureName, Object value ){
+    return assert( featureName, value );
+  }
+
+
+  /**
+   * Compute and assert the value of the given feature.
+   * Can be used to recompute features after changes
+   */
+  public final Object compute(String feature, Object parent){
+    Object val;
+
+    try{
+      if( parent instanceof Transaction )
+	val = ((Transaction) parent).computeFeature( feature );
+      else
+	val = ((Agent) parent).computeFeature( feature );
+      return setFeature( feature, val );
+    }catch(UnknownNameException e){
+      return assert(feature, "");
+    }
+  }
+
+
+  /************************************************************************
+  ** Matching:
+  ************************************************************************/
 
   /** Test a value.  
    *	@return false for null, False, and "", true otherwose.
@@ -122,48 +183,15 @@ public class Features{
     }
   }
 
-  /**
-   *  Return the raw value of the feature.
-   */
-  public Object feature( String featureName, Object parent ){
-    Object val ;
-
-    val = featureTable.get( featureName );
-    if ( val == null )
-      return compute(featureName, parent); 
-    return val;
-    
+  /** Matching.  Returns true if the list of criteria matches the parent. */
+  public boolean matches (Criteria criteria, Object parent) {
+    return criteria.match(this, parent);
   }
+  
 
-
-  /**
-   * Associate a named feature with an arbitrary value.
-   *
-   */
-  public Object setFeature( String featureName, Object value ){
-    return assert( featureName, value );
-    
-  }
-
-
-  /**
-   * Compute and assert the value of the given feature.
-   * Can be used to recompute features after changes
-   */
-  public Object compute(String feature, Object parent){
-    Object val;
-
-    try{
-      if( parent instanceof Transaction )
-	val = ((Transaction) parent).computeFeature( feature );
-      else
-	val = ((Agent) parent).computeFeature( feature );
-      return setFeature( feature, val );
-    }catch(UnknownNameException e){
-      return assert(feature, "");
-    }
-  }
-
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
   /**
    * Create a new Features for a Transaction.  Compute a few features that
@@ -181,47 +209,6 @@ public class Features{
     initialize(null);
   }
 
-  /**
-   * Matching.
-   *
-   *	The match criteria are a list (not a hash, because order might be
-   *	significant), of sublists or name=>value pairs.
-   *
-   *		[criteria]	ORed, i.e. fail if not matched.
-   *		x => bool	fail if !test(x) != !b
-   *		x => \&subr	fail if &subr(test(x)) returns false
-   *		x => \$var	$var = test(x)
-   *
-   * === maybe 	x => ["op" value]	comparison
-   *		x => [value] 		eq
-   *
-   *            x => [subr args...] (splice test(x) in as first arg.)
-   */
-  public boolean matches ( Vector criteria, Object parent ) throws NullPointerException{
-    int i;
-    if( criteria == null ) throw new NullPointerException("bad criteria.");
-
-    for( i = 0; i < criteria.size(); i++){
-      Object o = criteria.elementAt( i );
-
-      if( o instanceof String ){
-	String c = (String)o;
-	boolean feature = test( c, parent );
-	
-	Object ov = criteria.elementAt( ++i );
-	if( ov instanceof Boolean ){
-	  Boolean value = (Boolean) ov;
-	  if (!feature != !value.booleanValue())
-	    return false;
-	}
-      }
-
-    }
-    return true;
-  }
-
-
-  
 }
 
 
