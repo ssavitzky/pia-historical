@@ -35,11 +35,12 @@
 
 <h2>Warning!</h2>
 
-The checkpointing facility is still experimental.  It is entirely possible
-that, if the PIA's data structures change significantly, your checkpoint file
-will become unreadable.  <strong>Checkpointing should not be used as the only
-mechanism for persistent data yet.</strong><p>
-
+The checkpointing facility is quite reliable, but it is almost entirely a
+speed-up mechanism and <em>not</em> a method for permanently saving your
+Agency's state.  Whenever the PIA's software is upgraded, it is very likely
+that its data structures will have changed enough to render your checkpoint
+file unreadable.  <strong>Checkpointing should not be used as the
+mechanism for making data persistent.</strong><p>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
