@@ -190,7 +190,7 @@ sub push {
 	if (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
 	} elsif (ref $_) {
-	    my $t = $tag};
+	    my $t = $tag;
 	    if ($t) {
 		push(@$content, $_);
 	    } else {
