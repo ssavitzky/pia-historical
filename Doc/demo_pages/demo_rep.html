@@ -1,0 +1,236 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+  </body></head>
+
+<h2>Repeat Handler Demo</h2>
+
+The <a name='rep_demo'>repeat handler</a> has the effect of
+iterating over a list of strings or numbers.  This handler expands an
+element until one of the defined sub-elements reaches a stopping
+condition.  During expansion, an implicit local namespace is created
+in which iteration variables are defined.  Repeat handler examples include:
+<a href='#rep_simple'>simple iteration</a>, <a href='#rep_while'>while sub-element</a>,
+<a href='#rep_until'>until sub-element</a>, <a href='#rep_fin'>finally sub-element</a>,
+<a href='#rep_first'>first sub-element</a>, <a href='#rep_start'>start, step, and stop sub-elements</a>,
+<a href='#rep_paral'>looping in parallel</a>, and <a href='#rep_nest'>nested loops</a>.
+
+
+<a name='rep_simple'><h3> Simple Iteration</h3></a>
+
+<b>Description: </b> This is the simplest form of repeat, with an implied
+foreach sub-element.  The following example iterates through the list of
+three words. Each word is bound to the default list variable &amp;li, and
+printed out.
+<p>
+<b>Input: </b> &lt;repeat list="dog log frog"&gt;&li; &lt;/repeat&gt;
+<p>
+<b>Result: </b> dog log frog 
+<p>
+<hr>
+
+<a name='rep_while'><h3> Foreach and While Sub-Element Example</h3></a>
+
+<b>Description: </b> This example loops through and
+expands a whitespace-separated list of words and numbers.  It uses the
+while sub-element to loop through the expanded list and test for
+numbers.  When the test evaluates to false, the while loop returns.
+Where the test evaluates to true, the numbers are printed out.  
+<p>
+
+<b>Input: </b> 
+<pre>
+&lt;repeat&gt;&lt;foreach&gt;2 3 4 x y &lt;/foreach&gt;
+   &lt;while&gt;&lt;test numeric&gt;&li; &lt;/while&gt;&li;
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b>
+		2 
+		3 
+		4 
+		
+<p>
+<hr>
+<a name='rep_until'><h3> Until Sub-Element Example</h3></a>
+<b>Description: </b> This example is very similar to the one above.  It loops through a
+series of words until a match is found.  It prints out the loop values up to the 
+one that matches.  This example uses an explicit iteration variable.
+<p>
+<b>Input: </b> 
+<pre>&lt;repeat&gt;&lt;foreach entity=x&gt;weasle otter stoat ferret&lt;/foreach&gt;
+   &lt;until&gt;&lt;test match="stoat"&gt;&x; &lt;/until&gt;&x;
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b> 
+   weasle 
+   otter 
+   
+<p>
+<hr>
+<a name='rep_fin'><h3> Finally Sub-Element Example</h3></a>
+
+<b>Description: </b> The "finally" sub-element is expanded following
+the last iteration.  In this example, the last value bound to the loop
+variable is returned.  Since a match is found, that value is returned;
+otherwise the last item on the list would be returned.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;repeat&gt;&lt;foreach&gt;5 4 3 2 1 0 -1 -2 -3&lt;/foreach&gt;
+   &lt;until&gt;&lt;test zero&gt;&li;&lt;/until&gt;
+      &lt;finally&gt;&li;&lt;/finally&gt;
+&lt;/repeat&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+		   
+			
+		
+		   
+			
+		
+		   
+			
+		
+		   
+			
+		
+		   
+			
+		
+		   0
+<p>
+<hr>
+
+<a name='rep_first'><h3> First Sub-Element Example</h3></a>
+
+<b>Description: </b> The "first" sub-element is expanded once during
+the first iteration.  In this example, some text is printed before the
+output from the loop is printed.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;repeat&gt;&lt;foreach&gt;10 20 30 40&lt;/foreach&gt;&li; 
+   &lt;first&gt;The answer is: &lt;/first&gt;
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b> The answer is: 10 
+		   
+		20 
+		   
+		30 
+		   
+		40 
+		   
+		
+<p>
+<hr>
+
+<a name='rep_start'><h3> Start, Stop and Step Sub-Elements Example </h3></a>
+<p>
+<b>Description: </b> This example prints even numbers, by print loop variables
+starting at 2 and stepping by 2.  It stops at 20.
+<p>
+
+<b>Input: </b> &lt;repeat&gt;&lt;for start=2 stop=8 step=2&gt;&lt;/for&gt; &n; &lt;/repeat&gt;
+<p>
+<b>Result: </b>  2  4  6  8 
+<p>
+<hr>
+
+<a name='rep_paral'><h3> Looping in Parallel</h3></a>
+
+<b>Description: </b> Because the contents of a repeat are repeatedly
+expanded, it is easy to go through multiple lists and print output from each
+list.  The following illustrates how the contents of separate lists can be
+printed.  The first loop iterates through a list of words, the second prints
+its loop index.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;repeat&gt;&lt;foreach&gt;partridge turtle_doves french_hens&lt;/foreach&gt;
+   &lt;for&gt;&lt;stop&gt;10&lt;/for&gt;
+      &n; &li; 
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b> 
+		   
+			1 partridge 
+    	 	
+		   
+			2 turtle_doves 
+    	 	
+		   
+			3 french_hens 
+    	 	
+<p>
+<hr>
+<h3> Create a Numbered List</h3>
+
+<b>Description: </b> This is another example of iterating through two loops; this one
+does something a little more useful.  It creates a numbered list by taking each item on
+the list of words and formatting them into a numbered list with numbering provided by the
+second list.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;repeat&gt;&lt;foreach entity=x&gt;one two three four five&lt;/foreach&gt;
+   &lt;for start=1 stop=5&gt;&lt;/for&gt;
+      &lt;b&gt;&n;. &lt;/b&gt; &lt;em&gt;&x;&lt;/em&gt;&lt;br&gt;
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b> 
+<p>
+
+   
+      <b>1. </b> <em>one</em><br>
+
+   
+      <b>2. </b> <em>two</em><br>
+
+   
+      <b>3. </b> <em>three</em><br>
+
+   
+      <b>4. </b> <em>four</em><br>
+
+   
+      <b>5. </b> <em>five</em><br>
+
+<p>
+<hr>
+
+<a name='rep_nest'><h3> Nested List Example</h3></a>
+<b>Description: </b> This gives an example of nesting two lists.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;repeat list="day night good bad no"&gt;&li; 
+   &lt;repeat list="time"&gt;&li; &lt;/repeat&gt;
+&lt;/repeat&gt;
+</pre>
+<p>
+<b>Result: </b> day 
+			time 
+		night 
+			time 
+		good 
+			time 
+		bad 
+			time 
+		no 
+			time 
+		
+
+<p>
+
+</html>
+
+

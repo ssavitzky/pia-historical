@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>PIA Tagsets</title></head>
+<body><center><h1>PIA Tagsets</h1></center>This document describes
+the PIA tagset. It covers the following:<ul><li>the relationship
+between a tagset and a <a href = "#dtd">DTD</a></li>
+<li>the <a href = "#self">self-documenting</a> nature of PIA tagsets</li>
+<li>rules for <a href = "#names">naming</a> PIA tags</li>
+<li>the association of <a href = "#actions">actions</a> with tagsets</li>
+<li>the <a href = "#predefined">predefined tagsets</a></li>
+<li>the <a href = "#resources">search path</a> used by the PIA in
+loading a tagset's resources</li></ul><h2><a name = "dtd"
+    accesskey = "#DTD">Tagsets and DTDs</a></h2><p>A DTD or Document
+Type Definition is an XML or SGML document that contains the rules
+that specify the allowable content for a particular class of documents.
+Included in any DTD is a list of specifications for all of the elements
+that are needed by the document class. To learn more about DTDs,
+XML and SGML visit the <a href = "http://www.w3.org">W3C</a> website. </p><p>A
+tagset definition file is essentially a mapping into XHTML of an
+SGML DTD. Tags are similar, in many respects, to the elements that
+make up a DTD. Much like a DTD, a tagset contains the definitions
+of the entities, elements and attributes that can be used in a document,
+along with their values and details of their syntax. </p><p>Tagsets
+differ from DTDs, however, in that they associate actions with the
+elements that make up the set. A single DTD can map to multiple
+tagsets as tagsets are concerned not simply with document structure
+but with the actions associated with active tags. For example the
+PIA has two tagset that have the same elements and DTD but different
+uses. The <em>tagset</em> tagset is used to define other tagsets.
+The <em>tsdoc</em> tagset is used to document the elements that
+make up the tagset.</p><p>A tagset specifies a superset of the information
+in a document's DTD (Document Type Definition), and is contained
+in a file with a <code>.ts</code> extension. </p><h2><a name = "self">Tagsets
+are Self-Documenting</a></h2><p>A tagset definition file can also
+be seen as an HTML file that documents a markup language. The standard
+HTML tags are augmented with a handful of XML constructs that actually <em>define</em> the language.
+Because both the formal and informal descriptions are mixed in the
+same file, it is easy to derive some of the documentation directly
+from the formal components, thus ensuring its correctness. This
+allows the developer to confine the <em>informal</em> parts of the
+documentation to descriptive material, without having to worry about
+keeping two equivalent versions of every definition in sync.</p><h2><a
+    name = "names">Tagset Names</a></h2><p>Element tags and attributes
+start with a letter and contain any sequence of letters, digits,
+period <code>(.)</code>, hyphen <code>(-)</code> , underscore <code>(_)</code>,
+and colon <code>(:)</code> characters. Case is ignored in HTML, but
+significant in XML. XXML tag names are <em>not</em> case sensitive.
+Attribute names are always case sensitive.</p><p>Within active element
+tag names, the hyphen <code><code>-</code></code> is usually used
+to separate words. The colon <code><code>(:)</code></code>  character
+serves a special function. That portion of the name before the colon
+designates a "<dfn>namespace</dfn>,'' and the portion after it a
+name <em>within</em> that space. Each user-defined active element,
+for example, defines a namespace with the element's tag name as
+its namespace name, and the names <code>attributes</code> and <code>content</code> defined
+within it. </p><h2><a name = "actions">Actions and Tagsets</a></h2><p>Actions
+can be associated with "active'' elements. Whenever such an element
+appears in a document, a corresponding piece of code termed its
+"<dfn>action</dfn>'' is "<dfn>expanded</dfn>.'' Locally-defined
+entities are bound to the element's attributes and content. </p><p>A
+collection of entities and elements designed to work together in
+an active document is called a "<dfn>tagset</dfn>,'' largely for
+historical reasons. (MetaHTML also uses "tagset'' in this sense.)
+A tagset is essentially an extension of an SGML or XML <dfn>Document
+Type Definition</dfn> (DTD), although tagsets are usually defined
+using an XML-based notation which is easier to parse and to extend. </p><h2><a
+    name = "predefined">Predefined Tagsets</a></h2><p>The PIA defines
+a standard tagset, called <code>pia-xhtm</code> for use in creating
+active documents. Some agents may define their own tagsets as extensions
+to the standard one. Distinct tagsets can   be defined for different
+kinds of document processing. Possible uses include parsing HTML,
+formatting, and translating SGML documents <em>into</em> HTML.</p><p>The
+following tagsets are currently predefined: </p><ul><li> HTML<br>The
+syntax of standard HTML 3.2 </li>
+<li> <a href = "Manuals/InterForm/Tagset//tagset.html">tagset</a><br>This
+defines the syntax of tagset definition files. Read it first, since
+it explains the syntactic constructs used in the other tagset definition
+files.   </li>
+<li> <a href = "Manuals/InterForm/Tagset/basic.html">basic</a><br>The
+definitions of the "primitive'' tags -- the ones that <em>all</em> tagsets
+use, and that are implemented using Java "handlers'' rather than
+being defined in terms of other tags.   </li>
+<li> <a href = "Manuals/InterForm/Tagset/xxml.html">XXML</a><br>The
+tagset intended for stand-alone XML processing. It adds a comparatively
+small number of tags to basic that are defined in terms of other
+tags. </li>
+<li> <a href = "Manuals/InterForm/Tagset/xhtml.html">XHTML</a><br>The
+tagset used in the PIA for HTML processing, containing all the tags
+defined in both stand-alone and HTML.</li>
+<li> <a href = "Manuals/InterForm/Tagset/pia-xhtml.html">pia-XHTML</a><br>The
+tagset used in the PIA for HTML processing, containing all the tags
+defined XHTML along with some tags used for formatting interform
+pages.</li></ul><p>Any agent can have a private tagset. Its name
+is <code><em>type</em>-xhtml</code>, where <code><em>type</em></code> is
+the agent's type. For most agents this is the same as the agent's
+name. DOFS and Toolbar are examples of type names. </p><h3><a
+    name = "resources">How Resources are Located and Loaded</a></h3><p>Tagsets
+make use of the Java's resource mechanism that allows arbitrary
+data files to exist in the same namespace as classes. Resources
+can be shipped around in JAR files, downloaded from the Internet,
+and, in most cases, obtained from directories in the <code>CLASSPATH</code>.
+This means that common tagsets can be defined in the same directory
+as the classes of the <code>crc.dps.tagset</code> package. </p><p>Tagsets
+and other resources (including external entities) can exist either
+as Java resources or as files located relative to the document being
+processed. They can also be located in the DPS, in an internal namespace. </p><p>When
+a DTD is specified in a document using a system identifier, the
+PIA searches for the corresponding <code>.ts</code>  file. A tagset
+specified on a command line takes precedence over one specified
+in the document's <code>doctype</code> declaration. This allows
+documents to be processed with tagsets other than the one they were
+originally written for. </p><p>The search order for tagsets is as
+follows:</p><ol><li>First, the namespace is identified. An identifier
+followed by a colon indicates an explicit namespace. Otherwise,
+if the name contains slashes it is considered to be a file located
+relative to the current document; otherwise if it contains periods
+it is considered to be a resource. Tagsets with neither are sought
+first in the current directory (the explicit namespace <code>file:</code>), then
+in the package <code>crc.dps.tagset</code> in the explicit namespace <code>DPS:</code>.
+   </li>
+<li>If the namespace is specified explicitly, it performs the lookup.
+   </li>
+<li>The tagset's name is first sought along the internal processing
+context chain defined by the <code>topProcessor</code> links in <code>Context</code> objects.</li>
+<li>The class <code><em>tsname</em>.class</code> is sought provided
+that the name could be in the package/resource namespace. If it
+exists and implements the <code>Tagset</code> interface, it is loaded
+and        instantiated. </li>
+<li> <code><em>tsname</em>.ts</code> is sought, first in the current
+directory, then as a resource, to identify the correct namespace.
+   </li>
+<li> <code><em>tsname</em>.obj</code> is loaded as a serialized
+object, if it exists in the same location and is newer than <code><em>tsname</em>.ts</code> </li>
+<li> <code><em>tsname</em>.tss</code> is processed using the minimal
+bootstrap tagset containing <code>&#60;tagset></code>, <code>&#60;define></code>,
+and their sub-elements, if it exists in the same location and is newer
+than <code><em>tsname</em>.ts</code>. This is assumed to be a tagset
+"stripped" of its documentation. </li>
+<li> <code><em>tsname</em>.ts</code> is processed using the <code>tagset</code> tagset. </li></ol><p>Once
+a tagset is loaded, its name is added to the appropriate namespace. </p><p>The
+search order used for entities is similar, except that entities
+cannot be represented as classes, and external entity names are
+expected to have an extension. </p><p>While processing a tagset's
+start tag, the tagset mentioned in its <code>context</code> is also
+loaded, followed by any tagsets mentioned in its <code>include</code> attribute.
+Tagsets and entities mentioned in     resources are not looked for
+in locations relative to the current document, but only in those
+relative to the current resource. </p><p><b>Copyright 1999 Ricoh
+Silicon Valley</b></p></body></html>

@@ -1,0 +1,107 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+<html>
+<head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+</body></head>
+
+
+<h2>Define Elements and Entities Demo</h2>
+The <a name='define_demo'>define element handler</a> shows how to define some elements and
+a simple entity.
+<p>
+
+<h3> Define and Use an Element </h3>
+<b> Description:</b> Create an element called co_name whose action prints a company name in full
+between two horizontal rules.
+<p>
+<b>Definition: </b> 
+<pre>
+&lt;define element=co_name&gt;
+  &lt;action&gt;
+	&lt;hr&gt;
+	&lt;text pad align center width=80&gt;Ricoh Silicon Valley, Inc.&lt;/text&gt;
+	&lt;hr&gt;
+  &lt;/action&gt;
+&lt;/define&gt;
+</pre>
+<p>
+
+<!--  Actual definition does not print  -->
+
+<p>
+
+<b>Input: </b>&lt;co_name/&gt;
+<p>
+<b>Result: </b>
+	<hr>
+	Ricoh Silicon Valley, Inc.                                                      
+	<hr>
+  
+<p>
+
+<hr>
+
+<h3> Using Namespace Entities</h3>
+
+<b>Description: </b> The example below shows how to set an attribute and how use some of the 
+entities that are available within the extract namespace.  This example takes a list of space-separated
+words and formats them into a numbered list.  The attribute lstring takes a string as an argument.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;define element=ordered_list empty&gt;
+  &lt;doc&gt; Converts a series of space-separated words into a numbered list.
+  &lt;/doc&gt;
+  &lt;define attribute=lstring&gt;
+    &lt;doc&gt; String that is converted to an ordered list.
+    &lt;/doc&gt;
+  &lt;/define&gt;
+  &lt;action&gt;
+    &lt;ol&gt;
+	&lt;extract&gt;&lt;from&gt;&attributes;&lt;name&gt;lstring&lt;eval/&gt;
+	   &lt;repeat&gt;&lt;foreach&gt;&list;&lt;/foreach&gt;&lt;li&gt;&li;
+	   &lt;/repeat&gt;
+	&lt;/extract&gt;
+    &lt;/ol&gt;
+  &lt;/action&gt;
+&lt;/define&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+
+
+
+    <ol>
+	<li>one
+	   </li><li>two
+	   </li>
+    </ol>
+  
+
+
+
+<h3> Define and Use an Entity </h3>
+<b> Description:</b> Define the entity "tomorrow", and set it to the value "Saturday".  Show
+how it may be used in an XML document.
+<p>
+<b> Input: </b>&lt;define entity=tomorrow&gt;&lt;value&gt;Saturday&lt;/define&gt;
+<!--  Result is unseen  -->
+
+<p>
+<b> Input: </b>Tomorrow is: &amptomorrow;
+<p>
+<b> Result:</b>Tomorrow is: Saturday
+<p>
+
+<br>
+</html>
+
+
+
+
+
+
+
+
+

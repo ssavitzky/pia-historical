@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+<!ENTITY Root CDATA "ROOT">
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>XHTML Entity Reference</title></head>
+<body><center><h1>XHTML Entity Reference</h1></center><p>PIA entities
+are named objects that can be referred to in interforms. They function
+much like variables or macros in that they can be defined and later
+replaced by their definition.</p><p>XHTML entities follow the same
+conventions as XML entities and therefore begins with an ampersand
+(<code>&#38;</code>) followed by a name, and ends with a semicolon
+(<code>;</code>). </p><p>More formally the rules for entity creation
+might be specified as follows:</p><dl><dt>entity ::= '' name ';'
+  </dt>
+<dt>name ::= [identifier ':']? identifier   </dt>
+<dt>identifier := [letter | digit | '-' | '_' | '.']+   </dt></dl><p>Case
+is <em>significant</em> in entity names. </p><p>Thus to reference
+the current day of the week one might include the following text:</p><blockquote><code>Today
+is &#38;day;</code>.</blockquote><p>This text might be evaluated,
+assuming that this is the start of a new work week, as:</p><blockquote><code>Today
+is Monday.</code></blockquote>An entity name can consist of a pair
+of sub-names separated by a colon (<code>:</code>). These sub-names form
+a path (similar to a file path) through a sequence of "namespaces."
+If no namespace is given, the interpreter searches through any locally-defined
+entities (for example, the list element entity defined by the repeat
+tag) and the top-level (global) entity table associated with the
+interform being interpreted.<p>Entities can be used as "iteration
+variables." For example, you can repeat some text for every item
+in a list. The <code>&#38;li;</code> entity is replaced by each
+list item in turn.</p><p>The document <code><a>Evaluated Entities</a></code> shows
+the value on your system of each of the entities listed below.</p><table
+    border = "1" frame = "border">
+<tbody>
+<tr>
+<td><b><a name = "e-agentName">agentName</a></b></td>
+<td>Name of the agent that owns this XHTML form</td>
+</tr>
+<tr>
+<td><b><a name = "e-agentNames">agentNames</a></b></td>
+<td>The names of all defined agents. </td>
+</tr>
+<tr>
+<td><b><a name = "e-agentPath">agentPath</a></b></td>
+<td>Full path to this agent (i.e. "/Type/Name" if <code>agentName</code> and
+       <code>agentType</code> are different)</td>
+</tr>
+<tr>
+<td><b><a name = "e-agentType">agentType</a></b></td>
+<td>Type of the agent that owns this XHTML form</td>
+</tr>
+<tr>
+<td><b><a name = "e-date">date</a></b></td>
+<td>Current date in the form <code>yyyymmdd</code>. This format
+is an        ISO standard; dates in this format can be sorted, and
+are valid as        filenames, SGML identifiers, table keys, and
+so on. </td>
+</tr>
+<tr>
+<td><b><a name = "e-dateString">dateString</a></b></td>
+<td>Current date and time in a human-readable form similar to that generated
+by the Unix <code>date</code> command.</td>
+</tr>
+<tr>
+<td><b><a name = "e-day">day</a></b></td>
+<td>Current day of the month, padded with zero if necessary to make
+two digits.</td>
+</tr>
+<tr>
+<td><b><a name = "e-dayName">dayName</a></b></td>
+<td>Name of the current day of the week. </td>
+</tr>
+<tr>
+<td><b><a name = "e-entityNames">entityNames</a></b></td>
+<td>Names of all defined entities.</td>
+</tr>
+<tr>
+<td><b><a name = "e-fileName">fileName</a></b></td>
+<td>Name of the file containing the XHTML form being expanded. </td>
+</tr>
+<tr>
+<td><b><a name = "e-filePath">filePath</a></b></td>
+<td>Complete path to the file containing the XHTML form being expanded.
+This is always a complete pathname on the system running the PIA.</td>
+</tr>
+<tr>
+<td><b><a name = "e-forms">forms</a></b></td>
+<td>Counter that is incremented at the end tag of every form element.
+Can be used for constructing a unique identifier for each form in
+a document. </td>
+</tr>
+<tr>
+<td><b><a name = "e-hour">hour</a></b></td>
+<td>Current hour, padded with a zero if necessary to make two digits. </td>
+</tr>
+<tr>
+<td><b><a name = "e-minute">minute</a></b></td>
+<td>Current minute, padded with a zero if necessary to make    
+   two digits. </td>
+</tr>
+<tr>
+<td><b><a name = "e-month">month</a></b></td>
+<td>Current month (starting with January = 1), padded with a zero
+if necessary to make two digits. </td>
+</tr>
+<tr>
+<td><b><a name = "e-monthName">monthName</a></b></td>
+<td>Current month (starting with January = 1), padded with a zero
+if necessary to make two digits. </td>
+</tr>
+<tr>
+<td><b><a name = "e-piaDIR">piaDIR</a></b></td>
+<td>Full pathname of the directory in which the PIA is installed.
+       Normally accessed inside the PIA as <code><a href = "/PIA/">/PIA/</a></code></td>
+</tr>
+<tr>
+<td><b><a name = "e-piaHOME">piaHOME</a></b></td>
+<td>Home directory of the user executing the PIA </td>
+</tr>
+<tr>
+<td><b><a name = "e-piaHOST">piaHOST</a></b></td>
+<td>Fully-qualified domain name of the host on which the PIA is
+       executing. </td>
+</tr>
+<tr>
+<td><b><a name = "e-piaPORT">piaPORT</a></b></td>
+<td>Number of the port on which the PIA is listening for connections.</td>
+</tr>
+<tr>
+<td><b><a name = "e-piaUSER">piaUSER</a></b></td>
+<td>Login name of the user executing the PIA. </td>
+</tr>
+<tr>
+<td><b><a name = "e-second">second</a></b></td>
+<td>Current second, padded with a zero if necessary to make    
+   two digits.</td>
+</tr>
+<tr>
+<td><b><a name = "e-time">time</a></b></td>
+<td>Current time in the form <code>hh:mm</code> </td>
+</tr>
+<tr>
+<td><b><a name = "e-transAgentName">transAgentName</a></b></td>
+<td>Name of the agent (if any) to which the current request transaction
+is directed, or which generated the current response transaction. </td>
+</tr>
+<tr>
+<td><b><a name = "e-transAgentType">transAgentType</a></b></td>
+<td>Type of the agent (if any) to which the current request transaction
+is directed, or which generated the current response transaction. </td>
+</tr>
+<tr>
+<td><b><a name = "e-url">url</a></b></td>
+<td>Full URL of the current transaction. </td>
+</tr>
+<tr>
+<td><b><a name = "e-urlPath">urlPath</a></b></td>
+<td>Path part of the current transaction's URL.</td>
+</tr>
+<tr>
+<td><b><a name = "e-urlQuery">urlQuery</a></b></td>
+<td>Query string of the current transaction's URL. </td>
+</tr>
+<tr>
+<td><b><a name = "e-usrDIR">usrDIR</a></b></td>
+<td>Full pathname of the directory that contains the user's personal PIA
+state. Normally accessed inside the PIA as <code><a href = "/My/">/&Root;/</a></code></td>
+</tr>
+<tr>
+<td><b><a name = "e-weekday">weekday</a></b></td>
+<td>Index (Sunday = 0) of the current day of the week.</td>
+</tr>
+<tr>
+<td><b><a name = "year">year</a></b></td>
+<td>Current (four-digit) year. This <em>may</em> be inaccurate if
+the PIA is executed with the system's date set before 1970.</td>
+</tr>
+</tbody>
+</table></body></html>

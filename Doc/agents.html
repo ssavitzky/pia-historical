@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>Guide to PIA Agents</title></head>
+<body><center><h1>Guide to PIA Agents</h1></center><p>This document
+describes the sample agents that ship with the PIA. PIA agents fall
+into three categories:</p><ul><li><a href = "#Standard">Standard
+agents</a> that are automatically installed when the PIA is set
+up. </li>
+<li><a href = "#Optional Agents">Optional agents </a>that ship with
+the PIA and can be installed at the user's discretion.</li>
+<li><a href = "#Contributed">Contributed agents </a>made available
+by the PIA developer community.</li></ul><hr><h2><a name = "Standard">Standard
+Agents</a></h2><p>The agents currently available are:</p><ul><li><a
+    href = "#Admin">Admin</a></li>
+<li><a href = "#PIA">PIA and ROOT</a></li>
+<li><a href = "#fbi">Toolbar</a></li>
+<li><a href = "#History">History</a></li></ul><h3><a name = "Admin"></a>Admin</h3><p>The
+Admin agent is the main agent. It manages all the other agents that
+make up the PIA Agency.</p><h3><a name = "PIA"></a>PIA and ROOT</h3><p>These
+two agents serve the files that are in the <code><var>PIA_DIR</var></code> and
+the <code><var>PIA_HOME</var></code> directories respectively. The
+PIA and ROOT agents are of type Document-Oriented File System (DOFS).</p><h3><a
+    name = "fbi"></a>The Toolbar Agents</h3><p>There are two Toolbar
+agents. The localfile agent adds a control menu to pages proxied
+by the PIA agency.</p><p>The remote agent adds a control menu to
+pages proxied through your agency</p><h3><a name = "History"></a>History
+Agent</h3><p>The History agent tracks all web pages that you visit
+from any browser, allowing you to search those URLs by date. To
+make best use of the History agent, set your browsers to use your
+local Information Agency as your proxy (this setting is usually
+found under the Network options available under edit/preferences,
+options/network, or some similar menu. You need to specify both
+the host name and port--8888 by default-- where your agency is running.) </p><p>Once
+you set your Information Agency as your proxy, browse to a few external
+web pages, then visit the <a href = "/History/home.xh">History agent's
+home page</a>. You should see a link to today's date (e.g. <tt>My/History /
+1997 / 08 /04</tt>) When you jump to this link you will see a list
+of the pages you visited.</p><h2>Optional Agents</h2><p>The PIA
+provides a simple form for installing agents. Look for it in <code>Admin/install_agent</code>.
+The optional  agents currently shipping with the PIA include:</p><ul>
+<li>Swifty</li>
+<li>HelloWorld</li>
+<li>View</li>
+<li>demo</li></ul><h3>Swifty</h3><p>The Swifty agent allows you
+to easily customize your PIA home page. It offers the option of
+adding useful links, provides a custom page title and a decorative
+image</p><h3>HelloWorld</h3><p>The HelloWorld agent allows the user
+to choose a custom greeting. This agent provides a simple example
+of form use for PIA developers.</p><h3>View</h3><p>The View agent
+allows you to view documents after those document are processed
+with a tagset or script.</p><h3>demo</h3><p>This agent serves as
+both a demonstration and testbed for the PIA's interform markup
+language and its formatter/interpreter. Its home page provides links
+to tag use examples.</p><h2>Contributed Agents</h2><p>Agents contributed
+by the PIA developer community can be found in the directory <code>Contrib/&#60;host.name>/Agents</code> Install
+these agents much as you would any of the optional agents provided
+by Ricoh. </p><p>Users can place a copy of their agent directories
+in <code>Contrib/HOST.NAME/</code> and submit them to the PIA group
+for inclusion in the general release.  Before attempting to install
+a contributed agent,  copy its directory and files to  <code><var>USR_DIR</var>/Agents</code> or<code> <var>PIA_DIR</var>/Agents</code>.</p><p><b>Copyright
+1999 Ricoh Silicon Valley</b></p></body></html>

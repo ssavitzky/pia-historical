@@ -1,0 +1,31 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+  </body></head>
+
+<h2>Protect Handler Demo</h2>
+
+The <a name='protect_demo'>protect handler demo</a> shows how to protect marked up nodes from
+being expanded.
+<p>
+<h3> Protect a Marked Up Node</h3>
+<b> Description:</b> This example shows the result of protecting emphasized text.  HTML characters
+have been encoded so that they will not be expanded.
+<p>
+<b> Input: </b>&lt;protect markup&gt;Silicon Valley is &lt;em&gt;the&lt;/em&gt; place to program.&lt;/protext&gt;
+<p>
+<b> Result: </b> Silicon Valley is &lt;em&gt;the&lt;/em&gt; place to program.
+<p>
+<hr>
+
+<h3> Expand a Marked Up Node</h3>
+<b> Description:</b> If the result attribute is used, marked up nodes are expanded in the normal
+way.
+<p>
+<b> Input: </b>&lt;protect result&gt;Silicon Valley is &lt;em&gt;the&lt;/em&gt; place to program.&lt;/protext&gt;
+<p>
+<b> Result: </b> Silicon Valley is <em>the</em> place to program.
+<p>
+
+</html>

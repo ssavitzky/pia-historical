@@ -1,0 +1,153 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+  </body></head>
+
+
+<h2>Test Handler Demo</h2>
+
+Test is used to perform a test on its content. If no attributes are
+specified, the test is the same as that performed by if. If the
+tested condition is true, the test element expands to 1,
+otherwise it expands to nothing at all.  Test is mainly used
+inside control-flow operations for computing conditions.
+
+The <a name='test_demo'>test handler demo</a> shows how to use the
+test handler to test for: <a href='#zero'> zero</a>, <a href='#pos'> a
+positive number</a>, <a href='#neg'> a negative number</a>, <a href='#match'> a matching string </a>, <a href='#null'> null content
+</a>, <a href='#num'> a number</a>, <a href='#sorted'> or a sorted
+list </a>, and how to <a href='#notnum'>negate a test with not</a>.  
+<p>
+
+<a name='zero'><h3>Test for Zero</h3></a>
+<b> Description:</b>Test zero returns true when passed whitespace or 0; false when handed a text string or a number other than zero.
+<p>
+<b> Input:      </b>&lt;test zero&gt;0&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<b> Input:      </b>&lt;test zero&gt; &lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<b> Input:      </b>&lt;test zero&gt;-1&lt;/test&gt;
+<p>
+<b> Result:     </b>
+<p>
+<b> Input:      </b>&lt;test zero&gt;text string&lt;/test&gt;
+<p>
+<b> Result:     </b>
+<p>
+
+<hr>
+
+<a name='pos'><h3>Test for a Positive Number</h3></a>
+<b> Description:</b>The following examples test for a positive number.
+<p>
+<b> Input:      </b></html><html>&lt;test positive&gt;-1&lt;/test&gt;
+<p>
+<b> Result:     
+
+</b><p>
+<b> Input:      </b></html><html>&lt;test positive&gt;1&lt;/test&gt;
+<p>
+<b> Result:     1
+<hr>
+
+
+<a name='neg'><h3>Test for a Negative Number</h3></a>
+<b> Description:</b>The following examples test for a negative number.
+</b><p>
+<b> Input:      </b>&lt;test negative&gt;-1&lt;/test&gt;
+<p>
+<b> Result:     1
+
+</b><p>
+<b> Input:      </b></html><html>&lt;test negative&gt;0&lt;/test&gt;
+<p>
+<b> Result:     
+<hr>
+
+
+<a name='match'><h3> Test for a Match on a String </h3></a>
+<b> Description:</b>The following examples test for exact and case insensitive matches on text strings.
+</b><p>
+<b> Input:      </b> &lt;test match="cat"&gt;Match the Category&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<b> Input:      </b> &lt;test case match="cat"&gt;Match the Category&lt;/test&gt;
+<p>
+<b> Result:     </b>
+<hr>
+
+<a name='null'><h3>Test for null Content </h3></a>
+<b> Description:</b> The following examples test for null on an empty node (one without text or whitespace) and on a node containing whitespace.
+<p>
+<b> Input:      </b>&lt;test null&gt;&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<b> Input:      </b>&lt;test null&gt; &lt;/test&gt;
+<p>
+<b> Result:     </b>
+<hr>
+
+
+<a name='num'><h3>Test for a Number </h3></a>
+<b> Description:</b>  The following examples test for numeric content.
+<p>
+<b> Input:      </b>&lt;test numeric&gt;999&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<b> Input:      </b>&lt;test numeric&gt;one&lt;/test&gt;
+<p>
+<b> Result:     </b>
+<hr>
+
+
+<a name='notnum'><h3>Test for Not a Number </h3></a>
+<b> Description:</b>  This example shows the use of not.  While this test should
+fail, if it is negated, it will return true.
+<p>
+<b> Input:      </b>&lt;test not numeric&gt;one&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<hr>
+
+
+<a name='sorted'><h3>Test a Sorted List</h3></a>
+<b> Description:</b>Test that a sorted list is sorted.  Should return true.
+<p>
+<b> Input:      </b>&lt;test sorted&gt;Ants Bats Toads&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<hr>
+<h3>Test an Unsorted List</h3>
+<b> Description:</b>Test that an unsorted list is sorted.  Should return false.
+<p>
+<b> Input:      </b>&lt;test sorted&gt;bats ants toads&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+<hr>
+<h3>Case Sensitive Test on a Sorted List</h3>
+<b> Description:</b>Do a case sensitive test on a sorted list.  Should return true.
+<p>
+<b> Input:      </b>&lt;test case sorted&gt;Bats ants toads&lt;/test&gt;
+<p>
+<b> Result:     </b>1
+<p>
+
+<b>Copyright &copy;   Ricoh Silicon Valley</b><br>
+<em></em>
+  
+
+
+
+</html>
+
+
+

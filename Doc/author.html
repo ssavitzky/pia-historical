@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+<!ENTITY Root CDATA "ROOT">
+<!ENTITY Toolbar CDATA "Toolbar">
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>Authoring Agents</title><link
+    href = "mailto:steve@crc.ricoh.com" rev = "made"></head>
+<body><center><h1>Authoring Agents</h1></center><p>This document
+provides an overview of agent writing in the PIA system. In particular
+it describes:</p><ul><li><a href = "#Files">Agent files</a></li>
+<li><a href = "#Naming">Agent naming</a></li>
+<li><a href = "#Tips">Tips on agent creation</a></li></ul><p>The
+extended HTML tags needed to create agents are described in the <a
+    href = "pia-xhtml.html">PIA XHTML Manual</a>.</p><p>Source code
+for sample agents is in the <a href = "../../../Agents">Agents</a> directory
+at the top-level of the PIA's installation tree. Feel free to use
+these files as a source of ideas and examples, and as a basis for
+creating new agents.</p><h2><a name = "Files"></a>Agent Files</h2><p>This
+section describes the files that make up an agent and the search
+path the PIA uses in locating those files.</p><h3>Standard Files</h3><p>A
+PIA Agent consists of little more than a collection of extended
+HTML (XHTML) files organized in a directory and automatically generated.
+Agents require a set of standard files. Those files, listed below,
+are "inherited" from the root directory if they are not found in
+the agent's home directory.</p><ul><li><code>home.xh</code><br>The
+agent's "home page." This is the page that appears when he agent
+is selected from the Agency's list of running agents. It is therefore
+the first page seen by a user. It includes an index of the agent's
+other pages. It is returned from a request for <code>/AgentName</code>.</li>
+<li><code>index.xh</code><br>The page returned from a request for <code>/AgentName/</code>.
+Note the trailing slash that distinguishes this page from the home
+page. It gives a standardized listing of the agent's top-level extended
+HTML form. Typically, it needs no customization.</li>
+<li><code>options.xh</code><br>Lists the agent's options. This page
+seldom requires customization.</li>
+<li><code>initialize.xh</code> <br>This XHTML file is invoked automatically
+when the agent is installed. It defines default values for any options
+and sets the "match criteria" for transactions that the agent acts
+on. This file does <em>not</em> have a default, and can be omitted
+if not needed.</li></ul><h3>Search Path</h3><p>The PIA follows a
+search path in seeking the extended HTML files that comprise an
+agent. Agents look first in directories under <var><code>USR_DIR</code></var>,
+then in those under <var><code>PIA_DIR</code></var> and finally
+in <code><var>PIA_DIR</var>/src</code> That path is as follows:</p><ol>
+<li>The <code>AgentType/AgentName</code> directory.<ul><li><code>USR_DIR/Agents/AgentType/AgentName/</code><br>The
+user's custom XHTML files for this agent.</li>
+<li><code>PIA_DIR/Agents/AgentType/AgentName/</code><br>The Agent's
+home directory.</li>
+<li><code>PIA_DIR/src/Agents/AgentType/AgentName/</code><br>The
+home directory for experimental agents and development tools. </li></ul></li>
+<li>The <code>Agents/AgentName</code> directory<ul><li>The <code>AgentName</code> directory <code>USR_DIR/Agents/AgentName/</code> <br>The
+user's custom XHTML forms for this agent.   </li>
+<li> <code>PIA_DIR/Agents/AgentName/</code><br> The agent's home
+directory</li>
+<li> <code>PIA_DIR/src/Agents/AgentName/</code><br> The home directory
+for experimental agents and development tools.</li></ul></li>
+<li>The <code>Agents/AgentType</code> directory.<ul><li> <code>USR_DIR/Agents/AgentType/</code> <br>The
+user's custom XHTML files for this agent type.</li>
+<li> <code>PIA_DIR/Agents/AgentType/</code><br>The agent type's
+home directory.   </li>
+<li> <code>PIA_DIR/src/Agents/AgentType/</code>. </li></ul></li>
+<li>The <code>Agents</code> directory<ul><li><code>USR_DIR/Agents/</code> <br>The
+user's customized default XHTML files. </li>
+<li> <code>PIA_DIR/Agents/</code> <br>The PIA's default XHTML files.</li></ul></li></ol><code><var>USR_DIR</var></code><p> is
+normally <code>$HOME/.pia</code>, and is accessible as the DOFS
+agent <code>/&Root;</code>. <code>PIA_DIR</code> is normally
+either <code>$HOME/pia</code> (if the user has their own working
+copy of the PIA source code), or wherever the PIA is installed;
+it is accessible as the DOFS agent <code>/PIA</code>.</p><h2><a
+    name = "Naming"></a>Agent Naming</h2><p>Every agent has a <em>name</em> and
+a <em>type</em>. The type is used to create a family of agents with
+similar behavior but different options. The <a href = "/DOFS">DOFS</a> agents
+form such a family. So do the <a href = "/Toolbar">&Toolbar;</a> agents <a
+    href = "/Toolbar/Remote">Remote</a> and <a
+    href = "/Toolbar/Localfile">Localfile</a>. In most case, the
+type classification name represents not only the family name but
+names an agent of which the others are "sub-agents."</p><p>Agents
+that are not "sub-agents" of some type have the name (<code>&#38;agentName;</code>)
+and type (<code>&#38;agentType;</code>). An XHTML form can verify
+this with the following test: </p><blockquote> <code>&#60;test exact
+match="&#38;agentName;>"&#38;agentType;&#60;/test></code></blockquote><p>By
+convention, agent names intended to be seen at the top level of
+an agent listing are capitalized, but this is not required. Name
+lookup is case-sensitive, and there may be good reasons to prefer
+uppercase or lowercase names in some cases. For example, DOFS is
+uppercase because it is an acronym. Most agents with DOFS as their
+type have lowercase names except for the "standard" ones <code>/&Root;</code> and <code>/PIA</code>.
+For another example, <code>Localfile</code> and <code>Remote</code> are
+sub-agents of <code>&Toolbar;</code>, and so have lowercase names. </p><p>At
+some point it will be possible to make sub-agents invisible at the
+top level. </p><h3>Agent Data Structures and Code</h3><p>Every installed
+agent has an associated software object which contains its options
+(stored as entities in the <code>AGENT</code> namespace) and the
+criteria that match features of the transactions in which the agent
+has registered interest.</p><p>This object is normally an instance
+of the class <code>GenericAgent</code>. If a subclass of this class
+is defined in the package <code>crc.pia.agent</code>, and its name
+matches the agent's type (with the first character capitalized,
+the rest in lowercase, and all period (<code>.</code>) and hyphen
+(<code>-</code>) characters converted to underscore (<code>_</code>)
+characters), it is loaded automatically when the agent is installed.</p><p>It
+is sometimes necessary to use a different programming language other
+than Java for part of an agent. For example, PERL is good for text
+manipulation). One choice is to put the external code into a CGI
+script (with a <code>.cgi</code> extension); another is to use the
+OS-command <code>actor</code>. PERL is a good choice for a scripting
+language because it is nearly as ubiquitous as Java. Be warned, though,
+that not all of its libraries or extensions are available on all
+systems.</p><h2><a name = "Tips"></a>Tips on Agent Creation</h2><p>PIA
+agents, and active documents are so new that few conventions have
+become established for their use and there is considerable room
+for experimentation. A few rules of thumb have become clear:</p><h3>Uniform
+Look and Feel</h3><p>Use "include" files to give a family of related
+agents a similar appearance. The PIA uses <code>header.inc</code> in
+this way; almost every agent XHTML page includes the code which
+expands into a standardized heading.: </p><blockquote><code>&#60;set
+entity name=title><em>short title</em>&#60;/set></code><br> <code>read
+interform file=heading.inc process</code></blockquote><p>The standard <code>include</code> files
+currently available are: </p><ul><li> <code>heading.inc</code><br> The
+standard header   </li>
+<li> <code>about.inc</code>   <br> Information "about" an agent.
+This information is similar to what you might see on the        "about"
+menu item on a Windows or Macintosh application. This is displayed
+by the default <code>home.xh</code> file just underneath the quick
+reference described in the section that follows. </li>
+<li> <code>insert.inc</code><br> An image or set of links "inserted"
+in the normally-empty space to the left of the quick reference.
+On an application, this is often a link to the agent that serves
+as a control panel.</li></ul><p>You can also copy and extend the
+default <code>home.xh</code> file to get a slight extension or modification
+of one of the standard quick references.</p><h3>Quick Reference
+Up Front</h3><p>An agent's home page is the easiest to access. Additionally,
+many users have browsers with small screens. Therefore it makes
+sense to put the most-commonly-used functions, and links to the most-commonly-used
+pages, as close to the top of an agent's home page as possible.</p><p>There
+are two common formats for this. The first uses a single column
+of links near the right-hand side of the screen. The column just
+to the left contains a small number of labels. </p><p>The second
+format is used on the home pages of applications, which typically
+have many functions. It consists of <em>three</em> columns of icons
+or of mixed icons and text.</p><h3>No Nasty Surprises</h3><p>It
+is perfectly possible to put a query string into a link, and so
+have an ordinary-looking link or icon that is equivalent to submitting
+a form. In a PIA this can have drastic effects (there is, for example,
+an XHTML form you can use to <a href = "/Agency/shutdown.if">shut
+down the PIA</a>).</p><p>Many users experiment, clicking links at
+random. You may want to use a robot to build an index of your PIA,
+or to identify broken links. It's a good idea to make any irreversible
+actions the result of submitting a form, rather than just following
+a link. This also gives you a chance to ask the user for confirmation.</p><blockquote>Eventually
+it is possible to use standard HTTP authentication to keep unauthorized
+users away from agents or forms you do not want them to use.</blockquote><h3>Active
+Documentation</h3><p>XHTML forms make it easy to mix controls or
+forms with their documentation. Thus, it is possible not only to <em>describe</em> a
+function such as a link to a useful page or a form, but to provide
+the thing itself and invite the reader to try it out on the spot.</p><p>Wherever
+possible, an agent should be self-documenting, including links to
+whatever documents a user may need. This includes tips on customization
+as well as advice on how to set the options. A <code>HEADER.html</code> or <code>index.html</code> file
+in the agent's home directory may be useful, since it can provide
+documentation that the user sees while browsing the agent's source
+code directory <em>before</em> installation. It should include an
+installation form, especially if an agent has many options.</p><h3>Readable
+Source</h3><p>It goes without saying that the output of a XHTML
+file--the user's view--should be easily read, understood, and used.
+But so should the input--the author's view. </p><p>Appropriate indentation
+makes for easier to read code. Indent the content of elements such
+as lists and control structures. Comment the file as appropriate.</p><p>Keep
+a to-do list. Document your design decisions, including things you
+tried that turned out to be mistakes. </p><p>Use source control
+(the PIA group uses CVS, which is free, well-supported, and well-suited
+for projects with multiple developers).</p><p>Remember, an agent's
+XHTML files are read not only by their author, but by any users
+who want to customize or extend them. If the agent is complicated,
+consider writing an "implementation detail" document.</p><h4><a
+    name = "Directory">Directory Structure</a></h4><p>Your Information
+Agency makes use of two directories:</p><ul><li><var>PIA_DIR</var> contains
+the code, documentation, agents and other files released by the
+PIA group.</li>
+<li><var>PIA_HOME</var> (typically <tt>~/.pia </tt>stores agent
+data and customized <dfn>interforms</dfn>.</li></ul><p>By default,
+agents read and write their data files into <var>PIA_HOME/AGENT_NAME</var> (where <var>AGENT_NAME</var> is
+the name of the agent. For example, the <var>History</var> agent
+keeps lists of visited URLs in <tt>~/.pia/History/</tt>) </p><p>In
+seeking their interforms, agents look first in <code><var>PIA_HOME/Agents/AGENT_NAME</var></code>, where <var>AGENT_NAME</var> is
+the name of the agent in question. If that search fails, the agent
+then checks <var><code>PIA_DIR/Agents/AGENT_NAME</code></var>. Thus
+the <var>History</var> agent searches for its files in <kbd>~/.pia/Agents/History </kbd>and
+then in <kbd>/usr/local/bin/pia/Agents/History</kbd>.</p><p>This
+makes it easy to customize your agents by simply putting new interform
+files in <code><var>PIA_HOME/Agents/AGENT_NAME/FILENAME.xh</var></code>.
+For example, a customized form, <tt>foo.xh</tt> for the <var>History</var> agent
+would go in <tt>~/.pia/Agents/History/foo.xh</tt>.)</p><h4><a
+    name = "Customizing">Customizing an Existing Agent</a></h4><p>This
+section shows how to add a new function to the <var>History</var> agent.
+The new feature allows you to see a display of all web pages visited
+on the current day.</p><p>In the example that follows, assume that <var>PIA_HOME</var> has
+the value <code>~/.pia</code>. </p><ol><li>Create a file, <tt>~/.pia/Agents/History/today.xh</tt>.</li>
+<li>Add the following content:<br><tt>&#60;html>&#60;body></tt><br><tt>&#60;h2>
+Web pages visited Today&#60;/h2></tt><br><tt>&#60;include src="&#38;year;/&#38;month;/&#38;day;.html"></tt><br><tt>&#60;/body>&#60;/html></tt></li>
+<li>Save the file <code>today.xh</code>. </li>
+<li>Use your browser to view the URL <code><a
+    href = "http://jaguar.crc.ricoh.com:8888/History/today.if">/History/today.xh</a></code> If
+you have been using your agency as a proxy to view external documents,
+you should get a listing of all places you visited today.</li></ol><h5>What
+Is Going On?</h5><p>To understand the workings of this interform,
+it is necessary to understand both the <var>History</var> agent
+and the specifics of this particular interform file.</p><p>The <var>History</var> agent
+stores information on URLs visited in files organized by date. For
+example, the file <tt>~/.pia/History/1997/07/11.html </tt> stores
+all the URLs visited on July 11, 1997. The interform <var>today.xh</var> exploits
+this fact.</p><p>The interform shown above contains the standard
+HTML tags <code>&#60;html></code>, <code>&#60;body></code>, <code>&#60;h2></code> and
+one non-standard tag <code>&#60;include></code>. The power of the
+interform comes from this special tag.</p><p>The interform also
+makes use of three entities, <var>&#38;year;</var>, <var>&#38;month;</var> and <var>&#38;day;</var>.
+By assigning the value of the <var>file</var> attribute to these
+entities, rather than a hard-coded date, the interform always makes
+use of the current day's date.</p><p>Putting it all together, the
+tag <tt>&#60;read file="&#38;year;/&#38;month;/&#38;day;.html"></tt> tells the <var>History</var> agent
+to read the specified file and insert the contents at this location.
+The entities are resolved and if there is a file for the current
+day it is displayed. If not, the <code>&#60;read></code> tag results
+in no new text being inserted.</p><p>The <a href = "basic.html">Basic
+Tagset Manual</a> provides further details on each interform tag
+and entity. </p><h3><a name = "Creating"></a>Creating a New Agent</h3><p>This
+section describes how to build an agent from scratch. It describes
+how to create an agent named <var>HelloWorld</var>. </p><ol><li>Begin
+by creating a directory for the agent's interforms.<br>Create the
+directory, <tt>~/.pia/Agents/HelloWorld</tt>. </li>
+<li>Create a home page for your agent, <tt>~/.pia/Agents/HelloWorld/home.xh</tt> with the
+following content:<pre>&#60;!doctype html public "-//IETF//DTD HTML//EN//2.0">
+&#60;HTML> &#60;html> &#60;body> <br>&#60;header> Hello World&#60;/header><br>&#60;h2>
+I am the  agent &#60;/h2><br>&#60;if>&#60;get name=FORM:data><br>&#60;then>You
+entered the greeting: <br>  &#60;p>&#60;font size=+5 color="FF0000"><br> 
+  &#60;get name=FORM:data> &#60;/font> &#60;/p> <br>&#60;/then><br>&#60;else>
+ <br>  &#60;form action="" method="post"> <br>  My mission is to
+display a greeting.<br>  "Hello World!" is customary, but I am very
+flexible.<br>  My owner, , may decide. &#60;p> 
+   &#60;input type="submit" value="Enter"> <br>   A Greeting: &#60;input
+name="data">  &#60;p> &#60;/form> <br>&#60;/else><br>&#60;/if><br>&#60;footer
+/>&#60;/body>&#60;/html>  </pre></li>
+<li>Install your agent using the <a
+    href = "http://jaguar.crc.ricoh.com:8888/Agency/install_agent.if">/<code>Agency/install_agent.xh</code></a> interform. </li>
+<li>Go to that page, enter <tt>HelloWorld</tt> as the name of your
+agent and click on the install button.</li></ol><p>You should now
+the able to see and interact with your <var>HelloWorld</var> agent.</p><h5>What's
+Going On?</h5><p>The <var>HelloWorld</var> agent uses many standard
+HTML tags. These include <code>&#60;html></code>, <code>&#60;h2></code>, <code>&#60;if></code>).
+The interform extensions employed are explained below. Additional
+information can be found in the <a href = "entities.html">Entities
+Manual</a>.</p><p><var>HelloWorld</var> uses three entities.</p><table
+    border = "1" frame = "border">
+<tbody>
+<tr align = "left">
+<th>Entity  </th>
+<th align = "left">Explanation</th>
+</tr>
+<tr>
+<td align = "left"><code><a>&#38;agentName;</a></code> </td>
+<td align = "left">Specifies current agent's name</td>
+</tr>
+<tr>
+<td align = "left"><a><code>&#38;piaUSER;</code></a> </td>
+<td align = "left">Specifies user ID this agency is running under </td>
+</tr>
+<tr>
+<td><a><code>&#38;urlPath;</code></a></td>
+<td>Specifies that this form should be submitted to the same URL
+as the current document </td>
+</tr>
+</tbody>
+</table><p><var>HelloWorld</var> uses a number of custom tags.</p><table
+    border = "1" frame = "border">
+<tbody>
+<tr align = "left">
+<th>Interform</th>
+<th>Example</th>
+<th align = "left">Explanation</th>
+</tr>
+<tr>
+<td><a><code>&#60;header></code></a></td>
+<td align = "left"><code>&#60;header>Hello World&#60;/header></code></td>
+<td align = "left">Puts a standard agent header at the top of the
+page. This includes the PIA logo, that lets you navigate back to
+the Agency home page. </td>
+</tr>
+<tr>
+<td><a><code>&#60;get></code></a></td>
+<td align = "left"><code>&#60;get name=FORM:data></code></td>
+<td align = "left">Retrieves the value, if any, of the <tt>data</tt> field
+of the interform submitted as part of the request for this document. </td>
+</tr>
+<tr>
+<td><a><code>&#60;input></code></a></td>
+<td><code>&#60;input type="submit" value="Enter"></code> </td>
+<td>Specifies the nature of the input the value.</td>
+</tr>
+<tr>
+<td><a><code>&#60;footer></code></a></td>
+<td align = "left"><code>&#60;footer /></code></td>
+<td align = "left">Provides the navigation bar at the bottom of
+the screen, along with a copyright notice.</td>
+</tr>
+</tbody>
+</table><p>The <var>HelloWorld</var> interform checks to see if
+the user has submitted a form. If so, the form data is processed
+and the results displayed. If no form has been submitted, the form
+is presented for the user to fill out. </p><h3><a name = "Tips"></a>Tips
+on Agent Creation</h3><p>The following section contains tips on
+creating agents. For a more advanced example, see the <a
+    href = "swifty.html">Swifty Agent</a>. Additional ideas and
+inspiration might come from a close look at the interforms of agents
+that ship with the PIA.</p><h4><a name = "installing">Installing
+Agents</a></h4><p>In order for the PIA Agency to know about a particular
+agent and direct requests to that agent appropriately, that agent
+must be installed. As agents are represented by persistent software objects,
+agent installation creates the object that corresponds to the agent
+in question.</p><p>On start-up, the Information Agency looks in
+the directory <var>PIA_HOME</var> and then <var>PIA_DIR</var> for
+the subdirectory <code>/Admin/Agency/START-UP.html.</code> This
+file specifies those agents that should be installed. You should
+copy and modify this file to start your own agents.</p><p>Each time
+an agent is started, the PIA loads its <tt>initialize.xh</tt> interform,
+if one exists. Consider creating such a file for your agent in <code>initialize.xh</code>.
+This file typically contains default values for variables are used
+by your agent.</p><h4>Interforms</h4><p>Entity variables can be
+several levels deep. For example, <tt>&#38;AGENT:employees;</tt> might
+return the first item in a list of employees associated with this
+agent.</p><h4>Inheritance</h4><p>Standard forms such as  <code>options.xh</code>,
+can be inherited from the Agents directory. The PIA Agent looks
+in the <var>Agents</var> directory if this form is not found in
+that agents subdirectory, <code>/Agents/<var>AGENT_NAME</var></code>.</p><h3>Processing
+Documents Not Specifically Requested</h3><p>Agents can process documents
+moving through the agency even if they are not specifically directed
+to that agent. For example, the History and CIA agents process all
+proxied documents. Each agent registers a criteria for the documents
+it is interested in. Whenever the agency sees a document that matches
+an agent's registered criteria, (requests for documents are considered
+documents in their own right), that agent is given a chance to process
+the document before sending it on to its destination.</p><h3><a
+    name = "Debugging"></a>Debugging Tag-Based Agents</h3><p>As
+with any code, agent code may not always work correctly the first
+time. Here are some techniques for understanding what is happening
+within your agent.</p><ul><li>Use the <tt>&#38;urlQuery</tt>; PIA
+tag to check the name/value pairs that are being posted from one
+page to another. For example: <code>fullname=Master+of+the+Universe&#38;wea=Weather&#38;submission=Submit</code> indicates
+these entries: fullname, Weather checkbox and Submit button.</li>
+<li>Look at the HTML source that is generated, using <var>View/Document
+Source</var> in the browser menu. This gives a good indication of
+where the code broke down.</li>
+<li>Put in print statements and expand variables inside tagset elements
+to check whether they have been set correctly.</li></ul><hr><b>Copyright
+© 1999 Ricoh Silicon Valley</b><br> </body></html>

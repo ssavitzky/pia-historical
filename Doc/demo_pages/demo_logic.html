@@ -1,0 +1,151 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+  </body></head>
+
+<h2>Logical Handler Demo</h2>
+The <a name='logic_demo'>logical handler demo</a> is used to test a number of nodes in turn.
+If the logical handler is used with no "and" or "or" attribute, it returns the value of 
+each component.  If the "and" attribute is specified, each child component is expanded in turn.
+Where each sub-component evaluates to true, the value of the last child is returned.  When a
+child component evaluates to false, no output is generated.  If the "or" attribute is used, the
+value of the first sub-component that evaluates to true is returned.  The following examples 
+show how to use:  <a href='#no_att'>no attributes</a>, the
+<a href='#and_att'>and attribute</a>, the <a href='#or_att'>or attribute </a>, an
+<a href='#or_false'>or evaluating to false</a>, an <a href='#and_false'>and evaluating to false</a>,
+and <a href='#multi_hand'>logical handler combined with other handlers</a>. 
+<p>
+
+<h3> Define Variables</h3>
+
+Define some variables so that that may be used in the examples that follow.
+<p>
+
+
+
+
+Fruit1: "apples"<br>
+Fruit2: "oranges"<br>
+Fruit3: "apples"<br>
+<p>
+
+<a name='no_att'><h3> No Attribute Example</h3></a>
+
+<b>Description: </b> This example contains three nodes.  No attribute has been added
+to the logical handler, so all three are evaluated and returned.
+<p>
+<b>Input: </b> &lt;logical&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;two&lt;/b&gt;&lt;em&gt;three&lt;/em&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <em>one</em><b>two</b><em>three</em>
+<p>
+<hr>
+
+<a name='and_att'><h3> And Attribute Example</h3></a>
+
+<b>Description: </b> This example contains the same three nodes as the example above.  Here,
+the "and" attribute has been added to the logical handler.  In this case, logical returns the
+value of the last node.
+<p>
+<b>Input: </b> &lt;logical and&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;two&lt;/b&gt;&lt;em&gt;three&lt;/em&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <em>three</em>
+<p>
+<hr>
+
+<a name='or_att'><h3> Or Attribute Example</h3></a>
+
+<b>Description: </b> This example contains the same three nodes as the example above.  Here,
+the "or" attribute has been added to the logical handler.  In this case, logical returns the
+value of the first sub-component.
+<p>
+<b>Input: </b> &lt;logical or&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;two&lt;/b&gt;&lt;em&gt;three&lt;/em&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <em>one</em>
+<p>
+<hr>
+
+<a name='or_false'><h3> Or Attribute and Empty Sub-Component</h3></a>
+
+<b>Description: </b> Here, the first node is empty and consequently evaluates to false.
+In this case, logical returns the first node that evaluates to true.
+<p>
+<b>Input: </b> &lt;logical or&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;two&lt;/b&gt;&lt;em&gt;three&lt;/em&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <em>one</em>
+<p>
+<hr>
+
+<a name='and_false'><h3> And Attribute and Empty Sub-Component</h3></a>
+
+<b>Description: </b> Here, the second node is empty and consequently evaluates to false.
+Because one of sub-components is false, logical returns no output. ??? In fact returns three.
+<p>
+<b>Input: </b> &lt;logical and&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;&lt;/b&gt;&lt;em&gt;three&lt;/em&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <em>three</em>
+<p>
+<hr>
+
+<a name='multi_hand'><h3> Using Logical and Test Handlers Together</h3></a>
+
+<b>Description: </b> This example uses the test handler to determine whether an expression is
+true or false.  In this instance, both tests evaluate to true and the result from the final
+test is returned.
+<p>
+<b>Input: </b> &lt;logical and&gt;&lt;test match="apples"&gt;Fruit1&lt;/test&gt;&lt;test match="apples"&gt;Fruit3&lt;/test&gt;&lt;/logical&gt;	
+<p>
+<b>Result: </b> 1	
+<p>
+<hr>
+
+<h3> Using Logical and Test Handlers Together</h3>
+
+<b>Description: </b> This example shows the result of using a test that fails.
+<p>
+<b>Input: </b> &lt;logical and&gt;&lt;test match="apples"&gt;Fruit1&lt;/test&gt;&lt;test match="oranges"&gt;Fruit3&lt;/test&gt;&lt;/logical&gt;	
+<p>
+<b>Result: </b> 	
+<p>
+<hr>
+
+<h3> A More Complicated Example</h3>
+
+<b>Description: </b> The following gives a more complicated example of how to
+use the logical handler in conjunction with other handlers.  In this example,
+the repeat handler is used to generate a list of numbers.  The select handler
+turns the list into the selected set.  The logical handler, in conjunction
+with the numeric remainder attribute, operates on the set of numbers to
+generate a list of even numbers.
+
+<p> <b>Input: </b>
+&lt;extract&gt;&lt;repeat
+stop=10&gt; &n; &lt;/repeat&gt;
+	&lt;repeat list="&list;"&gt;&lt;if&gt;&lt;test zero&gt;&lt;numeric remainder&gt;&li; 2
+	&lt;/numeric&gt;&lt;/test&gt;&lt;then&gt;&li;, &lt;/then&gt;&lt;/if&gt;&lt;/extract&gt;
+<p>
+<b>Result: </b> 0, 2, 4, 6, 8, 10, 
+
+<p>
+
+<hr>
+
+<h3>Possible Unexpected Results</h3>
+
+<b>Description: </b>This example shows the and attribute being used with a series of numbers.
+Instead of the last number being returned, all numbers are printed out.  This is because the
+numbers are contained in a single node and it is the contents of this node that are returned.
+When markup is added, the final sub-component only is returned.
+<p>
+<b>Input: </b> &lt;logical and&gt;1 2 3 4&lt;/logical&gt;
+<p>
+<b>Result: </b> 1 2 3 4
+<p>
+<b>Input: </b> &lt;logical and&gt;&lt;b&gt;1&lt;/b&gt;&lt;b&gt;2&lt;/b&gt;&lt;b&gt;3&lt;/b&gt;&lt;b&gt;4&lt;/b&gt;&lt;/logical&gt;
+<p>
+<b>Result: </b> <b>4</b>
+<p>
+
+</html>
+
+

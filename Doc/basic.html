@@ -1,0 +1,999 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+<?Fm: Validation Off>
+
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>Basic Tagset Manual</title></head>
+<body><center><h1>Basic Tagset Manual</h1></center><p>This document
+introduces the <a href = "Manuals/InterForm/Tagset/basic.html">basic</a> tagset,
+one of several predefined tagsets available to users and developers
+working with the PIA. The other tagsets are:</p><ul><li><a
+    href = "Manuals/InterForm/Tagset/xxml.html">XXML</a><br>the
+basic tagset extended with some XML convenience functions</li>
+<li><a href = "Manuals/InterForm/Tagset/xhtml.html">XHTML</a><br>the
+basic tagset extended with some HTML convenience functions</li>
+<li><a href = "Manuals/InterForm/Tagset/pia-xhtml.html">PIA XHTML</a><br>the
+default XHTML tagset used by the PIA</li></ul><p>Currently the best
+source of examples of tag set use is the demo agent. If you wish
+to view these examples without using the PIA, look at the listing
+of <a href = "demo_pages">demo files</a>.</p><p>This document contains
+a <a href = "#quick">quick reference</a> table that in the future
+will allow you to easily locate information on a particular basic
+tagset tag. For now, the definitive source for tagset information
+is the tagset reference documents listed above. </p><p>If you are
+unfamiliar with the documentation, you should first look at <a
+    href = "#howtoread">How to Read Tagset Descriptions</a>.</p><h2>Introducing
+the Basic Tagset</h2><p>The basic tagset consists of <em>primitive</em> tags
+that are predefined. These tags provide generally useful functions
+and can be used as is. Primitive tags can also be used as components
+of new tags that you create yourself.</p><p>Extending the primitive
+tagset requires the use of a special tag, <code>&#60;define></code> whose
+purpose is to construct other tags. The <code>&#60;define></code> tag
+is used to specify the tag name and all other necessary information
+about the tag including its attributes.</p><p><em>Tag</em> is used
+here in much the same way that <em>element</em> might be used in
+an XML or SGML DTD. Defining a tag requires the same information
+one might supply for a DTD element. This includes the following:</p><ul>
+<li>the element name</li>
+<li>any attributes that element might have</li>
+<li>modifiers that specify whether the attributes are required or
+optional and what value types they may take on</li>
+<li>what subelements can occur as children of this element</li>
+<li>what parent element this element must have</li></ul><p>XHTML
+tags are <em>active</em> tags in that they constitute not merely
+markup but a directive to take some action. and can require some
+additional information not required of XML/SGML element definitions.
+This information reflects the special uses to which these tags are
+put. This includes the tag's <em>handler</em>, a specification of
+the Java class that is associated with actions to be carried out when
+this element is present. The keyword <em>handler</em> can be followed
+with the name of the class to be used. If no class is named, the
+handler is assumed to have the same name as the tag.</p><p>When
+viewed as active tags, XHTML tags are much like Java or C++ methods.
+They have a name, a documentation field, optional arguments, and
+they perform some sort of action. A combination of HTML, XML, or
+other XTHML tags can be used in the action clause. The last item evaluated
+in the action clause is returned, so long as it has a return value.</p><p>Viewed
+in this light, a tag's attributes are analogous to the arguments
+that may be passed into a function. </p><p>A simple tag definition
+for the user-defined tag <code>my_tag</code> is presented here:</p><blockquote><code>&#60;define
+element=my_tag></code><blockquote><code>&#60;doc> Given a string
+attribute, prints that string in a bold font.&#60;/doc>&#60;define
+attribute=my_attr required>&#60;/define>&#60;action></code></blockquote><blockquote><blockquote><code>&#60;b>&#38;attributes:my_attr;&#60;/b></code></blockquote><code>&#60;/action></code></blockquote><code>&#60;/define></code></blockquote><p>The <code>&#60;doc></code> element
+serves to document the tag's actions. The <code>&#60;action></code> element
+specifies the action taken when this tag is evaluated. In this case
+it prints the tag's attribute using a bold font. The following example
+shows how, once defined, this tag might be used in an active document.</p><blockquote><code>&#60;my_tag
+my_attr="Hello World">&#60;/my_tag></code></blockquote><h2>Noteworthy</h2><ul>
+<li>A tagset file can be converted into HTML using the <a
+    href = "tsdoc.html">tsdoc</a> tagset. Eventually it will be
+possible to process tagset files into DTD's as well. It is conceivable
+that we could even process them into Java or C, perhaps using embedded <code>&#60;code></code> tags
+with a <code>language</code> attribute.</li>
+<li>SGML requires that the element named in the <code>&#60;!doctype...></code> declaration
+must be the highest level (outermost) element in the document.</li>
+<li>This tagset includes documentation in HTML, in spite of the
+fact that HTML is not a superset of the tagset being defined. The
+syntax of the document that defines a tagset and the syntax defined <em>by</em> the
+tagset are, potentially, completely disjoint. Because of the included
+HTML, this document does <em>not</em> qualify as XML. It could,
+however, be described in SGML or converted to XML by outputting
+empty HTML tags with the XML empty-tag delimiter.</li></ul><h2>Tagset
+Overview</h2><p>The tagset categories and their elements described
+in this document are listed in the quick reference table that follows.
+Each element and attribute name in the table is linked to a tagset
+definition file for that element. If you are unfamiliar with these
+files, read the following section before linking to a definition.</p><h3><a
+    name = "howtoread">How to Read Tagset Descriptions</a></h3><p>A
+tagset definition file consists of a sequence of <code>&#60;define></code> elements.
+Some of these statements are nested inside others.  The outermost <code>&#60;define></code> elements
+define SGML <em>elements</em> and <em>entities</em>. Nested inside
+each element definition are the definitions of its <em>attributes</em>.
+Any definition can also contain documentation. </p><p>When converted
+to HTML for documentation purposes, the nested attribute definitions
+are indented. Documentation elements are nested one more level and
+typeset in italics.  The <code>&#60;/define></code>, <code>&#60;doc></code>,
+and <code>&#60;/doc></code> tags are omitted. </p><p>Certain elements
+are only meaningful inside of other elements. For example, <code>&#60;then></code> elements only
+occur inside <code>&#60;if></code> elements.  By convention, the
+definitions of these elements follow that of their parent in element.
+ </p><h3><a name = "quick">Quick Reference Table</a></h3><table
+    border = "1" frame = "border">
+<thead>
+<tr>
+<td>Element Type</td>
+<td>Element</td>
+<td>Attributes</td>
+<td>Subelements</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href = "#Construct">Construct Specification</a></td>
+<td><code><a futurehref = "tagsets/basic/define.html">&#60;define></a></code></td>
+<td><code><a futurehref = "tagsets/basic/define.html#element">element</a></code><br><code><a
+    futurehref = "tagsets/basic/define.html#attribute">attribute</a></code><br><code><a
+    futurehref = "tagsets/basic/define.html#entity">entity</a></code><br><code><a
+    futurehref = "tagsets/basic/define.html#notation">notation</a></code></td>
+<td><code><a>&#60;value></a></code><br><code><a>&#60;action></a></code></td>
+</tr>
+<tr>
+<td><a href = "#Tagset">Tagset</a></td>
+<td><code><a futurehref = "tagsets/basic/tagset.html">&#60;tagset></a></code></td>
+<td><code><a futurehref = "tagsets/basic/tagset.html#name">name</a></code><br> <code><a
+    futurehref = "tagsets/basic/tagset.html#include">include</a></code><br><code><a
+    futurehref = "tagsets/basic/tagset.html#tagset">tagset</a></code><br> <code><a
+    futurehref = "tagsets/basic/tagset.html#recursive">recursive</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "2"><a href = "#Documentation">Documentation</a></td>
+<td><code><a futurehref = "tagsets/basic/doc.html">&#60;doc></a></code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/note.html">&#60;note></a></code></td>
+<td><code><a futurehref = "tagsets/basic/note.html#author">author</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "2"><a href = "#Control">Control Structure</a></td>
+<td><code><a futurehref = "tagsets/basic/if.html">&#60;if></a></code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/repeat.html">&#60;repeat></a></code></td>
+<td><code><a futurehref = "tagsets/basic/repeat.html#list">list</a></code><br><code><a
+    futurehref = "tagsets/basic/repeat.html#start">start</a></code><br><code><a
+    futurehref = "tagsets/basic/repeat.html#stop">stop</a></code><br> <code><a
+    futurehref = "tagsets/basic/repeat.html#step">step</a></code><br> <code><a
+    futurehref = "tagsets/basic/repeat.html#entity">entity</a></code></td>
+<td><code><a futurehref = "#repeat_foreach">&#60;foreach></a></code><br><code><a
+    futurehref = "#repeat_for">&#60;for></a></code><br><code><a
+    futurehref = "#repeat_while">&#60;while></a></code><br><code><a
+    futurehref = "#repeat_until">&#60;until></a></code><br><code><a
+    futurehref = "#repeat_first">&#60;first></a></code><br><code><a
+    futurehref = "#repeat_finally">&#60;finally></a></code></td>
+</tr>
+<tr>
+<td><a href = "#Logical">Logical </a></td>
+<td><code><a futurehref = "tagsets/basic/logical.html">&#60;logical></a></code></td>
+<td><code><a futurehref = "tagsets/basic/logical.html#and">and</a></code><br><code><a
+    futurehref = "#logical_or">or</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><a href = "#Document">Document Structure</a></td>
+<td><code><a futurehref = "tagsets/basic/extract.html">&#60;extract></a></code></td>
+<td><code><a futurehref = "tagsets/basic/extract.html#sep">sep</a></code><br><code><a
+    futurehref = "tagsets/basic/extract.html#all">all</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "4"><a name = "#Expansion" href = "#Expansion">Expansion
+Control</a></td>
+<td><code><a futurehref = "tagsets/basic/expand.html">&#60;expand></a></code></td>
+<td><code><a futurehref = "tagsets/basic/hide.html#hide">hide</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/protect.html">&#60;protect></a></code></td>
+<td><code><a futurehref = "#protect_result">result</a></code><br><code><a
+    futurehref = "#protect_markup">markup</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/hide.html">&#60;hide></a></code></td>
+<td><code><a futurehref = "tagsets/basic/hide.html#markup">markup</a></code><br><code><a
+    futurehref = "#hide_text">text</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/debug.html">&#60;debug></a></code></td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "4"><a href = "#DataManip">Data Manipulation</a></td>
+<td><code><a futurehref = "tagsets/basic/numeric.html">&#60;numeric></a></code></td>
+<td><code><a futurehref = "tagsets/basic/numeric.html#sum">sum</a></code><br><code><a
+    futurehref = "tagsets/basic/numeric.html#difference">difference</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#product">product</a></code><br><code><a
+    futurehref = "tagsets/basic/numeric.html#quotient">quotient</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#remainder">remainder</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#power">power</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#sort">sort</a></code><br><code><a
+    futurehref = "tagsets/basic/numeric.html#reverse">reverse</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#pairs">pairs</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#sep">sep</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#digits">digits</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#integer">integer</a></code><br> <code><a
+    futurehref = "tagsets/basic/numeric.html#extended">extended</a></code><br><code><a
+    futurehref = "tagsets/basic/numeric.html#modulus">modulus</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/text.html">&#60;text></a></code></td>
+<td><code><a futurehref = "tagsets/basic/text.html#pad">pad</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#trim">trim</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#width">width</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#align">align</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#sort">sort</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#reverse">reverse</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#pairs">pairs</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#sep">sep</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#split">split</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#join">join</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#encode">encode</a></code><br><code><a
+    futurehref = "tagsets/basic/text.html#decode">decode</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/subst.html">&#60;subst></a></code></td>
+<td><code><a futurehref = "tagsets/basic/subst.html#match">match</a></code><br> <code><a
+    futurehref = "tagsets/basic/subst.html#result">result</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/parse.html">&#60;parse></a></code></td>
+<td><code><a futurehref = "tagsets/basic/parse.html#usenet">usenet</a></code><br><code><a
+    futurehref = "tagsets/basic/parse.html#query">query</a></code><br><code><a
+    futurehref = "tagsets/basic/parse.html#element">element</a></code><br><code><a
+    futurehref = "tagsets/basic/parse.html#elements">elements</a></code><br><code><a
+    futurehref = "tagsets/basic/parse.html#attr">attr</a></code><br><code><a
+    futurehref = "tagsets/basic/parse.html#pairs">pairs</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "4"><a href = "#External">External Resources</a></td>
+<td><code><a futurehref = "tagsets/basic/include.html">&#60;include></a></code></td>
+<td><code><a futurehref = "tagsets/basic/include.html#src">src</a></code><br><code><a
+    futurehref = "tagsets/basic/include.html#tagset">tagset</a></code><br><code><a
+    futurehref = "tagsets/basic/include.html#entity">entity</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/output.html">&#60;output></a></code></td>
+<td><code><a futurehref = "tagsets/basic/output.html#dst">dst</a></code><br><code><a
+    futurehref = "tagsets/basic/output.html#append">append</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/connect.html">&#60;connect></a></code></td>
+<td><code><a futurehref = "tagsets/basic/connect.html#method">method</a></code><br><code><a
+    futurehref = "tagsets/basic/connect.html#src">src</a></code><br><code><a
+    futurehref = "tagsets/basic/connect.html#mode">mode</a></code><br><code><a
+    futurehref = "tagsets/basic/connect.html#tagset">tagset</a></code><br><code><a
+    futurehref = "tagsets/basic/connect.html#entity">entity</a></code><br><code><a
+    futurehref = "tagsets/basic/connect.html#result">result</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/status.html">&#60;status></a></code></td>
+<td><code><a futurehref = "tagsets/basic/status.html#src">src</a></code><br><code><a
+    futurehref = "tagsets/basic/status.html#entity">entity</a></code><br><code><a
+    futurehref = "tagsets/basic/status.html#item">item</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "5"><code><a href = "#DataStruct">Data Structure</a></code></td>
+<td><code><a class = "tagsets/basic/DOCUMENT.html"
+    futurehref = "tagsets/basic/DOCUMENT.html">&#60;DOCUMENT></a></code> </td>
+<td><code><a futurehref = "tagsets/basic/DOCUMENT.html#protocol">protocol</a></code><br><code><a
+    futurehref = "tagsets/basic/DOCUMENT.html#version">version</a></code><br><code><a
+    futurehref = "tagsets/basic/DOCUMENT.html#code">code</a></code><br><code><a
+    futurehref = "tagsets/basic/DOCUMENT.html#message">message</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code class = "tagsets/basic/HEADERS.html"><a
+    futurehref = "tagsets/basic/HEADERS.html">&#60;HEADERS></a></code></td>
+<td><code><a futurehref = "tagsets/basic/HEADERS.html#element">element</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a class = "tagsets/basic/header.html"
+    futurehref = "tagsets/basic/header.html">&#60;header></a></code></td>
+<td><code><a futurehref = "#header_name">name</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/query.html">&#60;QUERY></a></code></td>
+<td><code><a futurehref = "tagsets/basic/query.html#element">element</a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/url.html">&#60;URL></a></code></td>
+<td><code><a futurehref = "tagsets/basic/url.html#protocol">protocol</a></code><br><code><a
+    futurehref = "tagsets/basic/url.html#host">host</a></code><br><code><a
+    futurehref = "tagsets/basic/url.html#port">port</a></code><br><code><a
+    futurehref = "tagsets/basic/url.html#path">path</a></code><br><code><a
+    futurehref = "tagsets/basic/url.html#reference">reference</a></code><br><code><a
+    futurehref = "tagsets/basic/url.html#query">query</a></code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table><h2><a name = "Construct">Construct Specification Elements</a></h2><p>The
+construct specification elements are used to create a tagset. They
+include the <code><a futurehref = "tagsets/basic/define.html">&#60;define></a></code> element
+and its subelements.</p><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Subelements of &#60;define></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code><a futurehref = "tagsets/basic/value.html">&#60;value></a></code></td>
+</tr>
+<tr>
+<td> <code><a class = "tagsets/basic/action.html"
+    futurehref = "tagsets/basic/action.html">&#60;action></a></code></td>
+</tr>
+</tbody>
+</table><p>The <code>&#60;define></code> element can be used to
+specify any of the following tag types:</p><ul><li><code>element</code></li>
+<li><code>attribute</code></li>
+<li><code>entity</code></li>
+<li><code>word</code></li></ul><p>The <code>&#60;define> </code>element
+must be predefined for bootstrapping, but it is <em>not</em> in
+the tagset unless placed there.</p><p>The tagset is not recursive.
+For that reason, tags cannot be used as actions.</p><p>The <code>&#60;define></code> element
+can occur outside of a <code>&#60;namespace> </code>or <code>&#60;tagset></code> element because
+there is always a "current" namespace and tagset in effect.</p><p>A <code>&#60;define> </code>element
+that contains neither a<code> &#60;value> </code>nor an <code>&#60;action> </code>subelement defines
+only syntax. The defined construct is simply passed through to the
+output by the processor, with its contents and attributes, if any,
+processed in turn. </p><p>A <code>&#60;define> </code>element can
+contain anything at all. All content with the exception of the <code>&#60;value></code>, <code>&#60;action></code>,
+and possibly <code>&#60;doc> </code>elements are discarded. This
+means that a definition can contain arbitrary <em>decorative</em> markup,
+and that arbitrary computation can be done in the course of processing
+a definition.</p><p>A construct can be "defined" more than once.
+In such cases, the attributes are effectively merged. The associated
+value and/or action are replaced. This technique is used to associate
+a new value with a construct, and to associate an action with a
+construct that has already been defined.</p><h3>Construct Specification
+Attributes</h3><p>The following attribute of the <code>&#60;define></code> element
+is used to specify the type of construct being defined and whether
+it is required or optional. The name of the element defined is expressed
+as the value of the <em>element</em> attribute.</p><p>The attributes
+for <code>&#60;define element></code> are of the form</p><blockquote><code>&#60;define
+attribute='construct_type' optional></code></blockquote><p>They
+are summarized here and described in more detail below:</p><table
+    border = "1" frame = "border">
+<thead>
+<tr>
+<th>Construct Type</th>
+</tr>
+</thead>
+<tbody>
+<tr align = "left">
+<td><a>element</a></td>
+</tr>
+<tr align = "left">
+<td><a>attribute</a> </td>
+</tr>
+<tr align = "left">
+<td><a>entity</a> </td>
+</tr>
+<tr align = "left">
+<td><a>notation</a></td>
+</tr>
+</tbody>
+</table><h3>Modifiers for Structure Constructors</h3><h4><a
+    name = "general"></a>General Modifiers</h4><p>The following
+sections describe the available modifiers for the structure constructor
+elements.</p><p>In working with these modifiers consider the following:</p><ul>
+<li>Modifiers for <code>&#60;define> </code>element are meaningful <em>only</em> when
+defining an element. It is impossible to represent this constraint
+in SGML. </li>
+<li>The use of <code>parent=</code> in subelements of <code>&#60;define></code>specifies
+that these elements only occur inside the given parent element;
+in this case, <code>&#60;define></code>. The value of the <code>parent</code> attribute
+is a list which is appended to with each use, allowing the DTD to
+be incrementally extended. <br>The use of <code>parent</code> greatly
+simplifies the construction of content models and the parser. An element
+with a parent implicitly terminates any unclosed elements between
+it and its innermost parent.</li></ul><table border = "1"
+    frame = "border">
+<thead>
+<tr>
+<th>Modifier Type</th>
+<th>Modifier </th>
+</tr>
+</thead>
+<tbody>
+<tr align = "left">
+<td><a futurehref = "#general">General modifiers for <code>&#60;define></code></a></td>
+<td><code><a>handler</a></code></td>
+</tr>
+<tr>
+<td rowspan = "5"><a futurehref = "#moddefelt">For <code>&#60;define
+element></code></a></td>
+<td><code><a>quoted</a></code></td>
+</tr>
+<tr>
+<td><code><a>literal</a></code></td>
+</tr>
+<tr>
+<td><code><a>text</a></code></td>
+</tr>
+<tr>
+<td><code><a>no-text</a></code></td>
+</tr>
+<tr>
+<td><code><a>empty</a></code></td>
+</tr>
+<tr>
+<td rowspan = "3"><a futurehref = "#moddefattr">For <code>&#60;define
+attribute></code></a></td>
+<td><code><a>optional</a></code></td>
+</tr>
+<tr>
+<td><code><a>required</a></code></td>
+</tr>
+<tr>
+<td><code><a>fixed</a></code></td>
+</tr>
+<tr>
+<td rowspan = "8"><a futurehref = "#moddefent">For <code>&#60;define
+entity></code></a></td>
+<td><code><a>system</a></code></td>
+</tr>
+<tr>
+<td><code><a>public</a></code></td>
+</tr>
+<tr>
+<td><code><a>mode</a></code></td>
+</tr>
+<tr>
+<td><code><a>method</a></code></td>
+</tr>
+<tr>
+<td><code><a>NDATA</a></code></td>
+</tr>
+<tr>
+<td><code><a>tagset</a></code></td>
+</tr>
+<tr>
+<td><code><a>retain</a></code></td>
+</tr>
+<tr>
+<td><code><a>parameter</a></code></td>
+</tr>
+</tbody>
+</table><h2><a name = "Tagset"></a>Tagset and Namespace</h2><p>The <code>&#60;tagset></code> and <code>&#60;namespace></code> elements
+provide the context in which <code>&#60;define></code> operates,
+i.e., in which elements, entities, and so on are defined.</p><p>It
+is, however, meaningful for <code>&#60;define></code> to occur outside
+of a <code>&#60;namespace></code> or <code>&#60;tagset></code> element
+because there is always a "current" namespace and tagset in effect.</p><h2>Documentation
+Elements</h2><p>The elements <code>&#60;parent></code> and<code> &#60;note></code> elements
+are subelements of <code>&#60;tagset></code>.</p><h2><a name = "Control"></a>Control
+Structure Elements</h2><p>Control structure elements modify the
+control flow of an expansion, by selectively including, skipping,
+or repeating some content. The control structure elements are <code>&#60;if></code> and <code>&#60;repeat></code>.</p><p>The
+control structure elements are summarized here:</p><h3><code><a
+    class = "tagsets/basic/if.html">&#60;if></a></code> and its
+Components</h3><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Subelement </th>
+<th>Parent</th>
+<th>Handler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code><a futurehref = "tagsets/basic/if.html#then">&#60;then></a></code></td>
+<td><code>&#60;if></code> <br><code>&#60;else-if></code> <br><code>&#60;elif></code> <br><code>&#60;elsf></code></td>
+<td><code>quoted</code></td>
+</tr>
+<tr>
+<td><code><a class = "tagsets/basic/if.html#else">&#60;else></a></code></td>
+<td><code>&#60;if></code></td>
+<td><code>quoted</code></td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/else-if.html#else-if">&#60;else-if></a></code></td>
+<td><code>&#60;if></code></td>
+<td><code>elsf</code></td>
+</tr>
+<tr>
+<td><code><a>&#60;elsf></a></code></td>
+<td><code>&#60;if></code></td>
+<td></td>
+</tr>
+<tr>
+<td><code><a>&#60;elif></a></code></td>
+<td><code>&#60;if></code></td>
+<td><code>elsf</code></td>
+</tr>
+</tbody>
+</table><h3><a name = "Repeat"></a><code>&#60;repeat></code> and
+its Components</h3><p>The contents of a <code><a>&#60;repeat></a></code> are
+repeatedly expanded. All of the following subelements are effectively
+iterating in parallel, which makes it easy to go through multiple
+lists and number the corresponding elements.</p><table border = "1"
+    frame = "border">
+<thead>
+<tr>
+<th>Subelement </th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code><a>&#60;foreach></a></code></td>
+<td><code><a>entity</a></code></td>
+</tr>
+<tr>
+<td rowspan = "4"><code><a>&#60;for></a></code></td>
+<td><code><a>entity</a></code></td>
+</tr>
+<tr>
+<td><code><a>start</a></code></td>
+</tr>
+<tr>
+<td><code><a>stop</a></code></td>
+</tr>
+<tr>
+<td><code><a>step</a></code></td>
+</tr>
+<tr>
+<td><code><a>&#60;start></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;stop></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;step></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;while></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;until></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;first></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;finally></a></code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table><h2><a name = "Logical"></a>Logical Elements</h2><p>The
+logical elements are <code>&#60;logical></code> and <code>&#60;test></code>.</p><table
+    border = "1" frame = "border">
+<thead>
+<tr>
+<td>Element</td>
+<td>Attribute</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "2"><code><a>&#60;logical></a></code></td>
+<td><code><a>and</a></code></td>
+</tr>
+<tr>
+<td><code><a>or</a></code></td>
+</tr>
+<tr>
+<td rowspan = "10"><code><a>&#60;test></a></code></td>
+<td><code><a>text</a></code></td>
+</tr>
+<tr>
+<td><code><a>not</a></code></td>
+</tr>
+<tr>
+<td><code><a>zero</a></code></td>
+</tr>
+<tr>
+<td><code><a>positive</a></code></td>
+</tr>
+<tr>
+<td><code><a>negative</a></code></td>
+</tr>
+<tr>
+<td><code><a>numeric</a></code></td>
+</tr>
+<tr>
+<td><code><a>match</a></code></td>
+</tr>
+<tr>
+<td><code><a>exact</a></code></td>
+</tr>
+<tr>
+<td><code><a>case</a></code></td>
+</tr>
+<tr>
+<td><code><a>null</a></code></td>
+</tr>
+</tbody>
+</table><h2><a name = "Document"></a>Document Structure Elements</h2><p>Document
+structure elements extract nodes or sets of nodes from a parse tree,
+and perform structural modifications on trees. The tree being operated
+on need not be part of the document being processed. It might be
+a namespace or the value of an entity.</p><p>These elements consist
+of the <code>&#60;extract></code> element and its subelements. </p><table
+    border = "1" frame = "border">
+<thead>
+<tr>
+<th>Element</th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "2"><code><a>&#60;extract></a></code></td>
+<td><code><a>sep</a></code></td>
+</tr>
+<tr>
+<td><code><a>all</a></code></td>
+</tr>
+</tbody>
+</table><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Subelement Type</th>
+<th>Subelement </th>
+<th>Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "5">Starting Point</td>
+<td><code><a>&#60;from></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;in></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td rowspan = "3"><code><a>&#60;id></a></code></td>
+<td><code><a>case</a></code></td>
+</tr>
+<tr>
+<td><code><a>recursive</a></code></td>
+</tr>
+<tr>
+<td><code><a>all</a></code></td>
+</tr>
+<tr>
+<td rowspan = "6">Extraction</td>
+<td rowspan = "3"><code><a>&#60;name></a></code></td>
+<td><code><a>case</a></code></td>
+</tr>
+<tr>
+<td><code><a>recursive</a></code></td>
+</tr>
+<tr>
+<td><code><a>all</a></code></td>
+</tr>
+<tr>
+<td rowspan = "3"><code><a>&#60;key></a></code></td>
+<td><code><a>sep</a></code></td>
+</tr>
+<tr>
+<td><code><a>recursive</a></code></td>
+</tr>
+<tr>
+<td><code><a>all</a></code></td>
+</tr>
+<tr>
+<td rowspan = "5">Replacement</td>
+<td rowspan = "2"><code><a>&#60;replace></a></code></td>
+<td><code><a>name</a></code></td>
+</tr>
+<tr>
+<td><code><a>case</a></code></td>
+</tr>
+<tr>
+<td><code><a>&#60;append></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;remove></a></code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code><a>&#60;unique></a></code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table><h3>Extract and its Components</h3><p>The subelements of
+extract fall into three groups:</p><ul><li>Subelements of <code>&#60;extract></code>:
+Starting Points</li>
+<li>Subelements of <code>&#60;extract></code>: Extraction<br><code>text</code> can
+occur inside a <code>&#60;extract></code> element. Text is split
+on whitespace and interpreted as follows: <ul><li>If the text is
+a number <em>N</em>, it extracts the <em>N<sup>th</sup></em> node
+in the current set. The first node is zero, and negative numbers
+are counted from the last node. </li>
+<li>If the text starts with a pound sign (<code>#</code>), it is
+matched as a node type. The list of node types is defined in the <a
+    href = "http://www.w3.org/TR/1998/WD-xptr-19980303">XPointer
+specification</a>, plus locally-defined types. In addition, <code>#all</code> is
+defined, matching <em>any</em> node. Type matching is case-insensitive.</li>
+<li>Otherwise, it is matched as a "<em>name</em>." The name of an
+entity or attribute is the name it is defined to have; the name
+of an element is its tag name. </li></ul>Text items are applied <em>sequentially</em>,
+so that, for example, <code>... li -1</code> extracts the last <code>&#60;li></code> element
+in the current set.</li>
+<li>Subelements of <code>&#60;extract></code>: Replacement</li></ul><h2><a
+    name = "Expansion"></a>Expansion Control Elements</h2><p>Expansion
+control elements modify the processing of their contents, but are
+not conditional in the same way that control-structure operations
+are. No tests are performed.</p><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Element</th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code><a futurehref = "tagsets/basic/expand.html">&#60;expand></a></code></td>
+<td><code><a>hide</a></code></td>
+</tr>
+<tr>
+<td rowspan = "2"><code><a futurehref = "tagsets/basic/protect.html">&#60;protect></a></code></td>
+<td><code><a>result</a></code></td>
+</tr>
+<tr>
+<td><code><a>marksup</a></code></td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/hide.html">&#60;hide></a></code></td>
+<td><code><a>text</a></code></td>
+</tr>
+<tr>
+<td><code><a futurehref = "tagsets/basic/hide.html">&#60;debug></a></code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table><h2><a name = "DataManip"></a>Data Manipulation Elements</h2><p>Data
+manipulation elements perform operations on data, typically text,
+that depend on some non-structural features of its content (e.g.
+its value as a number).</p><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Element</th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "14"><code><a futurehref = "tagsets/basic/numeric.html">&#60;numeric></a></code></td>
+<td><code><a>sum</a></code></td>
+</tr>
+<tr>
+<td><code><a>difference</a></code></td>
+</tr>
+<tr>
+<td><code><a>product</a></code></td>
+</tr>
+<tr>
+<td><code><a>quotient</a></code></td>
+</tr>
+<tr>
+<td><code><a>remainder</a></code></td>
+</tr>
+<tr>
+<td><code><a>power</a></code></td>
+</tr>
+<tr>
+<td><code><a>sort</a></code></td>
+</tr>
+<tr>
+<td><code><a>reverse</a></code></td>
+</tr>
+<tr>
+<td><code><a>pairs</a></code></td>
+</tr>
+<tr>
+<td><code><a>sep</a></code></td>
+</tr>
+<tr>
+<td><code><a>digits</a></code></td>
+</tr>
+<tr>
+<td><code><a>integer</a></code></td>
+</tr>
+<tr>
+<td><code><a>extended</a></code></td>
+</tr>
+<tr>
+<td><code><a>modulus</a></code></td>
+</tr>
+<tr>
+<td rowspan = "12"><code><a futurehref = "tagsets/basic/text.html">&#60;text></a></code></td>
+<td><code><a>pad</a></code></td>
+</tr>
+<tr>
+<td><code><a>trim</a></code></td>
+</tr>
+<tr>
+<td><code><a>width</a></code></td>
+</tr>
+<tr>
+<td><code><a>align</a></code></td>
+</tr>
+<tr>
+<td><code><a>sort</a></code></td>
+</tr>
+<tr>
+<td><code><a>reverse</a></code></td>
+</tr>
+<tr>
+<td><code><a>pairs</a></code></td>
+</tr>
+<tr>
+<td><code><a>sep</a></code></td>
+</tr>
+<tr>
+<td><code><a>split</a></code></td>
+</tr>
+<tr>
+<td><code><a>join</a></code></td>
+</tr>
+<tr>
+<td><code><a>encode</a></code></td>
+</tr>
+<tr>
+<td><code><a>decode</a></code></td>
+</tr>
+<tr>
+<td rowspan = "2"><code><a futurehref = "tagsets/basic/subst.html">&#60;subst></a></code></td>
+<td><code><a>match</a></code></td>
+</tr>
+<tr>
+<td><code><a>result</a></code></td>
+</tr>
+</tbody>
+</table><h2><a name = "External"></a>External Resources</h2><p>External
+"resources" include both documents local to the system on which
+the document processor resides (i.e. files), and remote resources
+(specified with complete URLs).</p><table border = "1" frame = "border">
+<thead>
+<tr>
+<th>Element</th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "4"><code><a>&#60;include></a></code></td>
+<td><code><a>src</a></code></td>
+</tr>
+<tr>
+<td><code><a>tagset</a></code></td>
+</tr>
+<tr>
+<td><code><a>entity</a></code></td>
+</tr>
+<tr>
+<td><code><a>quoted</a></code></td>
+</tr>
+<tr>
+<td rowspan = "3"><code><a>&#60;output></a></code></td>
+<td><code><a>dst</a></code></td>
+</tr>
+<tr>
+<td><code><a>append</a></code></td>
+</tr>
+<tr>
+<td><code><a>directory</a></code></td>
+</tr>
+<tr>
+<td rowspan = "6"><code><a>&#60;connect></a></code></td>
+<td><code><a>method</a></code></td>
+</tr>
+<tr>
+<td><code><a>src</a></code></td>
+</tr>
+<tr>
+<td><code><a>mode</a></code></td>
+</tr>
+<tr>
+<td><code><a>tagset</a></code></td>
+</tr>
+<tr>
+<td><code><a>entity</a></code></td>
+</tr>
+<tr>
+<td><code><a>result</a></code></td>
+</tr>
+<tr>
+<td rowspan = "3"><code><a>&#60;status></a></code></td>
+<td><code><a>src</a></code></td>
+</tr>
+<tr>
+<td><code><a>entity</a></code></td>
+</tr>
+<tr>
+<td><code><a>item</a></code></td>
+</tr>
+</tbody>
+</table><h2><a name = "DataStruct"></a>Data Structure Elements</h2><p>Data
+structure elements perform no operations. They represent common
+forms of complex structured data. Strictly speaking, <code><code>&#60;tagset></code></code> and <code><code>&#60;namespace></code></code> are
+data structure elements. Often a data structure element has a representation
+that is a <em>subclass</em> of the representation of an ordinary
+element. (Currently <code>crc.dps.active.ParseTreeElement</code>).</p><table
+    border = "1" frame = "border">
+<thead>
+<tr>
+<th>Element </th>
+<th>Subelements</th>
+<th>Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan = "4"><code><a>&#60;DOCUMENT></a></code></td>
+<td><code><a>&#60;protocol></a></code></td>
+<td rowspan = "4">None</td>
+</tr>
+<tr>
+<td><code><a>&#60;version></a></code></td>
+</tr>
+<tr>
+<td><code><a>&#60;code></a></code></td>
+</tr>
+<tr>
+<td><code><a>&#60;message></a></code></td>
+</tr>
+<tr>
+<td rowspan = "2"><code><a>&#60;HEADERS> </a></code></td>
+<td rowspan = "2">None</td>
+<td><code><a>element</a></code></td>
+</tr>
+<tr>
+<td><code><a>name</a></code></td>
+</tr>
+<tr>
+<td><code><a>&#60;Query></a></code></td>
+<td><code><a>&#60;Query></a></code></td>
+<td><code><a>element</a></code></td>
+</tr>
+<tr>
+<td rowspan = "6"><code><a>&#60;URL></a></code></td>
+<td rowspan = "6">None</td>
+<td><code><a>protocol</a></code></td>
+</tr>
+<tr>
+<td><code><a>host</a></code></td>
+</tr>
+<tr>
+<td><code><a>port</a></code></td>
+</tr>
+<tr>
+<td><code><a>path</a></code></td>
+</tr>
+<tr>
+<td><code><a>reference</a></code></td>
+</tr>
+<tr>
+<td><code><a>query</a></code></td>
+</tr>
+</tbody>
+</table><hr><b>Copyright © 1999 Ricoh Silicon Valley</b><br></body></html>

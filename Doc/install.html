@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" [
+
+<!-- Begin Document Specific Declarations -->
+
+
+<!-- End Document Specific Declarations -->
+
+]>
+
+<html><head><title>PIA Installation Manual, release 2.0b</title></head>
+<body><center><h1>Installing the PIA</h1></center><p>This manual
+describes how to install the Platform for Information Applications
+(PIA). This information is directed at PIA users. Developers intending
+to create applications should also consult <a href = "#Authoring">Authoring
+Agents</a>.</p><p>Topics covered include:</p><ul><li><a href = "#Before">Before
+You Begin</a></li>
+<li><a href = "#Obtaining">Obtaining the Files</a></li>
+<li><a href = "#Installing">Installing the Files</a></li>
+<li><a href = "#Running">Running the PIA</a></li>
+<li><a href = "#Questions">Questions, Problems and Comments</a></li></ul><p>For
+information on use of the PIA, see the <a href = "doclist.html">PIA
+Document List</a>.</p><hr><h2><a name = "Before"></a>Before You
+Begin</h2><p>You need the following software to run the PIA:</p><ul>
+<li><code>Java JRE 1.1</code> or higher is needed to create and
+run applications. <br><code>JDK</code> is needed to modify the PIA
+code. <code>JDK</code> can be obtained from <code><a
+    href = "http://www.javasoft.com">http://www.javasoft.com</a></code></li>
+<li>An operating system that supports sockets and long filenames.<br>We
+have tested the PIA on Linux (Red Hat 4.2), Windows 9X, and Solaris
+on SPARC.</li>
+<li>The <code>tar</code> and <code>gunzip</code> utilities.<br>These
+are required for unpacking the files.</li></ul><h2><a name = "Obtaining">Obtaining
+the Files</a></h2><p>The PIA files are available via HTTP, from <code><a
+    href = "http://www.risource.org/PIA/">http://www.risource.org/PIA/</a>.</code></p><p>The
+latest stable releases are maintained in compressed form in the
+directories <code>ftp://www.risource.org/PIA/Pia_bin.tgz</code> and <code>ftp://www.risource.org/PIA/Pia_src.tgz</code>.</p><h2><a
+    name = "Installing">Installing the Files</a></h2><p>The files
+are supplied in the form of a gzip'ed tar file. Set your working
+directory to the intended the parent directory for the PIA files.
+Extract the files using <code>tar</code>.</p><blockquote><code>tar
+xvf pia_bin_2_0b</code></blockquote><p>This creates the directory <code>pia/</code> under
+your home directory.</p><h3 id = "CHDCECIE">Setting Up</h3><p>The
+PIA uses two environment variables:</p><ul><li><var>PIA_DIR</var> indicates
+the location of the PIA directory just installed.</li>
+<li><var>USR_DIR</var> indicates the location to which the PIA writes
+its data files.</li></ul><p>On Unix, set the <var>PIA_DIR</var> to <kbd>$HOME/pia</kbd> or
+whatever installation location you chose above.On Windows, set the <var>PIA_DIR</var> to <code><var>drivename</var>:\pia</code>.</p><p><var>USR_DIR</var> is
+automatically created by the PIA. You are free to reset its location
+if desired.On Unix, the default directory for <var>USR_DIR</var> is <kbd>~/.pia</kbd>.
+On Windows, the default directory is <code>c:\PIAUSERS\<var>username</var></code>.</p><p>If
+you use the <kbd>-u</kbd> command line option to specify <var>USR_DIR</var>,
+that setting takes precedence over the one you specify in the environment
+variable.</p><p>When the PIA starts, it looks for the <code>pia.props</code> under <code>~/.pia/Config</code>.
+You can create a customizable copy in your home directory under <code>~/.pia/Config</code> by
+copying <tt>pia/Config/pia.props</tt> and modifying it using a text
+editor. Note that this is <var>USR_DIR</var>.</p><p>The default
+settings of the PIA are contained in <code>pia/Config/pia.props</code>.</p><p>If
+you start the PIA with a <code>-u <var>userdir</var> </code> option,
+the PIA looks for the <code>pia.props</code> in <code><var>userdir</var>/Config</code>.</p><p>It
+is convenient to put the directory <code>pia/bin</code> into your
+shell's search path. </p><h2><a name = "Running">Running the PIA</a></h2><p>On
+UNIX, once you have set up the <code><var>PIA_DIR</var></code> and <code><var>USR_DIR</var></code> environment
+variables, you can launch the PIA with the command: <code>PIA_DIR/bin/pia.</code>This
+is a one-line shell script that runs <em>pia_wrapper</em>. A complete
+list of command-line options can be found by running <kbd>PIA_DIR/bin/pia
+-?</kbd> at the shell prompt.</p><p>Under Windows 95 and NT, launch
+the PIA with the command: <code>PIA_DIR/bin/pia.bat</code>.</p><p>This
+is a batch file that makes use of the <var>PIA_DIR</var> and <var>USR_DIR</var> environment
+variables. It is equivalent to the following:<kbd>java -classpath <var>CPATH</var> crc.pia.Pia
+-root <var>PIA_DIR</var> -u <var>PIA_HOME</var></kbd></p><p>Note
+the <code>-root</code> and <code>-u</code> options. The <code>-p</code> option
+can be used to set the port.</p><h2>Using the PIA</h2><p>The PIA
+is essentially a Web server. Assuming you are running on a machine
+called <code>PiaHOST</code> using <code>piaPORT</code>, simply browse
+to <code><a href = "http://piaHOST:piaPORT/PIA/Doc">http://piaHOST:piaPORT/</a></code> </p><p>Some
+of the functions work best if you set your browser's proxies to
+the PIA as well. In most cases, <code>http://localhost:8888</code> will
+work.</p><h2><a name = "Questions">Questions, Problems, or Comments</a></h2><p>You
+can check for known bugs by going to <code><a
+    href = "http://www.risource.org/PIA/bugs">http://www.risource.org/PIA/bugs</a></code></p><p>Questions,
+problems and comments should be directed to <code>pia-bugs@risource.org</code>.</p><hr><p><b>Copyright
+1999 Ricoh Silicon Valley</b></p></body></html>

@@ -1,0 +1,84 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+  </body></head>
+
+<h2>Numeric Handler Demo</h2>
+
+The <a name='numeric_demo'>numeric handler demo</a> shows how to use the following numeric handler attributes:  <a href='#sum'> Sum</a>, <a href='#diff'> Difference</a>, <a href='#prod'> Product</a>, <a href='#quot'> Quotient</a>, <a href='#rem'> Remainder</a>, <a href='#sort'> Sort</a>.
+<p>
+
+<hr>
+<a name='sum'><h3> Sum Numbers Separated by Whitespace </h3></a>
+<b> Description:</b> Adds the numbers: 10 20 30 40 9.5, and returns the result.<br>
+<br>
+<b> Input:      </b>&lt;numeric sum&gt;10 20 30 40 9.5&lt;/numeric&gt;<br>
+<br>
+
+<b> Result:     </b>109.5
+<hr>
+
+<h3> Sum an HTML Encoded List of Numbers </h3>
+<b> Description:</b> Adds the numbers: 100 200 300<br>
+<br>
+<b> Input:</b>&lt;ul&gt;&lt;numeric sum&gt;&lt;li&gt;100 &lt;li&gt;200 &lt;li&gt;300&lt;/numeric&gt;&lt;/ul&gt;<br>
+<br>
+
+<b> Result:</b><ul>600</ul>
+<hr>
+
+
+<a name='diff'><h3> Using the Difference Attribute </h3></a>
+<b> Description:</b> Compute the difference between 14 and 17.  This should return -3.<br>
+<br>
+<b> Input:</b>&lt;numeric difference&gt; 14 17 &lt;/numeric&gt;<br>
+<br>
+<b> Result: </b>-3
+<hr>
+
+
+<a name='prod'><h3> Using the Product Attribute </h3></a>
+
+<b> Description:</b> Compute the product of 9 and 9.<br>
+<br>
+<b>Input:</b>&lt;numeric product&gt;9 9&lt;/numeric&gt;<br>
+<br>
+<b>Result:</b>81
+<hr>
+
+<a name='quot'><h3> Using the Quotient Attribute</h3></a>
+<b> Description:</b> Compute the quotient of 20 and 10.<br>
+<br>
+<b>Input: </b>&lt;numeric quotient&gt;20 10&lt;/numeric&gt;<br>
+<br>
+<b>Result: </b>2.0
+<hr>
+
+<a name='rem'><h3> Using Remainder Attribute </h3></a>
+<b> Description:</b> Compute the remainder of 17 and 10.<br>
+<br>
+<b>Input:</b>&lt;numeric remainder&gt;17 10&lt;/numeric&gt;<br>
+<br>
+<b>Result:</b>7
+<hr>
+
+<a name='sort'><h3> Sort a List of Numbers in Ascending Order</h3></a>
+
+<b> Description:</b> Sort 88 77 11 99 in ascending order.<br>
+<br>
+<b>Input:</b>&lt;numeric sort&gt;88 77 11 99 &lt;/numeric&gt;<br>
+<br>
+<b>Result:</b>11778899
+<hr>
+
+<h3> Sort a List of Numbers in Descending Order </h3>
+
+<b> Description:</b> Sort 88 77 11 99 in descending order.<br>
+<br>
+<b>Input:</b>&lt;ul&gt;&lt;numeric sort reverse&gt;&lt;li&gt;88&lt;li&gt;77&lt;li&gt;11&lt;li&gt;99&lt;/numeric&gt;&lt;/ul&gt;<br>
+<br>
+<b>Result:</b><ul>99887711</ul>
+<p>
+
+</html>

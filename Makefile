@@ -79,7 +79,7 @@ SRCDIR=src/java/crc
 CLASSDIR=src/java
 PIALIBDIR=lib/java
 PIABINDIR=bin
-INTERFORM=Doc/Manuals/InterForm
+INTERFORM=
 DOCRELEASE=Doc/Release
 DOCPAPER=Doc/Papers
 CDROMDIR=../cdrom
@@ -100,7 +100,6 @@ rm_pia_tar::
 
 prep_rel::
 	cd $(CLASSDIR); make clean ; make
-	cd $(INTERFORM); make
 	cd $(CLASSDIR);make crc.zip; make alldoc
 	cd $(CLASSDIR);rm -fr java
 
@@ -125,6 +124,10 @@ crfixbat::
 pia_bin.toc:: 
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS \
+	    | grep -v Config/CDRW | grep -v Config/Demos \
+	    | grep -v Config/MB3 \
+	    | grep -v Config/Photo | grep -v Config/Printer \
+	    | grep -v Config/WebWort | grep -v Config/cdrom \
 	    | grep -v pia_src.tgz | grep -v pia.toc \
 	    | grep -v src > pia/pia_bin.toc 
 
@@ -135,13 +138,14 @@ pia_bin.tar:	rm_bin_tar prep_rel crfixbat cp_build_noa pia_bin.toc
 
 pia.toc:: 
 	cd ..;	find pia \! -type d -print \
-	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
-	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
-	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
-	    | grep -v src/app/webfax | grep -v src/tex \
-	    | grep -v pia_bin.tgz | grep -v pia_bin.toc \
-	    | grep -v Doc/Slides > pia/pia.toc 
+	    | grep -v CVS \
+	    | grep -v src/app/webfax | grep -v src/perl \
+	    | grep -v src/tex \
+	    | grep -v Config/CDRW | grep -v Config/MB3 \
+	    | grep -v Config/Photo | grep -v Config/Printer \
+	    | grep -v Config/WebWort | grep -v Config/cdrom \
+	    | grep -v Config/Demos | grep -v Doc/Papers \
+	    | grep -v pia_bin.tgz | grep -v pia_bin.toc > pia/pia.toc 
 
 pia.tar:	rm_pia_tar prep_rel crfixbat cp_build_noa pia.toc
 	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src

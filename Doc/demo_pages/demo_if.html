@@ -1,0 +1,101 @@
+<!doctype  html public "-//IETF//DTD HTML//EN//3.2">
+
+<html><head>
+<body bgcolor='#ffffff' link='#c40026' vlink='#e40026'>
+</body></head>
+
+<h2>If Demo</h2>
+
+The <a name='if_demo'>if handler</a> provides the standard if/else-if/else conditions.
+When one of these conditions evaluates to true, the then statement for that clause is executed.
+elsf is provided as a synonym for else-if.  Below are some "if" examples.
+
+<p>
+
+<h3>Define an Entity and Test for its Existence</h3>
+
+<b> Description:</b> defines a variable "tomorrow", sets it to a value, then tests for its 
+existence.
+<p>
+<b>Input: </b> &lt;define entity=tomorrow&gt;&lt;value&gt;Saturday&lt;/define&gt;
+
+
+<p>
+<b>Input: </b>
+<pre>
+&lt;if&gt;tomorrow&lt;then&gt;
+	&amp;tomorrow
+&lt;/then&gt;&lt;else&gt;
+	Tomorrow is another day
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+ 
+	Saturday
+ 
+<p>
+<hr>
+
+<h3>Using if, elsf, and else</h3>
+
+<b>Description: </b> This gives an example of using if, elsf, and else clauses.  It defines the 
+variable "teeshirt", sets it to "large" then performs a series of tests on this value. The
+return value is the "then" statement associated with the successful test.
+<p>
+
+<b>Input: </b> &lt;define entity=teeshirt&gt;&lt;value&gt;large&lt;/define&gt;
+<p>
+
+
+
+<b>Input: </b> 
+<pre>
+&lt;if&gt;&lt;test match="small"&gt; large &lt;/test&gt;
+	&lt;then&gt; Size is small&lt;/then&gt;
+
+&lt;elsf&gt;&lt;test match="medium"&gt; large &lt;/test&gt;
+	&lt;then&gt; Size is medium&lt;/then&gt;
+&lt;/elsf&gt;
+
+&lt;else&gt;
+	Size is large
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+
+<b>Result: </b> 
+
+<if>
+	<then> Size is medium</then>
+</if>
+<p>
+<hr>
+
+
+<h3>An if Example that Fails</h3>
+
+<b>Description: </b> This example shows an if test that fails, and consequently returns nothing.
+<p>
+<b>Input: </b> 
+<pre>
+&lt;if&gt;&lt;test match="xs"&gt; large &lt;/test&gt;
+	&lt;then&gt; Size is extra small&lt;/then&gt;
+
+&lt;else&gt;
+	&lt;if&gt; &lt;test match="xlarge"&gt; large &lt;/test&gt;
+	&lt;then&gt;Size is extra large&lt;/then&gt;
+&lt;/else&gt;
+&lt;/if&gt;
+</pre>
+<p>
+<b>Result: </b> 
+
+	 
+<p>
+
+</html>
+
