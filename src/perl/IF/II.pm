@@ -11,78 +11,15 @@
 package IF::II;
 
 require HTML::Parser;
-use HTML::Element;
+
 use IF::IT;
 use IF::IA;
 
-push(@ISA,'HTML::Parser');		# remains to be seen
-
-@if_defaults = (
-	     'streaming' => 1,
-	     'passing' => 1,
-	     'syntax' => $IF::IA::syntax,
-	     'agents' => $IF::IA::agents,
-	     'active_agents' => $IF::IA::active_agents,
-	     'passive_agents' => $IF::IA::passive_agents,
-	     );
-
-@html_defaults = (
-	     'streaming' => 0,
-	     'passing' => 0,
-	     'parsing' => 1,
-	     'syntax' => $IF::IT::syntax,
-	     );
-
-#############################################################################
-###
-### Evaluators:
-###
-###	All take either a reference to an interpretor as their second
-###	argument, or a list of attribute=>value pairs that are used to
-###	construct one.
-
-sub run_file {
-    my ($file, $interp) = @_;
-
-    print "\nrunning file $file\n" if $main::debugging;
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse_file($file);
-    return $interp->run;
-}
-
-
-sub run_string {
-    my ($string, $interp) = @_;
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse($string);
-    return $interp->run;
-}
-
-
-sub run_tree {
-
-
-}
-
-
-sub run_stream {
-
-
-}
-
-
+push(@ISA,'HTML::Parser');	# === At some point we will use our own. ===
+				#     the problem is that HTML::Parser
+				#     does some things we don't want.
+				#     We should eventually move to the
+				#     full SGML parser.
 
 #############################################################################
 ###
@@ -93,35 +30,19 @@ sub run_stream {
 ###	stream (subroutine that returns chunks), or a parse tree.
 ###
 ###   Output:
-###	The II object can provide output as either a file, a string, a
+###	The II object can provide output as either a string, a
 ###	stream, or a parse tree.
+###
+### ===	the stream stuff is missing at this point. ===
 ###
 ###   Interface:
 ###	$interp = II->new(arg => value, ...);
-###	$status= $interp->step;
-###	   1: start tag, 2: end tag, 0: text, -1: decl, undef: done
-###
-###	After calling step(), the following are accessible:
-###	   $token  = $interp->token;	# the current token as an IT object
-###	   $string = $interp->text;	# the current token as a string.
-###
-###	The following routines call step() as often as necessary to
-###	complete the current element.
-###
-###	   $status = $interp->run;	# just run.
-###	   $string = $interp->html;	# element as HTML string.
-###	   $tree   = $interp->tree;	# parse tree
+###	$result= $interp->run;
 ###
 ###   Theory:
 ###	The interpretor regards its input as a sequence of SGML tokens:
 ###	either start tags, end tags, declarations (e.g. <!DOCTYPE...>),
-###	comments, or text.  It is a subclass of HTML::Parser, but also
-###	understands how traverse a tree of HTML::Element's.  It does not
-###	use the latter's "traverse" operation, because that doesn't
-###	allow partial results.
-###
-###	=== At some point we will have to make it independent of
-###	=== HTML::Parser in order to handle literals, etc.
+###	comments, or text.  It is a subclass of HTML::Parser.
 ###
 ###	A set of ``agents'' may be provided which are matched against
 ###	tags and other features of items in the token stream.
@@ -159,9 +80,6 @@ sub new {
 	print "  $attr = $val\n" if $main::debugging > 1;
     }
 
-    my ($active_agents, $passive_agents) = ($self->active_agents, $self->passive_agents);
-    print "  passive: " . @$passive_agents . "\n" if $main::debugging;
-    print "  active: " . @$passive_agents . "\n" if $main::debugging;
     $self->{_out_queue} = '' if $self->streaming;
     $self;
 }
@@ -223,7 +141,10 @@ sub context {
     return $self->{'_cstack'}->[- $level];
 }
 
-### Things in the stack frame:
+#############################################################################
+###
+### Access to Things in the stack frame:
+###
 
 sub token {
     my ($self, $v) = @_;
@@ -343,7 +264,13 @@ sub quoting {
     $self->state->{'_quoting'};
 }
 
-### Variables:
+#############################################################################
+###
+### Access to Variables:
+###
+###	A variable table is maintained in each stack frame; dynamic scoping
+###	is used to access them.  Attributes in the current tag can be used 
+###	to provide private scope.
 
 sub getvar {
     my ($self, $v) = @_;
@@ -415,7 +342,7 @@ sub declaration {
     ## HTML declaration, e.g. doctype.
     ##	initial "<!" and ending ">" stripped off.
 
-    $self->handle_it(IF::IT->new('!')->push($text))
+    $self->resolve(IF::IT->new('!')->push($text))
 }
 
 sub start {
@@ -454,7 +381,7 @@ sub comment {
     ## Comment.
     ##	The leading and trailing "<!--" and "-->" have been stripped off.
 
-    $self->handle_it(IF::IT->new('!--')->push($text))
+    $self->resolve(IF::IT->new('!--')->push($text))
 }
 
 sub text {
@@ -464,7 +391,7 @@ sub text {
     ##	if $expanded is false, entities have NOT been expanded, so
     ##  HTML::Entities::decode($text) may need to be called.
 
-    $self->handle_it($text);
+    $self->resolve($text);
 }
 
 #############################################################################
@@ -529,10 +456,14 @@ sub process_it {
 sub step {
     my ($self) = @_;
 
+    ## === not completed yet.  Will probably be needed for streaming. ===
 }
 
 sub run {
     my ($self) = @_;
+
+    ## === Really needs to get input off the input queue, 
+    ##	   going to a file or input stream as needed.
 
     $self->flush;
     return $self->out_queue;
@@ -590,9 +521,9 @@ sub start_it {
     ##	  element.
 
     if ($it->needs_end_tag($self)) {
-	$self->handle_it($it, 1);
+	$self->resolve($it, 1);
     } else {
-	$self->handle_it($it, 0);
+	$self->resolve($it, 0);
     }
 }
 
@@ -611,19 +542,33 @@ sub end_it {
 	my $was_parsing = $self->parsing;
 	$self->pop_state;
 	$t = $it->tag;
-	$self->handle_it($it, $was_parsing? 0 : -1);
+	$self->resolve($it, $was_parsing? 0 : -1);
 	return if ($t eq $tag) or $one;
     }    
 }
 
-sub handle_it {
+#############################################################################
+###
+###  ``Resolver'':
+###
+###	This is the heart of the Interpretor:  it takes a start tag, end 
+###	tag, or completed subtree and ``does the right thing'' with it.
+###	This means:
+###	   1.	push or pop the parse stack
+###	   2.	apply any interested agents
+###	   3.	put the token in the right place.
+###
+
+sub resolve {
     my ($self, $it, $incomplete) = @_;
+
+    ## Do the right thing to an incoming token.  
+    ##	  $incomplete = 0 -- complete subtree
+    ##	  $incomplete > 0 -- start tag
+    ##	  $incomplete < 0 -- end tag
+
     my $dstack = $self->dstack;
     $self->token($it);
-
-    ## Do the right thing to a completed token.  
-    ##	  It is also called with no arguments to see if anything needs
-    ##	  to be done for a start tag just put on the stack.
 
     print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
 	if $main::debugging > 1;
@@ -662,12 +607,18 @@ sub handle_it {
 
 #############################################################################
 ###
-### Semantic Action Routines:
+### Output Routines:
 ###
-###	
+###	These are called to output a completely-processed token to the 
+###	appropriate place. 
+###
 
 sub output {
     my ($self, $str) = @_;
+
+    ## Append a string to the output queue.
+    ##	  Does the right thing for both string and list output.
+
     my $out_queue = $self->out_queue;
 
     if (ref $out_queue) { 
@@ -680,7 +631,7 @@ sub output {
 sub pass_it {
     my ($self, $it, $incomplete) = @_;
 
-    ## Pass a completed token to the output.
+    ## Pass a token or tree to the output.
 
     return unless defined $it;
     my $out_queue = $self->out_queue;
@@ -706,9 +657,8 @@ sub pass_it {
 sub push_it {
     my ($self, $it) = @_;
 
-    ## Push a completed token onto the contents of its parent,
+    ## Push a completed tree onto the contents of its parent,
     ##	  or the output queue if we're at the top level.
-
 
     return unless defined $it;
     my $dstack = $self->dstack;
@@ -785,16 +735,6 @@ sub define_agent {
     $self->agents->{$name} = $agent;
 }
 
-#############################################################################
-###
-### Ancient history:  the original Interform code from pia_agent.pl
-###
-
-### Environment in which the code is run:
-
-local $agent;			# The agent that owns the interform
-local $request;			# The request being handled
-
 sub eval_perl {
     my ($self, $it) = @_;
 
@@ -824,67 +764,149 @@ sub eval_perl {
     $self->token($result);    
 }
 
+#############################################################################
+###
+### Default Arguments:
+###
+###	These arrays contain default argument lists for constructing the
+###	most common kinds of interpretors and parsers.
+###
 
-#this is  a callback for html traverse
-#TBD change for multi-threads
-sub execute_interform {
-    my $element=shift;
-    my $start=shift;
-    return 1 unless $start;	# only do it once, when entering a node.
+@if_defaults = (
+	     'streaming' => 1,	# output is a string
+	     'passing' => 1,	# pass completed tags to the output.
+	     'syntax' => $IF::IA::syntax,
+	     'agents' => $IF::IA::agents,
+	     'active_agents' => $IF::IA::active_agents,
+	     'passive_agents' => $IF::IA::passive_agents,
+	     );
 
-    my $tag = lc($element->tag);
-    return 1 unless  ($tag eq "code" || $tag eq "eval");
+@html_defaults = (
+	     'streaming' => 0,	# output is a tree
+	     'parsing' => 1,	# push completed tags onto their parent.
+	     'passing' => 0,
+	     'syntax' => $IF::IT::syntax,
+	     );
 
-    ## At this point we have a code element.  Branch on language attribute.
-    my $code_status;
-    my $language=lc($element->attr('language'));
-#obvious branching on language TBD
-    if ($language eq 'perl'){
 
-	my $code_array=$element->content;
-#       replace with new array
-	my @new_elements;
+#############################################################################
+###
+### Evaluators:
+###
+###	All take either a reference to an interpretor as their second
+###	argument, or a list of attribute=>value pairs that are used to
+###	construct one.  The default is to use @if_defaults, which 
+###	produces a string as the result.
 
-	my $code;
-	while($code=shift(@$code_array)){
-	    print "execing $code \n" if $main::debugging > 1;
-	    if (ref($code)){
-		$code_status = $code; #this is an html element
-	    } else {
-		#evaluate string and return last expression value
-		$code_status= $agent->run_code($code, $request);
-		print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-		print "code status is $code_status\n" if  $main::debugging;
-	    }
-	    push(@new_elements,$code_status) if $code_status;
-	}
-	my $parent=$element->parent();
-	$parent->pos($element);
-	while($code=shift(@new_elements)){
-	    if (ref($code)) {
-		$parent->insert_element($code);
-		$element->tag('output'); # === kludge because pos broken ===
-	    } else {
-		push(@$code_array,$code);
-	    }
-	}
-	$element->attr('language',"perl_output");
-    } 
-#other languages?
-    return 0;#do children?
-    
+sub run_file {
+    my ($file, $interp) = @_;
+
+    ## Run the interpretor over a file. 
+    ##	  The result is a string.
+
+    print "\nrunning file $file\n" if $main::debugging;
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@if_defaults);
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->parse_file($file);
+    return $interp->run;
 }
+
+
+sub run_string {
+    my ($input, $interp) = @_;
+
+    ## Run the interpretor over a string, such as a buffered file. 
+    ##	  The result is a string.
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@if_defaults);
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->parse($input);
+    return $interp->run;
+}
+
+
+sub run_tree {
+    my ($input, $interp) = @_;
+
+    ## Run the interpretor over a parse tree.
+    ##	  The result is a string.
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@if_defaults);
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->process_it($input);
+    return $interp->run;
+}
+
+
+sub run_stream {
+
+
+}
+
+sub parse_HTML_file {
+    my ($file, $interp) = @_;
+
+    ## Run the interpretor parser over a file in ``parser mode''.
+    ##	  The result is a parse tree.  No agents are used.
+
+    print "\nrunning file $file\n" if $main::debugging;
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@html_defaults);
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->parse_file($file);
+    return $interp->run;
+
+}
+
+sub parse_HTML_string {
+
+    my ($input, $interp) = @_;
+
+    ## Run the interpretor parser over a string in ``parser mode''.
+    ##	  The result is a parse tree.  No agents are used.
+
+    if (!defined $interp) {
+	$interp = IF::II->new(@html_defaults);
+    } elsif (! ref($interp)) {
+	shift;
+	$interp = IF::II->new(@_);
+    }
+    $interp->parse($input);
+    return $interp->run;
+}
+
+
+#############################################################################
+###
+### Evaluating Interforms on behalf of PIA agents:
+###
 
 sub parse_interform_file {
     local ($agent,$file,$request)=@_;
 
     my $string = run_file($file);
 
-    ## The following gets us up and running if run_file fails:
-
-    return $string if $string && ! ref($string);
-    print "\nrun_file returned '$string'\n" if $main::debugging;
-    $main::debugging=0;	# look at the first post-mortem.
+    if (!string || ref($string)) {
+	print "\nIF::II::run_file returned '$string'\n" if $main::debugging;
+	$main::debugging=0;	# look at the first post-mortem.
+    }
     return $string;
 }
 
