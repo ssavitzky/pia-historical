@@ -94,9 +94,9 @@ public class BasicText extends AbstractNode implements Text {
     fpos = s.indexOf( ent );
     while( fpos != -1 ){
       found = true;
-      Report.debug("spos is-->"+Integer.toString(spos));
-      Report.debug("fpos is-->"+Integer.toString(fpos));
-      Report.debug("The substring is-->"+s.substring(spos, fpos));
+      //Report.debug("spos is-->"+Integer.toString(spos));
+      //Report.debug("fpos is-->"+Integer.toString(fpos));
+      //Report.debug("The substring is-->"+s.substring(spos, fpos));
       sb.append(s.substring(spos, fpos));
       spos = fpos + ent.length();
       sb.append((String)predefEntityTab.get(ent));
