@@ -17,8 +17,8 @@
 # CFLAGS = -g -Wall -DXMOSAIC
 # For HP's:
 # CFLAGS = -g -DXMOSAIC -I/usr/include/Motif1.1 -I/usr/include/X11R4
-# For everyone else:
- CFLAGS = -g -DXMOSAIC -I/rhine1/src/gnu/glibc-1.08.1/posix
+# For everyone else: -I/rhine1/src/gnu/glibc-1.08.1/posix
+ CFLAGS = -g -DXMOSAIC
 # ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 #include <stdio.h> 
 #include <stdlib.h>
 /* now in stdlib #include <getopt.h>*/
+#include <unistd.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -51,11 +52,11 @@ int gw_anchor_nums[] = {    0,1,0,2    };
 
 char gw_anchor_string[100];
 #define GW_MIN_DIG 6
-#define GW_TEX_HEADER "\\include{/mlp/datasets/fax/src/codemacro}\n"
+#define GW_TEX_HEADER "\\include{/usr/local/lib/pia/tex/codemacro}\n"
 #define GW_ANCHOR_START_STRING sprintf(gw_anchor_string,"\\encode{%d}{",gw_anchor_num_next())   /*puts down code*/
 #define GW_ANCHOR_END_STRING "}"
 
-#define GW_ANCHOR_FILE_NAME  "/mlp/datasets/fax/incoming/URLS/allUrls"
+#define GW_ANCHOR_FILE_NAME  "/tmp/URLS/allUrls"
 #define GW_SAVE_ANCHOR(text) fprintf(gw_afile,"%d %s \n",gw_anchor_num,text)
 /*
  * type definitions
