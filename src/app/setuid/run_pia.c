@@ -14,8 +14,8 @@
 #include <stdio.h>
 
 char *args[] = {
-  "/usr/local/bin/perl",/* "-U", */
-  "/home/pia/bin/pia",
+  /* "/usr/local/bin/perl", */
+  "./pia/bin/pia",
   0
 };
 
@@ -28,11 +28,11 @@ main(int argc, char** argv, char** env)
   setenv("LOGNAME", pw->pw_name, 1);	
   setenv("HOME", pw->pw_dir, 1);
 
+  setgid(pw->pw_gid);	
   if (setuid(pw->pw_uid)) {
     fprintf(stderr, "sorry\n");
     exit(-1);
   }
-  setgid(pw->pw_gid);	
   chdir(pw->pw_dir);
   execve (args[0], args, env);	
 }
