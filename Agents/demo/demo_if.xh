@@ -4,12 +4,13 @@
 <body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <header>
 </head>
-<set entity name=title>Demo &amp; Test Agent</set>
-<read interform file="heading.inc" process>
 
-<h2>If Handler Examples:</h2>
+<h2>If Demo</h2>
 
-The <a name="if_demo">if handler demo</a> shows how to use the if handler.
+The <a name="if_demo">if handler</a> provides the standard if/else-if/else conditions.
+When one of these conditions evaluates to true, the then statement for that clause is executed.
+elsf is provided as a synonym for else-if.  Below are some "if" examples.
+
 <p>
 
 <h3>Define an Entity and Test for its Existence</h3>
