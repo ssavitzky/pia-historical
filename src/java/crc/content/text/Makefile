@@ -7,6 +7,7 @@ FILES = \
 	html.java \
 	ParsedContent.java \
 	InterFormContent.java \
+	ProcessedContent.java \
 	StringContent.java
 
 include $(TOPDIR)/makefiles/file.make
