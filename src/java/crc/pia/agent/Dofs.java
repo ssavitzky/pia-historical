@@ -66,20 +66,11 @@ public class Dofs extends GenericAgent {
     if( url == null )
       return;
 
-    boolean redirection = false;
-    try{
-      redirection = isRedirection( request, url );
-    }catch(FileNotFoundException e1){
-      return;
-    }catch(MalformedURLException e2){
-      return;
-    }
-
-    if( redirection ) return;
-
     String path   = url.getFile();
     String myname = name();
     String mytype = type();
+    Agent agnt	  = this;
+
     Pia.debug(this, "path-->"+path);
     Pia.debug(this, "myname-->"+myname);
     Pia.debug(this, "mytype-->"+mytype);
@@ -92,104 +83,78 @@ public class Dofs extends GenericAgent {
      *	 mytype/path   -- Interforms for DOFS
      */
 
-    Agent agnt = this;
+    /* === need to use redirection below, but not yet ===
+    try {
+      if (isRedirection( request, url )) return;
+    }catch(FileNotFoundException e1){
+      return;
+    }catch(MalformedURLException e2){
+      return;
+    }
+    */
 
-    if (!myname.equals(mytype) && path.startsWith("/"+myname+"/")){
-      Pia.debug(this, ".../"+myname+"/... -- file.");
-      try{
+    if (!myname.equals(mytype)
+	&& (path.equals("/"+myname) || path.startsWith("/"+myname+"/"))) {
+      // (need to make sure that the name isn't a prefix of something)
+      Pia.debug(this, ".../"+myname+"... -- file.");
+      if (path.equals("/"+myname)) {
+	try {
+	  redirectTo( request, path+"/" );
+	} catch (MalformedURLException e2){
+	  throw new PiaRuntimeException(this, "respond",
+					"Malformed URL " + path+"/");
+	}
+	return;
+      }
+      try {
 	retrieveFile( url, request );
       }catch(PiaRuntimeException e){
 	throw e;
       }
     } else {
-      if (!myname.equals(mytype) && path.startsWith("/"+myname)
-	  && path.endsWith("/"+myname)) {
-	Pia.debug(this, ".../"+myname+" -- home.");
-	path = "/"+myname+"/home.if";
-      } else {
-	// http://napa:7777/dofs/doc/foobar.if
-	RegExp re = null;
-	MatchInfo mi = null;
-	try{
-	  re = new RegExp("^/" + mytype + "/([^/]+)" + "/");
-	  mi = re.match( path );
-	}catch(Exception e ){;}
-	
-	if(mi!=null){
-	  String search = "/" + mytype + "/";
-	  try{
-	    re = new RegExp("[^/]+/");
-	    mi = re.match( path.substring( search.length() ));
-	  }catch(Exception e){;}
-	  
-	  String match = mi.matchString();
-	  
-	  // get name only
-	  String name = null;
-	  if(mytype.equals( myname ))
-	    name = myname;
-	  else
-	    name  = match.substring(0, match.length() -1);
-	  
-	  Agent zAgnt = res.agent( name );
-	  if( zAgnt != null ){
-	    agnt = zAgnt;
-	    path = path.substring( ("/"+mytype).length() );
-	    Pia.debug(this, "The path for type-->"+path);
-	  }
-	}
-      }
-      if( agnt != null ){
-	Pia.debug(this, "Running interform...");
-	URL myurl = null;
-
-	try{
-	  myurl = new URL(url.getProtocol(), myname, url.getPort(), path);
-	}catch(MalformedURLException e){}
-
-	if (! agnt.respondToInterform( request, myurl, res )) {
+      String s = "/"+mytype+"/"+myname;
+      if (!myname.equals(mytype)) {
+	if (path.equals(s)) {
+	  Pia.debug(this, ".../TYPE/NAME");
+	  path = "/"+myname;
+	} else if (path.startsWith(s+"/")) {
+	  Pia.debug(this, ".../TYPE/NAME/...");
+	  path = "/"+myname+ path.substring(s.length());
+	} else {
 	  throw new PiaRuntimeException(this, "respond",
-					"No InterForm file found for "+
-					url.toExternalForm());
+					"Malformed DOFS path "+path);
 	}
+	respondToInterform(request, path, res);
+      } else {
+	respondToInterform(request, url, res);
       }
     }
   }
     
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   /**
    * name and type needs to be set after this
    */
   public Dofs(){
-    Pia.debug(this, "From Dofs generic constructor.");
+    super();
   }
 
   public Dofs(String name, String type){
     super(name, type);
   }
 
-  /**
-   * initialize 
-   */
-  public void initialize(){
-    String myname = name();
-    String mytype = "Dofs";
-    type( mytype );
 
-    // === [ss] I don't think these are needed; Agency routes it.
-    //matchCriterion("IsRequest", true);
-    //matchCriterion("IsAgentRequest",true);
-    /*
-    String myurl = "/"+ mytype + "/" + myname + "/" + "initialize.if";
-    if( DEBUG )
-      System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode.  No interform request is put onto the resolver.");
-    else{
-      request = createRequest("GET", myurl );
-    }
-    */
-  }
+
+  /************************************************************************
+  ** Attribute access:
+  ************************************************************************/
 
   /**
-   *
+   * @return the path to the DOFS's root directory.
    */
   public String root(){
     List f = fileAttribute("root");
@@ -203,6 +168,11 @@ public class Dofs extends GenericAgent {
       return null;
     }
   }
+
+
+  /************************************************************************
+  ** File access:
+  ************************************************************************/
 
   /**
    *Transaction handling.
