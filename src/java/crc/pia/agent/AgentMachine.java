@@ -18,6 +18,7 @@ import crc.pia.Transaction;
 import crc.pia.ByteStreamContent;
 import crc.pia.Content;
 import crc.pia.HTTPResponse;
+import crc.pia.PiaRuntimeException;
 
 
 public class AgentMachine extends Machine {
@@ -77,17 +78,34 @@ public class AgentMachine extends Machine {
    * Normally done by running an InterForm, but the agent can 
    * perform special processing first.
    */
-  public Transaction getRequest(Transaction request, Resolver resolver) {
-    Transaction response = null;
+  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException {
     StringBufferInputStream sb = null;
 
     Agent agnt = agent;
-    if( agnt != null )
-      response = agnt.respond(request, resolver);
+    if( agnt != null ){
+      try{
+	agnt.respond(request, resolver);
+      }catch(PiaRuntimeException ue){
+	throw ue;
+      }
+    }else{
+      throw new PiaRuntimeException(this, "getRequest", "Unable to find agent to handle request");
+    }
 
-    return response;
   }
-}
+}  
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
