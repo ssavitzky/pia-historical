@@ -3,7 +3,7 @@
 <title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>Printer `&agentName;' on &piaHOST; </h1>
+<h1><img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/printer.gif" align=center>Printer `&agentName;' on &piaHOST; </h1>
 You have reached the web printer home page.    To preview a document, enter
 the URL and click "Preview":
 <code language=perl>
