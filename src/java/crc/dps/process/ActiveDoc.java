@@ -1,4 +1,4 @@
-////// InterFormProcessor.java: Top Processor for PIA InterForms
+////// ActiveDoc.java: Top Processor for PIA active documents
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
