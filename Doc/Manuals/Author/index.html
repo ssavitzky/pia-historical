@@ -21,14 +21,86 @@
        able to  follow links to actual examples as they come up in the text.
 </dl>
 
-<h2>Introduction</h2>
-
-===<p>
-
-
 <h2>Anatomy of an Agent</h2>
 
-===<p>
+<h3>Agent InterForms</h3>
+
+An agent consists of little more than a collection of InterForm files
+contained in a directory.  The standard ones, listed below, are ``inherited''
+from the root directory if the agent's home directory doesn't contain them.
+
+<dl>
+  <dt> <code>initialize.if</code>
+  <dd> This InterForm is invoked automatically when the agent is first
+       installed.  It normally defines default values for any options the
+       agent might have.
+  <dt> <code>home.if</code>
+  <dd> The agent's ``home page'' -- this is the page a user will normally see
+       first.  It should include an index of the agent's other pages.  It is
+       returned from a request for <code>/AgentName</code>
+  <dt> <code>index.if</code>
+  <dd> This is the page returned from a request for <code>/AgentName/</code>
+       (note the trailing slash).  It gives a standardized listing of the
+       agent's top-level InterForms, and will not usually need to be
+       customized. 
+  <dt> <code>options.if</code>
+  <dd> Lists the agent's options.  As with <code>index.if</code>, the default
+       is almost always good enough.
+</dl>
+
+The default search path for InterForm files consists of:
+
+<ol>
+  <li> <code>USR_DIR/Agents/AgentName/</code> The user's customized
+       InterForms for this agent.
+  <li> <code>PIA_DIR/Agents/AgentName/</code> The Agent's home directory
+  <li> <code>PIA_DIR/src/Agents/AgentName/</code> The home directory for
+       experimental agents and development tools.
+  <li> <code>USR_DIR/Agents/AgentType/</code> The user's customized
+       InterForms for this agent type.
+  <li> <code>PIA_DIR/Agents/AgentType/</code> the Agent type's home directory.
+  <li> <code>PIA_DIR/src/Agents/AgentType/</code>.
+  <li> <code>USR_DIR/Agents/</code> The user's customized default InterForms.
+  <li> <code>PIA_DIR/Agents/</code> The PIA's default InterForms.
+</ol>
+
+<code>USR_DIR</code> is normally <code>$HOME/.pia</code>, and is accessible as
+the DOFS agent <code>/My</code>.  <code>PIA_DIR</code> is normally either
+<code>$HOME/pia</code> (if the user has their own working copy of the PIA
+source code), or wherever the PIA is installed; it is accessible as the DOFS
+agent <code>/PIA</code>.<p>
+
+
+<h3>Agent Names and Types</h3>
+
+Every agent has both a name and a type.  In most cases these are the same; a
+type can be used to create a family of agents with similar behavior but
+different options.  One example of this is the DOFS agents.<p>
+
+Agent names are normally capitalized, but this is not required; name lookup is
+case-sensitive, and there may be good reasons to prefer uppercase or lowercase
+names in some cases.  For example, DOFS is uppercase, and most agents with
+DOFS as their type have lowercase names except for the ``standard'' ones
+<code>/My</code> and <code>/PIA</code>.<p>
+
+
+
+<h3>Agent Data Structures and Code</h3>
+
+Every installed agent has an associated software object which contains its
+options (stored as entities in the <code>AGENT</code> namespace) and the
+criteria that match features of the transactions in which the agent has
+registered interest.<p>
+
+This object is normally an instance of the class <code>GenericAgent</code>.
+If a subclass of this class is defined in the package
+<code>crc.pia.agent</code>, and its name matches that of the agent or its
+type, it is loaded automatically when the agent is installed.<p>
+
+It will sometimes be necessary to use a different programming language for
+part of an agent (for example, PERL is good for text manipulation).  One
+choice is to put the external code into a CGI script (with a <code>.cgi</code>
+extension); another is to use the &lt;os-command&gt; actor.<p>
 
 
 <h2>Agents with Style</h2>
@@ -38,6 +110,20 @@ Well, there was Sean Connery as James Bond... Sorry, wrong context.<p>
 Actually, PIA agents, and active documents in general, are so new that few
 conventions have become established, and there is considerable room for
 experimentation.  A few rules of thumb have become clear, however.<p>
+
+<h3>Uniform Look and Feel</h3>
+
+The use of ``include'' files can give a family of related agents a similar
+appearance.  The PIA uses <code>header.inc</code> in this way; almost every
+agent InterForm page includes the code:
+
+<blockquote>
+<code>&lt;set entity name=title&gt;<em>short title</em>&lt;/set&gt;</code><br>
+<code>&lt;read interform file=heading.inc process&gt;</code>
+</blockquote>
+
+which expands into a standardized heading.<p>
+
 
 <h3>Quick Reference Up Front</h3>
 
@@ -53,14 +139,14 @@ Thus, it is possible not only to <em>describe</em> a function like a <a
 href="/agency/installers.if">link to a useful page</a> or a form, but to
 provide the thing itself and invite the reader to try it out on the spot.<p>
 
-=== needs examples, obviously ===<p>
+<!-- === needs examples, obviously === -->
 
 Wherever possible, an agent should be essentially self-documenting, including
 links to whatever other documents a user may need.  This includes tips on
 customization as well as advice on how to set the options.  A
-<code>HEADER.html</code> file is particularly useful, since it can provide
-documentation that the user will see while browsing the agent's source code
-directory <em>before</em> installing it.<p>
+<code>HEADER.html</code> file in the agent's home directory is particularly
+useful, since it can provide documentation that the user will see while
+browsing the agent's source code directory <em>before</em> installing it.<p>
 
 <h3>Readable Source</h3>
 
@@ -84,7 +170,7 @@ href="../Internals/">internals manual.</a>'' <p>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Sat Feb  1 22:52:25 1997
+Last modified: Mon Jun 30 07:22:30 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

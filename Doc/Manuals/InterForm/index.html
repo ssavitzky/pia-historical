@@ -6,10 +6,10 @@
 <h1>PIA InterForm Manual</h1>
 
 <blockquote><em>
-  This document is a user's manual for the Personal Information Agency's
-  InterForm (Interactive/Interpreted Form) markup language.  It is an ordinary
-  HTML document, but if you are viewing it through a PIA you will be able to
-  use links to an <em>active</em> document, the <a
+  This document is a user's manual for the Platform for Information
+  Appliances' InterForm (Interactive/Interpreted Form) markup language.  It is
+  an ordinary HTML document, but if you are viewing it through a PIA you will
+  be able to use links to an <em>active</em> document, the <a
   href="/if_demo/home.if">InterForm Demonstration Agent</a>.  Other
   information of interest to Agent authors can be found in the <a
   href="../Author/index.html">Agent Author's Manual</a>.
@@ -29,10 +29,14 @@
 
 <ul>
   <li> <a href="#intro">Introduction</a>
+  <li> <a href="#interp">The InterForm Interpretor</a>
+  <li> <a href="#std_tags">The Standard Tagset</a>
+  <li> <a href="#other_tags">Other Tagsets</a>
+  <li> <a href="#invoke">Invocation</a>
 </ul>
 
 <hr>
-<h2><a name="intro">Introduction:  What's an InterForm?</a></h2>
+<h2><a name="intro">Introduction:  What is an InterForm?</a></h2>
 
 An InterForm is a HTML document that contains some tags that a PIA can
 ``interpret.''  You can think of an InterForm as an HTML form that doesn't
@@ -112,7 +116,7 @@ documents with other document types <em>into</em> HTML.<p>
 
 
 <hr>
-<h2>The InterForm Interpretor</h2>
+<h2><a name="interp">The InterForm Interpretor</a></h2>
 
 <h3>Overview</h3>
 
@@ -208,9 +212,9 @@ alphabets).<p>
 
 The practical effect of the case-sensitivity rules is that you can use case to
 distinguish entities, where it matters.  On the other hand, you can use case
-to distinguish different kinds of tags and attributes, for example special
-InterForm tags and HTML tags, because it doesn't matter to the system which
-ones you use.<p>
+to improve the readability of different kinds of tags and attributes, for
+example special InterForm tags and HTML tags, because it doesn't matter to the
+system which ones you use.<p>
 
 URL's and filenames have their own sets of rules, of course, and filenames
 differ from one operating system to another.  Other names may refer to
@@ -236,6 +240,15 @@ has to be done by the interpretor in figuring out which action to take.<p>
 
 <h3>Entities</h3>
 
+<dl>
+  <dt> entity ::= '&amp;' path ';'?
+  <dd> 
+  <dt> path ::= identifier ['.' path]?
+  <dd> 
+  <dt> identifier := [letter | digit | '-']+
+  <dd> 
+</dl>
+
 An entity reference consists of the character ``<code>&amp;</code>''
 (ampersand) followed by a name, followed by the character ``<code>;</code>''
 (semicolon).  The semicolon can be omitted if the name of the entity is
@@ -249,8 +262,8 @@ path) through a sequence of ``namespaces'' (which may be Agents, &lt;table&gt;
 or &lt;dl&gt; elements, forms, and so on).  If no namespace is given, the
 interpretor will search through any locally-defined entities (for example, the
 list element entity defined by the &lt;repeat&gt; tag) and the top-level
-entity table associated with the InterForm being interpreted.  This is
-pre-loaded with a number of useful entities:<p>
+(global) entity table associated with the InterForm being interpreted.  This
+is pre-loaded with a number of useful entities:<p>
 
 ===<p>
 
@@ -260,12 +273,76 @@ href="/Agency/entities.if">/Agency/entities.if</a> InterForm.<p>
 
 The following namespaces are defined:
 
-===<p>
+<dl>
+  <dt> <code>AGENT</code>
+  <dd> The ``options'' of the PIA agent that owns the InterForm being expanded.
+  <dt> <code>TRANS</code>
+  <dd> The headers and features of the current transaction.  Defining a new
+       entity in this namespace will assert a feature if the feature's name is
+       lowercase, and a header if the name is capitalized.
+  <dt> <code>LOCAL</code>
+  <dd> The local namespace associated with the innermost element that contains
+       the entity being expanded.  A new namespace is created if necessary.
+  <dt> <code>GLOBAL</code>
+  <dd> The namespace associated with the document.  Note that this namespace
+       is actually a feature of the document's transaction, and so can be used
+       for communication between agents. 
+  <dt> <code>FORM</code>
+  <dd> The query string or form content associated with a GET or POST query.
+</dl>
 
+If a path ends with a namespace, it is returned as a description list or query
+string, depending on the context.
 
 <h3>Elements</h3>
 
-===<p>
+The syntax of an Element is:
+
+<dl>
+  <dt> element ::= start-tag [content end-tag]
+  <dd> (An element that consists only of a start tag is called <em>empty</em>;
+       empty elements are distinguished by their tags.
+  <dt> start-tag ::= '<' tag [attribute]* '>'
+  <dd> 
+  <dt> end-tag ::= '</' tag '>' 
+  <dd> 
+  <dt> content ::= [text | element]*
+  <dd> 
+  <dt> tag ::= identifier
+  <dd> 
+  <dt> attribute ::= identifier ['=' value]
+  <dd> (No spaces are permitted on either side of the '='.)
+  <dt> value ::= identifier | nonblank* | quoted-string
+  <dd> 
+  <dt> quoted-string ::= quote non-quote* quote
+  <dd> 
+  <dt> quote := '"' | "'"
+  <dd> 
+  <dt> identifier ::= [ letter | digit | '-' | '.' ]+
+  <dd> 
+  <dt> nonblank ::= <em>any character except</em> '"' | "'" | '<' | '>' |
+       whitespace 
+  <dd> 
+  <dt> whitespace ::= <em>any character with code &lt;= ' '.</em>
+  <dd> 
+</dl>
+
+HTML tags do not contain '-' or '.' characters.  Normally in the InterForm
+language '.' is used as a path separator, as in entities, whereas '-' is used
+to separate words in a single identifier.  Unlike entities, however, the
+namespace for actors is flat, so that this usage is purely a naming
+convention. <p>
+
+<blockquote><em>
+  Eventually we will want to go to entity-style hierarchical lookup on actor
+  tags, possibly with a '<code>-</code>' prefix or some such.  This will
+  permit &lt;dl&gt; lists to function as objects.  There may be alternative
+  ways of doing this; suggestions would be appreciated.
+</em></blockquote>
+
+The order of attributes in a start tag is retained, but is not significant for
+any of the predefined actors (or for any of the standard HTML tags, for that
+matter).<p>
 
 
 <h3>Lists</h3>
@@ -312,7 +389,7 @@ by whitespace or ``<code>&amp;</code>'' characters (as in query strings);
 names and values are normally separated by an ``<code>=</code>'' character.<p>
 
 Ordinary lists can be turned into associations by the &lt;associate&gt;
-actor, which associates them in pairs.<p>
+actor, which associates items in pairs.<p>
 
 Any <em>element</em> can be turned into an association (of attributes and
 values), optionally with its tag and content associated with special keys,
@@ -325,15 +402,51 @@ tables (AWK and Perl), association-lists (LISP), and tuples (relational
 database languages).<p>
 
 
-<h3>URL Extensions</h3>
-
-
 <h3>Tagsets</h3>
 
 A named collection of actors is called a <dfn>tagset</dfn> (it could have been
 called a ``cast,'' since it's a set of actors that work together, but ``cast''
 means something quite different in the programming language community).<p>
 
+<h3>Actor Documentation</h3>
+
+Every actor has some associated on-line documentation strings which can be
+specified as attributes when the actor is defined (and eventually using
+elements inside the actor's body).  These are:
+
+<dl>
+  <dt> <code>syntax</code>
+  <dd> A regular-expression syntax description for the actor.
+  <dt> <code>dscr</code>
+  <dd> A narrative description of the actor's semantics.  Uppercase words in
+       this description correspond to attributes of the element that invokes
+       the actor.
+  <dt> <code>note</code>
+  <dd> Any additional information, in text form.
+  <dt> <code>doc</code>
+  <dd> Full documentation, usually in HTML form.
+</dl>
+
+The following actors are used to access an actor's documentation:
+
+<dl>
+  <dt> <code>&lt;actor-attrs name=<em>id</em>&gt;</code>
+  <dd> The attributes of the actor, <em>except for the documentation
+       attributes</em>, as specified in the <code>&lt;actor&gt;</code> element
+       that defined the actor. 
+  <dt> <code>&lt;actor-dscr name=<em>id</em>&gt;</code>
+  <dd> The actor's description string.  <code>&lt;add-markup&gt;</code> can be
+       used to convert capitalized names to boldface, and so on.
+  <dt> <code>&lt;actor-syntax name=<em>id</em>&gt;</code>
+  <dd> The actor's syntax string.  <code>&lt;add-markup&gt;</code> can be
+       used to put it into a suitable form for display.
+  <dt> <code>&lt;actor-doc attr=<em>id</em> name=<em>id</em>&gt;</code>
+  <dd> Can be used to access any documentation associated with the actor.
+</dl>
+
+In addition, all predefined actors have an associated Java handler class in
+<code>crc.interform.handle</code>, and the documentation strings are part of
+the handler's <code>javadoc</code> documentation.<p>
 
 <hr>
 <h2>The <a name="std_tags">Standard Tagset</a></h2>
@@ -361,6 +474,25 @@ the <b>Safe</b> tagset on InterForm files owned by some other user, received
 in e-mail, or retrieved from elsewhere in the Web.  The DOFS agent uses the
 <b>Safe</b> tagset to process <code>index.if</code> files.<p>
 
+<h3>Secure</h3>
+
+The <b>Secure</b> tagset consists of the subset of the <b>Standard</b> tagset
+that cannot convey information outside the PIA's host computer; it does not
+contain any tags that invoke commands or make HTTP requests.<p>
+
+<h3>StandAlone</h3>
+
+The <b>StandAlone</b> tagset consists of the subset of the <b>Standard</b>
+tagset that does not require a PIA.  It is used when the InterForm Interpretor
+is operating as a filter or CGI rather than as a part of the PIA.<p>
+
+<h3>Basic</h3>
+
+The <b>Basic</b> tagset consists of the subset of the <b>Standard</b> tagset
+that operates entirely within the InterForm file; it is roughly speaking the
+intersection of <b>Safe</b> and <b>Secure</b>.<p>
+
+
 <h3>HTML</h3>
 
 The <b>HTML</b> tagset consists of exactly those tags and entities required
@@ -387,31 +519,16 @@ actor.
   <dd> Returns a list of URL/text pairs.
 </dl>
 
-<h4>Updating</h4>
+<hr>
+<h2><a name="invoke">Invocation</a></h2>
 
-These tagsets are usually used with the &lt;file edit
-tagset=<em>whatever</em>&gt; actor to perform specific modifications to
-files. 
-
-<dl>
-  <dt> <b>Update-Form</b>
-  <dd> Updates the &lt;input&gt; tags in a form with values in the
-       ``&amp;query;'' entity.  If there are several forms in the document,
-       the correct one is selected by matching the names and values of
-       &lt;input type=submit&gt; and &lt;input type=hidden&gt; elements.
-</dl>
-
-<h4>Other Operations</h4>
-
-<dl>
-  <dt> <b>Submit-Forms</b>
-  <dd> Submits every form in the file.
-</dl>
+The InterForm Interpretor is invoked either stand-alone as a CGI or filter
+(formatter), or as part of the PIA.
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Apr  8 10:09:22 1997
+Last modified: Thu Jul  3 08:45:00 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
