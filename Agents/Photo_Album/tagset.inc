@@ -98,12 +98,6 @@ match="\.jpg$"></set>
   <set name=caps local><dummy><read file=&mydirectory;/captions.html process></dummy></set>
 <set name=mytitle><get index=caps.h1.Text></set>
  <set name=mycaps><dummy><get name=caps findall=a></dummy></set>
- <set name=capdl><dl>
- <repeat list=&mycaps; entity=aref>
- <dt><get name=aref attr=href></dt>
- <dd><get index=aref.Text></dd>
-  </repeat>
- </dl></set>
   </then> </if>
 <if><get name=files><then>
 <photoscaption>
@@ -112,12 +106,11 @@ match="\.jpg$"></set>
 <photosdirectory>&mydirectory;</photosdirectory>
 <photosdate>&mydirectory;</photosdate>
 <photos>
-<repeat list=&files; entity=jpg><set name=count><sum>1 <get name=count></sum></set>
+<repeat list=&files; entity=jpg><set name=count><sum digits=0>1 <get name=count></sum></set>
 <photo directory=&mydirectory; file=&jpg;>
 <photothumbnail><subst match="\.jpg " result=".small.gif">&jpg; </subst></photothumbnail>
 <photoindex>&count;</photoindex>
- <if> <get name=capdl key=&jpg;> <then>
-<photocaption><get name=capdl key=&jpg;></photocaption></then> </if>
+  <repeat list=&mycaps; entity=aref>  <if> <test match=&jpg;><get name=aref attr=href></test> <then><photocaption><get index=aref.Text></photocaption></then></if></repeat>
 </photo>
 </repeat>
 </photos>
