@@ -155,7 +155,7 @@ public class Table extends Hashtable implements Stuff {
   public void append(Enumeration e) {
     while (e.hasMoreElements()) {
       Object v = e.nextElement();
-      put(v.toString(), v);
+      at(v.toString(), v);
     }
   }
 
@@ -167,7 +167,7 @@ public class Table extends Hashtable implements Stuff {
     }
     while (e.hasMoreElements()) {
       Object v = e.nextElement();
-      put(v.toString().toLowerCase(), v);
+      at(v.toString().toLowerCase(), v);
     }
   }
 
@@ -176,10 +176,11 @@ public class Table extends Hashtable implements Stuff {
     while (e.hasMoreElements()) {
       Object k = e.nextElement();
       Object v = e.nextElement();
-      put(k.toString(), v);
+      at(k.toString(), v);
     }
   }
 
+  /** Append a list of [key, value...] pairs. */
   public void appendPairs(List l) {
     appendPairs(l.elements());
   }
