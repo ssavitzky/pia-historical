@@ -27,8 +27,8 @@ public class protectHandler extends GenericHandler {
   ************************************************************************/
 
   /** Just return the content. */
-  public void action(Input in, Context aContext, Output out) {
-    ParseNodeList content = Expand.getProcessedContent(in, aContext);
+  public void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
     putList(out, content);
   }
 
@@ -56,23 +56,33 @@ public class protectHandler extends GenericHandler {
     textContent = false;	// true		extract text from content?
 
     /* Syntax: */
-    parseElementsInContent = true;	// false	recognize tags?
-    parseEntitiesInContent = true;	// false	recognize entities?
+    parseElementsInContent = false;	// true	recognize tags?
+    parseEntitiesInContent = false;	// true	recognize entities?
     syntaxCode = QUOTED;  		// EMPTY, QUOTED, 0 (check)
   }
 
   protectHandler(ActiveElement e) {
     this();
     // customize for element.
-    if (e.hasTrueAttribute("result")) syntaxCode=NORMAL;
+    if (e.hasTrueAttribute("result")) {
+      syntaxCode=NORMAL;
+      parseElementsInContent = true;	// false	recognize tags?
+      parseEntitiesInContent = true;	// false	recognize entities?
+    }
   }
 }
 
 class protect_markup extends protectHandler {
-  public void action(Input in, Context aContext, Output out) {
-    String cstring = Expand.getProcessedContentString(in, aContext);
-    putText(out, aContext, TextUtil.protectMarkup(cstring));
+  /** The action for &lt;protect markup&gt; is tricky: it relies on the fact
+   *	that Text, when output, replaces markup characters with entities. 
+   */
+  public void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    putText(out, aContext, content.toString());
   }
+  /** The constructor is also tricky: it relies on the fact that the 
+   *	superclass's constructor detects the "result" attribute.
+   */
   public protect_markup(ActiveElement e) { super(e); }
   static Action handle(ActiveElement e) { return new protect_markup(e); }
 }
