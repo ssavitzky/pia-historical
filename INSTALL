@@ -99,8 +99,16 @@ II. Installing the Files
 ========================================================================
 III. Setup
 
-	No setup is required unless you need to change the default
-	settings of the PIA.  The defaults are contained in 
+    A. Environment Variables
+	The PIA allows you to indicate the location of the installed PIA
+	directory and the directory for storing Agent data and customization files.
+	They are the following with their default values:
+
+	PIA_DIR=/usr/local/src
+	USR_DIR=~/.pia
+
+    B. If you need to change the default settings of the PIA.  
+ 	The defaults are contained in 
 
 	  pia/Config/pia.props
 
@@ -151,9 +159,9 @@ IV. Running the PIA
 V. Questions, problems, or comments:
 
     A. Before filing a bug report, please check the known bugs at:
-	http://foobar/release/0.9/KnowBugs.html
+	http://pia.crc.ricoh.com/release/0.9/KnowBugs.html
 
-    B. Other questions or comments can be sent to piacrcbug@crc.ricoh.com
+    B. Other questions or comments can be sent to pia_bugs@crc.ricoh.com
 
 
 ========================================================================
