@@ -11,6 +11,7 @@
 package crc.pia.agent;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.Enumeration;
 
@@ -26,8 +27,8 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 
-import gnu.regexp.RegExp;
-import gnu.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
 
 public class Agency extends GenericAgent {
   public boolean DEBUG = false;
@@ -51,7 +52,9 @@ public class Agency extends GenericAgent {
    * Install a named agent.  Automatically loads the class if necessary.
    *
    */
-  public void install(Table ht) throws NullPointerException, AgentInstallException{
+  public void install(Table ht)
+       throws NullPointerException, AgentInstallException {
+
     if( ht == null ) throw new NullPointerException("bad parameter Table ht\n");
     String name      = (String)ht.get("agent");
     String type      = (String)ht.get("type");
@@ -69,9 +72,12 @@ public class Agency extends GenericAgent {
     if( className == null ){
       char[] foo = new char[1]; 
       foo[0] = type.charAt(0);
+
+      // Capitalize name.  Should really check for "class" attribute,
+      //	=== Should preserve case in rest of agent name ===
+      //	=== should use interform.Util.javaName ===
       zname = (new String( foo )).toUpperCase();
-      String therest = type.substring(1);
-      zname += therest;
+      if (type.length() > 1) zname += type.substring(1).toLowerCase();
 
       className = "crc.pia.agent." + zname; 
     }
@@ -80,17 +86,13 @@ public class Agency extends GenericAgent {
       try{
 	newAgent = (Agent)Class.forName(className).newInstance() ;
 	newAgent.name( name );
-	newAgent.type( zname );
-	newAgent.initialize();
-	newAgent.parseOptions(ht);
-	installAgent( newAgent );
+	newAgent.type( type );
       }catch(Exception ex){
-	String err = ("Unable to create agent of class ["
-			      + className +"]"
-			      + "\r\ndetails: \r\n"
-			      + ex.getMessage());
-		throw new AgentInstallException(err);
+	newAgent = new GenericAgent(name, type);
       }
+      newAgent.initialize();
+      newAgent.parseOptions(ht);
+      installAgent( newAgent );
     }
     
   }
@@ -149,7 +151,6 @@ public class Agency extends GenericAgent {
     String lhost = null;
 
     Pia.instance().debug(this, "actOn...");
-
     boolean isAgentRequest = trans.test("IsAgentRequest");
     
     if(! isAgentRequest ) return;
