@@ -64,6 +64,7 @@ public class Loader {
       }
       return (c != null)? (Tagset)c.newInstance() : null;
     } catch (Exception e) { 
+      e.printStackTrace(System.err);
       return null;
     }
   }

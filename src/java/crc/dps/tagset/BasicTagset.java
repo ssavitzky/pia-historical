@@ -469,7 +469,9 @@ public class BasicTagset implements Tagset {
    */
   protected GenericHandler loadHandler(String tag, String cname) {
     GenericHandler h = null;
-    String name = (cname == null)? tag : cname;
+    String name = (cname == null)
+      ? NameUtils.javaName(tag, -1, -1, true, false)
+      : cname;
     Class c = NameUtils.loadClass(name, "crc.dps.handle.");
     if (c == null) {
       c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
