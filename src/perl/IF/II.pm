@@ -346,21 +346,50 @@ sub defvar {
 
 
 sub expand_entities {
-    my $ii = shift;
+    my ($ii, $string, $expand_hex) = @_;
 
     ## expand_entities($ii, $string) replaces valid HTML entities 
     ##	in the string with the corresponding entry in $ii's current 
-    ##	current entity table.  #digit is *not* expanded.
+    ##	current entity table, returning either a string or a token list.
 
-    ##  === Entities must expand as strings.  Use <get-> for tokens. ===
-    ##  === can use asString($ents->{$2}) ===
+    ## #hex is *not* expanded unless $expand_hex is true.
+
+    my $ents = $ii->entities;
+    $ents = \%entity2char unless defined $ents;
+
+    my $result = new DS::Tokens;
+
+    $string =~ s/(&\#(\d+);?)/$2 < 256 ? chr($2) : $1/eg if $expand_hex;
+    return $string unless ($string =~ /(&([-.\w]+);?)/);
+
+    while ($string =~ s/^([^&]*)\&//) {
+	$result->push($1) if (length($1));
+	if ($string =~ s/^(\w[-.\w]*)(;?)//) {
+	    $result->push((exists $ents->{$1})? $ents->{$1} : "&$1$2");
+	} else {
+	    $result->push("&");
+	}
+    }
+    $result->push($string) if length($string);
+    return ($result->is_text)? $result->as_string : $result;
+}
+
+sub expand_string_entities {
+    my $ii = shift;
+
+    ## expand_string_entities($ii, $string) replaces valid HTML entities 
+    ##	in the string with the corresponding entry in $ii's current 
+    ##	entity table.  #hex is *not* expanded.
+    ##	The string, passed by reference, is expanded in place.
 
     my $ents = $ii->entities;
     $ents = \%entity2char unless defined $ents;
 
     for (@_) {
 #	s/(&\#(\d+);?)/$2 < 256 ? chr($2) : $1/eg;
-	s/(&([-.\w]+);?)/(exists $ents->{$2})? $ents->{$2} : $1/eg;
+	s/(&([-.\w]+);?)/(exists $ents->{$2})? (ref ($ents->{$2})
+						? $ents->{$2}->as_string
+						: $ents->{$2}) : $1/eg;
     }
     $_[0];
 }
@@ -575,7 +604,7 @@ sub start_tag {
     my $it = IF::IT->new($tag);
     my ($attr, $val);
     while (($attr, $val) = splice(@$attrs, 0, 2)) {
-	$self->expand_entities($val) unless $self->quoting;
+	$val = $self->expand_entities($val) unless $self->quoting;
 	$it->attr($attr, $val);
 	print " $attr=$val " if $main::debugging>1;
     }

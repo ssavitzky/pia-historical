@@ -106,37 +106,10 @@ sub run_tree {
 }
 
 
-sub run_stream {
-
-
-}
-
-sub parse_init_file {
-    my ($file, $interp) = @_;
-
-    ## Run the interpretor parser over a file in ``parser mode''.
-    ##	  The result is a parse tree.  No actors are used, but the InterForm 
-    ##	  entity table is enabled.  Eventually we should use an appropriate
-    ##	  set of actors. ===
-
-    print "\parsing file $file\n" if $main::debugging;
-    local $entities = if_entities($agent, $file, $request);
-
-    if (!defined $interp) {
-	$interp = IF::II->new(@html_defaults);
-	$interp->entities($entities) if defined $entities;
-    } elsif (! ref($interp)) {
-	shift;
-	$interp = IF::II->new(@_);
-    }
-    $interp->parse_file($file);
-    return $interp->run;
-}
-
 sub parse_html_file {
     my ($file, $interp) = @_;
 
-    ## Run the interpretor parser over a file in ``parser mode''.
+    ## Run the interpretor over a file in ``parser mode''.
     ##	  The result is a parse tree.  No actors are used.
 
     print "\parsing file $file\n" if $main::debugging;
@@ -155,7 +128,7 @@ sub parse_html_string {
 
     my ($input, $interp) = @_;
 
-    ## Run the interpretor parser over a string in ``parser mode''.
+    ## Run the interpretor over a string in ``parser mode''.
     ##	  The result is a parse tree.  No actors are used.
 
     if (!defined $interp) {
@@ -182,7 +155,8 @@ sub interform_file {
     ## Run a standard PIA InterForm file.
 
     $resolver = $main::resolver unless defined($resolver);
-    local $entities = if_entities($agent, $file, $request);
+    local $entities = if_entities($agent, $file, $request,
+				  &IF::Tagset::tagset('Standard'));
 
     my $result = run_file($file);
     if (!result || ref($result)) {
@@ -198,7 +172,8 @@ sub interform_hook {
     ## Run a standard PIA InterForm file.
 
     $resolver = $main::resolver unless defined($resolver);
-    local $entities = if_entities($agent, '', $request);
+    local $entities = if_entities($agent, '', $request,
+				  &IF::Tagset::tagset('Standard'));
 
     my $result = run_tree($tree);
     if (!result || ref($result)) {
@@ -212,7 +187,7 @@ sub interform_hook {
 	     July, August, September, October, November, December);
 
 sub if_entities {
-    my ($agent, $file, $trans) = @_;
+    my ($agent, $file, $trans, $tagset) = @_;
 
     ## Load a standard set of entity bindings.
     ##	  === eventually this should be a set of separately-loaded packages
@@ -273,7 +248,7 @@ sub if_entities {
 
 	    'agentNames'	=> $agentNames,
 	    'entityNames'   	=> '',
-	    'actorNames'	=> join(' ', sort( keys %$IF::Actors::actors)),
+	    'actorNames'	=> $tagset? $tagset->actor_names : '',
 
 	    'second'		=> $sec,
 	    'minute'		=> $min,

@@ -143,6 +143,11 @@ sub name {
     return $self->attr('name', $v);
 }
 
+sub actor_names {
+    my ($self) = @_;
+    return join(' ', sort(keys %{$self->actors}))
+}
+
 #############################################################################
 ###
 ### Actors:
