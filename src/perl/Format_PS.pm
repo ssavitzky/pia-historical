@@ -7,7 +7,6 @@ require HTML::FormatPS;
 push (@ISA,qw(HTML::Formatter));
 
 
-
 sub adjust_lm
 {
     my $self = shift;
@@ -17,3 +16,7 @@ sub adjust_lm
     return $self->{lm};
 }
 
+sub form_start {
+##show table elements...
+    1;
+}

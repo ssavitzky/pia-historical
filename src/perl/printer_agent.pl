@@ -77,14 +77,14 @@ sub html_ps{
     my $response=shift;
 
     open(PSFILE,">$ps_file");
-    my $html = HTML::Parse::parse_html($response->content);
-
+#    my $html = HTML::Parse::parse_html($response->content);
+    my $html = IF::Run::parse_html_string($response->content);
     require HTML::Parse;
-    require HTML::FormatPS;
-    my $f = new HTML::FormatPS;
+    require("Format_PS.pm");
+    my $f = HTML::Format_PS->new;
     print PSFILE $f->format($html);
     close PSFILE;
-    $html->delete;		# still uses HTML::Element
+#    $html->delete;		# still uses HTML::Element
 }
 
 sub create_postscript{
@@ -149,7 +149,7 @@ sub create_preview{
 
 # === the following fails; apparently $request->url isn't a reference: (steve)
 #    my $image_url = $request->url->as_string;
-    my $element=IF::IT->new('a',href => $image_url);
+    my $element=IF::IT->new('a', href => $image_url);
 #   x my $img_url="file:$image_file";
     foreach $image_url (@image_files) {
 	$image_url=~/\/([^\/]*)$/;
