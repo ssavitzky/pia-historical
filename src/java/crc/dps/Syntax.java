@@ -54,8 +54,9 @@ public interface Syntax {
    *	<p>
    *
    *	Note that this replaces the earlier technique of dispatching
-   *	to a separate named actor, although this may still be useful
-   *	in some cases.
+   *	to a separate named actor, although that may still be useful
+   *	in some cases.  Since <code>getActionForNode</code> is called
+   *	at parse time, it preceeds any actual processing of the Node. <p>
    *
    * @param t the Token for which the syntax is being checked.
    * @return the correct Handler for the Token.  
@@ -72,6 +73,17 @@ public interface Syntax {
 
   /** If <code>true</code>, Entity references are recognized in content. */
   public boolean parseEntitiesInContent();
+
+  /** Return <code>true</code> if Text nodes are permitted in the content.
+   */
+  public boolean mayContainText();
+
+  /** Return <code>true</code> if paragraph elements are permitted in the
+   *	content.  If this is <code>true</code> and <code>mayContainText</code>
+   *	is false, whitespace is made ignorable and non-whitespace is 
+   *	commented out.
+   */
+  public boolean mayContainParagraphs();
 
   /** Return true if this kind of token implicitly ends the given one. 
    *	This is not as powerful a test as using the DTD, but it will work
