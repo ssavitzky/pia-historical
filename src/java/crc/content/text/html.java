@@ -4,6 +4,7 @@
 
 package crc.content.text;
 
+import crc.pia.Transaction;
 import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
 
@@ -17,8 +18,10 @@ import crc.gnu.regexp.MatchInfo;
 public class html extends Default
 {
 
-/**   changes meaning of location 0 in additions to be just after the body tag
- */
+    protected Transaction transaction = null;
+
+    /**   changes meaning of location 0 in additions to be just after the body tag
+     */
 
     protected void insertAddition(int position){
       String k =  new Integer( position).toString();
@@ -96,5 +99,18 @@ public class html extends Default
   public html(java.io.Reader in){
     super(in);
   }
+
+    public html(java.io.InputStream in, Transaction trans){
+	super(in);
+
+	transaction = trans;
+    }
+
+    public html(java.io.Reader in, Transaction trans){
+	super(in);
+	
+	transaction = trans;
+    }
+
 
 }
