@@ -36,11 +36,16 @@ if [ "$1" = "-v" ] ; then
     shift
 fi
 
+if [ "$1" = "-debug" ] ; then
+    D="-debug"
+    shift
+fi
+
 # We will count on Pia to handle multiple occurrances of -root and -u,
 #	so that arguments provided by the user will override anything
 #	this script puts earlier in the argument list.
 
-exec $PIA_BIN_DIR/pia_wrapper crc.pia.Pia $V $*
+exec $PIA_BIN_DIR/pia_wrapper $D crc.pia.Pia $V $*
 
 
 

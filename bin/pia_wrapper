@@ -20,7 +20,13 @@ JJ=`type java`
 JAVA_BIN=`$0 --kludge $JJ` >/dev/null 2>&1
 
 if [ ! -x "$JAVA_BIN" ] ; then
-    echo "Cannot locate java."
+   echo "Trying jre."
+  JJ=`type jre`
+  JAVA_BIN=`$0 --kludge $JJ` >/dev/null 2>&1
+fi
+
+if [ ! -x "$JAVA_BIN" ] ; then
+    echo "Cannot locate java or jre."
     echo "Please put java's binary directory in your $PATH"
     exit 1
 fi
@@ -61,6 +67,10 @@ elif [ "$2" = "-v" ] ; then
     VERBOSE=2
 fi
 
+if [ "$1" = "-debug" ] ; then
+    D="-debug"
+    shift
+fi
 ### Find out where the PIA is.
 #	The most likely candidate is the parent directory of $0.
 
@@ -112,5 +122,5 @@ fi
 
 [ -z "$VERBOSE" ] || echo CLASSPATH=$CLASSPATH
 [ -z "$VERBOSE" ] || echo "$JAVA_BIN $V $PIA_CLASS $V $ENV $*"
-exec $JAVA_BIN $V $PIA_CLASS $V $ENV $*
+exec $JAVA_BIN $D $V $PIA_CLASS $V $ENV $*
 
