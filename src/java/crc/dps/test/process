@@ -1,0 +1,8 @@
+#!/bin/sh
+#	$Id$
+# DPS filter
+#	
+#
+# Usage: 
+#	process [option]... filename
+exec pia_wrapper  crc.dps.Filter $*
