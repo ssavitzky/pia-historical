@@ -21,16 +21,12 @@ import java.util.StringTokenizer;
 
 import crc.pia.Pia;
 
-/** An Index is used for indexing SGML objects; it represents a path
- *	through a hierarchy of SGML elements.
- *       The exact semantics depend upon SGML type.<p>
- *
- *	 indexes behave somewhat like enumerations-- asking for the next
- *       element moves a pointer up one.
- *       this class also implements the recursive lookup by delegating
- *       to each SGML object in secession.<p>
- *
- *<strong>Syntax for accessing html elements.</strong>
+/** An index object is used for finding SGML objects.
+ *  A path, consisting of, tag name, start, and end positions,
+ *  is used to find the searched objects. Given a SGML object
+ *  as a starting location for the search, this class implements a 
+ *  recursive lookup by delegating to each SGML object (in the path) in secession.
+ *<p>Syntax for the path is the following:
  *<pre>
  *SGML.xxx[[-]start#[-end#]]
  *	xxx	
@@ -46,12 +42,12 @@ import crc.pia.Pia;
  *		end#
  *			number		end at indicated index (inclusive)
  *			null		end at end
- *</pre>
+ *
+ *For "dl" SGML object,
  * To retrieve all of dts'text, xxx should be "keys"
  * To retrieve all of dds'text, xxx should be "values"
  *
- *<strong>Examples:</strong>
- *<pre>
+ *Examples:
  *		xxx == xxx- == xxx-- == xxx-1-	means all tags whose name are xxx
  *		xxx-start#-end#			means a range of element
  *		xxx-start#			means an element at start#
@@ -61,9 +57,8 @@ import crc.pia.Pia;
  *		-				means all tags of any kind
  *		xxx..				means a token with the current SGML contents if current token
  *                                              isinstance of Tokens.  Otherwise, current token
- *</pre>				       
- *<strong>Examples for dl:</strong>
- *<pre>
+ *					       
+ *Examples for dl:
  *            foo
  *             |
  *             dl
@@ -77,21 +72,59 @@ import crc.pia.Pia;
  */
 public class Index {
 
-  /************************************************************************
-  ** Components:
-  ************************************************************************/
+ /**
+  * Attribute index - constant representing tag-name for getting any tag
+  */
   public static final String ANY="empty";
+
+  /**
+  * Attribute index - constant representing tag-name for getting text
+  */
   public static final String TEXT="text";
+
+ /**
+  * Attribute index - constant representing tag-name for getting all dts' content
+  */
   public static final String KEYS="keys";
+
+  /**
+  * Attribute index - constant representing tag-name for getting all dds' content
+  */
   public static final String VALS="values";
 
+  /**
+  * Attribute index - constant for not numeric or illegal index position
+  */
   static final int INVALIDNUMBER = -100;
+
+  /**
+  * Attribute index - default index position
+  */
   static final int FIRST=1;
+
+  /**
+  * Attribute index - indicating the last element wanted
+  */
   public static final int LAST=-1;
 
+  /**
+  * Attribute index - end of path
+  */
   static final int EOFINPUT=-1;
+
+  /**
+  * Attribute index - state indicating currently processing "." or ".."
+  */
   static final int DOTS=-2;
+
+  /**
+  * Attribute index - state indicating currently processing searching range of tags
+  */
   static final int NORMAL=0;
+
+  /**
+  * Attribute index - index of path
+  */
   int currentItem = -1;
 
   /**
@@ -114,74 +147,75 @@ public class Index {
    */
   protected int end = LAST;
 
+  /**
+   * true if starting position is not given
+   */
   protected boolean defaultStart = false;
 
+  /**
+   * state indicating either ".", "..", or range
+   */
   protected int processState = NORMAL;
 
-  /** The actual items. */
+  /**
+   * storing path split using "."
+   */
   protected  List  items;
+
+  /**
+   * storing one element of a path i.e. ul-1-5
+   */
   protected List positionParam;
 
-  /**********************************************************************
-   * Accessors to tag, start and end Index
-   **********************************************************************/
+  class InvalidInput extends Exception{
+    public InvalidInput() { super(); }
+    public InvalidInput(String s) {super(s);}
+  }
+
+ /**
+  * the tag-name indicating the wanted SGML objects 
+  */
   public String getTag(){
     return tag;
   }
 
+  /** 
+   * the position indicating first SGML object to retrieve 
+   */
   public int getStart(){
     return start;
   }
 
+  /** 
+   * return the position indicating last SGML object to retrieve 
+   */
   public int getEnd(){
     return end;
   }
 
-  public void setTag(String t){
+  private void setTag(String t){
     tag = t;
   }
 
-  public void setStart(int s){
+  private void setStart(int s){
    start = s;
   }
 
-  public void setEnd(int e){
+  private void setEnd(int e){
     end = e;
   }
   
-  public boolean isNormal(){
-    return processState == NORMAL;
-  }
-
-  public boolean isDots(){
+  private boolean isDots(){
     return processState == DOTS;
   }
 
-  public boolean isNumeric(String n)
-  {
-    try {
-      int number = java.lang.Integer.valueOf(n).intValue();
-      return true;
-    } catch (Exception e) {
-      return false;  //not legal index
-    }
-  }
-    
-  /** return just the current item as string
+  /**
+   * returns the first string
+   * usually the caller uses this to do the first level table lookup
    */
-  
-  public String myString()
-  {
-    return (String)items.at(currentItem);
-  }
-  
-  /**  returns the first string
-        usually the caller uses this to do the first level table lookup
-	*/
  public String shift()
   {
     return (String)items.shift();
-    
   }
 
  public void unshift(String s)
@@ -209,21 +243,17 @@ public class Index {
     this.path = path;
   }
 
-  /*
-  public Index(List l) {
-    items = l; // we don't manipulate items, so no need to copy
-  }
-  */
   /************************************************************************
   /**  operations  to provide index positioning and determine tag, start and end */
   /************************************************************************/
 
-  /** The number of indexed items. */
+  /** The number of elements in path */
   public int size() {
     return items == null? 0 : items.size();
   }
 
-  public int nextPositions() {
+  /** Getting the next element in the path and split it base on "-" */
+  private int nextPositions() {
     positionParam = new List();
 
     currentItem += 1;
@@ -250,23 +280,25 @@ public class Index {
     return 1;
   }
 
-
-  public String nextToken(){
+  /** next current path element's token i.e. tag, start or end position */
+  private String nextToken(){
     Object o = positionParam.shift();
     if( o == null ) return null;
     return (String) o;
   }
 
-  public void pushBackToken( String s ){
+  /**  push back current path element's token onto positionParam list */
+  private void pushBackToken( String s ){
     positionParam.unshift( s );
   }
 
-  protected boolean isDash(String s){
+  private boolean isDash(String s){
     if( s == null ) return false;
     return ( s.length() == 1 && s.indexOf("-") != -1 ) ? true : false;
   }
 
-  protected void resetPositionAttr(){
+  /** reset state tag and start and end positions */
+  private void resetPositionAttr(){
     processState = NORMAL;
     tag = ANY;
     setStart( INVALIDNUMBER );
@@ -274,7 +306,8 @@ public class Index {
     defaultStart = false;
   }
 
-  protected void dumpPositionParam(){
+  /** echoing current path's element list */ 
+  private void dumpPositionParam(){
     String s;
     Object o;
 
@@ -286,7 +319,7 @@ public class Index {
     }
   }
   
-  protected boolean isTextOrDigit(String s){
+  private boolean isTextOrDigit(String s){
     boolean result = true;
 
     if( s == null ) return false;
@@ -306,7 +339,7 @@ public class Index {
   }
 
   /* return INVALIDNUMBER if not a number */
-  protected int parseNumber(String s){
+  private int parseNumber(String s){
     if( s == null ) return INVALIDNUMBER;
 
     try{
@@ -317,7 +350,8 @@ public class Index {
     }
   }
 
-  protected void parseTag(){
+  /** parse tag */
+  private void parseTag(){
     //Pia.debug( "Entering parseTag...");
 
     String t = nextToken();
@@ -341,7 +375,8 @@ public class Index {
     //Pia.debug("Exiting parseTag...");
   }
 
-  protected void parseStart() throws InvalidIndex{
+  /** get start position */
+  private void parseStart() throws InvalidInput{
     int number;
     //Pia.debug("Entering parseStart...");
 
@@ -379,16 +414,17 @@ public class Index {
 	if ( isDash(t) ) pushBackToken( t );
       }else if ( number == INVALIDNUMBER ){
 	// bad input
-	throw new InvalidIndex("Invalid starting index.");
+	throw new InvalidInput("Invalid starting index.");
       }
     } else if ( number == INVALIDNUMBER ){
-      throw new InvalidIndex("Invalid starting index.");
+      throw new InvalidInput("Invalid starting index.");
     }
 
     //Pia.debug(this, "Exiting parseStart...");
   }
 
-  protected void parseEnd() throws InvalidIndex{
+  /** get end position */
+  private void parseEnd() throws InvalidInput{
     int number;
 
     //dumpPositionParam();
@@ -401,7 +437,7 @@ public class Index {
     }
     else 
       if( !isDash(t) )
-	throw new InvalidIndex("Missing dash before end.");
+	throw new InvalidInput("Missing dash before end.");
       else{
 	t = nextToken();
 	
@@ -409,11 +445,12 @@ public class Index {
 	  setEnd( LAST );
 	else  if( (number = parseNumber( t )) != INVALIDNUMBER )
 	  setEnd( number );
-	else throw new InvalidIndex("Invalid ending index.");
+	else throw new InvalidInput("Invalid ending index.");
       }
   }
 
-  protected void parsePositions() throws InvalidIndex{
+  /** get tag, start, and end position and check range */
+  private void parsePositions() throws InvalidInput{
     int s, e;
 
     parseTag();
@@ -430,138 +467,17 @@ public class Index {
       s = getStart();
       e = getEnd();
       if( s < 1 )
-	throw new InvalidIndex("Start index must start at 1 or larger.");
+	throw new InvalidInput("Start index must start at 1 or larger.");
       if( s > e && e != LAST )
-	throw new InvalidIndex("Start index is larger than end index."); 
+	throw new InvalidInput("Start index is larger than end index."); 
 
-    }catch(InvalidIndex ee){
+    }catch(InvalidInput ee){
       //Pia.debug("The error is-->"+ee.toString());
       throw ee;
     }
   }
 
-  protected boolean isAllSameTag(String myTag, Tokens ts){
-    if( tag == null || ts == null ) return false;
-    
-    SGML item;
-    end = ts.nItems();
-
-    for ( int i = 0 ; i < end; i++ ){
-      item = ts.itemAt( i );
-      if( !item.tag().equalsIgnoreCase( myTag ) )
-	return false;
-    }
-
-    return true;
-  }
-
-  protected SGML merge( SGML s ){
-    SGML result;
-    String myTag = getTag();
-
-    if( s.isToken() ) {
-      //Pia.debug("In merge -- token case "+s.toString());
-      return s;
-    }
-    else{
-      if( !isAllSameTag( myTag, s.content() ) )
-	result = new Element();
-      else{
-	if( s.content().nItems() > 0 ){
-	  Class c = (s.content().itemAt( 0 )).getClass();
-	  //Pia.debug("the class-->"+c.toString());
-	  try{
-	    result = (SGML)c.newInstance();
-	  }catch(Exception e){e.toString();}
-	}
-	result = new Element( myTag );
-      }
-
-      result.append( s.content() );	
-
-      //Pia.debug("In merge -- tokens case "+result.toString());
-    }
-    return result;
-  }
-
-  protected SGML doProcess(int what, SGML datum) throws InvalidIndex{
-    try{
-      if( isDots() ){
-	// either . or ..
-	Pia.debug("processing dots case.");
-	datum = merge( datum );
-      }else{
-	// normal indexing case
-	Pia.debug("processing normal case.");
-	parsePositions();
-        datum = datum.attr( this );
-      }
-    }catch(InvalidIndex e){
-      //Pia.debug(e.toString());
-      throw e;
-    }
-
-    return datum;
-  }
-    
-
-  /************************************************************************
-  ** Lookups: instance methods
-  ************************************************************************/
-  
-  public SGML lookup(SGML datum)
-       throws InvalidIndex, IllegalArgumentException
-  {
-    int what;
-
-    if( datum == null ) throw new IllegalArgumentException("Datum is null.");
-    //Pia.debug("lookup-->"+datum.toString());
-
-    what = nextPositions();
-    
-    while ( what != EOFINPUT ){
-      try{
-	datum = doProcess( what, datum ); 
-      }catch( InvalidIndex e ){
-	//Pia.debug(e.toString());
-	throw e;
-      }
-      resetPositionAttr();
-      what = nextPositions(); 
-    }
-    
-    
-    //Pia.debug(this,"my class is-->"+datum.getClass().toString());
-    //Pia.debug(this,"my content is-->"+datum.toString());
-    //Pia.debug(this,"my content is-->"+Integer.toString(datum.content().nItems()));
-
-    if( datum instanceof Tokens && datum.content().nItems() == 1 ){
-      // datum is a Tokens.  return a Token instead with the datum's content
-      
-      Pia.debug("Datum is a Tokens with 1 content");
-      
-      SGML element = datum.content().itemAt(0);
-      if( element.isToken())
-	Pia.debug("Datum is return as a Token");
-
-      return element;
-    }
-    
-    return datum;
-  }
-
-  public SGML lookup(Table datum)
-       throws InvalidIndex, IllegalArgumentException
-  {
-    if(datum == null){
-      return null;
-    }
-    
-    SGML data = (SGML)datum.at((String)items.shift());
-    return lookup(data);
-  }
-
-  protected SGML putAt( SGML cs, int where ){
+  private SGML putAt( SGML cs, int where ){
     Tokens conts = cs.content();
     SGML e = cs;
     SGML target;
@@ -576,7 +492,7 @@ public class Index {
     return e;
   }
 
-  SGML insertAt(int where, SGML item, SGML ts){
+  private SGML insertAt(int where, SGML item, SGML ts){
       Vector l = new Vector();
       SGML t, saveItem;
       int len;
@@ -609,12 +525,130 @@ public class Index {
       else return ts;
   }   
 
-  /**  recursive function for setting path to value for SGML objects
-    semantics of set, attr(name,value), depend on object
-    same  inner loop as lookup except that missing objects get created
-    */
 
-  public SGML path(SGML datum) throws InvalidIndex, IllegalArgumentException {
+
+
+  /** does tokens has all same tag */
+  private boolean isAllSameTag(String myTag, Tokens ts){
+    if( tag == null || ts == null ) return false;
+    
+    SGML item;
+    end = ts.nItems();
+
+    for ( int i = 0 ; i < end; i++ ){
+      item = ts.itemAt( i );
+      if( !item.tag().equalsIgnoreCase( myTag ) )
+	return false;
+    }
+
+    return true;
+  }
+
+  /** process result.  If a token just return it.
+   *  otherwise, if tokens and contents and all have the
+   *  same tag, get the first element's class, create
+   *  a new instance and let it reference the tokens.
+   *  If tokens has content with different tag, create
+   *  and element and let it reference the tokens
+   */
+  private SGML merge( SGML s ){
+    SGML result;
+    String myTag = getTag();
+
+    if( s.isToken() ) {
+      //Pia.debug("In merge -- token case "+s.toString());
+      return s;
+    }
+    else{
+      if( !isAllSameTag( myTag, s.content() ) )
+	result = new Element();
+      else{
+	if( s.content().nItems() > 0 ){
+	  Class c = (s.content().itemAt( 0 )).getClass();
+	  //Pia.debug("the class-->"+c.toString());
+	  try{
+	    result = (SGML)c.newInstance();
+	  }catch(Exception e){e.toString();}
+	}
+	result = new Element( myTag );
+      }
+
+      result.append( s.content() );	
+
+      //Pia.debug("In merge -- tokens case "+result.toString());
+    }
+    return result;
+  }
+
+  /** walk through each element in the path and process it */
+  private SGML doProcess(int what, SGML datum) throws InvalidInput{
+    try{
+      if( isDots() ){
+	// either . or ..
+	Pia.debug("processing dots case.");
+	datum = merge( datum );
+      }else{
+	// normal indexing case
+	Pia.debug("processing normal case.");
+	parsePositions();
+        datum = datum.attr( this );
+      }
+    }catch(InvalidInput e){
+      //Pia.debug(e.toString());
+      throw e;
+    }
+
+    return datum;
+  }
+    
+
+  /**
+   * Lookup for a SGML object indicated by path starting with datum 
+   */  
+  public SGML lookup(SGML datum) throws InvalidInput, IllegalArgumentException{
+    int what;
+
+    if( datum == null ) throw new IllegalArgumentException("Datum is null.");
+    //Pia.debug("lookup-->"+datum.toString());
+
+    what = nextPositions();
+    
+    while ( what != EOFINPUT ){
+      try{
+	datum = doProcess( what, datum ); 
+      }catch( InvalidInput e ){
+	//Pia.debug(e.toString());
+	throw e;
+      }
+      resetPositionAttr();
+      what = nextPositions(); 
+    }
+    
+    
+    //Pia.debug(this,"my class is-->"+datum.getClass().toString());
+    //Pia.debug(this,"my content is-->"+datum.toString());
+    //Pia.debug(this,"my content is-->"+Integer.toString(datum.content().nItems()));
+
+    if( datum instanceof Tokens && datum.content().nItems() == 1 ){
+      // datum is a Tokens.  return a Token instead with the datum's content
+      
+      Pia.debug("Datum is a Tokens with 1 content");
+      
+      SGML element = datum.content().itemAt(0);
+      if( element.isToken())
+	Pia.debug("Datum is return as a Token");
+
+      return element;
+    }
+    
+    return datum;
+  }
+
+  /**  
+   * return the searched SGML object, if it is not found, it will be created
+   */
+
+  public SGML path(SGML datum) throws InvalidInput, IllegalArgumentException {
     int what;
     SGML  prev      = datum;
     SGML  cur       = datum;
@@ -632,7 +666,7 @@ public class Index {
     int isDotDot = path.indexOf("..");
 
     // we don't want ..
-    if( isDotDot != -1 ) throw new InvalidIndex("dot dot is not accepted.");
+    if( isDotDot != -1 ) throw new InvalidInput("dot dot is not accepted.");
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
     //Pia.debug("original datum-->"+datum.toString());
 
@@ -647,8 +681,7 @@ public class Index {
       if( cur == null || cur.content().nItems() == 0 ){
 	Pia.debug(" not successfull "+prev.getClass().toString());
 	
-	if( prev.content() == null ||
-	    prev.content().itemAt(0).toString().equalsIgnoreCase("") )
+	if( prev.content() == null || prev.content().itemAt(0).toString().equalsIgnoreCase("") )
 	  whereToPut = prev;
 	else if( !(prev instanceof Tokens) ){
 	  //Pia.debug("************");
@@ -682,8 +715,7 @@ public class Index {
 	newElement = new Element( newTag, "" );
 	Pia.debug("after create element-->"+newElement.toString());
 
-	if( whereToPut.content() != null &&
-	    getStart() >= whereToPut.content().nItems() ){
+	if( whereToPut.content() != null && getStart() >= whereToPut.content().nItems() ){
 	  whereToPut.append( newElement );
 	  Pia.debug("In append case greater or equal");
 	}
@@ -702,14 +734,11 @@ public class Index {
     return cur;
   }
 
+  /**
+   * Lookup for a SGML object indicated by path starting with data object 
+   */  
   
-  /************************************************************************
-  ** Lookups class methods
-  ************************************************************************/
-  
-  public static SGML get(String path, SGML data)
-       throws InvalidIndex, IllegalArgumentException
-  {
+  public static SGML get(String path, SGML data) throws InvalidInput, IllegalArgumentException{
     if(path == null)
       return data;
 
@@ -720,20 +749,6 @@ public class Index {
       //}else return data.attr(path);
   }
   
-  
-  public static SGML get(String path, Table data)
-       throws InvalidIndex, IllegalArgumentException
-  {
-    if(path == null){
-      return null;
-    }    
-    //if(path.indexOf('.')>0 ||  path.indexOf('-')>=0){
-      Index i = new Index(path);
-      return i.lookup(data);
-      //}
-      //return (SGML)data.at(path);
-  }
-
 }
 
 
