@@ -4,24 +4,22 @@
 
 package crc.tf;
 
-import crc.ds.UnaryFunctor;
 import java.net.URL;
 import crc.util.regexp.MatchInfo;
 import crc.util.regexp.RegExp;
 import crc.pia.Transaction;
+import crc.tf.TFComputer;
 
-
-public final class Agent implements UnaryFunctor{
+public final class Agent extends TFComputer {
 
   /**
    * Get an agent's name in a request URL.
    * @param object A transaction 
    * @return agent's name as an object if exists otherwise null
    */
-    public Object execute( Object o ){
+  public Object computeFeature(Transaction trans){
       String name = "agency";
 
-      Transaction trans = (Transaction) o;
       URL url = trans.requestURL();
       if( url == null ) return null;
 

@@ -22,6 +22,8 @@ FILES = \
 	 IsResponse.java \
 	 IsText.java \
 	 Registry.java \
+	 TFComputer.java \
+	 TFWrapper.java \
 	 UnknownNameException.java
 
 

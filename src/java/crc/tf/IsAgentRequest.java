@@ -4,28 +4,27 @@
  
 package crc.tf;
 
-import crc.ds.UnaryFunctor;
 import java.net.URL;
 import crc.pia.Transaction;
 import crc.pia.Pia;
+import crc.tf.TFComputer;
 
-public final class IsAgentRequest implements UnaryFunctor{
+public final class IsAgentRequest extends TFComputer {
   /**
    * Is this transaction a request for the agency
    * @param object A transaction 
    * @return Boolean true if the host part of a request url starts with "agency" or
    * host part and port  equals those of the Pia's hostname and port number otherwise false.  
    */
-  public Object execute( Object o ){
-    Object zfalse = new Boolean( false );
-    Object ztrue  = new Boolean( true );
+
+  public Object computeFeature(Transaction trans){
+
     String lhost = null;
     String lport = null;
     
-    Transaction trans = (Transaction)o; 
-    if( !trans.isRequest() ) return zfalse;
+    if( !trans.isRequest() ) return False;
     URL url = trans.requestURL();
-    if( url == null ) return zfalse;
+    if( url == null ) return False;
     
     String host = url.getHost();
     if( host!= null ) 
@@ -36,13 +35,14 @@ public final class IsAgentRequest implements UnaryFunctor{
     lport = Integer.toString( url.getPort() );
     
     if( lhost.startsWith("agency") || lhost == "" )
-      return ztrue;
+      return True;
     
-    if( Pia.instance().port().equals( lport ) && Pia.instance().host().startsWith( lhost ) ){
-      return ztrue;
+    if( Pia.instance().port().equals( lport )
+	&& Pia.instance().host().startsWith( lhost ) ){
+      return True;
     }
     
-    return zfalse;
+    return False;
   }
 }
 
