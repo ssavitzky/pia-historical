@@ -45,7 +45,9 @@ Manual</a>.<p>
 </actor>
 <actor tag=atag dscr="``tag'' for actor named in CONTENT">
   <set entity name=n><get name=content></set>
-  &lt;<strong><man>&n;</man></strong> <actor-attrs name="&n;"> &gt;
+  <set entity name=tag><if><actor-dscr name="&n;">
+	<then>actor</then><else>element</else></if></set>
+  &lt;&tag; <actor-attrs name="&n;"> &gt;
 </actor>
 
 <!-- Name anchors in THIS page, and links to them. -->
@@ -60,15 +62,21 @@ Manual</a>.<p>
 </actor>
 <actor tag=atoc dscr="``tag'' for actor named in CONTENT">
   <set entity name=n><get name=content></set>
-  &lt;<strong><toc>&n;</toc></strong> <actor-attrs name="&n;"> &gt;
+  <strong><toc>&n;</toc></strong> -- <atag>&n;</atag>
 </actor>
 
 <actor tag=adscr dscr="Make an actor description
 cross-referenced to the manual.">
   <set entity name=list><get name=content></set>
   <dl foreach list="&list;">
-    <dt> <atag>&li;</atag>
-    <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+    <dt> <strong>&li;</strong> -- &lt;actor <actor-attrs name="&li;">&gt;
+    <dd>
+	 <dl>
+	   <dt> <b>Syntax:</b>
+	   <dd> <add-markup><actor-syntax name="&li;"></add-markup>
+	   <dt> <b>Description:</b>
+	   <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+	 </dl>
   </dl>
 </actor>
 <actor tag=alist dscr="Make a list of actor tags">
@@ -81,7 +89,10 @@ cross-referenced to the manual.">
 <h3>Index</h3>
 
 <set name=actorNames><actor-names></set>
-<alist>&actorNames;</alist>
+<menu foreach list="&actorNames;">
+  <if><actor-dscr name="&li;"><then>
+  <li> <toc>&li;</toc>
+</menu>
   
 <hr>
 <h2>Actor Definition and Control</h2>
@@ -91,20 +102,22 @@ cross-referenced to the manual.">
 <adscr>actor</adscr>
   
 <pre><protect markup>
-<actor tag=demo quoted=1 dscr="show both CONTENT and its value">
+<actor tag=demo quoted=1 dscr="show both CONTENT and its value"
+  syntax="<demo>code to demonstrate</demo>">
   <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
   <expand><get name=content></expand>
 </actor>
 </protect></pre>
 
-<actor tag=demo quoted=1 dscr="show both CONTENT and its value">
+<actor tag=demo quoted=1 dscr="show both CONTENT and its value"
+  syntax="<demo>code to demonstrate</demo>">
   <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
   <expand> `<get name=content>' </expand>
 </actor>
 
 <adscr>demo</adscr>
 
-<demo><demo><get pia name="main::debugging"></demo></demo>
+<demo><demo><get pia name="pia.debug"></demo></demo>
 <p>
 
 <h3><name>actor-attrs</name></h3>

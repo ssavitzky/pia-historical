@@ -29,7 +29,7 @@
 
 <set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">
-  <dt> <strong>&li;</strong> <actor-attrs name="&li;">
+  <dt> <strong>&li;</strong> -- &lt;actor <actor-attrs name="&li;">&gt;
   <dd> <if><actor-dscr name="&li;"><then>
        <dl>
 	 <dt> <b>Syntax:</b>
