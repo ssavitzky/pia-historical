@@ -29,6 +29,27 @@ import crc.dom.DOMFactory;
 public interface Syntax {
 
   /************************************************************************
+  ** Flags:
+  ************************************************************************/
+
+  /** Syntax for an empty element. */
+  public final static int EMPTY   = -1;
+  /** Syntax for a normal element.  The contents are expanded. */
+  public final static int NORMAL  =  1;
+  /** Syntax for a quoted element:  contents are parsed but not expanded. */
+  public final static int QUOTED  =  2;
+
+  /** Syntax flag (to be or'ed in) to suppress expansion. */
+  public final static int NO_EXPAND	= 2;
+  /** Syntax flag (to be or'ed in) to suppress parsing of entities. */
+  public final static int NO_ENTITIES	= 4;
+  /** Syntax flag (to be or'ed in) to suppress parsing of elements. */
+  public final static int NO_ELEMENTS	= 8;
+
+  /** Syntax for a literal: elements and entities are not recognized. */
+  public final static int LITERAL =  NO_ENTITIES | NO_ELEMENTS | NO_EXPAND;
+
+  /************************************************************************
   ** Parsing Operations:
   ************************************************************************/
 
