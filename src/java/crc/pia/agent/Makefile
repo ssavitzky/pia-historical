@@ -3,6 +3,7 @@ PACKAGE=crc.pia.agent
 FILES = \
 	Agency.java \
 	AgentMachine.java \
-	AgentInstallException
+	Dofs.java \
+	AgentInstallException.java
 
 include $(MAKEDIR)/file.make

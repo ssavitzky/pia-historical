@@ -10,6 +10,7 @@
 
 package crc.pia.agent;
 import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.DataInputStream;
 import java.io.StringBufferInputStream;
@@ -18,11 +19,14 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Date;
 import java.util.NoSuchElementException;
+import java.io.FileNotFoundException;
 import java.util.Vector;
+import java.util.Properties;
 
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import crc.pia.PiaRuntimeException;
 import crc.pia.GenericAgent;
 import crc.pia.Resolver;
 import crc.pia.Agent;
@@ -44,18 +48,18 @@ public class Dofs extends GenericAgent {
   public boolean DEBUG = false;  
   /**
    * Respond to a DOFS request. 
-   * Figure out whether it's for a file or an interform, and whether it's
+   * Figure out whether it's for a file or an in erform, and whether it's
    * to a sub-agent or to /dofs/ itself.
    */
-  public Transaction respond(Transaction request, Resolver res){
+  public void respond(Transaction request, Resolver res) throws PiaRuntimeException{
     Transaction reply = null;
     String replyString = null;
 
-    if( !request.isRequest() ) return null;
+    if( !request.isRequest() ) return;
 
     URL url = request.requestURL();
     if( url == null )
-      return null;
+      return;
 
     String path   = url.getFile().toLowerCase();
     String myname = name().toLowerCase();
@@ -72,7 +76,11 @@ public class Dofs extends GenericAgent {
     Agent agnt = this;
 
     if( !myname.equals(mytype) && path.startsWith("/"+myname+"/")){
-      return retrieveFile( url, request );
+      try{
+	retrieveFile( url, request );
+      }catch(PiaRuntimeException e){
+	throw e;
+      }
     }else if( !myname.equals(mytype) && path.startsWith("/"+myname) && path.endsWith("/"+myname)){
       path = "/"+myname+"/home.if";
     }else {
@@ -115,10 +123,9 @@ public class Dofs extends GenericAgent {
 	  in = new StringBufferInputStream( replyString );
 	ByteStreamContent c = new ByteStreamContent( in );
 	
-	reply = new HTTPResponse( request, c );
+        new HTTPResponse( request, c );
       }
     }
-    return reply;
   }
 
   /**
@@ -143,6 +150,9 @@ public class Dofs extends GenericAgent {
 
     features = new Features( this );
 
+    matchCriterion("IsRequest", new Boolean( true ));
+    matchCriterion("IsAgentRequest", new Boolean( true ));
+    /*
     String myurl = "/"+ mytype + "/" + myname + "/" + "initialize.if";
     if( DEBUG )
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode.  No interform request is put onto the resolver.");
@@ -150,6 +160,7 @@ public class Dofs extends GenericAgent {
       Transaction request = createRequest("GET", myurl );
       Pia.instance().resolver().unshift( request );
     }
+    */
   }
 
   /**
@@ -176,22 +187,22 @@ public class Dofs extends GenericAgent {
   /**
    * generate the HTML for a local directory.
    */
-    protected Transaction retrieveDirectory( String path, Transaction request ){
+    protected void retrieveDirectory( String path, Transaction request ){
       File myfile = new File( path );
       Transaction response =  null;
 
       if ( !myfile.exists() ){
-	response =  new HTTPResponse( request );
+	response =  new HTTPResponse( request, false );
 	response.setStatus( HTTP.NOT_FOUND );
 	response.setReason( "File " + path + " does not exist" );
-	return response;
+	response.startThread();
       }
 
       if ( !myfile.canRead() ){
-	response =  new HTTPResponse( request );
+	response =  new HTTPResponse( request, false );
 	response.setStatus( HTTP.FORBIDDEN );
 	response.setReason( "User does not have read permission" );
-	return response;
+	response.startThread();
       }
 
       //check if-modified-since
@@ -201,9 +212,9 @@ public class Dofs extends GenericAgent {
 	Date mydate = new Date( zdate );
 	long time = mydate.getTime();
 	if ( time >= mtime ){
-	  response =  new HTTPResponse( request );
+	  response =  new HTTPResponse( request, false );
 	  response.setStatus( HTTP.NOT_MODIFIED );
-	  return response;
+	  response.startThread();
 	}
       }
 
@@ -217,6 +228,15 @@ public class Dofs extends GenericAgent {
       Vector url = new Vector();
       RegExp re = null;
       MatchInfo mi = null;
+
+
+      // Ensure that the base URL is "/" terminated
+      URL myurl = request.requestURL();
+      String dpath = null;
+      String mybase = myurl.toExternalForm();
+      if( !mybase.endsWith("/") )
+	dpath = mybase + "/";
+
 
       for (ls = myfile.list(), i = 0; ls != null && i < ls.length; i++){
 	String zfile = ls[i];
@@ -239,15 +259,10 @@ public class Dofs extends GenericAgent {
 	boolean ignore = ignoreFile(zfile, filepath);
 	boolean todo = ! (all && ignore);
 	if( todo )
-	  url.addElement( "<LI> <a href=\"" + zfile + "\">" + zfile + "</a>" );
+	  //url.addElement( "<LI> <a href=\"" + zfile + "\">" + zfile + "</a>" );
+	  url.addElement( "<LI> <a href=\"" + dpath+zfile + "\">" + zfile + "</a>" );
 	  
       }
-      // Ensure that the base URL is "/" terminated
-      URL myurl = request.requestURL();
-      String dpath = null;
-      String mybase = myurl.toExternalForm();
-      if( !mybase.endsWith("/") )
-	dpath = mybase + "/";
 
       String next = null;
       if( head != null ) 
@@ -266,110 +281,159 @@ public class Dofs extends GenericAgent {
       InputStream in = new StringBufferInputStream( html );
       ByteStreamContent bs = new ByteStreamContent( in );
 
-      response = new HTTPResponse( request, bs);
+      response = new HTTPResponse( request, false);
+      response.setContentObj( bs );
       response.setStatus( HTTP.OK );
       Date mDate = new Date( mtime );
       response.setHeader( "Last-Modified", mDate.toGMTString() ); 
       response.setContentType("text/html");
       response.setContentLength( html.length() );
       response.setHeader("Version", version());
-      return response;
+      response.startThread();
     }
 
 
   /**
+   * content type mapping
+   */
+  protected String contentType( String fn ){
+    String lfilename = fn.toLowerCase();
+
+    String fileExt     = null;
+    String contentType = "text/plain";
+    
+    Properties map = Pia.instance().piaFileMapping();
+       
+    //find extension
+    int i = lfilename.lastIndexOf('.');
+    if( i != -1 )
+      fileExt = lfilename.substring( i + 1);
+    
+    //get content type
+    if( fileExt != null && map.containsKey( fileExt ) )
+      contentType = (String) map.get( fileExt );
+    
+    return contentType;
+  }
+
+  /**
    * Retrieve the file at $url in order to satisfy $request.
    */
-  protected Transaction retrieveFile ( URL url, Transaction request ){
+  protected void retrieveFile ( URL url, Transaction request ) throws PiaRuntimeException{
     Transaction reply = null;
     File zfile = null;
     URL u = null;
     URL myurl = null;
 
+    int index = -1;
+    RegExp re = null;
+    MatchInfo mi = null;
+
     String filename = urlToFilename( url );
 
-    if( filename == null ) return null;
+    if( filename == null ){
+      String msg = "Can not locate request file.\n";
+      throw new PiaRuntimeException (this
+				     , "retrieveFile"
+				     , msg) ;
+    }
 
     zfile = new File( filename );
     if( zfile.isDirectory() )
-      return retrieveDirectory( filename, request );
+      retrieveDirectory( filename, request );
     else{
+
+      reply = new HTTPResponse( request, false );
+      reply.setStatus( 200 );
+      reply.setReason( "OK" );
+      reply.setHeader("Version", version());
+
       try{
-	u = new URL( Pia.instance().url() + "/" );
-	myurl = new URL( u, filename );
-	
+	Pia.instance().debug(this, "Going to get the following file :"+ filename );
 	String data = null;
+	byte[] fromFile = null;
+
+
+	fromFile = Utilities.readFrom( filename );
+	data = new String ( fromFile,0,0, fromFile.length);
 	if( DEBUG ){
-	  System.out.println("\n\nNote: result is suck in from foobar.html");
-	  InputStream in = new FileInputStream ("foobar.html");
-	  DataInputStream di = new DataInputStream( in );
-	  String line;
-	  data = new String();
-	  try{
-	    for(;;){
-	      line = di.readLine();
-	      if(line==null)break;
-	      data += line;
-	    }
-	  }catch(IOException e){;}
+	  System.out.println("Here is the output from the file found :");
+	  System.out.println(data);
+	}
+
+	String contentType = contentType( filename );
+	if( contentType.indexOf("html") == -1 ){
+
+	  InputStream newdata  = new ByteArrayInputStream( fromFile );
+	  Content finalContent = new ByteStreamContent( newdata );
+
+	  reply.setContentType( contentType );
+	  reply.setContentObj( finalContent );
+	  reply.startThread();
 
 	}else{
-	  InputStream in = myurl.openStream();
-	  Content c      = new ByteStreamContent( in );
-	  data           = c.toString();
-	}
-	int index = -1;
-	RegExp re = null;
-	MatchInfo mi = null;
 
-	String base = "<BASE HREF";
-	String baseRefBegin = null;
-	String afterBaseRef = null;
-	String search = null;
-	StringBuffer tmp = null;
-
-	if( (index = data.indexOf( base )) != -1 ){
-	  baseRefBegin = "<BASE HREF=\"";
-
-	  // data after <BASE HREF=" 
-	  afterBaseRef = data.substring( index + baseRefBegin.length() );
-
-	  search     = "<BASE HREF=\".*\">";
-
-	  int afterindex = -1;
-	  re = new RegExp( search );
-	  mi = re.match( data );
+	  // yes I am a html file
+	  String base = "<BASE HREF";
+	  String baseRefBegin = null;
+	  String afterBaseRef = null;
+	  String search = null;
+	  StringBuffer tmp = new StringBuffer( data );
 	  
-	  if( mi != null )
-	    afterindex = mi.end();
+	  if( (index = data.indexOf( base )) != -1 ){
+	    baseRefBegin = "<BASE HREF=\"";
 	    
-	  tmp = new StringBuffer();
-
-	  tmp.append( data.substring(0, index + baseRefBegin.length() ) );
-	  tmp.append( myurl.toExternalForm()+ "\">" );
-	  tmp.append( data.substring( afterindex ) );
-
+	    // data after <BASE HREF=" 
+	    afterBaseRef = data.substring( index + baseRefBegin.length() );
+	    
+	    search     = "<BASE HREF=\".*\">";
+	    
+	    int afterindex = -1;
+	    re = new RegExp( search );
+	    mi = re.match( data );
+	    
+	    if( mi != null )
+	      afterindex = mi.end();
+	    
+	    tmp = new StringBuffer();
+	    
+	    tmp.append( data.substring(0, index + baseRefBegin.length() ) );
+	    tmp.append( myurl.toExternalForm()+ "\">" );
+	    tmp.append( data.substring( afterindex ) );
+	  }
+	  Pia.instance().debug(this, "before creating reply" );
 	  InputStream newdata  = new StringBufferInputStream( new String(tmp) );
 	  Content finalContent = new ByteStreamContent( newdata );
-		      
-	  reply = new HTTPResponse( request, finalContent );
-	  reply.setHeader("Version", version());
+	  
+	  reply.setContentType( contentType );
+	  reply.setContentObj( finalContent );
+	  reply.startThread();
 
 	}
 
-      }catch( MalformedURLException e1 ){
-	if( DEBUG )
-	  System.out.println( e1.toString() );
+
+      }catch(NullPointerException e1){
+	String msg = "Bad file name.\n";
+	throw new PiaRuntimeException (this
+				       , "retrieveFile"
+				       , msg) ;
+      }catch(FileNotFoundException e2){
+	String msg = "File not found.\n";
+	throw new PiaRuntimeException (this
+				       , "retrieveFile"
+				       , msg) ;
       }catch(IOException e2){
 	if( DEBUG )
 	  System.out.println( e2.toString() );
+	throw new PiaRuntimeException (this
+				       , "retrieveFile"
+				       , e2.toString()) ;
       }catch(Exception e3){
 	if( DEBUG )
 	  System.out.println( e3.toString() );
       }
     }
 
-    return reply;
   }
 
   /**
@@ -400,7 +464,8 @@ public class Dofs extends GenericAgent {
     StringBuffer data = new StringBuffer();
 
     try{
-      data = Utilities.readFrom( filename, data );
+      byte [] fromfile = Utilities.readFrom( filename );
+      data = new StringBuffer ( new String ( fromfile,0,0, fromfile.length) );
       String zhead = "<head.*</head>";
       String htmlBeginBrak = "<html>";
       String htmlEndBrak   = "</html>";
@@ -450,6 +515,19 @@ public class Dofs extends GenericAgent {
     File zfile = new File( filename );
     return ! zfile.exists();
   }
+
+  /**
+   * for debugging only
+   */
+  private static void sleep(int howlong){
+    Thread t = Thread.currentThread();
+    
+    try{
+      t.sleep( howlong );
+    }catch(InterruptedException e){;}
+    
+  }
+
 
   public static Agency setupAgency(){
     Agency pentagon = new Agency("pentagon", "agency");
@@ -540,6 +618,7 @@ public class Dofs extends GenericAgent {
 
       // will eventually call getRequest of dofs' machine
 
+      /*
       Transaction reply = trans1.handleRequest( res );
       if( reply != null ){
 	String zheader = null;
@@ -554,6 +633,7 @@ public class Dofs extends GenericAgent {
 	  System.out.print( c.toString() );
 	}
       }
+      */
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -563,50 +643,14 @@ public class Dofs extends GenericAgent {
 
 
   public static void test1(String filename){
-    Agency pentagon = setupAgency();
     try{
       InputStream in = new FileInputStream (filename);
       Machine machine1 = new Machine();
       machine1.setInputStream( in );
 
-      Transaction trans1 = new HTTPRequest( machine1 );
-      Thread thread1 = new Thread( trans1 );
-      thread1.start();
 
-      for(;;){
-	if( !thread1.isAlive() )
-	  break;
-      }
-      trans1.assert("IsAgentRequest", new Boolean( true ) );
-
-      System.out.println("\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-      Hashtable ht = new Hashtable();
-      ht.put("agent", "dofs");
-      ht.put("type", "dofs");
-      ht.put("root", "~/");
-      ht.put("all", "false");
-      pentagon.install( ht );
-      
-      Resolver res = Pia.instance().resolver();
-
-      // put dofs' machine as toMachine of transaction
-      pentagon.actOn( trans1, res );
-
-      // will eventually call getRequest of dofs' machine
-      Transaction reply = trans1.handleRequest( res );
-      if( reply != null ){
-	String zheader = null;
-	if (reply.headers()!=null)
-	  zheader = reply.headersAsString();
-	System.out.println("\n\nHere is the response's header from request's handleRequest "); 
-	System.out.print( zheader );
-
-	Content c = reply.contentObj();
-	if( c!= null ){
-	  System.out.println("\n\nHere is the response from request's handleRequest "); 
-	  System.out.print( c.toString() );
-	}
-      }
+      new HTTPRequest( machine1 );
+   
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
