@@ -342,26 +342,35 @@ public class Parser extends Input {
 	int i = 1, j = itsPosition + 1;
 	for ( ; i < matchLength; ++i, ++j) {
 	  if (aString.charAt(i) != Character.toLowerCase(buf.charAt(j))) {
-	    j = 0;
 	    break;
 	  }
 	}
-	if (j > 0) {		// Success
+	if (i == matchLength) {		// Success
 	  buf.setLength(buf.length() - matchLength);
+	  last = 0;
 	  return true;
 	}
 
 	/* The match failed.  Advance the tentative starting point to the
 	 * next occurrence of aCharacter, if any.
 	 */
-	if (nextPosition > 0 && nextPosition < i) 
+	if (nextPosition > 0 && nextPosition < i) {
+	  // We matched a second occurrence in aString, so go there.
 	  itsPosition += nextPosition;
-	else
+	} else {
 	  itsPosition = -1;
+	  // It doesn't occur in the part we matched, but may occur later.
+	  for (++i, ++j; i < matchLength; ++i, ++j) {
+	    if (Character.toLowerCase(buf.charAt(j)) == aCharacter) {
+	      itsPosition = j;
+	      break;
+	    }
+	  }
+	}
       }
       last = in.read();
     } 
-    // ===
+    // === doesn't check for entities.  That's ok; we never use RCDATA. ===
     return false;
   }
 
