@@ -5,37 +5,25 @@
 <base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<table align=center cellspacing=0 cellpadding=0 border=0>
-<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
-	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48 alt="R I C O H"></a>
-    <th width=170 nowrap>
-    <th align=left nowrap nobr valign=center>
-        <a href="/"><img width=85 height=45 border=0
-	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
-<tr height=2><td colspan=3 nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
-<tr nowrap nobr><th align=left><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
-	border=0 width=170 height=21></a>
-    <th>
-    <th align=left><font face=helvetica>&agentName home page
-for
+<set entity name=title>&agentName; home page for
 <if><test exact  match='pia'><get env name="USER"></test>
     <then> this </then>
-    <else> &piaUSER;'s</else></if></font>
-<tr><th><th><th align=left><font face=helvetica>
+    <else> &piaUSER;'s</else></if><br>
 <if><test exact match='pia'><get env name="USER"></test>
     <then>Peripheral Interface </then>
-    <else>Personal Information </else></if> Agency</font>
-<td>
-<tr><th width=170 rowspan=5 valign=center>
+    <else>Personal Information </else></if> Agency</set>
+<read interform file="heading.inc" process>
+
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr><th width=170 valign=center>
 	<if><agent-running name="Logo">
 	    <then><img src="/Logo/A100.gif" height=100 width=111></then>
 	    <else>&agentName;</else>
 	</if>
-    <td><br>
-<tr>
+<td>
+  <table cellspacing=0 BORDER=0>
+  <tr><td align=right width=170><br>
+  <tr>
     <th valign=top align=right><b>&agentName;:</b>
     <td valign=top> <a href="/Agency/agents.if">list</a> / 
 	<a href="/Agency/installers.if">install</a> / 
@@ -43,28 +31,26 @@ for
  	agents<br>
 	<if><test exact match='pia'><get env name="USER"></test>
 	  <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
-<tr>
+  <tr>
     <th valign=top align=right><b>Files:</b>
     <td valign=top> <a href="/PIA/">PIA files</a>
 	<a href="/My/">My files</a>
 	<a href="/PIA/src/">Sources</a>
 	<a href="/PIA/Doc/"><b>Docs</b></a><br>
        
-<tr>
+  <tr>
     <th valign=top align=right><b>Agents:</b>
     <td valign=top> <repeat list="&agentNames;" entity="foo">
       <a href="/&foo;/home.if">&foo;</a> <a href="/&foo;/"><b> / </b></a>
    </repeat><br>
    
-<tr>
+  <tr>
     <th valign=top align=right><b>URL:</b>
     <td valign=top> &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<tr><td>
+  <tr>
     <th valign=top align=right><b>Date:</b>
     <td valign=top> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
-
-<tr><th align=left><br><!-- in case history isn't running -->
-<tr><th align=left><br>
+  </table>
 </table>
 
 
