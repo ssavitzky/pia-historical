@@ -137,6 +137,11 @@ public class Actor extends Element {
   /** Handler for this actor's actOn method. */
   Handler action = null;
 
+  /** Add a Handler as this Actor's action handler */
+  public void setAction(Handler h) {
+    action = h;
+  }
+
   /** Act on a matching token.  Normally what this does is push the
    *	actor itself as a handler, and set the interpretor to parse
    *	the content.  Some syntactic analysis can also be done here to

@@ -60,6 +60,13 @@ public class Tagset extends Element {
     return t;
   }
 
+  /** test for the presence of a Tagset with a given name.
+   */
+  public static boolean tagsetExists(String name) {
+    if (name == null) return false;
+    return tagsets.at(name) != null;
+  }
+
   /************************************************************************
   ** Components:
   ************************************************************************/
@@ -149,6 +156,7 @@ public class Tagset extends Element {
       tagged.at(tag, a);
     }
 
+    //System.err.println("Defined "+(name==null?tag:name)+" in "+name());
   }	
 
 
@@ -162,6 +170,15 @@ public class Tagset extends Element {
   protected Tagset(String name) {
     this.addAttr("name", name);
     bootstrap();
+  }
+
+  public Tagset(SGML it) {
+    this.addAttr("name", it.attr("name"));
+    tagsets.at(name(), this);
+    String base = it.attrString("base");
+    if (base != null && !"".equals(base)) {
+      include(tagset(base));
+    }
   }
 
   protected Tagset(Tagset t) {
