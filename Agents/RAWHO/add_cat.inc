@@ -16,6 +16,8 @@
   <dl>
    <dt>  name </dt>
    <dd><get name=catname></dd>
+   <dt>  owner </dt>
+   <dd>  <get name=owner>
    <dt> description  </dt>
    <dd><get name=catdesc>
    <dt> links </dt>

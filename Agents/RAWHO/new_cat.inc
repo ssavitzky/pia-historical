@@ -4,10 +4,12 @@
 <input type=submit value="AddCategory">
 :
 <input name="catname" size=20>
+Owner (use email address): <input name="owner" size=20>
 Description:<textarea name="catdesc" rows=1 cols=20></textarea>
 
 <process copy>
  <set  name=catname><get form name=catname></set>
+ <set  name=owner><get form name=owner></set>
  <set  name=catdesc><get form name=catdesc></set>
 <!--   get features -->
 <if><get form name=catfeatures> <then>

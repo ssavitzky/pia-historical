@@ -10,4 +10,13 @@ They provide means for adding links,  categories, [automatically suggesting  cat
 <p>
 RAWHO stands for Ricoh Assisted Working Hierarchical Organization or something
 like that.
+<p>
+The something's include:<br>
+RA~WHO:<br>
+- Ricoh's Automated Web Hypertext Organizer<br>
+- Ricoh's Automated Web Hypertext Ontology<br>
+- Ricoh's Automatic Web Hierarchy Organizer<br>
+(any more?)
+
+
 <!-- $Id$ -->

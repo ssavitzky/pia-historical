@@ -7,8 +7,12 @@
 
  <if> <get  form  name="catname"><then> 
 <get agent index="cats.&FORM.catname;">
- <a href="edit_category.if?category=&FORM.catname;"> edit &FORM.catname;</a>
-
+<hr>
+<table><caption>Controls for  &FORM.catname;</caption>
+<tr><td>
+ <a href="edit_category.if?category=&FORM.catname;"> edit </a>
+ <a href="cache_category.if?category=&FORM.catname;"> cache (get linked docs)</a>
+</table>
 </then>
  <else>
  Please specify a category:
@@ -23,7 +27,7 @@ name=catname> <set name=cats><get agent name=cats keys></set>
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 13:12:22 1997
+Last modified: Wed Nov 12 16:02:31 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

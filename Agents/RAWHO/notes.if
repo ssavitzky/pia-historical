@@ -31,7 +31,7 @@ categories and links are stored in files,  <a
 href="/~&agentName;/">~/.pia/&agentName;</a>.
 
 <p>
- feel free to run your own agent or use the shared:
+ Feel free to run your own agent (this agent is running on &piaHOST;:&piaPORT;) or use the shared:
  <a href="http://pia:8888/RAWHO/home.if"> PIA group server RAWHO</a>.
 Add new behaviors to the shared server by editing <a href="file:~pia/pia/Agents/RAWHO"><code>~pia/pia/Agents/RAWHO</code></a>.
 <h3> problems</h3>
@@ -41,7 +41,7 @@ Add new behaviors to the shared server by editing <a href="file:~pia/pia/Agents/
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 14:44:30 1997
+Last modified: Wed Oct 22 10:11:14 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

@@ -19,7 +19,11 @@
      <if><get form name="newfeature"> <then>
       <set index="feats" key=&FORM.newfeature;><get form name="newfeaturevalue"></set>
       </then></if>
-   <!-- do the  other attributes -->	   
+   <!-- do the  other attributes -->
+   <set index="catdl" key=lastModified>&date;</set>
+   <if> <get form name="owner"> <then>
+         <set index="catdl" key=owner><get form name="owner"></set>
+        </then></if>
    <if> <get form name="subcat"> <then>
 	 <set index="catdl" key=subCategory insert=-1><get form name="subcat"></set>
         adding subcat <get form name="subcat">
@@ -43,6 +47,7 @@
 
 	      <h2>Edit &FORM.category;</h2>
 <input name="category"  type=hidden value=&catname;>
+Owner:<input name="owner"  value=&catdl.owner;> <br>
 SuperCategories:<repeat list=&catdl.superCategory; entity=su> <get name=su> </repeat> Add SuperCategory:
 <select multiple name="supercat" size=2>
 <option> </option>
@@ -93,7 +98,7 @@ AddLinks: <set name=l><get agent index=links..dl-1 keys></set>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 14:01:17 1997
+Last modified: Wed Nov 12 12:30:27 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://seven.sages.com/~wolff/wolff.html"

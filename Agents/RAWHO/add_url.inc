@@ -32,6 +32,12 @@ is taken as the default value -->
  </else>
 </if>
 
+<if><get form name=contributor> <then>
+ <set name="contributor"><get form name=contributor></set>
+ </then> <else>
+ <set name="contributor">unknown</set>
+ </else>
+ </if>
 
 <!--  create directory structure and files for canonical information -->
  <write file="links/&urlid;/index.html">
@@ -50,6 +56,8 @@ is taken as the default value -->
    <dd><get name=formurl>
    <dt> description  </dt>
    <dd> <if><get name=txt><then><get name=txt></then><else><get name=formurl></else></if></dd>
+   <dt> contributor </dt>
+   <dd> <get name=contributor>
    <dt> features </dt>
    <dd> <get name=linkfeatures>
    <dt> category </dt>
