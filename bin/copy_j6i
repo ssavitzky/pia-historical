@@ -41,7 +41,7 @@ $to = "$to/$today";
 $ct = 0;
 $tonew = $to;
 
-print "copy_j6i $from $to\n";
+#print "copy_j6i $from $to\n";
 
 ## check for existing directory
 while (-e $to) {		# Fix this for better filenames
@@ -88,7 +88,7 @@ for $file (@jfiles){
 	$f2 = "$f.jpg";
 	$f3 = "$f.small.gif";
 	
-	cvj6i($file,$f2,$f3);
+	cvj6i($file,$f2,$f3) unless -f $f3;
 	push(@jpegs,$f);
 	
     } else {
@@ -151,24 +151,23 @@ $flag = 0;
 print $formheader if $captionsize;
 print $header;
 print $rowheader;
+$ext='jpg';
 
-for(@jpegs){
-    chop;
+for $file (@_){
+
   
-    ($file, $ext ) = ($_, 'jpg'); #split('\.');
+#    ($file, $ext ) = ($_, 'jpg'); #split('\.');
     $text[$count] = "$file.$ext";
 
     print $td;
-
-    if($jpg{$ext}){		# Stick a small jpeg image in
 
 	$image[$count] = "$file.small.gif";
 	$flag = 1;		# 
 	printImg($image[$count],$text[$count]);
 				# Force a line feed to put caption below
 	print "<br>";
-    }
-	printText($text[$count],$text[$count]);
+
+	printText($file);#adds input field
 	print $tdtrail;
     
 
@@ -191,16 +190,16 @@ print $formender if $captionsize;
 				# shouldlet agency make table...
 open(INDEX,">$table");
 select INDEX;
-make_index(@jfiles);
+make_index(@jpegs);
 select STDOUT;
 close INDEX;
 
 chdir "..";
 open(LOG,">.latest");
-print LOG "$to";
+print LOG "$dirnam";
 close LOG;
 open(LOG,">>.catalog");
-print LOG "$to\n";
+print LOG "$dirnam\n";
 close LOG;
 
 
