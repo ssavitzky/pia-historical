@@ -15,6 +15,7 @@ PACKAGES = \
 	pia \
 	sgml \
 	tf \
+	content \
 	util
 
 
