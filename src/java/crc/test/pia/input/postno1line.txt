@@ -1,0 +1,17 @@
+Referer: http://napa:2345/cgi-bin/getdirs.pl
+Connection: Keep-Alive
+User-Agent: Mozilla/2.0 (X11; I; Linux 1.2.13 i586)
+Host: napa:2345
+Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*
+Content-type: application/x-www-form-urlencoded
+Content-length: 51
+
+dir=%2Frest1%2Frest%2Fdata%2Fappcases&param=foo.dat
+
+
+
+
+
+
+
+
