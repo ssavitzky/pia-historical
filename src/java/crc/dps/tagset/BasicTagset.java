@@ -51,10 +51,10 @@ import crc.ds.List;
 public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   /************************************************************************
-  ** Flags: (for convenience in setting up tables):
+  ** Syntax Flags: (for convenience in setting up tables):
   ************************************************************************/
 
-  /** Syntax for an empty element. */
+  /** Syntax for an empty element.  (From Syntax) */
   public final static int EMPTY   = Syntax.EMPTY;
   /** Syntax for a normal element.  The contents are expanded. */
   public final static int NORMAL  = Syntax.NORMAL;
@@ -83,61 +83,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   protected boolean locked = false;
 
   protected String paragraphElementTag = null;
-
-  /************************************************************************
-  ** DOM Factory:
-  ************************************************************************/
-
-  /** The DOMFactory to which all construction requests are delegated. */
-  protected DOMFactory factory = null;
-
-  public DOMFactory getFactory() { return factory == null? this : factory; }
-
-  protected void setFactory(DOMFactory f) { factory = f; }
-
-
-  public crc.dom.Document createDocument() {
-    return (factory == null)
-      ? null
-      : factory.createDocument();
-  }
-
-  public crc.dom.DocumentContext createDocumentContext() { 
-    return (factory == null)
-      ? null
-      : factory.createDocumentContext();
-  }
-
-  public crc.dom.Element createElement(String tagName,
-				       crc.dom.AttributeList attrs) {
-    return (factory == null)
-      ? createActiveElement(tagName, attrs)
-      : factory.createElement(tagName, attrs);
-  }
-
-  public crc.dom.Text createTextNode(String data) {
-    return (factory == null)
-      ? createActiveText(data)
-      : factory.createTextNode(data);
-  }
-
-  public crc.dom.Comment createComment(String data) {
-    return (factory == null)
-      ? createActiveComment(data)
-      : factory.createComment( data );
-  }
-
-  public crc.dom.PI createPI(String name, String data) {
-    return (factory == null)
-      ? createActivePI(name, data)
-      : factory.createPI( name, data );
-  }
-
-  public crc.dom.Attribute createAttribute(String name, NodeList value){
-    return (factory == null)
-      ? createActiveAttribute(name, value)
-      : factory.createAttribute( name, value );
-  }
 
   /************************************************************************
   ** Context:
@@ -583,7 +528,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   ************************************************************************/
 
   public BasicTagset() {
-    factory = null;
     setHandlerForType(NodeType.ENTITY, EntityHandler.DEFAULT);
     setHandlerForType(NodeType.TEXT, TextHandler.DEFAULT);
   }
@@ -595,12 +539,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   public BasicTagset(Tagset previousContext) {
     this();
-    factory = previousContext.getFactory();
     context = previousContext;
   }
 
-  public BasicTagset(DOMFactory f) {
-    this();
-    factory = f;
-  }
 }

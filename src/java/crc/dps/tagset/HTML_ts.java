@@ -83,8 +83,4 @@ public class HTML_ts extends BasicTagset {
     initializeHTML(true);
   }
 
-  public HTML_ts(crc.dom.DOMFactory f) {
-    super(f);
-    initializeHTML(true);
-  }
 }

@@ -47,7 +47,7 @@ import crc.dps.active.*;
  * @see crc.dps.output.ToDocument
  * @see crc.dom.Node */
 
-public interface Tagset extends DOMFactory {
+public interface Tagset  {
 
   /************************************************************************
   ** Context:
@@ -60,13 +60,6 @@ public interface Tagset extends DOMFactory {
    *	that define only a small number of tags may use it.
    */
   public Tagset getContext();
-
-  /** Returns a DOMFactory equivalent to the one the Tagset is using.
-   *	It is sufficient to simply return <code>this</code>, but if
-   *	the Tagset is delegating its factory, it is much more efficient
-   *	to return that.
-   */
-  public DOMFactory getFactory();
 
   /************************************************************************
   ** Lookup Operations:
