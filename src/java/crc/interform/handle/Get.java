@@ -23,7 +23,8 @@ import java.util.Enumeration;
  * <dt>Syntax:<dd>
  *	&lt;get [name="name"] 
  *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
- *	     | [file="filename"|href="url"|[file|href] name="string" ] &gt;
+ *	     | [file="filename"|href="url"|[file|href] name="string" ] 
+ *           [attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values  ]&gt;
  * <dt>Dscr:<dd>
  *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
  *	ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
@@ -53,9 +54,12 @@ public class Get extends crc.interform.Handler {
     "Default is the generic lookup that includes paths.\n" +
     "If FILE or HREF specified, functions as <read>.\n" +
   "The last set of attributes applies to the retrieved SGML object.\n" +
-  "SIZE returns number of elements in corresponding SGML, ATTR returns\n" +
-  " the value of the named attribute.  KEY(s)/VALUES and ROW(s) COL(s) have\n" +
+  "SIZE returns number of elements retrieved.\n" +
+  "ATTR returns the value of the named attribute (can be tag).\n" +  
+  "KEY(s)/VALUES and ROW(s) COL(s) have\n" +
   " meanings only when the specified SGML object is a DL or Table respectively.\n" +
+  "If the retrieval returns more than one SGML object, these attributes apply\n" +
+  " to all of the retrieved objects and a list will be returned\n" +
 "";
  
   /** Handle for &lt;get&gt.  The dispatching really should be in 
@@ -90,9 +94,24 @@ public class Get extends crc.interform.Handler {
       } else {
 	result = ii.getEntity(name); // start in local table and move up
       }
-      
-       result =  getQueryResults(result, it);
-           
+
+      //result may be a token or tokens
+      //if possible make a single token
+      result = result.simplify();
+      if(it.hasAttr("size")){
+	Tokens  content = result.content();
+	int size = (content == null)? 0: content.nItems();
+	result = crc.sgml.Util.toSGML(String.valueOf(size));
+      } else {
+	if(result  instanceof Tokens){
+	  // repeat for all items
+	  Enumeration e = ((Tokens) result).elements();
+	  result = new Tokens();
+	  result.append(getQueryResults((SGML) e.nextElement(), it));
+	} else {
+	  result =  getQueryResults(result, it);
+	}
+      }
       ii.replaceIt(result);
     }
   }
@@ -102,6 +121,7 @@ public class Get extends crc.interform.Handler {
     //    System.out.println(s);
     crc.pia.Pia.debug(o,s);
   }
+
       /************************************************************
       ** check for any special attributes of request
       ** processing done here could eventually include database interface
@@ -112,12 +132,16 @@ public class Get extends crc.interform.Handler {
    * @param request is the (get) token with the request
    */
   public SGML getQueryResults( SGML context, SGML request){
+    //context should always be a Token
     if(context == null) return context;
     debug(this, "getting "+ request + " in " + context.getClass().getName());
-    if(request.hasAttr("attr"))
-       return context.attr(Util.getString( request, "attr", ""));
-    if(request.hasAttr("size") && context.content() != null)
-       return crc.sgml.Util.toSGML(String.valueOf(context.content().nItems()));
+    if(request.hasAttr("attr")){
+      String s =Util.getString( request, "attr", "");
+      if(s.equalsIgnoreCase("tag")){// return the tag of context
+	 return  Util.toSGML(context.tag());
+      }
+      return context.attr(s);
+    }
     if(request.hasAttr("key")){
       if(context instanceof AttrSGML)
 	return context.attr(Util.getString( request, "key", ""));
@@ -171,29 +195,42 @@ public class Get extends crc.interform.Handler {
       TableElement table=(TableElement) context;
 	
       if(request.hasAttr("row") || request.hasAttr("col")){
-	int row=Util.getInt(request,"row",-1);
-	int col=Util.getInt(request,"col",-1);
+	int row=Integer.parseInt(Util.getString(request,"row","-1"));
+	int col=Integer.parseInt(Util.getString(request,"col","-1"));
 	return table.getRowColumn(row,col);
       }
       if(request.hasAttr("rows") || request.hasAttr("cols")){
 	String rows=Util.getString(request,"rows","-");
 	String cols=Util.getString(request,"cols","-");
-	int rowstart=0,rowend=-1;
-	int columnstart=0,columnend=-1;
+	int rowstart=1,rowend=-1;
+	int colstart=1,colend=-1;
 	
-	int i=rows.indexOf('-');
-	if(i>0)
-	  rowstart=Integer.parseInt(rows.substring(0,i));
-	if(i>=0 && i + 1<rows.length())
-	  rowend=Integer.parseInt(rows.substring(i + 1));
-	
-	i=cols.indexOf('-');
-	if(i>0)
-	  columnstart=Integer.parseInt(cols.substring(0,i));
-	if(i>=0 && i + 1<cols.length())
-	  columnend=Integer.parseInt(cols.substring(i + 1));
-	debug(this," getting table " + rowstart +"-"+rowend+","+ columnstart + "-"+ columnend);
-	return  table.getTable(rowstart,rowend,columnstart,columnend);
+	if(!rows.equals("-")){
+	  int i=rows.indexOf('-');
+	  if(i<0){ // just a start
+	    rowstart=Integer.parseInt(rows);
+	    rowend=rowstart;
+	  } 
+	  if(i>0)
+	    rowstart=Integer.parseInt(rows.substring(0,i));
+	  if(i>=0 && i + 1<rows.length())
+	    rowend=Integer.parseInt(rows.substring(i + 1));	      
+	}
+
+	if(!cols.equals("-")){
+	  int i=cols.indexOf('-');
+	  if(i<0){ // just a start
+	    colstart=Integer.parseInt(cols);
+	    colend=colstart;
+	  } 
+	  if(i>0)
+	    colstart=Integer.parseInt(cols.substring(0,i));
+	  if(i>=0 && i + 1<cols.length())
+	    colend=Integer.parseInt(cols.substring(i + 1));	      
+	}
+
+	debug(this," getting table " + rowstart +"-"+rowend+","+ colstart + "-"+ colend);
+	return  table.getTable(rowstart,rowend,colstart,colend);
       }
     }
     // default is to return context

@@ -40,24 +40,31 @@ public class TableElement extends crc.sgml.Element {
   {
     data = new TableOfSGML();
     List rowLocations = content.tagLocations("tr");
-    int row=0;
+    int row=1;// start at 1
     while(!rowLocations.isEmpty()){
       int j = ((Integer) rowLocations.shift()).intValue();
       SGML rowToken = content.itemAt(j);
        Enumeration e = rowToken.content().elements();
-       int col=0;
+       int col=1;
        while(e.hasMoreElements()){
 	 // find an empty column
-	 while(data.getRowColumn(row,col) != null) col++;
+
+	 while(data.getRowColumn(row,col) != null){
+	   col++;
+	 }
 	 SGML  token = (SGML)e.nextElement();
 	 if(token.tag().equalsIgnoreCase("td") ||
 	    token.tag().equalsIgnoreCase("th")){
 	   int cspan = col + Util.getInt( token, "colspan", 1);
-	   int rspan = Util.getInt( token, "colspan", 1);
+	   int rspan = row + Util.getInt( token, "rowspan", 1);
 	   // set all of the rows, columns that this item spans
-	   for(int r = row; r < row + rspan; r++)
-	     for(; col < cspan; col++)
-	       data.setRowColumn( row,col, token);
+	   
+	   for(int r = row; r < rspan; r++){
+	     for(int c = col; c < cspan; c++){
+	       data.setRowColumn( r,c, token);
+	     }
+	   }
+	   col=cspan;
 	 }
        }
        row++;
@@ -73,11 +80,38 @@ public class TableElement extends crc.sgml.Element {
    */
 
   public SGML getRowColumn(int row, int col){
-    // always build the table because we never know when contents might change
+    // should always build the table because we never know when contents might change
     if(data == null) buildTable();
+    if(row<0) return getColumn(col);
+    if(col<0) return getRow(row);
     return data.getRowColumn(row,col);
   }
 
+  /**
+   * return a new row with the corresponding elements
+   */
+
+  public SGML getRow(int row){
+    if(data == null) buildTable();
+    Element  result = new Element("tr");
+    for(int i=1;i<=data.cols;i++){
+       result.append(getRowColumn(row,i));
+    }
+    return result;
+  }
+
+  /**
+   * return all the <TD> elements of this column
+   */
+
+  public SGML getColumn(int col){
+    if(data == null) buildTable(); 
+    Element  result = new Element("");
+    for(int i=1;i<=data.rows;i++){
+       result.append(getRowColumn(i,col));
+    }
+    return result;
+  }
 
   public SGML getTable(int rowstart,int rowend,int columnstart,int columnend){
      if(data == null) buildTable();
@@ -86,7 +120,7 @@ public class TableElement extends crc.sgml.Element {
     if(columnend<0 || columnend>data.cols)columnend=data.cols;
     int a[]={rowstart, rowend};
     int b[]={columnstart,columnend    };
-     System.out.println(" getting table " + a[0] +","+ a[1] + " " + b[0] + ","+ b[1]);
+     crc.pia.Pia.debug(this," getting table " + a[0] +","+ a[1] + " " + b[0] + ","+ b[1]);
      
     return copy(a,b);
   }

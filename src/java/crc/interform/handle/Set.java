@@ -20,6 +20,7 @@ import crc.sgml.TableElement;
 
 import crc.ds.Index;
 
+import java.util.Enumeration;
 
 /** Handler class for &lt;set&gt tag 
  * this description is out of date please update from syntax
@@ -110,7 +111,7 @@ public class Set extends crc.interform.Handler {
 
   void debug(Object o, String s){
     crc.pia.Pia.debug(o,s);
-    //System.out.println(s);
+    //    System.out.println(s);
   }
 
   /************************************************************
@@ -163,7 +164,15 @@ public class Set extends crc.interform.Handler {
 	}
       }
       // process all the attributes
-      setQueryRequest(root, value, it);
+      // if root is a tokens, perform set on each token 
+      if( root instanceof Tokens){
+	Enumeration e = ((Tokens) root).elements();
+	while(e.hasMoreElements()){
+	  setQueryRequest((SGML) e.nextElement(), value, it);
+	}
+      }else{
+	setQueryRequest(root, value, it);
+      }
   }
 
 
@@ -173,18 +182,22 @@ public class Set extends crc.interform.Handler {
    */
 
   public void setReplace(SGML context, SGML value){
+    debug( this, " replacing "  + value  +" in "+ context);
     Util.setSGML( context,value);
   }
 
   public void setInsert(SGML context, SGML value, SGML  request){
     int  where;
-    where = (int) crc.sgml.Util.numValue( request.attr("insert"));
     Tokens content =  context.content();
     if(content == null){
       // best we can do is trying to append
        context.append( value);
        return;
     }
+    where = Util.getInt( request,"insert",content.nItems());
+    debug(this, "inserting at " + where + " in " + content);
+
+
     if(where < 0 || where >  content.nItems()){
       // setting beyond end of list fails.. so just append
       // use push so that text does not get smashed
@@ -208,7 +221,7 @@ public class Set extends crc.interform.Handler {
 	 return;
     }
 
-     boolean insert = request.hasAttr("where");
+     boolean insert = request.hasAttr("insert");
      if( request.hasAttr("key")){
        String key = Util.getString( request, "key", "");
        if( context instanceof AttrSGML){
