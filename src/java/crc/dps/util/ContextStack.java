@@ -155,6 +155,11 @@ public class ContextStack  implements Context {
 
   public ContextStack() {}
 
+  public ContextStack(ContextStack prev) {
+    copy(prev);
+    stack = prev;
+  }
+
   public ContextStack(Input in, Context prev, Output out, EntityTable ents) {
     stack    	= prev;
     input    	= in;
