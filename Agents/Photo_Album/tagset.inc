@@ -111,8 +111,8 @@ match="\.jpg$"></set>
 <photosdate>&mydirectory;</photosdate>
 <photos>
 <repeat list=&files; entity=jpg><set name=count><sum>1 <get name=count></sum></set>
-<photo directory=&FORM.dir; file=&jpg;>
-<photothumbnail><subst match="\.jpg$" result="small.gif">&jpg;</subst></photothumbnail>
+<photo directory=&mydirectory; file=&jpg;>
+<photothumbnail><subst match="\.jpg " result="small.gif">&jpg; </subst></photothumbnail>
 <photoindex>&count;</photoindex>
  <if> <get name=capdl key=&jpg;> <then>
 <photocaption><get name=capdl key=&jpg;></photocaption></then> </if>
