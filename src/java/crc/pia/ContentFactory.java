@@ -27,9 +27,12 @@ public class ContentFactory extends ContentHandler
  /**  creates a new content factory with default list of possible content objects
  */
 
-  public static String TEXT_HTML           = "text/html";
-  public static String TEXT_PLAIN          = "text/plain";
-  public static String IMAGE_GIF           = "image/gif";
+  public static String TEXT_HTML                         = "text/html";
+  public static String TEXT_PLAIN                        = "text/plain";
+  public static String IMAGE_GIF                         = "image/gif";
+  public static String APPLICATION_POSTSCRIPT            = "application/postscript";
+  public static String APPLICATION_X_JAVA_AGENT          = "application/x-java-agent";
+  public static String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
   protected static String CONTPACKPREFIX = "crc.content";
   protected static String TEXTPACKPREFIX = CONTPACKPREFIX + ".text";
@@ -46,6 +49,9 @@ public class ContentFactory extends ContentHandler
   protected String cacheEntry = null;
 
   static{
+    contentTypeTable.at( APPLICATION_POSTSCRIPT, CONTPACKPREFIX + ".ByteStreamContent");
+    contentTypeTable.at( APPLICATION_X_JAVA_AGENT, CONTPACKPREFIX + ".ByteStreamContent");
+    contentTypeTable.at( APPLICATION_X_WWW_FORM_URLENCODED, CONTPACKPREFIX + ".ByteStreamContent");
     contentTypeTable.at( TEXT_HTML, TEXTPACKPREFIX + ".html");
     contentTypeTable.at( TEXT_PLAIN, TEXTPACKPREFIX + ".plain");
     contentTypeTable.at( IMAGE_GIF, IMGPACKPREFIX + ".gif");
