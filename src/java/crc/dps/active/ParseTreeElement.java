@@ -249,6 +249,10 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
     setTagName( "" );
   }
 
+  public ParseTreeElement(String tagName){
+    setTagName( tagName );
+  }
+
   /** Construct a ParseTreeElement with given tagname, attributes, and content. 
    * @see crc.dom.Element
    */
@@ -303,6 +307,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
     if (content != null) 	    copyContent(content);
   }
 
+  /** Copy constructor.  Selects deep or shallow copy */
   public ParseTreeElement(ParseTreeElement e, boolean copyChildren) {
     tagName = e.tagName;
     copyActiveInfo(e);
