@@ -27,21 +27,28 @@
 </table>
 
 
+<hr>
 <h2>About This Page:</h2>
+
+<!-- Note: the b and a tags below have nameless end tags in the .if file: -->
+The <b><a href="/&agentName;/">&agentName;</></b> agent is intended as a
+demonstration and testbed for the PIA's InterForm markup language and its
+formatter/interpretor.  This page is intended for testing and experimentation;
+it is expected that each user will make a customized version.
 
 <dl>
   <dt> <b>Note:</b>
   <dd> You are <em>strongly</em> encouraged to make a copy of this page
        in the &agentName; subdirectory of your personal Agents directory
-       (<code><a href="/My/Agents/">&usrDir;/Agents</a></code>).
+       (<code><a href="/My/Agents/">&usrDIR;/Agents</a></code>).  You can do
+       this with the command:
 </dl>
+<pre>
+cp &piaDIR;/Agents/&agentName;/&fileName; &usrDIR;/Agents/&agentName;/&fileName
+</pre>
+<hr>
 
-<!-- Note: the b and a tags below have nameless end tags in the .if file: -->
-The <b><a href="/&agentName;/">&agentName;</></b> agent is intended as a
-demonstration and testbed for the PIA's InterForm markup language and its
-formatter/interpretor.<p>
-
-<actor name=demo quoted=1 dscr="show both CONTENT and its value">
+<actor tag=demo quoted=1 dscr="show both CONTENT and its value">
   <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
 <expand><get name=content></expand>
 </actor>
@@ -56,7 +63,6 @@ formatter/interpretor.<p>
 </dl>
 
 <pre><demo><read file="~/.signature"></demo></pre>
-<pre><demo><read links file="~/.pia"></demo></pre>
 <pre><demo><read file="~/.pia"></demo></pre>
 <pre><demo><read directory match="^[A-Z].*[^~]$" tag=ol file="~/.pia"></demo></pre>
 <pre><demo><read directory file="~/.pia/HEADER.html"></demo></pre>
