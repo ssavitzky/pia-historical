@@ -21,21 +21,11 @@ import crc.gnu.regexp.RegExp;
  *	Entry</a> for syntax and description.
  */
 public class substHandler extends GenericHandler {
-  public String syntax() { return syntaxStr; }
-  static String syntaxStr=
-    "<subst match=\"pattern\" result=\"string\">text</subst>\n" +
-"";
-  public String dscr() { return dscrStr; }
-  static String dscrStr=
-    "Substitute RESULT string for MATCH pattern in CONTENT.\n" +
-"";
  
   public substHandler() {
     /* Expansion control: */
     stringContent = true;	// false 	want content as string?
     expandContent = true;	// false	Expand content?
-    passElement = false;	// true 	pass while expanding?
-    noCopyNeeded = false;	// true 	don't copy parse tree?
 
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?

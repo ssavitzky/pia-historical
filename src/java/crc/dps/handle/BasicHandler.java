@@ -64,16 +64,6 @@ public class BasicHandler extends AbstractHandler {
   ** Parsing Operations:
   ************************************************************************/
 
-  /** If the handler corresponds to an Element, this determines its syntax.
-   */
-  protected int syntaxCode = 0;
-
-  /** What the Handler knows about a Token's syntax without looking at it.
-   *
-   * @see crc.dps.Syntax
-   */
-  public int getSyntaxCode() { return syntaxCode; }
-
   /** Set what the Handler knows about a Token's syntax.
    *
    * @see crc.dps.Syntax
@@ -86,31 +76,6 @@ public class BasicHandler extends AbstractHandler {
     }
   }
   
-  /** Called to determine whether the given Token (for which this is
-   *	the Handler) is an empty element, or whether content is expected.
-   *	It is assumed that <code>this</code> is the result of the Tagset
-   *	method <code>handlerForTag</code>.
-   *
-   *	If <code>syntaxCode</code> is zero, we look at the Token's 
-   *	<code>hasEmptyDelimiter</code> flag.
-   *
-   * @param t the Token for which this is the handler, and for which the
-   *	ssyntax is being checked.
-   * @return <code>true</code> if the Token is an empty Element.
-   * @see crc.dps.Tagset
-   */
-  public boolean isEmptyElement(Node n) {
-    if (syntaxCode != 0) return (syntaxCode & Syntax.EMPTY) != 0;
-    else return false;		// === ought to look at node here.
-  }
-
-  /** Called to determine the correct Handler for a given Token.
-   *	The default action is to return <code>this</code>.
-   */
-  public Action getActionForNode(ActiveNode n) {
-    return this;
-  }
-
   /** If <code>true</code>, Element tags are recognized in content. */
   protected boolean parseElementsInContent = true;
 

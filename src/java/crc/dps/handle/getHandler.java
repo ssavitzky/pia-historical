@@ -76,8 +76,6 @@ public class getHandler extends GenericHandler {
     stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
-    noCopyNeeded = true;	// false 	don't copy parse tree?
-    passElement = false;	// true 	pass while expanding?
 
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?

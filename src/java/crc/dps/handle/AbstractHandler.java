@@ -75,7 +75,26 @@ implements Handler {
   ** Parsing Operations:
   ************************************************************************/
 
-  /** Called to determine whether the given Token (for which this is
+
+  /** If the handler corresponds to an Element, this determines its syntax.
+   */
+  protected int syntaxCode = 0;
+
+  /** What the Handler knows about a Token's syntax without looking at it.
+   *
+   * @see crc.dps.Syntax
+   */
+  public int getSyntaxCode() { return syntaxCode; }
+
+  /** Set what the Handler knows about a Token's syntax.
+   *
+   * @see crc.dps.Syntax
+   */
+  public void setSyntaxCode(int syntax) {
+    syntaxCode = syntax;
+  }
+  
+  /** Called to determine whether the given Node (for which this is
    *	the Handler) is an empty element, or whether content is expected.
    *	It is assumed that <code>this</code> is the result of the Tagset
    *	method <code>handlerForTag</code>.
@@ -86,7 +105,8 @@ implements Handler {
    * @see crc.dps.Tagset
    */
   public boolean isEmptyElement(Node n) {
-    return false;
+    if (syntaxCode != 0) return (syntaxCode & Syntax.EMPTY) != 0;
+    else return false;		// === ought to look at node here.
   }
 
   /** Called to construct a node for the given handler. 
@@ -169,9 +189,7 @@ implements Handler {
    */
   public boolean expandContent() { return true; }
 
-  /** If <code>true</code>, begin constructing a parse tree even if the
-   *	parent is not building a parse tree.
-   *	The default is to return <code>! passElement()</code>.
+  /** If <code>true</code>, pass the content to the action routine as a string.
    */
   public boolean stringContent() { return false; }
 
@@ -184,12 +202,6 @@ implements Handler {
    *	The default is to return <code>true</code>.
    */
   public boolean parseEntitiesInContent() { return true; }
-
-  /** If <code>true</code>, the element is passed to the output while being
-   *	processed.  The default is to return <code>true</code> -- the element
-   *	is passed in its entirety.
-   */
-  public boolean passElement() { return true; }
 
   /** Return <code>true</code> if Text nodes are permitted in the content.
    */
@@ -233,5 +245,28 @@ implements Handler {
     return n.startString() + n.contentString() + n.endString();
   }
 
+  /************************************************************************
+  ** Messaging Operations:
+  ************************************************************************/
 
+  /** per-document notification flag. */
+  protected boolean notified = false;
+
+  protected void unimplemented (Input in, Context cxt) {
+    // Kludge: the space here ^ keeps grep from noticing.
+    cxt.message(-1, "Unimplemented handler " + getClass().getName()
+		+ " in " + Log.node(in.getNode()),
+		0, true);
+  }
+
+  protected void unimplemented (Input in, Context cxt, String s) {
+    // Kludge: the space here ^ keeps grep from noticing.
+    cxt.message(-1, "Unimplemented feature: " + s + " " 
+		+ getClass().getName() + " in " + Log.node(in.getNode()),
+		0, true);
+  }
+
+  protected void reportError(Input in, Context cxt, String msg) {
+    cxt.message(-2, msg + " in " + Log.node(in.getNode()), 0, true);
+  }
 }

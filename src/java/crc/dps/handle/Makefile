@@ -20,9 +20,13 @@ HANDLERS = \
 ### The effect of these actors is entirely confined to the current document
 BASIC_ACTORS = \
 	defineHandler.java \
+	  actionHandler.java \
+	  valueHandler.java \
 	elseHandler.java \
 	elsfHandler.java \
+	expandHandler.java \
 	getHandler.java \
+	hideHandler.java \
 	ifHandler.java \
 	repeatHandler.java \
 	setHandler.java \
@@ -31,8 +35,7 @@ BASIC_ACTORS = \
 	testHandler.java \
 	thenHandler.java
 
-### The effect of these actors is local; they do not require a PIA, 
-###	but may have an effect on the local system. 
+### Additional actions for StandAlone XML
 
 SA_ACTORS = \
 
@@ -42,7 +45,7 @@ PIA_ACTORS= \
 
 
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
-FILES = $(HANDLERS) $(ACTORS)
+FILES = $(HANDLERS) $(ACTORS) Loader.java
 
 include $(TOPDIR)/makefiles/file.make
 
@@ -53,17 +56,21 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 ### Count unimplemented and total actor handles.  
 ###	This finds only actors that call "Interp.unimplemented", not
 ###	individual features that call "Interp.error" directly.
-report::
-	@echo 'BASIC:	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
-		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
-	@echo 'SA:	' `ls -l $(SA_ACTORS) | wc -l`, \
-		`grep 'unimplemented(' $(SA_ACTORS) | wc -l` unimp.
-	@echo 'PIA:	' `ls -l $(PIA_ACTORS) | wc -l`, \
-		`grep 'unimplemented(' $(PIA_ACTORS) | wc -l` unimp.
-	@echo 'TOTAL:	' `ls -l $(ACTORS) | wc -l`, \
+count::
+	@echo 'Handlers: ' `ls -l $(ACTORS) | wc -l` top, \
+		`grep 'class ' $(ACTORS) | wc -l` total, \
 		`grep 'unimplemented(' $(ACTORS) | wc -l` unimp.
 
+bogus_count::
+	@echo 'BASIC	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
+		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
+	@echo 'SA	' `ls -l $(SA_ACTORS)  | wc -l`, \
+		`grep 'unimplemented(' $(SA_ACTORS) /dev/null | wc -l` unimp.
+	@echo 'PIA	' `ls -l $(PIA_ACTORS)  | wc -l`, \
+		`grep 'unimplemented(' $(PIA_ACTORS) /dev/null | wc -l` unimp.
+
 ### This finds and prints out every instance of the string "unimplemented" 
+report:: count
 report::
 	@grep -q 'unimplemented(' $(BASIC_ACTORS) && \
 	  (echo 'BASIC:	' ; grep 'unimplemented(' $(BASIC_ACTORS)) || true

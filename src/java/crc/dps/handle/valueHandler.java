@@ -1,4 +1,4 @@
-////// setHandler.java: <set> Handler implementation
+////// valueHandler.java: <value> Handler implementation
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -14,32 +14,40 @@ import crc.dps.active.*;
 import crc.dps.aux.*;
 
 /**
- * Handler for &lt;set&gt;  <p>
+ * Handler for &lt;value&gt;....&lt;/&gt;  <p>
  *
- *	This is an approximation to the legacy &gt;set&gt;; it lacks many
- *	of the old extraction modifiers, which have moved to &lt;find&gt;. <p>
+ *	This is a sub-element of &lt;define&gt;.  It actually performs no
+ *	actions; we just need to make sure a corresponding node ends up in
+ *	the output where <code>defineHandler</code> can find it.
  *
- *	It is permissible for the <code>name</code> attribute to be missing,
- *	in which case the entire namespace will be returned.  The 
- *	<code>keys</code>, <code>values</code>, and <code>bindings</code>
- *	attributes are supported.
+ *	The handler's class is used to recognize the corresponding element.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  */
 
-public class setHandler extends GenericHandler {
+public class valueHandler extends GenericHandler {
+
+  /** The default is to expand the content at the point where it's defined. */
+  static valueHandler DEFAULT = new valueHandler();
+
+  /** QUOTED_VALUE is not expanded at the point where it is defined. */
+  static valueHandler QUOTED_VALUE  = new valueHandler(QUOTED);
 
   /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
 
-  /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
+  /** Action for &lt;value&gt; node. */
+  public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     // Actually do the work. 
-    String name = atts.getAttributeString("name");
-    aContext.setEntityValue(name, content, false);
+    ActiveElement e = in.getActive().asElement();
+    ActiveElement element = e.editedCopy(atts, null);
+    // === should be able to skip expanding the attrs altogether for <value>
+    out.startElement(element);
+    Copy.copyNodes(content, out);
+    out.endElement(e.isEmptyElement() || e.implicitEnd());
   }
 
   /** This does the parse-time dispatching. <p>
@@ -50,26 +58,16 @@ public class setHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    //if (dispatch(e, "element"))	 return set_element.handle(e);
-    //if (dispatch(e, "local"))	 return set_local.handle(e);
-    //if (dispatch(e, "global")) return set_global.handle(e);
-    //if (dispatch(e, "index"))	 return set_index.handle(e);
-
-    //if (dispatch(e, "pia"))	 return set_pia.handle(e);
-    //if (dispatch(e, "env"))	 return set_env.handle(e);
-    //if (dispatch(e, "agent"))	 return set_agent.handle(e);
-    //if (dispatch(e, "trans"))	 return set_trans.handle(e);
-    //if (dispatch(e, "form"))	 return set_form.handle(e);
-
+    if (dispatch(e, "quoted")) 	 return QUOTED_VALUE;
     return this;
   }
-   
+
   /************************************************************************
   ** Constructor:
   ************************************************************************/
 
   /** Constructor must set instance variables. */
-  public setHandler() {
+  public valueHandler() {
     /* Expansion control: */
     stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
@@ -78,6 +76,15 @@ public class setHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    syntaxCode = NORMAL; 		// EMPTY, QUOTED, 0 (check)
+    syntaxCode = NORMAL;  		// EMPTY, QUOTED, 0 (check)
+  }
+
+  valueHandler(int syntax) {
+    syntaxCode = syntax;
+  }
+
+  valueHandler(ActiveElement e) {
+    this();
+    // customize for element.
   }
 }

@@ -107,8 +107,6 @@ public class testHandler extends GenericHandler {
     /* Expansion control: */
     stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
-    passElement = false;	// true 	pass while expanding?
-    noCopyNeeded = true;	// false 	don't copy parse tree?
 
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
@@ -125,8 +123,6 @@ public class testHandler extends GenericHandler {
     textContent = text;		//	want only text in content?
 
     expandContent = true;	// false	Expand content?
-    passElement = false;	// true 	pass while expanding?
-    noCopyNeeded = true;	// false 	don't copy parse tree?
 
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?

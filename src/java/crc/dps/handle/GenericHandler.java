@@ -39,40 +39,6 @@ public class GenericHandler extends BasicHandler {
   ** State Used for Syntax:
   ************************************************************************/
 
-  /** If <code>true</code>, the element is passed to the output while
-   *	being processed.
-   */
-  protected boolean passElement = false;
-
-  /** If <code>true</code>, the element is passed to the output while
-   *	being processed.
-   */
-  public boolean passElement() { return passElement; }
-
-  /** If <code>true</code>, the element is passed to the output while
-   *	being processed.
-   */
-  public void setPassElement(boolean value) { passElement = value; }
-
-
-  /** If <code>true</code>, it is not necessary to copy a parse tree
-   *	before calling <code>computeResult</code>.
-   *
-   * @see #action
-   */
-  protected boolean noCopyNeeded = true;
-
-  /** If <code>true</code>, it is not necessary to copy a parse tree
-   *	before calling <code>computeResult</code>.
-   *
-   * @see #computeResult
-   * @see #expandAction
-   */
-  protected boolean noCopyNeeded() { return noCopyNeeded; }
-  protected void setNoCopyNeeded(boolean value) {
-    noCopyNeeded = value;
-  }
-
   /** Override to handle additional syntax codes. */
   public void setSyntaxCode(int syntax) {
     super.setSyntaxCode(syntax);
@@ -182,9 +148,9 @@ public class GenericHandler extends BasicHandler {
    *	subclasses.
    *
    *	Note that the element we construct (in order to bind &amp;ELEMENT;) is
-   *	empty, and the expanded content is kept in a separate NodeList, unless
-   *	noCopyNeeded is <code>false</code>.  This means that unexpanded nodes
-   *	don't have to be reparented in the usual case. <p>
+   *	empty, and the expanded content is kept in a separate NodeList.  This
+   *	means that unexpanded nodes don't have to be reparented in the usual
+   *	case. <p>
    *
    *	If the handler has no children, we simply copy the newly-constructed
    *	Element to the Output.  This should be equivalent to the default
@@ -196,8 +162,7 @@ public class GenericHandler extends BasicHandler {
    * @param tag the element's tagname
    * @param atts the (processed) attribute list.
    * @param content the (possibly-processed) content.
-   * @param cstring the (possibly-processed) content as a string. 
-   */
+   * @param cstring the (possibly-processed) content as a string.  */
   protected void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     //aContext.debug("in action for " + in.getNode());
@@ -211,7 +176,6 @@ public class GenericHandler extends BasicHandler {
     // === ParseListIterator, with a potential nodelist at each level.
 
     ActiveElement element = e.editedCopy(atts, null);
-    if (!noCopyNeeded) Copy.appendNodes(content, element);
     if (hasChildren()) {
       // Create a suitable sub-context:
       //    === not clear if entities should still be lowercase.  For now...
