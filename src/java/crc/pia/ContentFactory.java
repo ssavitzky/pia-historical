@@ -159,7 +159,7 @@ public class ContentFactory extends ContentHandler
 	return c;
       }catch(Exception e){
 	//e.printStackTrace();
-	return null;
+	return new crc.content.ByteStreamContent();
       }
     }
   }
