@@ -39,8 +39,6 @@ public class BasicAttribute extends AbstractNode implements Attribute {
    * Deep copy constructor.
    */
   public BasicAttribute(BasicAttribute attr){
-    AbstractNode a = null;
-
     setPrevious( null );
     setNext( null );
     setName( attr.getName() );
@@ -56,7 +54,7 @@ public class BasicAttribute extends AbstractNode implements Attribute {
   public Object clone(){
     BasicAttribute n = (BasicAttribute)super.clone();
     n.setName( getName() );
-    setValue( new ChildNodeList( getValue() ));
+    n.setValue( new ChildNodeList( getValue() ));
     n.copyChildren( this );
     n.setSpecified( getSpecified() );
     n.setIsAssigned( getIsAssigned() );
