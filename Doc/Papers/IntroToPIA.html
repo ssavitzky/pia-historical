@@ -12,45 +12,43 @@ This document summarizes the features of the PIA framework and provides a guide
 to the more detailed documentation.
 </abstract>
 
+<h1>Introduction</h1>
 The PIA framework provides the infrastructure for rapidly creating and maintaining value added
 services in a network environment.   Example services include high-quality printing of Web
 documents, forms processing, and document management systems. 
-These services may be bundled into a hardware product called a 
-Network Office Appliance, such as the File Management Appliance or the
+These services may be bundled into hardware products called
+Network Office Appliances, such as the File Management Appliance or the
 Memory Multifunction Machine (prototypes currently being developed by
-groups within Ricoh) or appear as more general "Information Appliances."
+groups within Ricoh) or in more general "Information Appliances."
 
 <p>
 
 These systems differ from traditional applications in several ways.
-Most importantly, they perform  both server functions (providing data
-to clients) and client functions (retrieving data from other servers).
-For example, a File Management Appliance takes documents from several
-sources (scanners, copiers, Web servers, PC's, etc.)and provides an
+Most importantly, they are easy to use and reliably perform a well-defined
+service without complex configuration by or training of the users.
+To do so, these systems must act as both servers (providing data
+to clients) and clients (retrieving data from other servers).
+For example, a File Management Appliance  retrieves documents (acts as a client) from several
+sources (scanners, copiers, Web servers, PC's, etc.) and provides (as a server) an
 easy-to-use interface to find, use, and publish those documents.
-  They represent a new kind of "middleware" that lies
+  Such services represent a new kind of "middleware" that lies
   between traditional servers and clients.  To be successful, they
   require a robust computational engine on which to run and the
-  knowledge about how to integrate and process information to meet
+  knowledge about how to process information to meet
   customer needs.   The ability to create, maintain, and deploy
-  this knowledge will become the key factor for successful office machines.
+  this processing knowledge will become the a factor for successful office machines.
 
 <p>
 
-Our Platform for Information Appliances (PIA) seeks to provide both
+The Platform for Information Appliances (PIA) seeks to provide both
 a standardized computational engine and a reusable design for the
-knowledge components. this design separates the knowledge into task
+knowledge components.  This design separates the knowledge into task
 specific modules  called "Agents."   Alternatively known as
-"Mediators" or "Facilitators" these agents embody the  knowledge
+"Mediators" or "Facilitators," agents embody the  knowledge
 needed to take information from various sources and use it to meet
-customer needs.  These agents run on a computational engine called
+customer needs.  The agents run on a computational engine called
 the "Information Agency" which provides all of the client and server
 functions shared among agents and across products.
-
-<p>
- In addition to the Java based reference implementation of the
- information agency, the framework includes  example agents, substantial documentation, style guidelines,
- templates and tools for developing agents.
 By adopting a common framework, developers ensure the reusability,
 interoperability, and maintainability of their efforts.  This reduces
 development time and cuts life-cycle costs.  Additionally the PIA
@@ -58,25 +56,29 @@ framework enables customizations to meet particular customer needs
 which would be difficult or impossible to provide using alternative approaches. 
 
 
+<p>
+ In addition to a Java based reference implementation of the
+ information Agency, the PIA framework includes  example agents, substantial documentation, style guidelines,
+ templates and tools for developing agents.
 
-<a href=AboutThisDoc.html  include=&tagset;>About this Document </a>
 
 
-<a href=UsingInfoAgency.html> Using the Information Agency </a>
+<a href=AboutThisDoc.html  include=latex-subdoc-actors>PIA Documentation </a>
 
 
- <a href=DevelopingAgents.html>  Developing agents</a>
-<a href=futureAgents.html> Future Agents </a>
-
- <a href=BuildingNOA> Building Network Office Appliances</a>
-
-<a href=Internals.html> Internals of the Information Agency </a>
+<p>
+For specific information on using the PIA framework, see the above documents.
+The remainder of this document presents a brief motivation for the development
+and use of the PIA framework.
 
  <a href=../vision.html include=&tagset;>The future office environment </a>
+
+
+ <a href=Glossary.html  include=&tagset;>Glossary </a>
 <hr>
 <!-- $Id$ --><br>
 <!-- hhmts start -->
-Last modified: Tue Apr 14 18:20:27 1998
+Last modified: Thu Apr 16 11:24:59 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
