@@ -382,31 +382,18 @@ public class Util extends crc.sgml.Util {
   **  SGML assigning utilities
   ************************************************************************/
 
-  /**  sets value in this table
-      creates path   if necessary*/
-  static public void setInTable(Table table, Index i, SGML value)
+
+  static public SGML getValue(SGML context, Index i)
   {
-    String s=i.nextToken();
-    if (i.size()<=0){
-      table.at(s,value);
+    if(i.size()>0){
+      try{
+	return i.lookup(context);
+      } catch(Exception e){}
     }
-    else{
-      SGML tokens = (SGML)table.at(s);
-      if( tokens== null) {
-         tokens = new Element(s);
-         table.at(s, tokens);
-      }
-      // create a path if none exists
-     try{    tokens = i.path( tokens);
-     setSGML( tokens, value);
-     }
-     catch (Exception e){
-//       Pia.debug( this," set failed");
-     }
-     
-    }
+    return context;
   }
   
+
 
   /** sets the value of a token */
  static public void setSGML(SGML token, SGML value)

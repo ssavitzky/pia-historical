@@ -211,6 +211,11 @@ public class Interp extends State {
   ** Access to Variables (entities):
   ************************************************************************/
 
+  /** get and set variables.  The  key for get may be a path in which case a
+     Index gets created.-- eventually should have separate methods for
+      string and index lookups. current system is very wasteful-- create
+      an index for each lookup. **/
+
   /** Get the current local binding table, if any */
   public final Table getLocalBindings() {
     return variables;
@@ -228,19 +233,6 @@ public class Interp extends State {
     return null;
   }
 
-  /** Get the binding table that includes this path, if any 
-       start local and move up stack frame.  Return null 
-       if none includes name*/
-  public final Table getLocalBindings(Index path) {
-    
-    // need first index to find correct table
-     String    name =  path.nextToken();
-    if(name ==  null) return null;
-    // index will do full lookup    
-     path.pushBackToken(name);
-    return getLocalBindings(name);
-  }
-
   /** Get the current local binding for a variable, if any */
   public final SGML getLocalBinding(String name) {
     return (variables != null)? (SGML)variables.at(name) : null;
@@ -253,17 +245,17 @@ public class Interp extends State {
    */
   public final SGML getvar (String name) {
     Index names =  new  Index(name);
-
-    Table bindings = getLocalBindings(names);
+    name = names.shift();
+    
+    Table bindings = getLocalBindings(name);
     if(bindings == null){
      return null;
     }
-    try{ return  names.lookup(bindings);
-    }catch(Exception e){
-    }
-    return null;
+    return Util.getValue((SGML)bindings.at(name),names);
     
   }
+  
+
 
   /** Get the value of a named variable (entity) with path lookup.
    *	Dynamic scoping is used, with an optional variable (entity) table
@@ -274,16 +266,13 @@ public class Interp extends State {
    */
   public final SGML getEntity(String name) {
     Index names =  new  Index(name);
-    
-    Table bindings = getLocalBindings(names);
+    // strip off the first element
+    name = names.shift();
+    Table bindings = getLocalBindings(name);
     if(bindings == null){
       bindings = entities;
     }
-    try{
-       return  names.lookup(bindings);
-    }catch(Exception e){
-    }
-    return null;
+    return Util.getValue((SGML)bindings.at(name),names);
     
   }
 
@@ -291,13 +280,10 @@ public class Interp extends State {
   /** Get the value of a named global variable (entity).
     */
   public final SGML getGlobal(String name) {
-    try{
-      return  Index.get(name,entities);
-    }
-    catch ( Exception e){
-    }
-    return null;
-    
+     Index names =  new  Index(name);
+    // strip off the first element
+    name = names.shift();
+    return Util.getValue((SGML) entities.at(name),names);
   }
   
 
@@ -306,12 +292,11 @@ public class Interp extends State {
    *	stack frame.if
    */
   public final void setvar(String name, SGML value) {
-    Index names= new Index(name);
-    Table bindings = getLocalBindings(names);
+    Table bindings = getLocalBindings(name);
     if(bindings == null){
       bindings=entities;
     }
-    Util.setInTable( bindings, names, value);
+    bindings.at(name, value);
     
     
    }
@@ -321,14 +306,14 @@ public class Interp extends State {
   public final void defvar(String name, SGML value) {
     if (variables == null) variables = new Table();
     if (value == null) value = Token.empty;
-    Util.setInTable( variables, new Index(name), value);
+    variables.at(name, value);
     
   }
 
   /** Set the value of a named global variable (entity).
    */
   public final void setGlobal(String name, SGML value) {
-          Util.setInTable( entities, new Index(name), value);
+          entities.at(name, value);
   }
   
     
@@ -341,6 +326,19 @@ public class Interp extends State {
       if (state.it != null && ((tag == null && state.it.hasAttr(name)) 
 			       || tag.equals(state.it.tag()))) {
 	return state.it.attr(name);
+      }
+    }
+    return null;
+  }
+
+  /** Get the element with a named attribute or tag.  Looks up the context tree until
+   *	it finds one, or if tag is specified, an element with that tag.
+   */
+  public final SGML getElementWithAttr(String name, String tag) {
+    for (State state=stack; state != null; state = state.stack) {
+      if (state.it != null && ((tag == null && state.it.hasAttr(name)) 
+			       || tag.equals(state.it.tag()))) {
+	return state.it;
       }
     }
     return null;
