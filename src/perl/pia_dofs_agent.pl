@@ -49,7 +49,7 @@ sub path {
 ###	interform directory that corresponds to the DOFS agent.
 
 sub retrieve_file {
-    my($self, $url, $request, $resolver)=@_;
+    my($self, $url, $request)=@_;
 
     ## Retrieve the file at $url in order to satisfy $request.
 
@@ -91,9 +91,10 @@ sub retrieve_file {
     $response=TRANSACTION->new($response);
     $response->to_machine($request->from_machine());
 
-    $resolver->push($response);	# push the response transaction
+#    $resolver->push($response);	# push the response transaction
 
-    return 1;
+#    return 1;
+    return $response;
 }
 
 
@@ -179,8 +180,13 @@ sub retrieve_directory {
 ###
 ###	Handle a DOFS request.  
 ###
-sub handle{
-    my($self, $request, $resolver)=@_;
+
+###  this is for dealing with direct agent requests
+###   use super class to deal with actual interform requests
+###   indirect handles are done by super class default method...
+#sub handle{
+sub  respond_to_interform{
+    my($self, $request)=@_;
     return 0 unless $request -> is_request();
 
     my $url = $request->url;
@@ -196,20 +202,23 @@ sub handle{
     ##	  $type/path  -- Interforms for DOFS
 
     if ($name ne $type && $path =~ m:^/$name/:) {
-	return $self->retrieve_file($url, $request, $resolver);
+	return $self->retrieve_file($url, $request);
     } elsif ($name ne $type && $path =~ m:^/$name$:) {
 	$path = "/$name/home.if";
     } elsif ($path =~ m:^/$name/([^/]+)/:) {
 	$type = $1;
-	my $agent = $resolver->agent($type);
+
+####  Resolver no longer gets passed in
+####  this is not a perfect way to get the type, but will work for now
+	my $agent = $main::main_resolver->agent($type);
 	$path =~ s:^/$type:: if defined $agent;
 	$self = $agent if defined $agent;
     }
 
-    $response = $self->respond_to_interform($request,$path);
-    return 0 unless defined $response;
-    $resolver->push($response);
-    return 1;
+    $response = &PIA_AGENT::respond_to_interform( $self,$request,$path);
+##    return 0 unless defined $response;
+##    $resolver->push($response);
+    return  $response;
 }
 
 
