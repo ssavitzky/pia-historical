@@ -207,7 +207,7 @@ public class GenericHandler extends BasicHandler {
     if (hasChildren()) {
       // Create a suitable sub-context:
       //    === not clear if entities should still be lowercase.  For now...
-      //aContext.debug("expanding definition in sub-context\n");
+      //aContext.debug("expanding <" + tag + "> " + getChildren() + "\n");
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
       ents.setEntityValue("content", content, true);
       ents.setEntityValue("element", new ParseNodeList(element), true);
