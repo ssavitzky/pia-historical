@@ -34,12 +34,74 @@
 <slide><h2>Overview</h2>
 <p>&nbsp;
 <ol>
+  <li> Introduction
   <li> Document Processing
   <li> Documents and the Web
   <li> Architecture and Implementation
   <li> Open Source
 </ol>
 
+</slide>
+
+<hr><set name=subCaption>Introduction</set>
+<slide><h2>``The Network is the Computer''</h2>
+=== needs a picture ===
+</slide>
+
+<slide><h2>If ``The Network is the Computer''...</h2>
+<table> 
+  <tr><th> On your Computer <th> Input <th> Process <th> Output
+  <tr>
+    <th>PC
+    <td> keyboard
+    <td> CPU
+    <td> display
+  <tr>
+    <th>Lisp
+    <td> read
+    <td> eval
+    <td> print
+  <tr>
+    <th>Number Crunching
+    <td> spreadsheet
+    <td> FORTRAN
+    <td> GnuPlot
+  <tr>
+    <th>Text Processing
+    <td> emacs
+    <td> PERL
+    <td> LaTeX
+  <tr> <td colspan=4>&nbsp;
+  <tr> <th> On the Web <th colspan=3 bgcolor=yellow> Where's the CPU? 
+  <tr> <td colspan=4>&nbsp;
+  <tr>
+    <th>Web Browsing
+    <td> Server
+    <td bgcolor=yellow align=center> ????
+    <td> Browser
+  <tr>
+    <th> Web Authoring
+    <td> edit
+    <td bgcolor=yellow align=center> ????
+    <td> upload
+  <tr>
+    <th> XML
+    <td> editor
+    <td bgcolor=yellow align=center> ????
+    <td> application
+  <tr> <td colspan=4>&nbsp;
+  <tr>
+    <th> &nbsp;
+    <td colspan=3 bgcolor=yellow align=center>
+	<em>something's missing...</em>
+</slide>
+
+<slide><h2>Right Here!</h2>
+=== Picture  ===
+
+<div align=center>
+  We are developing tools for <em>computing</em> with web documents.
+</div>
 </slide>
 
 <hr><set name=subCaption>Document Processing</set>
@@ -104,6 +166,8 @@
   <li> ... any other document, as long as someone writes a parser
   <li> On-the-fly or offline (command line)
   <li> As server, client, or proxy
+       <p>
+  <li> ``<strong>A spreadsheet for documents</strong>''
 </ul>
 </slide>
 
@@ -121,6 +185,70 @@
        pretty-printing / comment extraction / indexing
   <li> Prototyping<br>
        interactive websites / networked appliances
+</ul>
+</slide>
+
+<hr>
+<slide><h2>InfoWare</h2>
+<ul>
+  <li> information is more important than interface
+  <li> small, informal knowledge targeted at an individual or group
+  <li> maintainability over the long run is key
+</ul>
+</slide>
+
+<hr>
+<slide><h2>Who can use it?</h2>
+<ul>
+  <li> Intended mainly for use by non-programmers
+  <li> ... especially web authors and designers
+  <li> As we'll see later
+       <ul>
+	 <li> it's not intended for large programming tasks
+	 <li> but it's great for transforming documents
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What it's not</h2>
+<ul>
+  <li> Not a CGI scripting language
+       <ul>
+	 <li> Perl, Java, Tcl, etc.
+       </ul>
+  <li> Not a scripting language embedded in web pages
+       <ul>
+	 <li> asp, jsp, JavaScript, ...
+       </ul>
+  <li> Not servlets or server-side includes
+  <li> Not a style-sheet language (though this comes close)
+       <ul>
+	 <li> DSSSL, cascading style sheets, ...
+       </ul>
+  <li> Not (just) an extended HTML
+       <ul>
+	 <li> MetaHTML, php, ...
+       </ul>
+  <li> Not a high-volume web server
+       <ul>
+	 <li> We recommend <a href="http://www.apache.org/">Apache</a> for that.
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What it is</h2>
+<ul>
+  <li> Smoothly integrated into SGML documents
+       <ul>
+	 <li> no new syntax to learn
+	 <li> easily handled by SGML-aware editors
+       </ul>
+  <li> Easily integrated into document workflow
+  <li> A seamless part of the Web
+  <li> Designed for cut-and-paste document development
+  <li> A <em>personal</em> tool for operating on documents
 </ul>
 </slide>
 
@@ -343,10 +471,6 @@
 </table>
 </slide>
 
-<hr>
-<slide><h2></h2>
-</slide>
-
 <hr><set name=subCaption>Architecture and Implementation</set>
 <slide><h2>Architecture and Implementation</h2>
 <ul>
@@ -358,6 +482,52 @@
        </ol>
 </ul>
 
+</slide>
+
+<hr>
+<slide><h2>Document-processing architecture</h2>
+<div align=center><em>What the user sees.</em></div>
+<ul>
+  <li> Documents have to be maintainable
+       <ul>
+	 <li> Clean interface between documents and code
+	 <li> XML representation for all persistent data
+       </ul>
+  <li> Easy to use by authors, not programmers
+       <ul>
+	 <li> Code and data have the same syntax (SGML)
+       </ul>
+  <li> Use browser for user interface
+  <li> Adhere to standards wherever possible
+       <ul>
+	 <li> SGML, HTML, SML...
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>Implementation architecture</h2>
+<div align=center><em>What the developer sees.</em></div>
+<ul>
+  <li> The system has to be maintainable
+       <ul>
+	 <li> All source code online and browsable
+	 <li> Much documentation derived from the code
+	 <li> Server as self-documenting as possible
+       </ul>
+  <li> Code has to be portable
+       <ul>
+	 <li> Portable languages (Java, Perl)
+	 <li> Avoid user interface code
+	 <li> Avoid binary file formats
+       </ul>
+  <li> Adhere to standards wherever possible
+       <ul>
+	 <li> Standard representation: DOM
+	 <li> Standard protocol: HTTP
+	 <li> Standard syntax: HTML, XML, SGML
+       </ul>
+</ul>
 </slide>
 
 <hr>
@@ -529,10 +699,9 @@
 &lt;/html&gt;
 </pre>
 
-...which becomes <a href="/demo/hello-world">this page on the server</a>.<br>
+...which becomes <a href="/demo/hello-world">this page on the server</a>.
 (<a href="Images/hello-world.html">local copy</a>)
-
-<!-- === need a version in Images for stand-alone === -->
+<!-- need local copy in Images for stand-alone use -->
 </slide>
 
 <hr>
@@ -574,21 +743,50 @@ The language is easily localized or abbreviated.</em>
 
 <hr>
 <slide><h2>For another...</h2>
+Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 <pre>
-  === something more spectacular here, please ===
-  === maybe the history agent's hook, or a sucks-rules-meter ===
+&lt;if&gt;&lt;get name=FORM:url&gt;
+  &lt;then&gt;
+    &lt;hide&gt;
+      &lt;set name=URL&gt;&lt;text decode=url&gt;&amp;FORM:url;&lt;/text&gt;&lt;/set&gt;
+    &lt;/hide&gt;
+    &lt;!-- Processed with /View/slides.xh --&gt;
+    &lt;include src="&amp;URL;" tagset="&amp;FORM:tagset;" /&gt;
+  &lt;/then&gt;
+  &lt;else&gt;
+    &lt;html&gt;&lt;head&gt;&lt;title&gt;Slide viewer&lt;/title&gt;
+    &lt;/head&gt;&lt;body&gt;
+      &lt;header&gt;View&lt;/header&gt;
+      &lt;hr&gt;
+      &lt;form method=GET action=/View/slides&gt;
+        &lt;input type=submit value="View Slides"&gt;
+        &lt;input type=hidden name=tagset value=slides&gt;
+        &lt;b&gt;URL:&lt;/b&gt; &lt;input name=url size=55 maxlength=200&gt;
+      &lt;/form&gt;
+      &lt;footer&gt;
+    &lt;/body&gt;&lt;/html&gt;
+  &lt;/else&gt;
+&lt;/if&gt;
 </pre>
+<hide>
+  === something spectacular here, please ===
+  === maybe the history agent's hook, or a sucks-rules-o-meter ===
+  See <a href="http://web.electriclichen.com/linux/srom.html">srOm</a> and
+  <a href="http://web.electriclichen.com/linux/srom"> perl code</a>
+</hide>
 </slide>
 
 <hr>
-<slide><h2></h2>
+<slide><h2>It's a server, too</h2>
+<ul>
+  <li> <a href="/">Server home page</a>
+       (<a href="/Images/home.html">local</a>)
+  <li> <a href="/History">Web History</a>
+       (<a href="/Images/History.html">local</a>)
+  <li> <a href="/PIA/src/">Source browser</a>
+       (<a href="/Images/src.html">local)</a>
+</ul>
 </slide>
-
-<hr>
-<slide><h2></h2>
-</slide>
-
-<hr>
 
 <hr><set name=subCaption>Open Source</set>
 <slide><h2>Why Open Source for Us?</h2>
@@ -644,10 +842,6 @@ The language is easily localized or abbreviated.</em>
        <p>
   <li> Community-developed standards are best
 </ul>
-</slide>
-
-<hr>
-<slide><h2></h2>
 </slide>
 
 <hr>
