@@ -73,3 +73,65 @@ cd_rom:		$(CD_ROM_SRC_DIR) $(CD_ROM_DEST_DIR) version_id
 	mkisofs -f -R -T \
 	    -P "$(CD_ROM_PUB)" -A $(VERSION_ID) -V $(VERSION_ID) \
 	    -o $(CD_ROM_DEST_DIR)/pia.iso $(CD_ROM_SRC_DIR)
+
+
+/*
+ * Checking the release
+ */
+check::
+	check_files $(SUBDIRS) | tee check_files.log
+
+/*
+ * Put all CVS files into a tar file for safekeeping.
+ */
+SRCDIR=src/lib/java/classes/crc
+CLASSDIR=src/lib/java/classes
+
+cvs.tar::
+	find $(SUBDIRS) -name CVS -print | tar -cT - -f cvs.tar
+
+/*
+ * Prepare release
+ */
+rm_bin_tar:: 
+	rm pia_bin.tar
+rm_pia_tar::
+	rm pia.tar
+
+prep_rel:: 
+	cd $(SRCDIR); make clean ; make ; make doc
+	cd $(CLASSDIR);make crc.zip
+
+/*
+ * Binary release
+ */
+
+pia_bin.toc:: rm_bin_tar prep_rel
+	find \! -type d -print \
+	    | grep -v CVS | grep -v InternalDoc \
+	    | grep -v src > pia_bin.toc 
+
+pia_bin.tar:	pia_bin.toc
+	/usr/local/bin/tar cfT pia_bin.tar pia_bin.toc
+
+
+/*
+ * Source release
+ */
+
+pia.toc:: rm_pia_tar prep_rel
+	find \! -type d -print \
+	    | grep -v CVS | grep -v InternalDoc > pia_bin.toc 
+
+pia.tar:	src.toc
+	/usr/local/bin/tar cfT pia.tar pia.toc
+
+
+
+
+
+
+
+
+
+
