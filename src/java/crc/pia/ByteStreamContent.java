@@ -237,11 +237,7 @@ public class ByteStreamContent implements Content
     Headers myheader = headers();
     if( myheader != null )
       myheader.setContentLength( len );
-    if( body != null ){
-      try{
-	body.close();
-      }catch(IOException e){}
-    }
+    closeStream();
   }
  
  /**
@@ -327,6 +323,14 @@ public class ByteStreamContent implements Content
     }catch(IOException e2){
     }
     return null;
+  }
+
+  public void closeStream(){
+    if( body != null ){
+      try{
+	body.close();
+      }catch(IOException e){}
+    }
   }
 
   public ByteStreamContent(){
