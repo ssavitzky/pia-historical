@@ -29,7 +29,13 @@ public final class IsFileRq implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      String scheme = trans.getProtocol();
+      if( scheme ){
+	String lscheme = scheme.toLowerCase();
+	if( lscheme.indexOf("file") != -1 )
+	  return new Boolean( true );
+      }
+      return new Boolean( false );
     }
 }
 
