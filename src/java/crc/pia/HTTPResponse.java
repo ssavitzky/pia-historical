@@ -34,12 +34,12 @@ public class  HTTPResponse extends Transaction {
   /** 
    * status code of response
    */
-  protected int  code;
+  protected int  code = 200;
 
   /**
    * reason
    */
-  protected  String reason;
+  protected  String reason = "ok";
 
   /**
    * Attribute index - controls to be insert into a response
