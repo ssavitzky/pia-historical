@@ -5,6 +5,9 @@
 PACKAGE=crc.pia
 TOPDIR=../../..
 
+PACKAGES = \
+	agent
+
 FILES = \
 	Accepter.java \
 	Transaction.java \
@@ -27,3 +30,6 @@ FILES = \
 	HTTPResponse.java
 
 include $(TOPDIR)/makefiles/file.make
+include $(TOPDIR)/makefiles/package.make
+
+
