@@ -38,6 +38,8 @@ PRIM_HANDLERS = \
 	protectHandler.java \
 	repeatHandler.java \
 	selectHandler.java \
+	statusHandler.java \
+	submitHandler.java \
 	substHandler.java \
 	tagsetHandler.java \
 	testHandler.java \
