@@ -54,3 +54,9 @@
 <else>Please enter your signature in the space provided.
 </else>
 </if>
+<p>
+<!-- show any pending forms -->
+Remaining Pending Forms:
+<ul>
+ <read file="users/&FORM.name;.html">
+</ul>

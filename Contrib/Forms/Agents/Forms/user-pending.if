@@ -9,10 +9,21 @@
 
  <if><read file="users/&FORM.username;.html" info>
  <then>
+<!-- process any remove requests -->
+ <if><get form name=remove><then><read interform file="remove.if" process></then></if>
+
  <h2>Pending forms for &FORM.username;</h2>
- <ul>
- <read file="users/&FORM.username;.html">
- </ holdul>
+<set name=pending><read file="users/&FORM.username;.html" process></set>
+ <ul foreach list="&pending;">&li;</ul>
+<hr>
+ <h3> Remove a form from this list</h3>
+ <form action="&url;"><input name="username" type="hidden"
+ value="&FORM.username;">
+ <input
+ name="remove" type="Submit" value="Remove">: <input name="filepath" value=""
+ size=30>(all matching lines will be
+ removed from this list, but will remain on the system)</form>
+ 
  </then>
  <else><h2>No Pending forms for &FORM.username;</h2></else></if>
 

@@ -1,0 +1,13 @@
+<!-- remove a  line from a file -->
+<if><get form name="filepath"><then>
+<set name=sigs><read file="users/&FORM.username;.html" process></set>
+               <repeat list=&sigs;>	
+               <if><test match="&FORM.filepath;">&li;</test><then>
+Removed &li; from list of pending forms.</then>
+	 	<else>
+                <write append file="users/.&FORM.username;.html.temp">&li;</write>
+	 	</else></if></repeat>
+		<write file="users/&FORM.username;.html">
+                <read file="users/.&FORM.username;.html.temp"></write>
+		<write file="users/.&FORM.username;.html.temp"></write>
+</then></if>
