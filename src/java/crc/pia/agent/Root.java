@@ -118,6 +118,9 @@ public class Root extends GenericAgent {
   protected boolean isValidRootPath(String path) {
     // First see if it's a possibility.
     if (!isPossibleRootPath(path)) return false;
+    if (path.equals("~") || path.equalsIgnoreCase("%7e")) return true;
+    if (path.startsWith("~/")
+	|| path.startsWith("%7e/") || path.startsWith("%7E/")) return true;
     return null != findInterform(rewriteRootPath(path));
   }
 

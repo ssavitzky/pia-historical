@@ -66,6 +66,12 @@ import w3c.www.http.HTTP;
  */
 public class GenericAgent implements Agent, Registered, Serializable {
   
+  /** Standard option (entity) names. */
+
+  public static String agent_code_dir_name = "agentDIR";
+  public static String agent_data_dir_name = "userDIR";
+  public static String user_code_dir_name = "userAgentDIR";
+
   /** Extensions of executable files.
    *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
    *	processed with the DPS. 
@@ -526,7 +532,9 @@ public class GenericAgent implements Agent, Registered, Serializable {
   }
 
   /**
-   * get a file attribute
+   * Get an attribute that contains a file name.  
+   *
+   *	<p> Replaces leading "~" with the user's home directory.
    */
   public List fileAttribute(String key){
     String v = null;
@@ -545,7 +553,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 	  res = new List();
 	  res.push( v );
 	  fileTable.put( key, res );
-      }else if( v!=null){
+      } else if( v != null){
 	res = new List();
 	res.push( v );
 	fileTable.put( key, res );
@@ -565,8 +573,10 @@ public class GenericAgent implements Agent, Registered, Serializable {
   }
 
   /**
-   * retrieve a directory attribute. 
-   * Makes sure that it ends in a file separator character.
+   * Retrieve an attribute that contains a directory or search path. 
+   *
+   * <p> Makes sure that each directory name ends in a file separator 
+   *	 character, and replaces leading "~" with the user's home directory. 
    */
   public List dirAttribute(String key){
     String v = null;
@@ -612,7 +622,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    * @return the first qualified directory out of the possible three above.
    */
   public String agentDirectory(){
-    List directories = dirAttribute("agent_directory");
+    List directories = dirAttribute(agent_data_dir_name);
     if( directories!=null && directories.nItems() > 0)
       return (String)directories.at(0);
 
@@ -632,7 +642,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
 	  List dirs = new List();
 	  dirs.push( dir );
-	  dirAttribute( "agent_directory", dirs );
+	  dirAttribute( agent_data_dir_name, dirs );
 	  return dir;
 	}
       }
@@ -653,7 +663,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
    * A directory is qualified if it can be writen into.
    */
   public String agentIfDir(){
-    List directories = dirAttribute("agent_if_directory");
+    List directories = dirAttribute(user_code_dir_name);
     if( directories!=null && directories.nItems() > 0)
       return (String)directories.at(0);
 
@@ -674,7 +684,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
 	  List dirs = new List();
 	  dirs.push( dir );
-	  dirAttribute( "agent_if_directory", dirs );
+	  dirAttribute( user_code_dir_name, dirs );
 	  return dir;
 	}
       }
@@ -1073,7 +1083,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     /* Roots: if_root, ~/.pia/Agents, pia/Agents */
 
-    List roots = dirAttribute( "if_root" );
+    List roots = dirAttribute( agent_code_dir_name );
     if (roots == null) roots = new List();
 
     for (int i = 0; i < roots.nItems(); ++i) {
@@ -1238,7 +1248,11 @@ public class GenericAgent implements Agent, Registered, Serializable {
       hadName = true;
     }
     
-    if (path.startsWith("/" + DATA + "/") || path.equals("/" + DATA)) {
+    if (path.startsWith("%7e/") || path.startsWith("%7E/")
+	|| path.equalsIgnoreCase("%7e")) {
+      path = path.substring(3);
+      wasData = true;
+    } else if (path.startsWith("/" + DATA + "/") || path.equals("/" + DATA)) {
       path = path.substring(DATA.length() + 1);
       wasData = true;
     }

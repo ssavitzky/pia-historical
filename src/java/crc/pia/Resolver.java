@@ -220,6 +220,13 @@ public class Resolver extends Thread {
    */
   public Agent agentFromPath(String path) {
 
+    // Check for path starting with / (ignored) or ~
+
+    if (path.startsWith("/")) path = path.substring(1);
+    if (path.startsWith("~")) path = path.substring(1);
+    else if (path.startsWith("%7E") || path.startsWith("%7e"))
+      path = path.substring(3);
+
     /* Empty path is handled by ROOT. */
 
     if (path == null || path.equals("/") || path.equals("")) {
@@ -228,28 +235,31 @@ public class Resolver extends Thread {
 
     /* Now check for either /name/ or /type/name */
 
-    if (path.startsWith("/")) path = path.substring(1);
-    if (path.startsWith("~")) path = path.substring(1);
-    else if (path.startsWith("%7E") || path.startsWith("%7e"))
-      path = path.substring(3);
-
     List pathList = new List(new java.util.StringTokenizer(path, "/"));
 
     Agent a = null;
 
+    // Check for /type/name (possibly with trailing ~)
     if (pathList.nItems() > 1) {
       String name = pathList.at(1).toString();
       String type = pathList.at(0).toString();
+      if (name.endsWith("~"))
+	name = name.substring(0, name.lastIndexOf("~"));
+      else if (name.endsWith("%7E") || name.endsWith("%7e"))
+	name = name.substring(0, name.lastIndexOf("%"));
       Pia.debug(this, "Looking for agent :" + name);
       a = agent(name);
-      if (a == null || !type.equals(a.type())) {
-	Pia.debug(this, "Looking for agent :" + name);
-	a = agent(type);
+      if (a != null && type.equals(a.type())) {
+	return a;
       }
-    } else {
-      String name = pathList.at(0).toString();
-      a = agent(name);
     }
+
+    // Handle /name (possibly with trailing ~)
+    String name = pathList.at(0).toString();
+    if (name.endsWith("~")) name = name.substring(0, name.lastIndexOf("~"));
+    else if (name.endsWith("%7E") || name.endsWith("%7e"))
+      name = name.substring(0, name.lastIndexOf("%"));
+    a = agent(name);
     return a;
   }
 

@@ -235,7 +235,7 @@ public class Pia implements Tabular {
   /**
    *  Attribute index - Root agent
    */
-  protected Root rootAgent;
+  protected Agent rootAgent;
 
   /**
    *  Attribute index - Admin agent name
@@ -302,7 +302,7 @@ public class Pia implements Tabular {
   /**
    * @return root agent
    */
-  public Root rootAgent(){
+  public Agent rootAgent(){
     return rootAgent;
   }
 
@@ -798,7 +798,12 @@ public class Pia implements Tabular {
     resolver     = new Resolver();
     Transaction.resolver = resolver;
     
+    // === This should really to through the installAgent code in Admin.
+
+    // Create the Root agent, and make its data directory the USR_ROOT
     rootAgent = new Root(rootAgentName, null);
+    rootAgent.put(Root.agent_data_dir_name, usrRootStr);
+
     adminAgent = new Admin(adminAgentName, null);
 
     resolver.registerAgent( rootAgent );
