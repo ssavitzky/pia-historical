@@ -27,37 +27,74 @@ import java.util.Enumeration;
 /**
  * Mathematical utilities.
  *
+ *	A list is normally handled as an Enumeration, and a number as
+ *	an Association between a Node and its value.
+ *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
+ * @see crc.ds.Association
+ * @see java.util.Enumeration
  */
 
 public class MathUtil {
+
+  /************************************************************************
+  ** Attribute Conversion:
+  ************************************************************************/
+
+  public static int getInt(ActiveAttrList atts, String name, int dflt) {
+    String v = atts.getAttributeString(name);
+    if (v == null) return dflt;
+    Association a = Association.associateNumeric(null, v);
+    return a.isNumeric()? (int)a.longValue() : dflt;
+  }
+
+  public static long getLong(ActiveAttrList atts, String name, long dflt) {
+    String v = atts.getAttributeString(name);
+    if (v == null) return dflt;
+    Association a = Association.associateNumeric(null, v);
+    return a.isNumeric()? a.longValue() : dflt;
+  }
+
+  public static double getDouble(ActiveAttrList atts, String name,
+				 double dflt) {
+    String v = atts.getAttributeString(name);
+    if (v == null) return dflt;
+    Association a = Association.associateNumeric(null, v);
+    return a.isNumeric()? a.doubleValue() : dflt;
+  }
 
   /************************************************************************
   ** Input Conversion:
   ************************************************************************/
 
   /** Return a numeric Association between a node and its numeric value. 
-   *	Return null if the node contains no numeric text.  <p>
-   *
-   *	Should really ignore markup.
+   *	Return null if the node contains no numeric text.
    */
   public static Association getNumeric(Node n) {
-    String cstring = n.toString();
-    Association a = Association.associateNumeric(n, cstring);
+    Association a = Association.associateNumeric(n, n.toString());
     return (a.isNumeric())? a : null;
   }
 
-  /** Return a list of numeric Associations. */
-  public static List getNumbers(NodeList nl) {
+  /** Return a numeric Association between an obj4ct and its numeric value. 
+   *	Return null if the object contains no numeric text.
+   */
+  public static Association getNumeric(Object o) {
+    Association a = Association.associateNumeric(o, o.toString());
+    return (a.isNumeric())? a : null;
+  }
+
+  /** Return a list of numeric Associations.  Recursively descends into
+   *  	nodes with children, and splits text nodes containing whitespace.  */
+  public static Enumeration getNumbers(NodeList nl) {
     List l = new List();
-    NodeEnumerator enum = nl.getEnumerator();
-    for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
-      Association a = getNumeric(n);
-      if (a != null && a.isNumeric()) l.push(a);
+    Enumeration items = ListUtil.getTextItems(nl);
+    while (items.hasMoreElements()) {
+      Association a = getNumeric((Node)items.nextElement());
+      if (a != null) l.push(a);
     }
-    return l;
+    return l.elements();
   }
 
   /************************************************************************

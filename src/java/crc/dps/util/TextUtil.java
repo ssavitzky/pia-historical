@@ -13,7 +13,7 @@ import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
-import crc.dps.NodeType;
+import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.output.*;
 import crc.dps.input.*;
@@ -27,12 +27,31 @@ import java.util.Enumeration;
 /**
  * Text-processing utilities.
  *
+ *	Many of these utilities operate on Text nodes in NodeLists, as well
+ *	as (or instead of) on strings. 
+ *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
  */
 
 public class TextUtil {
+
+  /************************************************************************
+  ** Standard Character Entities:
+  ************************************************************************/
+
+  static BasicEntityTable charEnts = new BasicEntityTable();
+
+  static protected void dc(char c, String name) {
+    charEnts.addBinding(name, new ParseTreeEntity(name, c));
+  }
+
+  static {
+    dc('&', "amp");
+    dc('<', "lt");
+    dc('>', "gt");
+  }
 
   /************************************************************************
   ** Value extraction:
@@ -49,7 +68,7 @@ public class TextUtil {
   /** Extract text from a nodelist.
    */
   public static NodeList getText(NodeList nl) {
-    ToString out = new ToNodeList();
+    ToNodeList out = new ToNodeList();
     Copy.copyNodes(nl, new FilterText(out));
     return out.getList();
   }
@@ -76,6 +95,13 @@ public class TextUtil {
     return n;    
   }
 
+  /** Replace character entities in a NodeList with their values. */
+  public static final String expandCharacterEntities(NodeList nl) {
+    ToString out = new ToString(charEnts);
+    Copy.copyNodes(nl, out);
+    return out.getString();
+  }
+
   /** Add markup to a String, using commonly-accepted text
    *	conventions.  Things that look like tags are boldfaced; things
    *	that look like attributes are italicized, and so on.
@@ -86,7 +112,7 @@ public class TextUtil {
 
     // === at some point addMarkup needs to be parametrized ===
 
-    if (s == null || s.length() < 1) return null;
+    if (s == null || s.length() < 1) return "";
     String n = "";
     boolean inUC = false;	// inside string of uppercase chars.
     boolean inIT = false;	// inside italics  (_..._)
@@ -153,12 +179,22 @@ public class TextUtil {
       }
       else n += s.charAt(i);
     }
-    return s;
+    return n;
   }
 
   public static boolean isIDchar(char c) {
     return (Character.isLetterOrDigit(c) || c == '-' || c == '.');
   }
 
+
+  /** Add markup to a String, using commonly-accepted text
+   *	conventions.  Things that look like tags are boldfaced; things
+   *	that look like attributes are italicized, and so on.
+   *
+   *	Markup is sent to an Output. === should produce real nodes ===
+   */
+  public static final void addMarkup(String s, Output out) {
+    out.putNode(new ParseTreeText(addMarkup(s)));
+  }
 
 }
