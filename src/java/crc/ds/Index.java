@@ -74,6 +74,14 @@ import crc.pia.Pia;
  */
 public class Index {
 
+
+
+ /**
+  * The delimiter between tag start end
+  */
+  public static final String SEPARATOR="-";
+
+
  /**
   * Attribute index - constant representing tag-name for getting any tag
   */
@@ -266,10 +274,14 @@ public class Index {
 	return DOTS;
     }
 
-    StringTokenizer ts = new StringTokenizer(item, "-", true);
+    StringTokenizer ts = new StringTokenizer(item, SEPARATOR, true);
     try{
-      while( ts.hasMoreElements() )
-	positionParam.push( ts.nextToken() );
+      while( ts.hasMoreElements() ){
+	String s = ts.nextToken() ;
+//	System.out.println("pushing "+s);
+	positionParam.push(s );
+      }
+      
     }catch(Exception e){}
 
     processState = NORMAL;
@@ -291,7 +303,7 @@ public class Index {
 
   private boolean isDash(String s){
     if( s == null ) return false;
-    return ( s.length() == 1 && s.indexOf("-") != -1 ) ? true : false;
+    return ( s.length() == 1 && s.indexOf(SEPARATOR) != -1 ) ? true : false;
   }
 
   /** reset state tag and start and end positions */
@@ -362,7 +374,8 @@ public class Index {
     }
       
     // tag is not specified could be a dash
-    if( !isTextOrDigit(t) ){
+   // if( !isTextOrDigit(t) ){
+    if(t.equals(SEPARATOR)){
       tag = ANY;
       pushBackToken( t );
     }else{
@@ -451,7 +464,8 @@ public class Index {
     int s, e;
 
     parseTag();
-
+//    System.out.println(getTag());
+    
 
     try{
       parseStart();
