@@ -14,6 +14,8 @@ BASIC_ACTORS = \
 	Actor_syntax.java \
 	Actor_names.java \
 	Add_markup.java \
+	Calendar.java \
+	Calendar_day.java \
 	Difference.java \
 	Dl.java \
 	Element.java \
