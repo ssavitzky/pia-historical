@@ -6,6 +6,30 @@
 <h1>Technical Details</h1>
 <include src=config.inc>
 
+<slide><h2>What do people do with documents?</h2>
+<ul>
+  <li> <strong>Fill out and process forms</strong>
+       <ul>
+	 <li> checks, purchase requests, approvals
+	 <li> <em>Sometimes ``processing'' = signing.</em>
+       </ul>
+  <li> Create and sign legal documents
+  <li> Edit and publish manuscripts
+  <li> Memos: send, recieve, copy, file, ...
+  <li> Letters, bills, junk mail, magazines, postit notes, ...
+</ul>
+
+<p> Processing:
+<ul>
+  <li> signing: approving, authorizing, ...
+  <li> storing: indexing, filing, stacking, boxing, ...
+  <li> retrieving: searching, skimming, ...
+  <li> excerpting, annotating, summarizing, ...
+  <li> presenting, performing, parodying, ...
+</ul>
+
+</slide>
+
 <slide><h2>Example: form processing</h2>
 <div align=center> <b>Check Approval Form</b>
 </div>
@@ -112,7 +136,7 @@ Also,
 </slide>
 
 <slide><h2>How <em>we</em> do it</h2>
-<ul>
+<ul><!-- === needs a lot of work:  central -->
   <li> <b>Everything is a document</b>
        <ul>
 	 <li> All information is XML --
@@ -120,66 +144,122 @@ Also,
 	 <li> All <em>actions</em> are XML --
 	      <em>embedded</em> in the form itself
        </ul>
-  <li> <b>A Form describes its own processing</b>
-<!-- not clear how to say this === -->
-  <li> <b>Edit <em>one page</em> and you're done</b>
+  <li> <b>A document can contain its own processing instructions</b>
+       <ul>
+	 <li> No separate CGI scripts!
+       </ul>
+  <li> <b>Everything needed for a form is in <em>one file</em> and <em>one language</em></b>
 </ul>
 </slide>
 
-<slide><h2>Here's how we build the form:</h2>
+<slide><h2>Here's how we build a form:</h2>
 <ul>
   <li> <font color=green>HTML</font> and processing instructions
        <pre>
-&lt;set name=vendor>&lt;get name=PR:vendor&gt;&lt;/set&gt;
-&lt;set name=vphone&gt;<!-- simplify -->
-     &lt;extract&gt;&lt;from&gt;&amp;vendor-list;
-            &lt;key&gt;&amp;vendor;
-            &lt;name&gt;&amp;phone;&lt;/extract&gt; <font color=green>
-&lt;tr&gt;&lt;td align=right&gt;Vendor:
-    &lt;td&gt;&lt;input name=vendor value=&amp;vendor;&gt;
-&lt;tr&gt;&lt;td align=right&gt;Phone:
-    &lt;td&gt;&lt;input name=vphone value=&amp;vphone;&gt;</font>
+<font color=green>&lt;form action='&amp;url;&gt;</font>    
+  &lt;set name=vendor>&lt;get name=PR:vendor&gt;&lt;/set&gt;
+<font color=green>    &lt;!-- ... --&gt;
+  Vendor: &lt;input name=vendor value=&amp;vendor;&gt;&lt;br&gt;
+  Phone: &lt;input name=vphone value=&amp;vphone;&gt;</font>
+  &lt;process&gt;
+    &lt;if&gt;&lt;get name=approved&gt; 
+       &lt;then&gt; &lt;send-email dst=purchasing&gt;
+		 <font color=green>&lt;!-- ... --&gt; 
+		 Vendor: &amp;FORM:vendor;
+                 Phone: &amp;FORM:vphone;.</font>
+	      &lt;/send-email&gt;
+       &lt;/then&gt;
+    &lt;/if&gt;       
+  &lt;/process&gt;
+<font color=green>&lt;/form&gt;</font>
        </pre>
 </ul>
 </slide>
 
-<slide><h2>Processing is equally simple:</h2>
-<ul><!-- this one has problems -->
-       <pre>
-&lt;if&gt;&lt;get name=approved&gt; 
-   &lt;then&gt; &lt;send-email dst=purchasing&gt;
-             &lt;!-- existing code --&gt; <font color=green>
-             Vendor: &amp;FORM:vendor;  Phone: &amp;FORM:vphone;.</font>
-          &lt;/send-email&gt;
-   &lt;/then&gt; 
-   &lt;else&gt;<font color=green> &lt;h2&gt;Rejected&lt;/h2&gt; 
-          Couldn't verify signature.</font>
-   &lt;/else&gt;
-&lt;/if&gt;
-       </pre>
-  <li> but with HTML-like syntax
-  <li> All the usual programming constructs
-</ul>
+<slide><h2>An Application is a Web Site</h2>
+
+<p>&nbsp;
+
+<p>You access a form through its URL:
+<p>&nbsp;
+
+<table cellspacing=0 cellpadding=2 border=0 align=center>
+  <tr>  <td>&nbsp;
+	<th bgcolor=lightblue> Software layer
+	<th bgcolor=lightgreen colspan=2> Infoware layer
+	<td>&nbsp;
+  <tr>	<th>&lt;</th>
+	<th bgcolor=lightblue>http://forms.crc.ricoh.com</th>
+	<th bgcolor=lightgreen>/Purchasing</th>
+	<th bgcolor=lightgreen>/check-approval</th>
+	<th>&gt;</th>
+  <tr>  <td>&nbsp;
+	<td bgcolor=lightblue> web server
+	<td bgcolor=lightgreen>directory
+	<td bgcolor=lightgreen>file
+	<td>&nbsp;
+  <tr>  <td>&nbsp;
+	<td bgcolor=lightblue> <em>agency</em>
+	<td bgcolor=lightgreen><em>agent</em>
+	<td bgcolor=lightgreen><em>active document</em>
+	<td>&nbsp;
+</table>
+
+<dl>
+  <dt> The PIA makes an application into a web site
+  <dd> most of the application consists of ``<em>active documents</em>''
+       <ul>
+	 <li> it's a web site for the <em>author</em>
+	 <li> as well as the user.
+       </ul>
+  <dt> Tasks are performed by ``<em>agents</em>''
+  <dd> which look like top-level directories on the server.
+</dl>
+
 </slide>
 
-<!-- there's a missing transition here
- show the form in context; "we call this an agent..."
--->
+<slide><h2>For example...</h2>
+
+<p> Here's a typical ``active document''
+
+<pre><font color=green>
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt; Hello world!&lt;title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;</font>
+    &lt;header&gt; a classic example &lt;/header&gt;<font color=green>
+    &lt;hr&gt;
+    Hello world!</font>
+    &lt;footer cvsid="$ Id... $"&gt;<font color=green>
+  &lt;/body&gt;
+&lt;/html&gt;</font>
+</pre>
+
+...which becomes <a href="/demo/hello-world">this page on the server</a>.
+(<a href="Images/hello-world.html">local copy</a>)<br>
+(<a href="appendices.slides.html#previewer">another example</a>)
+</slide>
+
 
 <slide><h2>The Platform</h2>
-<p>&nbsp;
+<dl>
+  <dt> What we've done is create a <strong>platform</strong>
+  <dd> for computing with (active) documents.
+</dl>
+
 <table width='90%' cellspacing=0 border=0 align=center>
   <tr><th bgcolor="#c40026"> PIA
       <th> Platform for Information Applications
   <tr><th>&nbsp;
       <td>
 <table  width='100%'cellspacing=0 border=0>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <th bgcolor=lightgreen colspan=2> Infoware Layer
   <tr> <th bgcolor=lightgreen> Agents:
        <td bgcolor=lightgreen> 
 	 Collections of active documents 
   <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=2> Software Layer
   <tr> <th bgcolor=lightblue>Agency:
        <td bgcolor=lightblue>
 	  Web server and Document processor
@@ -189,6 +269,12 @@ Also,
 	  Agent and tag API's
 </table>
 </table>
+
+<dl>
+  <dt> Developing information applications
+  <dd> becomes as simple as developing web pages
+</dl>
+
 </slide>
 
 
@@ -198,7 +284,7 @@ Also,
   <tr><th bgcolor="#c40026"> PIA
       <th> Platform for Information Applications
   <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
-  <tr> <th bgcolor=lightgreen colspan=3 align=left> Agents:
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
   <tr> <th bgcolor=lightgreen>&nbsp;
        <td bgcolor=white>
 <ul>
@@ -229,7 +315,7 @@ Also,
   <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
   <tr>
   <tr> <th bgcolor=lightblue colspan=3> Software Layer
-  <tr> <th bgcolor=lightblue colspan=3 align=left>Agency:
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
 <ul>
@@ -268,8 +354,9 @@ Also,
 <ul>
   <li> <b>Simple</b>
        <ul>
-	 <li> main loop is one page of code
-	 <li> hooks for special-purpose code
+	 <li> <a href="appendices.slides.html#main-loop">main loop</a>
+	      is one page of code
+	 <li> hooks for special-purpose code: easy to extend
        </ul>
   <li> <b>Highly portable</b>
        <ul>
@@ -283,10 +370,6 @@ Also,
 	 <li> can save memory in pass-through mode
 	 <li> or cache document parse trees for speed
        </ul>
-  <li> <b>Simple API's</b>
-       <ul>
-	 <li> application programmers can easily extend
-       </ul>
 </ul>
        <th bgcolor=lightblue>&nbsp;
   <tr> <th bgcolor=lightblue colspan=3> &nbsp;
@@ -294,33 +377,69 @@ Also,
 </slide>
 
 
-<slide><h2>Main Loop</h2>
-<pre>
-  <font color=red>/** Process the current Node */</font>
-  public final void <font color=blue>processNode</font>() {
-    Action handler = input.getAction();
-    if (handler != null) {
-      handler.action(input, this, output));
-    } else {
-      copyExpandingChildren(input, this, output);
-    }
-  }
-  <font color=red>/** Copy the children of the current Node */</font>
-  public final void <font color=blue>copyExpandingChildren</font>() {
-    output.startNode(input.getNode());
-    for (Node node = input.toFirstChild() ;
-	 node != null;
-	 node = input.toNextSibling()) {
-      processNode();
-    }
-    output.endNode();    input.toParent();
-  }</pre>
+<slide><h2>Cool Stuff</h2>
+<p> There's lots more cool stuff I haven't mentioned.
+<p>&nbsp;
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> You can use other servers as resources
+  <li> ...and reprocess their documents
+  <li> The tag language is highly extensible
+</ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> There are plenty of hooks in the code
+  <li> ...for hanging special-purpose software
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+</table>
 </slide>
 
-<!-- another missing transition...
-   there's lots of cool stuff in here.  You can use other servers as
-   resources.  It's easy to add special-purpose code.  etc...
--->
+
+<slide><h2>A Framework for Infoware</h2>
+
+<p> The PIA is what we sometimes call a ``<strong>framework</strong>:''
+<ul>
+  <li> <strong>A re-useable design for a class of applications.</strong> 
+</ul>
+
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> Building applications is <em>really easy</em>
+  <li> ...because active documents are easy to write
+</ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> The software base is stable
+  <li> ...and shared by all applications
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+</table>
+</slide>
+
+<em>So now let's look at the applications...</em>
 <hr>
 <b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

@@ -1,4 +1,4 @@
-<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<!doctype html public "-//IETF//DTD HTML//EN//3.2">
 <html><head>
 <title>Slides for LinuxWorld</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
@@ -38,73 +38,107 @@
     <code>&lt;steve@rsv.ricoh.com&gt;</code><br>
 </div>
 
-=== RSV logo === PIA logo ===
+<p>&nbsp;
+<p>&nbsp;
+
+<table width=90% align=center>
+  <tr>
+        <th valign=top align=center width="33%">
+	  <a href="http://pia.rsv.ricoh.com/" ><img border=0
+	     src="Images/pia45.gif" alt="P I A"></a></th>  
+	<th valign=top width="34%">
+	  <table cellpadding=0 cellspacing=0 border=0 align=center>
+	    <tr nowrap nobr><th><a href="http://rsv.ricoh.com/"><img
+	      src='Images/ricoh.gif' border='0' width='170' height='48' 
+	      alt='R I C O H'></a></th></tr> 
+	    <tr nowrap nobr><td nowrap nobr><img src='Images/blackline.gif'
+	      height='2' width=170></td></tr> 
+	    <tr nowrap nobr><th align='left' valign='top'><img
+	      src='Images/ricoh-silicon-valley.gif' alt='RICOH SILICON VALLEY'
+	      border='0' width='170' height='21'></th></tr>
+	  </table> </th> 
+	<th valign=top align=right width="33%"><a
+	    href="http://www.risource.org/" ><img border=0
+	    src="Images/risource.logo.gif" alt="RiSource"></a></th>  
+       </table>
 </slide>
 
+<slide><h2>The Goal</h2>
+<p>&nbsp;
+
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+ Build web-based applications that process documents
+<ul>
+  <li> effortlessly, without programming
+  <li> using  <em>active documents</em> in XML
+</ul>
+       <th bgcolor=lightgreen> &nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3 align=right>Infoware Layer
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+ On a stable software base  shared by all applications
+
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3 align=right> Software Layer
+</table>
+</slide>
+
+<strong><em>To enable us take back control of our documents.</em></strong>
 
 <hr><set name=subCaption>Documents and the Web</set>
-<slide><h2>Documents: From Atoms to Bits</h2>
-<table>
-  <tr> <th colspan=3 align=center>
-       The computer changed  documents  
-  <tr> <td colspan=2>&nbsp;
-  <tr> <th align=left> &nbsp; <th align=left> Atoms <th align=left> Bits
-  <tr>	<th align=left> Documents
-	<td> ink on paper
-	<td> data in computer
-  <tr>	<th align=left> Formats
-	<td> plain text
-	<td> proprietary formats
-  <tr>	<th align=left> Creating
-	<td> pen, pencil, paint
-	<td> software applications
-  <tr>	<th align=left> Editing
-	<td> use an eraser
-	<td> run an application
-  <tr>	<th align=left> Reading
-	<td> use your eyes
-	<td> Run an application
-  <tr> <td colspan=3>&nbsp;
-  <tr> <td colspan=3> <em>Not all these changes were improvements</em>
-  <tr> <td colspan=3> People used to be in control.</em>
-</table>
-</slide>
+<slide><h2>Documents: From Paper</h2>
 
-<slide><h2>Documents: From Computers to The Web</h2>
-<table>
-  <tr> <th colspan=3 align=center>
-         The Web  <em>also</em> changed  documents:
-  <tr> <td colspan=2>&nbsp;
-  <tr> <th align=left> &nbsp;
-	<th align=left> Computers <th align=left> The Web
-  <tr> <th align=left> Documents
-	<td> files on a disk
-	<td> pages on a server
-  <tr>	<th align=left> Formats
-	<td> proprietary formats
-	<td> standardized markup
-  <tr>	<th align=left> User interfaces
-	<td> GUI widgets
-	<td> forms / links
-  <tr>	<th align=left> Editing
-	<td> run an application
-	<td> text editor
-  <tr>	<th align=left> Killer applications
-	<td> Monolithic programs
-	<td> Web sites / Infoware
-  <tr>	<th align=left> &nbsp;
-	<td> Visicalc
-	<td> Amazon.com
-  <tr> <td colspan=3>&nbsp;
-  <tr> <td colspan=3> ``<em>In the future, the only API's that matter will be
-       the API's of web sites</em>''
-  <tr> <td colspan=3 align=right> -- Tim O'Reilly
-</table>
+<strong>Before computers:</strong>
+<ul>
+  <li> Documents were ink on paper.
+  <li> Creating, editing, and reading were done with simple tools.<br>
+       <em>Anyone could do it!</em>
+  <li> Processing was done by passing paper around <br>
+       and putting more marks on it.
+  <li> People had control.
+</ul>
+
+<slide><h2>... to Computers</h2>
+<strong>Computers changed things:</strong>
+<ul>
+  <li> Documents became <em>data</em>.
+  <li> Creating, editing, and reading the data requires an
+       <strong>application.</strong>
+       <ul>
+	 <li> <em>Ever get e-mail you couldn't read?</em>
+       </ul>
+  <li> Computer processing is only what the application permits
+       <ul>
+	 <li> most other operations mean going back to paper
+	 <li> or at least ``exporting'' text	      
+       </ul>
+  <li> People no longer have control of their documents.
+</ul>
+
+<slide><h2>... to the Web</h2>
+<strong>The Web changed things again.</strong>
+<ul>
+  <li> Documents became <em>web pages</em> in HTML.
+  <li> Creating and editing with <strong>any editor</strong>.<br>
+       Reading with <strong>any browser</strong>
+  <li> Processing is at least <em>possible</em>
+       <ul>
+	 <li> because documents have standardized markup
+       </ul>
+  <li> People are getting control back.
+</ul>
+
 </slide>
 
 <hr><set name=subCaption>Information Applications</set>
 <slide><h2>Infoware, not software</h2>
-<p> &nbsp;
+<p> We aren't the only ones to notice this.
+
 <p><em>``<font color=red><strong>A killer application is</strong></font> no
 longer a desktop productivity application or even a back-office enterprise
 software system, but <font color=red><strong>an entirely new breed, something
@@ -125,24 +159,22 @@ support.)''  </em>
 </slide>
 
 
-<slide><h2>What do you want to do with documents?</h2>
-<p> Small office/workgroup
+<slide><h2>A Platform for Information Applications</h2>
+
+<strong>We still don't have complete control:</strong>
 <ul>
-  <li> <b>Form processing</b>
-  <li> <b>Website management</b>
-  <li> Corporate Website
-  <li> E-Commerce
-  <li> Intranet Portal
-  <li> 
+  <li> Processing still requires an application
+  <li> And building applications requires programming
+  <li> ... so <em>users</em> still don't control <strong>processing</strong>
+       ... <em>until now!</em>
 </ul>
 
-<p> Personal
-<ul>
-  <li> <b>Web-Browser's Assistant</b>
-  <li> Personal productivity applications
-  <li> Development project management
-  <li> Document reformatting
-</ul>
+<p> <strong>The goals of the PIA project are:</strong>
+<ol>
+  <li> to make it easy to develop document-processing applications
+  <li> to give control of documents back to their authors and users
+</ol>
+
 </slide>
 
 <hr><set name=subCaption>Technical Details</set>
@@ -154,92 +186,116 @@ support.)''  </em>
 <slide><h2>Some of what we've done</h2>
 Workgroup level applications:
 <ul>
-  <li> <b>Form processing system</b> <br>
-       for all of Ricoh Silicon Valley (6 student-weeks)
-  <li> <b>Thin Servers</b><br>
-       photo album, web printer, kiosk, ...
+  <li> <b>Form processing system</b> 
+       <ul>
+	 <li> for all of Ricoh Silicon Valley (6 student-weeks)
+       </ul>
+  <li> Thin Servers
+       <ul>
+	 <li> photo album (1 week)
+	 <li> web printer (2 weeks)
+	 <li> File server with CD-RW (2 weeks)
+	 <li> kiosk (1 day)
+       </ul>
 </ul>
+</slide>
 
-But it's not just for the office:
+<slide><h2>But it's not just for the office:</h2>
 <em>Developers use documents, too!</em>
 <ul>
   <li> <b>Web browsing history</b><br>
        saves <em>every</em> URL with time and date.<br>
        permanent; browser-independent
-  <li> <b>Slide formatter</b> (this one)
-  <li> <b>Code documentation</b><br>
-       pretty-printing, indexing, etc.
-  <li> <b>Web-site management</b><br>
-       enforcing look and feel
+  <li> <b>Slide formatter</b> (this one: 1 day)
+  <li> Code documentation
+       <ul>
+	 <li> pretty-printing, indexing, etc.
+       </ul>
+  <li> Web-site management
+       <ul>
+	 <li> enforcing look and feel
+       </ul>
 </ul>
 </slide>
 
-<!-- to do _with_ it == put that first -->
-<slide><h2>Cool things to do</h2><!-- do _to_ it -->
-Infrastructure: <em>(strictly for hackers)</em>
-<ul>
-  <li> <b>Port to C</b> speed, portability, embedding
-  <li> <b>Integrate with Apache</b> (mod_pia)
-  <li> <b>Re-write the PIA in &lt;<em>your favorite language</em>&gt;</b><br>
-       Squeak / Perl / Guile / Python / ...
-  <li> <b>Integrate with standard XML/SGML parsers</b>
-</ul>
-
+<slide><h2>Cool things to do with it</h2>
 Personal/Developer tools:
 <ul>
-  <li> <b>Webmaster's Assistant</b>
-  <li> <b>Smart Web Cache</b> + annotation
-  <li> <b>SGML Style Sheets</b>
-  <li> <b>Agent templates</b> (it <em>used to</em> work)
-  <li> <b>Form templates</b> (could my wife's flower shop use it?)
-</ul>
-
-</slide>
-
-<slide><h2>Webmaster's Assistant</h2>
-<em>(personal project: for my kids' links)</em>
-<ul>
-  <li> <b>Browse to a page</b>
-  <li> <b>Extract title, first paragraph</b>
-  <li> <b>Get category, keywords from user</b>
-  <li> <b>Construct an index entry</b> like this one:
-</ul>
-<p>
-<dl>
-  <dt> <a href="http://www.risource.org">pia.rsv.ricoh.com</a>
-       PIA -- Platform for Information Applications
-  <dd> PIA is a software framework for flexible and dynamic information
-       applications. It was created by researchers at Ricoh Silicon
-       Valley and makes it possible to create and maintain a new
-       generation of customized information processing applications.
+  <li> <b><a href="appendix.slides.html#assistant">Webmaster's Assistant</a></b>
+  <li> <b>Open-Source Website management package</b>
        <ul>
-	 <li> Entry created 1999-02-25
-	 <li> <b>Note: </b> Maybe we could use this...
+	 <li> I <em>know</em> I'm going to need this one!
        </ul>
-</dl>
+  <li> Smart Web Cache with annotation
+  <li> SGML Style Sheets
+  <li> Agent templates
+       <ul>
+	 <li> (it <em>used to</em> work)
+       </ul>
+  <li> Form templates
+       <ul>
+	 <li> (could my wife's flower shop use it?)
+       </ul>
+</ul>
+
 </slide>
 
-<slide><h2>And, of course,</h2>
+<slide><h2>Cool things to do for yourself</h2>
 
 Personal productivity applications
 <ul>
-  <li> <b>Personal Front Page</b> -- weather, traffic, Linux news, ...
-  <li> <b>Household Intranet</b> -- phonebook, calendar, ...
-  <li> <b>Personal finance + portal</b>
+  <li> Personal Front Page
+       <ul>
+	 <li> weather, traffic, Linux news, ...
+	 <li> look at <a href="http://www.svlug.org/">SVLUG</a>'s page for an
+	      example.  They do it with PERL.
+       </ul>
+  <li> Household Intranet
+       <ul>
+	 <li> phonebook, calendar, ...
+       </ul>
+  <li> Personal finance + portal
+       <ul>
+	 <li> checkbook, stock quotes, tax info...
+       </ul>
 </ul>
+</slide>
 
-<!-- split again -->
+<slide><h2>Cool things to do <em>for workgroups</em></h2>
 Small office/workgroup applications:
 <ul>
   <li> <b>Complete small-office forms package</b>
-  <li> <b>Accounting package</b>
-  <li> <b>Web server administration</b>
-  <li> <b>E-commerce package</b>
-  <li> <b>Portal development kit</b>
-  <li> <b>Intranet in a box</b>
+       <ul>
+	 <li> Our forms are great for a little R&amp;D company, but...
+       </ul>
+  <li> Accounting package
+  <li> <b>Scheduling and project management</b>
+  <li> E-commerce package
+  <li> Intranet in a box
 </ul>
+</slide>
 
-<!-- then the things you want to do _to_ it -->
+<slide><h2>Cool things to do <em>to</em> it</h2>
+Infrastructure: <em>(strictly for hackers)</em>
+<ul>
+  <li> <b>Re-write the PIA in &lt;<em>your favorite language</em>&gt;</b>
+       <ul>
+	 <li> Squeak / Guile / Python / DSSSL? / ...
+	 <li> Revive the <a href="/PIA/src/perl/">Perl</a> version
+       </ul>
+  <li> <b>Port to C</b> speed, portability, embedding
+  <li> <b>Integrate with Apache</b> (mod_pia)
+  <li> Integrate with standard XML/SGML parsers
+       <ul>
+	 <li> Easy, since it uses the DOM.
+       </ul>
+  <li> <b>totally change the tag language</b>
+       <ul>
+	 <li> translate to Japanese, perhaps?
+       </ul>
+</ul>
+</slide>
+
 
 <slide><h2>The Open Source Pitch</h2>
 <em>This is why we need your help!</em>
@@ -257,11 +313,10 @@ Small office/workgroup applications:
 
 <hr><set name=subCaption>Conclusion</set>
 <slide><h2>Where do we go from here?</h2>
-<!-- documents are changing
-     give control of documents back to their users and authors
- -->
+
 <ul>
-  <li> To the barricades! <em>(um, well, website, actually)</em>
+  <li> <strong>To the barricades!</strong>
+       <em>(um, well, website, actually)</em>
        <ul>
 	 <li> <a href="http://pia.rsv.ricoh.com/">pia.rsv.ricoh.com</a><br>
 	      <em>PIA documentation and software</em>
@@ -269,7 +324,33 @@ Small office/workgroup applications:
 	      <em>other document-oriented Open Source software</em>
        </ul>
 </ul>
-<p><strong>The best software is made by people who <em>love</em> it.</strong>
+
+<p> <strong>The goals of the PIA project are:</strong>
+<ol>
+  <li> to make it easy to develop document-oriented applications
+  <li> to give control of documents back to their authors and users.
+</ol>
+
+<p> <strong>The best software is made by people who <em>love</em> it.</strong>
+</slide>
+
+<hr><set name=subCaption>Branch point</set><set name=label>branch</set>
+<slide><h2>Where do we go from here?</h2>
+
+<ul>
+  <li> <a href="history.slides.html#0">History of Documents</a>
+  <li> <a href="architecture.slides.html#0">Architecture</a>
+  <li> <a href="who-what.slides.html#0">Users and Uses</a>
+  <li> <a href="open-source.slides.html#0">Open Source</a>
+  <li> <a href="oss-bkgnd.slides.html#0">Open Source Background Info</a>
+  <li> <a href="appendices.slides.html#0">Appendices</a>
+  <li> <a href="appendices.slides.html#QA">Questions &amp; answers</a>
+       <p>
+  <li> Our web sites:
+       <a href="http://pia.rsv.ricoh.com/">http://pia.rsv.ricoh.com/</a>
+       <a href="http://www.RiSource.org/">www.RiSource.org</a>
+</ul>
+
 </slide>
 
 <hr>

@@ -15,9 +15,15 @@
 <font size='+2'
   ><strong>&subCaption;</strong></font>
 </div>
+<p>&nbsp;
+<ul>
+  <li> <a href="#acks">Acknowledgments</a>
+  <li> <a href="#QA">Questions and Answers</a>
+  <li> <a href="#additional">Additional Material</a>
+</ul>
 </slide>
 
-<hr><set name=subCaption>Acknowledgments</set>
+<hr><set name=subCaption>Acknowledgments</set><set name=lable>acks</set>
 <slide><h2>Software Used</h2>
 <table>
   <tr> <th align=right>Text:    	
@@ -50,7 +56,19 @@
 </table>
 </slide>
 
-<hr><set name=subCaption>Questions and Answers</set>
+<hr><set name=subCaption>Questions and Answers</set><set name=label>QA</set>
+<slide><h2>Isn't this just &lt;active page language&gt;?</h2>
+<ul>
+  <li> 
+</ul>
+</slide>
+
+<slide><h2>Why not just use &lt;page-building tool&gt;?</h2>
+<ul>
+  <li> 
+</ul>
+</slide>
+
 <slide><h2>What About XSL?</h2>
 <ul>
   <li> We started this project before XSL came on the scene
@@ -80,6 +98,139 @@
        little differently. 
 </ul>
 </slide>
+
+<hr><set name=subCaption>Additional Material</set>
+<slide><h2>Additional Material</h2><set name=label>additional</set>
+
+<p> This section contains a few slides that, for one reason or another, don't
+    belong in the main stream of the presentation.
+
+</slide>
+
+<slide><h2>Apology</h2><set name=label>apology</set>
+<p> I have to apologise to everyone in the audience who has the CD-ROM in
+    their laptop and was hoping to follow along with me.   One of the
+    advantages of electronic documents is that you can change them <em>very
+    quickly.</em>
+
+<p> A lot of this presentation was cooked up over the weekend, and some of the
+    bits are still warm.  There's an up-to-date version on our web site.
+</slide>
+
+<slide><h2>Main Loop</h2><set name=label>main-loop</set>
+<pre>
+  <font color=red>/** Process the current Node */</font>
+  public final void <font color=blue>processNode</font>() {
+    Action handler = input.getAction();
+    if (handler != null) {
+      handler.action(input, this, output));
+    } else {
+      copyExpandingChildren(input, this, output);
+    }
+  }
+  <font color=red>/** Copy the children of the current Node */</font>
+  public final void <font color=blue>copyExpandingChildren</font>() {
+    output.startNode(input.getNode());
+    for (Node node = input.toFirstChild() ;
+	 node != null;
+	 node = input.toNextSibling()) {
+      processNode();
+    }
+    output.endNode();    input.toParent();
+  }</pre>
+</slide>
+
+<slide><h2>Webmaster's Assistant</h2><set name=label>assistant</set>
+<em>(personal project: for my kids' links)</em>
+<ul>
+  <li> <b>Browse to a page</b>
+  <li> <b>Extract title, first paragraph</b>
+  <li> <b>Get category, keywords from user</b>
+  <li> <b>Construct an index entry</b> like this one:
+</ul>
+<p>
+<dl>
+  <dt> <a href="http://www.risource.org">pia.rsv.ricoh.com</a>
+       PIA -- Platform for Information Applications
+  <dd> PIA is a software framework for flexible and dynamic information
+       applications. It was created by researchers at Ricoh Silicon
+       Valley and makes it possible to create and maintain a new
+       generation of customized information processing applications.
+       <ul>
+	 <li> Entry created 1999-02-25
+	 <li> <b>Note: </b> Maybe we could use this...
+       </ul>
+</dl>
+</slide>
+
+<slide><h2>Example: Slide Previewer</h2><set name=label>previewer</set>
+Here's what I used for a <a href="/View/slides">Slide previewer</a>.
+<pre>
+&lt;if&gt;&lt;get name=FORM:url&gt;
+  &lt;then&gt;
+    &lt;set name=URL&gt;&lt;text decode=url&gt;&amp;FORM:url;&lt;/text&gt;&lt;/set&gt;
+    &lt;include src="&amp;URL;" tagset="&amp;FORM:tagset;" /&gt;
+  &lt;/then&gt;&lt;else&gt;
+    &lt;html&gt;&lt;head&gt;&lt;title&gt;Slide viewer&lt;/title&gt;
+    &lt;/head&gt;&lt;body&gt;
+      &lt;header&gt;View&lt;/header&gt;  &lt;hr&gt;
+      &lt;form method=GET action=/View/slides&gt;
+        &lt;input type=submit value="View Slides"&gt;
+        &lt;input type=hidden name=tagset value=slides&gt;
+        &lt;b&gt;URL:&lt;/b&gt; &lt;input name=url size=55 maxlength=200&gt;
+      &lt;/form&gt;
+      &lt;footer&gt;
+    &lt;/body&gt;&lt;/html&gt;
+  &lt;/else&gt;
+&lt;/if&gt;
+</pre>
+</slide>
+
+<slide><h2>Example: Browsing History</h2><set name=label>history</set>
+<ul>
+  <li> Consider this: (<a href="/History">live</a>)<br>
+           
+       <a href='Images/history-index.html'>/~History</a> /
+       <a href='Images/1999.html'>1999</a> /
+       <a href='Images/01.html'>01</a> /
+       <a href='Images/29.html'>29</a>
+
+  <li> ... which points to this (and more)<br>
+14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
+14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
+15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
+15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
+15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
+...
+  <li> (This is why I designed the system in the first place...)
+</ul>
+</slide>
+
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> The document processor is <em>between the browser and the web</em>
+  <li> It can look at
+       <ul>
+	 <li> requests
+	 <li> responses
+	 <li> documents
+	 <li> local files
+       </ul>
+  <li> ``Agent'' (History, in this case)
+       <ul>
+	 <li> looks like a top-level directory
+	      (<a href="/History">/History/</a>)
+	 <li> does processing on behalf of <em>one user</em> (me)
+	 <li> keeps persistent state.
+       </ul>
+  <li> Documents are the only interfaces.
+</ul>
+
+</slide>
+
 
 
 <hr>
