@@ -3,8 +3,7 @@
 # COPYRIGHT 1997, Ricoh California Research Center
 # Portions COPYRIGHT 1997, Sun Microsystems
 
-# This makefile should be included in all leaves packages directory. It uses
-# the FILES variable to know what are the files to be compiled.
+# This makefile should be included inre the files to be compiled.
 # For example, if you have a package 'foo' containing 'a.java' and 'b.java'
 # your Makefile should look like this:
 # ----------
@@ -34,12 +33,13 @@ PIADIR=$(TOPDIR)/../../..
 LIBDIR= $(TOPDIR)/../../../lib/java
 BINDIR=$(TOPDIR)/../../../bin
 
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl1.1.zip
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
- #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
+#JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 #sun 1.0.2 location
-JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
+#JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
+JAVACLASSES= /usr/local/java/lib/classes.zip
 
 .SUFFIXES: .java .class
 
@@ -53,6 +53,7 @@ doc::	$(DOCDIR)
 	@echo $(DOCDIR) made
 
 $(DOCDIR):
+
 	mkdir $(DOCDIR)
 
 doc::
@@ -60,5 +61,6 @@ doc::
 
 clean::
 	@@rm -rf *~ *.class
+
 
 
