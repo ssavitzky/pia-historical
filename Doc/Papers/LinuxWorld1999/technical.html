@@ -1,0 +1,197 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Technical Details</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Technical Details</h1>
+<include src=config.inc>
+
+
+
+<slide><h2>What do you want to do?</h2>
+<ul>
+  <li> <b>Small-office form processing</b>
+  <li> <b>Personal productivity applications</b>
+  <li> <b>Website management</b>
+  <li> <b>E-Commerce</b>
+  <li> <b>Intranet Portal</b>
+  <li> <b>Development project management</b>
+</ul>
+</slide>
+
+
+
+
+<slide><h2>Example: form processing</h2>
+<div align=center> <b>Check Approval Form</b>
+</div>
+
+<form>
+  <table>
+   <tr><th align=right>Requestor:  <td><input name=name value="Stephen Savitzky">
+       <th align=right>Amount:     <td><input name=amt value="2300">
+   <tr><th align=right>Item:       <td><input name=amt width=30 value="Laptop">
+       <th align=right>Reference:  <td><a href=/forms/PR/1024>PR-1999-02-29-0100</a>
+   <tr><th align=right>Justification:
+        <td colspan=3><textarea rows=4 cols=40> I need a new laptop for
+the LinuxWorld presentation.
+Please?
+   </textarea>
+   <tr><th>Name: <td> <input name=name value="Greg Wolff">
+       <td> Sign: <td> <input name=pass>
+   <tr><th>Next:  <td> <input name=next value="Peter Hart">
+       <td><input type=submit value="Route Form">
+</form>
+
+</slide>
+
+
+<slide><h2>Things to notice</h2>
+<ul>
+  <li> <b>Need to get information from other documents</b>
+       <ul>
+	 <li> Purchase Request form
+	 <li> list of employees and managers
+	 <li> Routing list
+       </ul>
+  <li> <b>Some processing is needed</b>
+       <ol>
+	 <li> To present the form
+	 <li> To handle the form
+       </ol>
+</ul>
+</slide>
+
+
+
+
+<slide><h2>Processing</h2>
+<ul>
+  <li> <b>Assembling the Form</b>
+       <ul>
+	 <li> Extract basic info from PR (XML)
+	 <li> Get full names from <code>/etc/passwd</code> (text)
+	 <li> Construct form (HTML)
+       </ul>
+  <li> <b>Handling the form</b>
+       <ul>
+	 <li> Verify digital signature
+	 <li> Update database
+	 <li> Send e-mail to next person in route
+	 <li> Construct response page (HTML)
+       </ul>
+</ul>
+<em>That's a lot of PERL code, isn't it?</em>
+<ul>
+  <li> <b>Normally at least 2 CGI scripts</b>
+</ul>
+</slide>
+
+
+
+
+<slide><h2>How we do it</h2>
+<ul>
+  <li> <b>Everything is a document</b>
+       <ul>
+	 <li> All information is XML --
+	      easy to parse and extract
+	 <li> All <em>actions</em> are XML --
+	      <em>embedded</em> in the form itself
+       </ul>
+  <li> <b>HTML tags get passed along</b>
+  <li> <b>Action tags get ``expanded''</b>
+  <li> <b>Data comes out of documents</b>
+</ul>
+</slide>
+
+
+<slide><h2>How does that work?</h2>
+<ul>
+  <li> <b>Here's how we get the requestor's full name:</b>
+       <ul>
+	 <li> &lt;set name=ruser>&lt;get name=PR:req&gt;&lt;/set&gt;
+	 <li> &lt;set name=requestor&gt;<br>
+	      &nbsp;&nbsp;&lt;extract&gt;&lt;from&gt;&amp;USERNAMES;
+	      &lt;name&gt;&amp;ruser&lt;/extract&gt; 
+	 <li> &lt;input name=req value=&amp;requestor;&gt;
+       </ul>
+       <p>
+
+  <li> <b>Here's how we verify the signature:</b>
+       <ul>
+	 <li> &lt;if&gt;&lt;verify-signature name=&amp;name;
+	      pass=&amp;pass;&gt; <br>
+	      &nbsp; &lt;then&gt; &lt;h2&gt;approved&lt;/h2&gt; <br>
+	      &nbsp; &nbsp; Routed to &amp;FORM:next;. <br>
+	      &hbsp; &nbsp;  <br>
+	      &nbsp; &lt;/then&gt; <br>
+	      &nbsp; &lt;else&gt; &lt;h2&gt;approved&lt;/h2&gt; <br>
+	      &nbsp; &nbsp; Routed to &amp;FORM:next;. <br>
+	      &nbsp; &nbsp; <em>... code to send e-mail, etc. ...</em>
+	      &nbsp; &lt;/else&gt; <br>
+	      &nbsp; &lt;else&gt; &lt;h2&gt;Rejected&lt;/h2&gt; <br>
+	      &nbsp; &nbsp; Couldn't verify signature. <br>
+	      &lt;/if&gt;
+       </ul>
+</ul>
+</slide>
+
+<slide><h2>Annotated Bookmark Generator</h2>
+<ul>
+  <li> <b>Browse to a page</b>
+  <li> <b>Extract title, first paragraph</b>
+  <li> <b>Get category, keywords from user</b>
+  <li> <b>Construct an index entry</b><br>
+       <dl>
+	 <dt> <a href="http://www.risource.org">pia.rsv.ricoh.com</a>
+	      PIA -- Platform for Information Applications
+	 <dd> PIA is a software framework for flexible and dynamic information
+              applications. It was created by researchers at Ricoh Silicon
+              Valley and makes it possible to create and maintain a new
+              generation of customized information processing applications.
+	      <ul>
+		<li> Entry created 1999-02-25
+		<li> <b>Note: </b> Maybe we could use this...
+	      </ul>
+       </dl>
+</ul>
+</slide>
+
+<slide><h2>More processing:</h2>
+<ul>
+  <li> <b>Proxy: Annotate pages while browsing</b>
+  <li> <b>Client: fetch referenced pages for processing</b>
+  <li> <b>Extract information by tag, position</b>
+  <li> <b>Write files in user's home directory</b>
+  <li> <b>Fix up relative links</b>
+</ul>
+</slide>
+
+
+
+
+<slide><h2></h2>
+<ul>
+  <li> <b></b>
+</ul>
+</slide>
+
+
+
+
+<slide><h2></h2>
+<ul>
+  <li> <b></b>
+</ul>
+</slide>
+
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

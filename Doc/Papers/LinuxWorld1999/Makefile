@@ -13,7 +13,9 @@ include $(MF_DIR)/subdir.make
 
 SUBDIRS= Images
 
-FILES = lw99.html architecture.html who-what.html \
+FILES = \
+	technical.html \
+	lw99.html architecture.html who-what.html \
 	open-source.html oss-bkgnd.html appendices.html \
 	open-source-and-ricoh.html appliances.html
 
