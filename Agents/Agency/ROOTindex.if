@@ -11,14 +11,14 @@
     <th width=170 nowrap>
 <tr height=2><td colspan=2 bgcolor="#000000" nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=340><br></tr>
-<tr nowrap nobr><th align=left><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
-	border=0 width=170 height=21></a>
+<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
+	border=0 width=170 height=21 align=top></a>
     <th align=right width=170>
     <th align=left nowrap nobr valign=center><font face=helvetica>
         <a href="/"><img width=85 height=45 border=0 alt=PIA
 	    	         src="/Agency/Icons/pia45.gif"></a></font><br></tr>
- <tr><th><th valign=top align=right width=170><font face=helvetica>
+<tr><th><th valign=top align=right width=170><font face=helvetica>
 	    <if><test exact match='pia'><get env name="USER"></test>
 		<then></then>
 		<else><a href="/My/">&piaUSER;'s</a> </else></if></font></th>
