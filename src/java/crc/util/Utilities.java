@@ -4,6 +4,7 @@
 
 package crc.util;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,48 +14,56 @@ import crc.util.regexp.RegExp;
 
 public class Utilities{
 
-public static synchronized StringBuffer readFrom( String fileName, StringBuffer str ){
-    File f;
+public static synchronized byte[] readFrom( String fileName ) throws NullPointerException, FileNotFoundException, IOException{
+    File f = null;
     FileInputStream source = null;
-    StringBuffer s = new StringBuffer("");
-    byte[]buffer = new byte[1024];
-    int bytesRead;
-    String readString;
+    byte[]tmp = new byte[1024];
+    byte[]buffer = null;
+    int bytesRead = -1;
+    int total = 0;
 
     try{
-      f = new File(fileName);
+      f = new File( fileName );
+      long len = f.length();
+      buffer = new byte[ (int)len ];
+
       source = new FileInputStream( f );
-      while(true){
-	bytesRead = source.read( buffer, 0, 1024 );
-	readString = new String( buffer, 0, 0, bytesRead );
+      for(;;){
+	bytesRead = source.read( tmp, 0, 1024 );
 
 	if(bytesRead == -1) break;
-        if(str!=null)
-	  str.append( readString );
-	else
-	  s.append( readString );
+	System.arraycopy(tmp, 0, buffer, total, bytesRead);
+	total += bytesRead;
       }
-      return (str!=null) ? str : s;
+
+      return buffer;  
       
-    }catch(NullPointerException e){
-      System.out.println("Invalid file name\n");
+    }catch(NullPointerException e1){
+      throw e1;
+    }catch(FileNotFoundException e2){
+      throw e2;
+    }catch(IOException e3){
+      throw e3;
+    }catch(Exception e4){
+      //ArrayindexOutOfBoundsException, ... -- for arraycopy
+      return null;
     }finally{
-      if(source!=null)
+      if( source != null )
 	try {
-	  source.close();
-	}catch(IOException e){
-	  System.out.println("Exception from readFrom" + e + "\n");
-	}
-      return (str!=null) ? str : s; 
+	source.close();
+      }catch(IOException e5){
+	throw e5;
+      }
     }
+    
   }
   
 
- /**
+  /**
    * Given a string, write to file.
    *
    */
-  public static synchronized void writeTo( String fileName, String str ){
+  public static synchronized void writeTo( String fileName, String str )throws IOException{
     File f;
     FileOutputStream fileStream;
     DataOutputStream destination = null;
@@ -66,15 +75,16 @@ public static synchronized StringBuffer readFrom( String fileName, StringBuffer 
       fileStream = new FileOutputStream( f );
       destination = new DataOutputStream( fileStream );
       destination.writeChars( str );
-    }catch(Exception e){
-      System.out.println("Invalid file name\n");
+    }catch(IOException e1){
+      //either from writeChars or Fileoutputstream creation
+      throw e1;
     }finally{
       if(destination!=null)
 	try {
-	    destination.close();
-	}catch(IOException e){
-	   System.out.println("Exception from writeTo" + e + "\n");
-        }
+	destination.close();
+      }catch(IOException e2){
+	throw e2;
+      }
     }
   }
 
@@ -82,7 +92,7 @@ public static synchronized StringBuffer readFrom( String fileName, StringBuffer 
    * Given a string, append to file.
    *
    */
-  public static synchronized  void appendTo( String fileName, String str ){
+  public static synchronized  void appendTo( String fileName, String str ) throws NullPointerException, IOException{
     RandomAccessFile f = null;
 
     if(str==null) return;
@@ -92,20 +102,21 @@ public static synchronized StringBuffer readFrom( String fileName, StringBuffer 
       long length = f.length();
       f.seek( length );
       f.writeChars( str );
-    }catch(NullPointerException e){
-      System.out.println("Invalid file name\n");
+    }catch(NullPointerException e1){
+      // bad file name
+      throw e1;
     }catch(IOException e2){
-      System.out.println("Exception occurs in appendTo: " + e2 + "\n");
+      throw e2;
     }
     finally{
       if(f!=null)
 	try {
-	     f.close();
-	}catch(IOException e){
-	   System.out.println("Exception from appendTo" + e + "\n");
-        }
+	f.close();
+      }catch(IOException e3){
+	throw e3;
+      }
     }
-
+    
   }
 
 
