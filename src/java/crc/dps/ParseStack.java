@@ -20,6 +20,8 @@
  */
 
 package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeList;
 
 public class ParseStack extends StackFrame {
 
@@ -65,20 +67,34 @@ public class ParseStack extends StackFrame {
 
 
   /** Is the Processor currently constructing a parse tree? */
-  public final boolean parsing() {
+  public final boolean isParsing() {
     return parsing;
   }
 
   /** Is the Processor currently executing handlers? */
-  public final boolean expanding() {
+  public final boolean isExpanding() {
     return expanding;
   }
 
   /** Is the Processor currently passing start tags? */
-  public final boolean passing() {
+  public final boolean isPassing() {
     return passing;
   }
 
+  /** Set the flag that determines whether a parse tree is being constructed. 
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setParsing(boolean value) { parsing = value; }
+
+  /** Set the flag that determines whether a parse tree is being constructed. 
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setPassing(boolean value) { passing = value; }
+
+  /** Set the flag that determines whether handlers are being called.
+   *	Applies to this Node in the parse tree, and its children.
+   */
+  public void setExpanding(boolean value) { expanding = value; }
 
 
   /************************************************************************
@@ -88,7 +104,7 @@ public class ParseStack extends StackFrame {
   protected EntityTable entities;
   protected ParseStack entityContext;
 
-  protected HandlerTable handlers;
+  protected Tagset handlers;
   protected ParseStack handlerContext;
 
   /************************************************************************
@@ -111,10 +127,10 @@ public class ParseStack extends StackFrame {
     return entityContext;
   }
 
-  /** Returns the current HandlerTable. 
+  /** Returns the current Tagset. 
    *	Returns null if no entities are defined at this level.  
    */
-  public final HandlerTable getHandlers() {
+  public final Tagset getHandlers() {
     return handlers;
   }
 
@@ -155,11 +171,11 @@ public class ParseStack extends StackFrame {
   ************************************************************************/
 
   public ParseStack() {
-    StackFrame(0);
+    super(0);
   }
 
   public ParseStack(ParseStack nxt) {
-    StackFrame(nxt.depth + 1);
+    super(nxt.depth + 1);
     next = nxt;
   }
 

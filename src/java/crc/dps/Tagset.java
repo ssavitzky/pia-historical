@@ -29,11 +29,25 @@
 
 package crc.dps;
 import crc.dom.Node;
+import crc.dom.DocumentType;
+import java.util.Enumeration;
 
 public interface Tagset {
 
   /************************************************************************
-  ** Parsing Operations:
+  ** Context:
+  ************************************************************************/
+
+  /** Returns a Tagset which will handle defaults. 
+   *	Note that it may or may not be used by the various lookup
+   *	operations; it will usually be more efficient to duplicate the
+   *	entries of the context.  However, lightweight implementations
+   *	that define only a small number of tags may use it.
+   */
+  public Tagset getContext();
+
+  /************************************************************************
+  ** Lookup Operations:
   ************************************************************************/
 
   /** Called during parsing to return a suitable Handler for a given
@@ -42,10 +56,10 @@ public interface Tagset {
   public Handler handlerForTag(String tagname);
 
   /** Called during parsing to return a suitable Handler for a new Text
-   *	node.  The string is passed because the Handler might depend on 
-   *	whether the text is whitespace or not.
+   *	node.  It is up to the Parser to determine whether the text consists
+   *	only of whitespace.
    */
-  public Handler handlerForText(String text);
+  public Handler handlerForText(boolean isWhitespace);
 
   /** Called during parsing to return a suitable Token for a generic
    *	Node, given the Node's type.
@@ -56,27 +70,6 @@ public interface Tagset {
    *	entity reference.
    */
   public Handler handlerForEntity(String entityName);
-
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before an end tag.
-   * @param t the Token for which this is the handler, and for which the
-   *	nesting is being checked.
-   * @param p the Parser.
-   * @return a list of generated end-tag tokens, innermost first, to be
-   *	returned from the parser ahead of <code>t</code>. 
-   */
-  public TokenList checkEndNesting(Token t, Parser p);
-
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before a start tag or complete element.
-   *
-   * @param t the Token for which this is the handler, and for which the
-   *	nesting is being checked.
-   * @param p the Parser.
-   * @return a list of generated end-tag tokens, innermost first, to be
-   *	returned from the parser ahead of <code>t</code>.
-   */
-  public TokenList checkElementNesting(Token t, Parser p);
 
 
   /************************************************************************
@@ -108,12 +101,23 @@ public interface Tagset {
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.
    */
-  public Node getDTD();
+  public DocumentType getDocumentType();
 
 
   /************************************************************************
   ** Documentation Operations:
   ************************************************************************/
+
+  /** Returns an Enumeration of the element names defined in this
+   *	table.  Note that there is no good way to get the handlers for
+   *	Node types other than Element unless the implementation gives
+   *	them distinctive, generated names.
+   */
+  public Enumeration elementNames();
+
+  /** Returns an Enumeration of the element names defined in this table and
+   *	its context. */
+  public Enumeration allNames();
 
 
 }

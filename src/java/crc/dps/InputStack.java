@@ -1,12 +1,19 @@
-////// InputStack.java: Input stack frame
+////// InputStack.java: Input stack interface
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
 /**
- * The implementation of a Processor's input stack, using a linked list.
+ * The interface for a Processor's input stack.
+ * <p>
+ *	The interface is designed so that an InputStack can easily be
+ *	implemented using a linked list of InputStackFrame objects; it
+ *	is expected that most Input implementations will conform to both
+ *	interfaces.  <p>
  *
- *	The Processor maintains a stack of Input objects from which
- *	Token objects are obtained as needed.    <p>
+ *	However, since a Processor <em>is</em> an Input, and so can
+ *	be pushed onto an InputStack in addition to having one of its 
+ *	own, it is important that a Processor <em>not</em> implement
+ *	InputStackFrame.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -19,53 +26,46 @@
 
 package crc.dps;
 
-public class InputStack extends StackFrame {
+public interface InputStack extends Input {
 
   /************************************************************************
-  ** InputStack Frame information:
+  ** Stack Operations:
   ************************************************************************/
 
-  /** The actual Input object at this level of the stack. */
-  protected Input input;
-
-  public final Input getInput() {
-    return input;
-  }
-
-  /************************************************************************
-  ** StackFrame:
-  ************************************************************************/
-
-  /** The pointer to the next InputStack frame in the stack. */
-  protected InputStack next = null;
-
-  
-  /************************************************************************
-  ** Basic stack traversal:
-  ************************************************************************/
-
-  /** Returns the next InputStack frame in the linked list.
+  /** Push an Input onto the stack.  
+   *	Defined so that either an array or a linked list implementation
+   *	is possible; a linked list would be somewhat more efficient. 
+   *
+   * @return the new InputStack.
    */
-  public final InputStack getNext() {
-    return next;
-  }
+  public InputStack pushInput(Input anInput);
 
-  public final StackFrame getNextFrame() {
-    return next;
-  }
+  /** Push an InputStackFrame onto the stack.  
+   *	an InputStackFrame is basically an Input with a ``next'' pointer.
+   *
+   * @return the new InputStack.
+   */
+  public InputStack pushFrame(InputStackFrame aFrame);
+
+  /** Pop the old top Input.  
+   *	Defined so that either an array or a linked list implementation
+   *	is possible; a linked list would be somewhat more efficient. 
+   *
+   * @return the new InputStack, or <code>null</code> if there is no
+   *	next Input.
+   */
+  public InputStack popInput();
+
+  /** Returns the Input object at this level.  
+   *	(Note that it is usually more efficient to perform Input operations
+   *	 directly on the InputStack, since it is probably a linked list
+   *	 of objects that implement both the linked list and Input operations.)
+   */
+  public Input topInput();
 
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
-
-  public InputStack() {
-    StackFrame(0);
-  }
-
-  public InputStack(InputStack nxt) {
-    StackFrame(nxt.depth + 1);
-    next = nxt;
-  }
 
 }

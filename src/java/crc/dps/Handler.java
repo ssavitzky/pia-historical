@@ -33,6 +33,7 @@
 
 package crc.dps;
 import crc.dom.Node;
+import crc.dom.NodeList;
 
 public interface Handler {
 
@@ -93,8 +94,9 @@ public interface Handler {
   ************************************************************************/
 
   /** Called during parsing to return a suitable start tag or complete
-   *	element Token.  The new Token's handler will be
-   *	<code>this</code>.  Typically the Parser will have found the
+   *	element Token.  The new Token's handler will normally be
+   *	<code>this</code>, although the Handler may select an alternative
+   *	based on the attributes.  Typically the Parser will have found the
    *	handler in a Tagset.
    */
   public Token createStartToken(String tagname, NodeList attributes, Parser p);
@@ -120,10 +122,10 @@ public interface Handler {
    * @param t the Token for which this is the handler, and for which the
    *	nesting is being checked.
    * @param p the Parser.
-   * @return a list of generated end-tag tokens, innermost first, to be
-   *	returned from the parser ahead of <code>t</code>. 
+   * @return the number of elements that need to be ended before
+   * 	<code>t</code> can be ended.
    */
-  public TokenList checkEndNesting(Token t, Parser p);
+  public int checkEndNesting(Token t, Parser p);
 
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before a start tag or complete element.
@@ -131,10 +133,10 @@ public interface Handler {
    * @param t the Token for which this is the handler, and for which the
    *	nesting is being checked.
    * @param p the Parser.
-   * @return a list of generated end-tag tokens, innermost first, to be
-   *	returned from the parser ahead of <code>t</code>.
+   * @return the number of elements that need to be ended before
+   * 	<code>t</code> can be started.
    */
-  public TokenList checkElementNesting(Token t, Parser p);
+  public int checkElementNesting(Token t, Parser p);
 
   /** Returns the Tagset from which this Handler came. */
   public Tagset getTagset();

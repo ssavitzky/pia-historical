@@ -48,7 +48,7 @@ public abstract class StackFrame  {
    *	By convention the strongly-typed version of this operation is 
    *	called <code>getNext</code>.
    */
-  public StackFrame getNextFrame();
+  public abstract StackFrame getNextFrame();
 
   /** Returns the item at the top of the stack. */
 

@@ -30,11 +30,11 @@ public interface Parser extends Input {
   public Processor getProcessor();
 
   /************************************************************************
-  ** Syntax Access:
+  ** Access to Bindings:
   ************************************************************************/
 
-  /** Returns the handler table to be used by the Parser. */
-  public HandlerTable getHandlers();
+  /** Returns the Tagset being used by the Parser. */
+  public Tagset getTagset();
 
   /** Returns the character entity table to be used by the Parser.
    *	Entities in the table are quietly replaced by their values;

@@ -39,6 +39,8 @@
  * @see crc.dps.Input */
 
 package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeList;
 
 public interface Processor extends Input {
 
@@ -65,10 +67,10 @@ public interface Processor extends Input {
   ************************************************************************/
 
   /** Obtain the Handler for a given tag. */
-  public Syntax getHandlerForTag(String tag);
+  public Handler getHandlerForTag(String tag);
 
   /** Obtain the Handler for a given Node. */
-  public Syntax getHandlerForNode(Node aNode);
+  public Handler getHandlerForNode(Node aNode);
 
   /** Obtain the value associated with a given entity. */
   public NodeList getEntityValue(String name);
@@ -78,8 +80,45 @@ public interface Processor extends Input {
   ** Input Stack Operations:
   ************************************************************************/
 
+  /** Return the input stack */
+  public InputStack getInputStack();
+
   /** Push an Input onto the input stack. */
   public void pushInput(Input anInput);
+
+  /** Push an InputStackFrame (specialized Input) onto the stack. */
+  public void pushFrame(InputStackFrame aFrame);
+
+  /** Push a Token onto the input stack.
+   *	This is a convenience function, included in the Processor interface 
+   *	mainly for increased efficiency.
+   */
+  public void pushInput(Token aToken);
+
+  /** Push a Token onto the input stack to be expanded as a start tag,
+   *	content, and end tag.
+   */
+  public void pushInto(Token aToken);
+
+  /** Push a Node onto the input stack.
+   *	This is a convenience function, included in the Processor
+   *	interface mainly for increased efficiency.  The Node is
+   *	converted to a Token using the Processor's current Tagset.
+   */
+  public void pushInput(Node aNode);
+
+  /** Push a Node onto the input stack to be expanded as a start tag,
+   *	content, and end tag.  Token conversion is done using the 
+   *	Processor's current Tagset.
+   */
+  public void pushInto(Node aNode);
+
+  /** Push a NodeList onto the input stack.
+   *	This is a convenience function, included in the Processor
+   *	interface mainly for increased efficiency.  The Nodes are
+   *	converted to Tokens using the Processor's current Tagset.
+   */
+  public void pushInput(NodeList aNodeList);
 
 
   /************************************************************************
