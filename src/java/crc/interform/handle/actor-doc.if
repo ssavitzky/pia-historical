@@ -23,9 +23,9 @@
        <then>
        <dl>
 	 <dt> Syntax:
-	 <dd> <add-markup><actor-syntax name=&li;></add-markup>
+	 <dd> <pre><add-markup><actor-syntax name=&li;></add-markup></pre>
 	 <dt> Description:
-	 <dd> <add-markup><actor-dscr name=&li;></add-markup><br>
+	 <dd> <add-markup><actor-dscr name=&li;></add-markup>
 	 <dt> Definition:
 	 <dd> &lt;actor <actor-attrs name=&li;>&gt;...&lt;/actor&gt;
        </dl>
