@@ -26,7 +26,17 @@
 #	This has serious problems when you're trying to use source control.
 
 CLASSDIR= $(TOPDIR)/classes
-JAVACLASSES= /usr/local/java/lib/classes.zip
+
+#piahome/lib/java/*.zip   
+#zip files added in file.make...could determine automatically...
+LIBDIR= $(TOPDIR)/../../../lib/java
+
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl1.1.zip
+
+##javac wrapper should find these  .. specify explicitly if problem
+ #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
+#sun 1.0.2 location
+JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
 
 DOCDIR  = $(TOPDIR)/Doc
 
@@ -34,7 +44,7 @@ DOCDIR  = $(TOPDIR)/Doc
 
 .java.class:
 #	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
-	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -g $<
+	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -g $<
 
 all:: $(FILES:.java=.class)
 
@@ -45,7 +55,7 @@ $(DOCDIR):
 	mkdir $(DOCDIR)
 
 doc::
-	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) $(PACKAGE)
+	javadoc -d $(DOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) $(PACKAGE)
 
 clean::
 	@@rm -rf *~ *.class
