@@ -13,6 +13,7 @@ import crc.ds.TernFunc;
 
 import crc.pia.Machine;
 import crc.pia.Agent;
+import crc.pia.Pia;
 import crc.pia.Resolver;
 import crc.pia.Transaction;
 import crc.pia.ByteStreamContent;
@@ -69,8 +70,19 @@ public class AgentMachine extends Machine {
    * send response using a predefined callback
    */
    public void sendResponse (Transaction reply, Resolver resolver) {
+     // I really don't know what to do here
+     /*
      TernFunc cb = callback();
      cb.execute(agent, reply, resolver);
+     */
+     if( reply != null ){
+       Content c = reply.contentObj();
+       if( c != null ){
+	 String cs = c.toString();
+	 Pia.instance().debug(this, cs);
+       }
+     }
+     
    }
   
   /**
