@@ -32,6 +32,7 @@ public class Standard_ts extends StandAlone_ts {
 
     defActors(emptyActors, "empty", true);
     defActors(parsedActors, "parsed", true);
+    lock();
   }
 
 }
