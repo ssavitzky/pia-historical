@@ -57,7 +57,7 @@ sub tag {
     ## Return (optionally set) the tag.
 
     if (@_) {
-	$self->{'_tag'} = $_[0];
+	$self->{'_tag'} = lc $_[0];
     } else {
 	$self->{'_tag'};
     }
