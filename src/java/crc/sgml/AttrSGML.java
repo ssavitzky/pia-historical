@@ -49,9 +49,40 @@ public abstract class AttrSGML extends AttrBase implements SGML {
  */
 public SGML attr(Index  path)
   {
-   
-    SGML result = attr(path.getTag());
-    //   if(path.getStart()>0) return null;
+    String s = path.getTag();
+    
+    if(s.equals(Index.ANY)){
+     // return a dl content
+     //assignments to this object will not be reflected in our content
+      return content();
+    }
+    if(s.equalsIgnoreCase("KEYS") && !hasAttr("keys") ){
+      return new Tokens(attrs());
+    }
+
+    Tokens result = new Tokens();
+
+    if(s.equalsIgnoreCase("VALUES") && !hasAttr("values") ){
+      Enumeration e = attrs();
+      while(e.hasMoreElements()){
+	result.append(attr((String)e.nextElement()));
+      }
+// range specified?
+      int start = path.getStart();
+      int end = path.getEnd();
+      if(start == 1 &&  end == -1) return result;
+      
+      if( start>result.nItems()){
+	return new Tokens();
+      }
+      int stop = (end < start) ?  result.nItems() :  end;
+      
+      return result.copy( start, stop);
+      
+    }
+    
+    // normal case -- get this attribute -- ignore ranges
+    result.append(attr(s));
     return result;
   }
   
@@ -101,7 +132,7 @@ public SGML attr(Index  path)
   /** Convert the object to a single Element.  The result is a &gt;dl&lt;
    * 	element. */
   public Element toElement() {
-    return new Element("dl", (Attrs)this);
+    return new DescriptionList("dl", (Attrs)this);
   }
 
   /** Convert to a single token if it's a singleton list. */

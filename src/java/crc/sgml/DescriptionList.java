@@ -299,6 +299,9 @@ public class  DescriptionList extends crc.sgml.Element {
   public DescriptionList(Element e) {
     super(e);
   }
+  public DescriptionList(String tag, Attrs tbl) {
+    super(tag,tbl);
+  }
   
 }
 

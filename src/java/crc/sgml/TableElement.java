@@ -150,6 +150,20 @@ public class TableElement extends crc.sgml.Element {
     return data[row][col];
   }
 
+
+  public SGML getTable(int rowstart,int rowend,int columnstart,int columnend){
+    buildTable();
+    if(rowend<0)rowend=nRows;
+    
+    if(columnend<0)columnend=nCols;
+    int a[]={rowstart, rowend};
+    int b[]={columnstart,columnend    };
+    
+    
+    
+    return copy(a,b)
+  }
+
   /************************************************************************
   ** Access to attributes:
   ************************************************************************/
