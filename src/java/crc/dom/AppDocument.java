@@ -11,13 +11,6 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.Document;
-import w3c.dom.Node;
-import w3c.dom.Element;
-import w3c.dom.NodeEnumerator;
-import w3c.dom.NodeList;
-import w3c.dom.NotMyChildException;
-
 public class AppDocument extends AbstractDocument implements Document {
 
   /**
@@ -45,7 +38,7 @@ public class AppDocument extends AbstractDocument implements Document {
   public NodeEnumerator getElementsByTagName(String name){ return null; }
 
   /* implementing Node interface */
-  public int getNodeType(){ return AbstractNode.NodeType.DOCUMENT; }
+  public int getNodeType(){ return NodeType.DOCUMENT; }
   public Node getParentNode(){ return null; }
   public NodeList getChildren(){ return null; }
   public boolean hasChildren(){ return false; }

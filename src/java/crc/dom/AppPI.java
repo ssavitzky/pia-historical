@@ -3,7 +3,8 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 package crc.dom;
 
-import w3c.dom.PI;
+
+
 
 public class AppPI extends AbstractNode implements PI {
 
@@ -18,7 +19,7 @@ public class AppPI extends AbstractNode implements PI {
   public void setData(String data){ this.data = data; }
   public String getData(){return data;}
 
-  public int getNodeType(){ return AbstractNode.NodeType.PI; }
+  public int getNodeType(){ return NodeType.PI; }
 
   protected String name;
   protected String data;
