@@ -38,9 +38,12 @@ programs for test purposes):
 <ol>
   <li> <a href="JavaDoc/crc.pia.Pia.html">crc.pia.Pia</a><br>
        the main program of the PIA itself.
-  <li> <a href="JavaDoc/crc.interform.Filter.html">crc.interform.Filter</a><br>
-       a stand-alone implementation of the InterForm interpretor for use as a
-       stream filter, document processor, or CGI script.
+  <li> <a href="JavaDoc/crc.dps.Filter.html">crc.dps.Filter</a><br>
+       a stand-alone document processor for use as a
+       stream filter, document processor, or CGI script.  This replaces the
+       earlier interpretor,
+       <a href="JavaDoc/crc.interform.Filter.html">crc.interform.Filter</a>,
+       which may still be in use in some places.
 </ol>
 
 Both are accessible via small wrapper programs in the <code><a
@@ -49,10 +52,12 @@ href="../../../bin">pia/bin</a></code> directory:
 <ol>
   <li> <a href="../../../bin/pia"><code>bin/pia</code></a> (and
        <code>pia.exe</code> for Windows)
-  <li> <a href="../../../bin/filter"><code>bin/filter</code></a> (and
-       <code>filter.exe</code> for Windows)
+  <li> <a href="../../../bin/process"><code>bin/process</code></a> (and
+       <code>process.exe</code> for Windows)
   <li> <a href="../../../bin/interform.cgi"><code>bin/interform.cgi</code></a>
        (and <code>interform.exe</code> for Windows)
+  <li> <a href="../../../bin/iffilter"><code>bin/filter</code></a> (and
+       <code>filter.exe</code> for Windows) -- the old InterForm filter
 </ol>
 
 Note that all are stand-alone applications.  None of these programs can be
@@ -83,10 +88,10 @@ The PIA is implemented using the following packages:
        href="JavaDoc/Package-crc.dom.html">crc.dom</a>  for representing
        active parse trees; these are extended to include syntax and semantic
        handlers. 
-  <dt> <a href="JavaDoc/Package-crc.interform.handle.html">crc.interform.handle</a>
-  <dd> Classes that <em>handle</em> particular InterForm <a
-       href="JavaDoc/crc.interform.Actor">Actor</a>s or <a
-       href="JavaDoc/crc.interform.Tagset">Tagset</a>s. 
+  <dt> <a href="JavaDoc/Package-crc.dps.handle.html">crc.dps.handle</a>
+  <dd> Classes that <em>handle</em> particular InterForm elements. 
+  <dt> <a href="JavaDoc/Package-crc.dps.tagset.html">crc.dps.tagset</a>
+  <dd> Classes and tagset definition files that implement the various tagsets.
   <dt> <a href="JavaDoc/Package-crc.pia.html">crc.pia</a>
   <dd> The <em>PIA</em> itself, and in general everything that deals with HTTP
        <a href="JavaDoc/crc.pia.Transaction.html">Transaction</a>s.
@@ -107,7 +112,7 @@ The PIA is implemented using the following packages:
 </dl>
 
 Handler classes in
-<a href="JavaDoc/Package-crc.interform.handle.html">crc.interform.handle</a>,
+<a href="JavaDoc/Package-crc.dps.handle.html">crc.dps.handle</a>,
 <a href="JavaDoc/Package-crc.pia.agent.html">crc.pia.agent</a>, and
 <a href="JavaDoc/Package-crc.tf.html">crc.tf</a> are loaded by name when
 needed. <p>
@@ -115,8 +120,8 @@ needed. <p>
 
 <h3>Note:</h3>
 
-As of the Alpha release this manual is still under construction.  Suggestions
-about what else to include would be greatly appreciated.<p>
+This manual is still under construction.  Suggestions about what else to
+include would be greatly appreciated.<p>
 
 
 <hr>

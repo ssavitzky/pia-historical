@@ -60,6 +60,31 @@ word-processor macros or text-formatting style sheets.  Programmers will find
 that, in spite of their unfamiliar syntax, InterForms have all the power of
 any modern object-based language.<p>
 
+<h3>InterForm Filename Extensions</h3>
+
+As in most document-processing systems, the default file type of an InterForm
+is indicated by its ``extension'' -- the characters its name following the
+last period character.  The defined extensions are:
+
+<dl compact>
+  <dt> .xh
+  <dd> ``eXtended-HTML'' -- resulting in a MIME type of
+     <code>text/html</code> 
+  <dt> .xx 
+  <dd> ``eXtended-XML'' -- resulting in a MIME type appropriate for XML.
+  <dt> .xm 
+  <dd> ``eXtended-MIME -- the MIME type (optionally, the whole HTML header) is
+       in the document. [currently unimplemented]
+  <dt> .lif
+  <dd> ``legacy'' InterForm processed with the new DPS.  Since the legacy
+       tagset is incomplete, these won't work in all cases.  [Soon to be
+       obsolete. ]
+  <dt> .if
+  <dd> InterForm processed with the <em>old</em> interpretor.  [Soon to be
+       obsolete. ]
+</dl>
+
+
 <h3>InterForm Data Structures</h3>
 
 The key idea behind InterForms is <em>computing with documents</em>, so data
@@ -124,6 +149,13 @@ documents with other document types <em>into</em> HTML.<p>
 
 <hr>
 <h2><a name="interp">The InterForm Interpretor</a></h2>
+
+<strong>The InterForm language and its interpretor have undergone major
+changes, and the documentation is not yet up to date.  The new interpretor can
+be found in <a
+href="../../../src/java/crc/dps/"><code>../../../src/java/crc/dps/</code></a>
+and its subdirectories; JavaDoc documentation will be in the <a
+href="../Api/index.html">API Manual</a> if it has been built. </strong> <p>
 
 <h3>Overview</h3>
 
@@ -500,6 +532,13 @@ A named collection of actors is called a <dfn>tagset</dfn> (it could have been
 called a ``cast,'' since it's a set of actors that work together, but ``cast''
 usually means something quite different in the context of a programming
 language).<p>
+
+<strong>The InterForm language and its interpretor have undergone major
+changes, and the documentation is not yet up to date.  Documentation for the
+new tagsets can be found in the <a
+href="Tagset"><code>Tagset</code></a> directory in files with lower-case
+names. </strong> <p>
+
 
 <h3>Actor Documentation</h3>
 
