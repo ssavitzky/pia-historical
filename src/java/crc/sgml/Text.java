@@ -8,11 +8,16 @@ package crc.sgml;
  * SGML text strings.
  *	Text is used in the InterForm package to represent sequences of
  *	characters that contain no markup.  The SGML interface is used to
- *	speed up the kinds of testing that the interpretor has to do.
+ *	speed up the kinds of testing that the interpretor has to do. <p>
  *
  *	Like all SGML objects, SGML Text can be appended to; if 
  *	StringBuffer wasn't final we could simply extend it.  As it is,
- *	there are some advantages to being forced not to.
+ *	there are some advantages to being forced not to. <p>
+ *
+ *	=== Text should probably descend from Token. <p>
+ *
+ *	=== Text should have subclasses for wrapping StringBuffer and
+ *	Object, and maybe another for wrapping Number.
  */
 public class Text implements SGML {
   private Object content;

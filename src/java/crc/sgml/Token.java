@@ -22,7 +22,14 @@ import crc.ds.Table;
  *	defined but have no associated value have an empty token for
  *	their value; a static constant is provided for the purpose. <p>
  *
- *	@see Tokens.  */
+ *	A special token, <code>Token.empty</code>, is used as the value 
+ *	of attributes and table entries that are present but do not have
+ *	an explicit value.  It can be used to distinguish such entries,
+ *	which are considered <em>true</em>, from entries whose value is
+ *	a null string, which are considered <em>false</em>. <p>
+ *
+ *	@see Tokens.
+ */
 public class Token implements SGML {
 
   /** An empty token, used as the value for an attribute with no value */
@@ -134,6 +141,8 @@ public class Token implements SGML {
   ** SGML list interface:
   ************************************************************************/
 
+  /** Create a new <code>Tokens</code> list containing both the current
+   *	token and the given one. */
   public SGML append(SGML v) {
     Tokens content = new Tokens();
     content.addItem(this);
@@ -167,15 +176,15 @@ public class Token implements SGML {
   ** Construction:
   ************************************************************************/
 
-  public Token () {
+  protected Token () {
   }
 
-  public Token (String tag) {
+  protected Token (String tag) {
     this();
     this.tag = tag;
   }
 
-  public Token (Token t) {
+  protected Token (Token t) {
     this(t.tag());
   }
 

@@ -5,8 +5,11 @@
 package crc.sgml;
 
 /**
- * Interface for SGML tokens and collections of tokens.
- *	At some point this may become a subinterface of Stuff.
+ * Interface for SGML tokens and collections of tokens.<p>
+ *
+ * === All implementations of <code>crc.sgml.SGML</code> should
+ *      support <code>equals</code>, <code>equalsIgnoreCase</code>,
+ *      and <code>compareTo</code> methods as well.
  */
 public interface SGML extends java.lang.Cloneable {
 
