@@ -54,8 +54,10 @@ function SubmitIfRemotelyStored() {
   }
 }
 
-function Email() {
-  alert("Not implemented");
+function EmailIm() {
+  photoid = document.forms[0].PhotoID.value;
+  email = document.forms[0].EmailAddress.value;
+  location = "StoreAndMail.if?PhotoID=" + photoid + "&Email=" + email
 }
 
 function PrintIm() {
@@ -135,8 +137,8 @@ Storage:
 Local Services:
 </TD>
 <TD>
-<INPUT &onClick;="Email();" TYPE="button"  NAME="Print" VALUE="Email">
-<INPUT &onClick;="PrintIm();" TYPE="button" NAME="Print" VALUE="Print">
+<INPUT TYPE="text" NAME="EmailAddress"><INPUT &onClick;="EmailIm();" TYPE="button"  NAME="Email" VALUE="Email">
+<BR><INPUT &onClick;="PrintIm();" TYPE="button" NAME="Print" VALUE="Print">
 </TD>
 </TR>
 
