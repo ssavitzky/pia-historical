@@ -7,13 +7,13 @@ TOPDIR=../..
 
 PACKAGES = \
 	active \
-	aux \
 	handle \
 	input \
 	output \
 	parse \
 	process \
-	tagset
+	tagset \
+	util
 
 FILES = \
 	Action.java \
