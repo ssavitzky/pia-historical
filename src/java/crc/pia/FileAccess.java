@@ -17,6 +17,12 @@ import java.io.File;
 import java.util.Date;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.TimeZone;
+import java.util.SimpleTimeZone;
+import java.util.Locale;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -74,7 +80,7 @@ public class FileAccess {
       long mtime = myfile.lastModified();
       String zdate = request.header("If-Modified-Since");
       if( zdate != null && !"".equals(zdate)) try {
-	Date mydate = new Date( zdate );
+	Date mydate = new Date(zdate); // === no good non-deprecated equivalent 
 	long time = mydate.getTime();
 	if ( time >= mtime ){
 	  response =  new HTTPResponse( request, false );
@@ -166,12 +172,26 @@ public class FileAccess {
       response.setContentObj( bs );
       response.setStatus( HTTP.OK );
       Date mDate = new Date( mtime );
-      response.setHeader( "Last-Modified", mDate.toGMTString() ); 
+      response.setHeader( "Last-Modified", toGMTString(mDate) ); 
       response.setContentType("text/html");
-      response.setContentLength( html.length() );
+      //response.setContentLength( html.length() );
       response.setHeader("Version", agent.version());
       response.startThread();
     }
+
+  /** Convert a Date to a String in the GMT timezone according to
+   *	the Internet (IETF) standard.  Replaces the deprecated
+   *	Date.toGMTString, from which the code has been shamelessly
+   *	copied. 
+   *
+   * @see java.util.Date#toGMTString
+   */
+  public static String toGMTString(Date date) {
+    DateFormat formatter
+      = new SimpleDateFormat("d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+    formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    return formatter.format(date);
+  }
 
     /** 
      * Retrieve a file or directory and respond to the given request with it.
@@ -203,7 +223,9 @@ public class FileAccess {
 	reply = new HTTPResponse( request, false );
 	reply.setStatus( 200 );
 	reply.setReason( "OK" );
-	reply.setHeader("Version", agent.version());
+	reply.setHeader( "Version", agent.version() );
+	Date mDate = new Date(zfile.lastModified());
+	reply.setHeader( "Last-Modified", toGMTString(mDate) ); 
 	
 	try{
 	  Pia.instance().debug(agent, "Retrieving file :"+ filename );
