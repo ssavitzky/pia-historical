@@ -1,7 +1,7 @@
 <!-- This heading is meant to be included. -*-html-helper-*- -->
 <table border=1 align=center cellspacing=2 cellpadding=5>
   <tr> <th colspan=5>Documentation Overview</tr>
-  <tr>	<th align=LEFT><b>Release 2.0alpha:</b></th>
+  <tr>	<th align=LEFT><b>Release 2.0b:</b></th>
         <td><a href="/PIA/Doc/Release">Release notes</a><br>
         <td><a href="/PIA/README">README</a><br>
         <td><a href="/PIA/INSTALL">installation</a><br>
