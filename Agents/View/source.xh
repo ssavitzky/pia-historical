@@ -1,0 +1,48 @@
+ <if><get name=FORM:url>
+    <then><hide><!-- must have some text before the first active tag??  -->
+<set name=URL><text decode=url>&FORM:url;</text></set></hide>
+<!-- Processed with /View/slides.xh -->
+<html>
+  <head><title>&URL;</title></head>
+  <body>
+    <h2>Source code for &URL;</h2>
+    <pre><protect result markup>
+<include src="&URL;" tagset="pia-xhtml" quoted />
+         </protect>
+    </pre>
+  </body>
+</html>
+</then>
+<else>
+<html><head>
+<title>View source</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>View</header>
+<sub-head page=source>
+    <tr><th align=right><xopt page="&attributes:page;"
+			      pages="view slides">&blue-dot;</xopt>
+        <td> <b>view</b>
+	     <xa href=view page="&attributes:page;">page</xa>
+	     <xa href=slides page="&attributes:page;">slides</xa>
+	     <xa href=source page="&attributes:page;">source</xa>
+</sub-head>
+<hr>
+
+<form method=GET action=source>
+<input type="submit" value="View source">
+<input type=hidden name=tagset value=HTML>
+<b>URL:</b> <input name=url size=55 maxlength=200
+  value="http://&piaHOST;:&piaPORT;/PIA/Agents">
+</form>
+
+<dl>
+  <dt> <b>Note:</b>
+  <dd> The page being viewed is parsed using the <code>pia-xhtml</code>
+       tagset.  Odd things may happen if it contains empty elements that are
+       not defined in this tagset.
+</dl>
+
+<footer cvsid="$Id$">
+</body></html>
+</else>
+</if>

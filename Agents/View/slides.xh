@@ -1,0 +1,32 @@
+ <if><get name=FORM:url>
+    <then><hide><!-- must have some text before the first active tag??  -->
+<set name=URL><text decode=url>&FORM:url;</text></set></hide>
+<!-- Processed with /View/slides.xh -->
+<include src="&URL;" tagset="&FORM:tagset;" />
+</then>
+<else>
+<html><head>
+<title>View slides</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>View</header>
+<sub-head page=slides>
+    <tr><th align=right><xopt page="&attributes:page;"
+			      pages="view slides">&blue-dot;</xopt>
+        <td> <b>view</b>
+	     <xa href=view page="&attributes:page;">page</xa>
+	     <xa href=slides page="&attributes:page;">slides</xa>
+	     <xa href=source page="&attributes:page;">source</xa>
+</sub-head>
+<hr>
+
+<form method=GET action=view>
+<input type="submit" value="View slides">
+<input type=hidden name=tagset value=slides>
+<b>URL:</b> <input name=url size=55 maxlength=200
+  value="http://&piaHOST;:&piaPORT;/PIA/Doc/Papers/LinuxWorld1999/lw99.html">
+</form>
+
+<footer cvsid="$Id$">
+</body></html>
+</else>
+</if>

@@ -1,0 +1,30 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Generic Home Page for &AGENT:name;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Home Page</header>
+<set name="subs"><agent-list subs type="&agentType;"></set>
+<sub-head page=home>
+    <tr><th align=right><xopt page="&attributes:page;"
+			      pages="view slides">&blue-dot;</xopt>
+        <td> <b>view</b>
+	     <xa href=view page="&attributes:page;">page</xa>
+	     <xa href=slides page="&attributes:page;">slides</xa>
+	     <xa href=source page="&attributes:page;">source</xa>
+</sub-head>
+<hr>
+
+<!-- See whether there's an "about" file for this agent. -->
+<include src="about.inc">
+
+<hr>
+
+<repeat list="view slides source">
+  <select><from><include tagset=HTML src="&li;.xh"></from>
+	  <name recursive>form</name>
+  </select>
+</repeat>
+
+<p>
+<footer cvsid="$Id$">
+</body></html>
