@@ -568,13 +568,13 @@ public class Transaction extends Thing{
    */
   public Transaction handleRequest( Resolver resolver ){
     Machine destination = toMachine();
-    Content responseContent;
+    Transaction response;
 
 
     if(!destination)
       return errorResponse();
-    responseContent = destination.getRequest( this, resolver );
-    return new Transaction(this, responseContent);
+    response = destination.getRequest( this, resolver );
+    return response;
   }
   
   /**
