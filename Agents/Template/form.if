@@ -1,13 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html>
-<if><tagset-exists name=template-form>
-    <then><user-message>tagset template-form already exists</user-message>
-    <else><user-message>loading tagset template-form</user-message>
-	  <if><read process quiet interform file=tagset.inc></if>
-	  <user-message>tagset template-form loaded</user-message>
-	  
-</if>
-<tagset-load name=template-form>
+<tagset-load name=template-form interform file=tagset.inc>
 
 <t-form-setup><!-- perform setup -->
 <!-- ============================================================= -->
