@@ -127,7 +127,7 @@ implements Handler {
    *	has the given <code>name</code> as either an attribute name or
    *	a period-separated suffix of its tagname.
    */
-  protected boolean dispatch(ActiveElement e, String name) {
+  public boolean dispatch(ActiveElement e, String name) {
     return e.hasTrueAttribute(name)
       || e.getTagName().endsWith("."+name);
   }
