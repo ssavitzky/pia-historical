@@ -70,7 +70,7 @@
   <doc> This is the leading path for graphics.  It should begin and end with
 	a slash if necessary.
   </doc>
-  <value>/PIA/Doc/Graphics/</value>
+  <value>/Icon/</value>
 </define>
 
 <define entity=logo>
@@ -102,6 +102,17 @@
 
 <h2>&lt;Slide&gt;</h2>
 
+<define element=xxx>
+  <doc> This is a sample row using a 1x1 transparent gif.  Unfortunately it
+	works correctly only if cellpadding=0, which introduces other problems.
+  </doc>
+<action>
+<tr height=1 nowrap nobr cellpadding=0 bgcolor="&topBg;" 
+       ><td colspan=3><a
+        name="&slide;"><img src="&icons;/trans1x1.gif"></a></td></tr>
+</action>
+</define>
+
 <define element=slide parent=body>
   <doc>	This is the element that defines a ``slide''.   Usage is something
 	like:
@@ -123,7 +134,7 @@
   <if>&DOC:slidelist;<else><set name=DOC:slidelist> </set></if>
 </hide>
 <table width="100%" cellspacing=0 cellpadding=5 border=0>
-<tr><th bgcolor="&ulBg;" fgcolor="&ulFg;" valign=top align=center
+<tr><th bgcolor="&ulBg;" fgcolor="&ulFg;" align=center
        ><a name="&slide;">&slide;</a></td>
     <th align=left bgcolor="&topBg;" fgcolor="&topFg;" width="100%"><if>
         <get name=label>

@@ -17,7 +17,7 @@
     <tr><th><td><a href="options">Options</a>
 	    	      <a href="initialize">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+	        <a href="/~/Agents/&agentPath;/">(Customized)</a>
   </if>
   <if>&AGENT:criteria;<then>
     <tr><th align=right> criteria:&nbsp;
@@ -96,7 +96,7 @@
   <code><a href="/PIA/Agents/&agentPath;/initialize"
   >/PIA/Agents/&agentPath;/initialize.??</a></code>,
   and putting it in your personal InterForm directory,
-  <code><a href="/My/Agents/&agentPath;/"
+  <code><a href="/~/Agents/&agentPath;/"
   >~/.pia/Agents/&agentPath;/</a></code>
   (Replace <code>??</code> in the names above with the current one of
    <code>xh</code> (new) or <code>if</code> (old).)

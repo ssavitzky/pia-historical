@@ -173,10 +173,10 @@
 	     agents<br>
     <tr><th valign=top align=right>Files: &nbsp;
 	<td><a href="/PIA/Doc/"><b>Docs</b></a>
-	    <a href="/My/">My files</a>
+	    <a href="/~/">Data</a>
 	    <a href="/PIA/src/">Sources</a>
-	    <a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	    <a href="/My/Agents/&agentPath;/">(Customized)</a>
+	    <a href="/PIA/Agents/">Agents</a>
+	    <a href="/~/Agents/">(Customized)</a>
     <tr><th valign=top align=right><b>Agents:</b> &nbsp;
         <td valign=top> <repeat list="&agentNames;" entity="foo">
             <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
@@ -195,7 +195,7 @@
   </doc>
   <action>
 <a href="/">PIA</a> || <a href="/&AGENT:name;">&AGENT:name;</a>:
-<a href="/&AGENT:name;/">index</a>
+<a href="/&AGENT:name;/">/index/</a>
 <a href="/&AGENT:name;/agents">agents</a>
   </action>
 </define>

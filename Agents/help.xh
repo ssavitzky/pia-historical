@@ -36,7 +36,7 @@
        </if> agent of
        <if><test exact match='pia'>&piaUSER;</test>
 		<then>An Information Appliance</then>
-		<else><a href="/My/">&piaUSER;'s</a>
+		<else><a href="/~/">&piaUSER;'s</a>
        			Personal Information Agency</else>
        </if>
 <if>&referer;<then>       

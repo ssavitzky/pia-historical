@@ -58,7 +58,8 @@
   <li> <code>USR_DIR = &usrDIR;</code>
        (your customizations and agent output)  <br>
        If things are set up correctly, this should also be reachable as
-       <a href="/My/">/My/</a>
+       <a href="/~/">/~/</a>, the <a href="/ROOT">ROOT</a> agent's data
+       directory. 
   <li> Customized InterForms: <code>&usrDIR;/Agents</code>
 </ul>
 

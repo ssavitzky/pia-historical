@@ -126,15 +126,10 @@ Provides basic file browsing capabilities.
        name:<input name="agent" value="DOFS">
        </form></if><p>
 
-  <dt> <a name="My">DOFS/My</a>
-       <if><agent-running name=My><then><em>installed</em></then>
-       <else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       name:<input name="agent" value="My">
-       type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="&usrDIR;">
-       <input type="submit" value="Install">
-       </form></if>
+  <dt> <a name="My">DOFS/My</a> is no longer needed:
+  <dd> <a href="/~/">/~/</a> (the <a href="/ROOT">ROOT</a> agent's data
+       directory) has replaced it.
+       
   <dt> <a name="PIA">DOFS/PIA</a>
        <if><agent-running name=PIA><then><em>installed</em></then>
        <else>

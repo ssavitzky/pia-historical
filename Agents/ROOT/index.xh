@@ -6,7 +6,7 @@
 <set name=piaURL>http://&piaHOST;:&piaPORT;/</set>
 <set name=ltitle><if><test exact match='pia'>&piaUSER;</test>
 		     <then> </then>
-		     <else><a href="/My/">&piaUSER;'s</a> </else></if></set>
+		     <else><a href="/~/">&piaUSER;'s</a> </else></if></set>
 <header show-date=yes ltitle=&ltitle;>
   <if><test exact match='pia'>&piaUSER;</test>
 			    <then>An Information Appliance</then>
@@ -48,7 +48,7 @@
       <else>
 	<th valign=top align=right><a href="/PIA/"><b>Files:</b></a>&nbsp;
 	<td valign=top> <a href="/PIA/Agents/">Agents</a>
-	    <a href="/My/Agents/">(custom)</a>
+	    <a href="/~/Agents/">(custom)</a>
 	    <a href="/PIA/Doc/">Doc</a>
 	    <a href="/PIA/src/">src</a>
       </if><br></tr>
@@ -57,10 +57,10 @@
 	    <tr><th valign=top align=right>
 		    <a href="/History"><b>History:</b></a>&nbsp;
 		<td valign=top> 
-		    [<a href="/My/History">All</a> | 
-		     <a href="/My/History/&year;/">&year;</a>/<a
-			href="/My/History/&year;/&month;/">&month;</a>/<a
-			href="/My/History/&year;/&month;/&day;.html">&day;</a>]
+		    [<a href="/~/History">All</a> | 
+		     <a href="/~/History/&year;/">&year;</a>/<a
+			href="/~/History/&year;/&month;/">&month;</a>/<a
+			href="/~/History/&year;/&month;/&day;.html">&day;</a>]
 		    <br></then>
         <else><tr><td>&nbsp;<td></tr>
     </if>

@@ -32,7 +32,7 @@ found in that file in turn.
 <p>
 
 It is also possible to override <em>this</em> file with your own version, in
-(<code>/My/Agents/&AGENT:name;/initialize.xh</code>) and put arbitrary
+(<code>/~/Agents/&AGENT:name;/initialize.xh</code>) and put arbitrary
 InterForm code into it.
 
 <short-footer cvsid="$Id$">
