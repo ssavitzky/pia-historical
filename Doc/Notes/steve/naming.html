@@ -55,80 +55,179 @@
 <p> Under this scheme, an agent would have both a ``home'' directory and a
     ``root'' directory, and also both a ``home'' and a ``root'' tagset.
 
-<h2>Mapping Agents and URL's to Directories</h2>
+<h2>Mapping Agent URL's to Directories</h2>
 
 <h3>Currently:</h3>
 
 <p> The following URL's refer to an agent's directories:
 
-<dl>
-  <dt> <code>/<em>name</em></code> 
-  <dd> an agent's ``root'' directory; normally the same as its ``home''
-       directory  unless it's a DOFS agent
-  <dt> <code>/<em>type</em>/<em>name</em></code>
-  <dd> an agent's home directory if <code><em>type</em></code> is not the same
-       as <code><em>name</em></code>
-  <dt> <code>/~<em>name</em></code>
-  <dd> an agent's data directory
-  <dd> an agent's data directory
-  <dt> <code>/My</code>
-  <dd> DOFS agent referring to the root of the data directories its home
-       directory is <code>/DOFS/~</code>
-  <dt> <code>/My/Agents/<em>name</em></code>
-  <dd> user directory containing the overrides for the files in the
-       agent's home directory. 
-</dl>
+<table width="90%" align=center border=1>
+  <tr> <th align=left> URL <th align=left> Directory <th align=left> description
+  <tr> <td valign=top> <code>/<em>name</em></code> 
+       <td valign=top> <code>pia/Agents/<em>name</em></code>
+       <td> an agent's ``root'' directory; normally the same as its ``home''
+            directory  unless it's a DOFS agent
+  <tr> <td valign=top> <code>/<em>type</em>/<em>name</em></code>
+       <td valign=top> <code>pia/Agents/<em>type</em>/<em>name</em></code>
+       <td> an agent's home directory if <code><em>type</em></code>
+	    is not the same as <code><em>name</em></code>
+  <tr> <td valign=top> <code>/~<em>name</em></code>
+       <td valign=top> <code>.pia/<em>name</em></code>
+       <td> an agent's data directory
+  <tr> <td valign=top> <code>/My/Agents/<em>name</em></code>
+       <td valign=top> <code>.pia/Agents/<em>name</em></code>
+       <td> an agent's user directory, containing the overrides for the files
+	    in the agent's home directory. 
+  <tr> <td valign=top> <code>/My</code>
+       <td valign=top> <code>.pia</code>
+       <td> DOFS agent referring to the root of the data directories
+
+<tr> <th align=left> URL <th align=left> mapped to:
+       <th align=left> description
+  <tr> <td valign=top> <code>/<em>path</em></code> 
+       <td valign=top> <code>/Agency/ROOT/<em>name</em></code>
+       <td> a file ``in the root'', handled by <code>Agency</code>
+  <tr> <td valign=top> <code>/<em>badfile</em></code> 
+       <td valign=top> 
+       <td> missing root file, handled by <code>Agency</code>
+  <tr> <td valign=top> <code>/<em>bad/path</em></code> 
+       <td valign=top> 
+       <td> missing agent, handled by the Resolver.
+</table>
 
 <h3>Proposed:</h3>
 
-<dl>
-  <dt> <code>/<em>name</em></code> 
-  <dd> an agent's ``root'' directory; normally the same as its ``home''
-       directory unless redirected by setting <code>AGENT:root</code>
-  <dt> <code>/~<em>name</em></code>
-  <dd> an agent's home directory.  Normally
-       <code>.../Agents/<em>name</em></code> or 
-       <code>.../Agents/<em>type</em>/<em>name</em></code>, unless remapped
-       by setting <code>AGENT:home</code> 
-  <dt> <code>/~/<em>name</em></code>
-  <dd> an agent's data directory
-  <dt> <code>/~</code>
-  <dd> DOFS agent referring to the root of the data directories; its home
-       directory should be <code>/~~</code>
-  <dt> <code>/My/Agents/<em>name</em></code>
-  <dd> user directory containing the overrides for the files in the
-       agent's home directory, <em>unless</em> remapped by setting
-       <code>AGENT:userdir</code>.
-</dl>
+<table width="90%" align=center border=1>
+  <tr> <th align=left> URL <th align=left> Directory <th align=left> Entity
+       <th align=left> description
+  <tr> <td valign=top> <code>/<em>name</em></code> 
+       <td valign=top> <code>pia/Agents/<em>name</em></code><br>
+       <td valign=top> <code>AGENT:root</code>
+       <td> an agent's ``root'' directory; normally the same as its ``home''
+            directory unless redirected by setting <code>AGENT:root</code>
+  <tr> <td valign=top> <code>/<em>name</em>~</code>
+       <td valign=top> <code>pia/Agents/<em>name</em></code><br>
+       <td valign=top> <code>AGENT:home</code>
+       <td> an agent's home directory, where its <code>.xh</code> files live.
+  <tr> <td valign=top> <code>/~<em>name</em></code>
+       <td valign=top> <code>.pia/<em>name</em></code><br>
+       <td valign=top> <code>AGENT:data</code>
+       <td> an agent's (default?) data directory
+  <tr> <td valign=top> <code>/<em>name</em>/~</code>
+       <td valign=top> <code>.pia/<em>name</em></code><br>
+       <td valign=top> <code>AGENT:data</code>
+       <td> an agent's data directory (allows agent to remap)
+  <tr> <td valign=top> <code>/~Agents/<em>name~</em></code>
+       <td valign=top> <code>.pia/Agents/<em>name</em></code><br>
+       <td valign=top> <code>AGENT:home</code>
+       <td> an agent's user directory, with user overrides for its code.
+  <tr> <td valign=top> <code>/~</code>
+       <td valign=top> <code>.pia</code><br>
+       <td valign=top> <code>PIA:userDIR</code>
+       <td> the root of the data directories; effectively an alias for
+            <code>/~ROOT</code>
+  <tr> <th align=left> URL <th align=left> mapped to <th align=left> Entity
+       <th align=left> description
+  <tr> <td valign=top> <code>/<em>path</em></code>
+       <td valign=top> <code>/ROOT/<em>path</em></code><br>
+       <td valign=top> <code>PIA:rootAgent</code>
+       <td valign=top> a file ``in the root''
+  <tr> <td valign=top> <code>/<em>badfile</em></code> 
+       <td valign=top> 
+       <td valign=top> 
+       <td> missing root file, handled by ROOT
+  <tr> <td valign=top> <code>/<em>bad/path</em></code> 
+       <td valign=top> 
+       <td valign=top> 
+       <td> missing agent, handled ROOT.
+</table>
 
-<h3>Mounting:</h3>
+<p> The only really drastic changes here are:
+<ol>
+  <li> Going from <code>/<em>type</em>/<em>name</em></code> to
+       <code><em>name</em>~</code> to designate the ``home'' directory.  It
+       will simplify the lookup considerably.
+  <li> Changing from <code>/My/</code> to <code>/~/</code>.  It has to be
+       treated specially because <code>/~~</code> seems ambiguous -- is it
+       home or data?  It is better to regard <code>/~</code> as simply an
+       alias for <code>~ROOT</code> -- the root agent's data directory.  This
+       neatly sidesteps the need for a separate DOFS agent for it.
+</ol>
+
+<p> An alternative scheme would be to changing the meaning of
+    <code>~</code> from ``data home'' to ``code home'', and consistently use
+    <code>/~/</code> as the root of the data directories.  This is a little
+    more consistent with Unix usage, and would remove the ambiguity about the
+    meaning of <code>/~~</code>, but represents a significantly larger
+    change. 
+
+<p> Another way of looking at an agent's ``root'' directory is that it might
+    be <em>either</em> its home or its data directory.  Hence, for a DOFS
+    agent, the root is the data directory, not the home.
+
+<p> Ideally, a missing file should be handled by mapping it to a URL in
+    the ROOT agent.  This will require the ability of DPS code to set the
+    HTTP result code, which is not possible yet.
+
+<h3>``Mounting'':</h3>
 
 <p> It would be desirable to ``mount'' agents anywhere in the agent tree.  A
     ``mounted'' agent would have the following URL's:
 
-<dl>
-  <dt> <code>/<em>path</em>/<em>name</em></code> 
-  <dd> root directory
-  <dt> <code>/<em>path</em>/~<em>name</em></code>
-  <dd> home directory
-  <dt> <code>/~/<em>path</em>/<em>name</em></code>
-  <dd> data directory
-</dl>
+<table width="90%" align=center border=1>
+  <tr> <th align=left> URL <th align=left> Directory
+       <th align=left> description
+  <tr> <td valign=top> <code>/<em>path</em>/<em>name</em></code> 
+       <td valign=top> <code>pia/Agents/<em>path</em>/<em>name</em></code> 
+       <td valign=top> root directory
+  <tr> <td valign=top> <code>/<em>path</em>/<em>name</em>~</code>
+       <td valign=top> <code>pia/Agents/<em>path</em>/<em>name</em></code> 
+       <td valign=top> home directory
+  <tr> <td valign=top> <code>/~/<em>path</em>/<em>name</em></code><br>
+		       <code>/<em>path</em>/<em>name</em>/~</code>
+       <td valign=top> <code>.pia/<em>path</em>/<em>name</em></code> 
+       <td valign=top> data directory
+  <tr> <td valign=top> <code>/~/<em>path</em>/<em>name</em>~</code>
+       <td valign=top> <code>.pia/Agents/<em>path</em>/<em>name</em></code> 
+       <td valign=top> user directory
+</table>
 
 <p> This would all be done by setting the <code>AGENT:path</code>, of course.
     Note that the location of the agent's actual <em>directories</em> could of
     course be overridden in the usual way.
 
 <p> Currently, an agent's ``name'' has to be unique.  Under this scheme, it
-    only has to be unique with the path prefix.  Another way of looking at
-    this is to say that the agent's name can include slashes.  This changes
+    only has to be unique with the path prefix.  This changes
     <code>findInterform</code> somewhat.
+
+<p> It is not quite correct to say that we simply substitute
+    <code>/<em>path</em>/<em>name</em></code> for <code>/<em>name</em></code>
+    everywhere it occurs -- note that the data directory is referenced by
+    prefixing <code><em>name</em></code> with tilde, as usual.  This is
+    required by the fact that something earlier in the path may very well be
+    an agent in its own right.  The simplest examples are the `type' agents.
+
+<p> Considerable effort will be involved in this change, because presently the
+    <code><em>name</em></code> is used as the key for the agent table.
+
 
 <h2>Tagsets</h2>
 
+Tagsets need a <code>prefix</code> (namespace) attribute as well as a
+<code>name</code> attribute.  They ought to be separate for several reasons:
 
-<h2>The Agency</h2>
+<ol>
+  <li> Several tagsets can share a namespace.  For example, <code>dps:</code>
+       is shared by <code>basic</code>, <code>xhtml</code>, and
+       <code>xxml</code>.
 
+  <li> The <code>name</code> is usually derived from the DTD name, which in
+       turn is supposed to be derived from the tag of the top element.
+
+  <li> A tagset like <code>pia-xhtml</code> should have a <code>name</code> of
+       <code>xhtml</code> (the DTD from which it is derived) and a
+       <code>prefix</code> (namespace) of <code>pia:</code>.
+</ol>
 
 
 <hr>
