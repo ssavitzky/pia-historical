@@ -1,0 +1,121 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; administration</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> Editing <get form name=euser></set>
+<read interform file="heading.inc" process>
+
+<tagset-load name=Form-agent-actors>
+
+ <if-in-group  group=admin> <set name=allow> true</set> </if-in-group>
+ <if> <test match=&FORM.euser; exact><get trans name=AuthenticatedUser></test>
+      <then><set name=allow> true</set> </then></if>
+
+ <if> <get form name=euser>
+ <then>
+ <set name=euser> <get  form name=euser></set>
+ <set name=uid> <get  form name=euser></set>
+<form action="&url;" id="euser1"  copy method=post>
+<input name="euser" type=hidden  value="&euser;">
+ <process copy>
+
+   <if><get name=allow>  <then>
+   <set name=u><get agent name=users key=&uid;></set>
+    <set index=u.username replace><get name=username form></set>
+    <set index=u.usermanager replace><get name=usermanager form></set>
+    <set index=u.userdept replace><get name=userdept form></set>
+    <set index=u.userext replace><get name=userext form></set>
+
+
+  
+
+		    <!-- Saving new data to disk -->
+		    <read interform file=users-save.inc process> 
+    		    <read interform file=groups-save.inc process>
+   </then> <else>
+   <h2>NOT Authorized</h2>
+   Users not in the admin group can only change entries for themselves.
+  </else></if>
+		    <br>
+ </process>
+
+ <set name=u><get agent name=users key=&uid;></set>
+
+ <table>
+<TR><TD>user-id: <TD><get name=uid>
+<TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
+<TR><TD> Manager:<TD><select name="usermanager">
+ <option>&u.usermanager.Text;</option>
+ <repeat list=&AGENT.users.keys;> <option><get name=li></option></repeat>
+</select>
+<TR> <TD> Department:<TD><input name="userdept" size="10" value=&u.userdept.Text;>
+<TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
+</table>
+
+<h3>Groups:<h3>
+  <ul foreach list=&AGENT.groups.keys; entity=mgrp>
+   <set name=mylist><get agent index=groups.&mgrp;.li.Text></set>
+   <if> &mylist; <then></then> <else><set name=mylist> nobody</set></else></if>
+<if>
+	<is-in-list value=&euser;>&mylist;</is-in-list>
+	 <then><li> &mgrp;  <input type="checkbox" name=group&li; value=keep checked></li></then>
+       
+   </if> 
+   </ul>
+
+  <br>
+  <input type="SUBMIT" value="Submit">  
+ </form>
+
+   <set name=myuser><get name=users agent key=&uid;></set>
+   <if> <get index=myuser.userpublickey.Text> <then> </then>
+   <else>
+   This user does not have a public key, and should <a href="register.if">create a
+   key</a> before digitally signing forms.
+ </else></if>
+
+ </then>
+</if>
+
+<if-in-group  group=admin>  
+<hr>
+<form action="&url;">
+ Select userid to edit:
+ <select name="euser">
+  <option> <get trans name=AuthenticatedUser></option>
+ <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
+ </select>
+<input type="SUBMIT" value="Edit">
+</form>
+
+   <hr>
+<form action="&url;" method=post copy id="deluser1">
+   <process copy>
+   <set name=duser> <get form name=deluser></set>
+   <set agent name=users key=&duser; delete></set>
+   <repeat list=&AGENT.groups.keys;>
+   <group-remove-user user=&duser; group=&li;>
+   </repeat>
+    <b>  Deleted &duser; </b>
+    <read interform file=users-save.inc process>
+    <read interform file=groups-save.inc process>
+  </process>
+ Delete userid:
+  
+ <select name="deluser">
+ <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
+ </select>
+<input type="SUBMIT" value="DELETE USERID">
+</form>
+</if-in-group>
+
+<hr>
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+<!-- hhmts start -->
+Last modified: Tue Feb 17 14:03:52 1998
+<!-- hhmts end -->
+</body></html>
