@@ -19,9 +19,8 @@ import crc.pia.HTTPRequest;
 
 public class Accepter extends Thread {
   public boolean DEBUG = false;
-  public boolean TRACE = false;
   /**
-   * The default port number if non is given.
+   * The default port number if none is given.
    */
   public final static int DEFAULT_PORT=8001;
 
@@ -41,14 +40,14 @@ public class Accepter extends Thread {
   protected boolean finish = false;
 
   /**
-   * stop thread 
+   * Stop receiving requests
    */
   protected void shutdown(){
     finish = true;
   }
 
   /**
-   * shutdown socket
+   * Shutdown socket
    */
   protected void cleanup(boolean restart){
     if( DEBUG )
@@ -66,6 +65,9 @@ public class Accepter extends Thread {
     }
   }
 
+  /**
+   * Clean up without restarting
+   */
   protected void finalize() throws IOException{
     cleanup( false );
   }
@@ -92,11 +94,10 @@ public class Accepter extends Thread {
   }
 
   /**
-  * this gets called by accepter whenever new request is received
-  * ,creates transaction and places on stack of resolver (will be private).
-  * @return nothing. 
+  * This gets called by accepter whenever a new request is received.
+  * A transaction is created, and it automatically places itself onto the resolver.
   */ 
-  public void handleConnection(Socket clientSocket) {
+  protected void handleConnection(Socket clientSocket) {
    
     InetAddress iaddr = clientSocket.getInetAddress();
     int         port  = clientSocket.getPort();
@@ -154,10 +155,10 @@ public class Accepter extends Thread {
   }
 
  /**
-  * Creates a transaction from the client's request (will be private).
+  * Creates a transaction from the client's request
   * @return a PIA transaction. 
   */ 
- public void createRequestTransaction ( String addr, int port, Socket client) {
+ protected void createRequestTransaction ( String addr, int port, Socket client) {
     // Create a request transaction
 
     Machine machine =  new Machine(addr, port, client);
@@ -165,7 +166,7 @@ public class Accepter extends Thread {
  }
 
   /**
-   * restart socket
+   * Restart accepter
    */
   protected void restart(){
     try {
