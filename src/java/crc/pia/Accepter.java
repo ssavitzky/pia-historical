@@ -124,7 +124,7 @@ public class Accepter extends Thread {
       Pia.debug(this, "There is an exception creating accepter's socket.");
       Pia.errSys(e, "There is an exception creating accepter's socket.");
     }
-    Pia.debug(this, "Accepter: listening on port" + port);
+    Pia.verbose("Accepter: listening on port" + port);
     this.start();
   }
 
@@ -135,9 +135,6 @@ public class Accepter extends Thread {
   public Accepter( int port ) throws IOException{
     if(port == 0) port = DEFAULT_PORT;
 
-
-    System.out.println("Accepter: listening on port " + port);
-
     this.port = port;
     try {
       listenSocket = new ServerSocket( port );
@@ -145,6 +142,7 @@ public class Accepter extends Thread {
       throw e;
     }
 
+    Pia.verbose("Accepter: listening on port " + port);
     this.start();
   }
 
