@@ -21,6 +21,7 @@
 
 package crc.pia;
 import java.util.Enumeration;
+import java.net.URL;
 
 import crc.ds.Thing;
 import crc.ds.Queue;
@@ -298,6 +299,16 @@ public class Transaction extends Thing{
    */
   public void unsetHeader(String name){} 
      
+
+  /**
+   * @return requested transaction
+   */
+  public Transaction requestTran(){
+    if( requestTran )
+      return requestTran;
+    else
+      return null;
+  }
 
   /**
    * true if this transaction is a response
