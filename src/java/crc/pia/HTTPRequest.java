@@ -147,7 +147,12 @@ public class  HTTPRequest extends Transaction {
 
     if( url != null ){
       try{
-	u = new URL( Pia.instance().url() + "/" );
+
+	Pia mypia = Pia.instance();
+	if( mypia != null)
+	  u = new URL( mypia.url() + "/" );
+	else
+	  u = new URL("file" + "://" + "localhost" + "/");
 
 	myurl = new URL( u, url );
       }catch( MalformedURLException e ){
@@ -313,7 +318,7 @@ public class  HTTPRequest extends Transaction {
   public void printOn(OutputStream stream) throws IOException{
      PrintStream out = new PrintStream( stream );
 
-     String requestLine = protocolInitializationString();
+    String requestLine = protocolInitializationString();
      if( requestLine != null )
        out.print( requestLine );
 
@@ -354,7 +359,11 @@ public class  HTTPRequest extends Transaction {
     try{
       URL u;
 
-      u = new URL( Pia.instance().url() + "/" );
+      Pia mypia = Pia.instance();
+      if( mypia != null)
+	u = new URL( mypia.url() + "/" );
+      else
+	u = new URL("file" + "://" + "localhost" + "/");
 
       URL myurl = new URL(u, zurlandmore );
       protocol = myurl.getProtocol();
@@ -716,8 +725,9 @@ public class  HTTPRequest extends Transaction {
 
       try{
 	if(headersObj ==  null) initializeHeader();
-	Pia.debug(this, "Got a head...");
-    
+	//Pia.debug(this, "Got a head...");
+	System.out.println("Got a head...");
+
 	// and the content
 	if(contentObj ==  null) initializeContent();
 	Pia.debug(this, "Got a body...");
