@@ -31,7 +31,7 @@ sub re_initialize {
 
     ## Called from initialize.if after installing as class 
 
-    print "  ", $self->name, " (CIA) re-initialized.\n" unless $main::quiet;
+    print "  ", $self->name, " re-initialized.\n" unless $main::quiet;
     return bless $self;
 }
 
@@ -50,15 +50,13 @@ sub load_file {
     ##	  and stash it as one enormous string attribute in $attr.
 
     my $name = $self->name;
-    $fn = $self->file_attribute($fn_attr);
-    $fn = $default unless defined $fn;
+    my $fn = $self->file_attribute($fn_attr);
+    $fn = $default unless defined $fn && $fn ne '';
     $fn = $self->find_interform($fn);
 
     return unless defined $fn;
 
     my $code = readFrom($fn);
-    ##$code =~ s/#.*$//g;		# strip comments.
-
     print "  $name loaded $attr from $fn\n" unless $main::quiet;
 
     $self->attribute($attr, $code);
@@ -72,20 +70,18 @@ sub compile_file {
     ##	  and make it into an anonymous subroutine in &$attr.  UCK!
 
     my $name = $self->name;
-    $fn = $self->file_attribute($fn_attr);
-    $fn = $default unless defined $fn;
+    my $fn = $self->file_attribute($fn_attr);
+    $fn = $default unless defined $fn && $fn ne '';
     $fn = $self->find_interform($fn);
 
     return unless defined $fn;
 
     my $code = readFrom($fn);
+    $code = "\$subr = sub {\n" . $code . "\n};\n";
 
     local $subr;
-    $code = "$subr = sub{\n" . $code . "}";
-
     my $status = eval ($code) if defined $code;
-    print "$name: error in $fn: $@\n" if $@ ne '';
-
+    print "  $name: error in $fn: $@\n" if $@ ne '';
     print "  $name compiled $attr from $fn\n" unless $main::quiet;
 
     $self->attribute($attr, $subr);
@@ -99,6 +95,7 @@ sub require_file {
     ##	  The file is located as an interform and require'd.
 
     my $name = $self->name;
+    my $fn;
     $fn = $self->file_attribute($fn_attr);
     $fn = $default unless defined $fn;
     $fn = $self->find_interform($fn);
@@ -126,7 +123,7 @@ sub run_hook {
     ##	  The context, defined by local variables, is suitable for either
     ##	  an act_on or a handle operation.
 
-    my $code = $$self->attribute($attr);
+    my $code = $self->attribute($attr);
     return if !defined $code;
     my $status;
 
@@ -136,13 +133,14 @@ sub run_hook {
     local $request = $trans;
     local $response;
     local $url;
+    local $path;
 
     if (defined $trans && $trans->is_response) {
 	$response = $trans;
 	$request  = $trans->request;
     }
     $url = $request->url if defined $request;
-    
+    $path = $url->path if defined $url;
 
     if (ref($code) eq 'CODE') {
 	$status = &$code($trans, $res);
@@ -170,10 +168,10 @@ sub  act_on {
 ###	Handle a transaction, typically a request.  
 ###
 sub handle{
-    my($self, $request, $resolver)=@_;
+    my($self, $request, $res)=@_;
     return 0 unless $request -> is_request();
 
-    my $url = $request->url;
+    local $url    = $request->url();
     my $path = ref($url) ? $url->path() : $url;
     my $type = $self->type();
     my $name = $self->name();
@@ -181,14 +179,8 @@ sub handle{
 
     ## Declare local variables for use by spies
 
-    local $type   = $response->content_type();    return unless $type;
-    local $isHTML = ($type =~ m:text/html:)? 1 : 0;
-    local $url    = $request->url();
-    local $title  = $response->title();
-    local $debug  = $main::debugging; 		# !$main::quiet; 
-
     local $agent    = $self;	 # in case a spy wants to contact us.
-    local $context  = $response; # in case a spy needs more information
+    local $context  = $request; # in case a spy needs more information
     local $resolver = $res;
 
     ## Examine the path to see what we have:
@@ -224,6 +216,63 @@ sub handle_path {
 }
 
 
+
+############################################################################
+###
+### Utilities:
+###
+########################################################################
+
+### === The following need to lock their files! Otherwise Netscape's
+###	simultaneous requests will bite us...
+
+###### writeTo($fn, $str)
+###	Writes $str to file $fn
+###
+sub writeTo {
+    my ($fn, $str) = @_;
+    open(FILE, ">$fn");
+    print FILE $str;
+    close(FILE);
+}
+
+###### appendTo($fn, $str)
+###	Appends $str to file $fn
+###
+sub appendTo {
+    my ($fn, $str) = @_;
+    open(FILE, ">>$fn");
+    print FILE $str;
+    close(FILE);
+}
+
+###### asHTML($string)
+###
+###	convert $string to HTML by properly escaping &, <, and >.
+###	
+sub asHTML {
+    my $s = shift;
+
+    $s =~ s'&'&amp;'g;
+    $s =~ s'<'&lt;'g;
+    $s =~ s'>'&gt;'g;
+    $s
+}
+
+###### readFrom($fn, &optional $str)
+###	Read from file $fn and returns the contents as a string.
+###	If $str is provided, it is appended to.
+###
+sub readFrom {
+    my ($fn, $str) = @_;
+
+    open(FILE, "<$fn");
+    while (<FILE>) {
+	$str .= $_;
+    }
+    close(FILE);
+    return $str;
+}
 
 ############################################################################
 

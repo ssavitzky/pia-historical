@@ -572,6 +572,7 @@ sub run_interform{
 sub parse_interform_string{
     my($self,$string,$request)=@_;
     $HTML::Parse::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IGNORE_TEXT = 0;
     $HTML::Parse::IMPLICIT_TAGS = 0;
     my $html=parse_html($string);
     my $status=$self->run_interform($html,$request);
@@ -583,10 +584,12 @@ sub parse_interform_string{
 sub parse_interform_file{
     my($self,$file,$request)=@_;
     $HTML::Parse::IGNORE_UNKNOWN = 0;
+    $HTML::Parse::IGNORE_TEXT = 0;
     $HTML::Parse::IMPLICIT_TAGS = 0;
     my $html=parse_htmlfile($file);
     my $status=$self->run_interform($html,$request);
     my $string=$html->as_HTML;
+    #my $string = as_HTML($html);
     $html->delete;
     return $string;
 }
