@@ -248,6 +248,28 @@ public class Util extends crc.sgml.Util {
     }
   }
 
+  /**
+   * return a numeric list from start to stop
+   */
+  public static Tokens listItems(SGML start, SGML stop, SGML step){
+    Tokens result = new Tokens();
+    int begin=(int)  start.numValue();
+    int end=(int)  stop.numValue();
+    boolean positive = begin < end;
+    int inc;
+    if(step != null){
+      inc = (int) step.numValue();
+      if(inc == 0 || (inc < 0 &&  positive)) return result;
+    } else {
+     inc = ( positive) ? 1 : -1;
+    }
+    for(int i= begin; (positive && i<end) || (!positive && i>end); i+=inc){
+       result.append(toSGML(new Integer(i)));
+    }
+    return result;
+  }
+    
+
   /** Return attributes as the result from expanding an element
    *	<code>it</code>.  The result will be a blank-separated string
    *	of <code><em>attr</em>=<em>value</em></code> pairs
@@ -395,30 +417,18 @@ public class Util extends crc.sgml.Util {
   
 
 
-  /** sets the value of a token */
+  /** sets the content of token to value */
  static public void setSGML(SGML token, SGML value)
   {
     if(token == null) {
       crc.pia.Pia.debug("Tried to set null token");
-      System.out.println( "Tried to set null token");
+      //System.out.println( "Tried to set null token");
       return;
     }
-    if (token instanceof Tokens){
-      Tokens t=(Tokens) token;
-      
-      for(int i=0;i<t.nItems();i++){
-	setSGML(t.itemAt(i), value);
-      }
-    }   else{
-         // remove any items
-         Tokens t= (Tokens)token.content();
-	 if(t != null)
-	   t.clear();
-	 token.append(value);
-	 
-    }
- }
-
-
+    Tokens t= (Tokens)token.content();
+    if(t != null)
+      t.clear();
+    token.append(value);
+  }   
 
 }
