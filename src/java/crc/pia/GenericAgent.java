@@ -7,6 +7,7 @@ import crc.tf.UnknownNameException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.StringBufferInputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -692,16 +693,21 @@ public class GenericAgent extends AttrBase implements Agent {
     }
     else{
       try{
-	redirUrl = new URL(url, wholePath);
+	redirUrl = new URL(url, path);
 	redirUrlString = redirUrl.toExternalForm();
 	Pia.debug(this, "The redirected url-->" + redirUrlString);
       }catch(MalformedURLException e){
 	throw e;
       }
 
-      Transaction response = new HTTPResponse( req, false );
+      String msg ="The new location is :" + redirUrlString; 
+      Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
+      Transaction response = new HTTPResponse( Pia.instance().thisMachine,
+					       req.fromMachine(), ct, false);
       response.setHeader("Location", redirUrlString);
-      response.errorResponse(301, "The new location is :" + redirUrlString);
+      response.setStatus(HTTP.MOVED_PERMANENTLY);
+      response.setContentLength( msg.length() );
+      response.startThread();
       return true;
     }
   }
