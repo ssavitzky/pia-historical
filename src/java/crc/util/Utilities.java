@@ -469,7 +469,7 @@ public class Utilities {
    */
   public static void report(Exception e) {
     System.err.println(e.toString() + " " + e.getMessage());
-    e.printStackTrace();
+    // e.printStackTrace();
   }
 
   /** 
