@@ -41,64 +41,69 @@ import crc.pia.Configuration;
 
 public class Pia {
   /**
-   * where to proxy
+   * A substring that ends all proxy property names.
    */
-  public static final String PIA_PROXIES = "crc.pia.proxy_";
+  public static final String PROXY = "_proxy";
 
   /**
-   * a list of scheme not to proxy
+   * The name of the property that contains a comma-separated list of
+   *	sites not to proxy.
    */
-  public static final String PIA_NO_PROXIES = "crc.pia.no_proxy";
+  public static final String NO_PROXY = "no_proxy";
 
 
   /**
-   * Name of path of pia properties
+   * Property name of path of pia properties file.
    */
   public static final String PIA_PROP_PATH = "crc.pia.profile";
 
   /**
-   * Name of URL of pia doc
+   * Property name of URL of pia doc
    */
   public static final String PIA_DOCURL = "crc.pia.docurl";
 
   /**
-   * Name of pia's top-level install directory.
+   * Property name of pia's top-level install directory.
    */
   public static final String PIA_ROOT = "crc.pia.piaroot";
 
   /**
-   * Name of server port
+   * Property name of server port
    */
   public static final String PIA_PORT = "crc.pia.port";
 
   /**
-   * Name of this host
+   * Property name of this host
    */
   public static final String PIA_HOST = "crc.pia.host";
 
   /**
-   * Name of user's pia state directory (normally ~/.pia)
+   * Property name of user's pia state directory (normally ~/.pia)
    */
   public static final String USR_ROOT = "crc.pia.usrroot";
 
   /**
-   * Name of debugging flag
+   * Property name of debugging flag
    */
   public static final String PIA_DEBUG = "crc.pia.debug";
 
   /**
-   * Name of verbose flag
+   * Property name of verbose flag
    */
   public static final String PIA_VERBOSE = "crc.pia.verbose";
 
   /**
-   * Name of pia logger class
+   * Property name of pia logger class
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
+  /** 
+   * Property name of pia Agency class
+   */
+  public static final String PIA_AGENCY = "crc.pia.agency";
 
   /**
-   * Name of pia logger class
+   * Property name of pia logger class
    */
   public static final String PIA_REQTIMEOUT = "crc.pia.reqtimeout";
 
@@ -107,18 +112,18 @@ public class Pia {
   ** Private fields:
   ************************************************************************/
 
-  private Properties    piaFileMapping = null;
-  private Piaproperties properties     = null;
+  private Properties    piaFileMapping 	= null;
+  private Piaproperties properties 	= null;
 
-  private static Pia     instance      = null;
-  private String  docurl               = null;
-  private static Logger  logger        = null;
+  private static Pia    instance	= null;
+  private String  	docurl		= null;
+  private static Logger logger 		= null;
 
-  private String  piaRootStr    = null;
-  private File    piaRootDir    = null;
+  private String  piaRootStr 		= null;
+  private File    piaRootDir    	= null;
   
-  private String  usrRootStr	= null;
-  private File    usrRootDir 	= null;
+  private String  usrRootStr		= null;
+  private File    usrRootDir 		= null;
   
   private String  url        = null;
   private String  host       = null;
@@ -131,7 +136,7 @@ public class Pia {
   private static boolean debugToFile= false;
 
   private Table proxies          = new Table();
-  private List  noProxies        = null;
+  private List  noProxies        = new List();
 
   private String piaAgentsStr    = null;
   private File   piaAgentsDir    = null;
@@ -361,16 +366,19 @@ public class Pia {
   } 
 
   /**
-   * @return the proxy string
+   * @return the table that maps protocols onto proxy URL's.
    */
   public Table proxies(){
     return proxies;
   } 
 
   /**
-   * @return the no proxy schemes
+   * List of sites not to proxy.  This is a List and not a Table because
+   *	Agency will iterate down it looking for a <em>prefix</em> of the
+   *	URL we are trying to reach.
+   * @return the list of sites not to proxy.
    */
-  public List noProxies(){
+  public List noProxies() {
     return noProxies;
   } 
 
@@ -525,17 +533,6 @@ public class Pia {
   }
 
 
-  public void verboseMessage() {
-	PrintStream o = System.out ;
-
-	o.println(piaRootStr   + " (parent of src, lib, Agents)");
-	o.println(piaAgentsStr + " (agent interforms)");
-	o.println(usrRootStr   + " (user directory)");
-	o.println(usrAgentsStr + " (user interforms)");
-	o.println(Integer.toString( requestTimeout() ) + " (request time out)\n");
-	o.println(url+"\n");
-  }
-
   /************************************************************************
   ** Initialization:
   ************************************************************************/
@@ -543,63 +540,60 @@ public class Pia {
   /**
    * Initialize the server logger and the statistics object.
    */
-
-    private void initializeLogger() throws PiaInitException
-    {
-	if ( loggerClassName != null ) {
-	    try {
-		logger = (Logger) Class.forName(loggerClassName).newInstance() ;
-		logger.initialize (this) ;
-	    } catch (Exception ex) {
-		String err = ("Unable to create logger of class ["
-			      + loggerClassName +"]"
-			      + "\r\ndetails: \r\n"
-			      + ex.getMessage());
-		throw new PiaInitException(err);
-	    }
-	} else {
-	    warningMsg ("no logger specified, not logging.");
+    private void initializeLogger() throws PiaInitException {
+      if ( loggerClassName != null ) {
+	try {
+	  logger = (Logger) Class.forName(loggerClassName).newInstance() ;
+	  logger.initialize (this) ;
+	} catch (Exception ex) {
+	  String err = ("Unable to create logger of class ["
+			+ loggerClassName +"]" + "\r\ndetails: \r\n"
+			+ ex.getMessage());
+	  throw new PiaInitException(err);
 	}
+      } else {
+	warningMsg ("no logger specified, not logging.");
+      }
     }
 
-  private void initializeProxies(){
-    // i. e. agency.crc.pia.proxy_http=foobar 
-    // get keys from properties
-    // enumerate thru keys looking for PIA_PROXIES
-    // if one found, get string pass underscore; this is the key
-    // get from properties its value
-    // push k,v to proxies
-
+  /** Iterate through the properties looking for keys that end in 
+   *	<code>_proxy</code>.  The key <code>no_proxy</code> is assumed to 
+   *	contain a comma-separated list of URL's; others are assumed to
+   *	contain a single URL.
+   */
+  protected void initializeProxies(){
+    String noproxies = null;
     Enumeration e =  properties.propertyNames();
     while( e.hasMoreElements() ){
-      try{
-	String keyEntry = (String) e.nextElement();
-	if( keyEntry.indexOf(PIA_PROXIES) != -1 ){
-	  String key = keyEntry.substring( keyEntry.indexOf('_') + 1 );
-	  String v   = properties.getProperty( keyEntry );
-	  proxies.put( key, v );
-	}
-      }catch( NoSuchElementException ex ){
+      String propName = (String) e.nextElement();
+      if (propName.endsWith(NO_PROXY)) {
+	noproxies = properties.getProperty(propName);
+      } else if (propName.endsWith(PROXY)) {
+	/* Remove _proxy and leading dot-separated path from key */
+	String scheme = propName.substring(0, propName.indexOf(PROXY));
+	if (scheme.indexOf(".") >= 0) 
+	  scheme = scheme.substring(scheme.indexOf(".")+1);
+	String v = properties.getProperty(propName);
+	if (! v.endsWith("/")) v += "/";
+	proxies.put(scheme, v);
       }
     }
-    String noproxies = properties.getProperty(PIA_NO_PROXIES, null);
-    if( noproxies != null ){
+    
+    if (noproxies != null) {
       StringTokenizer parser = new StringTokenizer(noproxies, ",");
-      try{
-	noProxies = new List();
-	while(parser.hasMoreTokens()) {
-	  String v = parser.nextToken().trim();
-	  noProxies.push( v );
-	}
-      }catch(NoSuchElementException ex) {
+      while (parser.hasMoreTokens()) {
+	String v = parser.nextToken().trim();
+	noProxies.push( v );
       }
     }
-      
-
-
   }
 
-  private void initializeProperties() throws PiaInitException{
+  /** 
+   * Initialize the Pia from the properties that we already have.
+   *	Put the values of any properties that defaulted back into
+   *	the property table.
+   */
+  protected void initializeProperties() throws PiaInitException {
     String thisHost = null;
     String path = null;
 
@@ -619,85 +613,48 @@ public class Pia {
     port 		= properties.getInteger(PIA_PORT, port);
     reqTimeout 		= properties.getInteger(PIA_REQTIMEOUT, 60000);
     loggerClassName 	= properties.getProperty(PIA_LOGGER, loggerClassName);
+    agencyClassName 	= properties.getProperty(PIA_AGENCY, agencyClassName);
     docurl 		= properties.getProperty(PIA_DOCURL, docurl);
 
-    // Initialize proxies. 
-    // i. e. agency.crc.pia.proxy_http=foobar 
-    // get keys from properties
-    // enumerate thru keys looking for PIA_PROXIES
-    // if one found, get string pass underscore; this is the key
-    // get from properties its value
-    // push k,v to proxies
+    /* Set proxy tables from properties that end in "_proxy" */
 
-    initializeProxies();
+    initializeProxies(); 
+
+    /* If we still don't know our host name, complain. */
 
     if( host == null ){
       throw new PiaInitException(this.getClass().getName()
 				 +"[initializeProperties]: "
 				 +"[host] undefined.");
     }
-    
-    if( piaRootStr == null ){
-	    File piafile = new File("Pia.java");
-	    if( piafile.exists() ){
-	      path = piafile.getAbsolutePath();
-	      piaRootStr = path.substring(0, path.indexOf("Pia.java")-1);
-	    }
-	    else{
-	      File piadir = new File(home, "pia");
 
-	      // check if we have a copy of the working directory
-	      if ( piadir.exists() && piadir.isDirectory() )
-		piaRootStr = piadir.getAbsolutePath();
-	      else
-		throw new PiaInitException(this.getClass().getName()
-					   +"[initializeProperties]: "
-					   +"[pia root directory] undefined.");
-	    }
-    }
-
-    if ( piaRootStr.startsWith("~") ){
-      piaRootStr = home + piaRootStr.substring(1);
-    }
-    // Now the directories that depend on it:
+    /* Try to find the PIA's root directory.  If it doesn't exist, 
+     *	change the agency class to "Fallback" so that the user can be
+     *	queried. */
     piaRootDir = new File( piaRootStr );
+    if (piaRootDir.exists() && piaRootDir.isDirectory()) {
+      piaRootStr = piaRootDir.getAbsolutePath();
+    } else {
+      piaRootStr = null;
+      agencyClassName = "crc.pia.agency.Fallback";
+    }
     
     //  we are at /pia/Agents -- this is for interform
     piaAgentsStr = piaRootStr + filesep + "Agents";
     piaAgentsDir = new File( piaAgentsStr );
 
-    if( usrRootStr == null ){ 
-      if( home!=null && home != "" ){
-	// i.e. we have ~/bob and looking for ~/bob/pia
-	File dir = new File(home, ".pia");
-	if( dir.exists() ){
-	  usrRootStr = dir.getAbsolutePath(); 
-	}
-	dir = new File(home, "my");
-	if( dir.exists() ){
-	  usrRootStr = dir.getAbsolutePath(); 
-	}
-      }
-	  
-      if( usrRootStr == null ){
-	// i.e. we have /pia/users and if bob is valid user's name
-	// we have /pia/users/bob
-	File usersDir = new File(piaRootStr,"users");
-	if( usersDir.exists() ){
-	  if( userName!=null && userName != "" )
-	    usrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
-	}
-	else throw new PiaInitException(this.getClass().getName()
-					+"[initializeProperties]: "
-					+"[user root directory] undefined.");
-      }
-    }
+    /* Try to find the user's PIA state directory.   */
 
-    if ( usrRootStr.startsWith("~") ){
-      usrRootStr = home + usrRootStr.substring(1);
-    }
     usrRootDir = new File( usrRootStr );
+    usrRootStr = usrRootDir.getAbsolutePath();
 	
+    if (piaRootDir.exists() && piaRootDir.isDirectory()) {
+      piaRootStr = piaRootDir.getAbsolutePath();
+    } else {
+      piaRootStr = null;
+      agencyClassName = "crc.pia.agency.Fallback";
+    }
+    
     usrAgentsStr = usrRootStr + filesep + "Agents";
     usrAgentsDir = new File( usrAgentsStr );
 
@@ -711,6 +668,7 @@ public class Pia {
     properties.setInteger(PIA_PORT, port);
     properties.setInteger(PIA_REQTIMEOUT, reqTimeout);
     properties.setProperty(PIA_LOGGER, loggerClassName);
+    properties.setProperty(PIA_AGENCY, agencyClassName);
 
     url = url();
   }
@@ -722,11 +680,20 @@ public class Pia {
     resolver     = new Resolver();
     Transaction.resolver = resolver;
     
-    agency       = new Agency("Agency", null);
+    try {
+      agency = (Agency) Class.forName(agencyClassName).newInstance() ;
+      //agency = new Agency("Agency", null);
+      agency.name("Agency");
+      //agency.type("Agency");
+    } catch (Exception e) {
+      errSys(e, "Cannot create Agency object with class name "
+	     + agencyClassName + "\n" + e.toString());
+    }
+      
+
     resolver.registerAgent( agency );
-    
-    if( verbose )
-      verboseMessage();
+
+    System.err.println("Created agency with url = <" + url + ">");
 
     try{
       accepter = new Accepter( port );
@@ -734,13 +701,11 @@ public class Pia {
       errSys( e, "Can not create Accepter" );
     }
 
-    String docdir = docUrl();
-    if( docdir != null )
-      System.out.println( "The documentation directory is :" + docdir );
-
   }
 
-  /** Initialize fields from properties. */
+  /** Initialize the Pia from the properties.  Can be called again if the
+   *	properties change.
+   */
   public boolean initialize() {
     try{
       initializeProperties();
