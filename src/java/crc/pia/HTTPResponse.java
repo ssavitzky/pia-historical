@@ -82,6 +82,7 @@ public class  HTTPResponse extends Transaction {
     protocol = tokens.nextToken();
     if( protocol==null ) throw new RuntimeException("Bad reply.  Invalid status line.");
 
+    Pia.instance().debug(this, "The first response line" + firstLine);
     String majorMinor = protocol.substring("HTTP/".length());
     StringTokenizer mytokens = new StringTokenizer( majorMinor, "." );
     String zmajor = mytokens.nextToken();
@@ -91,9 +92,11 @@ public class  HTTPResponse extends Transaction {
         minor = zminor;
     }
 
-    code = Integer.parseInt( tokens.nextToken() );
-    
-    reason = tokens.nextToken();
+    if( tokens.hasMoreTokens() )
+      code = Integer.parseInt( tokens.nextToken() );
+
+    if( tokens.hasMoreTokens() )
+      reason = tokens.nextToken();
   }
   
   
