@@ -52,7 +52,7 @@ public class RHPMAgent extends GenericAgent {
     private static String proxyTopLevelSymbol=""; 
     // private static String proxyTopLevelDir="pia/Agents/RHPMAgent";  // name of top level path where profiles directory will be location
     // changed pg
-    private static String proxyTopLevelDir="/home/sun_home/pia/src/java/ricoh";  // name of top level path where profiles directory will be location
+    private static String proxyTopLevelDir="/home/pgage/pia/src/java/ricoh";  // name of top level path where profiles directory will be location
     private static String proxyProfilesDir="profiles"; // name of subdirectory for profile information (each subdir inthis directory will be named for a user, e.g. "jamey")
     private static String rhprofileFile="profile.rh";
     private static String rhlocationsFile="locations.rh";
