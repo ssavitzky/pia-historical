@@ -4,6 +4,9 @@
       form></set></then> <else><set name=capfile><read
       file=".latest">/photocaptions.xml</set></else> </if>
  <set name=caps><read file=&capfile; process></set>
+<if><get name=caps> <else>
+<set name=caps><create-photo-captions directory=&capfile;></set>
+</else></if>
 <title> <get index=caps.photostitle.Text></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">

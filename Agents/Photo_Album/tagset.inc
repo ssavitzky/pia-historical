@@ -93,9 +93,10 @@ directory">
 <set name=mydirectory local><get name=directory element></set>
 <set name="files" local><read directory file="&mydirectory;"
 match="\.jpg$"></set>
+<set local name=mytitle>Photos </set>
  <if><read info file=&mydirectory;/captions.html> <then>
-  <set name=caps local><read info file=&mydirectory;/captions.html
-  process></set>
+  <set name=caps local><read file=&mydirectory;/captions.html process></set>
+<set local name=mytitle><get index=caps.h1.Text></set>
  <set name=mycaps><get name=caps findall=a></set>
  <set name=capdl local><dl>
  <repeat list=&mycaps; entity=aref>

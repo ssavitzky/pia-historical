@@ -13,7 +13,13 @@
 <TR><th width=170>
 	<a href="http://www.ricohcpg.com/digital.html">
 	  <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99
-	       alt="Digital Camera"></a>
+	       alt="Digital Camera"></a><br>
+<set name=checked><read file="checkout"></set>
+<if><get name=checked><then>
+       Camera is <a href="checkout.if">checked out</a> to <get name=checked>
+      </then><else>
+        Please <a href="checkout.if"> Check-Out the camera</a>
+      </else></if>
 <td>
   <table cellspacing=0 BORDER=0>
     <tr><td align=right width=170><br>
@@ -63,12 +69,7 @@
 
 </table>
 <p>
-<set name=checked><read file="checkout"></set>
-<if><get name=checked><then>
-       Camera is <a href="checkout.if">checked out</a> to <get name=checked>
-      </then><else>
-        Please <a href="checkout.if"> Check-Out the camera</a>
-      </else></if>
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
