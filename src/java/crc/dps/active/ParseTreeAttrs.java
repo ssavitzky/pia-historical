@@ -16,7 +16,7 @@ import crc.dps.Tagset;
  * Implementing Attribute list.
  *
  */
-public class ParseTreeAttrs extends crc.dom.AbstractNamedList
+public class ParseTreeAttrs extends ParseNodeTable
 	implements ActiveAttrList, Namespace
 {
 
@@ -99,8 +99,6 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
 	if (attr instanceof ActiveNode) 
 	  //setItem( attr.getName(), ((ActiveNode)attr).deepCopy());
 	  setItem( attr.getName(), attr );
-	else if( attr instanceof AbstractNode)
-	  setItem( attr.getName(), ((AbstractNode)attr).clone() );
 	else
 	  // If it is a foreign attribute, do nothing but refers to it
 	  setItem( attr.getName(), attr );
@@ -169,7 +167,7 @@ public class ParseTreeAttrs extends crc.dom.AbstractNamedList
   }
 
   public void setAttributeValue(String name, Node value) {
-    setAttributeValue(name, new ArrayNodeList(value));
+    setAttributeValue(name, new ParseNodeList(value));
   }
 
   public void setAttributeValue(String name, String value) {

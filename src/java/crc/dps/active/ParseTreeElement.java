@@ -6,7 +6,6 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.ArrayNodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
@@ -59,7 +58,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
    */
   public NodeEnumerator getElementsByTagName(String name)
   {
-    ArrayNodeList result = new ArrayNodeList();
+    ParseNodeList result = new ParseNodeList();
     findAll( name, this, result );
     return result.getEnumerator();
   }
@@ -111,7 +110,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   }
 
   public void setAttributeValue(String name, Node value) {
-    setAttributeValue(name, new ArrayNodeList(value));
+    setAttributeValue(name, new ParseNodeList(value));
   }
 
   public void setAttributeValue(String name, String value) {
@@ -196,7 +195,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   ** Utilities:
   ************************************************************************/
   
-  protected void findAll( String tag, Element elem, ArrayNodeList result){
+  protected void findAll( String tag, Element elem, ParseNodeList result){
     Element child = null;
     
     if( elem.hasChildren() ){

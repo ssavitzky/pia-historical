@@ -36,6 +36,9 @@ NODE_CLASSES = \
 OTHER_CLASSES = \
 	NotActiveNodeException.java \
 	ParseTreeAttrs.java \
+	ParseNodeArray.java \
+	ParseNodeTable.java \
+	ParseNodeMap.java \
 	ParseNodeList.java \
 	ParseChildList.java \
 	ParseChildEnum.java
@@ -55,3 +58,8 @@ ParseTreePI.class: ParseTreeNode.java ParseTreeNamed.java
 ParseTreeComment.class: ParseTreeNode.java
 ParseTreeElement.class: ParseTreeNode.java
 ParseTreeText.class: ParseTreeNode.java
+
+ParseNodeMap.class: ParseNodeArray.java
+
+ParseNodeList.class: ParseNodeArray.java
+ParseNodeArrayEnumerator.class: ParseNodeArray.java

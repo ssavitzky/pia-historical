@@ -4,7 +4,6 @@
 
 package crc.dps.active;
 
-import crc.dom.ArrayNodeList;
 import crc.dom.NodeList;
 import crc.dom.Node;
 import crc.dom.NodeEnumerator;
@@ -21,8 +20,8 @@ import java.util.Enumeration;
  * @see crc.dps.Token
  * @see crc.dom.Node
  */
-public class ParseNodeList extends ArrayNodeList
-implements ActiveNodeList, java.io.Serializable {
+public class ParseNodeList extends ParseNodeArray
+  implements ActiveNodeList, java.io.Serializable {
 
   /**
    * Returns the indexth item in the collection, as a ActiveNode.
@@ -47,6 +46,9 @@ implements ActiveNodeList, java.io.Serializable {
   public ParseNodeList() {}
 
   public ParseNodeList(ActiveNode initialChild) {
+    super((Node)initialChild);
+  }
+  public ParseNodeList(Node initialChild) {
     super((Node)initialChild);
   }
   public ParseNodeList(NodeList initialChildren) {

@@ -6,7 +6,6 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.ArrayNodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
