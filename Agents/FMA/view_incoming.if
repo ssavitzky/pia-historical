@@ -37,14 +37,16 @@ Sort by: <select name="from">  <option>date</option>
 <!-- read list of incoming faxes - should be replaced by a get-->
  <set name="faxes"><read file="user/&user;.html"></set>
 
+<if><get name="faxes"><then>
+
 <!-- filter and sort -->
 
 <!-- show - probably want calendar interface here-->
 <!--  more data  should be shown in listing -->
 <form action="/&agentName;/route_faxes.if" method=POST>
 <table align=center>
-<tr><TH><TH><TH>Forward To</tr>
- <tr foreach list="&faxes;">
+ boom<tr><TH><TH><TH>Forward To</tr>
+<tr foreach list="&faxes;">
   <TR><TD align=right> <a href="/&agentName;/view_fax.if?fax=&li;"><img src="/&agentName/DATA/&li;/small.gif"></a>
    <TD align=left><a href="/&agentName;/view_fax.if?fax=&li;">&li;</a>
    <TD align=center> <select name="faxroute:&li;">&userlist;</select>
@@ -53,8 +55,14 @@ Sort by: <select name="from">  <option>date</option>
  <input type="SUBMIT" value="ForwardFaxes">
 </form>
  <HR>
+</then>
+<else>
+<!--  no faxes waiting for user -->
+</if>
+
 <!-- read list of incoming faxes - should be replaced by a get-->
  <set name="faxes"><read file="incoming.html"></set>
+<if><get name="faxes"><then>
 
 <!-- filter and sort -->
 
@@ -71,7 +79,11 @@ Sort by: <select name="from">  <option>date</option>
 </table>
  <input type="SUBMIT" value="ForwardFaxes">
 </form>
-
+</then>
+<else>
+Currently no Incoming faxes
+</else>
+</if> 
 
 
 <hr>
