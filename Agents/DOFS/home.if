@@ -78,7 +78,7 @@ This is the home page for the
 <hr>
 <h2>Install a new DOFS:</h2>
        <form action="/Agency/install_agent.if" method="POST">
-           <input name="type" value="dofs" type=hidden>
+           <input name="type" value="DOFS" type=hidden>
            name:<input name="agent" value="" size=10> 
            root:<input name="root" value="" size=30>
            <input type="submit" value="install_DOFS"><br>
