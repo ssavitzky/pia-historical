@@ -17,13 +17,15 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Hole:</b> Some &lt;select&gt; subs unimplemented. <br>
-       Needs to implement everything in XPointer spec, at least.
-       (1998-09-08)<br>
+  <li> <b>Impr:</b> XML / interacts with unquoted attribute values. <br>
+       Solutions include requiring a space or requiring non-ID values to be
+       quoted.  The latter is more correct.  Quoting strictness should be a
+       parser parameter for maximum versatility.
+       (1998-09-09) <br>
 
-  <li> <b>Bug:</b> XML empty flag not recognized <br>
-       At least on &lt;for&gt; elements.
-       (1998-09-04) <br>
+  <li> <b>Hole:</b> Some &lt;select&gt; subs unimplemented. <br>
+       id, xptr, replace; some attributes (e.g. <code>recursive</code>)
+       (1998-09-08)<br>
 
   <li> <b>Hole:</b> Entity definitions. <br>
        &lt;define entity&gt; unimplemented.
@@ -46,8 +48,9 @@ See also:
   <li> <b>Hole:</b> Parser work needed. <br>
        Literals, CDATA sections, parent, content models, declaration and PI
        parsing, optionally splitting text into tokens, optional case-munging.
-       <code>retainTree</code> implemented (08-27) but untested.
        (1998-08-13) <br>
+       -- <code>retainTree</code> implemented (08-27) but untested.
+          parent stuff done (no error checking) 09-11.
 
   <li> <b>Hole:</b> Attribute definitions. <br>
        Attribute types, implied/fixed/etc., default values, handlers.
