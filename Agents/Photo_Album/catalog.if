@@ -1,11 +1,13 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>&agentName; Catalog</title>
+<title>Catalog of Pictures</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 <base href="http://&piaHOST;:&piaPORT;/Photos/"></base>
-</head><body>
-<h1>&agentName; Catalog</h1>
- <table  border=1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Catalog</set>
+<read interform agent=Agency file="heading.inc" process>
+
+<table  border=1>
 <TR><TH><TH>Title<TH>Captions created<TR><read file="&AGENT.master_list;"></table>
 
 <hr>
@@ -22,7 +24,7 @@
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 14:24:44 1997
+Last modified: Tue Jun  3 17:53:25 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

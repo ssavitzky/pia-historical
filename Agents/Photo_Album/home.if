@@ -57,10 +57,10 @@
 
 <tr><th>
     <td align=right><td>
-        <a href="http://cdrw/CDRW/publish_photos.if">
+        <a href="http://cdrw:8001/CDRW/publish_photos.if">
         <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
     <!-- should test for CD-R/RW -->
-    <a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a><br>
+    <a href="http://cdrw:8001/CDRW/publish_photos.if">Create photo CD</a><br>
 </table>  
 <p>
 <hr>

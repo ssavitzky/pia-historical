@@ -1,11 +1,12 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>New pictures</title>
+<title>Latest Pictures</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body>
-<h1>&agentName; new pictures page</h1>
-<set entity  name=latest><read file=".latest"></set>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Latest Pictures</set>
+<read interform agent=Agency file="heading.inc" process>
 
+<set entity  name=latest><read file=".latest"></set>
 <set agent name="slides"><read directory file="&latest;" match="\.jpg$"></set>
  <set agent name="slide_directory"><get entity name="latest"></set>
 <set agent name="next_slide">1</set>
@@ -32,7 +33,7 @@ Most recent pictures captured on  &latest;.
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 14:25:12 1997
+Last modified: Tue Jun  3 17:52:16 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

@@ -2,13 +2,13 @@
 <html><head>
 <title>Help for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Help for &agentName;</set>
 <read interform agent=Agency file="heading.inc" process>
 
 <h3>Functions</h3>
 <ul>
-  <li><a href="/Photos/&latest;/">Latest photos</a>
+  <li><a href="/Photos/latest.if/">Latest photos</a>
   <li><a href="/Photos/">All photos</a>
   <li><a href="/&agentName;/slide_show.if">Slideshows</a>
   <li><a href="/&agentName;/catalog.if">Catalog</a>
@@ -23,7 +23,7 @@
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Jun  3 17:15:01 1997
+Last modified: Tue Jun  3 17:50:10 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

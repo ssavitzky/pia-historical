@@ -1,9 +1,11 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title></title>
+<title>Slide Show Setup</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body>
-<h1>Load slide show </h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Slide Show Setup</set>
+<read interform agent=Agency file="heading.inc" process>
+
 <if><test><get form name="directory"></test><then><set agent
 name="slides"><read directory file="&FORM.directory;" match="\.jpg$"></set>
  <set agent name="slide_directory"><get form name="directory"></set>
@@ -29,7 +31,7 @@ name="slide_pause">10</set></else></if>
 </then></if>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 14:28:01 1997
+Last modified: Tue Jun  3 17:47:58 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
