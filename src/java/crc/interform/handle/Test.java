@@ -18,26 +18,26 @@ import crc.gnu.regexp.RegExp;
  * <dl>
  * <dt>Syntax:<dd>
  *	&lt;test [iftrue="value"] [iffalse="value"] [not] [text|link]
- *	      [zero|positive|negative|null|match="pattern" [exact] [case]]&gt;
+ *	      [zero|positive|negative|null|markup|match="pattern" [exact] [case]]&gt;
  * <dt>Dscr:<dd>
  *	Test CONTENT; return null or IFFALSE if false, else '1' or
  *	IFTRUE.  <dt>Tests:<dd> default (non-whitespace), ZERO, POSITIVE,
- *	NEGATIVE, NULL, MATCH='pattern'.  <dt>Modifiers:<dd> NOT, CASE
- *	(sensitive), TEXT, LINK, EXACT (match).
+ *	NEGATIVE, NULL, (contains) MARKUP, MATCH='pattern'.  <dt>Modifiers:<dd> NOT,
+ *	 CASE (sensitive), TEXT, LINK, EXACT (match).
  * </dl>
  */
 public class Test extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<test [iftrue=\"value\"] [iffalse=\"value\"] [not] [text|link]\n" +
-    "[zero|positive|negative|null|match=\"pattern\" [exact] [case]]&gt;\n" +
+    "[zero|positive|negative|null||markup|match=\"pattern\" [exact] [case]]&gt;\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Test CONTENT; return null or IFFALSE if false, else '1' or\n" +
     "IFTRUE.  Tests: default (non-whitespace), ZERO, POSITIVE,\n" +
-    "NEGATIVE, NULL, MATCH='pattern'.  Modifiers: NOT, CASE\n" +
-    "(sensitive), TEXT, LINK, EXACT (match).\n" +
+    "NEGATIVE, NULL, (contains) MARKUP, MATCH='pattern'.  Modifiers: NOT,\n" +
+    " CASE (sensitive), TEXT, LINK, EXACT (match).\n" +
 "";
 
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -56,6 +56,8 @@ public class Test extends crc.interform.Handler {
       result = Util.numValue(test) > 0;
     } else if (it.hasAttr("negative")) {
       result = Util.numValue(test) < 0;
+    } else if (it.hasAttr("markup")) {
+      result = ! test.isText();
     } else if (it.hasAttr("match")) {
       String match = it.attrString("match");
       if (match == null) match = "";
