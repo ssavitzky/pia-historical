@@ -130,18 +130,121 @@ public class BasicAttribute extends AbstractNode implements Attribute {
     long len = value.getLength();
     StringBuffer sb = new StringBuffer();
     Node n = null;
+    String data = null;
+    String result = null;
 
     for( long i = 0; i < len; i++ ){
       try{
 	n = value.item( i );
-	if( n instanceof Text )
-	  sb.append( " " + ((Text)n).getData());
+	if( n instanceof Text ){
+	  // At this junction getData would already done character substitution.
+	  data = ((Text)n).getData();
+
+	  // Now do general entity substitution if any.
+	  result = genEntSub( data );
+
+	  sb.append( " " + result );
+	}
       }catch(NoSuchNodeException e){
       }
     }
 
     return new String( sb );
   }
+
+  /**
+   * General entity substitution. By searching for the Document object through parent, get DTD
+   * from the Document object's getDocumentType.  From the DocumentType object, get generalEntities object.
+   * Now, do substitution.
+   */
+  protected String genEntSub(String data){
+    Document doc = null;
+
+    doc = findDoc(this);
+    if( doc == null ) return data;
+
+    DocumentType dtd = (DocumentType)doc.getDocumentType();
+    if( dtd == null ) return data;
+
+    NamedNodeList ge = dtd.getGeneralEntities();
+    if( ge == null ) return data;
+
+    return doGenEntSub(ge, data);
+  }
+
+  /**
+   * Given the list of general entities and data.
+   * Now, do general entities substitution.
+   *
+   */
+  protected String doGenEntSub(NamedNodeList ge, String data){
+    String ent;
+    String result;
+
+    EntityScanner es = new EntityScanner( data );
+    ent = es.nextEntity();
+    while( ent != null ){
+      if( ge.getNode( ent ) != null ){
+	//result = subEntity(ent, ge, data);
+	//data = result;
+      }
+      ent = es.nextEntity();
+    }
+
+    return data;
+  }
+
+
+  /**
+   * substitute entity within data and return a new string.
+   */
+  protected String subEntity(String et, NamedNodeList ge, String s){
+    int spos=0;
+    int epos=0;
+    int fpos=0;
+    boolean found = false;
+    StringBuffer sb = new StringBuffer();
+    Node gEntity= null;
+
+    String ent = "&"+et+";";
+    fpos = s.indexOf( ent );
+    while( fpos != -1 ){
+      found = true;
+      Report.debug("spos is-->"+Integer.toString(spos));
+      Report.debug("fpos is-->"+Integer.toString(fpos));
+      Report.debug("The substring is-->"+s.substring(spos, fpos));
+      sb.append(s.substring(spos, fpos));
+      spos = fpos + ent.length();
+      
+      gEntity = ge.getNode(et);
+      //if( gEntity instanceof InternalEntity ) 
+      //	sb.append( ((InternalEntity)gEntity).getContent() );
+      //   else if ( gEntity instanceof ExternalTextEntity )
+      //	sb.append( ((ExternalTextEntity)gEntity).getContent() );
+      fpos = s.indexOf( ent, fpos+1 );
+    }
+    if( !found ) return s;
+    
+    if( spos != 0 )
+      sb.append(s.substring(spos, s.length()));
+
+    return new String( sb );
+  }
+
+
+  /**
+   * Find doc from parent.
+   */
+  protected Document findDoc(Node n){
+    Node p = n.getParentNode();
+    if( p == null ) return null;
+
+    if( !(p instanceof Document) ){
+      p = findDoc( p ); 
+    }
+    return (Document)p;
+  }
+  
 
   protected void setNullValue(){
     try{
@@ -174,3 +277,38 @@ public class BasicAttribute extends AbstractNode implements Attribute {
 }
 
 
+class EntityScanner{
+
+  EntityScanner(String data){ this.data = data; }
+
+  /**
+   * Scan for general entity.  If one is found, it will be
+   * returned; otherwise, null.
+   */
+  protected String nextEntity(){
+    int spos = 0;
+    int epos = 0;
+
+    if( start >= data.length() ) return null;
+
+    spos = data.indexOf( '&', start );
+    if( spos != -1 ){
+      // some thing is found
+      if( spos+1 >= data.length() ) return null;
+
+      epos = data.indexOf( ';', spos+1 );
+      if( epos != -1 ){
+	start = epos + 1;
+	return data.substring( spos+1, epos );
+      }
+      else
+	return null;
+    }
+    else return null;
+  }
+
+  String data;
+  int start = 0;
+
+
+}
