@@ -75,8 +75,18 @@ public class Tagset extends Token {
   ************************************************************************/
 
   /** Return the actor with a name matching the given tag. */
-  public Actor forTag(String t) {
+  public Actor activeFor(String t) {
     return (Actor)actors.at(t);
+  }
+
+  /** Return a passive actor. */
+  public Actor passiveAt(int i) {
+    return (Actor)passive.at(i);
+  }
+
+  /** Return the number of passive actors. */
+  public int nPassive() {
+    return passive.nItems();
   }
 
   /** Add an actor to the tagset. */
@@ -120,6 +130,10 @@ public class Tagset extends Token {
 
   protected Tagset(String name) {
     this.attr("name", name);
+  }
+
+  public Object clone() {
+    return null; // === clone
   }
 
 /* ========================================================================

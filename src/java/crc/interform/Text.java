@@ -58,10 +58,24 @@ public class Text implements SGML {
     return true;
   }
 
+  /** Parser state:  0 for a complete element. */
+  public byte incomplete() {
+    return 0;
+  }
+
+  /** Set parser state.  Ignored for all but Token. */
+  public void incomplete(byte i) {
+  }
+
   /** A string ``tag'' that is guaranteed to be null if isList(),
    *	and "" if istext(). */
   public String tag() {
     return "";
+  }
+
+  /** Return null: the name of the entity to which this is a reference. */
+  public String entityName() {
+    return null;
   }
 
   /** Convert the entire object to text */
@@ -75,10 +89,15 @@ public class Text implements SGML {
     return null;
   }
 
-  /** The result of appending some SGML tokens.  Same as this if isList(). */
+  /** The text part of the object's content. */
+  public Text contentText() {
+    return this;
+  }
+
+  /** The result of appending some SGML tokens. */
   public SGML append(SGML sgml) {
     if (sgml == null) return this;
-    return (new Tokens()).append(this).append(sgml);
+    return appendText(sgml.toText());
   }
 
   /** The result of appending a string.  returns this. */
@@ -98,7 +117,7 @@ public class Text implements SGML {
   }
 
   /** The result of appending some text.  Same as this if isText(). */
-  public Text appendText(Text t) {
+  public SGML appendText(Text t) {
     if (t == null) return this;
     if (isStringBuffer) {
       ((StringBuffer)content).append(t);
@@ -114,14 +133,20 @@ public class Text implements SGML {
   }
 
   /** Append this as text. */
-  public void appendTextTo(Text t) {
-    t.appendText(this);
+  public void appendTextTo(SGML t) {
+    t.append(this);
   }
 
   /** Append contents to a Tokens list. */
   public void appendContentTo(Tokens list) {
     list.append(this);
   }
+
+  /** Convert the object to a single token. */
+  public Token toToken() {
+    return new Token("", this);
+  }
+
 
   /************************************************************************
   ** Construction:

@@ -23,7 +23,7 @@ public class Tokens implements SGML {
 
   public String toString() {
     StringBuffer s = new StringBuffer();
-    for (int i = 0; i < size(); ++i) {
+    for (int i = 0; i < nItems(); ++i) {
       s.append(content.elementAt(i).toString());
     }
     return s.toString();
@@ -33,11 +33,15 @@ public class Tokens implements SGML {
   ** SGML list interface:
   ************************************************************************/
 
-  public int size() {
+  public int nItems() {
     return content.size();
   }
   public SGML itemAt(int i) {
-    return i >= size() ? null : (SGML)content.elementAt(i);
+    return i >= nItems() ? null : (SGML)content.elementAt(i);
+  }
+  public SGML itemAt(int i, SGML v) {
+    content.setElementAt(v, i);
+    return this;
   }
 
   /************************************************************************
@@ -54,6 +58,15 @@ public class Tokens implements SGML {
     return false;
   }
 
+  /** Parser state:  0 for a complete element. */
+  public byte incomplete() {
+    return 0;
+  }
+
+  /** Set parser state.  Ignored for all but Token. */
+  public void incomplete(byte i) {
+  }
+
   /** Return true for a list of tokens. */
   public boolean isList() {
     return true;
@@ -67,12 +80,16 @@ public class Tokens implements SGML {
   /** Return true if the SGML is pure text, or a 
    * 	singleton list containing a Text. */
   public boolean isText() {
-    return size() == 1 && itemAt(0).isText();
+    return nItems() == 1 && itemAt(0).isText();
   }
 
   /** A string ``tag'' that is guaranteed to be null if isList(),
    *	and "" if isText(). */
   public String tag() {
+    return null;
+  }
+
+  public String entityName() {
     return null;
   }
 
@@ -86,7 +103,7 @@ public class Tokens implements SGML {
 
   /** Convert the object to a single token. */
   public Token toToken() {
-    return (size() == 1) ? itemAt(0).toToken() : new Token(null, this);
+    return (nItems() == 1) ? itemAt(0).toToken() : new Token(null, this);
   }
 
   /** The object's content.  This is the same as this if isList(); 
@@ -99,33 +116,83 @@ public class Tokens implements SGML {
   public SGML append(SGML sgml) {
     if (sgml.isList()) {
       sgml.appendContentTo(this);
-    } else if (sgml.isText() && size() > 0 && itemAt(size()-1).isText()) {
-      itemAt(size()-1).appendText(sgml.toText());
+    } else if (sgml.isText() && nItems() > 0 && itemAt(nItems()-1).isText()) {
+      itemAt(nItems()-1).appendText(sgml.toText());
     } else {
       content.addElement(sgml);
     }
     return this;
   }
 
-  /** The result of appending some text.  Same as this if isText(). */
-  public Text appendText(Text t) {
-    return toText().appendText(t);
+  /** The result of appending some text.  */
+  public SGML appendText(Text t) {
+    return append(t);
   }
 
   /** Append this as text. */
-  public void appendTextTo(Text t) {
-    for (int i = 0; i < size(); ++i) {
+  public void appendTextTo(SGML t) {
+    for (int i = 0; i < nItems(); ++i) {
       itemAt(i).appendTextTo(t);
     }
   }
 
   /** Append contents to a Tokens list. */
   public void appendContentTo(Tokens list) {
-    for (int i = 0; i < size(); ++i) {
+    for (int i = 0; i < nItems(); ++i) {
       list.append(itemAt(i));
     }
   }
     
+  /************************************************************************
+  ** Access to parts of content:
+  ************************************************************************/
+
+  /** Return only the text portions of the content */
+  public Text contentText() {
+    Text t = new Text();
+    for (int i = 0; i < nItems(); ++i) {
+      t.append(itemAt(i).contentText());
+    }
+    return t;
+  }
+
+  /** Return only the content inside of markup (including text content). */
+  public Tokens contentMarkup() {
+    Tokens t = new Tokens();
+    for (int i = 0; i < nItems(); ++i) {
+      if (! itemAt(i).isText()) t.append(itemAt(i));
+    }
+    return t;
+  }
+
+  /** Return only the text inside the given tag */
+  public Text linkText(String tag) {
+    Text t = new Text();
+    for (int i = 0; i < nItems(); ++i) {
+      if (itemAt(i).tag() == tag) t.append(itemAt(i).contentText());
+    }
+    return t;
+  }
+
+  /** Return the content with leading and trailing whitespace removed. */
+  public Tokens contentTrim() {
+    Tokens t = new Tokens();
+    for (int i = 0; i < nItems(); ++i) {
+      if (i == 0 && itemAt(i).isText()) {
+	// === We really ought to treat first and last differently.
+	String s = itemAt(i).toString().trim();
+	if (s != "") t.append(new Text(s));
+      } else if (i == nItems() && itemAt(i).isText()) {
+	// === We really ought to treat first and last differently.
+	String s = itemAt(i).toString().trim();
+	if (s != "") t.append(new Text(s));
+      } else {
+	t.append(itemAt(i));
+      }
+    }
+    return t;
+  }
+
   /************************************************************************
   ** Construction:
   ************************************************************************/
