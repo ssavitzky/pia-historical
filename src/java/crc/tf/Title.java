@@ -9,8 +9,8 @@ import java.net.URL;
 import crc.ds.UnaryFunctor;
 import crc.pia.Transaction;
 import crc.pia.Content;
-import crc.util.regexp.MatchInfo;
-import crc.util.regexp.RegExp;
+import gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
 
 public final class Title implements UnaryFunctor{
   private String getPage(Transaction trans){
