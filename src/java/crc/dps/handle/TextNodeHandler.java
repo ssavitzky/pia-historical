@@ -1,4 +1,4 @@
-////// TextHandler.java: Text Node Handler implementation
+////// TextNodeHandler.java: Text Node Handler implementation
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -32,25 +32,25 @@ import crc.ds.Table;
  * @see crc.dom.Node
  */
 
-public class TextHandler extends AbstractHandler {
+public class TextNodeHandler extends AbstractHandler {
 
   /************************************************************************
   ** Standard handlers:
   ************************************************************************/
 
-  /** The default TextHandler.  
+  /** The default TextNodeHandler.  
    *	Its <code>getActionForNode</code> method should be capable of
    *	returning the correct handler. 
    */
-  public static final TextHandler DEFAULT  = new TextHandler(false);
+  public static final TextNodeHandler DEFAULT  = new TextNodeHandler(false);
 
-  /** An TextHandler for active entities. */
-  public static final TextHandler ACTIVE  = new TextHandler(true);
+  /** An TextNodeHandler for active entities. */
+  public static final TextNodeHandler ACTIVE  = new TextNodeHandler(true);
 
-  /** An TextHandler for passive entities, which should never be 
+  /** An TextNodeHandler for passive entities, which should never be 
    *	replaced by their values during processing.
    */
-  public static final TextHandler PASSIVE = new TextHandler(false);
+  public static final TextNodeHandler PASSIVE = new TextNodeHandler(false);
 
   /************************************************************************
   ** State:
@@ -122,14 +122,14 @@ public class TextHandler extends AbstractHandler {
   ** Construction:
   ************************************************************************/
 
-  public TextHandler() {}
+  public TextNodeHandler() {}
 
-  /** Construct a TextHandler
+  /** Construct a TextNodeHandler
    *
    * @param active <code>true</code> (default) if the text should ever be
    *	expanded, <code>false</code> otherwise.
    */
-  public TextHandler(boolean active) {
+  public TextNodeHandler(boolean active) {
     this.active = active;
   }
 

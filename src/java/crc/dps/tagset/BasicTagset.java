@@ -556,7 +556,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   public BasicTagset() {
     setHandlerForType(NodeType.ENTITY, EntityHandler.DEFAULT);
-    setHandlerForType(NodeType.TEXT, TextHandler.DEFAULT);
+    setHandlerForType(NodeType.TEXT, TextNodeHandler.DEFAULT);
   }
 
   public BasicTagset(String name) {

@@ -14,7 +14,7 @@ BASE_CLASSES = \
 	IgnorableHandler.java \
 	LegacyHandler.java \
 	SkippableHandler.java \
-	TextHandler.java \
+	TextNodeHandler.java \
 	TypicalHandler.java
 
 ### These are the primitive handlers defined in basic.ts
