@@ -684,7 +684,7 @@ public class Pia {
       agency = (Agency) Class.forName(agencyClassName).newInstance() ;
       //agency = new Agency("Agency", null);
       agency.name("Agency");
-      //agency.type("Agency");
+      agency.type("Agency");
     } catch (Exception e) {
       errSys(e, "Cannot create Agency object with class name "
 	     + agencyClassName + "\n" + e.toString());
