@@ -26,10 +26,13 @@
 #	This has serious problems when you're trying to use source control.
 
 CLASSDIR= $(TOPDIR)/classes
+DOCDIR  = $(TOPDIR)/Doc
 
 #piahome/lib/java/*.zip   
 #zip files added in file.make...could determine automatically...
+PIADIR=$(TOPDIR)/../../..
 LIBDIR= $(TOPDIR)/../../../lib/java
+BINDIR=$(TOPDIR)/../../../bin
 
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl1.1.zip
 
@@ -37,8 +40,6 @@ LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl1.1.zip
  #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 #sun 1.0.2 location
 JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
-
-DOCDIR  = $(TOPDIR)/Doc
 
 .SUFFIXES: .java .class
 
