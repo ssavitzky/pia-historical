@@ -230,6 +230,8 @@ public class Resolver extends Thread {
 
     if (path.startsWith("/")) path = path.substring(1);
     if (path.startsWith("~")) path = path.substring(1);
+    else if (path.startsWith("%7E") || path.startsWith("%7e"))
+      path = path.substring(3);
 
     List pathList = new List(new java.util.StringTokenizer(path, "/"));
 

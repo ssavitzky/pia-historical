@@ -1054,6 +1054,8 @@ public class GenericAgent extends AttrBase implements Agent {
     if (path.startsWith("/~")) {
       path = "/" + path.substring(2);
       wasData = true;
+    } else if (path.startsWith("/%7E") || path.startsWith("/%7e")) {
+      path = "/" + path.substring(4);
     }
 
     /* Remove a leading /type or /name or /type/name from the path. */
