@@ -1,4 +1,4 @@
-////// EntityTable.java: Node Handler Lookup Table interface
+////// EntityTable.java: Entity Lookup Table interface
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 package crc.dps;
@@ -14,25 +14,9 @@ import crc.dom.AttributeList;
 import java.util.Enumeration;
 
 /**
- * The interface for a EntityTable -- a lookup table for syntax. 
+ * The interface for a EntityTable -- a lookup table for values. 
  *
- *	A Node's Handler provides all of the necessary syntactic and
- *	semantic information required for parsing, processing, and
- *	presenting a Node and its start tag and end tag Token.  A
- *	EntityTable can be regarded as either a lookup table for syntactic
- *	information, or as a a Handler factory. <p>
- *
- *	Name=value bindings are represented using the Attribute interface,
- *	since that has all the necessary properties.  
- *	=== Eventually we should use a NamedNodeList of Entity nodes === <p>
- *
- *	Note that this interface says little about the implementation.
- *	It is expected, however, that any practical implementation of
- *	EntityTable will also be a Node, so that entityTables can be read and
- *	stored as documents or (better) DTD's.  <p>
- *
- *	(We may eventually make EntityTable an extension of Node in order
- *	to enforce this.) <p>
+ *	Entities are named values that can be substituted into a document.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
