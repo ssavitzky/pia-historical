@@ -7,12 +7,14 @@ package crc.sgml;
 import crc.ds.List;
 import crc.ds.Table;
 import crc.ds.Index;
+import crc.ds.SortTree;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
 
 import java.util.Enumeration;
 import java.lang.Integer;
+
 
 /**
  * A List (sequence) of SGML Token's.  
@@ -365,7 +367,7 @@ public class Tokens extends List implements SGML {
       addItem(it.itemAt(i));
   }
 
-/**  copy specified items into a new tokens */
+  /** copy specified items into a new tokens */
    public Tokens copy(int[] indices) {
      Tokens result = new Tokens();
      
@@ -375,7 +377,7 @@ public class Tokens extends List implements SGML {
    return result;
  }
 
-/**  copy specified items into a new tokens */
+  /** copy specified items into a new tokens */
    public Tokens copy(int  start, int stop) {
      Tokens result = new Tokens();
      
@@ -385,6 +387,8 @@ public class Tokens extends List implements SGML {
  }
 
 
+  /** Return a new Tokens object with the same content.  Shallow copying 
+   *	is used.  */
   public Object clone() {
     return new Tokens(this);
   }
@@ -396,4 +400,60 @@ public class Tokens extends List implements SGML {
     else return new Tokens(t);
   }
 
-}
+  /************************************************************************
+  ** Sorting:
+  ************************************************************************/
+
+  /** Return a new Tokens containing the contents sorted in ascending 
+   *	lexicographic order. */
+  public Tokens sortAscending() {
+    SortTree sorter = new SortTree();
+    Tokens results = new Tokens();
+    sorter.append(this.elements());
+    sorter.ascendingValues(results);
+    return results;
+  }
+
+  /** Return a new Tokens containing the contents sorted in descending 
+   *	lexicographic order. */
+  public Tokens sortDescending() {
+    SortTree sorter = new SortTree();
+    Tokens results = new Tokens();
+    sorter.append(this.elements());
+    sorter.descendingValues(results);
+    return results;
+  }
+
+  /** Return a new Tokens containing the contents sorted in ascending 
+   *	numerical order. */
+  public Tokens sortAscendingNumeric() {
+    SortTree sorter = new SortTree();
+    Tokens results = new Tokens();
+    sorter.appendNumeric(this.elements());
+    sorter.ascendingValues(results);
+    return results;
+  }
+
+  /** Return a new Tokens containing the contents sorted in descending 
+   *	numerical order. */
+  public Tokens sortDescendingNumeric() {
+    SortTree sorter = new SortTree();
+    Tokens results = new Tokens();
+    sorter.appendNumeric(this.elements());
+    sorter.descendingValues(results);
+    return results;
+  }
+
+  /** Return a new Tokens containing the contents sorted as specified
+   *	by the two boolean parameters <code>reverse</code> and
+   *	<code>numeric</code>
+   */
+  public Tokens sort(boolean reverse, boolean numeric) {
+    if (reverse) {
+      return numeric? sortDescendingNumeric() : sortDescending(); 
+    } else {
+      return numeric? sortAscendingNumeric() : sortAscending(); 
+    }
+  }
+
+ }
