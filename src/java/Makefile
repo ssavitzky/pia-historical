@@ -21,9 +21,7 @@ PIAPACKAGENAMES= \
 	crc.dps.active crc.dps.util \
 	crc.ds \
 	crc.gnu.regexp \
-	crc.interform crc.interform.handle \
 	crc.pia crc.pia.agent \
-	crc.sgml \
 	crc.tf \
 	crc.util \
 	misc

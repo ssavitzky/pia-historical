@@ -14,8 +14,6 @@ PACKAGES = \
 	util \
 	dom \
 	dps \
-	sgml \
-	interform \
 	content \
 	tf \
 	pia

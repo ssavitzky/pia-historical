@@ -6,8 +6,6 @@ FILES = \
 	Default.java \
 	html.java \
 	annotatedhtml.java \
-	ParsedContent.java \
-	InterFormContent.java \
 	ProcessedContent.java \
 	StringContent.java
 
