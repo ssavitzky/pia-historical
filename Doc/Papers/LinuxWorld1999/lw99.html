@@ -5,16 +5,26 @@
 </head><body>
 <h1>Slides for LinuxWorld 1999, Session 74</h1>
 
+<hide>
+<p> Note: you are viewing the plain form of a document that was designed to be
+    viewed as a <a href="lw99.slides.html">slide presentation</a>.  You can
+    expect to see a little bit of junk at the end of this paragraph: (
 <!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
 <!-- See mail.conferences:102 -->
 <set name=DOC:hh>440</set><!-- Tweak size for Netscape at 800x600 -->
 			  <!-- horizontal scrollbar eats into height... -->
-
-<p> Note: This presentation looks best in Netscape with a screen size of
-    800x600, and all toolbars turned off.  It was designed for a presentation
-    using a laptop computer. 
-
 <set name=DOC:logo><img src="Images/pent24.gif"></set>
+)
+</hide>
+
+<p> Note: The <a href="lw99.slides.html">processed form</a> of this
+    presentation looks best in Netscape with a screen size of 800x600, and all
+    toolbars turned off.  Set the variable width font to 24-pt Times and the
+    fixed-width font to 18-pt Courier.  It was designed to be presented using
+    a laptop computer and projection CRT.
+
+<p> For casual viewing or printing, use the <a href="lw99.html">plain HTML
+    form</a>.
 
 <hr>
 
@@ -38,8 +48,9 @@
 <slide><h2>Overview</h2>
 <p>&nbsp;
 <ol>
-  <li> Introduction
+  <li> Introduction: <em>``The Network is the Computer''</em>
   <li> Documents and the Web
+  <li> Information Applications
   <li> Document Processing
   <li> Architecture and Implementation
   <li> Open Source
@@ -57,44 +68,40 @@
 
 <slide><h2>But if ``The Network is the Computer''...</h2>
 <table align=center> 
-  <tr><th bgcolor=yellow> On your Computer <th> Input <th> Process <th> Output
+  <tr><th bgcolor=yellow> On your Computer <th> I/O <th> Processing <th> Storage
   <tr>
     <th>PC
-    <td> keyboard
+    <td> keyboard<br> display
     <td> CPU
-    <td> display
+    <td> Hard drive <br> CD/ROM
   <tr>
     <th>Lisp
-    <td> read
+    <td> read/print
     <td> eval
-    <td> print
+    <td> lists
   <tr>
     <th>Number Crunching
     <td> spreadsheet
-    <td> FORTRAN
-    <td> GnuPlot
+    <td> macros <br> applications
+    <td> files <br> database
   <tr>
     <th>Text Processing
-    <td> emacs
-    <td> PERL
-    <td> LaTeX
+    <td> emacs / lpr
+    <td> PERL, LaTeX
+    <td> file system
   <tr> <th>&nbsp;<th>&nbsp;<th>&nbsp;
-  <tr> <th bgcolor=yellow> On the Web <th> Input <th bgcolor=yellow> Process <th> Output
+  <tr> <th bgcolor=yellow> On the Web
+       <th> I/O <th bgcolor=yellow> Processing <th> Storage
   <tr>
     <th>Web Browsing
-    <td> Server
-    <td bgcolor=yellow align=center> ????
     <td> Browser
+    <td bgcolor=yellow align=center> ????
+    <td> Servers
   <tr>
     <th> Web Authoring
-    <td> edit
-    <td bgcolor=yellow align=center> ????
-    <td> upload
-  <tr>
-    <th> XML
     <td> editor
     <td bgcolor=yellow align=center> ????
-    <td> application
+    <td> Server
   <tr> <td colspan=4>&nbsp;
   <tr>
     <th> &nbsp;
@@ -122,124 +129,241 @@
 
 <hr><set name=subCaption>Documents and the Web</set>
 <slide><h2>Documents and the Web</h2>
-<ul>
-  <li> The Web has <em>totally transformed</em> the way we think about
-       <ul>
-	 <li> documents
-	 <li> hypertext
-	 <li> the Internet
-	 <li> computers
-	 <li> user interfaces
-       </ul>
-  <li> In particular,
-       <ul>
-	 <li> A document is a web page
-	 <li> a hypertext document is a web site
-	      <ul>
-		<li> forget about earlier, more elaborate visions
-		<li> the web is the 80% solution
-	      </ul>
-	 <li> The Internet is the Web
-	 <li> a computer is either a server or a browser
-	 <li> a user interface is a collection of forms
-       </ul>
+<table>
+  <tr>	<th colspan=3 align=center>
+         The Web has <em>totally transformed</em> the way we think about
+         information:
+  <tr> <td colspan=2>&nbsp;
+  <tr> <th> Old <th> New
+  <tr>	<th> Documents
+	<td> files
+	<td> web pages
+  <tr>	<th> 
+	<td> proprietary formats
+	<td> standardized markup
+  <tr>	<th> Hypertext
+	<td> text + link database
+	<td> web pages + URL's
+  <tr>	<th> the Internet
+	<td> telnet +ftp
+	<td> The Web
+  <tr>	<th> &nbsp;
+	<td> downloading programs
+	<td> finding information
+  <tr>	<th> Computers
+	<td> data processors
+	<td> browsers and servers
+  <tr>	<th> User interfaces
+	<td> GUI widgets
+	<td> forms
 </ul>
 </slide>
 
-
-<slide><h2>Appliances</h2>
+<slide><h2>What is our system?</h2>
+<p>&nbsp;
 <div align=center>
-  <strong>The future of computing is <em>networked appliances</em></strong>
-  <img src="Images/officeimg.gif">
+  <strong>A Document-Processing Engine for the Web</strong>
 </div>
 <ul>
-  <li> (NOA = Networked Office Appliance)
-  <li> Web-enabled -- used mainly or only through a browser.
-  <li> Mostly special-purpose
-  <li> May be clients, servers, or (ta-da!) document processors
+  <li> The Web is made of documents
+  <li> ``<em>In the future, the only API's that matter will be the API's of web
+       sites</em>'' <br>
+       -- Tim O'Reilly
+  <li> What we have is a general-purpose document processor
+  <li> designed <em>specifically</em> for web applications.
+       <ul>
+	 <li> Can operate as client, server, proxy, or any combination
+	 <li> Can process other servers' documents<br>
+	      ... <em>examples further on</em>
+       </ul>
+  <li> Serves as the basis for
+       <ul>
+	 <li> personal web assistants
+	 <li> easy-to-administer servers
+	 <li> web-based information appliances
+       </ul>
 </ul>
+<p>&nbsp;
+<div align=center>
+   ``<strong>Like a spreadsheet for documents</strong>''
+</div>
 </slide>
 
-
-<slide><h2>Appliances on the Web</h2>
-<strong>An appliance contains a thin server.</strong>
-<a href="Images/webprinter.small.gif"><img
-   src="Images/webprinter.small1.gif" align=right width=300></a> 
+<slide><h2>Example: Browsing History</h2>
 <ul>
-  <li> Used through its Web pages
-  <li> Pages are generated by ``<em>agents</em>''
-       <ul>
-	 <li> from ``active documents''
-	 <li> and (optional) custom code
-       </ul>
-  <li> Agents run on ``<em>Agency</em>'' infrastructure
-       <ul>
-	 <li> Processes HTTP requests
-	 <li> Implements XML standard
-	 <li> Runs agents
-       </ul>
-  <li> Examples:
-       <ul>
-	 <li> WebPrinter
-	 <li> Photo Album
-	 <li> Form server <!-- link to sample? -->
-       </ul>
+  <li> Consider this: (<a href="/History">live</a>)<br>
+           
+       <a href='Images/history-index.html'>/~History</a> /
+       <a href='Images/1999.html'>1999</a> /
+       <a href='Images/01.html'>01</a> /
+       <a href='Images/29.html'>29</a>
+
+  <li> ... which points to this (and more)<br>
+14:27 <a href='http://internal/~wolff/position/'>http://internal/~wolff/position/ : </a><br>
+14:27 <a href='http://internal/~wolff/position/infoapps.html'>http://internal/~wolff/position/infoapps.html : </a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image1.gif'>http://internal/~wolff/position/Image1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/pia_arch1.gif'>http://internal/~wolff/position/pia_arch1.gif</a><br>
+14:28 --image/gif- <a href='http://internal/~wolff/position/Image2.gif'>http://internal/~wolff/position/Image2.gif</a><br>
+15:07 <a href='http://internal/~wolff/position.html'>http://internal/~wolff/position.html : </a><br>
+15:08 <a href='http://www.varesearch.com/'>http://www.varesearch.com/ : </a><br>
+15:08 --image/gif- <a href='http://www.varesearch.com/graphics/varback.gif'>http://www.varesearch.com/graphics/varback.gif</a><br>
+...
+  <li> (This is why I designed the system in the first place...)
 </ul>
 </slide>
 
 
-<slide><h2>Appliances usually run on open source</h2>
-<table><!-- could squeeze another image into lower left.  PIA proto? -->
-<tr><td colspan=2>
-	<img src="Images/netwinder.jpeg"><br>
-	<img src="Images/netwinder2.jpeg" align=top>
-	<a href="http://www.corelcomputer.com/">Corel NetWinder</a> (Linux)
-    <td align=center>
-	<a href="http://www.cobaltmicro.com/">Cobalt Qube</a> <br>
-	<img src="Images/qube.jpeg" align=center> <br> (Linux)
-<tr><td align=center>
-	<img src="Images/snap.gif"><br>
-	<a href="http://www.snapserver.com/">Snap server</a> (???)
-    <td valign=center align=center>
-	<a href="http://www.whistle.com/">Whistle InterJet</a> <br> (FreeBSD)
-    <td><img src="Images/interjet.jpeg">
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> The document processor is <em>between the browser and the web</em>
+  <li> It can look at
+       <ul>
+	 <li> requests
+	 <li> responses
+	 <li> documents
+	 <li> local files
+       </ul>
+  <li> ``Agent'' (History, in this case)
+       <ul>
+	 <li> looks like a top-level directory
+	      (<a href="/History">/History</a>)
+	 <li> does processing on behalf of <em>one user</em> (me)
+	 <li> keeps persistent state.
+       </ul>
+  <li> 
+</ul>
+</slide>
+<hr><set name=subCaption>Information Applications</set>
+<slide><h2>InfoWare, not software</h2>
+
+<p><em>``A killer application is no longer a desktop productivity application
+or even a back-office enterprise software system, but an entirely new breed,
+something you might call an `information application' or perhaps even
+`infoware.'</em>
+
+<p><em>
+``Traditional software embeds small amounts of information in a lot of
+software; infoware embeds small amounts of software in a lot of
+information. The `actions' in an infoware product are generally fairly simple:
+make a choice, buy or sell, enter a small amount of data and get back a
+customized result -- the primary interaction with the user is managed largely
+via the Web page (which may have been created by a writer, editor, or designer
+rather than by a programmer, with a relatively small amount of programming
+support.)''  </em>
+
+<div align=right>-- Tim O'Reilly, of O'Reilly and Associates.</div>
+</slide>
+
+
+<slide><h2>The New Killer Application</h2>
+
+<p> <em>Killer application:</em> n. An application that makes someone want to
+    go out and buy a computer.
+
+<table>
+  <tr> <th> Apple II
+	<td> VisiCalc
+
+  <tr> <th> IBM PC
+	<td> Lotus 123, WordPerfect
+
+  <tr> <th> Windows
+	<td> Microsoft Office
+
+  <tr> <th> Linux
+	<td> Apache (&gt;50% of web sites in Europe) <br>
+	<th> <td> Samba for intranets
+
+  <tr> <td colspan=2>&nbsp;
+
+  <tr> <th> The Web
+	<td> <code>amazon.com</code>
+
 </table>
 </slide>
 
-<hr><set name=subCaption>Document Processing</set>
-<slide><h2>InfoWare, not software</h2>
+
+
+<slide><h2>Aspects of InfoWare</h2>
 <ul>
-  <li> Information is more important than <em>either</em> interface or
-       processing
+  <li> <strong>Information is Everything</strong>
        <ul>
-	 <li> <strong>above all, preserve the information!</strong>
-	 <li> If information is accessible, processing is straightforward.
+	 <li> more important than <em>either</em> interface or
+	      processing
        </ul>
-  <li> Informal knowledge targeted at an individual or group
+       
+  <li> <strong>Knowledge is informal:</strong>
        <ul>
 	 <li> mostly <strong>documents</strong>, not databases
 	 <li> hierarchical, not tabular
-	 <li> every group has its procedures
+	 <li> Even databases are transformed into documents for transmission
        </ul>
-  <li> Maintainability over the long run is key
+
+  <li> <strong>Information changes:</strong>
        <ul>
+	 <li> Maintainability over the long run is key
 	 <li> No proprietary formats
 	 <li> No secret algorithms
+       </ul>
+
+  <li> <strong>Processing is distributed:</strong>
+       <ul>
+	 <li> every group has its procedures
+	 <li> <em>The user must be able to do processing, too!</em>
        </ul>
 </ul>
 </slide>
 
 
+<slide><h2>Infoware in the Organization</h2>
+<ul>
+  <li> Large organizations can afford a large IT staff
+       <ul>
+	 <li> search specialists
+	 <li> database designers
+	 <li> website weavers
+	 <li> network managers
+	 <li> computer operators
+	 <li> in-house programmers for one-off tasks
+       </ul>
+  <li> Individuals and small organizations can't.
+  <li> <strong>What to do?</strong>
+       <ul>
+	 <li> We need to bring document processing to everyone.
+       </ul>
+</ul>
+</slide>
+
+<slide><h2>Document-Oriented Computing</h2>
+<p><strong>InfoWare needs...</strong>
+<ul>
+  <li> A whole new way of looking at computation
+       <ul>
+	 <li> variables contain documents
+	 <li> content and behavior are separate
+       </ul>
+  <li> A new <em>location</em> for computation
+       <ul>
+	 <li> <em>documents</em> get passed between nodes
+	 <li> not just clients and servers
+	 <li> peers and proxies as well
+       </ul>
+</ul>
+<p> We call it <em>Document-Oriented Computing</em>
+</slide>
+
+
+<hr><set name=subCaption>Document Processing</set>
 <slide><h2>What Are Documents?</h2>
 <ul>
   <li> A document is a <em>tree-structured collection of text</em>
   <li> Document = content (text) + structure (markup tags)
   <li> Documents may have
        <ul>
-	 <li> multiple versions
+	 <li> multiple versions (revisions / translations / variants / ...)
 	 <li> multiple presentations (styles / views)
 	 <li> multiple representations (file / parse tree / ...)
-	 <li> multiple ``behaviors''
+	 <li> multiple uses (source code / manual / online help / ...)
        </ul>
 </ul>
 </slide>
@@ -247,7 +371,7 @@
 
 <slide><h2>A Document is not an Object</h2>
 <ul>
-  <li> Documents <em>separate</em> content from behavior<br>
+  <li> Documents <em>separate</em> content from processing<br>
        Objects <em>combine</em> content and behavior
        
   <li> Therefore, documents...
@@ -282,135 +406,8 @@
 	 <li> Workflow / groupware
        </ul>
 </ul>
+  <strong>We can do it all</strong>
 </slide>
-
-
-<slide><h2>What Can Our System Do?</h2>
-<ul>
-  <li> Short answer -- all of the above
-  <li> ... to any SGML document (including HTML and XML)
-  <li> ... any other document, as long as someone writes a parser
-  <li> On-the-fly or offline (command line)
-  <li> As server, client, or proxy
-       <p>
-  <li> ``<strong>A spreadsheet for documents</strong>''
-</ul>
-</slide>
-
-
-<slide><h2>What do we use it for?</h2>
-<ul>
-  <li> Permanent web history<br>
-       where / when / site structure
-  <li> Website maintenence <br>
-       link-checking / style consistency / 
-  <li> Form Handling<br>
-       a complete web application development environment<br>
-       all of RSV's forms are on the web -- 6 man-weeks.
-  <li> Automated documentation<br>
-       pretty-printing / comment extraction / indexing
-  <li> Prototyping<br>
-       interactive websites / networked appliances
-</ul>
-</slide>
-
-
-<slide><h2>Who can use it?</h2>
-<ul>
-  <li> Intended mainly for use by non-programmers
-  <li> ... especially web authors and designers
-  <li> As we'll see later
-       <ul>
-	 <li> it's not intended for large programming tasks
-	 <li> but it's great for transforming documents
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>What it's not</h2>
-<ul>
-  <li> Not a CGI scripting language
-       <ul>
-	 <li> Perl, Java, Tcl, etc.
-       </ul>
-  <li> Not a scripting language embedded in web pages
-       <ul>
-	 <li> asp, jsp, JavaScript, ...
-       </ul>
-  <li> Not servlets or server-side includes
-  <li> Not a style-sheet language (though this comes close)
-       <ul>
-	 <li> DSSSL, cascading style sheets, ...
-       </ul>
-  <li> Not (just) an extended HTML
-       <ul>
-	 <li> MetaHTML, php, ...
-       </ul>
-  <li> Not a high-volume web server
-       <ul>
-	 <li> We recommend <a href="http://www.apache.org/">Apache</a> for
-	      that. 
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>What it is</h2>
-<ul>
-  <li> Smoothly integrated into SGML documents
-       <ul>
-	 <li> no new syntax to learn
-	 <li> easily handled by SGML-aware editors
-       </ul>
-  <li> Easily integrated into document workflow
-  <li> A seamless part of the Web
-  <li> Designed for cut-and-paste document development
-  <li> A <em>personal</em> tool for operating on documents
-</ul>
-</slide>
-
-
-<slide><h2>What's different?</h2>
-<ul>
-  <li> XML syntax for actions
-       <ul>
-	 <li> no CGI's or embedded Basic/Perl/Java/etc. code
-	 <li> easily edited with standard tools
-	 <li> ``programs'' can be processed as documents
-	 <li> programmers not required for most work<br>
-	      -- Technical writers can do it.
-       </ul>
-  <li> Generic SGML as well as XML and HTML
-  <li> Optional separation of behavior and content
-       <ul>
-	 <li> actions can be separate (tagset) or embedded<br>
-	      The syntax is the same in either case
-	 <li> documents can be processed with different sets of actions for
-	      the same tags (tagsets)
-       </ul>
-  <li> Dynamically-loaded handlers
-</ul>
-</slide>
-
-
-<slide><h2>Document-Oriented Computing</h2>
-<p>&nbsp;
-<ul>
-  <li> A whole new way of looking at computation
-       <ul>
-	 <li> variables contain documents
-	 <li> content and behavior are separate
-       </ul>
-  <li> A new <em>location</em> for computation
-       <ul>
-	 <li> <em>documents</em> get passed between nodes
-	 <li> not just clients and servers
-	 <li> peers and proxies as well
-       </ul>
-</ul>
-</slide>
-
 
 <slide><h2>A Simple Example</h2>
 <ul>
@@ -451,7 +448,8 @@
 </slide>
 
 
-<slide><h2>Another Example</h2>
+
+<slide><h2>Example: Documentation</h2>
 <ul>
   <li> Input: <a href="Images/slides.ts">a document tagset specification</a>
 <pre>
@@ -483,461 +481,21 @@
 </slide>
 
 
-<slide><h2>What's <em>Really</em> Going On?</h2>
-<p>&nbsp;
-<div align=center>
-  <strong>A Document-Processing Engine for the Web</strong>
-</div>
-<ul>
-  <li> The Web is made of documents
-  <li> ``In the future, the only API's that matter will be the API's of web
-       sites'' <br>
-       -- Tim O'Reilly
-  <li> What we have is a general-purpose document processor
-  <li> designed <em>specifically</em> for web applications.
-       <ul>
-	 <li> Can operate as client, server, proxy, or any combination
-	 <li> Can process other servers' documents<br>
-	      ... <em>examples further on</em>
-       </ul>
-  <li> Serves as the basis for
-       <ul>
-	 <li> personal web assistants
-	 <li> easy-to-administer servers
-	 <li> web-based information appliances
-       </ul>
-</ul>
-</slide>
-
-<hr><set name=subCaption>Architecture and Implementation</set>
-<slide><h2>Architecture and Implementation</h2>
-<p>
-<table align=center valign=center cellpadding=0 border=0>
-<tr> <th>&nbsp; <th>PIA System Architecture <th>&nbsp;
-<tr> <th>&nbsp; <th>&nbsp; <th>&nbsp;
-<tr> <td align=right valign=center> <img src="Images/nc.gif">
-     <td align=center valign=center> 
-	<img src="Images/pia-architecture.gif">
-     <td align=left valign=center>
-	<img src="Images/web.gif">
-</table>
-
-</slide>
-
-
-<slide><h2>Document-processing goals</h2>
-<div align=center><em>What the user sees.</em></div>
-<ul>
-  <li> Documents have to be maintainable
-       <ul>
-	 <li> Clean interface between documents and code
-	 <li> XML representation for all persistent data
-       </ul>
-  <li> Easy to use by authors, not programmers
-       <ul>
-	 <li> Code and data have the same syntax (SGML)
-       </ul>
-  <li> Use browser for user interface
-  <li> Adhere to standards wherever possible
-       <ul>
-	 <li> SGML, HTML, SML...
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>Implementation goals</h2>
-<div align=center><em>What the developer sees.</em></div>
-<ul>
-  <li> The system has to be maintainable
-       <ul>
-	 <li> All source code online and browsable
-	 <li> Much documentation derived from the code
-	 <li> Server as self-documenting as possible
-       </ul>
-  <li> Code has to be portable
-       <ul>
-	 <li> Portable languages (Java, Perl)
-	 <li> Avoid user interface code
-	 <li> Avoid binary file formats
-       </ul>
-  <li> Adhere to standards wherever possible
-       <ul>
-	 <li> Standard representation: DOM
-	 <li> Standard protocol: HTTP
-	 <li> Standard syntax: HTML, XML, SGML
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>Agency Architecture Layers</h2>
+<hr><set name=subCaption>Branch point</set><set name=label>branch</set>
+<slide><h2>Where do we go from here?</h2>
 
 <ul>
-  <li> Server Front End
-       <ul>
-	 <li> Handles HTTP requests
-	 <li> Dispatches each request to ``agent'' for response
-	 <li> Allows agents to ``act on'' documents as they flow through
-       </ul>
-  <li> Agent handlers
-       <ul>
-	 <li> Manage a group of pages
-	 <li> May have special-purpose code.
-       </ul>
-  <li> Document Processor for active pages
-       <ul>
-	 <li> Interprets markup in active documents
-	 <li> Rarely needs to be changed
-	 <li> Recently re-written using DOM
-       </ul>
-  <li> ``Action'' handlers for tags
-       <ul>
-	 <li> Written in XML. Java, or C
-	 <li> Loaded as needed at run-time
-	 <li> Organized into ``tagsets''
-       </ul>
-</ul>
-</slide>
-
-
-<slide>
-<h2>PIA's Document Processor</h2>
-<ul>
-  <li> Simple
-       <ul>
-	 <li> Main loop fits on a single page.
-	 <li> Easy to maintain and describe.
-       </ul>
-  <li> Versatile
-       <ul>
-	 <li> stream, string and parse tree input and output 
-	 <li> can build parse trees while processing
-       </ul>
-  <li> Portable
-       <ul>
-	 <li> based on W3C's Document Object Model
-	 <li> C or C++ version would be feasible
-	 <li> An earlier version was written in Perl
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>The Implementation</h2>
-<ul>
-  <li> General Technique:
-       <ul>
-	 <li> Processor gets input from a parse tree traverser
-	 <li> Sends output to a parse tree constructor
-       </ul>
-  <li> Algorithm:
-       <ul>
-	 <li> Convert input to a parse tree.
-	 <li> Each ``element'' has a parent Node and content NodeList.
-	 <li> Parser associates an action with each node
-	 <li> Traverse the parse tree depth first
-	 <li> Actions pass result nodes to an output tree constructor
-       </ul>
-  <li> Advantages:
-       <ul>
-	 <li> Basic algorithm is very simple
-	 <li> All table lookup is done once, in the parser
-	 <li> Saving parse trees in server RAM gives a major speedup
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>Primitive Actions</h2>
-(all are active SGML <em>elements</em>)
-<ul>
-  <li> &lt;define&gt;       
-  <li> &lt;get&gt;, &lt;set&gt;
-  <li> &lt;if&gt; - &lt;then&gt; - &lt;else-if&gt; - &lt;else&gt;
-  <li> &lt;test&gt;,  &lt;logical&gt;
-  <li> &lt;repeat&gt;
-  <li> &lt;select&gt;
-  <li> &lt;expand&gt;, &lt;protect&gt;, &lt;hide&gt;
-  <li> &lt;text&gt;, &lt;numeric&gt;
-  <li> &lt;subst&gt;
-</ul>
-</slide>
-
-
-<slide><h2>I/O and Data Conversion</h2>
-(additional primitives)
-<ul>
-  <li> &lt;parse&gt;<br>
-       <em>converts raw text to marked-up XML.</em>
-  <li> &lt;include&gt;, &lt;output&gt;, &lt;connect&gt;, &lt;status&gt;<br>
-       <em>I/O, including both files and URL's.</em>
-  <li> &lt;DOCUMENT&gt;, &lt;HEADERS&gt;, &lt;URL&gt;, &lt;QUERY&gt;, ...<br>
-       <em>data structure representation and conversion</em>
-  <li> &lt;debug&gt;
-</ul>
-</slide>
-
-
-<slide><h2>There's more...</h2>
-(but not <em>much</em> more:)
-<p>
-
-<ul>
-  <li> There are a few elements used <em>inside</em> the primitives
-  <li> ... most primitives are modified by <em>attributes</em>,
-  <li> ... but the basic language is still fairly small. 
+  <li> <a href="architecture.slides.html#0">Architecture</a>
+  <li> <a href="who-what.slides.html#0">Users and Uses</a>
+  <li> <a href="open-source.slides.html#0">Open Source</a>
+  <li> <a href="appendices.slides.html#0">Appendices</a>
        <p>
-  <li> New tags can be easily defined
-       <ul>
-	 <li> usually in terms of old ones
-	 <li> can connect to Java ``handler''
-       </ul>
-       <p>
-  <li> SGML <code>&amp;<em>entities</em>;</code> are used as variables.
+  <li> Our web site:
+       <a href="http://pia.rsv.ricoh.com/">http://pia.rsv.ricoh.com/</a>
 </ul>
+
 </slide>
 
-
-<slide><h2>For example...</h2>
-<pre>
-&lt;define element=factorial recursive&gt;
-  &lt;doc&gt;the Factorial function&lt;/doc&gt;
-  &lt;action&gt;
-    &lt;if&gt;&lt;test zero&gt;&amp;content;&lt;/test&gt;
-      &lt;then&gt;1&lt;/then&gt;
-      &lt;else&gt;&lt;numeric product&gt;
-              &amp;content;
-              &lt;factorial&gt;&lt;numeric difference&gt;&amp;content; 1
-                         &lt;/numeric&gt;
-              &lt;/factorial&gt;
-           &lt;/numeric&gt;
-      &lt;/else&gt;
-    &lt;/if&gt;
-  &lt;/action&gt;
-&lt;/define&gt;
-</pre>
-
-<em>It's not really meant for numeric processing!</em>
-</slide>
-
-
-<slide><h2>A better example...</h2>
-
-<em>It's really meant for web pages.</em>
-
-<pre>
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt; Hello world!&lt;title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;header&gt; a classic example &lt;/header&gt;
-    &lt;hr&gt;
-    Hello world!
-    &lt;footer cvsid="$ Id... $"&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</pre>
-
-...which becomes <a href="/demo/hello-world">this page on the server</a>.
-(<a href="Images/hello-world.html">local copy</a>)
-<!-- need local copy in Images for stand-alone use -->
-</slide>
-
-
-<slide><h2>Tags and actions are separate</h2>
-<em>You can define a new set of tags.</em>
-<pre>
-&lt;html&gt;
-  &lt;tete&gt;
-    &lt;title&gt; Bonjour, tout le mond!&lt;title&gt;
-  &lt;/tete&gt;
-  &lt;corps&gt;
-    &lt;bienvenue&gt; une example classique &lt;/bienvenue&gt;
-    Bonjour, toute le mond!
-    &lt;pied cvsid="$ Id... $"&gt;
-  &lt;/corps&gt;
-&lt;/html&gt;
-</pre>
-
-<em>as well as redefining the old ones.<br>
-The language is easily localized or abbreviated.</em>
-</slide>
-
-<slide><h2>So the first example...</h2>
-<p><em>...wasn't really so bad after all!</em>
-<pre>
-&lt;element name=fact&gt;
-  &lt;doc&gt;the Factorial function, again.
-  &lt;defined-as&gt;
-    &lt;if&gt;&lt;zerop&gt;&amp;content; &lt;then&gt; 1
-      &lt;else&gt;&lt;product&gt; &amp;content;
-                      &lt;fact&gt;&lt;diff&gt;&amp;content; 1
-&lt;/element&gt;
-</pre>
-
-<em>(Especially if you leave out end tags wherever possible.)
-</em>
-</slide>
-
-<slide><h2>For another...</h2>
-Here's what I used for a <a href="/View/slides">Slide previewer</a>.
-<pre>
-&lt;if&gt;&lt;get name=FORM:url&gt;
-  &lt;then&gt;
-    &lt;set name=URL&gt;&lt;text decode=url&gt;&amp;FORM:url;&lt;/text&gt;&lt;/set&gt;
-    &lt;include src="&amp;URL;" tagset="&amp;FORM:tagset;" /&gt;
-  &lt;/then&gt;&lt;else&gt;
-    &lt;html&gt;&lt;head&gt;&lt;title&gt;Slide viewer&lt;/title&gt;
-    &lt;/head&gt;&lt;body&gt;
-      &lt;header&gt;View&lt;/header&gt;  &lt;hr&gt;
-      &lt;form method=GET action=/View/slides&gt;
-        &lt;input type=submit value="View Slides"&gt;
-        &lt;input type=hidden name=tagset value=slides&gt;
-        &lt;b&gt;URL:&lt;/b&gt; &lt;input name=url size=55 maxlength=200&gt;
-      &lt;/form&gt;
-      &lt;footer&gt;
-    &lt;/body&gt;&lt;/html&gt;
-  &lt;/else&gt;
-&lt;/if&gt;
-</pre>
-<hide>
-  === something spectacular here, please ===
-  === maybe the history agent's hook, or a sucks-rules-o-meter ===
-  See <a href="http://web.electriclichen.com/linux/srom.html">srOm</a> and
-  <a href="http://web.electriclichen.com/linux/srom"> perl code</a>
-</hide>
-</slide>
-
-
-<slide><h2>It's a server, too</h2>
-<ul>
-  <li> ``Agents'' look like top-level directories.
-  <li> Active pages are processed on the server.
-  <li> Passive HTML, images, etc. served unmodified.
-  <li> Some Examples
-       <ul>
-	 <li> <a href="Images/home.html">Server home page</a>
-	      (<a href="/">live</a>)
-	 <li> <a href="Images/History.html">Web History</a>
-	      (<a href="/History">live</a>)
-	 <li> <a href="Images/src.html">Source browser</a>
-	      (<a href="/PIA/src/">live</a>)
-       </ul>
-</ul>
-</slide>
-
-
-<hr><set name=subCaption>Open Source</set>
-<slide><h2>Why Open Source for Us?</h2>
-<ul>
-  <li> Software is a cost for Ricoh
-       <ul>
-	 <li> We mostly sell hardware.  We <em>need</em> software to make it
-	      useful, but can't sell it separately.
-	 <li> Eric Raymond's ``<a
-	      href="http://www.opensource.org/for-suits.html#frosting">widget
-	      frosting</a>'' business model 
-       </ul>
-  <li> We want the PIA to become a <em>de facto</em> standard.
-       <ul>
-	 <li> It's not nearly as useful if it isn't widely used
-	 <li> Needs a large user/developer community
-       </ul>
-  <li> We <em>use</em> lots of open-source software
-       <ul>
-	 <li> and want to give something back to the community
-       </ul>
-  <li> It's best for the customers
-       <ul>
-	 <li> We target Small Office/Home Office applications
-	 <li> Small businesses don't have lots of money for software
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>Why Open Source for Developers?</h2>
-<ul>
-  <li> Solid, peer-reviewed software
-  <li> Active developer community
-       <ul>
-	 <li> Mutual assistance
-	 <li> Fast bug fixes
-	 <li> Rapid evolution/improvement
-       </ul>
-  <li> No orphan products
-       <ul>
-	 <li> someone can always take over the project
-       </ul>
-</ul>
-</slide>
-
-
-<slide><h2>Open Standards for Document Processing</h2>
-<ul>
-  <li> We hope to do for document <em>processing</em>
-  <li> ... what HTML did for document representation
-  <li> ... and HTTP did for document communication
-       <p>
-  <li> Community-developed standards are best
-</ul>
-</slide>
-
-
-<slide><h2>Developer's Website</h2>
-
-<strong>The PIA framework is organized as a web site</strong><br>
-<em>for use by developers</em>
-<ul>
-  <li> <a href="http://pia.rsv.ricoh.com/">http://pia.rsv.ricoh.com/</a>:
-       PIA Group Server
-  <li> <a href="/PIA/Doc">Documentation</a>
-       <ul>
-	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
-	 <li> <a href="/PIA/Doc/Release">Release notes</a>
-	 <li> <a href="/PIA/Doc/Tutorial">Tutorial</a>
-       </ul>
-  <li> <a href="/PIA/src">Source Code</a>
-  <li> <a href="/PIA/Config#app">Examples</a>
-</ul>
-Makes technical transfer very easy.
-</slide>
-
-
-<hr><set name=subCaption>Acknowledgments</set>
-<slide><h2>Software Used</h2>
-<table>
-  <tr> <th align=right>Text:    	
-       <td> GNU Emacs, LaTeX, PIA
-  <tr> <th align=right>Graphics:	
-       <td> xfig, ghostscript, netPBM
-  <tr> <th align=right>Programming:	
-       <td> Java, Perl
-  <tr> <th align=right>Scripting:	
-       <td> PIA, Perl, bash
-  <tr> <th align=right>Web Clients:	
-       <td> PIA, Netscape, chimera
-  <tr> <th align=right>Web Servers:	
-       <td> PIA, Apache
-  <tr> <th align=right>OS:		
-       <td> <strong><a href="http://www.linux.org/">Linux!</a></strong>
-	    <em>(of course)</em>
-</table>
-</slide>
-
-<slide><h2>Hardware Used</h2>
-<table>
-  <tr> <th align=right> Desktop:
-       <td> <a href="http://www.varesearch.com/">VA Research</a>
-  <tr> <th align=right> Laptop:
-       <td> <a href="http://www.ricoh-usa.com/">Ricoh</a>
-	    <a href="http://www.ricoh-usa.com/prodshw/minipc/">Magio</a>
-  <tr> <th align=right> Server/NC:
-       <td> <a href="http://www.corelcomputer.com/">Corel</a> NetWinder
-</table>
-</slide>
 
 <hr>
 <set name=label>TOC</set>
@@ -947,10 +505,6 @@ Makes technical transfer very easy.
   &slidelist;
 </ol>
 </slide>
-
-<hr>
-<toc>Table of Contents</toc>
-<hr>
 
 <b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

@@ -1,0 +1,179 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Users and Uses</h1>
+<set name=DOC:hh>440</set><!-- Tweak size for Netscape at 800x600 -->
+			  <!-- horizontal scrollbar eats into height... -->
+<set name=DOC:logo><img src="Images/pent24.gif"></set>
+
+<slide><!-- Slide 0 doesn't have a title -->
+<p>&nbsp;
+<p>&nbsp;
+<div align=center valign=center>
+<font size='+2'
+  ><strong>&subCaption;</strong></font>
+</div>
+</slide>
+
+<slide><h2>Who need it?</h2>
+<ul>
+  <li> Intended mainly for use by non-programmers
+  <li> ... especially web authors and designers
+  <li> It's not all things for all people
+       <ul>
+	 <li> it's not intended for large programming tasks
+	 <li> ...but it's great for transforming documents
+	 <li> it's not intended for high-volume websites
+	 <li> ...but it's great for workgroups and individuals
+	 <li> ...especially webmasters
+       </ul>
+</ul>
+</slide>
+
+
+
+<slide><h2>What do we use it for?</h2>
+<ul>
+  <li> Permanent web history<br>
+       where / when / site structure
+  <li> Website maintenance <br>
+       link-checking / style consistency 
+  <li> Workflow <br>
+       a complete web application development environment<br>
+       all of RSV's forms are on the web -- 6 man-weeks.
+  <li> Automated documentation<br>
+       pretty-printing / comment extraction / indexing
+  <li> Prototyping<br>
+       interactive websites / networked appliances
+</ul>
+</slide>
+
+
+<slide><h2>Document-processing goals</h2>
+<p><strong>What the Userswant:</strong>
+<p>&nbsp;
+<ul>
+  <li> Documents have to be maintainable
+       <ul>
+	 <li> Clean interface between documents and code
+	 <li> XML representation for all persistent data
+       </ul>
+  <li> Easy to use by authors, not programmers
+       <ul>
+	 <li> Code and data have the same syntax (SGML)
+       </ul>
+  <li> Use browser for user interface
+  <li> Adhere to standards wherever possible
+       <ul>
+	 <li> SGML, HTML, SML...
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>Implementation goals</h2>
+<p><strong>What the developers want:</strong>
+<p>&nbsp;
+
+<ul>
+  <li> The system has to be maintainable
+       <ul>
+	 <li> All source code online and browsable
+	 <li> Much documentation derived from the code
+	 <li> Server as self-documenting as possible
+       </ul>
+  <li> Code has to be portable
+       <ul>
+	 <li> Portable languages (Java, Perl)
+	 <li> Avoid user interface code
+	 <li> Avoid binary file formats
+       </ul>
+  <li> Adhere to standards wherever possible
+       <ul>
+	 <li> Standard representation: DOM
+	 <li> Standard protocol: HTTP
+	 <li> Standard syntax: HTML, XML, SGML
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>What it's not</h2>
+<ul>
+  <li> Not a CGI scripting language
+       <ul>
+	 <li> Perl, Java, Tcl, etc.
+       </ul>
+  <li> Not a scripting language embedded in web pages
+       <ul>
+	 <li> asp, jsp, JavaScript, ...
+       </ul>
+  <li> Not servlets or server-side includes
+  <li> Not a style-sheet language (though this comes close)
+       <ul>
+	 <li> DSSSL, cascading style sheets, ...
+       </ul>
+  <li> Not (just) an extended HTML
+       <ul>
+	 <li> MetaHTML, php, ...
+       </ul>
+  <li> Not a high-volume web server
+       <ul>
+	 <li> We recommend <a href="http://www.apache.org/">Apache</a> for
+	      that. 
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>What it is</h2>
+<ul>
+  <li> Smoothly integrated into SGML documents
+       <ul>
+	 <li> no new syntax to learn
+	 <li> easily handled by SGML-aware editors
+       </ul>
+  <li> Easily integrated into document workflow
+  <li> A seamless part of the Web
+  <li> Designed for cut-and-paste document development
+  <li> A <em>personal</em> tool for operating on documents
+</ul>
+</slide>
+
+
+<slide><h2>What's different?</h2>
+<ul>
+  <li> XML syntax for actions
+       <ul>
+	 <li> no CGI's or embedded Basic/Perl/Java/etc. code
+	 <li> easily edited with standard tools
+	 <li> ``programs'' can be processed as documents
+	 <li> programmers not required for most work<br>
+	      -- Technical writers can do it.
+       </ul>
+  <li> Generic SGML as well as XML and HTML
+  <li> Optional separation of behavior and content
+       <ul>
+	 <li> actions can be separate (tagset) or embedded<br>
+	      The syntax is the same in either case
+	 <li> documents can be processed with different sets of actions for
+	      the same tags (tagsets)
+	 <li> Dynamically-loaded handlers
+       </ul>
+  <li> Entities (&amp;foo;) used as variables.
+       <ul>
+	 <li> can be written as well as inserted
+       </ul>
+</ul>
+</slide>
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
