@@ -60,21 +60,19 @@ sub version{
 ### features.  resolve uses mask on features to determine which agents get
 ### which transactions. agent can add new requests to stack or modify
 ### this request, another function gets called to actually handle a request
-
-sub  new_requests{
-    my($self,$request)=@_;
-    #subclasses should override
-    return ();
-}
+###
 
 # agents should not assume every transaction they get matches their
 # desired feature set
 
-#feature is string naming a feature
-#value is 0,1 (exact match--for don't care remove corresponding feature)
-#code is perl function takes transaction as argument returns Boolean
-sub match_criterion{
+sub match_criterion {
     my($self,$feature,$value,$code)=@_;
+
+    ## Set a match criterion.
+    ##    $feature is string naming a feature
+    ##    $value is 0,1 (exact match--for don't care, omit the feature)
+    ##    $code is perl function takes transaction as argument returns Boolean
+
     my $criterion=$$self{criterion};
     $self->criterion_computation($feature,$code) if defined $code;
     
@@ -93,13 +91,12 @@ sub criterion_computation{
 sub matches{
     my($self,$values)=@_;
     my $criterion=$self->match_criterion();
-    print $self->name if  $main::debugging;
+    print " " . $self->name . "?" if  $main::debugging;
     foreach $key (keys %$criterion){
 	return 0 unless $$values{$key}==$$criterion{$key};
-	print "$key matched\n" if $main::debugging;
+	print " $key" if $main::debugging;
     }
-
-    print "matches request\n" if  $main::debugging;
+    print " matched.\n" if  $main::debugging;
     return 1;
 }
 
@@ -108,10 +105,20 @@ sub matches{
 ### Handle requests:
 ###
 
+sub  new_requests{
+    my($self,$request)=@_;
+
+    ## Return a set of new requests for this transaction.
+    ##    Called by resolver after an agent matches.
+    ##    subclasses should override if they actually generate requests.
+
+    return ();
+}
+
 sub handle{
     my($self,$request)=@_;
 
-    ## Handle a request directed at an agent.  The default is to use an
+    ## Handle a request directed AT an agent.  The default is to use an
     ## interform; subclasses or instances should override this or install
     ## methods if different behavior is required.
 
@@ -268,13 +275,12 @@ sub options_form{
 
 sub  parse_options{
     my($self,$argument)=@_;
-    print "parsing  options \n" if  $main::debugging;
+    print "parsing options \n" if  $main::debugging;
     my $hash=$argument->parameters;
     foreach $key (keys(%{$hash})){
-	print("changing $key to",$$hash{$key}," \n\n") if  $main::debugging;
+	print("  setting $key = ",$$hash{$key},"\n") if  $main::debugging;
 	$self->option($key,$$hash{$key});
     }
-    
 }
 
 sub option{
@@ -348,15 +354,23 @@ sub request{
     
 }
 
-sub create_request{
-# create a new request object given method,  url, content
- # TBD proper handling of content and types and headers
+sub create_request {
     my($self,$method,$url,$content)=@_;
+
+    ## Create a new request given $method, $url, and $content
+    ##
+    ##	  If $content is a reference, we assume that it refers to an
+    ##	  HTML element containing a form, so construct the appropriate 
+    ##	  contents for a PUT request.
+
+ # TBD proper handling of content and types and headers
+
     my $request=new HTTP::Request  $method,$url;
+
     if (ref($content)){
-#treat as html element
+	## treat as html element
 	my $string="";
-#create string out of form parameters, perhaps should check tag type
+	## create string out of form parameters, perhaps should check tag type
 	$content->traverse(
 	sub {
 	    my($self, $start, $depth) = @_;
@@ -382,7 +396,7 @@ sub create_request{
 ###
 ### interform processing:
 ###
-###	interforms  must execute in context of agent therefore we
+###	interforms must execute in the context of an agent; therefore we
 ###	cannot create a new class for interforms
 ###
 
@@ -410,11 +424,11 @@ sub execute_interform{
 
 	my $code;
 	while($code=shift(@$code_array)){
-	    print "execing $code \n" if  $main::debugging;
-	    if( ref( $code)){
-		$code_status=$code; #this is an html element
-	    }else{
-	    #evaluate string andreturnlast expression value
+	    print "execing $code \n" if $main::debugging > 1;
+	    if (ref($code)){
+		$code_status = $code; #this is an html element
+	    } else {
+		#evaluate string and return last expression value
 		$code_status=eval $code;
 		print "code status is $code_status\n" if  $main::debugging;
 	    }
@@ -423,7 +437,7 @@ sub execute_interform{
 	my $parent=$element->parent;
 	$parent->pos($element);
 	while($code=shift(@new_elements)){
-	    if(ref($code)){
+	    if (ref($code)) {
 		$parent->insert_element($code);
 	    }else{
 		push(@$code_array,$code);
@@ -455,7 +469,6 @@ sub parse_interform_string{
     my $string=$html->as_HTML;
     $html->delete;
     return $string;
-    
 }
 
 sub parse_interform_file{
@@ -465,7 +478,44 @@ sub parse_interform_file{
     my $string=$html->as_HTML;
     $html->delete;
     return $string;
-    
+}
+
+
+sub run_init_file {
+    my($self,$fn,$find)=@_;
+
+    ## Submit each form and get each link in $fn.
+    ##    Look up $fn as an interform if $find is positive.
+    ##    Treat $fn as a string if $find is negative.
+    ##
+    ##    This is done for initialization, and is similar enough to 
+    ##    interform processing to be put with it.
+
+    my $html;
+    my $count=0;
+    my $request;
+
+    if ($find < 0) {
+	$html = parse_html($fn);
+    } else {
+	my $file = $find? $file = $self->find_interform($fn) : $fn;
+	return unless -e $file;
+	$html = parse_htmlfile($file);
+    }
+    for (@{ $html->extract_links(qw(a form)) }) {
+	my ($url, $element) = @$_;
+	if ($element->tag =~ /form/i) {
+	    $method=$element->attr('method');
+	    $request=$self->create_request($method,$url,$element);
+	} else {
+	    ## A name= link would probably cause confusion.
+	    $request=$self->create_request('GET',$url,$element);
+	}
+	my $status=$self->request($request);
+	$count+=1;
+    }
+    $html->delete;
+    return $count;
 }
 
 1;
