@@ -6,8 +6,8 @@ URL=show_slide.if"><meta></then></if>
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>slideshow &AGENT.slide_directory;</title>
-<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set name=previous><difference>&slide; 1</difference></set>
 <h4>Slide: <a href="show_slide.if?slide=&previous;">&previous;</a>  &slide;
@@ -20,19 +20,10 @@ URL=show_slide.if"><meta></then></if>
 
 <set name="AGENT.next_slide">&next;</set>
 <read interform file="banner.if">
-<!-- onlyoneslideshowatatime -->
-<hr>
-<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
-<p>
-</then></if>
+<!-- only one slide show at a time -->
 
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<!-- hhmts start -->
-Last modified: Fri Apr 18 14:27:43 1997
-<!-- hhmts end -->
-<p>
-<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
-         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
-         >wolff@crc.ricoh.com</a>&gt;</address>
 </body></html>
 

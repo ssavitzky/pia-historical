@@ -1,68 +1,65 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>Digital Photo Album </title>
-<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
+<set entity name=title>Photo Album<br>agent home page</set>
+<read interform file="heading.inc" process>
+
 <set entity  name=latest><read file=".latest"></set>
-<table align=center cellspacing=0 cellpadding=0 border=0>
-<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
-	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48 alt="R I C O H"></a>
-    <th width=170 nowrap>
-    <th align=left nowrap nobr valign=center>
-        <a href="/"><img width=85 height=45 border=0
-	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
-<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=425><br></tr>
-<tr><th align=left><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
-	border=0 width=170 height=21></a>
-    <th>
-    <th align=left><font face=helvetica>Photo Album</font>
-<tr><th width=170>
-    <td><br>
-<if><agent-running name="Photos"><then>
-<TR><th>
-    <TD align=right height=32><td>
-        <a href="/&agentName;/latest.if">
-        <img src="/Photos/&latest;/r0100001.small.gif"
-                   height=32 width=32 border=0 alt="Photo Album"></a>
-    <a href="/&agentName;/latest.if">Newest Photos</a><br>
-</then></if>
-<TR><th rowspan=3>
-        <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99 border=0>
-    <TD align=right><td><!-- move td to after the icon to get the -->
-                        <!-- icons lined up to the left of the PIA -->
-        <a href="/&agentName;/catalog.if">
-        <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/catalog.if">Captioned Photos</a><br>
 
-<TR><TD align=right><td>
-        <a href="/&agentName;/catalog.if">
-        <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <a href="/Photos/">All Photos</a><br>
+<table cellspacing=0 BORDER=0>
+<TR><th width=170>
+	<a href="http://www.ricohcpg.com/digital.html">
+	  <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99
+	       alt="Digital Camera"></a>
+<td>
+  <table cellspacing=0 BORDER=0>
+    <tr><td align=right width=170><br>
 
-<TR>
-    <TD align=right><td>
+  <if><agent-running name="Photos"><then>
+    <TR><TD align=right width=170>
+    <td><a href="/&agentName;/latest.if">
+          <img src="/Photos/&latest;/r0100001.small.gif"
+               height=32 width=32 border=0 alt="Photo Album"></a>
+	<a href="/&agentName;/latest.if">Newest Photos</a><br>
+  </then></if>
+    <TR><TD align=right width=170>
+	<td><!-- put this td after the icon to get the -->
+            <!-- icons lined up to the left of the PIA -->
+        <a href="/&agentName;/catalog.if">
+          <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
+	<a href="/&agentName;/catalog.if">Captioned Photos</a><br>
+
+    <TR><TD align=right>
+	<td>
+        <a href="/&agentName;/catalog.if">
+          <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
+	<a href="/Photos/">All Photos</a><br>
+
+    <TR><TD align=right>
+	<td>
         <a href="/&agentName;/slide_show.if">
-        <img src="/Photo_Album/slides.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/slide_show.if">Slideshows</a><br>
+          <img src="/Photo_Album/slides.gif"  height=32 width=32 border=0></a>
+	<a href="/&agentName;/slide_show.if">Slideshows</a><br>
 
-<tr><th>
-    <TD align=right><td>
-        <a href="/&agentName;/help.if">
-        <img src="/Photo_Album/help.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/help.if">Help</a><br>
+    <tr><TD align=right>
+	<td>
+	    <a href="/&agentName;/help.if">
+              <img src="/Photo_Album/help.gif"  height=32 width=63 border=0></a>
+	    <a href="/&agentName;/help.if">Help</a><br>
 
-<tr><th>
-    <td align=right><td>
+    <tr><td align=right>
+	<td>
         <a href="http://cdrw:8001/CDRW/publish_photos.if">
-        <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
-    <!-- should test for CD-R/RW -->
-    <a href="http://cdrw:8001/CDRW/publish_photos.if">Create photo CD</a><br>
-</table>  
-<p>
+          <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
+	<!-- should test for CD-R/RW -->
+	<a href="http://cdrw:8001/CDRW/publish_photos.if">Create photo CD</a>
+	<br>
+  </table>
+</table>
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

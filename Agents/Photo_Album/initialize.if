@@ -1,8 +1,8 @@
 <!doctype html system "html.dtd">
 <html><head>
 <title>Initialize the &agentName; agent</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
-</head><body>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <h1>Initialize the &agentName; agent</h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
@@ -12,21 +12,24 @@
 
 <dl>
   <dt> <b>Note:</b>
-  <dd> photo album deals with directories of dc2 images, see<a name="installation.html">installation notes</a>
+  <dd> photo album deals with directories of dc2 images, see
+       <a name="installation.html">installation notes</a>
 </dl>
 
+<h2>Banner for bottom of each page:</h2>
+
 <set agent name="banner"><table align=center>
-<TR><TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
-<img src="/&agentName;/camera.gif"  height=20 width=20 alt="&agentName;"></a>
-<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/latest.if">
-<img src="/Agency/Icons/new.gif"  height=20 width=20 alt="New"></a>
-<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/catalog.if">
-<img src="/&agentName;/album.gif"  height=20 width=20 alt=album></a>
-<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/help.if">
-<img src="/Agency/Icons/help.gif"  height=20 width=40 alt=help></a>
-<TD> <a href="http://&piaHOST;:&piaPORT;/Agency/home.if">
+<TR><TD> <a href="/Agency/home.if">
 <img src="/Agency/Icons/pia20.gif" height=20 width=37 alt=PIA></a>
-</table></set>
+<TD> <a href="/&agentName;/home.if">
+<img src="/&agentName;/camera.gif"  height=20 width=20 alt="&agentName;"></a>
+<TD> <a href="/&agentName;/latest.if">
+<img src="/Agency/Icons/new.gif"  height=20 width=20 alt="New"></a>
+<TD> <a href="/&agentName;/catalog.if">
+<img src="/&agentName;/album.gif"  height=20 width=20 alt=album></a>
+<TD> <a href="/&agentName;/help.if">
+<img src="/Agency/Icons/help.gif"  height=20 width=40 alt=help></a>
+</table><hr></set>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
