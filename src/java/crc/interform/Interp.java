@@ -626,9 +626,10 @@ public class Interp extends State {
 	  it = null;
 	}
 	if (it != null) {
+	  boolean wasParsing = parsing;
 	  popState();
 	  if (it != null) {
-	    incomplete = (byte)(parsing? 0 : -1);
+	    incomplete = (byte)(wasParsing? 0 : -1);
 	    it.incomplete(incomplete);
 	    tag = it.tag();
 	    syntax = tagset().forTag(tag);
