@@ -329,15 +329,19 @@ public class Interp extends State {
       debug("looking up &"+((Entity)it).entityName() + "; ");
       SGML v = getEntity(((Entity)it).entityName());
       return (v == null)? it : v.isText()? new Text(v) : v;
+    } else if (it.isText()) {
+      return new Text(it);
     } else {
       return it;
     }
   }
 
 
-  /** Expand entities in text, lists, or start tags.  Other SGML 
-   *	(basically end tags and complete elments) is passed through 
-   *	unchanged.  Start tags are expanded in place; others are copied.
+  /** Expand entities in text, lists, or start tags.  Complete
+   *	elements have their attributes expanded and their contents
+   *	copied. Other SGML (basically end tags and text) is passed
+   *	through unchanged.  Start tags are expanded in place; others
+   *	are copied.
    */
   SGML expandAttrs(SGML it) {
     if (it.isElement()) {
@@ -345,6 +349,13 @@ public class Interp extends State {
 	Element t = Element.valueOf(it); // should be a no-op.
 	for (int i = 0; i < t.nAttrs(); ++i) 
 	  t.attrValueAt(i, expandEntities(t.attrValueAt(i)));
+	it = t;			// but just to make sure...
+      } else if (it.incomplete() == 0) {
+	Element t = new Element(it.tag());
+	t.content(it.content());
+	Element itt = (Element)it;
+	for (int i = 0; i < itt.nAttrs(); ++i) 
+	  t.addAttr(itt.attrNameAt(i), expandEntities(itt.attrValueAt(i)));
 	it = t;			// but just to make sure...
       } else {
 	it = expandEntities(it);
@@ -365,7 +376,7 @@ public class Interp extends State {
       if (old.nItems() == 0) return it;
       Tokens tl = new Tokens();
       for (int i = 0; i < old.nItems(); ++i) {
-	tl.append(expandEntities(old.itemAt(i), tbl));
+	tl.addItem(expandEntities(old.itemAt(i), tbl));
       }
       return tl;
     } else if (it instanceof Entity) {
@@ -373,11 +384,13 @@ public class Interp extends State {
       return (v == null)? it : v.isText()? new Text(v) : v;
     } else if (it.isElement()) {
       Element itt = (Element)it;
-      Element t = new Element();
+      Element t = new Element(it.tag());
       for (int i = 0; i < itt.nAttrs(); ++i) 
 	t.attrValueAt(i, expandEntities(itt.attrValueAt(i), tbl));
       t.content(expandEntities(itt.content(), tbl));
       return t;
+    } else if (it.isText()) {
+      return new Text(it);
     } else {
       return it;
     }
