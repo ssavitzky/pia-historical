@@ -57,6 +57,12 @@ public interface Namespace {
    */
   public ActiveNode setBinding(String name, ActiveNode binding);
 
+  /** Look up a name and get a value. */
+  public NodeList getValueNodes(Context cxt, String name);
+
+  /** Set a value. */
+  public void setValueNodes(Context cxt, String name, NodeList value);
+
   /************************************************************************
   ** Information Operations:
   ************************************************************************/

@@ -78,10 +78,12 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
     return wrap(itemsByName.get(name));
   }
 
-  public NodeList getValue(String name) {
+  public NodeList getValueNodes(Context cxt, String name) {
     ActiveNode binding = getBinding(name);
     if (binding == null) {
       return null;
+    } else if (binding.asEntity() != null) {
+      return binding.asEntity().getValueNodes(cxt);
     } else if (binding instanceof ParseTreeNamed) {
       return ((ParseTreeNamed)binding).getValue();
     } else if (binding.hasChildren()) {
@@ -123,7 +125,8 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
     return old;
   }
 
-  public void setValue(String name, NodeList value, Tagset ts) {
+  public void setValueNodes(Context cxt, String name, NodeList value) {
+    Tagset ts = cxt.getTopContext().getTagset();
     ActiveNode binding = getBinding(name);
     if (binding == null) {
       addBinding(name, ts.createActiveEntity(name, value));

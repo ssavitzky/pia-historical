@@ -10,6 +10,7 @@ import java.util.Enumeration;
 
 import crc.dps.Namespace;
 import crc.dps.Tagset;
+import crc.dps.Context;
 
 
 /**
@@ -193,7 +194,7 @@ public class ParseTreeAttrs extends ParseNodeTable
     return (ActiveNode)getAttribute(name);
   }
 
-  public NodeList getValue(String name) {
+  public NodeList getValueNodes(Context cxt, String name) {
     return getAttributeValue(name);
   }
 
@@ -202,7 +203,7 @@ public class ParseTreeAttrs extends ParseNodeTable
   }
 
 
-  public void setValue(String name, NodeList value, Tagset ts) {
+  public void setValueNodes(Context cxt, String name, NodeList value) {
     setAttributeValue(name, value);
   }
   

@@ -78,11 +78,7 @@ public class Index {
 
     // If we wanted the whole space, return its list of bindings.
     if (name == null) return new ParseNodeList(ns.getBindings());
-    ActiveNode b = ns.getBinding(name);
-    if (b == null) return null;
-    if (b.asEntity() != null) return b.asEntity().getValueNodes(c);
-    else if (b.asAttribute() != null) return b.asAttribute().getValue();
-    return new ParseNodeList(b);
+    else return ns.getValueNodes(c, name);
   }
 
   public static void setValue(Context c, String space, String name,
@@ -90,20 +86,12 @@ public class Index {
     Namespace ns = c.getNamespace(space);
     Tagset ts = c.getTopContext().getTagset();
 
-    if (ns == null) {
+    if (ns != null) {
+      ns.setValueNodes(c, name, value);
+    } else {
       // If there's nothing there, make a namespace and populate it.
       BasicEntityTable ents = new BasicEntityTable(space);
       ents.setEntityValue(c, name, value, ts);
-      return;
-    } 
-
-    ActiveNode b = ns.getBinding(name);
-    if (b == null) {
-      ns.setBinding(name, new ParseTreeEntity(name, value));
-    } else if (b.asEntity() != null) {
-      b.asEntity().setValueNodes(c, value);
-    } else if (b.asAttribute() != null) {
-      b.asAttribute().setValue(value);
     }
   }
 

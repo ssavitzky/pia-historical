@@ -99,6 +99,31 @@ public class BasicNamespace extends ParseTreeGeneric implements Namespace {
     if (binding.asNamespace() != null) namespaceItems ++;
   }
 
+  public NodeList getValueNodes(Context c, String name) {
+    ActiveNode b = getBinding(name);
+    if (b == null) return null;
+    else if (b.asEntity() != null) return b.asEntity().getValueNodes(c);
+    else if (b.asAttribute() != null) return b.asAttribute().getValue();
+    else if (b instanceof ParseTreeNamed) {
+      return ((ParseTreeNamed)b).getValue();
+    } else if (b.hasChildren()) return b.getChildren();
+    else return new ParseNodeList(b);
+  }
+
+  public void setValueNodes(Context c, String name, NodeList value) {
+    ActiveNode b = getBinding(name);
+    if (b == null) {
+      Tagset ts = c.getTopContext().getTagset();
+      setBinding(name, ts.createActiveEntity(name, value));
+    } else if (b.asEntity() != null) {
+      b.asEntity().setValueNodes(c, value);
+    } else if (b.asAttribute() != null) {
+      b.asAttribute().setValue(value);
+    } else {
+      // === problem -- namespace can't set value (DOM update needed)
+    }
+  }
+
   /************************************************************************
   ** Information Operations:
   ************************************************************************/
