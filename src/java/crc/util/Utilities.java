@@ -11,9 +11,20 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.DataOutputStream;
-import crc.util.regexp.RegExp;
+import gnu.regexp.RegExp;
 
 public class Utilities{
+
+  /**
+   * return a string read from a file
+   */
+  public static String readStringFrom( String filename ) throws NullPointerException, FileNotFoundException, IOException{
+
+      byte[] fromFile = readFrom( filename );
+      String data = new String ( fromFile,0,0, fromFile.length);
+      return data;
+
+  }
 
 public static synchronized byte[] readFrom( String fileName ) throws NullPointerException, FileNotFoundException, IOException{
     File f = null;
