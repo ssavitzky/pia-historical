@@ -1,0 +1,46 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Forms help page</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Help / FAQ</set>
+<read interform file="heading.inc" process>
+<!-- read process quiet interform file=tagset.inc -->
+<tagset-load name=Form-agent-actors>
+
+<h1> How do I ...</h1>
+<dl>
+  <dt> Sign a form
+  <dd>  Clicking on a form in your pending list <a href="home.if"> on the home
+	page</a> takes you to the signature page, at the bottom you should
+	find your username with a place to enter your pass-phrase then hit the
+	submit button.  (*old style forms have some extraneous boxes which can be ignored)
+  <dt>  Remove a pending form
+  <dd>  Clicking  on the header for a pending list (your username or group) on the <a href="home.if">
+	home page</a> will take you to a  <a href="edit_pending.if">page</a>
+	where you can select items to remove (or conversely keep).  Note that
+	the forms will remain on the system, but will be removed from the
+	pending list and will not be routed to any subsequent users.
+  <dt> Check the status of a form
+  <dd> Clicking on the STATUS button at the bottom of every page will show a
+       <a href="status.if"> list of every</a> form that you have signed
+       complete with all subsequent signers.  Clicking on one of those forms
+       will retrieve the complete form, the names of the signers, and provide
+       a link to show the route for that form.  
+
+  <dt> Get back to the home page
+  <dd> The  <a href="home.if">Form home:</a> link at the top of every page is
+       a quick link back to the home page with your list of currently pending forms.
+  <dt> What is the REPORT button for
+  <dd>  The  <a href="reports.if"> reports  page</a> provides a convenient way
+	to see all entries for a given type of form for a given time period.
+	(Currently the use of that function is restricted to group members.)
+  <dt> Get a new private key
+  <dd> If you lose/forget your pass-phrase see Kevin or Greg to generate a new
+       key pair.
+</dl>
+
+<hr>
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

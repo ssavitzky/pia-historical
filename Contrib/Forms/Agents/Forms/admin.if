@@ -33,7 +33,7 @@
       </dl>
  <hr>
 
-      <a href="initialize.if"> reinitialize</a>
+      
 
       <form action="edit_form.if">
 <input type="SUBMIT" value="Edit Form">:
@@ -59,6 +59,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 12:28:19 1998
+Last modified: Tue Feb 17 15:56:10 1998
 <!-- hhmts end -->
 </body></html>

@@ -33,10 +33,14 @@ Fill out: <select name="formtype">
 </form>
  <a href="forms.if">List of Forms</a>
 <TR><TD>  <a href="status.if"> Status</a>
-<if-in-group group=FrontOffice><TR><TD>  <a href="reports.if"> Reports</a>
-</TD></TR></if-in-group>
+<TR><TD>  <a href="help.if"> Help</a> </TD></TR>
 
-<TR><TD> <a href="admin.if">Admin</a>
+
+
+<TR><TD>
+ <if-in-group group=FrontOffice><a href="reports.if">Reports</a> <br>
+ </if-in-group>
+ <a href="admin.if">Admin</a> </TD></TR>
 </table>
 </then> <else>
 Please  <a href="add_user.if">click here</a> to  register user information for <get name=uid>.
