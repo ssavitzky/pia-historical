@@ -11,6 +11,18 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileReader;
 
+/** Loader for Tagsets.
+ *
+ *	Tagsets can be loaded either by instantiating an implementation class
+ *	(by far the fastest method if the class exists), or from a file.
+ *	Files can be either Java objects (<code>.obj</code>), XML tagsets
+ *	(<code>.ts</code>), or XML tagsets stripped of extraneous
+ *	documentation (<code>.tss</code>).  To make matters worse, files can
+ *	be loaded either from the file system (as one might expect), from the
+ *	Web, or from Java ``resources'' associated with this module.  Loader
+ *	knows the correct search path.
+ *
+ */
 public class Loader {
 
   /** Table of all globally-defined tagsets, by name.

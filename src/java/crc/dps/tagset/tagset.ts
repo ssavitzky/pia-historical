@@ -8,10 +8,10 @@
 <p> This file contains the <a href="#XHML">eXtended HTML (XHML)</a> definition
     for the <code>tagset</code> <a href="#tagset">tagset</a>, or in other
     words, the formal definition of the language in which tagsets are defined.
-    (Yes, this is a circular definition.)  You are probably reading it in HTML
-    form, as <a href="tagset.html"><code>tagset.html</code></a>; this was
-    derived automatically from the XHML original file, <a
-    href="tagset.ts"><code>tagset.ts</code></a>.
+    (Yes, this is a <a href="#circular">circular definition</a>.)  You are
+    probably reading it in HTML form, as <a href="tagset.html"
+    ><code>tagset.html</code></a>; this was derived automatically from the
+    XHML original file, <a href="tagset.ts"><code>tagset.ts</code></a>.
 
 <p> A tagset definition file such as this is essentially a mapping into
     XHML of an SGML Document Type Definition (DTD), and in fact can be
@@ -138,7 +138,7 @@
 	<tag>tagset</tag> element because there is always a ``current''
 	namespace and tagset in effect.
   </doc>
-  <define attribute name=element implied>
+  <define attribute=element implied>
     <doc> Specifies that an element (tag) is being defined.  The value of the
 	  attribute is the tagname of the element being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -148,7 +148,7 @@
 	  processed.
     </doc>
   </define>
-  <define attribute name=attribute implied>
+  <define attribute=attribute implied>
     <doc> Specifies that an attribute is being defined.    The value of the
 	  attribute is the name of the attribute being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -161,7 +161,7 @@
 	  element's definition.
     </doc>
   </define>
-  <define attribute name=entity implied>
+  <define attribute=entity implied>
     <doc> Specifies that an entity is being defined.    The value of the
 	  attribute is the name of the entity being defined.  If the
 	  <code>handler</code> attribute or the <code><tag>action</tag></code>
@@ -171,17 +171,19 @@
 	  document.
     </doc>
   </define>
-  <define attribute name=notation implied>
+  <define attribute=notation implied>
     <doc> Specifies that a notation is being defined.    The value of the
 	  attribute is the name of the notation being defined.  The associated
-	  value, if any, should be the MIME type of the data.
+	  value, if any, should be the MIME type of the data.  A ``notation''
+	  is the identifier used in a DTD to describe the data in an unparsed
+	  external entity.
     </doc>
   </define>
 
   <doc> <strong>General modifiers:</strong>
   </doc>
 
-  <define attribute name=handler implied>
+  <define attribute=handler implied>
     <doc> Specifies the action handler class for the node being defined.
 
 	  <p> If no value is specified, the handler class name is assumed to
@@ -350,21 +352,20 @@
 	inside another by using <tag>select</tag>.
   </note>
 
-  <define attribute name=name required/>
-  <define attribute name=context implied>
+  <define attribute=context implied>
     <doc> The <code>context</code> attribute specifies the tagset in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.
     </doc>
   </define>
-  <define attribute name=include implied>
+  <define attribute=include implied>
     <doc> The <code>include</code> attribute specifies a list of tagsets,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>tagset</tag>.  This is different from <tag>context</tag>, which
 	  effectively includes by reference.
     </doc>
   </define>
-  <define attribute name=recursive implied>
+  <define attribute=recursive implied>
     <doc> If present, this attribute indicates that elements defined in the
 	  tagset can be used in the definitions of other elements.  The
 	  default is for definitions to be in terms of elements and entities
@@ -377,19 +378,19 @@
 <define element=namespace handler>
   <doc> This defines a namespace for entities. 
   </doc>
-  <define attribute name=name implied>
+  <define attribute=name implied>
     <doc> Note that the <code>name</code> attribute is optional; it is
 	  perfectly meaningful to have an anonymous <tag>namespace</tag>.
     </doc>
   </define>
-  <define attribute name=context implied>
+  <define attribute=context implied>
     <doc> The <code>context</code> attribute specifies the namespace in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.  If no
 	  value is specified, the innermost namespace is assumed.
     </doc>
   </define>
-  <define attribute name=include implied>
+  <define attribute=include implied>
     <doc> The <code>include</code> attribute specifies a list of namespaces,
 	  by name, whose contents are to be <em>copied into</em> the current
 	  <tag>namespace</tag>.  This is different from <tag>context</tag>,

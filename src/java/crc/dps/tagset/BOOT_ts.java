@@ -26,8 +26,8 @@ public class BOOT_ts extends BasicTagset {
     
     defTag("tagset", null, NORMAL, "tagset");
     defTag("define", null, NORMAL, "define");
-    /**/defTag("action", "action doc value", QUOTED, "define_action");
-    /**/defTag("value",  "action doc value", QUOTED, "define_value");
+    /**/defTag("action", "action doc value", QUOTED, "action");
+    /**/defTag("value",  "action doc value", QUOTED, "value");
     /**/defTag("doc",    "action doc value", QUOTED, "Skippable");
   }
 

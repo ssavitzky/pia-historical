@@ -8,7 +8,8 @@ TOPDIR=../../..
 ### Base classes:
 BASE_CLASSES = \
 	BasicTagset.java \
-	Loader.java
+	Loader.java \
+	TagsetProcessor.java 
 
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
@@ -79,6 +80,7 @@ HTML_ts.class: BasicTagset.java
 basic.class: BasicTagset.java HTML_ts.java
 standalone.class: BasicTagset.java HTML_ts.java
 standard.class: BasicTagset.java HTML_ts.java
+legacy.class: BasicTagset.java HTML_ts.java
 
 basic.html: Makefile $(DOC_TS)
 tsdoc.html: Makefile $(DOC_TS)

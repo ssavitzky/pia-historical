@@ -10,6 +10,7 @@ import crc.dom.DocumentType;
 import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
+import java.io.PrintStream;
 
 import crc.dps.Syntax;
 import crc.dps.NodeType;
@@ -99,6 +100,20 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   public Tagset getContext() { return context; }
 
   /************************************************************************
+  ** Adding a Handler:
+  ************************************************************************/
+
+  /** Add the handler to the content of the tagset Node. */
+  protected void addHandler(String name, int type, Handler newHandler) {
+    ActiveNode h = (ActiveNode)newHandler;
+    addChild(h);
+    if (verbosity > 0) {
+      message(1, getName() + " defining " + NodeType.getName(type)
+	      + " " + name, 2, true);
+    }
+  }
+
+  /************************************************************************
   ** Lookup Operations:
   ************************************************************************/
 
@@ -131,7 +146,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   public void setHandlerForTag(String tagname, Handler newHandler) {
     handlersByTag.at(tagname, newHandler);
     handlerNames.push(tagname);
-    addHandler(tagName, NodeType.ELEMENT, newHandler);
+    addHandler(tagname, NodeType.ELEMENT, newHandler);
   }
 
   public Handler getHandlerForAttr(String name) {
@@ -143,12 +158,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     String xname = "~attr~" + name;
     handlerNames.push(xname);
     addHandler(xname, NodeType.ELEMENT, newHandler);
-  }
-
-  /** Add the handler to the content of the tagset Node. */
-  protected void addHandler(String name, int type, Handler newHandler) {
-    ActiveNode h = (ActiveNode)newHandler;
-    addChild(h);
   }
 
   /** Called during parsing to return a suitable Handler for a new Text
@@ -413,9 +422,10 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    */
   protected GenericHandler defTag(String tag, String notIn, int syntax,
 				  String cname) {
-    GenericHandler h = loadHandler(tag, cname, true);
-    if (h == null) h = new GenericHandler(syntax);
-    else if (syntax != 0) h.setSyntaxCode(syntax);
+    GenericHandler h =
+      (GenericHandler) crc.dps.handle.Loader.loadHandler(tag, cname, 
+							 syntax, false);
+    if (h == null) { h = new GenericHandler(syntax); }
     if (notIn != null) {
       Enumeration nt = new java.util.StringTokenizer(notIn);
       while (nt.hasMoreElements()) {
@@ -423,27 +433,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       }
     }
     setHandlerForTag(tag, h);
-    return h;
-  }
-
-  /** Define a node by type, with a named handler class.
-   *
-   * @param type the nodeType being defined.
-   * @param name an optional item name.
-   * @param cname the name of the handler's class.  If <code>null</code>,
-   *	BasicHandler is used.
-   * @return the Handler in case more setup needs to be done.
-   */
-  protected BasicHandler defType(int type, String name, int syntax,
-				 String cname) {
-    BasicHandler h = loadHandler(cname, true);
-    if (h == null) {
-      // the following is redundant if loadHandler defaults properly:
-      h = new BasicHandler(syntax);
-    } else if (syntax != 0) {
-      h.setSyntaxCode(syntax);
-    }
-    setHandlerForType(type, h);
     return h;
   }
 
@@ -507,69 +496,38 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   }
 
   /************************************************************************
-  ** Handler cache:
+  ** Debugging:
+  **	This is a subset of crc.util.Report.
   ************************************************************************/
 
-  protected static Table handlerCache = new Table();
-  protected static void defHandle(String cname, BasicHandler handler) {
-    handlerCache.at(cname, handler);
+  protected int verbosity = 0;
+  protected PrintStream log = null;
+
+  public int 	getVerbosity() 		{ return verbosity; }
+  public void 	setVerbosity(int value) { verbosity = value; }
+  public PrintStream getLog() 		{ return log; }
+  public void 	setLog(PrintStream stream) { log = stream; }
+
+  public void message(int level, String text, int indent, boolean endline) {
+    if (verbosity < level) return;
+    String s = "";
+    for (int i = 0; i < indent; ++i) s += " ";
+    s += text;
+    if (endline) log.println(s); else log.print(s);
   }
 
-  static {
-    defHandle("else", new elseHandler());
-    defHandle("elsf", new elsfHandler());
-    defHandle("get", new getHandler());
-    defHandle("if", new ifHandler());
-    defHandle("repeat", new repeatHandler());
-    defHandle("set", new setHandler());
-    defHandle("subst", new substHandler());
-    defHandle("test", new testHandler());
-    defHandle("then", new thenHandler());
-    defHandle("tagset", new tagsetHandler());
-    defHandle("define", new defineHandler());
+  public final void debug(String message) {
+    if (verbosity >= 2) log.print(message);
   }
 
-  /** Load an appropriate handler class and instantiate it. 
-   *	Subclasses (e.g. legacy) may need to override this.
-   */
-  protected GenericHandler loadHandler(String tag, String cname,
-				       boolean defaultOK) {
-    if (cname == null) return new GenericHandler();
-
-    String name = ("".equals(cname))
-      ? NameUtils.javaName(tag, -1, -1, true, false)
-      : cname;
-
-    GenericHandler h = (GenericHandler) handlerCache.at(name);
-    if (h != null) return h;
-
-    h = (GenericHandler) loadHandler(name, false);
-    if (h == null && defaultOK) {
-      h = new GenericHandler();
-    }
-    if (h != null) handlerCache.at(name, h);
-    return h;
+  public final void debug(String message, int indent) {
+    if (verbosity < 2) return;
+    String s = "";
+    for (int i = 0; i < indent; ++i) s += " ";
+    s += message;
+    log.print(s);
   }
 
-  /** Load an appropriate handler class and instantiate it. 
-   *	Subclasses (e.g. legacy) may need to override this.
-   */
-  protected BasicHandler loadHandler(String cname, boolean defaultOK) {
-    if (cname == null) return new BasicHandler();
-
-    BasicHandler h = (BasicHandler) handlerCache.at(cname);
-    if (h != null) return h;
-
-    Class c = NameUtils.loadClass(cname, "crc.dps.handle.");
-    if (c == null) {
-      c = NameUtils.loadClass(cname+"Handler", "crc.dps.handle.");
-    }
-    try {
-      if (c != null) h = (BasicHandler)c.newInstance();
-    } catch (Exception e) {}
-    if (h == null && defaultOK) h = new BasicHandler();
-    if (h != null) handlerCache.at(cname, h);
-    return h;
-  }
+  public String logString(String s) { return Log.string(s); }
 
 }

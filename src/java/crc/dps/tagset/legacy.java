@@ -8,6 +8,8 @@ import crc.util.*;
 import crc.dps.handle.*;
 import crc.interform.handle.*;
 
+import java.util.Enumeration;
+
 /** The Legacy tagset.  This consists of the HTML syntax plus those
  *	actors that were used in old (legacy) InterForms. <p>
  *
@@ -86,6 +88,7 @@ public class legacy extends HTML_ts {
 
     // === need Table, Dl, etc. ===
 
+    defLegacy("actor", new Actor());
     defLegacy("actor-attrs", new Actor_attrs());
     defLegacy("actor-dscr", new Actor_dscr());
     defLegacy("actor-doc", new Actor_doc());
@@ -161,5 +164,19 @@ public class legacy extends HTML_ts {
     return h;
   }
 
+  protected GenericHandler defTag(String tag, String notIn, int syntax,
+				  String cname) {
+    GenericHandler h = loadHandler(tag, cname, true);
+    if (h == null) h = new GenericHandler(syntax);
+    else if (syntax != 0) h.setSyntaxCode(syntax);
+    if (notIn != null) {
+      Enumeration nt = new java.util.StringTokenizer(notIn);
+      while (nt.hasMoreElements()) {
+	h.setImplicitlyEnds(nt.nextElement().toString());
+      }
+    }
+    setHandlerForTag(tag, h);
+    return h;
+  }
 }
 

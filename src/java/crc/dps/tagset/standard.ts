@@ -3,6 +3,12 @@
 
 <h1>Standard Tagset</h1>
 
+<doc> This tagset consists of the primitive operations from the <a
+      href="basic.html">basic</a> tagset, the additional non-primitive
+      convenience functions of <a href="standalone.html">standalone</a>, and
+      HTML syntax.  It is intended for use in active HTML documents.
+</doc>
+
 This file contains the XML definition for the Standard (new) Tagset.  It
 should be possible to process this file into either documentation or a DTD.
 It's concievable that we could even process it into Java. <p>
@@ -27,6 +33,40 @@ declaration be the outermost element in the document.
 
 
 <h2>Data Structure Tags</h2>
+
+
+<h2>Form-Processing Tags</h2>
+
+<h3>Submit</h3>
+<define element=submit handler >
+  <doc>
+  </doc>
+  <define attribute= implied>
+    <doc> 
+    </doc>
+  </define>
+</define>
+
+<h3>Form and its components</h3>
+<define element=form >
+  <doc>
+  </doc>
+  <define attribute= implied>
+    <doc> 
+    </doc>
+  </define>
+</define>
+
+<h4>Sub-elements of <tag>form</tag></h4>
+<ul>
+  <li> <define element=process parent=form quoted handler>
+         <doc> The content of a <tag>process</tag> element is expanded only
+	       when the <tag>form</tag> that contains it is being processed as
+	       a result of a <code>post</code> or <code>query</code>
+	       submission. 
+         </doc>
+       </define>
+</ul>
 
 
 <hr>

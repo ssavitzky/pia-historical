@@ -25,9 +25,9 @@ public class tagset extends HTML_ts {
     
     defTag("tagset", null, NORMAL, "tagset");
     defTag("define", null, NORMAL, "define");
-    /**/defTag("action", "action doc value", QUOTED, "define_action");
-    /**/defTag("value",  "action doc value", QUOTED, "define_value");
-    /**/defTag("doc",    "action doc value", QUOTED, "Ignorable");
+    /**/defTag("action", "action doc value", QUOTED, "action");
+    /**/defTag("value",  "action doc value", QUOTED, "value");
+    /**/defTag("doc",    "action doc value", QUOTED, "Skippable");
   }
 
 }

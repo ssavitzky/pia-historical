@@ -47,21 +47,5 @@ public class basic extends HTML_ts {
     defActive("else else-if", "test then else-if", QUOTED);
   }
 
-  /************************************************************************
-  ** Handler cache:
-  ************************************************************************/
-
-  static {
-    defHandle("else", new elseHandler());
-    defHandle("elsf", new elsfHandler());
-    defHandle("get", new getHandler());
-    defHandle("if", new ifHandler());
-    defHandle("repeat", new repeatHandler());
-    defHandle("set", new setHandler());
-    defHandle("subst", new substHandler());
-    defHandle("test", new testHandler());
-    defHandle("then", new thenHandler());
-  }
-
 }
 

@@ -10,9 +10,9 @@ reference on how to <em>read</em> such a representation is <a
 href="tagset.html"><code>tagset.html</code></a>, the HTML version of the <a
 href="tagset.ts"><code>tagset</code></a> tagset.
 
-<doc> This tagset consists of the primitive operations <em>only</em>.
-	It is mainly intended as a base for more extensive tagsets, which in
-	turn are usually layered on top of HTML.
+<doc> This tagset consists of the primitive operations <em>only</em>.	It is
+      mainly intended as a base for more extensive tagsets, which in turn are
+      usually layered on top of HTML.
 </doc>
 
 <dl>
@@ -20,11 +20,12 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   <dd> It is already possible to process a tagset file into HTML using the
        <a href="tsdoc.html">tsdoc</a> tagset. It will eventually be possible
        to process tagset files into DTD's as well.  It's conceivable that we
-       could even process them into Java or C.
+       could even process them into Java or C, perhaps using embedded
+       <code>&lt;code&gt;</code> tags with a <code>language</code> attribute.
 
   <dt> <b>Note:</b>
   <dd> Also observe the SGML requirement that the element named in the
-       &lt;!doctype...&gt; declaration be the outermost element in the
+       &lt;!doctype...&gt; declaration must be the outermost element in the
        document. 
 
   <dt> <b>Note:</b>
@@ -33,7 +34,9 @@ href="tagset.ts"><code>tagset</code></a> tagset.
        defined.  The syntax of the document that defines a tagset and the
        syntax defined <em>by</em> the tagset are, potentially, completely
        disjoint.  Because of the included HTML, this document does
-       <em>not</em>  qualify as XML.
+       <em>not</em>  qualify as XML.  It could, however, be described in SGML
+       or converted to XML by outputting empty HTML tags with the XML
+       empty-tag delimiter. 
 </dl>
 
 <h2>Definition Elements</h2>
@@ -48,7 +51,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <h3>Define and its components</h3>
 
-<define element=define handler no-text default-content=value>
+<define element=define handler no-text>
   <doc> Defines an element, attribute, entity, or word.  It is meaningful for
 	for <tag>define</tag> to occur outside of a <tag>namespace</tag> or
 	<tag>tagset</tag> element because there is always a ``current''
@@ -60,18 +63,26 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	by the processor, with its contents and attributes (if any) also being
 	processed in turn. 
 
+	<p>Note that a <tag>define</tag> can contain anything at all in its
+	content; everything but the <tag>value</tag>, <tag>action</tag>, and
+	possibly <tag>doc</tag> elements are thrown away.  This means that a
+	definition can contain arbitrary decorative markup, and that arbitrary
+	computation can be done in the course of processing a definition.
+
 	<p>A construct can be ``defined'' more than once; the attributes
 	are effectively merged; the value and/or action are replaced.  The
 	main use of this is to associate a new value with a construct, and to
 	associate an action with a construct that has already been defined. 
   </doc>
-  <doc> <strong>Construct Specification Attributes:</strong>
 
+  <h4>Construct Specification Attributes:</h4>
+
+  <blockquote><em>
 	<p>The following attributes specify the type of construct being
 	defined, and its name (expressed as the value of the attribute).  It
 	is an error for more than one of these attributes to be present in a
 	single <tag>define</tag> tag.
-  </doc>
+  </em></blockquote>
 
   <define attribute=element implied>
     <doc> Specifies that an element (tag) is being defined.  The value of the
@@ -113,8 +124,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
 
-  <doc> <strong>General modifiers:</strong>
-  </doc>
+  <h4>General modifiers:</h4>
 
   <define attribute=handler implied>
     <doc> Specifies the action handler class for the node being defined.
@@ -130,17 +140,13 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  containing <em>element</em> based on the presence of a ``handled''
 	  attribute.  Probably only one such attribute should be permitted.
     </doc>
-    <note author=steve>
-	=== the implementation needs to give an error for missing handlers!
-    </note>
   </define>
 
-  <doc> <strong>Modifiers for <code><tag>define element</tag></code>:</strong>
-	<blockquote><em>
+  <h4>Modifiers for <code><tag>define element</tag></code>:</h4>
+  <blockquote><em>
 	  The following attributes are only meaningful when defining an
 	  Element.  It is impossible to represent this constraint in SGML.
-	</em></blockquote>
-  </doc>
+  </em></blockquote>
 
   <define attribute=quoted implied>
     <doc> Indicates that the content of the element being defined should be
@@ -157,8 +163,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
 
-  <doc> <strong>Modifiers for <code><tag>define attribute</tag></code>:</strong>
-  </doc>
+  <h4>Modifiers for <code><tag>define attribute</tag></code>:</h4>
+
 
   <define attribute=implied implied>
     <doc> Only meaningful for attributes.  Specifies that the attribute is
@@ -176,8 +182,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
     </doc>
   </define>
 
-  <doc> <strong>Modifiers for <code><tag>define entity</tag></code>:</strong>
-  </doc>
+  <h4>Modifiers for <code><tag>define entity</tag></code>:</h4>
 
   <define attribute=system implied>
     <doc> The value of this attribute is the ``system identifier'' (URI) of
@@ -511,26 +516,92 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 </define>
 
 <h4>Sub-elements of <tag>repeat</tag></h4>
+
+The contents of a <tag>repeat</tag> is repeatedly expanded; all of the
+following sub-elements are effectively iterating in parallel, which makes it
+easy to go through multiple lists and number the corresponding elements (for
+example). 
+
 <ul>
-  <li> <define element=yyy parent=repeat handler>
-         <doc>
+  <li> <define element=foreach parent=repeat handler>
+         <doc> The contents of this sub-element are a list; at each iteration
+	       the specified element (default <code>&amp;li;</code>) is
+	       replaced by an item from the list.
+         </doc>
+         <define attribute=entity implied>
+           <doc> If present, this specifies the name of the iteration variable
+		 used by the <tag>foreach</tag> sub-element.  
+    	   </doc>
+         </define>
+       </define>
+  <li> <define element=for parent=repeat handler>
+         <doc> The iteration variable (default <code>&amp;n;</code>) is
+	       incremented from the starting value (default 1) by the step
+	       value (default 1) until it reaches the final value (no
+	       default).  Iteration is stopped when the iteration variable
+	       exceeds the final value.
+         </doc>
+         <define attribute=entity implied>
+           <doc> If present, this specifies the name of the iteration variable
+		 used by the <tag>for</tag> sub-element.  
+    	   </doc>
+         </define>
+         <define attribute=start implied>
+           <doc> If present, this specifies the starting value for the
+		 iteration variable, replacing a <tag>start</tag> sub-element.  
+    	   </doc>
+         </define>
+         <define attribute=stop implied>
+           <doc> If present, this specifies the final value for the
+		 iteration variable, replacing a <tag>stop</tag> sub-element.  
+    	   </doc>
+         </define>
+         <define attribute=step implied>
+           <doc> If present, this specifies the step value for the
+		 iteration variable, replacing a <tag>step</tag> sub-element.  
+    	   </doc>
+         </define>
+       </define>
+       <ul>
+	 <li> <define element=start parent=for handler>
+	        <doc> The content must evaluate to a number, which is used as
+		      the starting value for the iteration variable.
+	        </doc>
+	      </define>
+	 <li> <define element=stop parent=for handler>
+	        <doc> The content must evaluate to a number, which is used as
+		      the final value for the iteration variable.
+	        </doc>
+	      </define>
+	 <li> <define element=step parent=for handler>
+	        <doc> The content must evaluate to a number, which is used as
+		      the step value for the iteration variable.
+	        </doc>
+	      </define>
+       </ul>
+  <li> <define element=while parent=repeat handler>
+         <doc> At each iteration the content is evaluated as a
+	       <em>condition</em> as in <tag>if</tag>; if the condition is
+	       <code>false</code> the <tag>repeat</tag> is terminated.
+         </doc>
+       </define>
+  <li> <define element=until parent=repeat handler>
+         <doc> At each iteration the content is evaluated as a
+	       <em>condition</em> as in <tag>if</tag>; if the condition is
+	       <code>true</code> the <tag>repeat</tag> is terminated.
+         </doc>
+       </define>
+  <li> <define element=first parent=repeat handler>
+         <doc> The contents are expanded exactly once, before the first
+	       iteration. 
+         </doc>
+       </define>
+  <li> <define element=finally parent=repeat handler>
+         <doc> The contents are expanded exactly once, after the last
+	       iteration. 
          </doc>
        </define>
 </ul>
-
-<h3>Test</h3>
-<define element=test handler>
-  <doc> This element performs a test on its content.  If no attributes are
-	specified, the test is the same as that performed by <tag>if</tag>.
-	If the tested condition is <code>true</code>, the <tag>test</tag>
-	element expands to ``<code>1</code>'', otherwise it ``expands'' to
-	nothing at all.
-
-	<p><tag>test</tag> is not, strictly speaking, a control-flow
-	operation, but it is used almost exclusively inside control-flow
-	operations for computing conditions.
-  </doc>
-</define>
 
 <h3>Logical</h3>
 <define element=logical handler>
@@ -561,12 +632,31 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   </define>
 </define>
 
+<h3>Test</h3>
+<define element=test handler>
+  <doc> This element performs a test on its content.  If no attributes are
+	specified, the test is the same as that performed by <tag>if</tag>.
+	If the tested condition is <code>true</code>, the <tag>test</tag>
+	element expands to ``<code>1</code>'', otherwise it ``expands'' to
+	nothing at all.
+
+	<p><tag>test</tag> is not, strictly speaking, a control-flow
+	operation, but it is used almost exclusively inside control-flow
+	operations for computing conditions.
+  </doc>
+  <define attribute= implied>
+    <doc> 
+    </doc>
+  </define>
+</define>
+
 
 <h2>Document Structure Elements</h2>
 
 <blockquote><em>
   Document structure elements select Nodes or sets of Nodes from a parse tree,
-  and perform structural modifications on trees.
+  and perform structural modifications on trees.  Note that the tree being
+  operated on need not be the Input document; it might be a Namespace.
 </em></blockquote>
 
 <h3>Select and its components</h3>
@@ -577,8 +667,122 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <h4>Sub-elements of <tag>select</tag></h4>
 <ul>
-  <li> 
+  <li> <define element=from parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=in parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=child parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=tag parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=attr parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=iref parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=entity parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=key parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=xptr parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=binding parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=paren parent=select handlert>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=next parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=prev parent=select handler>
+         <doc>
+         </doc>
+       </define>
+  <li> <define element=replace parent=select handler>
+         <doc>
+         </doc>
+       </define>
 </ul>
+
+<h2>Expansion Control Elements</h2>
+
+<blockquote><em>
+  Expansion control elements modify the processing of their contents, but are
+  not conditional in the same way that control-structure operations are. 
+</em></blockquote>
+
+<h3>Expand</h3>
+<define element=expand handler>
+  <doc> The content is actually expanded (processed) <em>twice</em>.  This is
+	done in order to compute some active content and then expand it as if
+	it had been in the input document.
+  </doc>
+  <define attribute=hide implied>
+    <doc> The content is processed as usual, but the results are not passed to
+	the output.  The effect is to process the content for side-effects
+	only. 
+    </doc>
+  </define>
+</define>
+
+<h3>Protect</h3>
+<define element=protect handler>
+  <doc> The content is not expanded (unless the <code>result</code> attribute
+	is present), but passed to the output as-is. 
+  </doc>
+  <define attribute=result implied>
+    <doc> The content is expanded (once); this makes <tag>protect</tag> a
+	  no-op unless the <code>markup</code> attribute is present.
+    </doc>
+  </define>
+  <define attribute=markup implied>
+    <doc> Markup in the content is ``protected'' from further expansion by
+	  converting it to text, replacing markup-specific characters with the
+	  corresponding entity references.
+    </doc>
+  </define>
+</define>
+
+<h3>Hide</h3>
+<define element=hide handler>
+  <doc> The content is processed as usual, but the results are not passed to
+	the output.  The effect is to process the content for side-effects
+	only. 
+  </doc>
+  <define attribute=markup implied>
+    <doc> Only markup in the content is ``hidden'' -- text is passed through
+	  to the output.  References to passive entities (including character
+	  entities) are expanded.
+    </doc>
+  </define>
+  <define attribute=text implied>
+    <doc> Only text in the content is ``hidden'' -- markup is passed through
+	  to the output.  References to passive entities (including character
+	  entities) are expanded.
+    </doc>
+  </define>
+</define>
 
 <h2>Data Manipulation Elements</h2>
 
@@ -587,6 +791,208 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   depend on some non-structural features of its content (e.g. its value as a
   number).
 </em></blockquote>
+
+<h3>Numeric operations</h3>
+<define element=numeric handler>
+  <doc> All passive markup in the content is ignored in most cases; the
+	content is taken to be a sequence of numbers <em>n<sub>0</sub>,
+	n<sub>1</sub>, ...</em> separated by whitespace.  Elements are
+	represented by their first non-whitespace text.  If no operation is
+	specified in the attributes, this sequence is returned as a
+	space-separated list of Text nodes.
+  </doc>
+  <define attribute=sum implied>
+    <doc> The numbers in the content are added.
+    </doc>
+  </define>
+  <define attribute=difference implied handler>
+    <doc> The difference  <em>n<sub>0</sub> - n<sub>1</sub> - ...</em> is
+	  computed. 
+    </doc>
+  </define>
+  <define attribute=product implied handler>
+    <doc> The numbers in the content are multiplied.
+    </doc>
+  </define>
+  <define attribute=quotient implied handler>
+    <doc> The quotient <em>n<sub>0</sub> / n<sub>1</sub> / ...</em> is
+	  computed. 
+    </doc>
+  </define>
+  <define attribute=remainder implied handler>
+    <doc> The remainder <em>n<sub>0</sub> % n<sub>1</sub> % ...</em> is
+	  computed.  
+    </doc>
+  </define>
+  <define attribute=power implied handler>
+    <doc> The power <em>n<sub>0</sub> ^ n<sub>1</sub> ^ ...</em> is
+	  computed. 
+    </doc>
+  </define>
+  <define attribute=sort implied handler>
+    <doc> The content is taken to be a list of items each of which must
+	  contain a numeric value in its text. 
+    </doc>
+  </define>
+  <define attribute=reverse implied>
+    <doc> Causes a sort to be done in reverse order.
+    </doc>
+  </define>
+  <define attribute=pairs implied>
+    <doc> Sorts a list of key and value pairs according to the keys.
+	  Typically this is used for the contents of <code>&lt;dl&gt;</code>
+	  lists, in which the <code>&lt;dt&gt;</code> and
+	  <code>&lt;dd&gt;</code> elements follow one another rather than
+	  being hierarchical as they are in a table.
+    </doc>
+  </define>
+  <define attribute=sep implied>
+    <doc> Specifies the separator to be used between sorted or split (no
+	  operation specified) numbers.
+    </doc>
+  </define>
+  <define attribute=digits implied>
+    <doc> The value is the number of digits to the right of the decimal point
+	  to preserve in the output.  The default is zero if the result is an
+	  integer, the maximum possible otherwise.
+    </doc>
+  </define>
+  <define attribute=integer implied>
+    <doc> All computation is done with (64-bit, signed) integer arithmetic.
+	  Results of division operations are truncated.
+    </doc>
+  </define>
+  <define attribute=extended implied>
+    <doc> All computation is done with extended-precision integer arithmetic.  
+    </doc>
+  </define>
+  <define attribute=modulus implied>
+    <doc> All computation is done with modular arithmetic with the specified
+	  modulus.  Combined with extended-precision, this can be used for
+	  cryptographic calculations.
+    </doc>
+  </define>
+</define>
+
+<h3>Text operations</h3>
+<define element=text handler>
+  <doc> Passive markup in the content is ignored in most cases, but preserved
+	in the output when possible.  For sorting purposes, the content is
+	taken to be a sequence of text nodes separated by whitespace.
+	Elements are represented by their first text content.  If no operation
+	is specified in the attributes, this sequence is returned as a
+	space-separated list of Text nodes.
+  </doc>
+  <define attribute=pad implied handler>
+    <doc> Pad the text to the specified <code>width</code> with the specified
+	  <code>align</code>ment (default is <code>left</code>).
+    </doc>
+  </define>
+  <define attribute=trim implied handler>
+    <doc> Trim the text to the specified <code>width</code> with the specified
+	  <code>align</code>ment.  The default is <code>left</code>, meaning
+	  that characters are trimmed from the right.  If no
+	  <code>width</code> is specified, leading and trailing whitespace are
+	  trimmed.
+    </doc>
+  </define>
+  <define attribute=width implied>
+    <doc> Specifies a width to pad or trim to.  If neither <code>pad</code>
+	  nor <code>trim</code> is specified, padding or trimming is done as
+	  needed. 
+    </doc>
+  </define>
+  <define attribute=align implied>
+    <doc> Specifies alignment when padding.  Permissible values are
+	  <code>left</code>, <code>right</code>, <code>center</code>
+    </doc>
+  </define>
+  <define attribute=sort implied handler>
+    <doc> The list of items in the content is sorted according to their text
+	  content.  Markup is ignored for sorting, but retained for output.
+    </doc>
+  </define>
+  <define attribute=reverse implied>
+    <doc> Causes a sort to be done in reverse order.
+    </doc>
+  </define>
+  <define attribute=pairs implied>
+    <doc> Sorts a list of key and value pairs according to the keys.
+	  Typically this is used for the contents of <code>&lt;dl&gt;</code>
+	  lists, in which the <code>&lt;dt&gt;</code> and
+	  <code>&lt;dd&gt;</code> elements follow one another rather than
+	  being hierarchical as they are in a table.
+    </doc>
+  </define>
+  <define attribute=sep implied>
+    <doc> Specifies the separator to be used between sorted or split items.
+	  If not specified, the implied separator is a single space.
+    </doc>
+  </define>
+  <define attribute=split handler implied>
+    <doc> Splits the text into ``tokens'' (words) using the specified
+	  separator.  
+    </doc>
+  </define>
+  <define attribute=join handler implied>
+    <doc> Joins items in the content by separating them with the given
+	  separator.  The items, and the separators, remain distinct Text
+	  nodes. 
+    </doc>
+  </define>
+  <define attribute=merge handler implied>
+    <doc> Merges items in the content by separating them with the given
+	  separator, then concatenating them into a single Text node.
+    </doc>
+  </define>
+</define>
+
+<note author=steve>
+  At some point we'll want to deal with <code>measure</code> and font
+  metrics.
+</note>
+
+<h3>To-markup</h3>
+<define element=to-markup handler>
+  <doc> Strips passive markup (assumed to be decorative) from the text in the
+	content to convert it to a single string.  Character and other passive
+	entities are expanded.  Runs of consecutive whitespace characters are
+	converted to single spaces.
+
+	<p>If no other operation is specified in an attribute, special
+	characters [<code>&amp;&lt;&gt;</code>] are replaced with entities,
+	and line breaks are inserted to limit line lengths to 72 characters.
+  </doc>
+  <define attribute=usenet implied>
+    <doc> Markup is added according to the conventions of Usenet mail and news
+	  articles:  <code>_<i>italics</i>_</code>,
+	  <code>*<b>bold</b>*</code>, and so on, similar to the old
+	  <code>&lt;add-markup&gt;</code> tag.  Runs of multiple uppercase
+	  letters are lowercased and set monospaced, and values after an equal
+	  sign are italicized.  
+    </doc>
+  </define>
+  <define attribute= implied>
+    <doc> 
+    </doc>
+  </define>
+</define>
+
+The set of attributes used in <tag>to-markup</tag> and <tag>to-string</tag> is
+open-ended; tagset authors are free to define new ones as needed.
+
+<h3>To-text</h3>
+<define element=to-text handler>
+  <doc> Converts the marked-up content into one or more Text nodes (strings).
+	If no other operation is specified in an attribute, the marked-up
+	content is simply converted to its external representation.
+  </doc>
+  <define attribute= implied>
+    <doc> 
+    </doc>
+  </define>
+</define>
+
 
 <h2>Data Structure Elements</h2>
 
