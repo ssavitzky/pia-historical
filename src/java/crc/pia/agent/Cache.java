@@ -69,6 +69,7 @@ public class Cache extends GenericAgent {
   String dataPath       = null;
   URL url               = null;
   CacheTable cacheTable = null;
+  boolean doNotCache    = false;
 
   /** This is called on requests and responses*/
   public void actOn(Transaction ts, Resolver res){
@@ -91,7 +92,19 @@ public class Cache extends GenericAgent {
     */
   protected void actOnRequest(Transaction ts, Resolver res) {
     URL reqURL = ts.requestURL();
-    String url = ts.url();
+
+    if(ts.hasQueryString()) {
+      doNotCache = true;
+      return;
+    }
+    if(ts.method() != null) {
+      if(ts.method().equalsIgnoreCase("POST") 
+	 || ts.method().equalsIgnoreCase("PUT")) {
+	doNotCache = true;
+	return;
+      }
+    }
+
 
     // Look it up in the db
     String datafile = (String)cacheTable.get(reqURL.hashCode());
@@ -107,10 +120,14 @@ public class Cache extends GenericAgent {
       a candidate for the cache.
   */
   protected void actOnResponse(Transaction ts, Resolver res) {
+    
     // If this is anything but a request from the server,
-    // bail out.
-    if(ts.statusCode() != 200)
+    // e.g. a redirect, bail out.
+    if(ts.statusCode() != 200) {
+      // Tell handle method not get from cache
+      doNotCache = true;
       return;
+    }
 
     URL reqURL = ts.requestURL();
     String datafile = (String)cacheTable.get(reqURL.hashCode());
@@ -157,14 +174,14 @@ public class Cache extends GenericAgent {
       con.tapIn(fos);
     }
     catch(ContentOperationUnavailable e) {
-      System.err.println("Tap error: " +e.toString() + e.getMessage());
+      System.err.println("Tap error: " + e.getMessage());
       return;
     }
     try {
       con.notifyWhen(this, "END", fos);
     }
     catch(ContentOperationUnavailable e) {
-      System.err.println("Tap error: " +e.toString() + e.getMessage());
+      System.err.println("Tap error: " + e.getMessage());
     }
   }
 
@@ -174,6 +191,10 @@ public class Cache extends GenericAgent {
   public boolean handle(Transaction ts, Resolver res) {
 
     Transaction response = null;
+    if(doNotCache == true) {
+      doNotCache = false;
+      return false;
+    }
 
     String datapath = (String)cacheTable.get(ts.requestURL().hashCode());
     if(datapath == null) {
@@ -217,7 +238,6 @@ public class Cache extends GenericAgent {
       response.setContentType(headers.contentType());
       response.setContentLength(headers.contentLength());
     }
-
     response.startThread();
     return true;
   }
@@ -341,7 +361,7 @@ public class Cache extends GenericAgent {
       fosWrite.write(urlStr, 0, urlStr.length());
     }
     catch(IOException e) {
-      System.err.println(e.getMessage());
+      System.err.println("writeHeader error: " + e.getMessage());
     }
     try {
       fosWrite.flush();
@@ -349,7 +369,7 @@ public class Cache extends GenericAgent {
       fos.close();
     }
     catch(IOException e) {
-      System.err.println(e.getMessage());
+      System.err.println("writeHeader error: " + e.getMessage());
     }
   }
 
