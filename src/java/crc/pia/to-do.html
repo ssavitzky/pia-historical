@@ -27,12 +27,33 @@ See also:
 
 <h2>Main List</h2>
 <ol>
+  <li> <b>Hole</b> Better agent naming conventions. <br>
+       specified using the following attributes on Agent:
+       <ul>
+	 <li> <code>name</code> the base name.
+	 <li> <code>base</code> the agent's ``mount point''
+	 <li> <code>path</code> the full path relative to the PIA's document
+	      root: <code>base/name</code> -- this is the unique key for
+	      looking up the agent. 
+       </ul>
+       (1998-12-22) <br>
+
   <li> <b>Bug</b> need per-agent InterForm and data directories <br>
        This would have two good effects: avoid searching in the obsolete
        <code>src/Agents</code>, and allow agents to be anywhere.  Actually the
        InterForm search path should be a real path; data is just a single
-       dir. 
-       (1998-12-17)
+       dir.  Should have the following attributes on Agent:
+       <ul>
+	 <li> <code>codeDir</code> the code directory.  Default is
+	      <code>Agents/<em>path</em></code>.  
+	 <li> <code>userDir</code> user's overrides
+	 <li> <code>dataDir</code> the data; <em>always</em> using
+	      <code>~</code> 
+       </ul>
+       Note that currently the <code>if_root</code> attribute preceeds the
+       default paths, but does not override them.  Similarly, many possible
+       roots and paths are currently searched. 
+       (1998-12-17) <br>
 
   <li> <b>Hole</b> <code>handle</code> subdir for tag handlers <br>
        Agent-specific handlers are in Agent. 
