@@ -49,7 +49,7 @@ public class Agent_home extends crc.interform.Handler {
     String home = (type.equals(name))? name : type + "/" + name;
     if (link) {
       Element t = new Element("a");
-      t.attr("href", home+"/home.if");
+      t.attr("href", "/" + home + "/home.if");
       t.append(home);
       ii.replaceIt(t);
     } else {
