@@ -538,9 +538,11 @@ public class Token implements SGML {
   }
 
   public void appendTextTo(SGML t) {
-    if (incomplete >= 0) t.append(startTag());
+    if (tag != null && !tag.equals("") && !specialFormat)       
+      if (incomplete >= 0) t.append(startTag());
     if (content != null && incomplete == 0) content.appendTextTo(t);
-    if (hasEndTag() && incomplete <= 0) t.append(endTag());
+    if (tag != null && !tag.equals("") && !specialFormat)       
+      if (hasEndTag() && incomplete <= 0) t.append(endTag());
   }
 
   /************************************************************************
