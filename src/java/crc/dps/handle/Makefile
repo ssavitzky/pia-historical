@@ -62,6 +62,7 @@ FILES = $(BASE_CLASSES) $(HANDLERS) Loader.java
 include $(TOPDIR)/makefiles/file.make
 
 ### Reporting.
+all:: count
 
 report:: count check
 

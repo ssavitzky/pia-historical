@@ -220,6 +220,9 @@ implements Handler {
    */
   public boolean implicitlyEnds(String tag) { return false; }
 
+  /** Return true if this kind of token is a potential child of the given one.
+   */
+  public boolean isChildOf(String tag) { return true; }
 
   /************************************************************************
   ** Presentation Operations:

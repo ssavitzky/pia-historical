@@ -12,9 +12,10 @@ import crc.dom.Element;
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
-import crc.dps.tagset.BasicTagset;
+import crc.dps.tagset.*;
 import crc.dps.output.DiscardOutput;
-import crc.dps.tagset.TagsetProcessor;
+
+import java.util.StringTokenizer;
 
 /**
  * Handler for &lt;tagset&gt;....&lt;/&gt;  <p>
@@ -57,6 +58,17 @@ public class tagsetHandler extends GenericHandler {
 
   }
 
+  /** This does the parse-time dispatching. <p>
+   *
+   *	Action is dispatched (delegated) to a subclass if the string
+   *	being passed to <code>dispatch</code> is either the name of an
+   *	attribute or a period-separated suffix of the tagname. <p>
+   */
+  public Action getActionForNode(ActiveNode n) {
+    ActiveElement e = n.asElement();
+    return this;
+  }
+   
   /* === This is very twisty. ===
     
      The element we create at parse time with createElement becomes part of
@@ -106,26 +118,73 @@ public class tagsetHandler extends GenericHandler {
   public void action(Input in, Context cxt, Output out) {
     ActiveElement n  = in.getActive().asElement();
     TopContext   top = cxt.getTopContext();
-    BasicTagset newTagset = new BasicTagset();
-    newTagset.setName(n.getAttributeString("name"));
-    newTagset.setAttributes(n.getAttributes());
+    Tagset oldTagset = getParserTagset(top);
+
+    String parserTSname = n.getAttributeString("tagset");
+    Tagset parserTagset = null;
+    String parentTSname = n.getAttributeString("parent");
+    Tagset parentTagset = null;
+    String inclusions   = n.getAttributeString("include");
+    boolean recursive   = n.hasTrueAttribute("recursive");
 
     // Check the TopProcessor.  If it's a TagsetProcessor, we're processing a
-    // tagset file in the Loader (figures).  Otherwise, we're just referencing
-    // one.
+    // tagset file in the Loader (figures).  
 
-System.err.println("Looking for TopProcessor");
+    // Otherwise, we're just referencing a tagset === ignore this case for now.
+    //	  Requires replacing/unlocking the top processor's tagset 
+    //	  and if recursive, replacing the Parser's as well.
 
     TagsetProcessor tproc = (top instanceof TagsetProcessor)
       ? (TagsetProcessor) top : null;
 
-    // If the tagset is non-recursive, just replace the one in 
-    //	the TopProcessor.   
+    // Construct a new tagset.  
+    // 	  === Clone the specified PARENT tagset, if any.
+    BasicTagset newTagset = 
+      ("HTML".equals(parentTSname)) ? new HTML_ts() : new BasicTagset();
+    newTagset.setName(n.getAttributeString("name"));
+    newTagset.setAttributes(n.getAttributes());
 
-    //  If it's recursive, the parser and TopProcessor are already using the
-    //  same one, but it might be locked.  In that case, we have to replace
-    //  them both with one we can modify.
+    // Handle the inclusions.
+    if (inclusions != null) {
+      StringTokenizer inames = new StringTokenizer(inclusions);
+      while (inames.hasMoreElements()) {
+	String incN  = inames.nextElement().toString();
+	Tagset incTS = crc.dps.tagset.Loader.require(incN);
+System.err.println("Loading tagset=" + incN + 
+		   ((incTS == null)? " FAILED" : " OK"));
+	if (incTS == null) {
+	  reportError(in, cxt, "Cannot load included tagset " + incTS);
+	} else {
+	  newTagset.include(incTS);
+	}
+      }
+    }
 
+    // If there's a parser tagset (TAGSET attribute), load it.
+    if (parserTSname != null) {
+      // load the specified parserTagset (TAGSET attribute)
+      // Make it the current tagset in the parser.
+      parserTagset = crc.dps.tagset.Loader.require(parserTSname);
+System.err.println("Loading tagset=" + parserTSname + 
+		   ((parserTagset == null)? " FAILED" : " OK"));
+      if (parserTagset == null) {
+	reportError(in, cxt, "Cannot load parser tagset " + parserTSname);
+      } else {
+	setParserTagset(top, parserTagset);
+      }      
+    }
+
+    //	If the tagset is non-recursive, just replace in TopProcessor (below).
+    //  If it's recursive, we have to copy it into the Parser.
+
+    if (recursive) {
+      if (parserTSname != null) {
+	reportError(in, cxt, "TAGSET and RECURSIVE attrs are incompatible.");
+      }
+      setParserTagset(top, newTagset);
+    }
+
+    // Load the tagset. 
     if (tproc != null) {
       // We're loading a Tagset, so we don't need output.  Go through the
       // input and quietly discard the results.
@@ -141,25 +200,25 @@ System.err.println("Looking for TopProcessor");
       unimplemented(in, cxt, "using a sub-tagset");
       cxt.subProcess(in, out).processChildren();
     }
+
+    // Restore the top processor's old tagset.
+    setParserTagset(top, oldTagset);
   }
 
-  /** Action for &lt;tagset&gt; node. */
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
-    // === Do we need to go through the content at this point?
+  /************************************************************************
+  ** Utilities:
+  ************************************************************************/
+
+  protected Tagset getParserTagset(TopContext top) {
+    ProcessorInput in = top.getProcessorInput();
+    return (in == null)? null : in.getTagset();
   }
 
-  /** This does the parse-time dispatching. <p>
-   *
-   *	Action is dispatched (delegated) to a subclass if the string
-   *	being passed to <code>dispatch</code> is either the name of an
-   *	attribute or a period-separated suffix of the tagname. <p>
-   */
-  public Action getActionForNode(ActiveNode n) {
-    ActiveElement e = n.asElement();
-    return this;
+  protected void setParserTagset(TopContext top, Tagset ts) {
+    ProcessorInput in = top.getProcessorInput();
+    if (in != null) in.setTagset(ts);
   }
-   
+
   /************************************************************************
   ** Constructor:
   ************************************************************************/

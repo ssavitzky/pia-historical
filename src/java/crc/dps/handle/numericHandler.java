@@ -13,16 +13,22 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
 
+import crc.ds.Association;
+import java.util.Enumeration;
+
 /**
  * Handler for &lt;numeric&gt;....&lt;/&gt;  <p>
- *
- *	
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  */
 
 public class numericHandler extends GenericHandler {
+
+  protected boolean integerOp  = false;
+  protected boolean extendedOp = false;
+  protected int     digits     = -1;
+  protected long    modulus    = 0;
 
   /************************************************************************
   ** Semantic Operations:
@@ -42,7 +48,12 @@ public class numericHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    if (dispatch(e, "")) 	 return numeric_.handle(e);
+    if (dispatch(e, "sum")    ) 	 return numeric_sum.handle(e);
+    if (dispatch(e, "difference")) 	 return numeric_difference.handle(e);
+    if (dispatch(e, "product")) 	 return numeric_product.handle(e);
+    if (dispatch(e, "quotient")) 	 return numeric_quotient.handle(e);
+    if (dispatch(e, "remainder")) 	 return numeric_remainder.handle(e);
+    if (dispatch(e, "sort"))    	 return numeric_sort.handle(e);
     return this;
   }
 
@@ -65,15 +76,241 @@ public class numericHandler extends GenericHandler {
 
   numericHandler(ActiveElement e) {
     this();
-    // customize for element.
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    digits       = MathUtil.getInt(atts, "digits", -1);
+    extendedOp   = atts.hasTrueAttribute("extended");
+    long modulus = MathUtil.getLong(atts, "modulus", 0);
+
+    integerOp    = extendedOp || (modulus != 0)
+      		   || atts.hasTrueAttribute("integer");
+
+    // customize for element. integer, extended, modulus
   }
 }
 
-class numeric_ extends numericHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
+class numeric_sum extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
-    // do the work
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 0;
+    long   iresult = 0;
+    boolean intOp  = true;
+
+    Association a;
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult += a.doubleValue();
+      if (intOp) {
+	iresult += a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
   }
-  public numeric_(ActiveElement e) { super(e); }
-  static Action handle(ActiveElement e) { return new numeric_(e); }
+  public numeric_sum(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_sum(e); }
 }
+
+class numeric_difference extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 0;
+    long   iresult = 0;
+    boolean intOp  = true;
+
+    Association a;
+    if (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = a.doubleValue();
+      if (intOp) {
+	iresult = a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult -= a.doubleValue();
+      if (intOp) {
+	iresult -= a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
+  }
+  public numeric_difference(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_difference(e); }
+}
+
+class numeric_product extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 1.0;
+    long   iresult = 1;
+    boolean intOp  = true;
+
+    Association a;
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult *= a.doubleValue();
+      if (intOp)  {
+	iresult *= a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
+  }
+  public numeric_product(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_product(e); }
+}
+
+class numeric_quotient extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 1.0;
+    long   iresult = 1;
+    boolean intOp  = integerOp;
+
+    Association a;
+    if (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = a.doubleValue();
+      if (intOp) {
+	iresult = a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult /= a.doubleValue();
+      if (intOp) {
+	iresult /= a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
+  }
+  public numeric_quotient(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_quotient(e); }
+}
+
+
+class numeric_power extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 1.0;
+    long   iresult = 1;
+    boolean intOp  = true;
+
+    Association a;
+    if (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = a.doubleValue();
+      if (intOp) {
+	iresult = a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = Math.pow(fresult, a.doubleValue());
+      if (intOp) {
+	iresult = (long) Math.pow(iresult, a.longValue());
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
+  }
+  public numeric_power(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_power(e); }
+}
+
+
+class numeric_remainder extends numericHandler {
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    double fresult = 0;
+    long   iresult = 0;
+    boolean intOp  = true;
+
+    Association a;
+    if (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = a.doubleValue();
+      if (intOp) {
+	iresult = a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    while (args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      if (!integerOp && ! a.isIntegral()) intOp = false;
+      fresult = Math.IEEEremainder(fresult, a.doubleValue());
+      if (intOp) {
+	iresult %= a.longValue();
+	if (modulus != 0) iresult %= modulus;
+      }
+    }
+    if (intOp) {
+      putText(out, cxt, "" + iresult);
+    } else {
+      putText(out, cxt, MathUtil.numberToString(fresult, digits));
+    }
+  }
+  public numeric_remainder(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new numeric_remainder(e); }
+}
+
+class numeric_sort extends numericHandler {
+  protected boolean reverse  = false;
+  protected boolean caseSens = false;
+  protected boolean pairs    = false;
+
+  public void action(Input in, Context cxt, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Enumeration args = MathUtil.getNumbers(content);
+    unimplemented(in, cxt);
+  }
+  public numeric_sort(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    reverse  = atts.hasTrueAttribute("reverse");
+    caseSens = atts.hasTrueAttribute("case");
+    pairs    = atts.hasTrueAttribute("pairs");
+  }
+  static Action handle(ActiveElement e) { return new numeric_sort(e); }
+}
+

@@ -32,6 +32,7 @@ public class textHandler extends GenericHandler {
   public void action(Input in, Context cxt, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
     // Actually do the work. 
+    unimplemented(in, cxt);
   }
 
   /** This does the parse-time dispatching. <p>

@@ -121,6 +121,20 @@ public class BasicHandler extends AbstractHandler {
     implicitlyEnds.at(tag, tag);
   }
 
+  /** Set of elements which are permissible parents for this one. */
+  Table parents = null;
+
+  /** Return true if this kind of token implicitly ends the given one. */
+  public boolean isChildOf(String tag) {
+    return parents == null || tag != null && parents.has(tag);
+  }
+
+  /** Insert a tag into the parents table. */
+  public void setIsChildOf(String tag) {
+    if (parents == null) parents = new Table();
+    parents.at(tag, tag);
+  }
+
   protected boolean mayContainText = true;
 
   /** Return <code>true</code> if Text nodes are permitted in the content.
