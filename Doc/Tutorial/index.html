@@ -354,11 +354,12 @@ followed by an explanation of all PIA tags.
 
 &lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"&gt;&lt;HTML&gt;
 &lt;html&gt;&lt;head&gt;
-&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026"&gt;
 &lt;title&gt;Prototype Home Page&lt;/title&gt;
-&lt;a name="Swifty Home"&gt;&lt;/a&gt;
-&lt;header&gt;
 &lt;/head&gt;
+
+&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026"&gt;
+
+&lt;header&gt;Home Page&lt;/header&gt;
 
 &lt;form action="/Swifty/edit_page" method="POST"&gt;
 
@@ -495,20 +496,21 @@ associated with each form input. In order to see the effect of these edits
 in the home page, you need to select the Swifty link in the top right corner
 of the page. edit_page.xh is shown below, followed by a detailed description
 of the input processing.
-<PRE>&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0">
 
-&lt;html>&lt;head>
-&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-&lt;title>Home Page Editor&lt;/title>
-&lt;a name="Swifty Edit">&lt;/a>
-&lt;header>
-&lt;/head>
+<PRE>
+&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;Home Page Editor&lt;/title&gt;
+&lt;/head&gt;
 
-&lt;!-- Process form variables -->
+&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026"&gt;
+&lt;header&gt;Edit Page&lt;/header&gt;
 
-&lt;if>&lt;get name="FORM:submission"> &lt;then>
+&lt;!-- Process form variables --&gt;
 
-        &lt;if>&amp;FORM:fullname;&lt;then>
+&lt;if&gt;&lt;get name="FORM:submission"&gt; &lt;then&gt;
+
+        &lt;if&gt;&amp;FORM:fullname;&lt;then&gt;
               <A NAME="setfn">&lt;set name="AGENT:fname"&gt;&amp;FORM:fullname;&lt;/set&gt;</A>         
         &lt;/if&gt;       
                &lt;!-- Process links selections --&gt; 
