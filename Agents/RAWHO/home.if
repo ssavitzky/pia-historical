@@ -1,0 +1,25 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>RAWHO</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<h2> add link</h2>
+<read file=new_url.inc interform process>
+
+<h2> add  category</h2>
+<read file=add_cat.inc interform process>
+
+<h2> categories</h2>
+<get agent name=categories>
+<h3> links</h3>
+<get agent name=links>
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Thu Oct  9 18:29:45 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>
