@@ -18,6 +18,10 @@ public class ParseNodeArray implements EditableNodeList, Serializable {
   Vector elements = new Vector();
   protected long size() { return elements.size(); }
 
+  protected String sep = null;
+  public String getSep() { return sep; }
+  public void setSep(String v) { sep = v; }
+
   public ParseNodeArray(){
   }
 
@@ -174,6 +178,7 @@ public class ParseNodeArray implements EditableNodeList, Serializable {
     for (long i = 0; i < length; ++i) try {
       Node n = item(i);
       result += n.toString();
+      if (sep != null && i != length - 1) result += sep;
     }catch(NoSuchNodeException e){
     }
     return result;
