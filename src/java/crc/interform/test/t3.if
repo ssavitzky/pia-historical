@@ -35,9 +35,16 @@ should be '': '<test match="foo"> test match something  </test>' match
 should be '1': '<test match="foo"> test match foo something  </test>' match
 should be '': '<test exact match="foo"> test match foo something  </test>'
 should be '1': '<test exact match="foo">foo</test>'
+should be '1': '<test match=foo>this FOO stuff</test>'
+should be '': '<test case match=foo>this FOO stuff</test>'
+should be '1': '<test case match=FOO>this FOO stuff</test>'
 
+<h2>Subst</h2>
 
-<h2>Test problems with empty quotes inside quotes</h2>
+should be 'this did work': '<subst match=may result=did>this may work</subst>'
+should be 'this did nothing': '<subst match=may result=did>this did nothing</subst>'
+
+h2>Test problems with empty quotes inside quotes</h2>
 <blockquote>
  should be 'xxyyzz': '<if>1<then>xx<protect>yy</protect>zz</then></if>'
  should be 'xxzz': '<if>1<then>xx<protect></protect>zz</then></if>'
