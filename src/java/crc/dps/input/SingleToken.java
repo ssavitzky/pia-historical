@@ -1,4 +1,4 @@
-////// Wrapper.java: Wrap an Input as an InputFrame.
+////// SingleToken.java: an InputFrame for a single Token
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -12,8 +12,8 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
- * An InputFrame that is simply a wrapper for an Input that does not
- *	have its own links.
+ * An InputFrame that is simply a single Token.  The Token is delivered
+ *	exactly once. 
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -23,37 +23,35 @@ import java.util.NoSuchElementException;
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException */
 
-public class Wrapper extends AbstractInputFrame {
+public class SingleToken extends AbstractInputFrame {
   
   /************************************************************************
   ** Instance variables:
   ************************************************************************/
   
-  protected Input wrappedInput;
+  protected Token theToken;
 
   /************************************************************************
   ** Input operations:
   ************************************************************************/
 
-  public Token nextToken() { return wrappedInput.nextToken(); }
-
-  public boolean atEnd() { return wrappedInput.atEnd(); }
-
-  public Object nextElement() throws NoSuchElementException {
-    return wrappedInput.nextElement();
+  public Token nextToken() { 
+    Token temp = theToken;
+    theToken = null;
+    return temp;
   }
 
-  public boolean hasMoreElements() { return wrappedInput.hasMoreElements(); }
+  public boolean atEnd() { return theToken == null; }
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
 
-  public Wrapper() {}
+  public SingleToken() {}
 
-  public Wrapper(Input anInput, InputStack nextFrame) {
+  public SingleToken(Token aToken, InputStack nextFrame) {
     super(nextFrame);
-    wrappedInput = anInput;
+    theToken = aToken;
   }
 
 }

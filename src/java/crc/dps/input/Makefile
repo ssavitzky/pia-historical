@@ -6,10 +6,14 @@ PACKAGE=crc.dps.input
 TOPDIR=../../..
 
 FILES = \
+	ExpandToken.java \
+	SingleToken.java \
 	Wrapper.java
 
 include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
+ExpandToken.class: ../AbstractInputFrame.java  ../Input.java ../Token.java
+SingleToken.class: ../AbstractInputFrame.java  ../Input.java
 Wrapper.class: ../AbstractInputFrame.java  ../Input.java
