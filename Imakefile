@@ -39,12 +39,8 @@ SUBDIRS 	=  Doc bin lib /* pub src */
 
 /*** Symbolic Links ***/
 
-all::	Agents lib bin lib/perl bin/pia
+all::	lib bin lib/perl lib/java bin/pia
 	@echo "symlinks made"
-
-Agents: src/Agents
-	ln -s src/Agents .
-
 
 
 /*** Standard Imake stuff ***/
