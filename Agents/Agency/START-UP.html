@@ -70,8 +70,8 @@ You can get additional installation forms from:
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="My">
        type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="~/.pia"> -- note the use of
-       "<code>~</code>", which expands to your home directory<br>
+       root:<input name="root" value="&usrDIR;"> -- note the use of an
+       entity, ``&amp;usrDIR;'', which gets expanded in the startup file.<br>
        <input type="submit" value="install"><br>
        </form>
   <dt> dofs/PIA
@@ -81,6 +81,14 @@ You can get additional installation forms from:
        root:<input name="root" value="&piaDIR;"> -- note the use of an
        entity, ``&amp;piaDIR;'', which gets expanded in the startup file.<br>
        <input type="submit" value="install"><br>
+       </form>
+  <dt> dofs/Home
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Home">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/"> -- note the use of
+       "<code>~</code>", which expands to your home directory<br>
        </form>
 </dl>
 
