@@ -19,6 +19,7 @@ import crc.pia.HTTPRequest;
 
 public class Accepter extends Thread {
   public boolean DEBUG = false;
+  public boolean TRACE = false;
   /**
    * The default port number if non is given.
    */
@@ -77,8 +78,9 @@ public class Accepter extends Thread {
     try{
       while( !finish && listenSocket != null ){
 	Socket clientSocket = listenSocket.accept();
-	if( listenSocket != null && clientSocket != null )
+	if( listenSocket != null && clientSocket != null ){
 	  handleConnection( clientSocket );
+	}
       }
     }catch(IOException e){
       if (DEBUG)
@@ -98,6 +100,8 @@ public class Accepter extends Thread {
    
     InetAddress iaddr = clientSocket.getInetAddress();
     int         port  = clientSocket.getPort();
+
+
 
     String hostName = iaddr.getHostName();
     if ( DEBUG ){
@@ -144,7 +148,7 @@ public class Accepter extends Thread {
       Pia.instance().debug( this, "connection from : "+ hostName + " at: " + String.valueOf( port ) );
       Pia.instance().log( "connection from : "+ hostName + " at: " + String.valueOf( port ) );
 
-      Transaction ts = createRequestTransaction(hostName, port, clientSocket);
+      createRequestTransaction(hostName, port, clientSocket);
     }
 
   }
@@ -153,11 +157,11 @@ public class Accepter extends Thread {
   * Creates a transaction from the client's request (will be private).
   * @return a PIA transaction. 
   */ 
- public Transaction createRequestTransaction ( String addr, int port, Socket client) {
+ public void createRequestTransaction ( String addr, int port, Socket client) {
     // Create a request transaction
 
     Machine machine =  new Machine(addr, port, client);
-    return new HTTPRequest( machine );
+    new HTTPRequest( machine );
  }
 
   /**
@@ -174,7 +178,7 @@ public class Accepter extends Thread {
     }
     if( DEBUG )
       System.out.println("Accepter: listening on port" + port);
-    this.start();
+     this.start();
   }
 
   /**
@@ -184,12 +188,8 @@ public class Accepter extends Thread {
   public Accepter( int port ) throws IOException{
     if(port == 0) port = DEFAULT_PORT;
 
-    if (DEBUG)
-      System.out.println("Server starts on port" + String.valueOf(port));
-    else{
-      Pia.instance().debug(this, "Server starts on port" + String.valueOf(port));
-      Pia.instance().log("Server starts on port" + String.valueOf(port));
-    }
+
+    System.out.println("Accepter: listening on port" + port);
 
     this.port = port;
     try {
@@ -197,18 +197,34 @@ public class Accepter extends Thread {
     }catch(IOException e){
       throw e;
     }
-    if( DEBUG )
-      System.out.println("Accepter: listening on port" + port);
+
     this.start();
   }
 
 
- /**
-  * Create Accepter for debugging.
-  * 
-  */ 
+  /**
+   * usage
+   */
+  private static void usage(){
+    System.out.println("This test program is used in conjunction with a client app in the test directory.");
+    System.out.println("The Accepter accepts data from a client, echoes it, and sends it back to the client.");
+    System.out.println("To run the test case, type java crc.pia.Accepter 8888 or any other port #. ");
+
+  }
+  
+  /**
+   * Create Accepter for debugging.
+   * 
+   */ 
   public static void main(String[] args){
     int port = 0;
+    Accepter accepter = null;
+    
+    if(args.length == 0){
+      usage();
+      System.exit(1);
+    }
+    
     if(args.length ==1){
       try {
 	port = Integer.parseInt(args[0]);
@@ -217,12 +233,14 @@ public class Accepter extends Thread {
       }
     }
     try{
-      new Accepter(port);
+      accepter = new Accepter(port);
+      accepter.DEBUG = true;
     }catch(IOException e){;}
     
   }
 
 }
+
 
 
 
