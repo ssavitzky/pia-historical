@@ -458,8 +458,8 @@ name=AuthenticatedUser></set></else></if>
 	  <else><set name=inbox><get name=myuser attr=type>.<get name=nuser></set></else>
 	</if>
       </then>
-      <else><set name=inbox><get name=myuser</set>
-	<set name=nuser><get name=myuser</set>
+      <else><set name=inbox><get name=myuser></set>
+	<set name=nuser><get name=myuser></set>
       </else>
     </if>
     <if> <get agent name=notified key=&nuser;> <then></then>
