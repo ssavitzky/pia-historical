@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+#	$Id$
 
 ###copy all files in from $1 to $2, create jpegs and makeTOC
 $quantfile = "~/.pia/Photo_Album/.quant";  # saves time for thumbnails
@@ -35,6 +36,8 @@ $to = "~/.pia/Photo_Album"  unless $to;
 $to = "$to/$today";
 $ct = 0;
 $tonew = $to;
+
+print "copy_j6i $from $to\n";
 
 ## check for existing directory
 while (-e $to) {		# Fix this for better filenames
