@@ -11,6 +11,7 @@ package crc.pia;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.net.URLEncoder;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -35,6 +36,7 @@ import crc.ds.Queue;
 import crc.ds.Features;
 import crc.util.Utilities;
 import crc.tf.Registry;
+
 
 public class  HTTPRequest extends Transaction {
 
@@ -199,7 +201,7 @@ public class  HTTPRequest extends Transaction {
   /**
    * Create a FormContent from fromMachine
    */
-  protected void initializeContent(){
+  protected void initializeContent() throws PiaRuntimeException{
     InputStream in;
     String test = null;
     String ztype= null;
@@ -218,6 +220,13 @@ public class  HTTPRequest extends Transaction {
 
       if( contentObj != null )
 	contentObj.setHeaders( headers() );
+      else{
+	Pia.instance().debug(this, "Unknown header type...");
+	String msg = "Unknown header type...\n";
+	throw new PiaRuntimeException (this
+				       , "initializeContent"
+				       , msg) ;
+      }
 
       Pia.instance().debug(this, "before set param");
       setParam();
@@ -427,11 +436,13 @@ public class  HTTPRequest extends Transaction {
     Machine destination = toMachine();
   
     if( destination == null )
-      errorResponse(null);
+      errorResponse(500, null);
     try{
       destination.getRequest( this, resolver );
     }catch(PiaRuntimeException e){
-      errorResponse( e.getMessage() );
+      errorResponse( 500, e.getMessage() );
+    }catch(UnknownHostException e2){
+      errorResponse( 400 , null );
     }
     
   }
@@ -441,7 +452,8 @@ public class  HTTPRequest extends Transaction {
    *
    *
    */
-  protected void errorResponse(String msg){
+  protected void errorResponse(int code, String msg){
+    int mycode = code;
     Pia.instance().debug(this, "This is the err msg :"+msg);
     StringBufferInputStream foo = null;
     String masterMsg = "Agency could not retrieve " + requestURL() + ": ";
@@ -451,15 +463,18 @@ public class  HTTPRequest extends Transaction {
       foo = new StringBufferInputStream( masterMsg  );
     }
     else{
-      masterMsg += ".\n";
+      String standardMsg = standardReason( mycode );
+      if ( standardMsg == null )
+	masterMsg += ".\n";
+      else
+	masterMsg = standardMsg;
       foo = new StringBufferInputStream( masterMsg );
     }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine, toMachine(), ct, false);
     
-    response.setStatus( 404 );
-    response.setReason( "Not found" );
+    response.setStatus( mycode );
     response.setContentType( "text/plain" );
     response.setContentLength( masterMsg.length() );
     Pia.instance().debug(this, "The header : \n" + response.headersAsString() );
@@ -777,19 +792,24 @@ public class  HTTPRequest extends Transaction {
    */
   public void run(){
     if(!DEBUG){
+      try{
+	// make sure we have the header information
+	if(headersObj ==  null) initializeHeader();
+	
+	Pia.instance().debug(this, "Got a head...");
 
-      // make sure we have the header information
-      if(headersObj ==  null) initializeHeader();
-    
-      Pia.instance().debug(this, "Got a head...");
-
-      // and the content
-      if( method().equalsIgnoreCase( "POST" ) ){
-	if(contentObj ==  null) initializeContent();
-	Pia.instance().debug(this, "Got a body...");
-	// incase body needs to update header about content length
-	if( headersObj!= null && contentObj != null )
-	  contentObj.setHeaders( headersObj );
+	// and the content
+	if( method().equalsIgnoreCase( "POST" ) ){
+	  if(contentObj ==  null) initializeContent();
+	  Pia.instance().debug(this, "Got a body...");
+	  // incase body needs to update header about content length
+	  if( headersObj!= null && contentObj != null )
+	    contentObj.setHeaders( headersObj );
+	}
+      }catch (PiaRuntimeException e){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();      
+	notifyThreadPool();
       }
 
       // now we are ready to be resolved
@@ -825,24 +845,30 @@ public class  HTTPRequest extends Transaction {
       
       
       // cleanup?
-      ThreadPool tp = Pia.instance().threadPool();
-      tp.notifyDone( executionThread );
+      notifyThreadPool();
       
 
     }
     else{
       // make sure we have the header information
       Pia.instance().debug(this, "Running HTTPRequest's run method");
-      if(headersObj ==  null) initializeHeader();
-      Pia.instance().debug(this, "Got a head...");
+
+      try{
+	if(headersObj ==  null) initializeHeader();
+	Pia.instance().debug(this, "Got a head...");
     
-      // and the content
-      if(contentObj ==  null) initializeContent();
-      Pia.instance().debug(this, "Got a body...");
-      // incase body needs to update header about content length
-      if( headersObj!= null && contentObj != null )
-	contentObj.setHeaders( headersObj );
-   
+	// and the content
+	if(contentObj ==  null) initializeContent();
+	Pia.instance().debug(this, "Got a body...");
+	// incase body needs to update header about content length
+	if( headersObj!= null && contentObj != null )
+	  contentObj.setHeaders( headersObj );
+      }catch (PiaRuntimeException e){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();      
+      }      
+
+
       if( contentObj != null ){
 	boolean done = false;
 	while( ! done ){
