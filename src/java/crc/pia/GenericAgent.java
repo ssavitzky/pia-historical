@@ -25,7 +25,8 @@ import crc.ds.Features;
 import crc.util.regexp.RegExp;
 import crc.util.regexp.MatchInfo;
 import java.util.Enumeration;
-
+import crc.interform.Run;
+import w3c.www.http.HTTP;
 
 public class GenericAgent implements Agent {
   
@@ -408,9 +409,8 @@ public class GenericAgent implements Agent {
    */
   public void respond(Transaction trans, Resolver res) throws PiaRuntimeException{
     URL zurl = trans.requestURL();
-    String url = zurl.getFile();
 
-    String reply = respondToInterform( trans, url, res );
+    String reply = respondToInterform( trans, zurl, res );
     InputStream in = null;
     if( reply != null  ){
       in = new StringBufferInputStream( reply );
@@ -422,7 +422,8 @@ public class GenericAgent implements Agent {
       response.setContentObj( c );
       response.startThread();
     }else{
-      throw new PiaRuntimeException(this, "respond", "Bad reply.");
+      //interformErr( request, url );
+      throw new PiaRuntimeException(this, "respond", "No InterForm file found for "+trans.url());
     }
   }
 
@@ -488,11 +489,12 @@ public class GenericAgent implements Agent {
    * of inheritance.  Allow for the fact that the user may be trying
    * to override the interform by putting it in piaUsrAgentsStr/name/.
    */
-  public String findInterform(URL url, boolean noDefault){
-    if(  url == null ) return null;
+  public String findInterform( URL url, boolean noDefault ){
+    if( url == null ) return null;
     Vector pathVector = new Vector();
     int index = -1;
     String zform = null;
+
 
     String host =  url.getHost();
     if( host!= null && !host.equalsIgnoreCase( name() ))
@@ -634,17 +636,64 @@ public class GenericAgent implements Agent {
 }
 
   /**
+   * Send error message for not found interform file
+   */
+  private void interformErr( Transaction req, URL url){
+    String msg = "No InterForm file found for "+url.toExternalForm();
+    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
+    Transaction abort = new HTTPResponse(Pia.instance().thisMachine, req.fromMachine(), ct, false);
+    abort.setStatus(HTTP.NOT_FOUND);
+    abort.setContentType( "text/plain" );
+    abort.setContentLength( msg.length() );
+    abort.startThread();
+  }
+
+  /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.  It can pass either a full
-   * URL or a path.
+   * need to modify the URL in the request.  It can pass a full
+   * URL.
    */
-    public String respondToInterform(Transaction t, String url, Resolver res){
-      String html = "<html>\n <head>\n  <title>Generic Agent</title>\n </head>\n" +
-	"<body>\n <center>\n  <h1>respond to interform</h1>\n </center>\n" +
-	"Hello World\n" + "</body>\n</html>\n";
-      return html;
+  public String respondToInterform(Transaction request, URL url, Resolver res){
+    Pia.instance().debug(this, "respondToInterform url version");
+    URL myurl;
+    String file;
+    String interformOutput = null;
+
+    if(request.method().equalsIgnoreCase("PUT") && url == null){
+      //return respondToInterformPut( request );
     }
+
+    if( url != null )
+      myurl = url;
+    else
+      myurl = request.requestURL();
+    file = findInterform( myurl, false );
+    Pia.instance().debug(this, "The path of interform is -->"+file);
+
+    if( file == null )
+      //send error response
+      return null;
+    else{
+      String lfile = file.toLowerCase();
+
+      if( lfile.endsWith(".if") ){
+	// If find_interform substituted .../home.if for .../ 
+	// we have to tell what follows that it's an interform.
+	request.assert("interform");
+      }
+      if( request.test("interform") ){
+	interformOutput = Run.interformFile(this, file, request, res);
+      }
+      
+    }
+
+    return interformOutput;
+      
+
+    
+  }
+  
 
   /**
    * Respond to a request directed at one of an agent's interforms.
@@ -688,6 +737,10 @@ public class GenericAgent implements Agent {
  }
 
 }
+
+
+
+
 
 
 
