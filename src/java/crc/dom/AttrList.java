@@ -106,6 +106,13 @@ public class AttrList extends AbstractNamedList implements AttributeList {
    * Size of the attribute list.
    */
   public long getLength(){ return getItemListLength();}
+
+  /**
+   * @return node enumerator
+   */
+  NodeEnumerator getEnumerator(){
+    return getListEnumerator();
+  }
 }
 
 
