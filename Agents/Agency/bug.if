@@ -1,0 +1,35 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>bug page</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<read interform file="heading.inc" process>
+
+<form action="/Bughistory/buglog.if" method=post>
+Platform:<select name="machine">
+	<option>Suns
+	<option>Linux
+	</select>
+<br>
+
+Your email address:
+<input name="username" value=""><br>
+
+Please describe exactly what actions triggered the bug<br>
+and the precise symptoms of the bug:
+<p>
+<textarea name="problem" rows="10" columns="100"></textarea><br>
+<input name="piaversion" value="0.9" type=hidden>
+<input name="patchlevel" value="0" type=hidden>
+<input type="SUBMIT" value="Submit bug">
+</form>
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+<hr>
+<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<b>$Id$</b><br>
+</body></html>
