@@ -119,7 +119,24 @@ public class Tokens extends List implements SGML {
 
   /** Convert to a single token if it's a singleton. */
   public SGML simplify() {
-    return (nItems() == 1) ? itemAt(0) : this;
+    int size;
+    size = nItems();
+    
+    if(size < 1) return this;
+    
+    if(size == 1) return itemAt(0);
+    boolean skip0 = false;
+    boolean skipn = false;
+    int start=0;
+    int stop=size;
+
+    if(Util.removeSpaces(itemAt(0)).isEmpty()) start=1;
+    if(Util.removeSpaces(itemAt(nItems()-1)).isEmpty()) stop=size - 1;
+    if(stop <= start) return this;  //an empty object?
+    if(stop - start == 1) return  itemAt(start);
+    if(stop != size || start != 0) return copy(start,stop);
+    //default is this
+    return this;
   }
 
   /** The object's content.  This is the same as this if isList(); 
@@ -185,22 +202,60 @@ public class Tokens extends List implements SGML {
       but specifying number or range gets that item or list of items
       useful for get in interforms */
   public SGML attr(Index name) {
+    if(name.isExpression()){
+      return attrExpression(name);
+    }
     if(name.isRange()){
       int[] indices=name.range(nItems());
       if(indices.length == 2){
         //start-stop
+//    System.out.println(" tokens getting" + indices.length);
+    
+
 	return copy(indices[0],indices[1]);
       } else{
 	//a-b-c
+//    System.out.println(" tokens getting" + indices.length);
 	return copy(indices);
       }
     }
     if(name.isNumeric()){
+//    System.out.println(" tokens getting" + name.numeric());
       return itemAt(name.numeric());
     }
     //otherwise null
     return null;
   }
+
+/** return contents which meet expression
+     tokens only understand size
+ */
+  SGML attrExpression(Index expression)
+  {
+    //look for keywords,tag matches,etc.
+    Enumeration keywords=expression.expression().elements();
+    int[] indices;  // integer pointers to items that match expression
+    Tokens  result =  new Tokens();
+    
+    while(keywords.hasMoreElements()){
+      String word=(String)keywords.nextElement();
+      if(word == "size"){
+        //check for null content     
+	result.addItem(new Text( new Integer(nItems()).toString()));
+      } else if (word == "tag"){
+        String  value = (String)keywords.nextElement();
+        List locations = tagLocations(value);
+	indices=new int[locations.nItems()];
+	SGML mytokens = copy(indices);
+	
+	result.append(mytokens);
+      }  
+    }
+    return result;
+    
+  }
+  
+
   
   /**  set an attribute by name.  Lists don't have any names,so interpret
         name as number to insert at.*/
@@ -381,6 +436,7 @@ public class Tokens extends List implements SGML {
   /** copy specified items into a new tokens */
    public Tokens copy(int  start, int stop) {
      Tokens result = new Tokens();
+//     System.out.println("copying from " + start + stop);
      
     for (int i =  start; i <   stop; ++i) 
       result.addItem(itemAt(i));
