@@ -3,11 +3,13 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.pia;
 
+import java.io.InputStream;
+import java.net.URL;
+
 import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
-import java.net.URL;
 
 
 import crc.ds.Features;
@@ -204,6 +206,27 @@ public interface Agent extends Attrs {
    *       User must specify from machine.
    */
   public void createRequest(Machine m, String method, String url, String queryString);
+
+  /** 
+   * Send an error message that includes the agent's name and type.
+   */
+  public void sendErrorResponse( Transaction req, int code, String msg );
+
+  /**
+   * Send error message for not found interform file
+   */
+  public void respondNotFound( Transaction req, URL url);
+
+  /**
+   * Send error message for not found interform file
+   */
+  public void respondNotFound( Transaction req, String path);
+
+  /**
+   * Respond to a transaction with a stream of HTML.
+   */
+  public void sendStreamResponse ( Transaction trans, InputStream in );
+
 }
 
 
