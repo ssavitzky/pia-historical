@@ -218,6 +218,19 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  attribute. 
     </doc>
   </define>
+  <define attribute=mode optional>
+    <doc> This specifies the read-write status of an external entity: one of
+	  <code>read-only</code> (default), <code>read-write</code>,
+	  <code>write</code>, or <code>append</code>. 
+    </doc>
+  </define>
+  <define attribute=write-mode optional>
+    <doc> This specifies handling of writes if the specified file does or does
+	  not exist.  Values are <code>create</code> or <code>rewrite</code>;
+	  the default is to create a file if it does not exist, and rewrite it
+	  if it does exist.
+    </doc>
+  </define>
   <define attribute=NDATA optional>
     <doc> This specifies that the entity contains non-parsed data; the value
 	  specifies the name of the data's <em>notation</em>.
@@ -1439,10 +1452,10 @@ open-ended; tagset authors are free to define new ones as needed.
 <define element=connect handler >
   <doc> Perform an HTTP request to connect to a remote or local resource.  The
 	content of the element becomes the data content of a <code>PUT</code>
-	(write) or <code>POST</code> (append) request.
+	(write) or <code>POST</code> (append) request.  
 
 	<p>If a <tag>URL</tag> and/or <tag>headers</tag> element appear before
-	any nonblank content, they are used for the connection. 
+	any nonblank content, they are used for the connection.
   </doc>
   <define attribute=method optional>
     <doc> The request ``method''.  Default is <code>GET</code>.  Any valid HTTP
@@ -1455,6 +1468,19 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> The URL of the resource to which the connection is being made.
     </doc>
   </define>
+  <define attribute=mode optional>
+    <doc> This specifies the read-write status of an external entity: one of
+	  <code>read-only</code> (default), <code>read-write</code>,
+	  <code>write</code>, or <code>append</code>. 
+    </doc>
+  </define>
+  <define attribute=write-mode optional>
+    <doc> This specifies handling of writes if the specified file does or does
+	  not exist.  Values are <code>create</code> or <code>rewrite</code>;
+	  the default is to create a file if it does not exist, and rewrite it
+	  if it does exist.
+    </doc>
+  </define>
   <define attribute=tagset optional>
     <doc> The tagset with which to process the result of the request.  The
 	  default is the current tagset.  An <em>empty</em> value results in
@@ -1465,6 +1491,43 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> Specifies the name of an entity to be defined, effectively caching
 	  the resource.  If not specified, no entity will be defined and the
 	  resource will not be cached.
+    </doc>
+  </define>
+  <define attribute=status optional>
+    <doc> If present, the result returned is an attribute list identical to
+	  that returned by the <tag>status</tag> operation.  A connection is
+	  established, if possible.  The content of the connected resource can
+	  be found in the entity specified by the <code>entity</code>
+	  attribute. 
+    </doc>
+  </define>
+</define>
+
+
+<h3>Status</h3>
+<define element=status handler empty>
+  <doc> Query the status of a connection or resource.  The result is an
+	<em>attribute list</em>.  It can be assigned to an entity, which can
+	then be used as a namespace.  For example,
+	<pre>
+	  &lt;set name=foo&gt;&lt;status src=bar.html&gt;&lt;/&gt;
+	  &amp;foo:exists;
+	</pre>
+	A partial list of attributes includes: <code>exists, path, host-name,
+	last-modified, content-type, ...</code> In addition, files may have
+	<code>readable, writeable, is-directory</code> and directories have
+	<code>files</code>. 
+  </doc>
+  <define attribute=src optional>
+    <doc> The URL of the resource being queried.  If the resource is remote,
+	  a <code>HEAD</code> request is sent.  If local, the filesystem is
+	  queried. 
+    </doc>
+  </define>
+  <define attribute=entity optional>
+    <doc> Specifies the name of an entity that has been either defined as an
+	  external entity, or created as a connection handle by a
+	  <tag>connect</tag> or <tag>include</tag> tag.
     </doc>
   </define>
 </define>
