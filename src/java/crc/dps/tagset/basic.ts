@@ -1181,7 +1181,8 @@ example).
   </define>
   <define attribute=sort optional handler>
     <doc> The list of items in the content is sorted according to their text
-	  content.  Markup is ignored for sorting, but retained for output.
+	  content.  Markup is ignored for sorting, but retained for output
+	  unless the <code>text</code> attribute is also present.
     </doc>
   </define>
   <define attribute=reverse optional>
@@ -1197,24 +1198,24 @@ example).
     </doc>
   </define>
   <define attribute=sep optional>
-    <doc> Specifies the separator to be used between sorted or split items.
-	  If not specified, the implied separator is a single space.
+    <doc> Specifies the separator to be inserted between items in the result
+	  of a <code>sort</code> or <code>split</code>.  If not specified, no
+	  separator is inserted and the items are simply jammed together, but
+	  remain separate nodes.  This is usually a bad idea unless the
+	  <tag>text</tag> element is enclosed in something else, like a
+	  <tag>foreach</tag> or <tag>select</tag>.
     </doc>
   </define>
   <define attribute=split handler optional>
-    <doc> Splits the text into ``tokens'' (words) using the specified
-	  separator.  
+    <doc> Splits the text into ``tokens'' (words) on whitespace and element
+	  boundaries.  With the <code>sep</code> attribute present, the
+	  separator is inserted between each token in the result.  The tokens
+	  and the separators remain distinct Text nodes unless the
+	  <code>join</code> attribute is also present.
     </doc>
   </define>
   <define attribute=join handler optional>
-    <doc> Joins items in the content by separating them with the given
-	  separator.  The items, and the separators, remain distinct Text
-	  nodes. 
-    </doc>
-  </define>
-  <define attribute=merge handler optional>
-    <doc> Merges items in the content by separating them with the given
-	  separator, then concatenating them into a single Text node.
+    <doc> Joins items in the content by merging adjacent Text nodes.
     </doc>
   </define>
 </define>
