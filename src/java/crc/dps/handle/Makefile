@@ -67,3 +67,9 @@ fixup:
 
 unfix:
 	for f in *.java ; do if [ -f $$f.bak ]; then mv -f $$f.bak $$f; fi ; done
+
+### Dependencies:
+
+AbstractHandler.class: ../Handler.java
+BasicHandler.class: AbstractHandler.java ../Handler.java
+GenericHandler.class: BasicHandler.java AbstractHandler.java ../Handler.java

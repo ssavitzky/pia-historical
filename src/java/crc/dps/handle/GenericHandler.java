@@ -42,14 +42,14 @@ public class GenericHandler extends BasicHandler {
   /** Performs actions associated with an Element's start tag Token.  
    *	Normally returns the original Token, but it may replace it with
    *	a new one or return <code>null</code>.  Called only for a Token
-   *	that represents the start tag of an Element with content.
+   *	that represents the start tag of an Element.
    *	Called only if the Processor is expanding.
    *
    * @param t the Token for which actions are being performed.
    * @param p the Processor operating on this Token.
-   * @return the original Token, a replacement, or  <code>null</code>.
+   * @return a Node to add to the parse tree.
    */
-  public Token startAction(Token t, Processor p) {
+  public Node startAction(Token t, Processor p) {
     return t;
   }
 
@@ -63,7 +63,7 @@ public class GenericHandler extends BasicHandler {
    * @param p the Processor operating on this Token.
    * @return the original Token, a replacement, or <code>null</code>.  */
   public Token endAction(Token t, Processor p) {
-    return t;
+    return p.result(t);
   }
 
   /** Performs actions associated with an complete Node's Token.
@@ -78,7 +78,7 @@ public class GenericHandler extends BasicHandler {
    * @param p the Processor operating on this Token.
    * @return the original Token, a replacement, or <code>null</code>.  */
   public Token nodeAction(Token t, Processor p) {
-    return t;
+    return p.result(t);
   }
 
   /** Returns a new, clean Node corresponding to the given Token.

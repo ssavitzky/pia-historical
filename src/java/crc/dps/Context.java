@@ -5,6 +5,7 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.Element;
 
 /**
  * The interface for a document parsing or processing context stack. <p>
@@ -182,4 +183,61 @@ public interface Context {
    */
   public void appendNodes(NodeList aNodeList);
 
+  /************************************************************************
+  ** Context Stack construction:
+  ************************************************************************/
+
+  /** Construct a new Context linked to this one.  <p>
+   *
+   *	Recursive operations like <code>expand</code> use this to create a new
+   *	evaluation stack frame when descending into an Element.
+   */
+  public Context newContext(Node aNode, String aTagName);
+
+  /************************************************************************
+  ** Expansion:
+  ************************************************************************/
+
+  /** Expand a node. 
+   *	Ordinary nodes are deep-copied.  Entities are replaced by their
+   *	values, if they have any.  Tokens know how to expand themselves.
+   *	Entities and tokens in the values of Attributes are also expanded.
+   */
+  public Token expand(Node aNode);
+
+  /** Expand all the nodes in a NodeList. */
+  public Token expand(NodeList aNodeList);
+
+  /** Called by an expansion Handler in order to return <code>aNode</code>
+   *	as its result.  The return value is <code>null</code>, allowing
+   *	the Handler to end with <br>
+   *	<code>return result(<em>aNode</em>);</code><p>
+   *
+   * @param aNode a Node to be appended to the parse tree under construction,
+   *	and/or passed to the Output.
+   * @return <code>null</code>.
+   */
+  public Token result(Node aNode);
+
+  /** Called by an expansion Handler in order to return <code>aNode</code>
+   *	as its result.  The return value is <code>null</code>, allowing
+   *	the Handler to end with <br>
+   *	<code>return result(<em>aNode</em>);</code><p>
+   *
+   * @param aNode a Node to be appended to the parse tree under construction.
+   * @param aToken a Token to be passed to the output.
+   * @return <code>null</code>.
+   */
+  public Token result(Node aNode, Token aToken);
+
+  /** Called by an expansion Handler in order to return <code>aNodeList</code>
+   *	as its result.  The return value is <code>null</code>, allowing
+   *	the Handler to end with <br>
+   *	<code>return results(<em>aNodeList</em>);</code><p>
+   *
+   * @param aNodeList a NodeList, the contents of which are to be appended to
+   *	the parse tree under construction, and/or passed to the Output.
+   * @return <code>null</code>.
+   */
+  public Token results(NodeList aNodeList);
 }

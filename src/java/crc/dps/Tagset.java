@@ -6,6 +6,8 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.DocumentType;
+import crc.dom.DOMFactory;
+
 import java.util.Enumeration;
 
 /**
@@ -35,7 +37,7 @@ import java.util.Enumeration;
  * @see crc.dps.Input 
  * @see crc.dom.Node */
 
-public interface Tagset {
+public interface Tagset extends DOMFactory {
 
   /************************************************************************
   ** Context:

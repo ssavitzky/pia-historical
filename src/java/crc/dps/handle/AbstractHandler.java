@@ -10,6 +10,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.Token;
 import crc.dps.Context;
+import crc.dps.Processor;
 import crc.dps.Handler;
 
 /**
@@ -39,20 +40,19 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
   ************************************************************************/
 
   /** The default action is simply to return the Token. */
-  public Node startAction(Token t, Context p) {
+  public Node startAction(Token t, Processor p) {
     return t;
   }
 
   /** The default action is simply to return the Token. */
-  public Node endAction(Token t, Context p) {
-    return t;
+  public Token endAction(Token t, Processor p, Node n) {
+    return p.result(n);
   }
 
   /** The default action is simply to return the Token. */
-  public Node nodeAction(Token t, Context p) {
-    return t;
+  public Token nodeAction(Token t, Processor p) {
+    return p.result(t);
   }
-
 
   /** Returns a new, clean Node corresponding to the given Token.
    *	The new Node is suitable for incorporating into a new
@@ -63,7 +63,7 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public abstract Node createNode(Token t);
+  public abstract Node createNode(Token t, Context p);
 
   /** Returns a new, clean Node corresponding to the given Token,
    *	created using the given DOMFactory. <p>

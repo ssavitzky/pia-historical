@@ -12,6 +12,11 @@ import crc.dom.DOMFactory;
 import crc.dps.Token;
 import crc.dps.Handler;
 import crc.dps.Context;
+import crc.dps.Processor;
+
+import crc.dps.BasicTokenList;
+import crc.dps.ParseStack;
+import crc.dps.Util;
 
 /**
  * Basic implementation for a Node Handler. <p>
@@ -41,26 +46,46 @@ public class BasicHandler extends AbstractHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** The default action is simply to return the Token. */
-  public Node startAction(Token t, Context p) {
+  /** The default action is simply to return the Token as the Node
+   *	being constructed.
+   */
+  public Node startAction(Token t, Processor p) {
+    t.setNode();
     return t;
   }
 
-  /** The default action is simply to return the Token. */
-  public Node endAction(Token t, Context p) {
-    return t;
+  /** The default action is simply to pass the constructed Node to the output
+   *	via <code>p.result</code>, and return null.
+   */
+  public Token endAction(Token t, Processor p, Node n) {
+    return (t.isEndTag())? p.result(n, t) : p.result(n);
   }
 
-  /** The default action is simply to return the Token. */
-  public Node nodeAction(Token t, Context p) {
-    return t;
+  /** The default action is simply to pass the Token to the output via
+   *	<code>p.result</code>, and return null.
+   */
+  public Token nodeAction(Token t, Processor p) {
+    // === nodeAction could be more efficient knowing it's in a processor
+    return expandAction(t, p);
   }
 
   /** Returns the result of ``expanding'' the given Token. 
    * @return a (possibly empty) NodeList of results.
    */
-  public NodeList expand(Token t, Context c) {
-    return t.expand(c);
+  public Token expandAction(Token t, Context c) {
+    // create a new, suitable node
+    Node node = createNode(t, c);
+    if (! node.hasChildren()) return c.result(node);
+
+    // create a new context in which to expand the children.
+    Context cc = c.newContext(node, t.getTagName());
+    for (Node child = getFirstChild();
+	 child != null;
+	 child = child.getNextSibling()) {
+      if (child instanceof Token) cc.expand((Token)child);
+      else			  cc.result(child);
+    }
+    return c.result(node);
   }
 
 
@@ -73,9 +98,8 @@ public class BasicHandler extends AbstractHandler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public Node createNode(Token t) {
-    // Since we don't know what factory to use, just clone the node.
-    return t.shallowCopy();
+  public Node createNode(Token t, Context c) {
+    return Util.expandAttrs(this, c.getHandlers(), c.getEntities());
   }
 
   /** Returns a new, clean Node corresponding to the given Token,

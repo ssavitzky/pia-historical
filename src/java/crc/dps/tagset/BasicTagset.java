@@ -7,6 +7,9 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.DocumentType;
 import crc.dom.BasicElement;
+import crc.dom.DOMFactory;
+import crc.dom.BasicDOMFactory;
+
 import java.util.Enumeration;
 
 import crc.dps.Tagset;
@@ -15,6 +18,9 @@ import crc.dps.Handler;
 import crc.dps.Parser;
 import crc.dps.Processor;
 import crc.dps.BasicToken;
+
+import crc.ds.Table;
+import crc.ds.List;
 
 /**
  * The basic implementation for a Tagset -- a lookup table for Handlers.
@@ -33,6 +39,42 @@ import crc.dps.BasicToken;
  * @see crc.dom.Node */
 
 public class BasicTagset extends BasicElement implements Tagset {
+
+  /************************************************************************
+  ** DOM Factory:
+  ************************************************************************/
+
+  /** The DOMFactory to which all construction requests are delegated. */
+  protected DOMFactory factory = new BasicDOMFactory();
+
+  public crc.dom.Document createDocument() {
+    return factory.createDocument();
+  }
+
+  public crc.dom.DocumentContext createDocumentContext() { 
+    return factory.createDocumentContext();
+  }
+
+  public crc.dom.Element createElement(String tagName,
+				       crc.dom.AttributeList attrs) {
+    return factory.createElement(tagName, attrs);
+  }
+
+  public crc.dom.Text createTextNode(String data) {
+    return factory.createTextNode(data);
+  }
+
+  public crc.dom.Comment createComment(String data) {
+    return factory.createComment( data );
+  }
+
+  public crc.dom.PI createPI(String name, String data) {
+    return factory.createPI( name, data );
+  }
+
+  public crc.dom.Attribute createAttribute(String name, NodeList value){
+    return factory.createAttribute( name, value );
+  }
 
   /************************************************************************
   ** Context:
@@ -218,5 +260,13 @@ public class BasicTagset extends BasicElement implements Tagset {
     return null;		// ===
   }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 
+  public BasicTagset() {}
+
+  public BasicTagset(Tagset previousContext) {
+    context = previousContext;
+  }
 }

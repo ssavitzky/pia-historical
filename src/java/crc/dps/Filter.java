@@ -33,6 +33,7 @@ public class Filter {
   static boolean debug = false;
   static boolean entities = true;
   static boolean verbose = false;
+  static boolean parsing = false;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -79,16 +80,27 @@ public class Filter {
     Parser p = new crc.dps.parse.BasicParser(in, null);
     // p.debug = debug;
 
+    OutputStreamWriter outw = new OutputStreamWriter(out);
     BasicProcessor ii = new BasicProcessor();
     ii.pushProcessorInput(p);
-    ii.setOutput(new crc.dps.output.ToWriter(new OutputStreamWriter(out)));
-    ii.setPassing(true);
+    ii.setOutput(new crc.dps.output.ToWriter(outw));
+    ii.setExpanding(true);
 
+    if (parsing) {
+      ii.setParsing(true);
+      ii.setNode(new BasicToken("ParseTree", 0));
+    } else {
+      ii.setPassing(true);
+    }
     //if (entities) new Environment(infile).use(ii);
     if (debug) ii.setDebug();
 
     ii.run();
 
+    if (parsing) { 
+      System.err.println("=====================\n");
+      System.err.println(ii.getNode());
+    }
   }
 
   /** Print a usage string.
@@ -101,6 +113,7 @@ public class Filter {
     o.println("        -e	no entities");
     o.println("        -h	print help string");
     o.println("        -o file	specify output file");
+    o.println("	       -p	build parse tree");
     o.println("        -t ts	specify tagset name");
     o.println("	       -v	verbose");
     o.println("        -d	debug");
@@ -125,6 +138,8 @@ public class Filter {
       } else if (args[i].equals("-o")) {
 	if (i == args.length - 1) return false;
 	outfile = args[++i];
+      } else if (args[i].equals("-p")) {
+	parsing = true;
       } else if (args[i].equals("-t")) {
 	if (i == args.length - 1) return false;
 	tsname = args[++i];

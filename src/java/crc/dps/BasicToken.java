@@ -49,7 +49,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   /** Values are -1 for start tag, 1 for end tag, 0 for whole node. */
   protected int syntax = 0;
 
-  protected boolean isEmpty = true;
+  protected boolean isEmpty = false;
   protected boolean hasEmptyDelim = false;
   protected boolean hasClosingDelim = true;
   protected boolean implicitEnd = false;
@@ -104,6 +104,8 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public int getSyntax() {
     return syntax;
   }
+
+  public void setSyntax(int value) { syntax = value; }
 
   /** Returns true if the Token corresponds to a start tag: the beginning
    *	of an Element (which will be terminated with a corresponding end tag).
@@ -500,18 +502,17 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   }
 
   /** Expand the Token in the given Context. */
-  public NodeList expand(Context c) {
-    if (handler != null) return handler.expand(this, c);
-    Token node = null; //  === createNode(c);
+  public Token expand(Context c) {
+    if (handler != null) return c.result(handler.expandAction(this, c));
+    Node node = Util.expandAttrs(this, c.getHandlers(), c.getEntities());
+    Context cc = c.newContext(node, getTagName());
     for (Node child = getFirstChild();
 	 child != null;
 	 child = child.getNextSibling()) {
-      NodeList results = (child instanceof Token) 
-	? ((Token)child).expand(c)
-	: null; // === Util.expand(child, c);
-      Util.appendNodes(results, node);
+      if (child instanceof Token) cc.expand((Token)child);
+      else			  cc.result(child);
     }
-    return new BasicTokenList(node);
+    return c.result(node);
   }
 
   /** Return a new start-tag Token for this Token.

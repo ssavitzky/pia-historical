@@ -53,68 +53,153 @@ public class BasicProcessor extends ParseStack implements Processor {
   protected void process() {
     Handler handler;
     // Loop as long as there's input.
-    while ((token = nextInput()) != null) {
+    if (token == null) token = nextInput();
+    anyResults = false;
+    while (token != null) {
       if (token.isStartTag()) {			// Start tag
-	debug("<" + token.getTagName() + ">", depth);
-	/* Here's where it gets tricky.
-	 *	We want to end up with parseStack.token being the current
-	 *	token (which we will pop when we see the end tag).  But
-	 *	we have to save all the other variables before calling the
-	 *	handler.
-	 */
-	pushToken(token, token.getTagName());
-	if (expanding) {
-	  handler = token.getHandler();
-	  if (handler != null) node = handler.startAction(token, this);
-	} else {
-	  // If we're just building a parse tree, the token _is_ the node,
-	  // and we can append it now. 
-	  if (parsing) { appendNode(token); node = token; }
+	Token t = token;
+	processStart();
+	// Empty element: pop the frame and treat as an end tag.
+	if (t.isEmptyElement()) {
+	  token = t; 
+	  processEnd();
 	}
-	if (!parsing) node = null;
-
       } else if (token.isEndTag()) {		// End tag
-	debug("</" + token.getTagName()
-	      + (token.implicitEnd()? " i" : "") +">", depth-1);
-	// remember whether we were passing the contents.
-	boolean werePassing = passing;
-	// then pop the parse stack.
-	popParseStack();
-	// the handler we want is the one from the start tag on the stack.
-	if (expanding) {
-	  handler = token.getHandler();
-	  if (handler != null) appendNode(handler.endAction(token, this));
-	}
-	// If we were parsing but not expanding, the node has already been added
-	// Don't have to createTreeUnder, since the start tag did that already.
-	// If we <em>were</em> passing, we just want to pass the end tag.
-	if (werePassing && token != null) token.setEndTag();
+	processEnd();
       } else /* token.isNode() */ {		// Complete node
-	debug(token.isElement() ? "<" + token.getTagName() + "/>"
-	      			: "[" + token.getNodeType() + "]", depth-1);
-	// === We would like nodeAction on a parsed subtree to do an eval.
-	// === We require eval to be equivalent to the blind expansion...
-	if (expanding) {
-	  handler = token.getHandler();
-	  if (handler != null) appendNode(handler.nodeAction(token, this));
-	} else if (parsing) {
-	  if (node != null) token.copyTokenUnder(node);
-	}
-	// === next line: only if expanding.  Otherwise copy the token. ===
-	// === Worry about shallow/deep and whether expansion is done.  ===
-	// === pass expanding to appendTreeTo?
+	processNode();
       }
 
-      // If we still have a token, see whether we need to pass it along ...
-      if (token != null) {
-	debug(passing? " passed: " + token.toString() + "\n" : "processed\n");
-	// pass the token to the output
-	if (passing) passOutput(token);
-	// if we're not running continuously, we're done.
-	if (! running) return;
+      if (anyResults && !running) return;
+      if (token == null) token = nextInput();
+    }
+  }
+
+  /************************************************************************
+  ** Result Processing:
+  ************************************************************************/
+
+  protected boolean anyResults;
+
+  public Token result(Node aNode) {
+    debug((parsing && node == null)? " dropped parse " : "ok");
+    if (aNode == null) return null;
+    if (parsing) appendNode(aNode);
+    if (passing) passOutput(new BasicToken(aNode));
+
+    anyResults = true;
+    return null;
+  }
+
+  public Token result(Node aNode, Token aToken) {
+    debug((parsing && node == null)? " dropped parse " : "ok");
+    if (parsing && aNode != null) appendNode(aNode);
+    if (passing && aToken != null) passOutput(aToken);
+
+    anyResults = true;
+    return null;
+  }
+
+  public Token results(NodeList aNodeList) {
+    if (aNodeList == null) return null;
+    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      result(node);
+    }
+    return null;
+  }
+
+  /************************************************************************
+  ** Processing:
+  ************************************************************************/
+
+  /** The processing associated with a start tag. */
+  protected final void processStart() {
+    Handler handler;
+    debug("<" + token.getTagName() + ">", depth);
+    /* Here's where it gets tricky.
+     *	We want to end up with parseStack.token being the current
+     *	token (which we will pop when we see the end tag).  But
+     *	we have to save all the other variables before calling the
+     *	handler.
+     */
+    pushToken(token, token.getTagName());
+    if (expanding) {
+      handler = token.getHandler();
+      if (handler != null) {
+	node = handler.startAction(token, this);
+	debug(" handled ");
+      } else if (parsing) {
+	node = token;
+	token.setNode();
+	debug(" parsing "); }
+      else node = null;
+    } else if (parsing) { 
+      node = token; 
+      token.setNode();
+    } else {
+      node = null;
+    }
+    if (passing && !token.isEmptyElement()) passOutput(token);
+    debug("\n");
+    token = null;
+  }
+
+  /** The processing associated with an end tag or empty element */
+  protected final void processEnd() {
+    debug("</" + token.getTagName()
+	  + (token.implicitEnd()? " i" : "") +">", depth-1);
+    // remember whether we were passing the contents ,
+    // and the new Node we constructed.
+    boolean werePassing = passing;
+    Token oldToken = token;
+    Node newNode = node;
+    Handler handler;
+    // then pop the parse stack, call the handler, and append the node.
+    popParseStack();
+    // the handler we want is the one from the start tag on the stack.
+    // It should still be there in <code>token</code>.
+    if (!token.isEmptyElement()) {
+      oldToken.setEndTag();
+      oldToken.setTagName(token.getTagName());
+    }
+    if (oldToken.implicitEnd()) {
+      token.setImplicitEnd(true);
+    }
+    if (parsing && newNode == null) { debug(" null result "); }
+    if (expanding) {
+      handler = token.getHandler();
+      if (handler != null) {
+	token = handler.endAction(token, this, newNode);
+	debug(" handled ");
       } else {
-	debug(" deleted\n");
+	token = token.isEmptyElement()? result(newNode)
+	  			      : result(newNode, oldToken);
+	debug(newNode == null? " vanished " : parsing? " parsed " : " passed ");
       }
+    } else {
+      token = token.isEmptyElement()? result(newNode)
+	  			    : result(newNode, oldToken);
+    }
+    debug("\n");
+  }
+
+  /** The processing associated with a complete Node. */
+  protected final void processNode() {
+    Handler handler;
+    debug(token.isElement() ? "<" + token.getTagName() + "/>\n"
+	  : "[" + token.getNodeType() + "]\n", depth-1);
+    // === We would like nodeAction on a parsed subtree to do an eval.
+    // === We require eval to be equivalent to the blind expansion...
+    if (expanding) {
+      handler = token.getHandler();
+      if (handler != null) token = handler.nodeAction(token, this);
+      else token = result(token.createNode(getHandlers()));
+    } else if (parsing) {
+      if (node != null) token.copyTokenUnder(node);
+      token = null;
+    } else {
+      token = result(token);
     }
   }
 

@@ -7,6 +7,8 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Element;
 import crc.dom.NodeEnumerator;
+import crc.dom.ArrayNodeList;
+import crc.dom.Attribute;
 
 /**
  * The implementation of a Processor's parse stack, using a linked list.
@@ -148,6 +150,10 @@ public class ParseStack extends StackFrame implements Context {
    *	Goes up the context stack if no handlers are defined at this level.  
    */
   public final Tagset getHandlers() {
+    if (handlers == null) {
+      localHandlers = new crc.dps.tagset.BasicTagset();
+      handlers = localHandlers;
+    }
     return handlers;
   }
 
@@ -266,6 +272,10 @@ public class ParseStack extends StackFrame implements Context {
     localEntities = null;
   }
 
+  public Context newContext(Node aNode, String aTagName) {
+    return new ParseStack(this, aNode, aTagName);
+  }
+
   /** Push a Token onto the parse stack. */
   public void pushToken(Token aToken){
     push();
@@ -313,6 +323,71 @@ public class ParseStack extends StackFrame implements Context {
   }
 
   /************************************************************************
+  ** Expansion:
+  ************************************************************************/
+
+  /** Expand a node. */
+  public Token expand(Node aNode) {
+    if (aNode instanceof Token) return ((Token)aNode).expand(this);
+    Tagset tagset = getHandlers();
+    EntityTable ents = getEntities();
+
+    switch (aNode.getNodeType()) {
+    case NodeType.ELEMENT:
+      Element elt = (Element)aNode;
+      Element ne = Util.expandAttrs(elt, tagset, ents);
+      // Note that we have to create a new context to expand the children in.
+      String tag = elt.getTagName();
+      Context c = newContext(ne, tag);
+      c.expand(elt.getChildren());
+      return result(ne);
+
+    case NodeType.NODELIST:
+    case NodeType.TOKENLIST:
+      return expand(aNode.getChildren());
+
+    case NodeType.ENTITY:
+      crc.dom.Entity ent = (crc.dom.Entity)aNode;
+      NodeList v = (ents == null)? null 
+	: entities.getValueForEntity(ent.getName(), false);
+      if (v != null) return expand(v);
+      // if unbound, fall through to copy...
+
+    default:
+      // === Worry about children
+      return result(Util.copyNode(aNode, tagset));
+    }
+  }
+
+  /** Expand all the nodes in a nodelist */
+  public Token expand(NodeList aNodeList) {
+    if (aNodeList == null) return null;
+    ArrayNodeList nl = new ArrayNodeList();
+    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      expand(node);
+    }
+    return null;
+  }
+
+  public Token result(Node aNode) {
+    if (parsing) appendNode(aNode);
+    return null;
+  }
+
+  /** A ParseStack doesn't have an output, so just drop aToken on the floor. */
+  public Token result(Node aNode, Token aToken) {
+    if (parsing) appendNode(aNode);
+    return null;
+  }
+
+  public Token results(NodeList aNodeList) {
+    if (parsing) appendNodes(aNodeList);
+    return null;
+  }
+
+
+  /************************************************************************
   ** Construction:
   ************************************************************************/
 
@@ -320,8 +395,32 @@ public class ParseStack extends StackFrame implements Context {
     super(0);
   }
 
+  /** Create an exact copy of the given parseStack node.  In general
+   *	this is done by the top node in a parse stack, which puts the
+   *	new node in its <code>parseStack</code> link and goes on being
+   *	the top node. */
   public ParseStack(ParseStack next) {
     copy(next);
+  }
+
+  /** Create a new ParseStack node linked to the given one.  */
+  public ParseStack(ParseStack s, Node aNode, String aTagName) {
+    node 		= aNode;
+    token 		= null;
+    tagName		= aTagName;
+    parsing 		= s.parsing;
+    expanding		= s.expanding;
+    passing 		= s.passing;
+
+    entities 		= s.entities;
+    localEntities	= null;
+    entityContext 	= (s.localEntities == null)? s : s.entityContext;
+
+    handlers 		= s.handlers;
+    localHandlers	= null;
+    handlerContext 	= (s.localHandlers == null)? s : s.handlerContext;
+    parseStack 		= s;
+    depth		= s.depth + 1;
   }
 
 

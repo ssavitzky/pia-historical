@@ -94,8 +94,13 @@ public interface Token extends Element, Text {
 
   /** Returns a negative number if <code>isStartTag</code>, a positive
    *	number if <code>isEndTag</code>, and zero if <code>isNode</code>.
+   *	If <code>isStartTag</code> and <code>isEmptyElement</code>, the
+   *	value will be <code>-2</code>, otherwise it will be <code>-1</code>.
    */
   public int getSyntax();
+
+  /** Sets the syntax code returned by <code>getSyntax</code>. */
+  public void setSyntax(int value);
 
   /** Returns true if the Token corresponds to a start tag: the beginning
    *	of an Element (which will be terminated with a corresponding end tag).
@@ -130,7 +135,9 @@ public interface Token extends Element, Text {
   /** Returns true if the Token corresponds to an Element that
    *	consists of a start tag with no content or corresponding end
    *	tag.  Note that such an element may return either <code>true</code>
-   *	or <code>false</code> from <code>isStartTag()</code>.
+   *	or <code>false</code> from <code>isStartTag()</code>.  Unprocessed
+   *	nodes (from a Parser) will be start tags, processed nodes from a
+   *	parse tree will be nodes.
    */
   public boolean isEmptyElement();
 
@@ -212,7 +219,7 @@ public interface Token extends Element, Text {
   public Token deepCopy();
 
   /** Expand the Token in the given Context. */
-  public NodeList expand(Context c);
+  public Token expand(Context c);
 
   /** Return a new start-tag Token for this Token.
    *	If the Token is already a start tag, it is simply returned. 

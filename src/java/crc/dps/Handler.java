@@ -45,66 +45,119 @@ public interface Handler {
   /** Performs actions associated with an Element's start tag Token.  
    *	Called only for a Token that represents the start tag of an
    *	Element with content, and only if the Processor is expanding.
+   *	Called <em>after pushing</em> the Token onto the parse stack. <p>
    *
    * @param t the Token for which actions are being performed.
-   * @param p the Context in which to perform the actions.
-   * @return a Node to which content Nodes will be added.
+   * @param p the Processor in which to perform the actions.  The Context
+   *	is one in which the Token has already been pushed.
+   * @return a Node which will contain the content of the Token's Element.
    */
-  public Node startAction(Token t, Context p);
+  public Node startAction(Token t, Processor p);
 
-  /** Performs actions associated with an Element's end tag Token.
+  /** Performs actions associated with an Element's end tag Token. <p>
    *	Called only for a Token that represents the start tag of an
    *	Element with content, and only if the Processor is expanding.
-   * <p>
-   *	The return value is a Node for efficiency.  In order to append
-   *	multiple nodes to the parse tree, the simplest thing is to 
-   *	return a Token with <code>nodeType</code> = NodeType.NODELIST.
-   *	The alternative is to call <code>p.appendNodes</code> and return
-   *	<code>null</code>.
+   *	Called <em>after popping</em> the Token from the parse stack. <p>
+   *
+   *	Results are returned directly to the calling Context using
+   *	<code>result</code>; the Context is expected to know what to do with
+   *	them, e.g., append them to a document under construction, or pass them
+   *	along to an Output.  The value <em>returned</em> from
+   *	<code>expandAction</code> is a Token to be <em>expanded</em> in the
+   *	calling Context, that is, a <em>continuation</em> or
+   *	<em>thunk</em>.   The default <code>endAction</code> calls
+   *	<code>p.result(n)</code> and returns <code>null</code>. <p>
    *
    * @param t the Token for which actions are being performed.
-   * @param p the Context in which to perform the actions.
-   * @return a Node to be added to the parse tree being constructed.  */
-  public Node endAction(Token t, Context p);
+   * @param p the Processor in which to perform the actions.
+   * @param n the Node originally returned by the corresponding startAction.
+   * @return a Token representing a continuation, which the calling 
+   *	context is expected to re-expand.
+   * @see #expand
+   */
+  public Token endAction(Token t, Processor p, Node n);
 
-  /** Performs actions associated with an complete Node's Token.
-   *	Normally returns the original Node,   Called for empty
-   *	Elements, Text, Comments, PI's, and so on.  It is not called
-   *	by the Context for parse trees associated with elements
-   *	having content, although <code>endAction</code> may call it in
-   *	that case.  Called only if the Context is expanding.
-   * <p>
-   *	The return value is a Node for efficiency.  In order to append
-   *	multiple nodes to the parse tree, the simplest thing is to 
-   *	return a Token with <code>nodeType</code> = NodeType.NODELIST.
+  /** Performs actions associated with an complete Node's Token. <p>
+   *
+   *	Normally returns the original Node, Called for Text, Comments, PI's,
+   *	and so on.  It is also called for a Token that represents a complete
+   *	(possibly-trivial) parse tree; it <em>may</em>, but need not, call
+   *	<code>expand</code>.  Called only if the Processor is expanding.  <p>
+   *
+   *	Results are returned directly to the calling Context using
+   *	<code>result</code>; the Context is expected to know what to do with
+   *	them, e.g., append them to a document under construction, or pass them
+   *	along to an Output.  The value <em>returned</em> from
+   *	<code>expandAction</code> is a Token to be <em>expanded</em> in the
+   *	calling Context, that is, a <em>continuation</em> or
+   *	<em>thunk</em>.   The default <code>endAction</code> calls
+   *	<code>p.result(n)</code> and returns <code>null</code>. <p>
    *
    * @param t the Token for which actions are being performed.
-   * @param p the Context in which to perform the actions.
-   * @return a Node to be added to the parse tree being constructed.  */
-  public Node nodeAction(Token t, Context p);
+   * @param p the Processor in which to perform the actions.
+   * @return a Token representing a continuation, which the calling 
+   *	context is expected to re-expand.
+   * @see #expand
+   */
+  public Token nodeAction(Token t, Processor p);
+
+  /** Performs the actions necessary to ``expand'' the given Token. <p>
+   *
+   *	Results are returned directly to the calling Context using
+   *	<code>result</code>; the Context is expected to know what to do with
+   *	them, e.g., append them to a document under construction, or pass them
+   *	along to an Output.  The value <em>returned</em> from
+   *	<code>expandAction</code> is a Token to be <em>expanded</em> in the
+   *	calling Context, that is, a <em>continuation</em> or
+   *	<em>thunk</em>. <p>
+   *
+   *	The result of calling <code>expandAction(<em>t</em>,
+   *	<em>p</em>)</code> with a given Token <code><em>t</em></code> is
+   *	supposed to be the same as using the Token as input to a Processor
+   *	with: <code><em>p</em>.pushInto(<em>t</em>)</code>.  Note, however,
+   *	that <code>expandAction</code> takes a Context as a parameter, while
+   *	<code>pushInto</code> is an operation on Processor.  If expansion
+   *	actually requires pushing something on the input stack of a Processor
+   *	(for example, a file to be parsed and processed), it will be necessary
+   *	to construct a new Processor. <p>
+   *
+   *	As a consequence, a Processor will never need to call
+   *	<code>expandAction</code> when processing input; it is only called
+   *	when expanding a Token returned as a ``thunk'' by one of the 
+   *	action routines. <p>
+   *
+   *	It would be reasonable for <code>expandAction</code> to assume that
+   *	any children of the Token that are not themselves instances of Token,
+   *	do not need to be expanded but simply copied.  However, it will
+   *	probably continue expanding in order to replace locally-defined
+   *	entities with their values. <p>
+   *
+   * @param t the Token to expand
+   * @param c the Context in which to perform the expansion. 
+   * @return a Token representing a continuation, which the calling 
+   *	context is expected to re-expand.
+   * @see #nodeAction
+   * @see crc.dps.Processor
+   * @see crc.dps.Context */
+  public Token expandAction(Token t, Context c);
 
   /** Returns a new, clean Node corresponding to the given Token.
-   *	The new Node is suitable for incorporating into a new
-   *	document. <p>
+   *	The new Node is suitable for incorporating into a new document.
+   *	Children are not copied, but entities in the values of attributes will
+   *	be expanded if they are defined. <p>
    *
-   *	Note that this is not used when creating a parse tree of an
-   *	active document -- such a parse tree is made out of Token
-   *	objects, which preserves the syntactic and semantic
-   *	information (e.g. handlers).  <p>
+   *	Note that this is not used when creating a parse tree for an active
+   *	document -- such a parse tree is made out of Token objects, which
+   *	preserves the syntactic and semantic information (e.g. handlers).  <p>
    *
    *	This might be implemented by cloning a prototype Node, for example.
    */
-  public Node createNode(Token t);
+  public Node createNode(Token t, Context c);
 
   /** Returns a new, clean Node corresponding to the given Token,
    *	created using the given DOMFactory. <p>
    */
   public Node createNode(Token t, DOMFactory f);
-
-  /** Returns the result of ``expanding'' the given Token. 
-   * @return a (possibly empty) NodeList of results.
-   */
-  public NodeList expand(Token t, Context c);
 
 
   /************************************************************************

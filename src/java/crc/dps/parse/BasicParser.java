@@ -183,10 +183,14 @@ public class BasicParser extends AbstractParser {
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  it.setHasEmptyDelimiter(true);
+	  it.setSyntax(-2);
+	  it.setIsEmptyElement(true);
 	  last = 0;
 	} else break;
       }
       if (last != '>') return false;
+
+      // Look the token up in the Tagset.
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
