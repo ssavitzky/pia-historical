@@ -9,7 +9,7 @@
 <if><get form name=agent>
     <then><set entity name=agent><get form name=agent></set>
 	  <agent-save file="&agent;.dat" interform name="&agent;">
-	  <user-message>Checkpointed &agent in &agent;.dat</user-message>
+	  <user-message>Checkpointed &agent; in &agent;.dat</user-message>
 	  Checkpointed:
     </then><else>
 	   <input type=submit value="Checkpoint Agent">
