@@ -42,6 +42,11 @@ public class AttrTable extends Table implements Attrs {
     return (SGML)at(name);
   }
 
+  /** Enumerate the defined attributes. */
+  public java.util.Enumeration attrs() {
+    return keys();
+  }
+
   /** Retrieve an attribute by name, returning its value as a String. */
   public String attrString(String name) {
     Object o = at(name);
@@ -54,16 +59,14 @@ public class AttrTable extends Table implements Attrs {
     return super.at(a, Util.toSGML(v));
   }
 
-  /** Set an attribute.  Returns the object itself. */
-  public Attrs attr(String name, SGML value) {
+  /** Set an attribute. */
+  public void attr(String name, SGML value) {
     super.at(name, value);
-    return this;
   }
   
-  /** Set an attribute.  Returns the object itself. */
-  public Attrs attr(String name, String value) {
+  /** Set an attribute to a String value. */
+  public void attr(String name, String value) {
     super.at(name, new Text(value));
-    return this;
   }
 
   /** Add an attribute.  Returns the object itself.  In this implementation
@@ -91,8 +94,8 @@ public class AttrTable extends Table implements Attrs {
     super(initialCapacity);
   }
 
-  public AttrTable(AttrTable t) {
-    this(t.size());
+  public AttrTable(Attrs t) {
+    this(t.nAttrs());
     append(t);
   }
 
@@ -119,13 +122,23 @@ public class AttrTable extends Table implements Attrs {
     return new AttrTable(this);
   }
 
+  /** Append Attrs */
+  public void append(Attrs t) {
+    Enumeration e = t.attrs();
+
+    while (e.hasMoreElements()) {
+      String k = e.nextElement().toString();
+      put(k, t.attr(k));	// can use put because t is an AttrTable
+    }
+  }
+
   /** Append a table */
-  public void append(AttrTable t) {
+  public void append(Table t) {
     Enumeration e = t.keys();
 
     while (e.hasMoreElements()) {
-      Object k = e.nextElement();
-      put(k, t.get(k));		// can use put because t is an AttrTable
+      String k = e.nextElement().toString();
+      put(k, t.get(k));	// can use put because t is an AttrTable
     }
   }
 

@@ -27,11 +27,14 @@ public interface Attrs extends java.lang.Cloneable {
   /** Retrieve an attribute by name, returning its value as a String. */
   String attrString(String name);
 
-  /** Set an attribute.  Returns the object itself. */
-  Attrs attr(String name, SGML value);
+  /** Enumerate the defined attributes. */
+  java.util.Enumeration attrs();
+
+  /** Set an attribute to a String.  */
+  void attr(String name, SGML value);
 
   /** Set an attribute.  Returns the object itself. */
-  Attrs attr(String name, String value);
+  void attr(String name, String value);
 
   /** Add an attribute.  Returns the object itself.  In some
    *	implementations this will be equivalent to attr, in others it

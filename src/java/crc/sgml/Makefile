@@ -7,6 +7,7 @@ TOPDIR=../../..
 
 FILES = \
 	Attrs.java \
+	AttrBase.java \
 	AttrTable.java \
 	SGML.java \
 	Text.java \
@@ -21,9 +22,13 @@ include $(TOPDIR)/makefiles/file.make
 ###	depends on.  This happens quietly (unfortunately), but make
 ###	seems to cope with it and not build anything twice.
 
+AttrBase.class: Attrs.java SGML.java ../ds/List.java
+
 AttrTable.class: AttrTable.java Attrs.java SGML.java ../ds/Table.java
 
 Attrs.class: Attrs.java SGML.java
+
+SGML.class: SGML.java Attrs.java
 
 Text.class: Text.java Token.java SGML.java
 
