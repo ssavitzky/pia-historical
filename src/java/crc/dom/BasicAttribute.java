@@ -30,6 +30,27 @@ public class BasicAttribute extends AbstractNode implements Attribute {
     setSpecified( false );
   }
 
+
+  public BasicAttribute(BasicAttribute attr){
+    AbstractNode a = null;
+
+    setPrevious( null );
+    setNext( null );
+    setName( attr.getName() );
+    setValue( new ChildNodeList( attr.getValue() ) );
+    copyChildren( attr );
+    setSpecified( attr.getSpecified() );
+  }
+
+  public Object clone(){
+    BasicAttribute n = (BasicAttribute)super.clone();
+    n.setName( getName() );
+    setValue( new ChildNodeList( getValue() ));
+    n.copyChildren( this );
+    n.setSpecified( getSpecified() );
+    return n;
+  }
+
   public int getNodeType() { return NodeType.ATTRIBUTE; }
 
   public void setName(String name){ this.name = name; }
