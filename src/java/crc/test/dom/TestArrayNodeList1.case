@@ -1,1 +1,1 @@
-java crc.test.dom.T_ArrayNodeList 1
+java -classpath /home/pgage/pia/src/java:/usr/local/java/lib/classes.zip:/usr/local/java/jdk1.2beta4/src.jar:/home/pgage/Jshield/classes crc.test.dom.T_ArrayNodeList 1

@@ -37,7 +37,7 @@ public class T_ArrayNodeList{
     try{
       for (int i = 0; i < 10; i++){ 
 	a.insert(i, new BasicText(  Integer.toString(i), true  ) );
-	Report.debug("The size of a is-->"+Integer.toString( a.size() ));
+	Report.debug("The size of a is-->"+Integer.toString((int) a.getLength() ));
       }
     }catch(Exception err0){
     }
