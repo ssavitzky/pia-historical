@@ -38,8 +38,10 @@ public class parseHandler extends GenericHandler {
     TopContext top  = cxt.getTopContext();
     String  tsname  = atts.getAttributeString("tagset");
     Tagset      ts  = top.loadTagset(tsname);	// correctly handles null
-    String cstring  = content.toString(); // may not be external form!
-
+    
+    // Get the content as a string in internal form.
+    String cstring  = TextUtil.getCharData(content);
+    if (cstring == null || cstring.length() == 0) return;
     parse(in, cxt, out, ts, cstring);
   }
 
