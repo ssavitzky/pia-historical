@@ -410,42 +410,6 @@ public class Resolver extends Thread {
   }
   
   /************************************************************************
-  ** User Agent
-  ************************************************************************/
-
-  /**
-   * Make a simple request.  This allows the Resolver to serve as
-   *	a user agent.  Agents are matched against the transaction.
-   *	@return the response transaction.
-   *	@param tran the request transaction.
-   *	@param fileName if non-null, a file into which the response
-   *		content is directed. 
-   */
-  public Transaction simpleRequest( Transaction tran, String fileName )
-       throws IOException{
-    File destinationFile;
-    FileWriter out = null;
-
-    match( tran );
-    tran.satisfy( this );
-    Transaction response = pop();
-    
-    if( fileName != null ){
-      try{
-	destinationFile = new File( fileName );
-	out = new FileWriter( destinationFile );
-	String str = response.contentObj().toString();
-	out.write( str );
-	out.flush();
-	out.close();
-      }catch(IOException e){
-	// I need to throw this
-      }
-    }
-    return response;
-  }
-
-  /************************************************************************
   ** Construction:
   ************************************************************************/
 
