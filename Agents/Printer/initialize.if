@@ -3,20 +3,28 @@
 <title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>printer initialization for <code language=perl> $current_self->name; </code></h1>
+<h1>Printer initialization for <code language=perl> $current_self->name; </code></h1>
 
 <code language=perl>
 require("printer_agent.pl");
 $current_self->option('render_method',"latex");
 $current_self->option('preview_number',"100");
 my $name= $current_self->name;
+$printer_root_directory=$current_self->agent_directory . "spool/";
+
+mkdir($printer_root_directory, 0777) unless -d $printer_root_directory;
+$printer_base_url= $current_self->agent_url;
+
 "initialized $name";
 </code>
 
 
+
+keepitsimplestupid just make the printer agent serve these files directly
+
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Sep 19 16:58:57 1996
+Last modified: Tue Oct  8 13:04:43 1996
 <!-- hhmts end -->
 </body></html>
