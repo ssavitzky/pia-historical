@@ -33,6 +33,7 @@ import java.net.URL;
 
 import crc.pia.Agent;
 import crc.pia.Transaction;
+import crc.util.Utilities;
 
 import crc.ds.Queue;
 import crc.ds.Table;
@@ -220,13 +221,14 @@ public class Resolver extends Thread {
    */
   public Agent agentFromPath(String path) {
 
+    // URL-decode path first to catch %7e
+    path = Utilities.urlDecode(path);
+
     // Check for path starting with / (ignored) or ~
 
     if (path.startsWith("/")) path = path.substring(1);
     if (path.startsWith("~")) path = path.substring(1);
-    else if (path.startsWith("%7E") || path.startsWith("%7e"))
-      path = path.substring(3);
-
+ 
     /* Empty path is handled by ROOT. */
 
     if (path == null || path.equals("/") || path.equals("")) {
@@ -245,8 +247,6 @@ public class Resolver extends Thread {
       String type = pathList.at(0).toString();
       if (name.endsWith("~"))
 	name = name.substring(0, name.lastIndexOf("~"));
-      else if (name.endsWith("%7E") || name.endsWith("%7e"))
-	name = name.substring(0, name.lastIndexOf("%"));
       Pia.debug(this, "Looking for agent :" + name);
       a = agent(name);
       if (a != null && type.equals(a.type())) {
@@ -257,8 +257,6 @@ public class Resolver extends Thread {
     // Handle /name (possibly with trailing ~)
     String name = pathList.at(0).toString();
     if (name.endsWith("~")) name = name.substring(0, name.lastIndexOf("~"));
-    else if (name.endsWith("%7E") || name.endsWith("%7e"))
-      name = name.substring(0, name.lastIndexOf("%"));
     a = agent(name);
     return a;
   }

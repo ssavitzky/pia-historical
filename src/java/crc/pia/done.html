@@ -39,6 +39,18 @@ See also:
        Agent-specific handlers are in Agent. 
        (1998-12-17) <br>
 
+  <li> 1999-02-09 <b>Bug</b> ~ doesn't work in some cases. <br>
+       ~Agent/ works, but ~Agent doesn't. In general, a directory only gets
+       found if a / is present.  Sounds like a redirection bug.
+       (1999-02-05) <br>
+       -- fixed by a cleanup of the redirection code, and more use of
+	  urlDecode. 
+
+  <li> 1999-02-09 <b>Bug</b> Agent~ doesn't work at all. <br>
+       (1999-02-05) <br>
+       -- findInterform was removing the agent name while mistaking it for the
+	  type. 
+
 </ol>
 <a name="end">End of list.</a>
 <hr>

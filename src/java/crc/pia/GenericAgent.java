@@ -173,6 +173,11 @@ public class GenericAgent implements Agent, Registered, Serializable {
    */
   protected String DATA = "~";
 
+  /**
+   * Path prefix for home subdirectory.
+   */
+  protected String HOME = "~";
+
   /** 
    * Crontab for timed requests.
    */
@@ -998,7 +1003,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     req.fromMachine(), ct, false);
     response.setHeader("Location", redirUrlString);
-    response.setStatus(HTTP.MOVED_PERMANENTLY);
+    response.setStatus(HTTP.MOVED_TEMPORARILY);
     response.setContentLength( msg.length() );
     response.startThread();
     return true;
@@ -1026,13 +1031,16 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     originalPath = path;
 
-    if (path.equals("/" + myname)
-	       || path.equals("/" + mytype)
-	       || path.equals("/" + mytype + "/" + myname) ) {
+    if (path.equals("/" + myname) || path.equals("/" + myname + HOME)
+	|| path.equals("/" + mytype)    
+	|| path.equals("/" + mytype + "/" + myname) 
+	|| path.equals("/" + mytype + "/" + myname + HOME) ) {
       if (homePathSuffix != null) path += homePathSuffix;
     } else if (path.equals("/" + myname + "/")
+	       || path.equals("/" + myname + HOME + "/")
 	       || path.equals("/" + mytype + "/")
-	       || path.equals("/" + mytype + "/" + myname + "/") ) {
+	       || path.equals("/" + mytype + "/" + myname + "/") 
+	       || path.equals("/" + mytype + "/" + myname + HOME + "/") ) {
       if (indexPathSuffix != null) path += indexPathSuffix;
     }
 
@@ -1226,33 +1234,30 @@ public class GenericAgent implements Agent, Registered, Serializable {
     boolean hadType = false;
     boolean wasData = false;
 
-    /* Remove a leading /~ from the path and replace it with / */
-
+    /* Remove a leading /~ from the path and replace it with /
+     *	This indicates the agent's data directory.
+     */
     if (path.startsWith("/~")) {
       path = "/" + path.substring(2);
-      wasData = true;
-    } else if (path.startsWith("/%7E") || path.startsWith("/%7e")) {
-      path = "/" + path.substring(4);
       wasData = true;
     }
 
     /* Remove a leading /type or /name or /type/name from the path. */
     // === Should really handle an arbitrary prefix (mount point) ===
-    if (path.startsWith("/" + mytype + "/")) {
+    if (! myname.equals(mytype) && path.startsWith("/" + mytype)) {
       path = path.substring(mytype.length() + 1);
       hadType = true;
     }
     
-    if (path.startsWith("/" + myname + "/")) {
+    if (path.startsWith("/" + myname)) {
       path = path.substring(myname.length() + 1);
       hadName = true;
-    }
+      if (path.startsWith(HOME)) {
+	path = path.substring(HOME.length());
+      }
+    } 
     
-    if (path.startsWith("%7e/") || path.startsWith("%7E/")
-	|| path.equalsIgnoreCase("%7e")) {
-      path = path.substring(3);
-      wasData = true;
-    } else if (path.startsWith("/" + DATA + "/") || path.equals("/" + DATA)) {
+    if (path.startsWith("/" + DATA )) {
       path = path.substring(DATA.length() + 1);
       wasData = true;
     }
@@ -1490,6 +1495,9 @@ public class GenericAgent implements Agent, Registered, Serializable {
     int end = path.indexOf('?');
     if(end > 0) path = path.substring(0, end);
 
+    // Perform URL decoding:
+    path = Utilities.urlDecode(path);
+
     // If there is a destination file name after the interform file, strip it
     path = stripDestFile( path );
 
@@ -1510,7 +1518,8 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     // authenticate the requester if necessary;
     // internal requests are not authenticated currently--eg. virtual machines
-    if( !(request.fromMachine() instanceof AgentMachine) && !authenticateRequest(request,file)){
+    if( !(request.fromMachine() instanceof AgentMachine)
+	&& !authenticateRequest(request,file)){
       requestAuthentication(request);
       return true; //not clear-returning true because response has been set
     }
