@@ -4,7 +4,7 @@
 package crc.dom;
 
 
-public final class NodeType {
+public class NodeType {
     public static final int DOCUMENT   = 0;
     public static final int ELEMENT    = 1;
     public static final int ATTRIBUTE  = 2;
