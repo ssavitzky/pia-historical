@@ -17,6 +17,27 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug:</b> Parsing:  &lt;tr&gt; gets lost <br>
+       &lt;tr&gt; ends the previous &lt;th&gt;, but neither the expected
+       &lt;/tr&gt; nor the &lt;tr&gt; show up.  An entity before an inserted
+       &lt;/td&gt; also causes havoc -- it turns into a comment! (probably bad
+       node type).
+       (1998-6-26) <br>
+
+  <li> <b>Bug:</b> slides:  &lt;h2&gt; doesn't work <br>
+       It produces no output, but the entity doesn't seem to get defined.
+       (1998-6-26) <br>
+
+  <li> <b>Bug:</b> replaceChild when redefining entity or handler <br>
+       BasicTagset and BasicEntityTable have to do a replaceChild when
+       replacing a binding.
+       (1998-6-26) <br>
+
+  <li> <b>Hole:</b> Must define tags at parse time to cache trees <br>
+       In order to parse correctly, you have to have the whole DTD in
+       advance.
+       (1998-6-25) <br>
+
   <li> <b>Impr:</b> Upgrade <code>handle</code> methods. <br>
        The static <code>handle(<em>element</em>)</code> methods in handler
        subclasses should pick up a static instance if possible, rather than

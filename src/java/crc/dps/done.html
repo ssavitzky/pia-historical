@@ -152,6 +152,18 @@ See also:
        -- <code>handle(<em>element</em>)</code> method in place; usage needs
 	  to be checked.
 
+  <li> 1998-06-26 <b>Bug:</b> Empty actor def's fail. <br>
+       (1998-6-25) <br>
+       -- Empty def. handled by defining as null string. 
+
+  <li> <b>Bug:</b> Actors defined inside &lt;if&gt; fail. <br>
+       One can no longer expect an actor defined inside quotes to be visible
+       there (because of pre-parsing), but it <em>should</em> be visible
+       <em>outside</em>. 
+       (1998-6-25) <br>
+       -- <code>ParseTreeText</code> wasn't getting cloned correctly; a
+	  hangover from when it descended from BasicText.
+
 </ul>
 <a name="end">End of list.</a>
 <hr>
