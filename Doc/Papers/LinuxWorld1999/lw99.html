@@ -11,9 +11,8 @@
 			  <!-- horizontal scrollbar eats into height... -->
 
 <set name=DOC:logo><img src="Images/pent24.gif"></set>
-
-
 <hr>
+
 <slide><!-- Slide 0 doesn't have a title -->
 <p>&nbsp;
 <p>&nbsp;
@@ -31,7 +30,6 @@
 </slide>
 
 
-<hr>
 <slide><h2>Overview</h2>
 <p>&nbsp;
 <ol>
@@ -51,7 +49,7 @@
 </div>
 </slide>
 
-<hr>
+
 <slide><h2>But if ``The Network is the Computer''...</h2>
 <table align=center> 
   <tr><th bgcolor=yellow> On your Computer <th> Input <th> Process <th> Output
@@ -143,7 +141,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Appliances</h2>
 <div align=center>
   <strong>The future of computing is <em>networked appliances</em></strong>
@@ -157,7 +155,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Appliances on the Web</h2>
 <strong>An appliance contains a thin server.</strong>
 <a href="/PIA/Doc/Graphics/webprinter.small.gif"><img
@@ -184,7 +182,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Appliances usually run on open source</h2>
 <table><!-- could squeeze another image into lower left.  PIA proto? -->
 <tr><td colspan=2>
@@ -214,8 +212,8 @@
        </ul>
   <li> Informal knowledge targeted at an individual or group
        <ul>
-	 <li> mostly documents, not databases
-	 <li> unstructured, not tabular
+	 <li> mostly <strong>documents</strong>, not databases
+	 <li> hierarchical, not tabular
 	 <li> every group has its procedures
        </ul>
   <li> Maintainability over the long run is key
@@ -226,7 +224,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What Are Documents?</h2>
 <ul>
   <li> A document is a <em>tree-structured collection of text</em>
@@ -241,7 +239,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>A Document is not an Object</h2>
 <ul>
   <li> Documents <em>separate</em> content from behavior<br>
@@ -257,7 +255,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Why Process Them?</h2>
 <ul>
   <li> The ``traditional'' operations
@@ -281,7 +279,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What Can Our System Do?</h2>
 <ul>
   <li> Short answer -- all of the above
@@ -294,7 +292,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What do we use it for?</h2>
 <ul>
   <li> Permanent web history<br>
@@ -311,7 +309,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Who can use it?</h2>
 <ul>
   <li> Intended mainly for use by non-programmers
@@ -324,7 +322,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What it's not</h2>
 <ul>
   <li> Not a CGI scripting language
@@ -352,7 +350,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What it is</h2>
 <ul>
   <li> Smoothly integrated into SGML documents
@@ -367,7 +365,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What's different?</h2>
 <ul>
   <li> XML syntax for actions
@@ -390,7 +388,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Document-Oriented Computing</h2>
 <p>&nbsp;
 <ul>
@@ -401,11 +399,13 @@
        </ul>
   <li> A new <em>location</em> for computation
        <ul>
+	 <li> <em>documents</em> get passed between nodes
 	 <li> not just clients and servers
 	 <li> peers and proxies as well
        </ul>
 </ul>
 </slide>
+
 
 <slide><h2>A Simple Example</h2>
 <ul>
@@ -427,7 +427,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What's Going On</h2>
 <ul>
   <li> A document's format is specified by a <br>
@@ -445,7 +445,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Another Example</h2>
 <ul>
   <li> Input: <a href="Images/slides.ts">a document tagset specification</a>
@@ -460,7 +460,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What's Going On?</h2>
 <ul>
   <li> Documents contain only content and markup (structure)
@@ -477,7 +477,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>What's <em>Really</em> Going On?</h2>
 <p>&nbsp;
 <div align=center>
@@ -506,19 +506,21 @@
 
 <hr><set name=subCaption>Architecture and Implementation</set>
 <slide><h2>Architecture and Implementation</h2>
-<ul>
-  <li> === this needs three pictures:
-       <ol>
-	 <li> === agency in context (between client and server)
-	 <li> === Agency internal view (server, agents, pages)
-	 <li> === DPS internal view (input, processor, tagset, output)
-       </ol>
-</ul>
+<p>
+<table align=center valign=center cellpadding=0 border=0>
+<tr> <th>&nbsp; <th>PIA System Architecture <th>&nbsp;
+<tr> <th>&nbsp; <th>&nbsp; <th>&nbsp;
+<tr> <td align=right valign=center> <img src="Images/nc.gif">
+     <td align=center valign=center> 
+	<img src="Images/pia-architecture.gif">
+     <td align=left valign=center>
+	<img src="Images/web.gif">
+</table>
 
 </slide>
 
-<hr>
-<slide><h2>Document-processing architecture</h2>
+
+<slide><h2>Document-processing goals</h2>
 <div align=center><em>What the user sees.</em></div>
 <ul>
   <li> Documents have to be maintainable
@@ -538,8 +540,8 @@
 </ul>
 </slide>
 
-<hr>
-<slide><h2>Implementation architecture</h2>
+
+<slide><h2>Implementation goals</h2>
 <div align=center><em>What the developer sees.</em></div>
 <ul>
   <li> The system has to be maintainable
@@ -563,14 +565,15 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Agency Architecture Layers</h2>
 
 <ul>
   <li> Server Front End
        <ul>
 	 <li> Handles HTTP requests
-	 <li> Dispatches requests to ``agents''
+	 <li> Dispatches each request to ``agent'' for response
+	 <li> Allows agents to ``act on'' documents as they flow through
        </ul>
   <li> Agent handlers
        <ul>
@@ -581,17 +584,18 @@
        <ul>
 	 <li> Interprets markup in active documents
 	 <li> Rarely needs to be changed
-	 <li> Recently re-written
+	 <li> Recently re-written using DOM
        </ul>
   <li> ``Action'' handlers for tags
        <ul>
-	 <li> Written in Java or C
+	 <li> Written in XML. Java, or C
 	 <li> Loaded as needed at run-time
+	 <li> Organized into ``tagsets''
        </ul>
 </ul>
 </slide>
 
-<hr>
+
 <slide>
 <h2>PIA's Document Processor</h2>
 <ul>
@@ -614,9 +618,8 @@
 </ul>
 </slide>
 
-<hr>
-<slide><h2>The Implementation</h2>
 
+<slide><h2>The Implementation</h2>
 <ul>
   <li> General Technique:
        <ul>
@@ -640,7 +643,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Primitive Actions</h2>
 (all are active SGML <em>elements</em>)
 <ul>
@@ -656,7 +659,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>I/O and Data Conversion</h2>
 (additional primitives)
 <ul>
@@ -670,7 +673,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>There's more...</h2>
 (but not <em>much</em> more:)
 <p>
@@ -690,7 +693,7 @@
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>For example...</h2>
 <pre>
 &lt;define element=factorial recursive&gt;
@@ -713,7 +716,7 @@
 <em>It's not really meant for numeric processing!</em>
 </slide>
 
-<hr>
+
 <slide><h2>A better example...</h2>
 
 <em>It's really meant for web pages.</em>
@@ -737,7 +740,7 @@
 <!-- need local copy in Images for stand-alone use -->
 </slide>
 
-<hr>
+
 <slide><h2>Tags and actions are separate</h2>
 <em>You can define a new set of tags.</em>
 <pre>
@@ -757,7 +760,6 @@
 The language is easily localized or abbreviated.</em>
 </slide>
 
-<hr>
 <slide><h2>So the first example...</h2>
 <p><em>...wasn't really so bad after all!</em>
 <pre>
@@ -774,23 +776,17 @@ The language is easily localized or abbreviated.</em>
 </em>
 </slide>
 
-<hr>
 <slide><h2>For another...</h2>
 Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 <pre>
 &lt;if&gt;&lt;get name=FORM:url&gt;
   &lt;then&gt;
-    &lt;hide&gt;
-      &lt;set name=URL&gt;&lt;text decode=url&gt;&amp;FORM:url;&lt;/text&gt;&lt;/set&gt;
-    &lt;/hide&gt;
-    &lt;!-- Processed with /View/slides.xh --&gt;
+    &lt;set name=URL&gt;&lt;text decode=url&gt;&amp;FORM:url;&lt;/text&gt;&lt;/set&gt;
     &lt;include src="&amp;URL;" tagset="&amp;FORM:tagset;" /&gt;
-  &lt;/then&gt;
-  &lt;else&gt;
+  &lt;/then&gt;&lt;else&gt;
     &lt;html&gt;&lt;head&gt;&lt;title&gt;Slide viewer&lt;/title&gt;
     &lt;/head&gt;&lt;body&gt;
-      &lt;header&gt;View&lt;/header&gt;
-      &lt;hr&gt;
+      &lt;header&gt;View&lt;/header&gt;  &lt;hr&gt;
       &lt;form method=GET action=/View/slides&gt;
         &lt;input type=submit value="View Slides"&gt;
         &lt;input type=hidden name=tagset value=slides&gt;
@@ -809,7 +805,7 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 </hide>
 </slide>
 
-<hr>
+
 <slide><h2>It's a server, too</h2>
 <ul>
   <li> <a href="/">Server home page</a>
@@ -820,6 +816,7 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
        (<a href="/Images/src.html">local)</a>
 </ul>
 </slide>
+
 
 <hr><set name=subCaption>Open Source</set>
 <slide><h2>Why Open Source for Us?</h2>
@@ -849,7 +846,7 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Why Open Source for Developers?</h2>
 <ul>
   <li> Solid, peer-reviewed software
@@ -866,7 +863,7 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Open Standards for Document Processing</h2>
 <ul>
   <li> We hope to do for document <em>processing</em>
@@ -877,7 +874,7 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
 </ul>
 </slide>
 
-<hr>
+
 <slide><h2>Developer's Website</h2>
 
 <strong>The PIA framework is organized as a web site</strong><br>
@@ -895,6 +892,30 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
   <li> <a href="/PIA/Config#app">Examples</a>
 </ul>
 Makes technical transfer very easy.
+</slide>
+
+<hr><set name=subCaption>Acknowledgments</set>
+<slide><h2>Software Used</h2>
+<table>
+  <tr> <th>Text:	<td> GNU Emacs, LaTeX, PIA
+  <tr> <th>Graphics:	<td> xfig, ghostscript, netPBM
+  <tr> <th>Programming:	<td> Java, Perl
+  <tr> <th>Scripting:	<td> PIA, Perl, bash
+  <tr> <th>Web:		<td> PIA, Netscape, Apache, chimera
+  <tr> <th>OS:		<td> <strong>Linux!</strong> (of course)
+</table>
+</slide>
+
+<slide><h2>Hardware Used</h2>
+<table>
+  <tr> <th> Desktop:
+       <td> <a href="http://www.varesearch.com/">VA Research</a>
+  <tr> <th> Laptop:
+       <td> <a href="http://www.ricoh-usa.com/">Ricoh</a>
+	    <a href="http://www.ricoh-usa.com/prodshw/minipc/">Magio</a>
+  <tr> <th> Server/NC:
+       <td> <a href="http://www.corelcomputer.com/">Corel</a> NetWinder
+</table>
 </slide>
 
 <hr>
