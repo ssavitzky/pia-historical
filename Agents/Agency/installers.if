@@ -167,6 +167,14 @@ which is only useful for agents which have no options.
        <br>
        <input type="submit" value="Install"><br>
        </form></if>
+  <dt> <a name="PhotoNet">Photo Net</a>
+       <if><agent-running name="PhotoNet"><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="PhotoNet"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form></if>
   <dt> Photos
        <if><agent-running name="Photos"><then><em>installed</em></then>
        <else>
