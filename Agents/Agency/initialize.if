@@ -10,8 +10,13 @@
 <if><read.file interform file="checkpoint.dat" info>
     <then>
 	<user-message>Restoring from checkpoint.dat</user-message>
-	<agent-restore interform file=checkpoint.dat>
-	restored from <code>checkpoint.dat</code>.
+	<if><agent-restore interform file=checkpoint.dat>
+	    <then>restored from <code>checkpoint.dat</code>.</then>
+            <else><user-message>Restore failed.  Loading <read interform 
+		  info=path file="/Agency/START-UP.html"></user-message>
+		  <actor name=form tag=form handle="submit_forms"></actor>
+		  <read file="/Agency/START-UP.html" interform process skip>
+	    </else></if>
     </then>
     <else>
 	<user-message>Loading startup file <read interform info=path
