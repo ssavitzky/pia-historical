@@ -9,17 +9,21 @@ CONTENTS:
     I. Obtaining the Files
        A. From Inside Ricoh
        B. From Outside Ricoh
-       C. Also Needed
+       C. From CD-ROM
+       D. Also Needed
 
     II. Installing the Files
 	A. At Your Site
 	B. In Your Home Directory
-	C. Under Source Control
+	C. From CD-ROM
+	D. Under Source Control
 
     III. Setup
 
     IV. Running the PIA
 	A. Starting the Program
+	   a. Under Unix
+	   b. Under Windows95
 	B. Using the PIA
 
     V. Questions, problems, or comments:
@@ -46,7 +50,10 @@ I. Obtaining the Files
 	be accessible via FTP in <pia.ricoh.com:/pub/pia>, or HTTP
 	via the public Agency at <http://pia.ricoh.com/>.
 
-   C. Also Needed
+   C. From CD-ROM
+	If you acquire a PIA CD-ROM, it contains the entire, uncompresed PIA directory.
+
+   D. Also Needed
 
 	You will need Java JDK(TM) 1.1.3 or the equivalent.  The JDK can
 	be obtained from <http://www.javasoft.com>.  All required code
@@ -61,6 +68,12 @@ I. Obtaining the Files
 	Several utilities and Agents are written in PERL, and require
 	PERL version 5.003 or higher.  PERL can be obtained from the
 	CPAN archives at <http://www.perl.com/>
+
+	If you plan to run the PIA on Windows95 without doing any development,
+	you can download JRE 1.1.4, the Java runtime environment for "Microsoft
+	Windows 95/NT 4.0".  Visit this site:
+
+		http://www.javasoft.com/products/jdk/1.1/jre/index.html
 
 ========================================================================
 II. Installing the Files
@@ -85,7 +98,11 @@ II. Installing the Files
 
 	This will create a directory pia/ under your home directory.
 
-    C. Under Source Control
+    C. From CD-ROM
+
+	  You can run the PIA from the PIA CD.
+
+    D. Under Source Control
 
 	If you are planning to do work on the Agency, you should check
 	out a working copy into your home directory using CVS. Assuming
@@ -130,21 +147,33 @@ IV. Running the PIA
 
     A. Starting the program
 
-	Run the pia with the command:
+	a. Under Unix
 
-	  pia/bin/pia
+		Run the pia with the command:
 
-	This is a one-line shell script that runs "pia_wrapper".  A
-	complete list of command-line options can be found by running
+		  pia/bin/pia
 
-	  pia/bin/pia -?
+		This is a one-line shell script that runs "pia_wrapper".  A
+		complete list of command-line options can be found by running
 
-	The first time the PIA is run, it will create a directory under
-	your home directory:
+		  pia/bin/pia -?
 
-	  ~/.pia/
+		The first time the PIA is run, it will create a directory under
+		your home directory:
 
-	This is used for storing Agent data and customization files.
+		  ~/.pia/
+
+		This is used for storing Agent data and customization files.
+
+	b. Under Windows95
+		
+		If you are using JRE, run the pia with the command:
+			
+		   pia/bin/piajre.bat
+		
+		otherwise
+			
+		   pia/bin/pia.bat	
 
     B. Using the PIA
 
