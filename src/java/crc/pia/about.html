@@ -1,0 +1,349 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>About the Document Processing System</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>About the Document Processing System</h1>
+
+<blockquote><em>
+  This document contains notes about the PIA's Document Processing System
+  (DPS), as implemented in the Java module <code>crc.dps</code>.
+</em></blockquote>
+
+<h3>See Also:</h3>
+<ul>
+  <li> <a href="handle/about.html">About Handlers</a> in
+       <a href="handle/"><code>handle/</code></a>
+</ul>
+
+<h2>Philosophy</h2>
+
+The DPS has several ways of looking at a document:
+
+<ul>
+  <li> As a character stream
+  <li> As a parse tree
+  <li> As a program, which ``expands'' (evaluates) to a document.
+</ul>
+
+An InterForm could be viewed as an active document (program) which expands
+into a character stream.  The easy way to implement an InterForm under this
+view would be to use the <code>toString</code> method on <code>Node</code>.
+Active nodes would simply expand appropriately by overriding the
+<code>toString</code> method, and everything would be cool.  <p>
+
+There are several problems with this:
+<ol>
+  <li> In some cases the InterForm is represented as a stream (file), and we
+       want to expand it ``on the fly''.
+  <li> In other cases, we want the result to be another parse tree. 
+  <li> In yet other cases, we want the result to be something else altogether,
+       for example nothing (evaluation for side effects), a bitmap (rendering
+       on the screen or for print), or a totally transformed document in a file.
+  <li> Sometimes we want to do all three:  expand into a stream, modify the
+       original InterForm parse tree itself, and store the modified parse tree
+       back into the original file.
+  <li> What's worse, we want to be able to process the same document in
+       different ways (e.g. expanding it or pretty-printing it), using
+       different definitions for its tags.
+</ol>
+
+As a result, we prefer to view an InterForm as an ActiveDocument composed of
+Nodes (some of) which implement the ActiveNode interface.  <em>Active</em>
+nodes simply expand into more nodes.  The classes whose names start with
+``<code>ParseTree</code>'' in <code>crc.dps.active</code> implement the
+<code>ActiveNode</code> interface. <p>
+
+The efficient way to accomplish this kind of processing is to use a parse tree
+<em>traverser</em> as an <code>Input</code>, and a <em>constructor</em> of
+some sort for an <code>Output</code>.  This avoids actually constructing nodes
+or nodelists until they are really needed.  (Attribute lists, in particular,
+will usually have to be constructed, but the attributes themselves can be
+shared so the overhead is small.  Nodes in child lists <em>cannot</em> be
+shared, but we use traversal to avoid constructing them in most cases.) <p>
+
+The default action for a node is to copy it (recursively, if necessary) from
+the current <code>Input</code> to the current <code>Output</code>.  Active
+nodes have an <code>action</code> routine that performs any necessary
+computation, and puts the results on the <code>Output</code>.
+
+<h3>Local Transformations</h3>
+
+Active nodes in the DPS all have the characteristic that they implement
+<em>local</em> functions:  at most they will be replaced by a NodeList.<p>
+
+If it can be determined at parse time that a node contains no children
+with side effects, all the children of that node can be expanded in
+parallel. <p> 
+
+In any case, a document in which all active nodes are local can be processed
+in a single depth-first, left-to-right traversal. 
+
+
+<h2>Implementation:</h2>
+
+<h3>Processing Overview</h3>
+
+The fundamental implementation is to <em>traverse</em> an active document
+(ParseTree) using a kind of iterator called an <code>Input</code> An
+<code>Input</code> is basically a specialized version of the DOM's
+<code>TreeIterator</code> <em>except:</em>
+
+<ul>
+  <li> It may be unidirectional, implementing only the navigation operations
+       <ul>
+	 <li> <code>toNextSibling</code>
+	 <li> <code>toParent</code>
+	 <li> <code>toFirstChild</code>
+       </ul>
+  <li> Rather than directly returning the next Node, it is possible to
+       <em>query</em> it to determine its node type, string data, and
+       whether it has children or attributes.
+  <li> If <code>input.hasChildren()</code> returns <code>true</code> but
+       <code>input.getNode().hasChildren()</code> returns <code>false</code>,
+       we know that <code><em>input</em></code> is a parser, and that
+       the current node's children have not been seen yet.
+  <li> The following all return implementations of ActiveNode:
+       <ul>
+	 <li> <code>getNode</code> -- a reference to the actual current node
+	      in the parse tree.  It is possible that not all of its children
+	      will be present.
+	 <li> <code>getTree</code> -- a reference to the same object as
+	      getNode, except that it is guaranteed that all of its children
+	      are present. 
+       </ul>
+</ul>
+
+(Note that <code>TreeIterator</code> has been dropped from recent
+versions of the DOM Level 1, but it's still a good idea.)<p>
+
+Similarly, the output is constructed by means of an <code>Output</code>.  This
+combines traversal with construction, so that it is possible to add a node to
+the document under construction, then go on to add its children. <p>
+
+This means that Output needs <code>startNode</code> and <code>endNode</code>
+as well as <code>putNode</code> (which adds a complete subtree).  <p>
+
+A <code>Parser</code> is simply a specialized <code>Input</code> that
+implements the standard operations by parsing an input stream.  It does
+<em>not</em> have to build an actual tree.  Similarly, an <code>Output</code>
+need not be a tree constructor; it might simply output a text representation
+of the node to an output stream. <p>
+
+An action routine will normally obtain its ``arguments'' (i.e. the attributes
+and children of the node that invoked it) by way of a suitable Output.  This
+could then be returned to the action routine's calling context as a
+continuation.  In any case, the Output is strongly typed, so the action
+routine can obtain the relevant objects (e.g. ActiveElement, NodeList, etc.)
+knowing their exact types.<p>
+
+
+<h3>Algorithms:</h3>
+
+The basic main loop, without evaluation, is:
+
+<h4>copyNodes(input, output)</h4>
+<ol>
+  <li> input.hasChildren?
+       <dl>
+	 <dt> yes:
+	 <dd> output.startNode
+	      <ol>
+		<li> input.toFirstChild
+		<li> copyNodes(input, output)
+		<li> input.toParent
+	      </ol>
+	      output.endNode
+	 <dt> no:
+	 <dd> output.putNode
+       </dl>
+  <li> input.toNextSibling <em>(get a new node)</em>
+  <li> repeat until no more siblings
+</ol>
+
+This can be done iteratively by just keeping track of nesting depth, although
+it's probably simpler to do it recursively.<p>
+
+The basic main loop for evaluation reduces to <code>copyNodes</code> if no
+active nodes are present:
+
+<h4>processNodes(input, context, output)</h4>
+<ol>
+  <li> node = input.getNode <em>(get a new node)</em>
+  <li> node.hasAction?
+       <dl>
+	 <dt> yes:
+	 <dd> node.action(input, context, output)
+	 <dt> no:
+	 <dd> <em>(copy and process)</em>
+	      <ol>
+		<li> input.hasChildren?
+		     <dl>
+		       <dt> yes:
+		       <dd> output.startNode
+			    <ol>
+			      <li> input.toFirstChild
+			      <li> processNodes(input, context, output)
+			      <li> input.toParent
+			    </ol>
+			    output.endNode
+		       <dt> no:
+		       <dd> output.putNode
+		     </dl>
+	      </ol>
+       </dl>
+  <li> node = input.toNextSibling <em>(get a new node)</em>
+  <li> if (n != null) process(input, context, output)
+</ol>
+
+<p><code>processNodes</code> is actually a method of the interface
+<code>crc.dps.Process</code>.  <code>Process</code> in turn <em>extends</em>
+<code>Context</code>, and has <code>input</code> and <code>output</code> as
+instance variables.  This makes the code as implemented somewhat less clear
+than that given above.  An additional complication is the fact that a node's
+``action'' is actually contained in a separate object (the ``handler'') which
+the node points to. 
+
+<p>It is the responsibility of the node's action handler to obtain and process
+its contents if necessary.  This is done by constructing a ``subProcess'' with
+the original input, and a nodelist as output.  It is possible to further
+simplify the processing, at the expense of efficiency, by insisting that every
+``passive'' node have an action that simply performs the ``copy and process''
+step.  (In fact, every passive node <em>does</em> have such an action, but
+we test for several common cases using the <code>actionCode</code> method.) 
+
+<p>A node's action is either a ``primitive'' (which executes at this point), or
+is specified by an ``action list'' of nodes (some of which may be active).  In
+the latter case, the original node's attribute list and processed content list
+are bound to the local variables (entities) <code>attributes</code> and
+<code>content</code> respectively, and a new subProcess is constructed with
+the action list as input and the original output as output.
+
+<p>The typical node action, then, is:
+
+<h4>action(input, context, output)</h4>
+<ol>
+  <li> atts = getProcessedAttributes(input, context)
+  <li> input.hasChildren?
+       <ol> <em>(process and collect children)</em>
+	 <li> content = new NodeList;
+	 <li> input.toFirstChild
+	 <li> process(input, context, content)
+	 <li> input.toParent
+       </ol>
+  <li> <em>(Construct new context; bind entities)</em>
+       <ol>
+	 <li> p = context.subProcess;
+	 <li> p.set("attributes", atts)
+	 <li> p.set("content", content)
+       </ol>
+  <li> process(actions, p, output) <em>(process action list)</em>
+</ol>
+
+Some (primitive) node actions may require the content in a different form, for
+example a string.  In this case they simply use a different type of object as
+their output.<p>
+
+Again, there are several complications in the actual code.  For example,
+NodeList cannot (presently) be used as either an input or an output; it has to
+be wrapped in an iterator. <p>
+
+
+<h3>Structure Sharing and Copying</h3>
+
+<p>Because of the way the DOM is designed, with nodes linked to their parent
+and siblings, it is essentially impossible to share structure.  If a node is
+part of an existing document tree and needs to be added to a new one, it has
+to be recursively copied.  This is inefficient, so the DPS only copies nodes
+when it is actually building structure.
+
+<p>The main exception to this at present is attribute lists -- these are
+represented as instances of <code>ParseTreeAttrs</code>, which is essentially
+an array.  Hence attributes can be shared.  Attribute <em>lists</em>, however,
+have to be copied in order to prevent changes made to the attributes of one
+element from being reflected in those of its copies.  Fortunately, attribute
+lists are fairly light-weight.  
+
+<p>A major advantage of this implementation is that, if a document consists
+primarily of text and ordinary ``passive'' markup, the entire parse tree is
+never actually constructed.  Passive nodes can flow directly from the input to
+the output without having to be copied.  This is partly because an
+<code>Input</code> can be queried about the ``effective'' structure
+(i.e. whether a node has children), while actually handing out an ``orphan''
+node with no parent and no children, ready to be inserted into a new
+tree by the <code>Output</code>.
+
+<hr>
+<h2> Alternative Implementations</h2>
+
+<p>There are two main alternative implementation techniques.
+
+<h3>Recursive Tree Expansion</h3>
+
+<p>ne alternative implementation would be to generate a complete parse tree,
+with each node having an ``<code>expand</code>'' method that recursively
+expands the node and its children, putting the results on an
+<code>Output</code>.  This is similar to the standard OO technique of having
+every object know how to ``print itself'' on an output stream.
+
+<p>The disadvantage of this approach is that a document's entire parse tree
+has to reside in memory.  The advantage is that most, if not all, context can
+be kept on the execution stack.
+
+<p>An extreme variation on this technique is to <em>compile</em> the original
+document into an equivalent program, and then execute it.
+
+<h3>Event Driven</h3>
+
+<p>Many parsers (including all SGML parsers conforming to the SAX interface
+standard) operate by calling an ``action routine'' for each of the following
+``events'':
+
+<ol>
+  <li> encountering a start tag
+  <li> encountering an end tag
+  <li> encountering some other node
+</ol>
+
+<p>They are, in other words, calling on the equivalent of an
+<code>Output</code> to perform their processing.  It would be possible to
+rewrite our processing algorithm so that an <code>Output</code> could do the
+necessary processing without needing an <code>Input</code>.  It would then be
+operating in ``push mode''.
+
+<p>There are several variations on this technique:
+
+<ol>
+  <li> The first is to separate the action for each active node into a
+       ``start action'' and an ``end action''.  In between, a processed parse
+       tree is constructed for the content.  Most of the work happens in the
+       end action; the processor's state consists mainly of a stack of
+       partially-constructed trees. 
+
+  <li> The second is to have the ``start action'' <em>return</em> a new
+       <code>Output</code> as a continuation, pushing the previous
+       output on a stack.  Performing an end tag event on such an output
+       would result in the end action being performed and the previous
+       output being popped.  This can be significantly more efficient if
+       special processing has to be done on an active tag's content.
+
+  <li> The third, which we actually implemented for our first ``InterForm
+       Interpretor'', is to have the event routines construct a sequence of
+       ``token'' objects which are then fed to the processor (which associates
+       separate actions with them).  This has the disadvantage that objects
+       are constructed for the end tags, then immediately thrown away.
+
+  <li> The fourth, by far the simplest to derive from the present code, is to
+       put the parser and processor in separate threads.  The ``event-driven''
+       <code>Input</code> simply blocks until the parser thread provides it
+       with a node.
+</ol>
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

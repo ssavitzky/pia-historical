@@ -1,0 +1,84 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>PIA: To-Do List</title>
+</head><body>
+<h1>To-Do List</h1>
+
+<blockquote><em>
+  This file contains pending tasks for the <code>crc.pia</code> package
+</em></blockquote>
+
+See also:
+<ul>
+  <li> <a href="done.html">Completed tasks</a>
+  <li> <a href="#Keywords">Keywords</a>
+  <li> <a href="#end">Oldest Entry</a> (at end.)
+</ul>
+
+<ol>
+  <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
+       Actually, finding files ought to be in a utility class, because you
+       need to get out: the file pathname, the URL path, and the part of the
+       URL after the file that was found (which gets passed to the
+       interform). 
+       (1998-10-13) <br>
+       
+  <li> <b>Bug</b> no namespace for all installed agents. <br>
+       (1998-10-12) <br>
+       
+  <li> <b>Hole:</b> PIA datatype transition. <br>
+       During the transition Agent and Transaction need to be able to
+       return both SGML and DOM data as needed.  Fortunately most of the
+       namespaces contain only strings; it's really only hooks that differ.
+       (1998-06-18) <br>
+       -- Make Agent and Transaction implement an interface with methods
+	  like <code>getObjectAt</code> and <code>getStringAt</code>,
+	  etc. instead of the Attr interface; sort it out in the handlers.
+
+  <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
+       Neither does its predecessor, InterFormContent.
+       (1998-07-08) <br>
+
+  <li> <b>Impr:</b> ISO 8601 date representation (dashes) <br>
+       See <a href="http://www.ft.uni-erlangen.de/~mskuhn/iso-time.html">this
+       summary</a>.  The main things needing fixing are the entity table
+       initialization, and dates as presented by the History agent's hook.
+       (1998-06-18) <br>
+       -- Should add timezone and UTC time/date as well.
+
+
+</ol>
+
+<a name="end">(End of list)</a>
+
+<h2><a name="Keywords">Description of Keywords</a></h2>
+
+(Listed in order of decreasing urgency.)
+
+<dl>
+  <dt> <b>Bug</b>
+  <dd> A (typically small) problem with a simple, unambiguous description of
+       its symptoms.
+  <dt> <b>Hole</b>
+  <dd> A piece of missing, but important, functionality.
+  <dt> <b>Goal</b>
+  <dd> A target capability (includes a date)
+  <dt> <b>Check</b>
+  <dd> Something to check for; a potential stumbling block or place where the
+       implementor may have cut corners in the heat of the moment.  For
+       example, Y2K problems.
+  <dt> <b>Impr</b>ovement
+  <dd> A desirable improvement.
+  <dt> <b>Prop</b>osal
+  <dd> A proposal that will need to be discussed further.
+  <dt> <b>Wish</b>
+  <dd> A desired improvement of low priority.
+</dl>
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
