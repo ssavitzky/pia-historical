@@ -74,6 +74,7 @@ prep_rel::
 	cd $(CLASSDIR); make clean ; make
 	cd $(INTERFORM); make
 	cd $(CLASSDIR);make crc.zip; make alldoc
+	cd $(CLASSDIR);rm -fr java
 
 ### Binary release
 
