@@ -307,7 +307,44 @@ public class Utilities {
 	throw e5;
       }
     }
-    
+  }
+  
+  /**
+   * Read an Object from a stream.  If the object implements the Registered
+   *	interface it is registered.  If the object is a List, every object
+   *	on the list is registered if necessary.
+   *
+   *	@see crc.ds.List
+   *	@see crc.ds.Registered
+   */
+  public static synchronized Object readObjectFrom( InputStream f )
+       throws NullPointerException, IOException
+  {
+    ObjectInputStream source = null;
+
+    try {
+      source = new ObjectInputStream(f);
+      return register(source.readObject());
+    }catch(NullPointerException e1){
+      throw e1;
+    }catch(ClassNotFoundException e){
+      return null; //throw e;
+    }catch(InvalidClassException e){
+      return null; //throw e;
+    }catch(StreamCorruptedException e){
+      return null; //throw e;
+    }catch(OptionalDataException  e){
+      return null; //throw e;
+    }catch(IOException e3){
+      throw e3;
+    }finally{
+      try {
+	if (source != null) source.close();
+	else if (f != null) f.close();
+      }catch(IOException e5){
+	throw e5;
+      }
+    }
   }
   
   /**
