@@ -2,7 +2,10 @@ Basic-tagset.html
 StandAlone-tagset.html
 Standard-tagset.html
 basic.html
+*--xhtml.html
 standalone.html
 standard.html
 tagset.html
 tsdoc.html
+xhtml.html
+xxml.html
