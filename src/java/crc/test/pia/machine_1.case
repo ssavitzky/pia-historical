@@ -1,0 +1,17 @@
+gen_get_machine
+server.pl &
+java crc.test.pia.T_machine -1 -proxy input/get_machine.txt
+killserver.pl
+
+
+
+
+
+
+
+
+
+
+
+
+
