@@ -168,10 +168,15 @@ public class Run  extends Environment {
 	ent("urlPath", transaction.requestURL().getFile());
       }
 
+
       // form parameters might be either query string or POST data
-      if(transaction.hasQueryString()){
-        ent("urlQuery",  transaction.queryString());
-	ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
+      // associated with the REQUEST
+      Transaction reqTrans = transaction.requestTran();
+      if(reqTrans == null) reqTrans = transaction;
+      
+      if(reqTrans.hasQueryString()){
+        ent("urlQuery",  reqTrans.queryString());
+	ent("FORM",new AttrWrap(new AttrTable(reqTrans.getParameters())));
       } else {
 	// No query, so initialize to an empty form.
 	ent("urlQuery",  "");
