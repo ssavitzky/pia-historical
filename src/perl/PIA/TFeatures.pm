@@ -284,6 +284,12 @@ sub get_url {
     return $url;
 }
 
+$computers{'content-type'} = \&get_content_type;
+sub get_content_type {
+    my($trans)=@_;
+    return $trans->content_type;
+}
+
 $computers{'method'} = \&get_method;
 sub get_method {
     my ($trans) = @_;
