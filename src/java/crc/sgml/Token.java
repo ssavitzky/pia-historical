@@ -131,6 +131,9 @@ public class Token implements SGML {
     return tag.equals("");
   }
 
+  /** Return true if the object implements the Attrs interface */
+  public boolean isAttrs() { return false; }
+
   /** Return true for an empty list or a token with no content. */
   public boolean isEmpty() {
     return content == null || content.isEmpty();
@@ -384,6 +387,18 @@ public class Token implements SGML {
     while (keys.hasMoreElements()) {
       append(new Token("dt", keys.nextElement().toString()));
       append(new Token("dd", Util.toSGML(values.nextElement())));
+    }
+  }
+
+  public Token(String tag, Attrs tbl) {
+    this();
+    this.tag = tag;
+    java.util.Enumeration keys = tbl.attrs();
+
+    while (keys.hasMoreElements()) {
+      String key = keys.nextElement().toString();
+      append(new Token("dt", key));
+      append(new Token("dd", tbl.attr(key)));
     }
   }
 

@@ -8,7 +8,9 @@ TOPDIR=../../..
 FILES = \
 	Attrs.java \
 	AttrBase.java \
+	AttrSGML.java \
 	AttrTable.java \
+	AttrWrap.java \
 	SGML.java \
 	Text.java \
 	Token.java \
@@ -24,7 +26,11 @@ include $(TOPDIR)/makefiles/file.make
 
 AttrBase.class: Attrs.java SGML.java ../ds/List.java
 
+AttrSGML.class: Attrs.java AttrBase.java SGML.java ../ds/List.java
+
 AttrTable.class: AttrTable.java Attrs.java SGML.java ../ds/Table.java
+
+AttrWrap.class: Attrs.java AttrBase.java AttrSGML.java SGML.java ../ds/List.java
 
 Attrs.class: Attrs.java SGML.java
 

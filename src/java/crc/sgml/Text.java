@@ -62,6 +62,9 @@ public class Text implements SGML {
     return true;
   }
 
+  /** Return true if the object implements the Attrs interface */
+  public boolean isAttrs() { return false; }
+
   /** Parser state:  0 for a complete element. */
   public byte incomplete() {
     return 0;

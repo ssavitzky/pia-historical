@@ -8,7 +8,7 @@ package crc.sgml;
  *	They are used not only for element attributes but for entity
  *	lookup tables and InterForm interpretor variables.
  */
-public interface Attrs extends java.lang.Cloneable {
+public interface Attrs {
 
   /** Test whether attributes exist.  Almost always returns true; may
    *	true even if no attributes are currently defined. */

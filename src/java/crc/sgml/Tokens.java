@@ -84,6 +84,9 @@ public class Tokens extends List implements SGML {
     return nItems() == 1 && itemAt(0).isText();
   }
 
+  /** Return true if the object implements the Attrs interface */
+  public boolean isAttrs() { return false; }
+
   /** A string ``tag'' that is guaranteed to be null if isList(),
    *	and "" if isText(). */
   public String tag() {

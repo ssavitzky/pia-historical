@@ -21,6 +21,9 @@ public interface SGML extends java.lang.Cloneable {
   /** Return true for a list of tokens. */
   boolean isList();
 
+  /** Return true if the object implements the Attrs interface */
+  boolean isAttrs();
+
   /** Return true for an empty list or a token with no content. */
   boolean isEmpty();
 

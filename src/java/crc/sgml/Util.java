@@ -224,4 +224,37 @@ public class Util {
     return n.toString();
   }
 
+  /** Decode a string in <code>x-www-form-urlencoded</code> format.
+   *	This exists only because java.net.URLDecoder doesn't. <p>
+   *	
+   *	To convert a String, each character is examined in turn: 
+   *	<ul>
+   *	  <li> The ASCII characters 'a' through 'z', 'A' through 'Z',
+   *		and '0' through '9' remain the same.   
+   *	  <li> The space character ' ' is converted into a plus sign '+'. 
+   *	  <li> All other characters are converted into the 3-character
+   *		string "%xy", where xy is the two-digit 
+   *		hexadecimal representation of the lower 8-bits of the
+   *		character.  
+   *	</ul>
+   */
+  public static final String urlDecode(String s) {
+    if (s.indexOf('+') < 0 && s.indexOf('%') < 0) return s;
+
+    String ss = "";
+    for (int i = 0; i < s.length(); ++i) {
+      char c = s.charAt(i);
+      if (c == '+') {
+	ss += ' ';
+      } else if (c == '%') {
+	int cc = (int)s.charAt(++i);
+	cc = cc * 16 + (int)s.charAt(++i);
+	ss += (char)cc;
+      } else {
+	ss += c;
+      }
+    }
+    // === unimplemented
+    return s;
+  }
 }
