@@ -58,7 +58,7 @@ pia_class.toc::
 crc.zip: pia_class.toc
 	$(BINDIR)/jarcrc
 	for p in $(PACKAGES); do \
-		(cd `echo $$p`; make clean) ; \
+		(cd `echo $$p`; rm *.class) ; \
 	done
 	mv $@ $(LIBDIR)
 
@@ -106,7 +106,7 @@ report::
 JIGSAWSOURCE = /pia1/ext/java/Jigsaw/src/classes
 JAVADOC_CLASSES = $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 JAVADOC_SOURCES = $(CLASSDIR):$(CLASSPATH):$(JAVASOURCE):$(JIGSAWSOURCE)
-JAVADOC_CMD = javadoc -d $(ADOCDIR) -package \
+JAVADOC_CMD = javadoc -J-mx64m -J-ms64m -d $(ADOCDIR) -package \
 	-classpath $(JAVADOC_CLASSES) -sourcepath $(JAVADOC_SOURCES)
 
 alldoc::
