@@ -27,11 +27,12 @@ import java.util.Enumeration;
 import java.lang.String;
 import java.lang.StringBuffer;
 
-// Removed dispatch code, plus debug_ subclass
 
 /**
- * Handler for &lt;typical&gt;....&lt;/&gt;  
- *
+ * Handler for &lt;debug&gt; &lt;/&gt;  This tag prints
+ * the node, document fragment, or document, that is between
+ * debug begin and end tags as a tree.  It also returns the
+ * document itself.  
  * <p>	
  *
  * @version $Id$
@@ -51,7 +52,7 @@ public class debugHandler extends GenericHandler {
   		     ActiveAttrList atts, NodeList content) {
 
     // Actually do the work. 
-    OutputTree trOut = new OutputTree(out);
+    OutputTrace trOut = new OutputTrace(out);
     // System.out.println("Length of content: " + content.getLength());
     
     NodeEnumerator enum = content.getEnumerator();
@@ -65,7 +66,7 @@ public class debugHandler extends GenericHandler {
 
   }
 
-  /** Print the children node as a tree.
+  /** Print the children of a node as a tree.
     */
   protected void printTree(Node node, Context cxt, Output out, int indentNum) {
     // System.out.println("printTree Node: " + node.toString());
