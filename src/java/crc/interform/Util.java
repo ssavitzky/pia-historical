@@ -11,9 +11,15 @@ import crc.interform.Handler;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
+import crc.sgml.Attrs;
+import crc.sgml.AttrWrap;
+import crc.sgml.Element;
 
 import crc.ds.List;
 import crc.ds.Table;
+
+import java.util.Date;
+import java.util.Enumeration;
 
 /** The Util class contains no data, only static methods.  For the
  *	most part, these are operations that belong on classes like
@@ -21,6 +27,84 @@ import crc.ds.Table;
  *	be extended.  In Smalltalk we would just extend them and be
  *	done with it. */
 public class Util extends crc.sgml.Util {
+
+  /************************************************************************
+  ** Date hacks (JDK 1.1 doesn't have them):
+  ************************************************************************/
+
+  /** Compute Julian day.  Saturday is 0 modulo 7.  <p>
+   *
+   * Note: This code has been in the Savitzky family for generations:
+   *	the original implementation was done in FORTRAN by Abraham
+   *	Savitzky in 1963 or thereabouts.
+   */
+  public static long julianDay(long y, long m, long d) {
+    if (m > 2) {			  /* march = 0 kludge */
+        m -= 3;
+    } else {
+        m += 9; y -= 1;
+    }
+    long c = y/100; long ya = y % 100;
+    return((146097L * c) / 4 + (1461L * ya) / 4 +
+             (153L * m + 2) / 5 + d + 1721119L);
+  }
+
+  /** Compute Julian day from a Date object. */
+  public static long julianDay(Date aDate) {
+    return julianDay(aDate.getYear()+1900, aDate.getMonth(), aDate.getDay());
+  }
+
+  /** Compute day of the week (Sunday = 0) from a Julian day. */
+  public static int getWeekday(Date aDate) {
+    // === should be +1; indicates an arithmetic problem in julianDay ===
+    return (int)(julianDay(aDate) -2) % 7;
+  }
+
+  /** Compute day of the month from a Julian day. */
+  public static int day(long j) {
+    long ji, jy, jm, jd;
+
+    ji = j - 1721119L;
+    jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
+    ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
+    jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
+    jy = 100 * jy + ji;
+
+    if (jm < 10) jm += 3;
+    else             {jm -= 9; jy += 1;}
+    return((int)jd);
+  }
+
+
+  /** Compute  month from a Julian day. */
+  public static int month(long j) {
+    long ji, jy, jm, jd;
+
+    ji = j - 1721119L;
+    jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
+    ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
+    jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
+
+    if (jm < 10) jm += 3;
+    else             {jm -= 9;}
+    return((int)jm);
+  }
+
+
+  /** Compute month from a Julian day. */
+  public static int year(long j) {
+    long ji, jy, jm, jd;
+
+    ji = j - 1721119L;
+    jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
+    ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
+    jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
+    jy = 100 * jy + ji;
+
+    if (jm < 10) jm += 3;
+    else             {jm -= 9; jy += 1;}
+    return((int)jy);
+  }
 
 
   /************************************************************************
@@ -57,7 +141,7 @@ public class Util extends crc.sgml.Util {
   }
 
   /************************************************************************
-  ** Attribute utilities:
+  ** Actor Argument utilities:
   ************************************************************************/
 
   public static String getString(SGML it, String attr, String dflt) {
@@ -70,6 +154,79 @@ public class Util extends crc.sgml.Util {
     return (v == null)? dflt : (int) v.numValue();
   }
 
+
+  /************************************************************************
+  ** Actor Result utilities:
+  ************************************************************************/
+
+  /** Return a list as the result from expanding an element
+   *	<code>it</code>.  The result will be a blank-separated string
+   *	unless <code>it</code> has <code>sep</sep> or <code>tag</code>
+   *	attributes.
+   */
+  public static SGML listResult(SGML it, Enumeration aList) {
+
+    if (it.hasAttr("tag")) {
+      return new Element(it.attrString("tag"), aList);
+    } else {
+      String sep = getString(it, "sep", " ");
+      String s = "";
+      while (aList.hasMoreElements()) {
+	String n = aList.nextElement().toString();
+	s += n;
+	if (aList.hasMoreElements()) s += sep;
+      }
+
+      return new Text(s);
+    }
+  }
+
+  /** Return attributes as the result from expanding an element
+   *	<code>it</code>.  The result will be a blank-separated string
+   *	of <code><em>attr</em>=<em>value</em></code> pairs
+   *	unless <code>it</code> has <code>sep</sep> or <code>tag</code>
+   *	attributes.
+   */
+  public static SGML attrsResult(SGML it, Attrs anAttrs) {
+    java.util.Enumeration e = anAttrs.attrs();
+
+    if (it.hasAttr("tag")) {
+      return new Element(it.attrString("tag"), anAttrs);
+    } else {
+      String sep = getString(it, "sep", " ");
+      String s = "";
+      while (e.hasMoreElements()) {
+	String n = e.nextElement().toString();
+	SGML v = anAttrs.attr(n);
+
+	s += n;
+	if (v != Token.empty && !v.isList() && !v.isEmpty()) {
+	  s += "=\"" + v.toString() + "\"";
+	}
+	if (e.hasMoreElements()) s += sep;
+      }
+
+      return new Text(s);
+    }
+  }
+
+  /** Return a query string as the result from expanding an element
+   *	<code>it</code>.  The result will be a blank-separated string
+   *	of <code><em>attr</em>=<em>value</em></code> pairs
+   *	unless <code>it</code> has <code>sep</sep> or <code>tag</code>
+   *	attributes.
+   */
+  public static SGML queryResult(SGML it, Attrs anAttrs) {
+    java.util.Enumeration e = anAttrs.attrs();
+
+    if (it.hasAttr("tag")) {
+      return new Element(it.attrString("tag"), anAttrs);
+    } else if (it.hasAttr("sep")) {
+      return attrsResult(it, anAttrs);
+    } else {
+      return new AttrWrap(anAttrs).toText();
+    }
+  }
 
   /************************************************************************
   ** File and Class Loading utilities:
