@@ -147,7 +147,7 @@ element</alist>
 
 <adscr>demo</adscr>
 
-<demo><demo><get pia name="pia.debug"></demo></demo>
+<demo><demo><get name="piaUSER"></demo></demo>
 <p>
 
 <adscr>actor-attrs</adscr>
@@ -219,8 +219,6 @@ element</alist>
   <dt> <demo>&foo;</demo>
   <dd> names defined with &lt;set&gt; are accessible both with &lt;get&gt; and
        with entity references.
-  <dt> <demo><get pia name="crc.pia.verbose"></demo>
-  <dd> 
   <dt> <demo><code attribute=value><get element name=attribute></code></demo>
   <dd>
   <dt> <demo><get entity name=filePath></demo>
