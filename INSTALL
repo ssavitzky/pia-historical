@@ -1,4 +1,4 @@
-PIA Installation Manual, Alpha release 0.9
+PIA Installation Manual, Alpha release 1.0
 ==========================================
 
 	This manual describes how to install a Personal Information
@@ -48,7 +48,7 @@ I. Obtaining the Files
 
    C. Also Needed
 
-	You will need Java JDK(TM) 1.0.2 or the equivalent.  The JDK can
+	You will need Java JDK(TM) 1.1.3 or the equivalent.  The JDK can
 	be obtained from <http://www.javasoft.com>.  All required code
 	outside the JDK is provided with the release.
 
@@ -163,7 +163,7 @@ IV. Running the PIA
 V. Questions, problems, or comments:
 
     A. Before filing a bug report, please check the known bugs at:
-	http://pia.crc.ricoh.com/release/0.9/KnowBugs.html
+	http://pia.crc.ricoh.com/release/1.0/KnowBugs.html
 
     B. Other questions or comments can be sent to pia_bugs@crc.ricoh.com
 

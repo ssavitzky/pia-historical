@@ -1,7 +1,7 @@
-README: The Information Agency Alpha release 0.9
+README: The Information Agency Alpha release 1.0
 ==================================================
 
-This is 0.9 (Alpha) release of the Information Agency.
+This is 1.0 (Alpha) release of the Information Agency.
 An Information Agency is a kind of proxy web server that provides an
 environment for document processing agents.  A Personal Information Agency
 sits between you and the rest of the web world, providing a place for agents
@@ -31,7 +31,7 @@ Supported platforms
 -------------------
 
 The PIA is written in Java, and should be extremely portable.  So far 
-it has been tested on Solaris and Linux with JDK 1.0.2 and JDK 1.1
+it has been tested on Solaris and Linux with JDK 1.1.3
 
 
 Quick Start
