@@ -101,6 +101,26 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected AgentMachine virtualMachine;
 
+  /**
+   * Act-on Hook.  A pre-parsed piece of InterForm code that is run when 
+   *	a transaction is matched by the agent.  Initialized by setting the 
+   *	agent's <code>act-on</code> or <code>_act_on</code> attribute.
+   */
+  protected SGML actOnHook;
+
+  /**
+   * Handle Hook.  A pre-parsed piece of InterForm code that is run when 
+   *	a transaction is being satisfied by the agent.  Initialized by 
+   *	setting the agent's <code>handle</code> or <code>_handle</code> 
+   *	attribute.
+   */
+  protected SGML handleHook;
+
+
+  /************************************************************************
+  ** Initialization:
+  ************************************************************************/
+
   /** Initialization.  Subclasses may override, but this should rarely
    *	be necessary.  If they <em>do</em> override this method it is
    *	important to call <code>super.initialize()</code>.
@@ -126,44 +146,26 @@ public class GenericAgent extends AttrBase implements Agent {
     if (RESOLVE_INITIALIZE) {
       createRequest("GET", url, null );
     } else {
+      /* Run the initialization in the current thread to ensure that 
+       * agents are initialized in the correct order and that no requests
+       * are made on partially-initialized agents.
+       */
       String fn = findInterform("initialize.if", true);
       Run.interformSkipFile(this, fn, makeRequest(machine(), "GET", url, null),
 			    Pia.instance().resolver());
     }
   }
 
+  /************************************************************************
+  ** Creating and Submitting Requests:
+  ************************************************************************/
+
   /**
    * Create a new request given method, url, query.  The results are tossed
    * on the floor.
    */
   public void createRequest(String method, String url, String queryString){
-    Pia.debug(this, "createRequest -- the method-->"+method);
-    Pia.debug(this, "createRequest -- the url   -->"+url);
-    Pia.debug(this, "createRequest -- the queryString  -->"+queryString);
-    Transaction request = null;
-
-    if( queryString == null ) {
-      request =  new HTTPRequest();
-      request.fromMachine( machine() );
-    } else if ("GET".equalsIgnoreCase(method)) {
-      request =  new HTTPRequest();
-      request.fromMachine(machine());
-      url += queryString;
-    } else {
-      FormContent c = new FormContent( queryString );
-      request = new HTTPRequest( machine(), c, false );
-
-      request.setHeader("Version", version());
-      request.setContentType( "application/x-www-form-urlencoded" );
-      request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
-      request.setContentLength( queryString.length() );
-    }
-
-    request.toMachine( Pia.instance().thisMachine() );
-    request.setMethod( method );
-    request.setRequestURL( url );
-
-    request.startThread();
+    makeRequest(machine(), method, url, queryString).startThread();
   }
 
   /**
@@ -177,6 +179,9 @@ public class GenericAgent extends AttrBase implements Agent {
   /** Make a new request Transaction on this agent. */
   public Transaction makeRequest(Machine m, String method, String url, 
 				 String queryString) {
+    Pia.debug(this, "makeRequest -->"+method+" "+url 
+	      + ((queryString == null)? "" : "?"+queryString));
+
     Transaction request = null;
 
     if( queryString == null ){
@@ -261,7 +266,7 @@ public class GenericAgent extends AttrBase implements Agent {
   ** File attributes:
   ************************************************************************/
 
-  // === file attributes don't seem to be used at all ===
+  // === file attributes: used only in Dofs (for root) ===
 
   /**
    * set a file attribute
@@ -467,6 +472,7 @@ public class GenericAgent extends AttrBase implements Agent {
    * value is 0,1 (exact match--for don't care, omit the feature)
    */
   public void matchCriterion(String feature, Object value) {
+    Pia.debug(this, name()+" match "+feature+"="+value);
     matchCriterion(Criterion.toMatch(feature, value));
   }
   
@@ -474,6 +480,7 @@ public class GenericAgent extends AttrBase implements Agent {
    * Set a boolean match criterion.
    */
   public void matchCriterion(String feature, boolean test) {
+    Pia.debug(this, name()+" match "+feature+"?"+test);
     matchCriterion(Criterion.toMatch(feature, test));
   }
 
@@ -526,9 +533,12 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /**
    * Act on a transaction that we have matched.  
-   *
    */
   public void actOn(Transaction ts, Resolver res){
+    if (actOnHook != null) {
+      Pia.debug(this, name()+".actOnHook ="+actOnHook.toString());
+      Run.interformHook(this, actOnHook, ts, res);
+    }
   }
 
   /**
@@ -538,7 +548,12 @@ public class GenericAgent extends AttrBase implements Agent {
    * may want to intercept a transaction meant for somewhere else.
    */
   public boolean handle(Transaction ts, Resolver res){
-    return false;
+    if (handleHook != null) {
+      Pia.debug(this, name()+".handleHook ="+handleHook.toString());
+      Run.interformHook(this, handleHook, ts, res);
+      return true;
+    } else
+      return false;
   }
 
 
@@ -585,7 +600,15 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /** Set an attribute. */
   public synchronized void attr(String name, SGML value) {
-    attributes.attr(name.toLowerCase(), value);
+    name = name.toLowerCase();
+    attributes.attr(name, value);
+    if (name.equals("act-on") || name.equals("_act_on")) {
+      actOnHook = value;
+      Pia.debug(this, "ActOn hook :="+value.toString());
+    } else if (name.equals("handle") || name.equals("_handle")) {
+      handleHook = value;
+      Pia.debug(this, "handle hook :="+value.toString());
+    }
   }
 
   // === option, optionAsXXX are now unnecessary.
