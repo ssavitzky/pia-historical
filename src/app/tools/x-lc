@@ -1,0 +1,8 @@
+#!/bin/sh
+#	Display linecounts under "." using xdu.
+#	$Id$
+
+find ${*-.} -type f ! -name '*~' ! -name '#*' ! -name '.#*' \
+    ! -name '*.class' ! -name '*.o' ! -name '*.log' ! -name '*.zip' \
+    -exec wc -l {} \; \
+    | xdu -c 4 -name "Line Counts: $*" -geom +105+80

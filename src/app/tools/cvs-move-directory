@@ -1,0 +1,5 @@
+# This script illustrates how to fix up a directory tree under CVS control
+#  after the its repository has been moved.
+#       -- sample only -- edit to suit, use it yourself, and e-mail to users.
+# $Id$
+find . -name "Repository" -exec perl -p -i -e 's@/classes/@/@' {} \;
