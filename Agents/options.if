@@ -6,6 +6,10 @@
 <set entity name=title>&agentName; agent <br>Options Page</set>
 <read interform file="heading.inc" process>
 
+<if><test exact match="&agentType">&agentName;</test>
+    <then><set name=agentPath>&agentName;</set></then>
+    <else><set name=agentPath>&agentType;/&agentName;</set></else>
+</if>
 <table cellspacing=0 cellpadding=0>
 <tr><th width=170><td>
     <table cellspacing=0 cellpadding=0>
@@ -13,8 +17,8 @@
     <tr><th><td> <a href="index.if">Index Page</a>
     <tr><th><td> <a href="home.if">Home Page</a>
     <tr><th align=right><a href="home.if">&agentName;</a>: <td> Options
-    <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-    <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+    <tr><th><td> <a href="/PIA/Agents/&agentPath;/">InterForms</a>
+    <tr><th><td> <a href="/My/Agents/&agentPath;/">Customized InterForms</a>
     <tr><th align=right><td>  
        <form action="/Agency/remove_agent.if" method="POST">
 	Remove agent:<br>

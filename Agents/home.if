@@ -9,6 +9,11 @@
 <read interform file="heading.inc" process>
 
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
+<if><test exact match="&agentType">&agentName;</test>
+    <then><set name=agentPath>&agentName;</set></then>
+    <else><set name=agentPath>&agentType;/&agentName;</set></else>
+</if>
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
 <table cellspacing=0 cellpadding=0>
 <tr>
   <th width=170>
@@ -23,8 +28,8 @@
 	<td><a href="options.if">Options</a>
 	    <if><read info interform file="initialize.if">
 	        <then><a href="initialize.if">[re-initialize]</a></then></if>
-    <tr><th><td><a href="/PIA/Agents/&agentName;/">InterForms</a>
-	        <a href="/My/Agents/&agentName;/">(Customized)</a>
+    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
+	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
