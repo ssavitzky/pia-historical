@@ -66,7 +66,8 @@ public class Set_agent extends Set {
       doComplexSet(index,new SecureAttrs(a, ii),  value ,ia, it, ii);
     } else {
       // do the simple set
-      a.attr(name, value);	// security unimplemented! ===  
+      if( name != null )
+	a.attr(name, value);	// security unimplemented! ===  
     }
     doFinish(it,value,ii);
 
