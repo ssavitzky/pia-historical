@@ -11,9 +11,12 @@
  */
 
 package crc.pia;
+
+import java.io.IOException;
 import crc.pia.Content;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
+import crc.util.regexp;
 
 public class Machine {
   /**
@@ -129,23 +132,16 @@ public class Machine {
     out.println( reply.getHeadersAsString() );
     out.println( "\n" );
 
-    if( ctrlString && content ){
-      String bodyandMore = null ;
-      int lastPos;
- 
-      String c = content.toLowerCase();
-      int pos = c.indexOf("<body");
-      if( pos != -1 ) 
-	bodyandMore = c.substring( pos+"<body".length() );
-
-      if( bodyandMore && (lastPos = bodyandMore.indexOf(">")) != -1 ){ // found "<body" and ">"
-	StringBuffer sb = new StringBuffer( content );
-	sb.insert(lastPos+1, ctrlString); 
-	content = new String(sb);
-      }
+    RegExp re = new RegExp("<body[^>]*>");
+    MatchInfo mi = re.match( content.toLowerCase() );
+    if( ctrlString && mi != null ){
+      String ms = mi.matchString();
+      StringBuffer buf = new StringBuffer( ms );
+      buf.append( ctrlString );
+      content   = re.simpleSubstitute(ms, new String( buf ));
     }
 
-    }else if (ctrlString){
+    else if (ctrlString){
       out.println( ctrlString );
     }
 
@@ -170,7 +166,6 @@ public class Machine {
       URL urlObject = new URL( request.getURI() );
       URLConnection agent = urlObject.openConnection();
       // not sure what to do here
-      /*
       proxy = proxy( request.getProtocol() );
       if( proxy )
 	agent.setRequestProperty("proxy", proxy);
