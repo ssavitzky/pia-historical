@@ -35,4 +35,16 @@ public class Protect extends crc.interform.Handler {
       ii.replaceIt(it.content());
     }
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    if (atts.hasTrueAttribute("markup")) {
+      putText(out, Util.protectMarkup(cstring));
+    } else {
+      putList(out, content);
+    }
+    return true;
+  }
 }

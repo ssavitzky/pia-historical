@@ -36,5 +36,8 @@ public class Protect_result extends Protect {
      "&lt;protect-result&gt; in separate classes is so each can have\n" +
      "its own syntax description.\n" +
 "";
+
+  /** Legacy action.  Inherited from protect: this fakes out the reporting. */
+  //public boolean action(
 }
 
