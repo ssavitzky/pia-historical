@@ -105,7 +105,7 @@ See also:
   <li> 1998-06-18 <b>Hole:</b> ParseTreeNode must allow extra action on
        addChild, insertBefore, and initialization. <br>
        This will allow insertion methods to be extended.  Only the protected
-       dispatch method <code>doInsert needs to be extended.</code>
+       dispatch method <code>doInsert</code> needs to be extended.
        (1998-6-19) <br>
 
   <li> 1998-06-18 <b>Hole:</b> Tagset and Handler must be generic. <br>
@@ -117,6 +117,40 @@ See also:
        The items defined must be their content, not their attributes.
        This will greatly simplify the loading of tagsets, DTD's, etc.
        (1998-6-19) <br>
+
+  <li> 1998-06-22 <b>Impr:</b> Define syntax flags in
+       <code>crc.dps.Syntax</code> <br> 
+       (They are currently defined in BasicTagset, which makes them mostly
+       inaccessible.)
+       (1998-06-18) <br>
+
+  <li> 1998-06-23 <b>Bug:</b> entities and attributes broken <br>
+       Something broke when we went to values not being children.  Values are
+       set, but cannot be retreived.  Several places seem to still be using
+       getChildren instead of getValue.
+       (1998-6-23) <br>
+       -- tested old value for null instead of new, in <code>putValue</code>.
+
+  <li> 1998-06-23 <b>Bug:</b> &lt;test match&gt; produces odd results.  <br>
+       &lt;test match&gt; produces odd results sometimes in <code>t2.if</code>
+       (1998-06-17) <br>
+       -- due to attributes being broken, of course.
+
+  <li> 1998-06-24 <b>Bug:</b> Nested &lt;if&gt; loses &lt;then&gt; content. <br>
+       The children of a second-level then are getting lost instead of copied.
+       (1998-6-23) <br>
+       -- declaring <code>int action</code> instead of
+          <code>int actionCode</code>
+
+  <li> 1998-06-24 <b>Impr:</b> &lt;test&gt; should be ended by &lt;then&gt; <br>
+       (1998-06-18) <br>
+
+  <li> 1998-06-25 <b>Impr:</b> Dispatching: create fewer instances <br>
+       Dispatching should create a new handler instance only when necessary;
+       normally it should cache instances with standard attributes.
+       (1998-06-15) <br>
+       -- <code>handle(<em>element</em>)</code> method in place; usage needs
+	  to be checked.
 
 </ul>
 <a name="end">End of list.</a>

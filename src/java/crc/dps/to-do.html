@@ -17,6 +17,38 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Impr:</b> Upgrade <code>handle</code> methods. <br>
+       The static <code>handle(<em>element</em>)</code> methods in handler
+       subclasses should pick up a static instance if possible, rather than
+       just calling <code>new</code>.  (See also ''Impr'' of 1998-06-15.)
+       (1998-6-25) <br>
+
+  <li> <b>Goal:</b> (8-1) Run Most Agents <br>
+       Be able to run all of the agents in daily use (i.e. history, etc., but
+       not the wacko stuff in on the form server).
+       (1998-6-24) <br>
+
+  <li> <b>Goal:</b> (7-1) Able to process slides <br>
+       Be able to process <code>.../Reviews/slides-199807.html</code> in time
+       to show it at the review.  Requires &lt;actor&gt;
+       (1998-6-24) <br>
+
+  <li> <b>Bug:</b> Flag unimplemented legacy options. <br>
+       Unimplemented legacy options in &lt;get&gt; etc. have to be brought to
+       the user's attention with error messages.  Requires a mode flag or,
+       better, dispatching via the legacy handler first.
+       (1998-6-24) <br>
+
+  <li> <b>Impr:</b> Character Entities should be defined in tagset <br>
+       Should have defined value; copy value into references to short-circuit
+       lookup.  <code>TextUtil.expandCharacterEntities</code> can then make
+       use of this.
+       (1998-6-22) <br>
+
+  <li> <b>Hole:</b> <code>ToParseTree</code> should take a tagset <br>
+       Tagset is needed to attach actions to constructed nodes.
+       (1998-6-22) <br>
+
   <li> <b>Impr:</b> Tagset should extend EntityTable. <br>
        This will make it easier to define entities and tags in the same DTD.
        (1998-6-19) <br>
@@ -27,7 +59,7 @@ See also:
        code, though.
        (1998-06-19) <br>
 
-  <li> <b>Hole:</b> PUT_VALUE action code needed <br>
+  <li> <b>Impr:</b> PUT_VALUE action code needed <br>
        Get a value for the node and put that.  Needs a corresponding
        <code>putValue(<em>node, context, output</em>)</code> in Action; the
        default should be to copy the node.
@@ -79,25 +111,12 @@ See also:
        defined in the DTD.
        (1998-06-18) <br>
 
-  <li> <b>Impr:</b> &lt;test&gt; should be ended by &lt;then&gt; <br>
-       (1998-06-18) <br>
-
   <li> <b>Impr:</b> Caching for subProcess stack <br>
        ContextStack should have a <code>free</code> link to a free
        sub-processor, to be used instead of allocating one.
        (1998-06-18) <br>
        -- <code>subProcess</code> clears <code>free</code>; caller does
 	  <code>p.cleanup()</code> when finished to restore it.
-
-  <li> <b>Impr:</b> Define syntax flags in <code>crc.dps.Syntax</code> <br>
-       (They are currently defined in BasicTagset, which makes them mostly
-       inaccessible.)
-       (1998-06-18) <br>
-
-  <li> <b>Bug:</b> &lt;test match&gt; produces odd results.  <br>
-       &lt;test match&gt; produces odd results sometimes in <code>t2.if</code>
-       (1998-06-17) <br>
-       -- 
 
   <li> <b>Hole:</b> NamedNodeList wrapping a Table <br>
        Want to be able to wrap a Table as a NamedNodeList.  This will provide
@@ -126,11 +145,6 @@ See also:
        consistant thing would be for whitespace to return <code>true</code>,
        non-whitespace to return <code>false</code>.
        (1998-06-15)
-
-  <li> <b>Impr:</b> Dispatching: create fewer instances <br>
-       Dispatching should create a new handler instance only when necessary;
-       normally it should cache instances with standard attributes.
-       (1998-06-15) <br>
 
   <li> <b>Hole:</b> Legacy Handlers <br>
        actor-attrsQ actor-dscrQ actor-docQ actor-syntaxQ getQ tagset-existsQ
@@ -210,6 +224,8 @@ See also:
        its symptoms.
   <dt> <b>Hole</b>
   <dd> A piece of missing, but important, functionality.
+  <dt> <b>Goal</b>
+  <dd> A target capability (includes a date)
   <dt> <b>Check</b>
   <dd> Something to check for; a potential stumbling block or place where the
        implementor may have cut corners in the heat of the moment.  For
