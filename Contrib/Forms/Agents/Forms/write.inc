@@ -6,21 +6,28 @@
    Please sign the following document.<p>
    <h2>&dir; form</h2><p>
    &dataobject;<p>
-   <form method=POST action="/Forms/sign.if">
-   <input type=hidden name=routepath value="&path;.route.html">
-   <input type=hidden name=filepath value="&path;.html">
-   <input type=hidden name=dir value="&dir;">
-   <input type=hidden name=manager value="&manager;">
-   <set name=temp>&FORM.name;</set> 
-   Username: <select name="name"><option>&temp;
-  <if><test match="NULL"><get index="routeobject.&temp;"></test><then>
-  <else><option><get index="routeobject.&temp;">
-        <read interform file="recurse.inc" process>
-  </else>
-  </if></select>
- 
-   Signature (UNIX password): <input type=password name=signature>
-  <input type=submit name=process value=submit><p>Signed by: </form>
+   <!--  put a form for each signer -->
+   <h3> Signatures</h3>
+   Please enter your digital signature (Unix password) in the box provided.
+   <set name=signers><get index=routeobject keys></set>
+   <repeat list=&signers; entity="signer">
+   <!-- hack to prevent repeats -->
+   <if><get name="signedby&signer;"><then>
+   <else>
+        <set name="signedby&signer;">true</set>    
+	<form method=POST action="/Forms/sign.if">
+	<input type=hidden name=routepath value="&path;.route.html">
+        <input type=hidden name=filepath value="&path;.html">
+        <input type=hidden name=dir value="&dir;">
+        <input type=hidden name=manager value="&manager;">
+        <set name=temp>&FORM.name;</set> 
+        <b>&signer;:</b> <input type=hidden name="name" value="&signer;"> 
+        <input type=password name=signature>
+        <input type=submit name=process value=SIGN>
+	</form> 
+   </else></if>
+  </repeat>
+  <p>Signed by:
 </write>
 
 <write append file="users/&FORM.name;.html">

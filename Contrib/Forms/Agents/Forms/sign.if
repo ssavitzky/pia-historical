@@ -9,7 +9,9 @@
 <h2>&FORM.dir; Signature Result</h2><p>
 
 <set entity name=routeobject><read file="&FORM.routepath;" process></set>
-<set entity name=nextperson><get index="routeobject.&FORM.name;"></set>
+<set entity name=nextpersons><get index="routeobject.&FORM.name;"></set>
+<!-- a  hack to make sure we get the last element -->
+<repeat list=&nextpersons;><set name=nextperson><get name=li></set></repeat>
 <set entity name=nameobject><read file="usertoname.dat" process></set>
 
 <if><test text>&FORM.signature;</test><then>
@@ -17,7 +19,7 @@
         <if><test match="&FORM.name;">&routeobject;</test><then>
             <if><test match="signed">&nextperson;</test><then>
                 You have already signed this document.<p></then>
-            <else><set name="routeobject.&FORM.name;">signed &dateString;</set>
+            <else><set index="routeobject.&FORM.name;">signed &dateString;</set>
                   <write file="&FORM.routepath;">&routeobject;</write>
                   <if><test exact match="NULL">&nextperson;</test><then>
                   <else><write append file="users/&nextperson;.html">
