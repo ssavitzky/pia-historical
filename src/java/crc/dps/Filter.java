@@ -28,8 +28,8 @@ import crc.dps.handle.GenericHandler;
 import crc.dps.handle.LegacyHandler;
 
 /**
- * Interpret an input stream or file as an InterForm.  
- *	=== Should really descend from Environment.
+ * Filter an input stream or file with the DPS.
+ *	=== Should really descend from TopProcessor
  */
 public class Filter {
   static String infile = null;
