@@ -71,8 +71,7 @@ rm_pia_tar::
 	rm -f $(PIALIBDIR)/crc.zip
 
 prep_rel::
-
-	cd $(SRCDIR); make clean ; make
+	cd $(CLASSDIR); make clean ; make
 	cd $(INTERFORM); make
 	cd $(CLASSDIR);make crc.zip; make alldoc
 
