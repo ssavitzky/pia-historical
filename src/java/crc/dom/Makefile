@@ -16,6 +16,7 @@ INTERFACES = \
 	Document.java \
 	DocumentContext.java \
 	Element.java \
+	EditableNodeList.java \
 	NamedNodeList.java \
 	Node.java \
 	NodeList.java \
@@ -29,10 +30,10 @@ EXCEPTIONS = \
 	NoSuchNodeException.java \
 	NotMyChildException.java 
 
+# All of the following appear to be unused in the DPS
+
 OTHER_CLASSES = \
 	NodeType.java 
-
-# All of the following appear to be unused in the DPS
 
 ENUMERATORS = \
 	LinkedNodeListEnumerator.java \
@@ -47,53 +48,53 @@ LIST_CLASSES = \
 	AttrList.java 
 
 NODE_CLASSES = \
-	NodeWrapper.java \
-	DOM.java \
-	CRCDocument.java \
-	NotMyChildException.java \
 	AbstractDOMFactory.java \
 	AbstractDocument.java  \
+	AbstractEntity.java \
 	AbstractNamedList.java \
-        AbstractNode.java  \
+	AbstractNode.java  \
+	AgentEntity.java \
+	AttributeDefinition.java \
+	BasicAttribute.java \
+	BasicComment.java \
+	BasicDOMFactory.java \
 	BasicDocument.java \
+	BasicElement.java \
 	BasicNamedNode.java \
 	BasicNamedNodeList.java \
 	BasicPI.java \
 	BasicText.java \
-	BasicDOMFactory.java \
+	CRCAttribute.java \
 	CRCDOM.java \
 	CRCDOMFactory.java \
-	BasicElement.java \
-	BasicAttribute.java \
-	CRCAttribute.java \
-	BasicComment.java \
+	CRCDocument.java \
+	CRCElement.java \
 	ChildNodeList.java \
-	Report.java \
-	Logger.java \
-	AttributeDefinition.java \
 	ConnectionType.java \
 	ContentType.java \
+	DOM.java \
 	DeclaredValueType.java \
 	DefaultValueType.java \
 	DocumentType.java \
 	ElementDefinition.java \
 	ElementToken.java \
+	ExternalEntity.java \
+	ExternalNDATAEntity.java \
+	ExternalTextEntity.java \
+	InternalEntity.java \
+	LocalEntity.java \
+	Logger.java \
 	ModelGroup.java \
+	NdataEntity.java \
+	NodeWrapper.java \
+	NotMyChildException.java \
 	OccurrenceType.java \
 	PCDATAToken.java \
-	CRCElement.java \
-	InternalEntity.java \
-	ExternalEntity.java \
-	ExternalTextEntity.java \
-	ExternalNDATAEntity.java \
-	AbstractEntity.java \
-	NdataEntity.java \
-	TextEntity.java \
-	AgentEntity.java \
-	LocalEntity.java \
-	SystemEntity.java
+	Report.java \
+	SystemEntity.java \
+	TextEntity.java
 
-FILES = $(INTERFACES) $(EXCEPTIONS) $(OTHER_CLASSES)
+FILES = $(INTERFACES) $(EXCEPTIONS)
 
 include $(TOPDIR)/makefiles/file.make
 #include $(TOPDIR)/makefiles/package.make
