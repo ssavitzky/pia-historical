@@ -82,9 +82,10 @@
 </if>
 
 <blockquote><em>
-  This is the source code for the banner that <a
-  href="/&agentType/&agentName;">&agentName;</a> puts on top of every 
-  page.  It can be customized by making an edited copy of the Agent's
+  This is the code that is executed whenever the  <a
+  href="/&AGENT:type;/&AGENT:name;">&AGENT:name;</a> agent's criteria match
+  a transaction's feature set.
+  It can be customized by making an edited copy of the Agent's
   initialization file,
   <code><a href="/PIA/Agents/&agentPath;/initialize"
   >/PIA/Agents/&agentPath;/initialize.??</a></code>,
@@ -95,7 +96,6 @@
    <code>xh</code> (new) or <code>if</code> (old).)
 </em></blockquote>
 
-<!-- parse only seems to work if act-on is NOT a DPS hook. === -->
 <pre><protect result markup><parse tagset=HTML>&AGENT:act-on;</protect>
 </pre>
 </then></if>

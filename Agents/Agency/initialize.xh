@@ -1,0 +1,39 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Initialize Agency</title>
+</head><body>
+<h1>The Agency Initialization InterForm</h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+
+<if><status src="checkpoint.dat" item=exists>
+    <then>
+	<if><agent-restore file=checkpoint.dat>
+	    <then>
+		<user-message>Restored from checkpoint.dat</user-message>
+            <else>
+ 		<set agent name=do-not-remove>true</set>
+		<user-message>Restore failed because of Java class updates.
+Loading start-up file.</user-message>
+		<submit-forms><include src="/Agency/START-UP.html"></submit-forms>
+	    </else></if>
+    </then>
+    <else>
+	<set agent name=do-not-remove>true</set>
+	<user-message>Loading startup file</user-message> 
+	<submit-forms><include src="/Agency/START-UP.html"></submit-forms>
+    </else>
+</if>
+
+<hr>
+This form gets requested by the agency at start-up.  It looks for a <a
+href=START-UP.html>START-UP.html</a> file and submits each of the forms
+found in that file in turn.
+<p>
+
+It is also possible to override <em>this</em> file with your own version, in
+(<code>/My/Agents/Agency/initialize.if</code>) and put arbitrary InterForm
+code into it.
+
+<short-footer cvsid="$Id$">
+</body></html>

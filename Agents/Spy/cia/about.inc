@@ -7,4 +7,3 @@ width=24>) at the front of the banner, which is a link to the PIA's home
 page.  <p>
 
 <inc-footer cvsid="$Id$">
-<hr>

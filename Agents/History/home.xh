@@ -1,37 +1,14 @@
 <!doctype html system "html.dtd">
 <html><head>
-<title>The History agent home page</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
+<title>The &AGENT:name; agent home page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-
-<set entity name=title>Home Page</set>
-<read interform file="heading.inc" process>
-<table cellspacing=0 cellpadding=0 border=0>
-<tr>
-  <th width=170>
-    <read quiet interform file="insert" process>
-  <td>
-    <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
-	                   width=170 height=1></th>
-        <td><br>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	    <td> <b href="home">Home</b>
-    		 <a href="index">Index</a>
-    		 <a href="help">Help</a>
-<if><read info interform file="initialize"><then>
-    <tr><th><td><a href="options">Options</a>
-	    	      <a href="initialize">[re-initialize]</a></then>
-</if>
-    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+<header>Home Page</header>
+<sub-head page=home >
     <tr><th><td><a href="/~History">/~History</a> /
 		<a href="/~History/&year;">&year;</a> /
 		<a href="/~History/&year;/&month;">&month;</a> /
 		<a href="/~History/&year;/&month;/&day;.html">&day;</a>
-    </table>
-</table>
+</sub-head>
 
 <if><agent-running name=History>
   <else>see the <a href="/Agency/installers#History">installation page</a>
@@ -140,14 +117,8 @@ provided for fixing old History directories.<p>
   InterForm directory as <code>~/.pia/Agents/&agentName;/initialize</code>
 </em></blockquote>
 
-<pre><protect-result markup><get agent name="act-on"></protect-result>
+<pre><protect result markup><parse tagset=HTML>&AGENT:act-on;</protect>
 </pre>
 
-
-<hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
-<b>$Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
+<footer cvsid="$Id$">
 </body></html>

@@ -6,10 +6,11 @@
 
 <read interform file="heading.inc" process>
 
-<form action="http://pia.crc.ricoh.com:8888/Bughistory/buglog.if" method=post>
+<form action="http://pia.crc.ricoh.com:8888/Bughistory/buglog" method=post>
 Platform:<select name="machine">
-	<option>Sun
-	<option>Linux
+	<option>Sun</option>
+	<option>Linux</option>
+	<option>Windows</option>
 	</select>
 <br>
 

@@ -1,0 +1,18 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>DOFS initialization</title>
+</head><body>
+<h1>DOFS default initialization</h1>
+By default we  look at requests only for local files (a caching instantiation
+of this agent probably would have different initialization ..  such agents
+should use a different root directory for their interforms).
+
+<!-- really, the only reason to have this init. file is the following: -->
+<user-message>Initializing &agentType;<if>
+    <test exact match="&agentName;">&agentType;</test>
+    <then>from &filePath; </then>
+    <else>/&agentName; with root=&AGENT:root;</if></user-message>
+
+<hr>
+<short-footer cvsid="$Id$">
+</body></html>

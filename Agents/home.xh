@@ -1,0 +1,27 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Generic Home Page for &AGENT:name;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<heading>Home Page</heading>
+<set name="subs"><agent-list subs type="&agentType;"></set>
+<sub-head page=home>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home">&agentType;</a>/</then>
+                <else>&agentType; agents: </else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat>
+</sub-head>
+
+<if><test exact match="&agentType">&agentName;</test>
+    <then><set name=agentPath>&agentName;</set></then>
+    <else><set name=agentPath>&agentType;/&agentName;</set></else>
+</if>
+<hr>
+
+<!-- See whether there's an "about" file for this agent. -->
+<include src="about.inc">
+<p>
+<footer cvsid="$Id$">
+</body></html>

@@ -1,6 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>&piaUSER;'s &agentName;: Home Page</title>
+<title>&piaUSER;'s &AGENT:name;: Home Page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>Home page for

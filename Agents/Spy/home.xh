@@ -1,17 +1,16 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Home Page for &agentName;</title>
+<title>Home Page for &AGENT:name;</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-
-<set entity name="subs"><agent-list subs type="&agentType;"></set>
-
 <header>Home Page</header>
 
+<set name="subs"><agent-list subs type="&agentType;"></set>
 <sub-head page=home>
-    <tr><th><td><a href="hide?hide=true">hide</a> /
-		<a href="hide?hide=false">show</a> /
+    <tr><th><td><a href="hide">hide/show</a> /
 		<a href="initialize">initialize</a>
-
+    <tr><th><td> <a href="using">Using  &agentType; Agents</a>
+    <tr><th><td> <a href="writing">Writing &amp; Customizing
+		    		      &agentType; Agents</a>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
 	        <then><a href="/&agentType;/home">&agentType;</a>/</then>
@@ -19,9 +18,6 @@
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
            </repeat>
-    <tr><th><td> <a href="using">Using  &agentType; Agents</a>
-    <tr><th><td> <a href="writing">Writing &amp; Customizing
-		    		      &agentType; Agents</a>
 </sub-head>
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||

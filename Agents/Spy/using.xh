@@ -1,12 +1,27 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Using &agentType; Agents</title>
-<link rev="made" href="mailto:steve@rsv.ricoh.com">
+<title>Using &AGENT:type; Agents</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header>Using &AGENT:type; Agents</header>
 
-<set entity name="subs"><agent-list subs type="&agentType;"></set>
-<set entity name=title>Using  &agentType; Agents</set>
-<read interform file="heading.inc" process><p>
+<set name="subs"><agent-list subs type="&agentType;"></set>
+<sub-head page=using>
+    <tr><th align=right> <xopt page="&page;" pages="using">&blue-dot;</xopt>
+	<td> <xa page="&page;" href="using">Using  &agentType; Agents</xa>
+    <tr><th align=right> <xopt page="&page;" pages="writing">&blue-dot;</xopt>
+	<td> <xa page="&page;" href="writing">Writing &amp; Customizing
+		    		      &agentType; Agents</xa>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home">&agentType;</a>/</then>
+                <else>&agentType; agents: </else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat>
+</sub-head>
+<hr>
+<nav-bar/>
+<hr>
 
 Once a <a href="&agentType;">&agentType;</a> agent is installed it requires
 little attention; it will simply look ``over your shoulder'' at some subset of
@@ -58,12 +73,5 @@ href="/History">History</a> agent's data directory:
   <dd> <a href="/~History/last.html">/~History/last.html</a>
 </dl>
 
-
-
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
-<address><a href="http://rsv.ricoh.com/~steve/"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
+<footer cvsid="$Id$">
 </body></html>
