@@ -229,9 +229,20 @@ sub is_request{
 
 $computers{agent_response} = \&is_agent_response;
 sub is_agent_response{
-    my $request=shift; 		return 0 unless $request->is_response;
-    my $agent=$request->header('Version');
-    return 1 if $agent =~ /^PIA/i;
+    my $response=shift; 		
+    return 0 unless $response->is_response;
+    my $agent=$response->header('Version');
+    my $request = $response->request;
+    my $url = $request->url if defined $request;
+
+    return 0 if defined $url && ($url->path =~ /^\/http:/i );
+
+    if ($agent =~ /^PIA/i) {
+	return 1 unless defined $request;
+	return 1 unless ref($request) =~ /TRANSACTION/;
+	return 1 if $request->is('agent_request');
+    }
+
     return 0;
 }
 
