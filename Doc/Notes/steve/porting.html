@@ -1,0 +1,211 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Notes on Porting the PIA</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Notes on Porting the PIA</h1>
+<h3>(to embedded systems)</h3>
+
+<h2>Alternatives</h2>
+<h3>OS Alternatives:</h3>
+<ul>
+  <li> VxWorks
+  <li> <a href="http://www.cygnus.com/ecos/">ECOS</a>
+</ul>
+
+<h3>Language Alternatives:</h3>
+<ul>
+  <li> C: Hard to port, but size/performance likely to be acceptable.
+  <li> Scheme+DSSSL.<br>
+       DSSSL is the standard style-sheet language for SGML; it's based on the
+       Scheme (a Lisp variant) programming language.  Most implementations, I
+       believe, are based on either the Guile or SIOD implementation of
+       Scheme, both of which are in C and fairly lightweight.  Parsers exist;
+       data structures and memory management are free.
+  <li> Java: trivial to port, but probably too big/slow. <br>
+       <a href="http://www.cygnus.com/product/javalang/">Cygnus</a> is working
+       on it, but too preliminary at this point.  VxWorks JVM's exist, but
+       probably not for Hitachi CPU's.
+  <li> C++: Easier to port to than C; possibly worse size/speed.
+  <li> Perl/Python/Smalltalk: Easier to port to than C/C++, but unfamiliar. <br>
+       Data structures and memory management come free; XML and HTML parsers
+       exist.  (There are web browsers and servers in Smalltalk already).
+       Smalltalk has a history of being used in embedded applications, but is
+       likely to be slow and bulky.
+</ul>
+
+Note that <a href="http://egcs.cygnus.com/">EGCS</a> now supports the SH4
+processor; this comes from Cygnus's <a
+href="http://www.cygnus.com/gnupro/">GNUPro</a>. 
+
+<h2>C Porting Considerations</h2>
+
+<h3>Memory Management</h3>
+<ul>
+  <li> This is by far the hardest problem in a C port.  You will have to use
+       one of the following techniques (or possibly some mixture of them):
+       <ol>
+	 <li> Reference counts.  Straightforward but somewhat error-prone.
+	 <li> Zoned allocation.  While you're processing a document, allocate
+	      all of its memory from one or more contiguous blocks.  When
+	      you're finished with a document, throw away all of the memory
+	      you allocated for it.  Keep a special block for global
+	      structures, which never get de-allocated.
+	 <li> Being careful.  If you can <em>guarantee</em> that every data
+	      structure is a tree, and that no objects are shared among trees,
+	      then you know that when you are finished with a document you can
+	      recursively de-allocate its entire tree. 
+	 <li> Garbage collection.  Hard unless you can find a pre-packaged
+	      version. 
+       </ol>
+</ul>
+
+<h3>Available Resources</h3>
+<ul>
+  <li> Mozilla<br>
+       Almost certainly has a DOM in C, along with XML and HTML parsers.
+  <li> Other XML parsers exist.
+       <ul>
+	 <li> An XML parser would have to be extended slightly to handle tags
+	      that the tagset flags as "empty", i.e. not requiring either a
+	      "/" delimiter or an end tag.  These can occur in HTML, but not
+	      in XML.
+
+	 <li> An XML parser would also want to handle missing end tags (for
+	      example, on list items).  This is not essential in an embedded
+	      application, because you can ensure that all end tags are
+	      supplied where needed.  If necessary, you could use a working
+	      Java PIA as a pre-processor.
+       </ul>
+</ul>
+
+<h3>Translating Java to C</h3>
+<ul>
+  <li> Translating method calls.<br>
+       These translate into a function call with the object being operated on
+       as the first argument.
+  <li> Translating an Interface<br>
+       (to a <code>struct</code> of pointers to functions).
+  <li> Translating a Class<br>
+       (to a <code>struct</code> plus interface functions).  Every instance of
+       a class has a pointer to the class-definition structure.
+  <li> Dynamic Method Dispatching<br>
+       This is done by going indirect through an object's class-definition
+       structure to find the appropriate function.  A good example of this can
+       be found in the X Toolkit. 
+</ul>
+
+<h3>Translating XML to C</h3>
+<ul>
+  <li> There are basically two ways to do this:
+       <ol>
+	 <li> Translate XML into initialized C data structures.  This
+	      eliminates the parsing step, and makes your system much more
+	      efficient.  It requires creating a lot of initialized data
+	      structures with funny names.
+	 <li> Translate (active) XML into C procedures.  A ``document'' would
+	      simply be a procedure that outputs (probably to an Output object
+	      rather than to a stream) the result of expanding the document
+	      with the DPS.
+       </ol>
+</ul>
+
+<h3>What is Essential?</h3>
+<div align=center><em>
+  This is roughly equivalent to ``where to start.''
+</em></div> 
+<ul>
+  <li> Data structures defined in <code>crc.ds</code>.  These are basically a
+       portable data structure library, and everything in the PIA can be built
+       out of them.  In particular, <code>List</code> and <code>Table</code>
+       are <em>almost essential</em>.
+  <li> You will probably have to add a string datatype. 
+  <li> The Document Processing System, in the <code>crc.dps</code> package.  
+</ul>
+
+<h3>What can be Left Out?</h3>
+<ul>
+  <li> Everything in <code>crc.interform</code> -- this is the old InterForm
+       interpretor, and is completely replaced by <code>crc.dps</code>, the
+       new Document Processing System.
+  <li> Certainly, any agents (in <code>pia/Agents</code> and
+       <code>crc.pia.agent</code>) that you don't need.  Probably the only
+       ones you'll need are <code>Agency</code> and <code>DOFS</code>,
+       <code>Agency</code> should be severely restricted.
+  <li> The Resolver (in <code>crc.pia.Resolver</code>) can be left out if you
+       don't want to use your device as a proxy.  A lot of other machinery
+       could go away if you got rid of this -- essentially you'd be left with
+       an ordinary web server that replaces CGI scripts with the DPS and its
+       active documents.
+  <li> Everything having to do with Java serialized objects (implemented using
+       <code>crc.util.Utilities.readObjectFrom</code> and
+       <code>writeObjectTo</code>.  Unfortunately there are other things in
+       <code>Utilities</code> that you may need.
+  <li> You could leave out the parser (<code>crc.dps.parse</code>) if you used
+       pre-build data structures for the parse trees of all your documents.
+       This would make your system significantly faster and reduce the amount
+       of RAM needed.
+  <li> Logging and debugging code should be implemented using macros so that
+       it can easily be removed from the production system. 
+</ul>
+
+<h3>What's Disorganized?</h3>
+
+<blockquote><em>
+  Several parts of the system are ``disorganized'' -- left in an incomplete or
+  confusing state because we simply haven't had time to give them the
+  attention they deserve.  If you're doing a port, these parts should be done
+  right instead of simply being copied. 
+</em></blockquote>
+
+<ul>
+  <li> <code>crc.dom</code> and <code>crc.dps.active</code> implement an
+       <em>obsolete version</em> of the W3C's Document Object Model.  The most
+       recent version of the interfaces is in <code>org.w3c.dom</code>; the
+       entire DPS needs to be rewritten to use it.  This will probably be
+       done sometime in late March, 1999.  The names of several classes and
+       methods will have to be changed.
+  <li> <code>crc.pia</code> needs to be re-organized to make better use of
+       interfaces.  <code>crc.pia.Agent</code> is far too complicated;
+       <code>crc.pia.Transaction</code> is too complex and should be redone as
+       an interface.
+  <li> <code>crc.pia.GenericAgent</code> is far too complex; it needs to be
+       split up and simplified:
+       <ul>
+	 <li> The file lookup code in <code>crc.pia.GenericAgent</code>
+	      (including <code>findInterformFile</code> and so on) needs to
+	      get moved to a separate utility class.  Compare
+	      <code>crc.pia.FileAccess</code>
+	 <li> The methods in <code>crc.pia.GenericAgent</code> that put
+	      together various kinds of response transaction could also go
+	      into a utility class.
+	 <li> <code>dirAttribute</code> and <code>fileAttribute</code> need to
+	      be worked on; they're left over from an older version.
+       </ul>
+  <li> Quite a lot of test scaffolding has been left in some classes. 
+</ul>
+
+<h2>Scheme/DSSSL Porting Considerations</h2>
+
+<ul>
+  <li> I would like to see this done on general principles.  My guess is that
+       an average Lisp programmer could put a first cut together in a couple
+       of days. 
+  <li> A DSSSL port of the DPS, in particular, should be almost completely
+       trivial.  Probably just a matter of translating each active tag's
+       handler into a Scheme function.
+  <li> A tagset-to-DTD translator would have to be written, since the existing
+       parsers all run off a standard DTD.
+  <li> There are certainly some web servers written in Common Lisp; it
+       wouldn't be surprising if there's at least one in Scheme as well.  This
+       would give us the front end. 
+</ul>
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
