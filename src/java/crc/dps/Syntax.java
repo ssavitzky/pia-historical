@@ -62,7 +62,7 @@ public interface Syntax {
    * @return the correct Handler for the Token.  
    * @see crc.dps.Tagset
    */
-  public Action getActionForNode(Node n);
+  public Action getActionForNode(crc.dps.active.ActiveNode n);
 
 
   /** If <code>true</code>, Element tags are recognized in content.  If 
