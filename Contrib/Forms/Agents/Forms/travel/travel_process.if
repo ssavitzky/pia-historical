@@ -8,7 +8,7 @@
 <set entity name=departmentobject><read file="usertodept.dat" process></set>
 <set entity name=extobject><read file="usertoext.dat" process></set>
 
-<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Extension:</b><dd><u><get name="extobject.&FORM.name;"></u><dt><b>Purpose:</b><dd><u>&FORM.purpose;</u><p>
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get index="departmentobject.&FORM.name;"></u><dt><b>Extension:</b><dd><u><get index="extobject.&FORM.name;"></u><dt><b>Purpose:</b><dd><u>&FORM.purpose;</u><p>
 
 <table border=1><caption> Air Travel <get form name=airline1></caption>
      <TR><TH>Date:<TH align=center>Depart<TH align=center>Arrive</tr>
@@ -45,7 +45,7 @@
 <set entity name=grandtotal><sum>&fcost; &ctotal; &htotal; &perdiem; </sum></set>
 
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=manager><get index="mlist.&FORM.name;"></set>
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>&manager;<dt>&manager;<dd>FrontOffice<dt>FrontOffice<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set> 

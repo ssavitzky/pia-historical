@@ -13,8 +13,8 @@
    <input type=hidden name=manager value="&manager;">
    <set name=temp>&FORM.name;</set> 
    Username: <select name="name"><option>&temp;
-  <if><test match="NULL"><get name="routeobject.&temp;"></test><then>
-  <else><option><get name="routeobject.&temp;">
+  <if><test match="NULL"><get index="routeobject.&temp;"></test><then>
+  <else><option><get index="routeobject.&temp;">
         <read interform file="recurse.inc" process>
   </else>
   </if></select>

@@ -12,7 +12,7 @@
 <set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Kiansho number:</b><dd><u>&knum;</u><dt><b>Amount:</b><dd><u>&FORM.cost;</u><dt><b>Subject:</b><dd><u>&FORM.subject;</u><dt><b>Explanation:</b><dd><u>&FORM.explanation;</u><dt><b>Effect:</b><dd><u>&FORM.effect;</u><dt><b>Expenditure:</b><dd><u>&FORM.expenditure;</u><dt><b>Vendor:</b><dd><u>&FORM.vendor;</u></dl></set>
 
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=manager><get index="mlist.&FORM.name;"></set>
 
 <read interform file="variable_routing.inc" process>
 

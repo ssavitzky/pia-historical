@@ -9,7 +9,7 @@
 <set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><p><dt><b>Inventor1:</b><dd><u>&FORM.inventor1;</u><dt><b>Inventor2:</b><dd><u>&FORM.inventor2;</u><dt><b>Inventor3:</b><dd><u>&FORM.inventor3;</u><dt><b>Inventor4:</b><dd><u>&FORM.inventor4;</u><dt><b>Inventor5:</b><dd><u>&FORM.inventor5;</u><p><dt><b>Group:</b><dd><u>&FORM.group;</u><p><dt><b>Objective:</b><dd><u>&FORM.objective;</u><dt><b>Title:</b><dd><u>&FORM.title;</u><dt><b>Description:</b><dd><u>&FORM.description;</u><p><h2>Disclosure</h2><dt><b>Disclosed externally:</b><dd><u>&FORM.boolean;</u><dt><b>Deadline:</b><dd><u>&FORM.deadline;</u><dt><b>Date of disclosure (internal or external):</b><dd><u>&FORM.disclosedate;</u><p><h2>Conception and Development</h2><dt><b>Conception date:</b><dd><u>&FORM.coceptiondate;</u><dt><b>Substantiation:</b><dd><u>&FORM.substantiation;</u><dt><b>Stage of invention:</b><dd><u>&FORM.stage;</u><p><dt><b>First experiment date:</b><dd><u>&FORM.experimentdate;</u><dt><b>Notebook# and Page:</b><dd><u>&FORM.labbook;</u><dt><b>Individuals that witnessed:</b><dd><u>&FORM.witnesses;</u><p><dt><b>Further work planned:</b><dd><u>&FORM.further;</u></dl></set>
 
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=manager><get index="mlist.&FORM.name;"></set>
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>FrontOffice<dt>FrontOffice<dd>&FORM.inventor1;<dt>&FORM.inventor1;<dd>&FORM.inventor2;<dt>&FORM.inventor2;<dd>&FORM.inventor3;<dt>&FORM.inventor3;<dd>&FORM.inventor4;<dt>&FORM.inventor4;<dd>&FORM.inventor5;<dt>&FORM.inventor5;<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set> 

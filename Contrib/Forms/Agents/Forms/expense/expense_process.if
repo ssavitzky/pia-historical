@@ -41,7 +41,7 @@
 <set entity name=grandtotal><sum>&atotal; &htotal; &ptotal; &mtotal; &ototal; </sum></set>
 
 
-<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get name="departmentobject.&FORM.name;"></u><dt><b>Date:</b><dd><u>&date;</u></dl>
+<set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Department #:</b><dd><u><get index="departmentobject.&FORM.name;"></u><dt><b>Date:</b><dd><u>&date;</u></dl>
 <p>
 <table border><caption><h2>Personal Auto</h2></caption>
 <tr><th>Date <th>Destination <th>Miles<th> Cost</tr>
@@ -55,7 +55,7 @@
 <p>
 <table border><caption><h2>Per Diem</h2></caption>
 <tr><th>Days<th>Location<TH>Cost</tr>
-<repeat list="1 2 3"><if><test positive><get form name="perdays&li;"></test><then><TR><TD><get form name="perdays&li;"><TD><get form name="perdest&li;"> <TD><get name="perdiem&li;"></tr></repeat></then></if>
+<repeat list="1 2 3"><if><test positive><get form name="perdays&li;"></test><then><TR><TD><get form name="perdays&li;"><TD><get form name="perdest&li;"> <TD><get index="perdiem&li;"></tr></repeat></then></if>
 <TR><TH align=center colspan=2> Total <TD>&ptotal;</table>
 <p>
 <table border><caption><h2>Business Meals</h2></caption>
@@ -66,12 +66,12 @@
 <table border><caption><h2>Other</h2></caption>
 <tr><th>Description <th>Type/Account # <th>Amount </tr>
 <repeat list="1 2 3 4 5 6 7 8 9 10"><if><test positive><get form name="amount&li;"></test><then><set name="acct"><get form name="account&li;"></set>
-<TR><td><get form name="description&li;"> <td>&acct;/<get name="acctobject.&acct;"> <td><get form name="amount&li;"> <tr></then></if></repeat>
+<TR><td><get form name="description&li;"> <td>&acct;/<get index="acctobject.&acct;"> <td><get form name="amount&li;"> <tr></then></if></repeat>
 <TR><TH align=center colspan=2> Total <TD>&ototal;</TR></table>
 <p></set>
 
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=manager><get index="mlist.&FORM.name;"></set>
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set>

@@ -9,7 +9,7 @@
 <set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u><dt><b>Pay period number:</b><dd><u>&FORM.paydate;</u><dt><b>Exceptions:</b><dd><u>&FORM.exceptions;</u><dt><b>Dates:</b><dd><u>&FORM.dates;</u></dl></set>
 
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=manager><get name="mlist.&FORM.name;"></set>
+<set entity name=manager><get index="mlist.&FORM.name;"></set>
 <set entity name=routeobject><dl><dt>&FORM.name;<dd>FrontOffice<dt>FrontOffice<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set> 

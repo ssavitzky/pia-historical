@@ -9,7 +9,7 @@
 <h2>&FORM.dir; Signature Result</h2><p>
 
 <set entity name=routeobject><read file="&FORM.routepath;" process></set>
-<set entity name=nextperson><get name="routeobject.&FORM.name;"></set>
+<set entity name=nextperson><get index="routeobject.&FORM.name;"></set>
 <set entity name=nameobject><read file="usertoname.dat" process></set>
 
 <if><test text>&FORM.signature;</test><then>
@@ -24,7 +24,7 @@
                         <li><a href="../&FORM.filepath;">&FORM.dir; form --- &FORM.name; &dateString;</a><br></write>
                   </else>
                   </if>
-                  <write append file="&FORM.filepath;"><b><get name="nameobject.&FORM.name;"></b> &dateString;<br></write>
+                  <write append file="&FORM.filepath;"><b><get index="nameobject.&FORM.name;"></b> &dateString;<br></write>
                   Your signature has been appended to the document.<br>
 
                  <read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi" query="username=&FORM.name;?src_url=http://&piaHOST;:&piaPORT;/My/Forms/&FORM.filepath;">
