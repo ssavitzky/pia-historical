@@ -50,6 +50,7 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
   public ActiveNode getBinding(String name) {
     if (!caseSensitive) name = cannonizeName(name);
     Object o = itemsByName.get(name);
+    if (o == null) return null;
     if (o instanceof ActiveNode) return (ActiveNode)o;
     else if (o instanceof String) return new ParseTreeText(o.toString());
     else return new ParseTreeText(o.toString()); // === might make a wrapper.
