@@ -6,9 +6,7 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
-import crc.dom.BasicComment;
 import crc.dom.Comment;
 
 import crc.dps.*;
@@ -120,12 +118,4 @@ public class ParseTreeComment extends ParseTreeNode implements ActiveComment {
     return new ParseTreeComment(this, true);
   }
  
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    Comment e = f.createComment(getData()); 
-    return e;
-  }
-
 }

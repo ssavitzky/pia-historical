@@ -7,13 +7,7 @@ package crc.dps.active;
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
-import crc.dom.DOMFactory;
-import crc.dom.Element;
-import crc.dom.BasicText;
-
 import crc.dom.Text;
-import crc.dom.Comment;
-import crc.dom.PI;
 
 import crc.dps.*;
 import crc.dps.util.*;
@@ -181,14 +175,6 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
    */
   public ActiveNode shallowCopy() {
     return new ParseTreeText(this, false);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    Text e = f.createTextNode(getData()); 
-    return e;
   }
 
 }

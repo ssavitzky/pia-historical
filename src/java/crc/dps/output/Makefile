@@ -9,12 +9,13 @@ TOPDIR=../../..
 # is minimal -- only the current node.
 
 TO_NODES = \
-	AbstractOutput.java \
 	ActiveOutput.java \
 	ToAttributeList.java \
 	ToDocument.java \
 	ToNodeList.java \
 	ToParseTree.java
+
+#	AbstractOutput.java \
 
 # The following Output classes do NOT have access to a constructed tree,
 # so the have to keep their state in a stack.

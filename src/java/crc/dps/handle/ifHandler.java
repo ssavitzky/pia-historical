@@ -9,7 +9,6 @@ import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;

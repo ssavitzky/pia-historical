@@ -6,7 +6,6 @@ package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.NodeType;
-import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;

@@ -6,9 +6,6 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
-
-import crc.dom.BasicPI;
 import crc.dom.PI;
 
 import crc.dps.*;
@@ -114,14 +111,6 @@ public class ParseTreePI extends ParseTreeNamed implements ActivePI {
    */
   public ActiveNode shallowCopy() {
     return new ParseTreePI(this, false);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    PI e = f.createPI(getName(), getData()); 
-    return e;
   }
 
 }

@@ -8,7 +8,6 @@ import java.io.*;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
 import crc.dom.Entity;
 

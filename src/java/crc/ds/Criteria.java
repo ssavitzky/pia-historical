@@ -4,8 +4,6 @@
 
 package crc.ds;
 
-import crc.dps.util.ListUtil;
-
 /**
  *  A Criteria performs a matching operation on a Features object.
  *	It consists of a List the elements of which are Criterion objects.
@@ -16,9 +14,9 @@ public class Criteria extends List {
   public boolean match(Features features, HasFeatures parent) {
     for (int i = 0; i < nItems(); ++i) {
       Criterion c = (Criterion)at(i);
-      crc.pia.Pia.debug(this, "         "+c.toString()+"?");
+      // crc.pia.Pia.debug(this, "         "+c.toString()+"?");
       if (! c.match(features, parent)) {
-	crc.pia.Pia.debug(this, "         failed");
+	// crc.pia.Pia.debug(this, "         failed");
 	return false;
       }
     }
@@ -34,7 +32,6 @@ public class Criteria extends List {
    *	"=" matches null, "", or False.
    */
   public Criteria(String str) {
-      // this(crc.sgml.Util.split(str));
       this(List.split(str));
   }
 

@@ -6,9 +6,7 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
-import crc.dom.BasicNamedNode;
 import crc.dom.Entity;
 
 import crc.dps.*;
@@ -157,13 +155,6 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
    */
   public ActiveNode deepCopy() {
     return new ParseTreeEntity(this, true);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    return null; // === DOMFactory cannot create entities ===
   }
 
 }

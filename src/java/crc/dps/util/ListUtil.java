@@ -5,13 +5,9 @@
 package crc.dps.util;
 
 import crc.dom.Node;
-import crc.dom.Element;
 import crc.dom.Text;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
-import crc.dom.Attribute;
-import crc.dom.AttributeList;
-import crc.dom.Entity;
 
 import crc.dps.NodeType;
 import crc.dps.active.*;

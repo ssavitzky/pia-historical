@@ -11,7 +11,6 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.NotMyChildException;
-import crc.dom.DOMFactory;
 
 /**
  * Abstract base class for all Nodes used to build parse trees in the
@@ -243,13 +242,6 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
 
   ////////////////////////////////////////////////////////////////////////
   // Presentation:
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   *
-   * === Worry about document, attribute, entity-ref ===
-   */
-  public abstract Node createNode(DOMFactory f);
 
   /**
    * Convert the node and its content to a String.

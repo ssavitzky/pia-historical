@@ -5,7 +5,8 @@
 package crc.dps.active;
 
 import java.io.*;
-import crc.dom.*;
+import crc.dom.NodeList;
+
 import crc.dps.Handler;
 import crc.dps.Namespace;
 import crc.dps.Input;

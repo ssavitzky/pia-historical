@@ -5,7 +5,6 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 import crc.dom.AttributeList;
 
 import crc.dps.active.*;

@@ -6,7 +6,6 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
 import crc.dom.Attribute;
 
@@ -124,14 +123,6 @@ public class ParseTreeAttribute extends ParseTreeNamed
    */
   public ActiveNode deepCopy() {
     return new ParseTreeAttribute(this, true);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    Attribute e = f.createAttribute(getName(), getValue()); 
-    return e;
   }
 
 }

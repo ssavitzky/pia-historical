@@ -6,9 +6,7 @@ package crc.dps.active;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
-import crc.dom.BasicPI;
 import crc.dom.PI;
 
 import crc.dps.*;
@@ -128,16 +126,6 @@ public class ParseTreeDecl extends ParseTreeNamed implements ActiveDeclaration {
 
   public ActiveNode deepCopy() {
     return new ParseTreeDecl(this, true);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f) {
-    /* === DOMFactory.createDeclaration unimplemented
-    Declaration e = f.createDeclaration(getName(), getData()); 
-    return e;
-    */ return null;
   }
 
 }

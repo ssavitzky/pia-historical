@@ -6,12 +6,12 @@ PACKAGE=crc.dps.input
 TOPDIR=../../..
 
 FILES = \
-	AbstractInput.java \
 	ActiveInput.java \
 	FromParseNodes.java \
 	FromParseTree.java 
 
 OLDFILES = \
+	AbstractInput.java \
 	AbstractInputFrame.java \
 	ExpandToken.java \
 	Guard.java \

@@ -7,7 +7,6 @@ import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 
 import crc.dps.active.*;
 

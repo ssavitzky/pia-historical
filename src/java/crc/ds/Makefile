@@ -8,9 +8,9 @@ TOPDIR=../..
 FILES = \
 	Association.java \
 	BalancedTree.java \
-	Criteria.java \
 	Criterion.java \
 	ValueCriterion.java \
+	Criteria.java \
 	Features.java \
 	HasFeatures.java \
 	InvalidIndex.java \

@@ -6,8 +6,6 @@ package crc.dps.util;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
-
 import crc.dom.Entity;
 
 import crc.dps.active.*;

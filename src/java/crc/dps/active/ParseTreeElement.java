@@ -9,7 +9,6 @@ import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
 import crc.dom.NoSuchNodeException;
@@ -409,22 +408,6 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
    */
   public ActiveNode deepCopy() {
     return new ParseTreeElement(this, true);
-  }
-
-  /** Return new node corresponding to this Token, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   *
-   * === Worry about document, attribute, entity-ref ===
-   */
-  public Node createNode(DOMFactory f) {
-    Element e = f.createElement(getTagName(), getAttributes()); 
-    if (e instanceof ActiveElement) {
-      ActiveElement be = (ActiveElement)e;
-      be.setHasEmptyDelimiter(hasEmptyDelimiter());
-      be.setIsEmptyElement(isEmptyElement());
-      be.setImplicitEnd(implicitEnd());
-    }
-    return e;
   }
 
 }

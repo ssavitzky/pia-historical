@@ -8,7 +8,6 @@ import crc.dps.Output;
 
 import crc.dom.Node;
 import crc.dom.Document;
-import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
@@ -24,13 +23,12 @@ import java.util.NoSuchElementException;
  * @see crc.dps.Processor
  */
 
-public class ToDocument extends AbstractOutput {
+public class ToDocument extends ActiveOutput {
 
   /************************************************************************
   ** State:
   ************************************************************************/
 
-  protected DOMFactory factory = null;
   protected Node current = null;
   protected Document root = null;
 
@@ -44,8 +42,4 @@ public class ToDocument extends AbstractOutput {
     root = doc;
   }
 
-  /** Output tokens to a Document created using a DOMFactory. */
-  public ToDocument(DOMFactory aFactory) {
-    factory = aFactory;
-  }
 }

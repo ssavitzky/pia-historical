@@ -12,7 +12,6 @@ import crc.dps.Namespace;
 
 import crc.dom.Node;
 import crc.dom.NodeList;
-import crc.dom.DOMFactory;
 
 /**
  * Interface for parse tree Nodes. <p>
@@ -98,11 +97,6 @@ public interface ActiveNode extends Active, Node {
   /** Return a deep copy of this Token.  Attributes and children are copied.
    */
   public ActiveNode deepCopy();
-
-  /** Return new node corresponding to this one, made using the given 
-   *	DOMFactory.  Children <em>are not</em> copied.
-   */
-  public Node createNode(DOMFactory f);
 
   /************************************************************************
   ** Construction Convenience Functions:

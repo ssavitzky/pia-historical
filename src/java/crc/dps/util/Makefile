@@ -15,8 +15,9 @@ CLASSES = \
 	BasicEntityTable.java \
 	ContextStack.java \
 	CurrentActive.java \
-	CurrentNode.java \
 	CursorStack.java
+
+#	CurrentNode.java \
 
 UTILITIES = \
 	Copy.java \

@@ -12,7 +12,6 @@ INTERFACES = \
 	AttributeList.java \
 	Comment.java \
 	Declaration.java \
-	DOMFactory.java \
 	Document.java \
 	DocumentContext.java \
 	Element.java \
@@ -31,6 +30,9 @@ EXCEPTIONS = \
 	NotMyChildException.java 
 
 # All of the following appear to be unused in the DPS
+
+OTHER_INTERFACES = \
+	DOMFactory.java 
 
 OTHER_CLASSES = \
 	NodeType.java 
