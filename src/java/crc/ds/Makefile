@@ -22,6 +22,7 @@ FILES = \
 	Sorter.java \
 	SortTree.java \
 	Table.java \
+	Tabular.java \
 	UnaryFunctor.java \
 	TernFunc.java \
 	Stuff.java 
@@ -38,7 +39,7 @@ SortTree.class: Sorter.java
 
 List.class: Stuff.java
 
-Table.class: Stuff.java
+Table.class: Stuff.java Tabular.java
 
 Thing.class: Stuff.java
 

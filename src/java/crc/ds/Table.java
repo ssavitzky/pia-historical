@@ -6,7 +6,7 @@ package crc.ds;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-public class Table extends Hashtable implements Stuff {
+public class Table extends Hashtable implements Stuff, Tabular {
 
   /************************************************************************
   ** Stuff interface:
@@ -52,7 +52,7 @@ public class Table extends Hashtable implements Stuff {
 
   /** Access a named attribute */
   public Object at(String a) {
-    return (a == null)? a : get(a);
+    return (a == null)? a : get((Object)a);
   }
 
   /** Add or replace an attribute */
@@ -96,6 +96,16 @@ public class Table extends Hashtable implements Stuff {
   }
 
 
+  /************************************************************************
+  ** Tabular interface:
+  ************************************************************************/
+
+  // in HashTable: public int size();
+  // in HashTable: public Enumeration keys();
+
+  public Object get(String key) { return get((Object)key); }
+  public void set(String key, Object value) { at(key, value); }
+  
   /************************************************************************
   ** Construction:
   ************************************************************************/
