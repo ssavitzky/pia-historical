@@ -10,7 +10,9 @@
 <agent-set-criterion name="agent_response" value=0>
 
 <set agent hook name="_act_on"><protect>
-   <set entity name=fn>&date;.html</set>
+   <set entity name=fn>&year;/&month;/&day;.html</set>
+   <write directory file="&year;"></write>
+   <write directory file="&year;/&month;"></write>
    <if><test not zero><get trans feature name="html"></test>
        <then><write append trim line file="&fn;">
 	         &time; <a href="&url;"><get trans feature name=title></a><br>

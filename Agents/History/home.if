@@ -30,6 +30,31 @@
   <li>Last link: <a  href="/My/History/.last.link">/My/History/.last.link</a>
 </ul>
 
+<h3>Directory Format</h3>
+
+The History agent uses a directory hierarchy of the form:
+
+<dl>
+  <dt> yyyy/
+  <dd> 
+       <dl>
+	 <dt> mm/
+	 <dd> 
+	      <dl>
+		<dt> dd.html
+		<dd> 
+	      </dl>
+       </dl>
+</dl>
+
+The year is always four digits; month and day are always two.  This makes
+sorting files by date very easy.  <p>
+
+Older versions of the PIA used <code>yymmdd.html</code> as the filename.  A
+PERL program, <code><read interform info=path file="fixup.pl"></code>, is
+provided for fixing old History directories.<p>
+
+
 <h3>Agent Act_On Hook</h3>
 
 <blockquote><em>
