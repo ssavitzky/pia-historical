@@ -1,0 +1,46 @@
+<h1>DPS Tag Handlers for the PIA</h1>
+
+<a href="../">[..]</a>
+<a href="#files">[files]</a>
+(
+  <a href="#Classes">Classes</a>
+  <a href="#Exceptions">Exceptions</a>
+)
+
+<p> This directory contains the DPS tag handlers for the PIA.  Agent-specific
+    handlers are in <code><a href="../agent/">../agent/</a></code>.
+
+<h2>Annotated Contents</h2>
+
+<h3><a name="Classes">Classes</a></h3>
+<dl>
+  <dt> <a href="agentList.java">agentList</a>
+  <dd> 
+  <dt> <a href="agentRunning.java">agentRunning</a>
+  <dd> 
+  <dt> <a href="transControl.java">transControl</a>
+  <dd> 
+  <dt> <a href="userMessage.java">userMessage</a>
+  <dd> 
+</dl>
+
+<hr>
+<h3><a name="Exceptions">Exceptions</a></h3>
+
+<dl>
+  <dt> <a href="PiaInitException.java">PiaInitException</a>
+  <dd> Exception during initialization.  Fatal.
+  <dt> <a href="PiaRuntimeException.java">PiaRuntimeException</a>
+  <dd> Exception while the PIA is running.  Caught, usually resulting in a
+       "Server Internal Error" (code 500) response.
+  <dt> <a href="BadMimeTypeException.java">BadMimeTypeException</a>
+  <dd> Results from an unparseable MIME type in a header.
+  <dt> <a href="ContentOperationUnavailable">ContentOperationUnavailable</a>
+  <dd> Generated when an attempt is made to perform an operation on a Content
+       that is not implemented in that particular implementation.
+</dl>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+<a name="files"><hr></a>
