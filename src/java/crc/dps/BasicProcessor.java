@@ -58,20 +58,18 @@ public class BasicProcessor extends ContextStack implements Processor {
   }
 
   /** Process the current Node */
-  public void processNode() {
+  public final void processNode() {
     Action action = input.getAction();
     if (action != null) {
-      debug("!! calling action for " + logNode(input.getNode()) + "\n");
-      debug("   action class name: " + action.getClass().getName() + "\n");
-      additionalAction(action.action(input, this));
+      additionalAction(action.actionCode(input, this));
+      //action.action(input, this, output);
     } else {
-      debug("!! default action for " + logNode(input.getNode()) + "\n");
       expandCurrentNode();
     }
   }
 
   /** Process the children of the current Node */
-  public void processChildren() {
+  public final void processChildren() {
     for (Node node = input.toFirstChild() ;
 	 node != null;
 	 node = input.toNextSibling()) {
@@ -82,12 +80,13 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   /** Perform any additional action requested by the action routine. */
   protected final void additionalAction(int flag) {
-    debug("   -> " + Action.actionNames[flag+1] + " (" + flag + ")\n");
+    //debug("   -> " + Action.actionNames[flag+1] + " (" + flag + ")\n");
     switch (flag) {
     case Action.COPY_NODE: copyCurrentNode(); return;
     case Action.COMPLETED: return;
     case Action.EXPAND_NODE: expandCurrentNode(); return;
     case Action.EXPAND_ATTS: expandCurrentAttrs(); return;
+    case Action.PUT_NODE: putCurrentNode(); return;
     }
   }
 
@@ -98,18 +97,15 @@ public class BasicProcessor extends ContextStack implements Processor {
   /** Process the current node in the default manner, expanding entities
    *	in its attributes and processing its children re-entrantly.
    */
-  public void expandCurrentNode() {
-    Node node = input.getNode();
-    if (node.getNodeType() == NodeType.ENTITY) {
-      expandEntity((Entity) node, output);
-    } else if (input.hasActiveAttributes()) {
-      ActiveElement oe = input.getActive().asElement();
+  public final void expandCurrentNode() {
+    ActiveNode node = input.getActive();
+    // No need to check for an entity; active ones use EntityHandler.
+    if (input.hasActiveAttributes()) {
+      ActiveElement oe = node.asElement();
       ActiveElement e = oe.editedCopy(expandAttrs(oe.getAttributes()), null);
-      //debug("Starting element" + logNode(e) + "\n");
       output.startElement(e);
       if (input.hasChildren()) { processChildren(); }
       output.endElement(e.isEmptyElement() || e.implicitEnd());
-      //debug("  done\n");
     } else if (input.hasChildren()) {
       output.startNode(node);
       if (input.hasChildren()) processChildren();
@@ -122,12 +118,12 @@ public class BasicProcessor extends ContextStack implements Processor {
   /** Process the current node by expanding entities in its attributes, but
    *	blindly copying its children (content).
    */
-  public void expandCurrentAttrs() {
-    Node node = input.getNode();
+  public final void expandCurrentAttrs() {
+    ActiveNode node = input.getActive();
     if (input.hasActiveAttributes()) {
-      ActiveElement oe = input.getActive().asElement();
-      ActiveElement e = new ParseTreeElement(oe,
-					     expandAttrs(oe.getAttributes()));
+      ActiveElement oe = node.asElement();
+      ActiveElement e =
+	new ParseTreeElement(oe, expandAttrs(oe.getAttributes()));
       output.startElement(e);
       if (input.hasChildren()) { copyChildren(); }
       output.endElement(e.isEmptyElement() || e.implicitEnd());
@@ -154,6 +150,15 @@ public class BasicProcessor extends ContextStack implements Processor {
     } else {
       output.putNode(n);
     }
+  }
+
+  /** Copy the current node to the output.  Recursion is not needed.
+   *
+   *	This is commonly used for, e.g., Text nodes.
+   */
+  public final void putCurrentNode() {
+    Node n = input.getNode();
+    output.putNode(n);
   }
 
   /** Copy the children of the current Node */
