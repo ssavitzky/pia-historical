@@ -52,6 +52,11 @@ sub new {
     $self;
 }
 
+sub init_content {
+    my $self = shift;
+    $self->{'_content'} = DS::Tokens->new;
+}
+
 
 
 #############################################################################
@@ -161,10 +166,12 @@ sub push {
     ##	  Tagless tokens have their content treated as arrays.
 
     my $self = shift;
-    $self->{'_content'} = [] unless exists $self->{'_content'};
+    $self->init_content unless exists $self->{'_content'};
     my $content = $self->{'_content'};
     for (@_) {
-	if (ref($_) eq 'ARRAY') {
+	if (ref($content) ne 'ARRAY') {
+	    $content->push($_);
+	} elsif (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
 	} elsif (ref $_) {
 	    my $t = $_->tag;
@@ -198,10 +205,12 @@ sub unshift {
     ## unshift something into the content, i.e. attach it to the front.
 
     my $self = shift;
-    $self->{'_content'} = [] unless exists $self->{'_content'};
+    $self->init_content unless exists $self->{'_content'};
     my $content = $self->{'_content'};
     for (@_) {
-	if (ref $_) {
+	if (ref($content) ne 'ARRAY') {
+	    $content->unshift($_);
+	} elsif (ref $_) {
 	    unshift(@$content, $_);
 	} else {
 	    # The current element is a text segment
@@ -222,38 +231,16 @@ sub unshift {
 ###
 
 sub as_string {
-    my ($self, $contentOnly) = @_;
+    my ($self) = @_;
 
     ## Convert a token, or its content if $contentOnly is true,
     ##	  to a string.
 
     my $string = '';
-    $string .= $self->starttag unless $contentOnly;
-
-    my $content = $self->content;
-    if (defined $content) {
-	for (@$content) {
-	    if (ref($_)) { 
-		if(ref($_) eq 'HTML::Element') {
-		    $string .= $_ -> as_HTML; } 
-		else {$string .= $_->as_string;}}
-	    else         { $string .= $_; }
-	    ## Note that we need as_HTML because legacy code is still
-	    ## generating HTML::Element's
-	}
-    }
-    return $string if $contentOnly;
+    $string .= $self->starttag . $self->content_string;
     $string .=  $self->endtag 
 	if ($self->needs_end_tag || $self->internal_content);
     return $string;
-}
-
-sub content_string {
-    my ($self) = @_;
-
-    ## Returns the content as a string
-
-    return $self->as_string(1);
 }
 
 sub content_text {
@@ -321,7 +308,12 @@ sub content_token {
 
 sub as_HTML {
     my ($self) = @_;
-    return $self->as_string;
+
+    ## === eventually, protect markup. ===
+
+    $string = $self->as_string;
+    HTML::Entities::encode_entities($string, '&">'); #"
+    $string;
 }
 
 sub starttag {

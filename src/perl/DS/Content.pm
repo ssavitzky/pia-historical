@@ -86,11 +86,10 @@ sub content_string {
 	for (@$content) {
 	    if (ref($_)) { 
 		if(ref($_) eq 'HTML::Element') {
+		    ## Note: used only in legacy code.
 		    $string .= $_ -> as_HTML; } 
-		else {$string .= $_->as_string($contentOnly);}}
+		else {$string .= $_->as_string;}}
 	    else         { $string .= $_; }
-	    ## Note that we need as_HTML because legacy code is still
-	    ## generating HTML::Element's
 	}
     }
     return $string;

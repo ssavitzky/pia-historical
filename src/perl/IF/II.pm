@@ -15,6 +15,7 @@ use HTML::Entities ();
 use IF::IT;
 use IF::IA;
 use DS::Tokens;
+use IF::Semantics qw(is_list);
 
 push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 				#     the problem is that HTML::Parser
@@ -68,7 +69,6 @@ sub new {
 
     $self->{_dstack} =  [];	# The stack of items under construction.
     $self->{_cstack} =  [];	# The control stack.
-    $self->{_out_queue} = IF::IT->new(); # a queue of tokens to be output.
     $self->{_out_queue} = DS::Tokens->new(); # a queue of tokens to be output.
     $self->{_in_stack} =  [];	# a stack of tokens to be input.
     $self->{_state} = {};	# A ``stack frame''
@@ -357,6 +357,12 @@ sub expand_entities {
 
 #############################################################################
 ###
+### Utilities:
+###
+
+
+#############################################################################
+###
 ### Input from the input stack:
 ###
 ###	The input stack contains either strings, tokens, or lists.
@@ -376,11 +382,11 @@ sub next_input {
     my $in_stack = $self->in_stack;
     my $input = pop @$in_stack;
 
-    return $input unless ref($input) eq 'ARRAY';
+    return $input unless (ref($input) eq 'ARRAY');
 
     my ($tag, $pc, $tokens) = @$input;
-    #print "??bad input = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
-    return $input unless ref $tokens eq 'ARRAY';
+    return $input unless is_list($tokens); # might be undefined.
+
     my $out = $tokens->[$pc++];
 
     return $input unless defined $out;
@@ -413,8 +419,8 @@ sub push_into {
 	return unless $it;
 	print "pushing string\n" if $main::debugging > 1;
 	push(@$in_stack, $it);
-    } elsif (ref($it) eq 'ARRAY') {
-	print "pushing array\n" if $main::debugging > 1;
+    } elsif (is_list($it)) {
+	print "pushing list\n" if $main::debugging > 1;
 	push(@$in_stack, ['', 0, $it]);
 	return $st;
     } else {
@@ -718,9 +724,12 @@ sub resolve {
 	$self->push_into($it);
 	$it = $self->next_input;
 	$incomplete = 0;
+    } elsif (! defined $it) {
+	$it = $self->next_input;
     }
-    ## === should pop input stack if $it undefined.
-    ## === the ref($it) shouldn't be needed ===
+    return unless defined $it;
+
+    ## === the ref($it) below shouldn't be needed ===
     $it = $self->expand_attrs($it) unless (ref($it) || $self->quoting);
 
     while ($it) {
@@ -803,7 +812,7 @@ sub resolve {
 	do {
 	    $it = $self->next_input;
 	    return unless $it;
-	    if (ref($it) eq 'ARRAY') {
+	    if (is_list($it)) {
 		## The end of some tag's content.
 		if (ref $it->[0]) {
 		    $it = $it->[0]->end_input($it, $self);
@@ -853,12 +862,12 @@ sub pass_it {
     } elsif (! ref($it)) {
 	print "  passing $it \n" if $main::debugging > 1;
 	$out_queue->push($it);
-    } elsif (ref($it) eq 'ARRAY') {
+    } elsif (ref($it) eq 'ARRAY' || $it->is_list) {
 	print "  passing [...] \n" if $main::debugging > 1;
 	$out_queue->push(@$it);
     } else {
 	print "  passing ".$it->starttag."... \n" if $main::debugging > 1;
-	$out_queue->push($it->as_HTML);
+	$out_queue->push($it->as_string); # === as_HTML? ===
     }
 }
 

@@ -11,7 +11,7 @@ package IF::Semantics; ###### Semantic utilities for Actors.
 
 require Exporter;
 push(@ISA,Exporter);
-@EXPORT = qw(split_list is_one_of tagset
+@EXPORT = qw(is_list split_list is_one_of tagset
 	     analyze remove_spaces list_items list_pairs
 	     get_text get_list get_pairs get_hash
 	     text_item lc_text_item string_item lc_string_item
@@ -20,6 +20,21 @@ push(@ISA,Exporter);
 	     test_result list_result pair_result); # === can't get tags to work.
 
 use URI::URL;
+
+#############################################################################
+###
+### Predicates:
+###
+
+sub is_list {
+    my $v = shift;
+
+    ## Returns true if the argument is a list.
+    ##	  The ARRAY test is probably obsolete now.
+
+    return ref $v && (ref($v) eq 'ARRAY' || $v->is_list);
+}
+
 
 #############################################################################
 ###
@@ -79,8 +94,8 @@ sub singleton_string {
     if (ref $in ne 'ARRAY') {
 	$in = $in->content;
     }
-    return $in unless ref $in;
-    if (ref $in eq 'ARRAY' && @$in == 1 && !ref($$in[0])) {
+    return $in unless is_list($in);
+    if (@$in == 1 && !ref($$in[0])) {
 	return $$in[0];
     }
     return;
@@ -176,14 +191,12 @@ sub analyze {
 
     my ($out, $x, @tmp, %tags);
 
-    if (ref($in) eq 'ARRAY') {
-	$out = {};
-    } elsif (ref($in)) {
+    if (ref($in) eq 'IF::IT') {
 	$out = $in;
 	$in = $in->content;
     } else {
 	$out = {};
-	$in = [ $in ];
+	$in = [ $in ] unless ref($in);
     }
 
     print "Analzying [@$in]\n" if  $main::debugging>1;
@@ -360,7 +373,7 @@ sub text_item {
     ## Returns its argument as a string without markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->content_text if ref $it;
     $it;
 }
@@ -371,7 +384,7 @@ sub lc_text_item {
     ## Returns its argument as a lowercase string without markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->content_text if ref $it;
     lc $it;
 }
@@ -382,7 +395,7 @@ sub link_item {
     ## Returns its argument as a string without markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->link_text if ref $it;
     $it;
 }
@@ -393,7 +406,7 @@ sub lc_link_item {
     ## Returns its argument as a lowercase string without markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->link_text if ref $it;
     lc $it;
 }
@@ -404,7 +417,7 @@ sub string_item {
     ## Returns its argument as a string, including markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->content_string if ref $it;
     $it;
 }
@@ -415,7 +428,7 @@ sub lc_string_item {
     ## Returns its argument as a lowercase string, including markup.
     ##	 if the argument is a list, selects the first item
 
-    $it = $it->[0] if ref($it) eq 'ARRAY';
+    $it = $it->[0] if is_list($it);
     $it = $it->content_string if ref $it;
     lc $it;
 }

@@ -24,27 +24,28 @@ push(@ISA, DS::List);
 ###	set of operations.
 
 sub push {
-    my $self = shift;
+    my ($self, @values) = @_;
+    my $foo;
 
     ## Push something into the content.  
     ##	  Strings are merged.  Arrays and Lists are appended.
 
-    for (@_) {
-	if (ref($_) eq 'ARRAY') {
-	    $self->push(@$_);
-	} elsif (ref $_) {
-	    if (! $_->is_list) {
-		push(@$self, $_);
+    for $foo (@values) {
+	if ((ref $foo) eq 'ARRAY') {
+	    $self->push(@$foo);
+	} elsif (ref $foo) {
+	    if (! $foo->is_list) {
+		push(@$self, $foo);
 	    } else {
-		$self->push(@{$_->content});
+		$self->push(@{$foo->content});
 	    }
 	} else {
 	    # The current element is a text segment
 	    if (@$self && !ref $self->[-1]) {
 		# last content element is also text segment
-		$self->[-1] .= $_;
+		$self->[-1] .= $foo;
 	    } else {
-		push(@$self, $_);
+		push(@$self, $foo);
 	    }
 	}
     }

@@ -48,6 +48,11 @@ sub new {
     $self;
 }
 
+sub init_content {
+    my $self = shift;
+    $self->{'_content'} = DS::List->new;
+}
+
 
 
 #############################################################################
@@ -193,31 +198,17 @@ sub empty_element {
 
 sub push {
     ## Push something into the content.  
-    ##	  Strings are merged.  Arrays are appended.
-    ##	  Tagless tokens have their content treated as arrays.
-    ## === We should leave the merging, etc. to subclasses that need it
 
     my $self = shift;
-    $self->{'_content'} = [] unless exists $self->{'_content'};
+    $self->init_content unless exists $self->{'_content'};
     my $content = $self->{'_content'};
     for (@_) {
-	if (ref($_) eq 'ARRAY') {
+	if (ref($content) ne 'ARRAY') {
+	    $content->push($_);
+	} elsif (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
-	} elsif (ref $_) {
-	    my $t = $tag;
-	    if ($t) {
-		push(@$content, $_);
-	    } else {
-		$self->push($_->content);
-	    }
 	} else {
-	    # The current element is a text segment
-	    if (@$content && !ref $content->[-1]) {
-		# last content element is also text segment
-		$content->[-1] .= $_;
-	    } else {
-		push(@$content, $_);
-	    }
+	    push(@$content, $_);
 	}
     }
     $self;
@@ -228,19 +219,15 @@ sub unshift {
     ## unshift something into the content, i.e. attach it to the front.
 
     my $self = shift;
-    $self->{'_content'} = [] unless exists $self->{'_content'};
+    $self->init_content unless exists $self->{'_content'};
     my $content = $self->{'_content'};
     for (@_) {
-	if (ref $_) {
+	if (ref($content) ne 'ARRAY') {
+	    $content->unshift($_);
+	} elsif (ref($_) eq 'ARRAY') {
 	    unshift(@$content, $_);
 	} else {
-	    # The current element is a text segment
-	    if (@$content && !ref $content->[0]) {
-		# last content element is also text segment
-		$content->[0] = $content->[0] . $_;
-	    } else {
-		unshift(@$content, $_);
-	    }
+	    unshift(@$content, $_);
 	}
     }
     $self;
