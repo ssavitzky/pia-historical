@@ -109,6 +109,7 @@ public class T_ChildNodeList{
 
     Report.debug("Testing cloning another list");
     ChildNodeList nl = new ChildNodeList( be.getChildren() );
+    Report.debug("The new node list has this many children-->"+Integer.toString((int)(nl.getLength())));
 
     Report.debug("Here is the old list...");
     printChildNodeListF( be.getChildren().getEnumerator() );
