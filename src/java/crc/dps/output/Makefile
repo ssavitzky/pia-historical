@@ -28,6 +28,7 @@ TO_TEXT = \
 # the target output is missing).
 
 TO_PROXY = \
+	DiscardOutput.java \
 	FilterText.java \
 	OutputTrace.java \
 	Proxy.java
@@ -52,6 +53,7 @@ ToParseTree.class: ../Output.java ../aux/CurrentActive.java \
 ToString.class: ../Output.java ../aux/CursorStack.java
 ToWriter.class: ../Output.java ../aux/CursorStack.java
 
+DiscardOutput.class: ../Output.java
 Proxy.class: ../Output.java
 FilterText.class: ../Output.java Proxy.java
 OutputTrace.class: ../Output.java Proxy.java
