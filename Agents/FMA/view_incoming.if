@@ -1,0 +1,84 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>View Incoming Faxes</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+<!-- set user=username ? unknown -->
+<set name="user"><if><get name="user" form><then>&FORM.user;</then><else>unknown</else></if></set>
+<set name="sender"><if><get name="sender" form><then>&FORM.sender;</then><else>unknown</else></if></set>
+
+<!-- include the standard head banner -->
+
+<set entity name=title>Incoming Faxes for &user;</set>
+<read interform file="heading.inc" process>
+
+<!-- set user list for reuse -->
+<set name="userlist">
+<repeat list="&AGENT.users;"> <option>&li;</option></repeat>
+</set>
+
+<!-- search form/ sorting -->
+<form action="&url;" method=POST>
+<input type="SUBMIT" value="Show">
+Faxes for: <select name="user"> <option>&user;</option> &userlist; </select>
+
+Sent by: <select name="from">  <option>&sender; </option>
+ <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat>
+</select>
+Sort by: <select name="from">  <option>date</option>
+ <option>sender</option>
+ <option>versions</option>
+
+</select>
+</form>
+
+
+<!-- read list of incoming faxes - should be replaced by a get-->
+ <set name="faxes"><read file="user/&user;.html"></set>
+
+<!-- filter and sort -->
+
+<!-- show - probably want calendar interface here-->
+<!--  more data  should be shown in listing -->
+<form action="/&agentName;/route_faxes.if" method=POST>
+<table align=center>
+<tr><TH><TH><TH>Forward To</tr>
+ <tr foreach list="&faxes;">
+  <TR><TD align=right> <a href="/&agentName;/view_fax.if?fax=&li;"><img src="/&agentName/DATA/&li;/small.gif"></a>
+   <TD align=left><a href="/&agentName;/view_fax.if?fax=&li;">&li;</a>
+   <TD align=center> <select name="faxroute:&li;">&userlist;</select>
+ </tr>
+</table>
+ <input type="SUBMIT" value="ForwardFaxes">
+</form>
+ <HR>
+<!-- read list of incoming faxes - should be replaced by a get-->
+ <set name="faxes"><read file="incoming.html"></set>
+
+<!-- filter and sort -->
+
+<!-- show - probably want calendar interface here-->
+<!--  more data  should be shown in listing -->
+<form action="/&agentName;/route_faxes.if" method=POST>
+<table align=center>
+<tr><TH><TH><TH>Forward To</tr>
+ <tr foreach list="&faxes;">
+  <TR><TD align=right> <a href="/&agentName;/view_fax.if?fax=&li;"><img src="/&agentName/DATA/&li;/small.gif"></a>
+   <TD align=left><a href="/&agentName;/view_fax.if?fax=&li;">&li;</a>
+   <TD align=center> <select name="faxroute:&li;">&userlist;</select>
+ </tr>
+</table>
+ <input type="SUBMIT" value="ForwardFaxes">
+</form>
+
+
+
+<hr>
+
+<!-- $Id$ -->
+
+<!-- insert standard footer which usually includes controls -->
+<read interform file="footer.inc" process>
+
+</body></html>

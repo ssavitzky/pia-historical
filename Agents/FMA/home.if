@@ -1,0 +1,46 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> Fax Management Appliance </title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<!-- include the standard head banner -->
+<set entity name=title>&agentName; home page</set>
+<read interform file="heading.inc" process>
+
+<!-- create table with image on left controls on right -->
+<table align=center cellspacing=0 cellpadding=0 border=0>
+
+<TR><th rowspan=3 valign=center>
+   <a href="http://www.ricoh.co.jp/fax/hl5200_e/shinka_e.html">
+    <img src="/&agentName;/r3.jpg" width=144 border=0></a>
+
+<!-- controls -->
+ <TD align=right><td>
+   <a href="/&agentName;/view_incoming.if">
+        <img src="/&agentName;/Icons/incoming.gif"  height=32 width=32
+        border=0 alt="INBOX"> Incoming Faxes</a><br>
+
+<TR><TD align=right><td> <a href="/&agentName;/send_fax.if">
+        <img src="/&agentName;/Icons/send.gif"  height=32 width=32 border=0> Send Fax</a><br>
+
+<TR>
+    <TD align=right><td>
+        <a href="/&agentName;/find_fax.if"><img src="/&agentName;/Icons/previews.gif"
+        height=32 width=32 border=0 > Find Fax </a>
+</table>
+
+
+  
+
+  <hr>
+
+
+<!-- insert  brief description of appliance -->
+<read interform file="about.inc" process>
+
+<!-- insert standard footer which usually includes controls -->
+<read interform file="footer.inc" process>
+
+
+</body></html>

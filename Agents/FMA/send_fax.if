@@ -1,0 +1,66 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> Send a Fax</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+
+<!-- include the standard head banner -->
+
+<set entity name=title> Send a Fax</set>
+<read interform file="heading.inc" process>
+
+
+<!-- set src = page to send ? show form -->
+<if><get name="src" form><then><set name="src">&FORM.src;</set>
+ <set name="dir">outgoing/&year;/&month;/&day;/&hour;&minute;</set>
+<set name="info">
+<dl>
+  <dt> URL
+  <dd> &FORM.src;
+  <dt> From
+  <dd> &FORM.user;
+  <dt> To
+  <dd> &FORM.to;
+</dl>
+</set>
+<!-- add to database -->
+<write file="&dir;/info.html">
+&info;
+</write>
+<write file="outgoing.html" append>
+&dir;
+</write>
+
+<h1>SENDING FAX</h1>
+ <a href="/&agentName;/view_fax.if?fax=&dir;">&info;</a>
+<!-- new tag for creating the images and sending -->
+<!-- this will insert any error messages -->
+<send-fax info=&info;>
+
+<hr>
+</then>
+<else>
+<h1> Send a Fax</h1>
+</else></if>
+
+<form action="&url;" method=POST>
+<input type="SUBMIT" value="Send">
+Document:<input type="URL" name="src" size="60">
+<br>
+From: <select name="user">  <option>&user;</option>
+ <repeat list="&AGENT.users;"> <option>&li;</option></repeat>
+</select><br>
+To: <select name="to">  <option> (type in)</option>
+ <repeat list="&AGENT.quicklist.dl.KEYS;"> <option>&li;</option></repeat>
+</select>
+<input name="toname" size="20">
+<input type="SUBMIT" value="Send">
+</form>
+
+
+<!-- insert standard footer which usually includes controls -->
+<read interform file="footer.inc" process>
+
+</body></html>
+<!-- $Id$ -->
