@@ -13,6 +13,7 @@ FILES = \
 	Fallback.java \
 	Logo.java \
 	Cache.java \
+	Camera.java \
 	AgentInstallException.java
 
 include $(TOPDIR)/makefiles/file.make
