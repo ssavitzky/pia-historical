@@ -706,7 +706,7 @@ public class Pia {
       System.exit(1);
     }
 
-    System.err.println("Created agency with url = <" + url + ">");
+    System.err.println("Point your browser to <URL: " + url + ">");
 
   }
 
