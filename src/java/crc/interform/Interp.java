@@ -29,16 +29,21 @@ public class Interp extends State {
   /** Entity table for this document. */
   Table entities;
 
+
+  /** Input stack. 
+   *	The input stack is a linked list of Input objects.
+   */
+  Input input;
+
   /** Output queue. 
    *	The output queue is kept in a Tokens list in order to take advantage
    *	of the automatic merging of strings.
    */
   Tokens output;
 
-  /** Input stack. 
-   *	The input stack is a linked list of Input objects.
-   */
-  Input input;
+  /** If true, convert tokens to strings before putting them on the
+   *  output queue.  */
+  boolean streaming;
 
   /************************************************************************
   ** Debugging:
@@ -63,58 +68,18 @@ public class Interp extends State {
     return entities;
   }
 
-
-  /************************************************************************
-  ** State stack operations:
-  ************************************************************************/
-
-  final State context(int level) {
-    State s = this    ;
-    for ( ; level > 0 && s != null; --level) { s = s.stack; }
-    return s;
+  /** Test the streaming flag.  
+   * 	If true, the interpretor converts tokens to strings before
+   *	putting them on the output queue.
+   */
+  public final boolean isStreaming() {
+    return streaming;
+  }
+  public final void setStreaming() {
+    streaming= true;
+    setPassing();
   }
 
-  /** Pop the parse state stack.
-   * @return true if the stack was already null.  */
-  final boolean popState() {
-    if (stack == null) {
-      debug("stack empty!\n");
-      it = null;
-      return false;
-    }
-    copyFrom(stack);
-    return true;
-  }
-
-  final void pushState() {
-    stack = new State(this);
-    depth++;
-  }
-
-  /************************************************************************
-  ** Syntax Checking:
-  ************************************************************************/
-
-  /** Return true if we are currently nested inside an element with
-   *  the given tag. */
-  public final boolean insideElement(String tag) {
-    for (State s = stack; s != null; s = s.stack) {
-      if (tag.equals(s.tag())) return true;
-    } 
-    return false;
-  }
-
-  /** Return the tag of the immediately-surrounding Element. */
-  public final String elementTag() {
-    return (stack != null) ? stack.tag() : null;
-  }
-
-  /** Return true if there is an element with the given tag at the
-   *  given level in the stack (with zero being the top). */
-  public final boolean isElementAt(String tag, int level) {
-    State s = context(level);
-    return s != null && tag.equals(s.tag());
-  }
 
   /************************************************************************
   ** Access to things in the stack frame:
@@ -133,59 +98,6 @@ public class Interp extends State {
 
   public final Table variables() {
     return variables;
-  }
-
-  public final boolean isPassing() {
-    return passing;
-  }
-  public final void setPassing() {
-    passing = true;
-    parsing = false;
-    skipping= false;
-  }
-
-  public final boolean isParsing() {
-    return parsing;
-  }
-  public final void setParsing() {
-    parsing = true;
-    passing = false;
-    skipping= false;
-  }
-
-  public final boolean isSkipping() {
-    return skipping;
-  }
-  public final void setSkipping() {
-    parsing = false;
-    passing = false;
-    skipping= true;
-  }
-
-  /** Test the streaming flag.  
-   * 	If true, the interpretor converts tokens to strings before
-   *	putting them on the output queue.
-   */
-  public final boolean isStreaming() {
-    return streaming;
-  }
-  public final void setStreaming() {
-    streaming= true;
-    setPassing();
-  }
-
-  /** Test the quoting flag.
-   *	If non-zero, no processing is done on incoming tokens.
-   *	If negative, the current tag contains unparsed character data.
-   */
-  public final boolean isQuoting() {
-    return quoting != 0;
-  }
-  public final boolean isUnparsed() {
-    return quoting < 0;
-  }
-  public final void setQuoting(int i) {
-    quoting = i;
   }
 
   /** Test to see if we can define actors in the current tagset.  If
@@ -308,7 +220,7 @@ public class Interp extends State {
 	tl.append(expandEntities(old.itemAt(i)));
       }
       return tl;
-    } else if (it.tag().equals("&")) {
+    } else if ("&".equals(it.tag())) {
       SGML v = getEntity(it.entityName());
       return (v == null)? it : v;
     } else {
@@ -322,7 +234,7 @@ public class Interp extends State {
    *	unchanged.  Start tags are expanded in place; others are copied.
    */
   SGML expandAttrs(SGML it) {
-    if (it.isElement()) {
+    if (it.isElement() && !"&".equals(it.tag())) {
       if (it.incomplete() > 0) {
 	Token t = it.toToken();	// should be a no-op.
 	for (int i = 0; i < t.nAttrs(); ++i) 
@@ -335,13 +247,14 @@ public class Interp extends State {
     return it;
   }
 
+
   /************************************************************************
   ** Getting and Pushing Input:
   ************************************************************************/
 
   public void pushInput(SGML t) {
     if (t.isList()) {
-      input = new InputList(t, input);
+      input = new InputList(t.content(), input);
     } else {
       input = new InputToken(t, input);
     }
@@ -354,12 +267,20 @@ public class Interp extends State {
 
   public void pushInto(SGML t) {
     if (t.isText()) {
+      debug("Expanding \""+t.toString().length()+"\"");
       input = new InputToken(t.toText(), input);
     } else if (t.isElement()) {
+      debug("Expanding <"+t.tag()+"> ");
       input = new InputExpand(t, input);
     } else {
+      debug("Expanding ["+t.content().nItems()+"]");
       input = new InputList(t.content(), input);
     }
+  }
+
+  public void pushInto(Tokens t) {
+    debug("Expanding ["+t.nItems()+"]");
+    input = new InputList(t.content(), input);
   }
 
   public SGML nextInput() {
@@ -387,17 +308,15 @@ public class Interp extends State {
    * Debugging output: "[" + flag + tag + "]" + actions + EOL.  The
    *	flag is "/" for end tags, "\" for start tags, and "|" for
    *	completed elements.  Actions include <em>name</em>? for every
-   *	``interested'' actor, and <em>name</em>! for every actor
-   *	called as a handler.<p>
+   *	``interested'' actor, <em>name</em>: for every actor pushed
+   *	as a handler, and <em>name</em>! for every handler called.<p>
    */
   public final void resolve(SGML token) {
 
     /* Get the next incoming token and make it current. */
     it = (token == null)? nextInput() : token;
 
-    /* Loop on incoming tokens.  This and "incomplete" used to be passed 
-     *	as function arguments; it's better to use the input stack.
-     */
+    /* Loop on incoming tokens. */
     for ( ; it != null; ) {
       byte incomplete = it.incomplete();
       String tag = it.tag();
@@ -408,7 +327,6 @@ public class Interp extends State {
        * is whatever it is nested inside of (the current element under
        * construction).  */
 
-      handlers = null;
       if (incomplete < 0) {
 	/* We just got an end tag. 
 	 *	Note that at this point, state.token is top-of-stack.
@@ -447,6 +365,8 @@ public class Interp extends State {
 	 *    in order to make expandAttrs suppress the copy.
 	 */
 	// === worry about that.  Add checkForSyntax? ===
+	// === should only expand start tags and entities.
+	// === what happens if an entity expands into a list at this point?
 	it = expandAttrs(it);
 	debug("expanded ");
       }
@@ -461,23 +381,35 @@ public class Interp extends State {
 	 */
 	debug("depth="+depth+" ");
 	debug("start ");
-	boolean wasPassing = passing;
+	handlers = null;
 
+	/* Push the stack.  
+	 *	This is awkward: if the token turns out to be empty,
+	 *	we will only have to pop it again.  On the other hand,
+	 *	all the parsing flags have to be pushed before the
+	 *	syntactic action routines operate on them. */
+	pushState();
 	checkForInterest(it, incomplete);
 
-	if (it == null) {
-	  // Some actor has deleted the token.
-	  debug("deleted\n");
-	} else if (it.incomplete() == 0) {
-	  // Some actor has marked it as finished.
+	if (it == null) {	// Some actor has deleted the token.
+	  popState();
+	  it = null;
+	} else if (it.incomplete() == 0) { // It's been marked as complete.
+	  stack.handlers = handlers;
+	  popState();
 	  debug("completed in "+elementTag()+"\n");
-	  continue;
-	} else {
-	  // Nothing happened; push it.
+	  // === the following fails for  nested actors.
+	  //	 something may be getting out of sync.
+	  if (true || !isQuoting()) checkForHandlers(it);
+	  //continue;
+	} else {		// Nothing happened; push it.
 	  debug("pushed in "+elementTag()+"\n");
-	  pushState();
+	  //pushState();
 	  // === some trouble if actor has passTags = false
-	  if (wasPassing) passToken(it);
+	  stack.handlers = handlers;
+	  handlers = null;
+	  if (passing) { passToken(it); debug("passed\n"); }
+	  it = null;		// Skip the handlers and pushToken
 	}
       } else {
 	/* End tag or complete token. */
@@ -485,17 +417,17 @@ public class Interp extends State {
 	debug(it.incomplete()<0?"end " : "comp ");
 
 	checkForInterest(it, incomplete);
-	checkForHandlers(it);
+	if (!isQuoting()) checkForHandlers(it);
+      }
 
-	if (it != null) {
-	  if (parsing) { 
-	    debug("appended to "+elementTag()+"\n");
-	    pushToken(it);
-	  }
-	  if (passing) { passToken(it); debug("passed\n"); }
-	} else {
-	  debug("deleted\n");
+      if (it != null) {
+	if (parsing) { 
+	  debug("appended to "+elementTag()+"\n");
+	  pushToken(it);
 	}
+	if (passing) { passToken(it); debug("passed\n"); }
+      } else {
+	debug("deleted\n");
       }
 
       /* Get another token, unless called to resolve a single token.
@@ -609,6 +541,7 @@ public class Interp extends State {
   public final void addHandler(Actor a) {
     if (handlers == null) handlers = new List();
     handlers.push(a);
+    debug(a.name()+":");
   }
 
   /** Mark the current token as completed. */
@@ -688,19 +621,20 @@ class InputToken extends Input {
  */
 class InputList extends Input {
   Tokens 	it;
-  int 		item 	= 0;
-  int		limit	= 0;
+  int 		item;
+  int		limit;
 
   public SGML nextInput() {
     return (item < limit)? it.itemAt(item++) : null;
   }
-  public boolean moreInput() {
-    return item < limit;
+  public boolean endInput() {
+    return item >= limit;
   }
 
-  public InputList(SGML t, Input p) {
+  public InputList(Tokens t, Input p) {
     super(p);
-    it = t.content();
+    it    = t;
+    item  = 0;
     limit = it.nItems();
   }
 }
@@ -730,8 +664,8 @@ class InputExpand extends Input {
       return it.endToken();
     }
   }
-  public boolean moreInput() {
-    return item <= limit;
+  public boolean endInput() {
+    return item > limit;
   }
 
   public InputExpand(SGML t, Input p) {

@@ -134,7 +134,7 @@ public class Token implements SGML {
 
   /** Return the name of the entity to which this is a reference. */
   public String entityName() {
-    return (tag.equals("&"))? content.itemAt(1).toString() : null;
+    return ("&".equals(tag))? content.itemAt(1).toString() : null;
   }
 
 
@@ -331,35 +331,39 @@ public class Token implements SGML {
 
   /** Make a Token with a special format, in which the first and last
    *	content items are really the start and end ``tag'' respectively. */
-  public Token (String tag, String content, String end) {
+  public Token (String tag, String s, String end) {
     this.tag = tag;
-    append(new Text(tag));
-    append(new Text(content));
-    if (end != null) append(new Text(end));
+    content = new Tokens();
+    content.push(new Text(tag));
+    content.push(new Text(s));
+    if (end != null) content.push(new Text(end));
     specialFormat = true;
   }
 
-  public Token (String tag, StringBuffer content, String end) {
+  public Token (String tag, StringBuffer s, String end) {
     this.tag = tag;
-    append(new Text(tag));
-    append(new Text(content));
-    if (end != null) append(new Text(end));
+    content = new Tokens();
+    content.push(new Text(tag));
+    content.push(new Text(s));
+    if (end != null) content.push(new Text(end));
     specialFormat = true;
   }
 
-  public Token (String tag, String start, StringBuffer content, String end) {
+  public Token (String tag, String start, StringBuffer s, String end) {
     this.tag = tag;
-    if (start != null) append(new Text(start));
-    append(new Text(content));
-    if (end != null) append(new Text(end));
+    content = new Tokens();
+    if (start != null) content.push(new Text(start));
+    content.push(new Text(s));
+    if (end != null) content.push(new Text(end));
     specialFormat = true;
   }
 
-  public Token (String tag, String start, String content, String end) {
+  public Token (String tag, String start, String s, String end) {
     this.tag = tag;
-    if (start != null) append(new Text(start));
-    append(new Text(content));
-    if (end != null) append(new Text(end));
+    content = new Tokens();
+    if (start != null) content.push(new Text(start));
+    content.push(new Text(s));
+    if (end != null) content.push(new Text(end));
     specialFormat = true;
   }
 

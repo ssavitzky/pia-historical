@@ -161,13 +161,13 @@ class Parser extends Input {
   
   public Parser(Input previous) {
     super(previous);
-    initializeTables();
+    if (isIdent == null) initializeTables();
   }
 
   public Parser(InputStream in, Input previous) {
     super(previous);
     this.in = in;
-    initializeTables();
+    if (isIdent == null) initializeTables();
   }
 
   /************************************************************************
@@ -177,18 +177,21 @@ class Parser extends Input {
   /** True for every character that is part of an identifier.  Does not
    *	distinguish the characters ('-' and '.') that are not officially
    *	permitted at the <em>beginning</em> of an identifier. */
-  static BitSet isIdent = new BitSet();
+  public static BitSet isIdent;
 
   /** True for every character that is whitespace. */
-  static BitSet isSpace = new BitSet();
+  public static BitSet isSpace;
   
   /** True for every character permitted in a URL */
-  static BitSet isURL = new BitSet();
+  public static BitSet isURL;
 
   /** Initialize the identifier and whitespace BitSet's.  Since we are only 
    *	concerned with the SGML reference syntax, we don't have to make these 
    *	public or have a set for each Parser object. */
   static void initializeTables() {
+    isIdent = new BitSet();
+    isSpace = new BitSet();
+    isURL = new BitSet();
     for (int i = 0; i <= ' '; ++i) isSpace.set(i);
     for (int i = 'A'; i <= 'Z'; ++i) { isIdent.set(i); isURL.set(i); }
     for (int i = 'a'; i <= 'z'; ++i) { isIdent.set(i); isURL.set(i); }
@@ -346,7 +349,6 @@ class Parser extends Input {
     last = 0;
     if (!eatIdent()) {
       buf.append("&"); 
-      buf.append((char)last);
       return false;
     }
     next = new Token("&", ident, (last == ';')? ";" : null);
@@ -392,6 +394,7 @@ class Parser extends Input {
     last = in.read();
     if (last == '\'' || last == '"') {
       int quote = last;
+      last = 0;
       debug("=" + (char)last + ".." + (char)last);
       StringBuffer tmp = buf;
       buf = new StringBuffer();
@@ -401,11 +404,12 @@ class Parser extends Input {
 	if (eatUntil(quote, true)) {
 	  if (list.isEmpty() || ! (buf.length() == 0)) 
 	    list.append(new Text(buf));
+	  last = 0;
 	  break;
 	}
 	if (getEntity()) {
 	  list.append(next);
-	}
+	} 
       }
       next = list.isText()? (SGML)list.toText() : (SGML)list;
       buf = tmp;

@@ -38,6 +38,10 @@ public class Tagset extends Token {
   public static Tagset tagset(String name) {
     if (name == null) return new Tagset();
     Tagset t = (Tagset)tagsets.at(name);
+    if (t == null) { 
+      t = loadTagset(name);
+      if (t != null) tagsets.at(name, t);
+    }
     if (t == null) {
       t = new Tagset(name);
       tagsets.at(name, t);
@@ -129,7 +133,6 @@ public class Tagset extends Token {
       tagged.at(tag, a);
     }
 
-    /* === let's skip the documentation stuff for now; do it in the actor. */
   }	
 
 
@@ -168,10 +171,37 @@ public class Tagset extends Token {
     syntax.append(t.syntax);
   }
 
-  /** Define the tagset, actor and element tags in a tagset. */
-  public void bootstrap() {
-    define(Actor.actor());
-    define(Actor.element());
-    define(Actor.tagset());
+  /************************************************************************
+  ** Bootstrapping:
+  ************************************************************************/
+
+  /** Bootstrap-load a new Tagset object.  Start by attempting to load
+   *   a handler object.  If that fails, fire up a suitable initial
+   *   set of actors.  */
+  protected void bootstrap() {
+    define(crc.interform.handle.Actor.bootstrap());
+    define(crc.interform.handle.Element.bootstrap());
+    define(crc.interform.handle.Tagset.bootstrap());
+  }
+
+  /** Load a Tagset subclasss.  Note that because newInstance takes no
+   *	arguments, the subclass's default constructor has to assign
+   *	the correct name.  The name will be something like
+   *	"crc.interform.handle.foo_ts". */
+  protected static Tagset loadTagsetSubclass(String name) {
+    try {
+      name = Util.javaName(name);
+      Class c = Util.loadClass(name, "crc.interform.handle.");
+      return (c != null)? (Tagset)c.newInstance() : null;
+    } catch (Exception e) { return null; }
+  }
+
+  /** Load a named Tagset.  First tries to load a file with a ".ts"
+   *	extension.  If that fails, tries to load a class, which had
+   *	better be a subclass of Tagset, and create an instance of it
+   *	(which had better have the right name). */
+  protected static Tagset loadTagset(String name) {
+    name += ".ts";
+    return loadTagsetSubclass(name);
   }
 }

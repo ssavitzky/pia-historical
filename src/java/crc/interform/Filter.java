@@ -43,9 +43,6 @@ public class Filter {
       usage();
       System.exit(-1);		// return an error
     }
-    System.err.println("infile = " + infile );
-    System.err.println("outfile= " + outfile);
-    System.err.println("propfile= " + propfile);
 
     /* Open the input and output files.
      * === ignore the property file for now. */
@@ -62,6 +59,12 @@ public class Filter {
       if (outfile != null) out = new FileOutputStream(outfile);
     } catch (Exception e) {
       System.err.println("Cannot open output file " + outfile);
+    }
+
+    if (debug) {
+      System.err.println("infile = " + infile );
+      System.err.println("outfile= " + outfile);
+      System.err.println("propfile= " + propfile);
     }
 
     /* Initialize and run the interpretor */

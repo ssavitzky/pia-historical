@@ -10,10 +10,8 @@ import crc.ds.Table;
 
 /** Handler functor (<b>Strategy</b> pattern) for Actors.  Handlers
  *	can be used to reify either the <code>handle</code> method or
- *	the <code>actOn</code> method; it is possible but very unusual
- *	for both methods to be overridden in the same Handler
- *	subclass.
- */
+ *	the <code>actOn</code> method; it is possible but unusual for
+ *	both methods to be overridden in the same Handler subclass.  */
 public class Handler {
 
   /** Perform the actions associated with a completed token. 
@@ -32,6 +30,11 @@ public class Handler {
 
   /** Initialize a new Actor object. */
   public void initializeActor(Actor ia) {
+  }
+
+  /** Initialize a new Object.  This is used for initializing
+   *   something other than an Actor, e.g. a Tagset. */
+  public void initializeObject(Object o) {
   }
 
   /************************************************************************

@@ -7,8 +7,12 @@ import crc.interform.Token;
 import crc.interform.Tokens;
 import crc.interform.Handler;
 import crc.interform.Interp;
+import crc.interform.Util;
+
 import crc.ds.List;
 import crc.ds.Table;
+
+import java.util.Enumeration;
 
 /**
  * The representation of an InterForm <em>actor</em>.
@@ -150,7 +154,7 @@ public class Actor extends Token {
 	if (quoting == 0 || quoteContent < 0) ii.setQuoting(quoteContent);
 	if (parseContent) ii.setParsing();
       }
-      if (quoting != 0) return;
+      //if (quoting != 0) return;
       if (handler != null || !isEmpty()) ii.addHandler(this);
     }
   }
@@ -241,10 +245,10 @@ public class Actor extends Token {
     }
     if (name == null && tag != null) {
       name=tag;
-      this.name=tag;
       addAttr("name", tag);
     }
 
+    this.name = name;
     if (tag != null) {
       tag = tag.toLowerCase();
       attr("tag", tag);
@@ -269,19 +273,9 @@ public class Actor extends Token {
        h = attrString("handle");
        if ("".equals(h)) h = attrString("name"); 
     }
-    handler = loadHandler(h, "crc.interform.handle.");
+    h = Util.javaName(h);
+    handler = Util.loadHandler(h, "crc.interform.handle.");
     if (handler != null) handler.initializeActor(this);
-  }
-
-  /** Load a named handler class.  The prefix is prepended only if the
-   *  handle name contains no "." characters. */
-  public static Handler loadHandler(String h, String prefix) {
-    if (h.indexOf(".") < 0) h = prefix + h;
-    try {
-      Class handleClass = Class.forName(h);
-      return (Handler) handleClass.newInstance();
-    } catch (Exception e) { }
-    return null;
   }
 
   /** Initialize the <code>action</code> object. */
@@ -295,7 +289,8 @@ public class Actor extends Token {
        h = attrString("action");
        if ("".equals(h)) h = attrString("name"); 
     }
-    action = loadHandler(h, "crc.interform.handle.");
+    h = Util.javaName(h);
+    action = Util.loadHandler(h, "crc.interform.handle.");
   }
 
   /** Initialize the match <code>criteria</code> list. */
@@ -327,53 +322,16 @@ public class Actor extends Token {
     } 
     if (implicitlyEnds != null) return;
     String s = attrString("not-inside");
-    if (s == null) return;
+    if (s != null) {
+      Enumeration tags = Util.split(s).elements();
+      implicitlyEnds = new Table();
+      while (tags.hasMoreElements()) {
+	implicitlyEnds.at(tags.nextElement().toString().toLowerCase(),
+			  Token.empty);
+      }
+    }
     
     // ===
   }
 
-  /************************************************************************
-  ** Bootstrapping:
-  ************************************************************************/
-
-  public static Actor actor() {
-    return new Actor("actor", "actor", "quoted",
-		     "crc.interform.DoActor");
-  }
-
-  public static Actor tagset() {
-    return new Actor("tagset", "tagset", "streamed",
-		     "crc.interform.DoTagset");
-  }
-
-  public static Actor element() {
-    return new Actor("element", "element", "empty",
-		     "crc.interform.DoElement"); 
-  }
-
-}
-
-
-/************************************************************************
-** Actor Handlers:
-************************************************************************/
-
-class DoActor extends Handler {
-  public void handle(Actor ia, SGML it, Interp ii) {
-    ii.tagset().define(new Actor(it.toToken()));
-    ii.deleteIt();
-  }
-}
-
-class DoTagset extends Handler {
-  public void handle(Actor ia, SGML it, Interp ii) {
-
-  }
-}
-class DoElement extends Handler {
-  public void handle(Actor ia, SGML it, Interp ii) {
-    Token t = it.toToken();
-    ii.tagset().define(new Actor(t, t.attrString("syntax")));
-    ii.deleteIt();
-  }
 }
