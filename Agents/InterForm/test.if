@@ -70,12 +70,25 @@ urlQuery = '&urlQuery;'<p>
           <os-command><get form name=command></os-command>
     </then>
     <else> Enter a command in the form below.  It will be run in the
-	   background with proxies set.
+	   background with proxies set to the PIA.
     </else>
 </if>
 <br>
 <input type=submit value=Command:>
 <input size=50 name=command value="chimera">
+</form>
+<form method=POST action="&url;">
+<if><get form name=npcommand>
+    <then>The command listed below is running in the background:
+          <os-command bypass><get form name=npcommand></os-command>
+    </then>
+    <else> Enter a command in the form below.  It will be run in the
+	   background with the PIA bypassed.
+    </else>
+</if>
+<br>
+<input type=submit value=Command:>
+<input size=50 name=npcommand value="chimera">
 </form>
 
 <h3>Process status:</h3>

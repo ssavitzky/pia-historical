@@ -1536,12 +1536,13 @@ sub pia_exit_handle {
 
 define_actor('os-command', 'unsafe' => 1, 'content' => 'command', 
 	     'dscr' => "Execute CONTENT as an operating system command 
-in the background with proxies set." );
+in the background with proxies set.  Optionally BYPASS proxies." );
 
 sub os_command_handle {
     my ($self, $it, $ii) = @_;
 
     my $command = get_text($it, 'command');
+    my $proxies = $it->attr('bypass')? "" : $main::proxies;
 
 				# replace &gt; with > symbol
     $command .="  > /dev/null " unless $command =~ s/\&gt\;/>/g;
@@ -1551,7 +1552,7 @@ sub os_command_handle {
     my $pid;
     unless ($pid = fork) {
 	unless (fork) {
-	    system("sh -c '$main::proxies cat /dev/null | $command '");
+	    system("sh -c '$proxies cat /dev/null | $command '");
 	    exit 0;
 	}
 	exit 0;
@@ -1565,12 +1566,13 @@ sub os_command_handle {
 
 define_actor('os-command-output', 'unsafe' => 1, 'content' => 'command', 
 	     'dscr' => "Execute CONTENT as an operating system command 
-and capture its output." );
+and capture its output.  Optionally BYPASS proxies." );
 
 sub os_command_output_handle {
     my ($self, $it, $ii) = @_;
 
     my $command = get_text($it, 'command');
+    my $proxies = $it->attr('bypass')? "" : $main::proxies;
 				# replace &gt; with > symbol
     $command =~ s/\&gt\;/>/g;
 
@@ -1580,7 +1582,7 @@ sub os_command_output_handle {
     my $result;
     eval {
 	$result = `$command`;
-	$result = `sh -c '$main::proxies cat /dev/null | $command '`;
+	$result = `sh -c '$proxies cat /dev/null | $command '`;
     };
     $ii->replace_it($result);
 }
