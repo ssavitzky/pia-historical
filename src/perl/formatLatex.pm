@@ -139,7 +139,7 @@ sub latex_start{
 }
 sub latex_end{
     my($self,$argument)=@_;
-    return $$self{_latex_end} if exists $$self{_latex_end};
+#    return $$self{_latex_end} if exists $$self{_latex_end};
     
     return $latex_end{$self->tag} if exists $latex_end{$self->tag};
     #default close { if start
