@@ -246,6 +246,38 @@ implements Handler {
   }
 
   /************************************************************************
+  ** Convenience Functions:
+  ************************************************************************/
+
+  /** Convenience function: return a NodeList. */
+  protected void putList(Output out, crc.dom.NodeList nl) {
+    if (nl != null) Copy.copyNodes(nl, out);
+  }
+
+  /** Convenience function: return a string. */
+  protected void putText(Output out, Context cxt, String s) {
+    out.putNode(newText(cxt, s));
+  }
+
+  /** Convenience function: create a new Element. 
+   *	Unlike createElement, this makes no assumptions about the handler,
+   *	so we have to go through the Tagset.
+   */
+  protected ActiveElement newElement(Context cxt, String tag) {
+    Tagset ts = cxt.getTopContext().getTagset();
+    return ts.createActiveElement(tag, null, false);
+  }
+
+  /** Convenience function: create a Text node.
+   *	We don't know anything about the document, so we have to go through
+   *	the Tagset to create it.
+   */
+  protected ActiveText newText(Context cxt, String data) {
+    Tagset ts = cxt.getTopContext().getTagset();
+    return ts.createActiveText(data);
+  }
+
+  /************************************************************************
   ** Messaging Operations:
   ************************************************************************/
 
