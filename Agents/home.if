@@ -10,7 +10,7 @@
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
 <tr><th><td> <a href="index.if">Index Page</a>
-<tr><th align=right><a href="home.if">&agentName;</a>:<td> Home Page</a>
+<tr><th align=right><a href="home.if">&agentName;</a>: <td> Home Page
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
