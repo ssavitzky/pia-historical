@@ -46,7 +46,9 @@ import crc.tf.UnknownNameException;
 import w3c.www.http.HTTP;
 
 public abstract class Transaction extends AttrBase implements Runnable {
-				// implements Runnable added by Greg
+
+  public boolean DEBUG = false;
+
   /**
    * Attribute index - use to notify thread pool when this transaction is done
    */
