@@ -25,8 +25,9 @@ import crc.pia.Pia;
  *  A path, consisting of, tag name, start, and end positions,
  *  is used to find the searched objects. Given a SGML object
  *  as a starting location for the search, this class implements a 
- *  recursive lookup by delegating to each SGML object (in the path) in secession.
- *<p>Syntax for the path is the following:
+ *  recursive lookup by delegating to each SGML object (in the path) in 
+ *  succession.
+ *<strong>Syntax for the path is the following:</strong>
  *<pre>
  *SGML.xxx[[-]start#[-end#]]
  *	xxx	
@@ -46,8 +47,9 @@ import crc.pia.Pia;
  *For "dl" SGML object,
  * To retrieve all of dts'text, xxx should be "keys"
  * To retrieve all of dds'text, xxx should be "values"
- *
- *Examples:
+ *</pre>
+ *<strong>Examples:</strong>
+ *<pre>
  *		xxx == xxx- == xxx-- == xxx-1-	means all tags whose name are xxx
  *		xxx-start#-end#			means a range of element
  *		xxx-start#			means an element at start#
@@ -166,11 +168,6 @@ public class Index {
    * storing one element of a path i.e. ul-1-5
    */
   protected List positionParam;
-
-  class InvalidInput extends Exception{
-    public InvalidInput() { super(); }
-    public InvalidInput(String s) {super(s);}
-  }
 
  /**
   * the tag-name indicating the wanted SGML objects 
@@ -376,7 +373,7 @@ public class Index {
   }
 
   /** get start position */
-  private void parseStart() throws InvalidInput{
+  private void parseStart() throws InvalidIndex{
     int number;
     //Pia.debug("Entering parseStart...");
 
@@ -414,17 +411,17 @@ public class Index {
 	if ( isDash(t) ) pushBackToken( t );
       }else if ( number == INVALIDNUMBER ){
 	// bad input
-	throw new InvalidInput("Invalid starting index.");
+	throw new InvalidIndex("Invalid starting index.");
       }
     } else if ( number == INVALIDNUMBER ){
-      throw new InvalidInput("Invalid starting index.");
+      throw new InvalidIndex("Invalid starting index.");
     }
 
     //Pia.debug(this, "Exiting parseStart...");
   }
 
   /** get end position */
-  private void parseEnd() throws InvalidInput{
+  private void parseEnd() throws InvalidIndex{
     int number;
 
     //dumpPositionParam();
@@ -437,7 +434,7 @@ public class Index {
     }
     else 
       if( !isDash(t) )
-	throw new InvalidInput("Missing dash before end.");
+	throw new InvalidIndex("Missing dash before end.");
       else{
 	t = nextToken();
 	
@@ -445,12 +442,12 @@ public class Index {
 	  setEnd( LAST );
 	else  if( (number = parseNumber( t )) != INVALIDNUMBER )
 	  setEnd( number );
-	else throw new InvalidInput("Invalid ending index.");
+	else throw new InvalidIndex("Invalid ending index.");
       }
   }
 
   /** get tag, start, and end position and check range */
-  private void parsePositions() throws InvalidInput{
+  private void parsePositions() throws InvalidIndex{
     int s, e;
 
     parseTag();
@@ -467,11 +464,11 @@ public class Index {
       s = getStart();
       e = getEnd();
       if( s < 1 )
-	throw new InvalidInput("Start index must start at 1 or larger.");
+	throw new InvalidIndex("Start index must start at 1 or larger.");
       if( s > e && e != LAST )
-	throw new InvalidInput("Start index is larger than end index."); 
+	throw new InvalidIndex("Start index is larger than end index."); 
 
-    }catch(InvalidInput ee){
+    }catch(InvalidIndex ee){
       //Pia.debug("The error is-->"+ee.toString());
       throw ee;
     }
@@ -581,7 +578,7 @@ public class Index {
   }
 
   /** walk through each element in the path and process it */
-  private SGML doProcess(int what, SGML datum) throws InvalidInput{
+  private SGML doProcess(int what, SGML datum) throws InvalidIndex{
     try{
       if( isDots() ){
 	// either . or ..
@@ -593,7 +590,7 @@ public class Index {
 	parsePositions();
         datum = datum.attr( this );
       }
-    }catch(InvalidInput e){
+    }catch(InvalidIndex e){
       //Pia.debug(e.toString());
       throw e;
     }
@@ -605,7 +602,7 @@ public class Index {
   /**
    * Lookup for a SGML object indicated by path starting with datum 
    */  
-  public SGML lookup(SGML datum) throws InvalidInput, IllegalArgumentException{
+  public SGML lookup(SGML datum) throws InvalidIndex, IllegalArgumentException{
     int what;
 
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
@@ -616,7 +613,7 @@ public class Index {
     while ( what != EOFINPUT ){
       try{
 	datum = doProcess( what, datum ); 
-      }catch( InvalidInput e ){
+      }catch( InvalidIndex e ){
 	//Pia.debug(e.toString());
 	throw e;
       }
@@ -648,7 +645,7 @@ public class Index {
    * return the searched SGML object, if it is not found, it will be created
    */
 
-  public SGML path(SGML datum) throws InvalidInput, IllegalArgumentException {
+  public SGML path(SGML datum) throws InvalidIndex, IllegalArgumentException {
     int what;
     SGML  prev      = datum;
     SGML  cur       = datum;
@@ -666,7 +663,7 @@ public class Index {
     int isDotDot = path.indexOf("..");
 
     // we don't want ..
-    if( isDotDot != -1 ) throw new InvalidInput("dot dot is not accepted.");
+    if( isDotDot != -1 ) throw new InvalidIndex("dot dot is not accepted.");
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
     //Pia.debug("original datum-->"+datum.toString());
 
@@ -681,7 +678,8 @@ public class Index {
       if( cur == null || cur.content().nItems() == 0 ){
 	Pia.debug(" not successfull "+prev.getClass().toString());
 	
-	if( prev.content() == null || prev.content().itemAt(0).toString().equalsIgnoreCase("") )
+	if( prev.content() == null ||
+	    prev.content().itemAt(0).toString().equalsIgnoreCase("") )
 	  whereToPut = prev;
 	else if( !(prev instanceof Tokens) ){
 	  //Pia.debug("************");
@@ -738,7 +736,9 @@ public class Index {
    * Lookup for a SGML object indicated by path starting with data object 
    */  
   
-  public static SGML get(String path, SGML data) throws InvalidInput, IllegalArgumentException{
+  public static SGML get(String path, SGML data)
+       throws InvalidIndex, IllegalArgumentException
+  {
     if(path == null)
       return data;
 
