@@ -7,8 +7,8 @@
 <sub-head page=checkpoint />
 <hr>
 <p> <b>Note:</b> The directory in which checkpoint files has changed!  It used
-    to be <code>&usrDIR;/Agents/Agency/</code>, which was incorrect.  It is
-    now <code>&usrDIR;/Agency/</code> .
+    to be <code>&usrDIR;/Agents/Admin/</code>, which was incorrect.  It is
+    now <code>&usrDIR;/Admin/</code> .
 
 <form method=GET action="&url;">
 <if><get name=FORM:agent>

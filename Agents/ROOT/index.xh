@@ -28,9 +28,9 @@
     <tr><th valign=top align=right width=170>
 	    <a href="/Admin/home"><b>Admin:</b></a>&nbsp;
 	<td valign=top>
-	    <a href="/Admin/agents">list</a> /
+	    <a href="/Admin/list-agents">list</a> /
 	    <a href="/Admin/installers">install</a> / 
-	    <a href="/Admin/remove_agent">remove</a> agents.<br>
+	    <a href="/Admin/remove-agent">remove</a> agents.<br>
 	    <if><test exact match='pia'>&piaUSER;</test>
 	      <then><a href="/Admin/shutdown.if">shut down</a> appliance<br>
 	    </if>

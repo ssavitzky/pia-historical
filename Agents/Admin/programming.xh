@@ -17,15 +17,15 @@
 
 <h3>Useful Interforms:</h3>
 <ul>
-  <li> <a href=/Agency/agents>list running agents</a>
-  <li> <a href="/Agency/installers">install new agents</a>
-  <li> <a href=/Agency/options>view/change options</a>
-  <li> <a href=/Agency/debug>toggle debugging</a> (currently
-       <if><test zero><get pia name="main::debugging"></test>
+  <li> <a href=agents>list running agents</a>
+  <li> <a href="installers">install new agents</a>
+  <li> <a href=options>view/change options</a>
+  <li> <a href=debug>toggle debugging</a> (currently
+       <if><test zero><get pia name="PIA:debugging"></test>
            <then>off</then><else>on</else></if>)
-  <li> <a href=/Agency/remove_agent> remove agent</a>
-  <li> <a href="/Agency/os-cmd">run OS commands</a>
-  <li> <a href="/Agency/shutdown">Shut down the PIA or the computer</a>
+  <li> <a href=remove-agent> remove agent</a>
+  <li> <a href="os-cmd">run OS commands</a>
+  <li> <a href="shutdown">Shut down the PIA or the computer</a>
 </ul>
 
 <h3>Other Information:</h3>
@@ -39,13 +39,13 @@
 	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
        </ul>
            </then>
-           <else><a href="/Agency/installers#PIA"><em>install
+           <else><a href="installers#PIA"><em>install
                  needed!</em></a></else></if>
-  <li> <a href="/Agency/entities">list defined entities</a>
-  <li> <a href="/InterForm/home">InterForm demonstration agent</a>
-       <if><agent-running name="InterForm"><then></then>
-       <else><a href="/Agency/installers#InterForm"><em>install
-       needed!</em></a></else></if> <b>mostly obsolete now</b>
+  <li> <a href="entities">list defined entities</a>
+  <li> <a href="/Demo">InterForm demonstration agent</a>
+       <if><agent-running name="Demo"><then></then>
+       <else><a href="installers#Demo"><em>install
+       needed!</em></a></else></if> 
 </ul>
 
 <h3>Where Things Are:</h3>
@@ -64,12 +64,12 @@
 
 <h3>Miscellaneous files...normally not accessed directly</h3>
 <ul>
-     <li> <a href=/Agency/install_agent> install agent</a> -- requires
+     <li> <a href=install-agent> install agent</a> -- requires
 	  knowledge of several non-obvious parameters.
-     <li> <a href=/Agency/START-UP.html> start-up </a> 
+     <li> <a href=START-UP.html> start-up file</a> 
 	  (This file gets "executed" on start-up by submitting every form.)
-     <li> <a href=/Agency/initialize> initialize Agency</a>
-	  (This file gets "executed" when a new Agency agent is created)
+     <li> <a href=initialize> initialize &AGENT:name; Agent</a>
+	  (This file gets "executed" when a new &AGENT:name; agent is created)
 </ul>
 
 <footer cvsid="$Id$">

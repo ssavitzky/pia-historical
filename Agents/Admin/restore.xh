@@ -9,7 +9,7 @@
 <if><status src="checkpoint.dat" item=exists>
 <then> CONFIRM:
 <else>
-  Checkpoint file <code>~/.pia/Agents/Agency/checkpoint.dat</code>
+  Checkpoint file <code>~/.pia/Admin/checkpoint.dat</code>
   does not exist.
 </else>
 </if>
