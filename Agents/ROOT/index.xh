@@ -1,0 +1,76 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+  <title>&piaUSER;'s Agency on &piaHOST;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set name=piaURL>http://&piaHOST;:&piaPORT;/</set>
+<set name=ltitle><if><test exact match='pia'>&piaUSER;</test>
+		     <then> </then>
+		     <else><a href="/My/">&piaUSER;'s</a> </else></if></set>
+<header show-date=yes ltitle=&ltitle;>
+  <if><test exact match='pia'>&piaUSER;</test>
+			    <then>An Information Appliance</then>
+	    		    <else>Personal Information Agency</else>
+			</if><br>
+	 &lt;<a href="&piaURL;">&piaURL;</a>&gt;</header>
+
+<table cellspacing=0 cellpadding=0 border=0>
+<tr>
+  <th width=170>
+    <table cellspacing=0 cellpadding=0 border=0>
+      <tr><th>
+	<if><read info interform file="insert.if">
+            <then><include src="insert.if"></then>
+        </if></tr>
+    </table>
+  <td valign=top>
+    <table cellspacing=0 cellpadding=0 border=0 valign=top>
+    <tr><th valign=top align=right width=170>
+	    <a href="/Admin/home"><b>Admin:</b></a>&nbsp;
+	<td valign=top>
+	    <a href="/Admin/agents">list</a> /
+	    <a href="/Admin/installers">install</a> / 
+	    <a href="/Admin/remove_agent">remove</a> agents.<br>
+	    <if><test exact match='pia'>&piaUSER;</test>
+	      <then><a href="/Admin/shutdown.if">shut down</a> appliance<br>
+	    </if>
+    <tr><if><test exact match='pia'>&piaUSER;</test>
+      <then>
+	<th valign=top align=right><b>Agent:</b>&nbsp;
+	<td valign=top><!-- need a ``topAgent'' entity. -->
+	    <if><agent-running name="Photo_Album"><then>
+		<a href="/Photo_Album/home">Photo Album</a></then>
+	    <else><if><agent-running name="CDRW"><then>
+		<a href="/CDRW/home">CDRW</a></then>
+	    <else><if><agent-running name="Printer"><then>
+		<a href="/Printer/home">Printer</a></then>
+	    <else>???</if></if></if></then>
+      <else>
+	<th valign=top align=right><a href="/PIA/"><b>Files:</b></a>&nbsp;
+	<td valign=top> <a href="/PIA/Agents/">Agents</a>
+	    <a href="/My/Agents/">(custom)</a>
+	    <a href="/PIA/Doc/">Doc</a>
+	    <a href="/PIA/src/">src</a>
+      </if><br></tr>
+    <if><agent-running name=History>
+        <then>
+	    <tr><th valign=top align=right>
+		    <a href="/History"><b>History:</b></a>&nbsp;
+		<td valign=top> 
+		    [<a href="/My/History">All</a> | 
+		     <a href="/My/History/&year;/">&year;</a>/<a
+			href="/My/History/&year;/&month;/">&month;</a>/<a
+			href="/My/History/&year;/&month;/&day;.html">&day;</a>]
+		    <br></then>
+        <else><tr><td>&nbsp;<td></tr>
+    </if>
+    <tr><td>&nbsp;<td></tr>
+  </table>
+</table>
+<hr>
+<include src="/ROOT/welcome.inc">
+<hr>
+<include src="/ROOT/doc-grid.inc">
+<p>
+<short-footer cvsid='$Id$'>
+</body></html>
