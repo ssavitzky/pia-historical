@@ -64,11 +64,16 @@ database tables.   This makes it easy to take parts of documents and use them
 as data, something most existing systems are not very good at.<p>
 
 In general, all data in an InterForm is in the form of SGML
-``<dfn>elements</dfn>.''  An element is either a string of characters, or a
-compound object consisting of a <em>start tag</em> and <em>end tag</em>
+``<dfn>elements</dfn>.''  An element is either a string of characters, or
+a compound object consisting of a <em>start tag</em> and <em>end tag</em>
 enclosing some <em>content</em> elements between them.  The element may also
 have some named <dfn>attributes</dfn>; attributes and their associated values
 appear in the element's start tag.<p>
+
+Strings of ordinary characters are called <dfn>text</dfn>; tags and entities
+are called <dfn>markup</dfn>.  Some operations let you operate only on text or
+markup.  Markup can be added (for example, by converting a sequence of words
+into a list), or removed.<p>
 
 
 <h3>Entities</h3>
@@ -125,14 +130,17 @@ an HTTP server, or an input device and turns it into a stream of
 ordinary characters), an entity name, or a piece of ``<dfn>markup</dfn>'' -- a
 start tag, end tag, or SGML declaration.<p>
 
-Next, any entities in the input stream are expanded, which means that
-input starts coming from the entity instead of from the original input stream.
-At this point, any end tags are paired with their corresponding start tag.
+Next, any end tags are paired with their corresponding start tag.
 Any end tags that may have been omitted (hardly anyone codes ``&lt;/li&gt;,''
 the end tag for a list item, for example) are generated automatically. <p>
 
-Finally the resulting tokens are sent to an output stream, usually a user's
-Web browser.<p>
+Also, any entities in the input stream are expanded, which means that input
+starts coming from the entity instead of from the original input stream.
+(Entities that are not defined, i.e. that have no meaning known to the system,
+are simply passed through unchanged.)<p>
+
+Finally the resulting tokens are turned back into characters and sent to an
+output stream, usually a user's Web browser.<p>
 
 <em>Actually, things are a little more complicated than that.  But only a
 little.</em> <p>
@@ -183,9 +191,48 @@ specifically it is derived from the SGML reference syntax, which it follows
 <em>exactly</em>.  Any InterForm can be parsed using an SGML parser (with an
 appropriate Document Type Definition).  Most HTML editors can handle
 InterForms; all that is needed is the ability to enter non-standard entities
-and element tags.  Most HTML editors can do this, because companies like
-Netscape and Microsoft keep adding tags faster than the editor vendors can
-keep up.<p>
+and element tags.  HTML editors can do this because companies like Netscape
+and Microsoft keep adding tags faster than the editor vendors can keep up.  An
+SGML validator, with an appropriate DTD (document type definition) can be used
+to validate the syntactic structure of an InterForm.<p>
+
+<h3>Names</h3>
+
+There are two, slightly different kinds of names (identifiers) in the
+InterForm system.  Element tags and attributes start with a letter and contain
+any sequence of letters, digits, ``<code>.</code>'' (period) and
+``<code>-</code>'' (hyphen) characters.  Case is ignored.  Entities come from
+the same character set, but case is significant (the original reason being to
+make it easy to represent upper- and lower-case letters in foreign
+alphabets).<p>
+
+The practical effect of the case-sensitivity rules is that you can use case to
+distinguish entities, where it matters.  On the other hand, you can use case
+to distinguish different kinds of tags and attributes, for example special
+InterForm tags and HTML tags, because it doesn't matter to the system which
+ones you use.<p>
+
+URL's and filenames have their own sets of rules, of course, and filenames
+differ from one operating system to another.  Other names may refer to
+environment variables and software objects in the PIA (agents, for example);
+these names are usually case sensitive. <p>
+
+By convention, actors that do not correspond directly to tags (for example,
+the one that matches the ``<code>foreach</code>'' attribute) should have names
+starting with ``<code>-</code>''; they usually end with it as well.  Within
+actor names, ``<code>-</code>'' is used to separate words.  Often the first
+word names the PIA data structure acted upon, as in
+``<code>agent-running</code>'', which tests whether an agent with a given name
+is running.<p>
+
+Many actors accept a large variety of special attributes that modify their
+behavior; for example ``<code>&lt;get entity&gt;</code>'' and ``<code>&lt;get
+actor&gt;</code>''.  Many specialized versions exist with names like
+``<code>get.entity</code>''--the tag and attribute separated by a
+``<code>.</code>'' (usually read as ``dot'' or ``point'' in this context).  It
+is somewhat more efficient to use these specialized actors, since less work
+has to be done by the interpretor in figuring out which action to take.<p>
+
 
 <h3>Entities</h3>
 
@@ -209,9 +256,10 @@ The following elements are treated as simple lists:
   &lt;ul&gt;, &lt;ol&gt;, &lt;table&gt;, &lt;tr&gt;
 </blockquote>
 
-Note that a &lt;table&gt; is therefore a list of lists.
-In addition, a description list (&lt;dl&gt;) can be treated as a list of
-two-element (&lt;dt&gt;, &lt;dd&gt;) lists.<p>
+Note that a &lt;table&gt; is therefore a list of lists.  In addition, a
+description list (&lt;dl&gt;) can be treated as a list of two-element
+(&lt;dt&gt;, &lt;dd&gt;) lists, or as a simple, flat list of alternating names
+and values.<p>
 
 A text string, especially an attribute, is turned into a list by splitting it
 on whitespace; the &lt;split&gt; actor can be used to split on any text
@@ -236,8 +284,8 @@ row.  Tables with labeled columns (usually indicated by an initial row of
 &lt;th&gt; elements) can be turned into <em>lists</em> of associations.<p>
 
 In addition, any string in the proper form can be used; pairs can be separated
-either by whitespace or ``<code>&amp;</code>'' characters (as in query
-strings).<p>
+by whitespace or ``<code>&amp;</code>'' characters (as in query strings);
+names and values are normally separated by an ``<code>=</code>'' character.<p>
 
 Ordinary lists can be turned into associations by the &lt;associate&gt;
 actor, which associates them in pairs.<p>
@@ -253,10 +301,14 @@ tables (AWK and Perl), association-lists (LISP), and tuples (relational
 database languages).<p>
 
 
-<h3>Entities</h3>
+<h3>URL Extensions</h3>
 
 
 <h3>Tagsets</h3>
+
+A named collection of actors is called a <dfn>tagset</dfn> (it could have been
+called a ``cast,'' since it's a set of actors that work together, but ``cast''
+means something quite different in the programming language community).<p>
 
 
 <hr>
@@ -335,7 +387,7 @@ files.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Jan 15 09:52:20 1997
+Last modified: Sat Feb  1 20:34:00 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
