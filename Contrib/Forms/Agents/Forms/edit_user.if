@@ -28,13 +28,7 @@
     <set index=u.userext replace><get name=userext form></set>
 
 
-    <repeat list=&AGENT.groups.keys; entity=grp>
-  <if-in-group group=&grp; user=&euser;>
-    <if> <get form name="group&grp;">
-       <else> <group-remove-user user=&euser; group=&grp;></else>
-    </if>
-  </if-in-group>
-    </repeat>
+  
 
 		    <!-- Saving new data to disk -->
 		    <read interform file=users-save.inc process> 
@@ -122,6 +116,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 12:48:59 1998
+Last modified: Tue Feb 17 14:03:52 1998
 <!-- hhmts end -->
 </body></html>
