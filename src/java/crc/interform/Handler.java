@@ -111,6 +111,16 @@ public class Handler implements java.io.Serializable {
   }
 
   /************************************************************************
+  ** Legacy action in the new DPS:
+  ************************************************************************/
+
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return false;
+  }
+
+  /************************************************************************
   ** Global handler table:
   ************************************************************************/
 
