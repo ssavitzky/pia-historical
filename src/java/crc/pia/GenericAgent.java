@@ -110,8 +110,7 @@ public class GenericAgent implements Agent {
     else{
       /*
       url = "/" + n + "/" + "initialize.if";
-      request = createRequest("GET", url );
-      Pia.instance().resolver().unshift( request );
+      createRequest("GET", url );
       */
     }
 
@@ -128,10 +127,11 @@ public class GenericAgent implements Agent {
    * Create a new request given method, url
    */
   private Transaction createRequest(String method, String url){
-    Transaction request =  new HTTPRequest(Pia.instance().thisMachine());
+    Transaction request =  new HTTPRequest();
+    request.toMachine( Pia.instance().thisMachine() );
     request.setMethod( method );
     request.setRequestURL( url );
-    return request;
+    request.startThread();
   }
  
   /**
