@@ -202,14 +202,6 @@ public class ActiveDoc extends TopProcessor {
   ** Sub-processing:
   ************************************************************************/
 
-  /** Load a Tagset by name. 
-   * @param tsname the tagset name.  If null, returns the current tagset. 
-   */
-  public Tagset loadTagset(String tsname) {
-    // === loadTagset is probably different in the PIA
-    return (tsname == null)? tagset : crc.dps.tagset.Loader.loadTagset(tsname);
-  }
-
   /** Process a new subdocument. 
    * 
    * @param in the input.
