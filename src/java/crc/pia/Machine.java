@@ -239,6 +239,7 @@ public class Machine implements java.io.Serializable {
       
       // dump header
       Pia.debug(this, "Transmitting firstline and header...");
+//      System.out.println("Transmitting firstline and header...\n"+outputString);
      
       shipOutput( out, outputString, false );
 
@@ -247,7 +248,7 @@ public class Machine implements java.io.Serializable {
       Pia.debug(this, headers);
 
       shipOutput( out, headers, false );
-      
+
       // send the content down the wire
       content.writeTo(out);
 
@@ -426,14 +427,30 @@ public class Machine implements java.io.Serializable {
 
     if( s == null )
       return;
-
+//    System.out.println("shipping "+s);
+    
     bytestring = s.getBytes();
+
     try{
-      if( bytestring != null )
+      if( bytestring != null ){
+//	System.out.println("bytestring is "+bytestring.length +" long ..."+s);
+	
 	out.write( bytestring, 0, bytestring.length  );
-      if( withnewline )
+      } else 
+	{System.out.print("bytestring is null");
+	}
+      
+
+      
+      if( withnewline ){
+//	System.out.println("(newline)");
 	out.write( '\n' );
+      }
+      
     } catch(IOException e) {
+//      System.out.println("SHIPPING FAILED");
+
+      
       Pia.debug(this, e.getClass().getName());
       String msg = "Can not write...\n";
       throw new PiaRuntimeException (this, "shipOutput", msg) ;

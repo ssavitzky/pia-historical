@@ -27,6 +27,7 @@ import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
 import crc.content.ByteStreamContent;
+import crc.pia.Authenticator;
 import crc.pia.Pia;
 
 import crc.ds.Features;
@@ -132,6 +133,11 @@ public class GenericAgent extends AttrBase implements Agent {
    * Crontab for timed requests.
    */
   protected Crontab crontab;
+
+  /**
+   * policy for authentication
+   */
+ protected Authenticator authPolicy;
 
 
   /************************************************************************
@@ -698,7 +704,7 @@ public class GenericAgent extends AttrBase implements Agent {
     return attributes.attrs();
   }
 
-  /** Set an attribute. */
+  /** Set an attribute. opportunity to do special processing for special attr*/
   public synchronized void attr(String name, SGML value) {
     if( name == null ) return;
 
@@ -710,6 +716,14 @@ public class GenericAgent extends AttrBase implements Agent {
     } else if (name.equals("handle") || name.equals("_handle")) {
       handleHook = value;
       Pia.debug(this, "Setting handle hook", ":="+value.toString());
+    }else if (name.equals("authentication") || name.equals("_authentication")) {
+      
+      if(authPolicy != null) {
+	//should only allow more stringent authentication
+	Pia.debug(this, "attempt to change authPolicy ignored");
+      }
+      authPolicy = new Authenticator( "Basic", value.toString());
+      Pia.debug(this, "Setting  authentication passwordfile", ":="+value.toString());
     }
   }
 
@@ -1021,6 +1035,34 @@ public class GenericAgent extends AttrBase implements Agent {
     response.startThread();
   }
 
+  /**
+   * authenticate the origin of a request
+   * @return false if cannot authenticate
+   */
+  public boolean authenticateRequest( Transaction request, String requestedFile){
+    if(authPolicy == null) return true;
+    return authPolicy.authenticateRequest(request,requestedFile, this);
+  }
+
+  /**
+   * requests authentication
+   */
+ public void requestAuthentication ( Transaction trans ) {
+
+   //do we need content for authentication response??
+      Pia.debug(this, "Authentication required");
+    Transaction response = new HTTPResponse( trans, false );
+     if(trans.has("UnauthorizedUser")) 
+       response.setStatus( 403 ); 
+     else 
+       response.setStatus( 401 ); 
+    authPolicy.setResponseHeaders(response, this);
+    Content c = new crc.content.text.StringContent(
+		   "Authorization required for access to agent "+ name());
+    response.setContentType( "text/plain" );
+    response.setContentObj( c );
+    response.startThread();
+ }
 
   /**
    * Respond to a request directed at one of an agent's interforms.
@@ -1062,6 +1104,13 @@ public class GenericAgent extends AttrBase implements Agent {
       Pia.debug(this, "The path of interform is -->"+file);
 
     String interformOutput = null;
+
+    // authenticate the requester if necessary;
+    // internal requests are not authenticated currently--eg. virtual machines
+    if( !(request.fromMachine() instanceof AgentMachine) && !authenticateRequest(request,file)){
+      requestAuthentication(request);
+      return true; //not clear-returning true because response has been set
+    }
       
     if( file.endsWith(".if") ){
       // If find_interform substituted .../home.if for .../ 

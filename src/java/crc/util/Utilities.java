@@ -535,7 +535,67 @@ public class Utilities {
 	crc.pia.Pia.debug( "The out string-->"+sbuf.toString());
 	return sbuf.toString() ;
   }
+
+
+   
+    /**
+     * decode a base64 String.
+     * @param input The string to be decoded.
+     */
+
+    public static String decodeBase64(String input) {
+	byte bytes[] = new byte[input.length()] ;
+	input.getBytes (0, bytes.length, bytes, 0) ;
+
+        String decoded;
+	byte buf[] = new byte[4];
+	
+	String result ="";  
+        for(int limit = 0; limit <= bytes.length - 4; limit += 4){
+	  for( int i =0; i< 4; i++) buf[i] = (byte) cvB64(bytes[limit+i]);
+	  decoded =  decodeBase64(buf);
+          if( decoded == null) return result;//return null if invalid string
+	  result += decoded;
+	}
+	return result;
+    }
+
+// utility function for converting base character
+    private  static final int cvB64 (int ch) {
+	if ((ch >= 'A') && (ch <= 'Z')) {
+	    return ch - 'A' ;
+	} else if ((ch >= 'a') && (ch <= 'z')) {
+	    return ch - 'a' + 26 ;
+	} else if ((ch >= '0') && (ch <= '9')) {
+	    return ch - '0' + 52 ;
+	} else {
+	    switch (ch) {
+	      case '=':
+		  return 65 ;
+	      case '+':
+		  return 62 ;
+	      case '/':
+		  return 63 ;
+	      default:
+		  return -1 ;
+	    }
+	}
+    }
+
+  public static String decodeBase64(byte[] buf)
+   {
+     if (buf[0] < 0 || buf[1] < 0 || buf[1] > 64 ||buf[0] > 64 ) return null;
+     byte[] result = new byte[3];
+     result[0] = (byte) (((buf[0] & 0x3f) << 2) | ((buf[1] & 0x30) >>> 4));
+     if (buf[2] > 64 ) return new String(result,0,1);
+     result[1] = (byte) (((buf[1] & 0x0f) << 4) | ((buf[2] &0x3c) >>> 2));
+     if (buf[3] > 64 ) return new String(result,0,2);
+     result[2] = (byte) (((buf[2] & 0x03) << 6) | (buf[3] & 0x3f) );
+     return new String (result);
+   }
   
+
+
 
   public static void main(String[] args){
     String fn = args[0];
