@@ -101,7 +101,7 @@
     <td valign=center align=left>
     <if><agent-running name=Logo>
 	<then><img src="/Logo/pia120.gif"
-		   height=120 width=222></then></if>
+		   height=120 width=235></then></if>
 </table>
 <hr>
 <b>URL:</b>
