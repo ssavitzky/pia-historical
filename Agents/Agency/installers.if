@@ -153,10 +153,9 @@ add a default start-up form to this file.  <p>
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
        Samba Name: (for mounting under windows) <input name="sambaName"
-       value="user_files"><br>
+       value="archive"><br>
        SambaConfigFile: <input name="sambaConfig" value="/etc/sbm.conf">
-       root: <input name="rootDir" value="user_files"> (relative to agent
-       directory) <br>
+       root: (relative to agent directory)<input name="rootDir" value="archive"><br>
        <input type="submit" value="Install"><br>
        </form></if>
   <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
@@ -165,7 +164,7 @@ add a default start-up form to this file.  <p>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="user_files">
        type:<input name="type" value="DOFS"><br>
-       root:(absolute) <input name="root" value="~/.pia/CDRW/user_files">
+       root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
        <input type="submit" value="Install">
        </form></if>       
 </dl>
