@@ -48,7 +48,7 @@ src="/&agentName;/statusbutton.gif" alt="Forms Status"></a>
 src="/&agentName;/reportsbutton.gif" alt="Reports"></a>
 <a href="http://&piaHOST;:&piaPORT;/&agentName;/admin.if"><img
 src="/&agentName;/adminbutton.gif" alt="Administration"></a>
-<a href="/Forms/feedback/feedback.if"><img src="/&agentName;/feedbackbutton.gif"
+<a href="/&agentName;/fill_out_form.if?formtype=feedback"><img src="/&agentName;/feedbackbutton.gif"
 alt=Feedback></a>
 </center></set>
 
