@@ -40,8 +40,12 @@ public class ListUtil {
   
 
   /************************************************************************
-  ** 
+  ** Conversion:
   ************************************************************************/
 
+  /** Convert a List (which is easy to manipulate) to a NodeList. */
+  public static ParseNodeList toNodeList(List l) {
+    return new ParseNodeList(l.elements());
+  }
 
 }

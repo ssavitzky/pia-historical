@@ -52,6 +52,12 @@ public class Copy {
     }
   }
 
+  /** Copy nodes from an Input to an Output. */
+  public static final void copyNodes(Input in, Output out) {
+    for (Node n = in.getNode(); n != null; n = in.toNextSibling()) {
+      copyNode(n, in, out);
+    }
+  }
 
   /** Copy the children of the input's current Node
    *
