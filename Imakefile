@@ -86,6 +86,7 @@ check::
  */
 SRCDIR=src/java/crc
 CLASSDIR=src/java
+INTERFORM=Doc/Manuals/InterForm
 
 cvs.tar::
 	find $(SUBDIRS) -name CVS -print | tar -cT - -f cvs.tar
@@ -103,6 +104,7 @@ rm_pia_tar::
 prep_rel::
 
 	cd $(SRCDIR); make clean ; make
+	cd $(INTERFORM); make
 	cd $(CLASSDIR);make crc.zip; make alldoc
 
 /*
