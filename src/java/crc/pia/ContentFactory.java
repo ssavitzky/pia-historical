@@ -27,7 +27,7 @@ public class ContentFactory
   public Content createContent(String contentType, InputStream input)
   {
     Content c = null;
-
+    if (contentType == null) contentType = "text/html";
     try{
       MimeType ztype  = new MimeType( contentType );
       // This is too simple,minded.  Need to test others
