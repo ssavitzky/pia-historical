@@ -41,7 +41,10 @@ public class BasicElement extends AbstractNode implements Element {
     setTagName( "" );
   }
 
-
+  /**
+   *
+   * Deep copy of this element.
+   */
   public Object clone(){
     BasicElement n = (BasicElement)super.clone();
     n.setTagName( getTagName() );
@@ -57,20 +60,45 @@ public class BasicElement extends AbstractNode implements Element {
    */
   public int getNodeType() { return NodeType.ELEMENT; }
 
+  /**
+   * Set the element's name.
+   * @param tagName Name of this element.
+   */
   public void setTagName(String tagName){ this.tagName = tagName; }
+
+  /**
+   * This method returns the string that is the element's name.
+   * Note that this is case-preserving.
+   * @return Tag name.
+   */
   public String getTagName(){ return tagName; }
   
+  /**
+   * Set a list of attributes for this element.
+   * @param attributes Attribute list for this element.
+   */
   public void setAttributes(AttributeList attributes)
   {
     attrList = attributes;
   }
+
+  /**
+   * @return return all attributes.
+   */
   public AttributeList getAttributes(){ return attrList; }
   
+
+  /**
+   * Adds a new attribute/value pair to an Element node object. If an attribute by
+   * that name is already present in the element, it's value is changed to be that
+   * of the Attribute instance.
+   * @param newAttr attribute/value pair.
+   */
   public void setAttribute(Attribute newAttr)
   {
-    Report.debug(this, "setAttribute");
+    //Report.debug(this, "setAttribute");
     if( newAttr == null ) return;
-    Report.debug(this, newAttr.getName());
+    //Report.debug(this, newAttr.getName());
     attrList.setAttribute( newAttr.getName(), newAttr );
   }
 
@@ -82,16 +110,63 @@ public class BasicElement extends AbstractNode implements Element {
    */
   public NodeEnumerator getElementsByTagName(String name)
   {
-    Report.debug(this, "Get elements by tag name...");
+    //Report.debug(this, "Get elements by tag name...");
     ArrayNodeList result = new ArrayNodeList();
     
     findAll( name, this, result );
-    Report.debug(this, "result size-->"+Integer.toString( (int)result.getLength() ));
+    //Report.debug(this, "result size-->"+Integer.toString( (int)result.getLength() ));
 
     return result.getEnumerator();
     
   }
+
+
+  /**
+   * printChildren depth first.
+   * This should be call at the root node.
+   */ 
+  public String toString(){
+    return getTagName();
+  }
+
+  /**
+   *
+   */
+  public void printChildren(String indent){
+    AbstractNode child = null;
     
+    Report.debug(indent+ "<" + toString() + printAttributes() + ">");
+    if( hasChildren() ){
+       NodeEnumerator enum = getChildren().getEnumerator();
+       child =  (AbstractNode)enum.getFirst();
+       while( child != null ) {
+	 child.printChildren( indent + "    ");
+	 child = (AbstractNode)enum.getNext();
+       }
+    }
+    Report.debug(indent + "</" + toString()+ ">");
+  }
+
+  protected String printAttributes(){
+    StringBuffer sb = new StringBuffer();
+
+    AttributeList l = getAttributes();
+    long len = l.getLength();
+    if( l == null || len==0 ) return new String( sb );
+
+    try{
+      Node a = null;
+      for(int i = 0;  i < len; i++){ 
+	a = l.item( i );
+	if( a instanceof AbstractNode )
+	  sb.append(" "+a.toString());
+      }
+    }catch(Exception ee){
+    }
+    return new String( sb );
+  }
+
+  
   protected void findAll( String tag, Element elem, EditableNodeList result){
     Element child = null;
     
@@ -100,7 +175,7 @@ public class BasicElement extends AbstractNode implements Element {
       
       child =  (Element)enum.getFirst();
       while( child != null ) {
-	Report.debug(this, "child name-->"+ child.getTagName());
+	//Report.debug(this, "child name-->"+ child.getTagName());
 	if( child.getTagName().equalsIgnoreCase( tag ) ){
 	  try{
 	    result.insert( result.getLength(), child );
