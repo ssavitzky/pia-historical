@@ -339,6 +339,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
       return null;
     }
     if (nextText != null) {
+      // === here we check for an implicitly-required paragraph tag.
       n = nextText;
       nextText = null;
     } else if (next != null) {
@@ -382,16 +383,27 @@ public abstract class AbstractParser extends CursorStack implements Parser
   }
 
 
-  /** Perform syntax checking for a start tag. 
+  /** Perform syntax checking for a start tag or other node. 
    *
    * @return <dl compact> 
    *		<dt>-1<dd> if a different element should be started first.
    *			   (The handler will tell us which one.)
+   *			   (currently unimplemented.)
    *	      	<dt> 0<dd> if it is acceptable in this context (normal),
    *		<dt> 1<dd> if it ends the current Element.
    *	     </dl>
    */
-  protected int checkStartTag(String tag) {
+  protected int checkStartTag(ActiveNode n) {
+    // need to check for implicitEnd
+    ActiveElement e = n.asElement();
+    if (e == null) {
+      // === no check for a node starting a different element;
+      // === the text check is done in nextToken.
+      return 0;
+    }
+    String tag = getTagName(depth-1);
+    if (tag != null && e.getSyntax().implicitlyEnds(tag)) return 1;
+
     return 0;			// === checkStartTag doesn't work yet.
   }
 
@@ -472,22 +484,29 @@ public abstract class AbstractParser extends CursorStack implements Parser
    *	sibling, i.e. most of the time.
    */
   protected Node advanceParser() {
+    int check;
     // Need to know whether we've seen all the children...
     ActiveNode n = nextToken();
     if (n != null) {
-      setNode(n);
-      return n;
+      check = checkStartTag(n);
+      if (check == 0) {
+	setNode(n);
+	return n;
+      } else {			// === checkStartTag -> -1 not supported
+	atLast = true;
+	return null;
+      }
     } else if (nextEnd != null) {
       // End tag, in nextEnd.
-      int i = checkEndTag(nextEnd);
-      if (i < 0) { 
+      check = checkEndTag(nextEnd);
+      if (check < 0) { 
 	n = next;
 	next = null;
 	nextEnd = null;
 	return n;
       }
       // If the end tag terminates THIS level, we're done with it.
-      if (i == 0) nextEnd = null;
+      if (check == 0) nextEnd = null;
       atLast = true;
       return null;
     } else {
