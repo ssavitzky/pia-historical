@@ -62,10 +62,9 @@ cp &piaDIR;/Agents/&agentName;/&fileName; &usrDIR;/Agents/&agentName;/&fileName
   <dd> 
 </dl>
 
-<pre><demo><read file="~/.signature"></demo></pre>
+<pre><demo><read file="~/.login"></demo></pre>
 <pre><demo><read file="~/.pia"></demo></pre>
 <pre><demo><read directory match="^[A-Z].*[^~]$" tag=ol file="~/.pia"></demo></pre>
-<pre><demo><read directory file="~/.pia/HEADER.html"></demo></pre>
 <demo><set entity name=dir><read directory file="~/.pia"></set>
 <ul foreach list="&dir;">
    <li> <read info file="~/.pia/&li;"> <a href="/My/&li;">&li;</a>
@@ -110,7 +109,7 @@ urlQuery = '&urlQuery;'<p>
 
 <h3>Process status:</h3>
 <pre>
-<os-command-output>ps</os-command-output>
+<os-command-output>/bin/ps</os-command-output>
 </pre>
 
 <hr>
