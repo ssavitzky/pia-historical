@@ -23,6 +23,46 @@ sub initialize {
     return $self;
 }
 
+sub classfile {
+    my ($class) = @_;
+
+    $class =~ s@::@/@g;
+    return $class . '.pm';
+}
+
+sub install {
+    my ($self, $options) = @_;
+
+    ## Install a named agent.  Automatically loads the class if necessary. 
+
+    my $name = $options->{'agent'};
+    my $type = $options->{'type'};
+    my $class = $options->{'class'};
+
+    $type = $name unless defined $type;
+
+    if ($class =~ /PIA_AGENT/) {
+	print "obsolete class $class for agent $agent\n";
+	$class = lc $class;
+	$class =~ s/pia_agent/PIA::Agent/;
+	print "--> $class; you should use 'type=whatever' instead";
+    }
+    if (defined $class) {
+	require &classfile($class) unless ($class eq PIA::Agent);
+    } else {
+	$class = PIA::Agent;
+	eval {
+	    require &classfile("${class}::$type");
+	    $class .= "::$type";
+	};
+    }
+
+    print "Installing agent $name	class $class\n" unless $main::quiet;
+    my $agent = $class->new ($name, $type);    
+    $agent->parse_options(0, $options);
+    $self->install_agent($agent);
+}
+
 sub resolver{
     my($self,$resolve)=@_;
     $$self{resolver}=$resolve if defined $resolve;

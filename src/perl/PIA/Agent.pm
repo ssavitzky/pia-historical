@@ -343,9 +343,9 @@ sub options_form{
 }
 
 sub  parse_options{
-    my($self,$argument)=@_;
+    my($self, $argument, $hash)=@_;
     print "parsing options \n" if  $main::debugging;
-    my $hash=$argument->parameters;
+    $hash=$argument->parameters unless defined $hash;
     foreach $key (keys(%{$hash})){
 	print("  setting $key = ",$$hash{$key},"\n") if  $main::debugging;
 	$self->option($key,$$hash{$key});
