@@ -6,7 +6,7 @@ package crc.dom;
 
 import java.io.*;
 
-public class CRCAttribute extends BasicAttr implements Attribute {
+public class CRCAttribute extends BasicAttribute implements Attribute {
 
   public CRCAttribute(Node myParent){
     super( myParent );
