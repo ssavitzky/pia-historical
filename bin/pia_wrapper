@@ -1,0 +1,44 @@
+#!/bin/sh
+# Pia launcher
+
+#find out where java is, ya
+PRG=`type -p java` >/dev/null 2>&1
+J_HOME=`dirname $PRG`/..
+
+if [ -z "$JAVA_HOME" ] ; then
+    export JAVA_HOME
+    JAVA_HOME=$J_HOME
+fi
+
+#where zjava lives, ya
+JAVA_BIN=$JAVA_HOME/bin/java
+export JAVA_BIN
+
+#where zjigsaw lives, ya
+JIGSAW_HOME="${JIGSAW_HOME-usr/local/Jigsaw}"
+export JIGSAW_HOME
+JIGSAW_CLASSES=$JIGSAW_HOME/src/classes
+
+#where jgl lives, ya
+JGL_HOME="${JGL_HOME-usr/local}"
+export JGL_HOME
+JGL_CLASSES=$JGL_HOME/jgl_1_1
+
+#where pia lives, ya
+PIA_HOME="${PIA_HOME-/home/rithy/pia}"
+export PIA_HOME
+PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+
+PIA_BIN=crc.pia.Pia
+PIA_CONFIGFILE=/home/rithy/pia/config/pia.props
+
+CLASSPATH="${CLASSPATH-.}"
+if [ -z "${CLASSPATH}" ] ; then
+    CLASSPATH="$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$JGL_CLASSES:$PIA_CLASSES"
+else
+    CLASSPATH="$CLASSPATH:$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$JGL_CLASSES:$PIA_CLASSES"
+fi
+
+echo $CLASSPATH
+echo "$JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE"
+exec $JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE
