@@ -1,0 +1,91 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+ <if> <get form name=urlid> <then>
+
+<set name=lnk><read process file="links/&FORM.urlid;/index.html"></set>
+ <set name=ldl><get index=lnk.body.dl></set>
+<br>
+<form action="&url;" id="editlink" copy>
+ <process copy>
+  <!-- save a backup -->
+  <write file="links/&FORM.urlid;/index.backup.html" append><get name=lnk></write>
+
+   <!-- do the features -->
+   <set name=feats><get index=ldl key="features"></set>
+   <set name=f><get name=feats keys></set>
+    <repeat list=&f;>
+    <if><get form name="f&li;"> <then> <set index="feats" key=&li;><get form name="f&li;"></set></then></if>
+    </repeat>
+     <if><get form name="newfeature"> <then>
+      <set index="feats" key=&FORM.newfeature;><get form name="newfeaturevalue"></set>
+      </then></if>
+   <!-- do the  other attributes -->	   
+   
+   <if> <get form name="supercat"> <then>
+	 <set index="ldl" key=category insert=-1><get form name="supercat"></set>
+        adding cat <get form name="supercat">
+	  <repeat list=&FORM.supercat;>
+          <set name=clnks><get agent index=cats.&li; key=links></set>
+
+         <set index="clnks" insert=-1><li><get agent index=links..dl-1 key=&FORM.urlid;></li></set>
+
+	  </repeat>
+	</then></if>
+	      
+   <repeat list="url description" entity=k>
+    <if> <get form name="&k;"> <then>
+	      <set index=ldl key=&k;><get form name="&k;"></set>
+	      </then></if> 
+   </repeat>
+  <write file="links/&FORM.urlid;/index.html"><get name=lnk></write>
+ </process>
+
+	      <h2>Edit &FORM.urlid;</h2>
+<input name="urlid"  type=hidden value=&FORM.urlid;>
+URL:<input type="URL" name="url" value="&ldl.url;">	<br>
+Description:<textarea name="description" rows=2 cols=40><get index=ldl.description></textarea><br>
+Categories:<repeat list=&ldl.category; entity=su>  <a href="show_category.if?catname=&su;"><get name=su> </a></repeat> Add Category:
+<select multiple name="supercat" size=2>
+ <set name=k><get agent index=cats keys></set>	      
+ <repeat list=&k;> <option>&li;</option></repeat>	      
+ </select>
+	      <br>
+Features: <br>
+<set name=feats><get index=ldl key="features"></set>
+	      <set name=f><get name=feats keys></set>
+<repeat list=&f;><set name=val><get index=ldl.features key=&li;></set>
+ <b>&li;</b> value: <input name="f&li;" value="&val;"> <br>
+</repeat>
+Add Feature:<input name="newfeature" size="20">	 Value:<input name="newfeaturevalue" size="20">
+	      <br>
+
+<input type="SUBMIT" value="Change &FORM.urlid;">
+</form>
+
+
+</then>
+ <else>
+<set name=lperrow>3</set>
+<h2> Choose a link to edit</h2>
+<set name=l><get agent index=links..dl-1 keys></set>
+	      <table><tr>
+	       <repeat list=&l;>
+                <set name=dummy>0</set>
+                <if> <test negative><difference>&lperrow; &dummy;</difference></test> <then><TR><set name=dummy>0</set></then></if>
+	      <td><a href=&url?urlid=&li;><get agent index=links..dl-1 key=&li;></a></td></tr>
+	      </repeat>
+	      </table>
+</else></if>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Thu Oct 16 13:24:29 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://seven.sages.com/~wolff/wolff.html"
+         > Greg </a> &lt;<a href="mailto:wolff@sages.com">wolff@sages.com</a>&gt;</address>
+</body></html>

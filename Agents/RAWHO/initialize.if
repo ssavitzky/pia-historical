@@ -30,24 +30,19 @@
 <if><read file=links.html info> <then>
 <set agent name="links"><read file=links.html process></set>
 </then><else>
-<set agent name="links"><dl codekeys></dl> <dl valuekeys></dl></set>
+<set agent name="links"><dl codekeys> </dl>
+<dl urlkeys> </dl>
+</set>
 </else></if>
 
-<if><read file=categories.html info> <then>
-<set agent name="categories"><read file=categories.html process></set>
-</then><else>
-<set name=cats><read dir file="categories"></set> 
- <set agent name="categories"><dl foreach=cats>
-   <set name=cat><read file="categories/&li;/index.html"></set>
-    <set name=catname></set>   
-  <dt>  <a href="/~&agentName;/categories/&li;/index.html" catid=&li;> <get index="cat.body.dl.name"></a></dt>
-  <dd>  <get index="cat.body.dl.description">
- </dl></set>
-</else></if>
+<if><read file=cats.html info> <then>
+<set agent name="cats"><read file=cats.html process></set>
+</then><else><set agent name="cats"><dl> </dl></set></else></if>
+
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Sun Oct 12 13:06:51 1997
+Last modified: Thu Oct 16 13:14:10 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

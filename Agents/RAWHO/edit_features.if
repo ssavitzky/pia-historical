@@ -1,0 +1,8 @@
+<get name=features agent>
+
+==
+<set name=foo><get index=features agent></set>
+==<br> 
+size=<get name=foo key="site type">
+<br>
+==
