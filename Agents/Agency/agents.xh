@@ -8,7 +8,7 @@
 <pre><i><text pad align=right width=15>Index</text>	Home</i>
 <repeat list="&agentNames;" entity="li"
        ><text pad align=right width=15><a href="/&li;/"><b>&li;/</b></a
-       ></text>	<a href="/&li;"><b>&li;</b></a>
+       ></text>	<agent-home link agent="&li;">
 </repeat></pre>
 
 <footer cvsid="$Id$">

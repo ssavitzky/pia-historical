@@ -10,10 +10,40 @@
 
 <h2>Legacy operations</h2>
 
+<note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
+   following definitions.  It is not necessary; most of these can be defined
+   directly, and if any remain they represent places where work needs to be
+   done.  It is, however, expedient (i.e. a temporary hack).
+</note>
+
 <define element=agent-home empty handler=legacy:agent-home>
-   <doc> determine the home directory of an agent.  Doesn't appear to work.
+   <doc> Determine the home directory of an agent.  Prefixes the agent's name
+	 with its type, if necessary, to produce a complete path.
    </doc>
+   <define attribute=agent optional>
+      <doc> specifies the name of the agent being queried.  Defaults to the
+	    name of the current agent.
+      </doc>
+   </define>
+   <define attribute=link optional>
+      <doc> If present, the result is a link to the agent's home. 
+      </doc>
+   </define>
 </define>
+
+<define element=agent-running empty handler=legacy:agent-running>
+   <doc> Determine whether a given agent is currently running (installed in
+	 the PIA).
+   </doc>
+   <define attribute=name required>
+      <doc> specifies the name of the agent being queried.
+      </doc>
+      <note author=steve> Should almost certainly be changed to "agent".
+      </note>
+   </define>
+</define>
+
+
 
 <h2>Headers and Footers</h2>
 
