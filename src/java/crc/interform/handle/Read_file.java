@@ -37,7 +37,7 @@ import crc.gnu.regexp.MatchInfo;
  *	QUIET if file does not exist.
  *  </dl>
  */
-public class Read_file extends crc.interform.Handler {
+public class Read_file extends Get {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<read.file file=\"name\" [interform [agent=\"agentName\"]] [quiet]\n" +
@@ -191,7 +191,11 @@ public class Read_file extends crc.interform.Handler {
 	result = null;
       }    
     }
-
+    // if name exists, use as an index
+    if(it.hasAttr("name")){
+      result = getValue(result,it);
+    }
+    result=processResult(result, it);
     ii.replaceIt(result);
   }
 }

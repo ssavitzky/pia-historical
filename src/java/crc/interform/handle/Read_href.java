@@ -39,7 +39,7 @@ import java.io.ByteArrayOutputStream;
  *	Use GET (default) or HEAD HTTP method.
  *  </dl>
  */
-public class Read_href extends crc.interform.Handler {
+public class Read_href extends Get {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<read.href href=\"url\" [method=get|head|put] [query=\"query-string\"]\n"+
@@ -82,27 +82,46 @@ public class Read_href extends crc.interform.Handler {
     }
     boolean process= false;
     String tsname = null;
-    
-     if (it.hasAttr("process") ||it.hasAttr("tagset") ) {
-      tsname = it.attrString("tagset");
-      process= true;
-      if (tsname == null) {
+    tsname = it.attrString("tagset");
+    if (tsname == null) {
 	tsname = "HTML";  // default tagset for processing
       }
+    if (it.hasAttr("process") ||it.hasAttr("tagset") || it.hasAttr("findall") || it.hasAttr("name") ) {
+      process= true;
      }
 
 
-/**  get the agent
- */
+    // should we wait for the result?
+    long waitTime = 0;
+    if(it.hasAttr("wait")){
+	// default is wait 10 minutes
+	String time = Util.getString(it,"wait","600");
+	// time specified in seconds
+	if(time != null) try {
+	  waitTime = Long.parseLong(time) * 1000;
+	} catch( Exception e) {
+	  // number format  bad use default
+	  waitTime = 600 * 1000;
+	}
+    }
+	
+    // also some tags imply waiting
+    if(waitTime == 0 && isComplex(it)){
+      waitTime = 30 * 1000;// wait 60 seconds by default
+    }
+
+
+    /**  get the agent
+     */
     Run env = Run.environment(ii);
     Agent agent =env.agent;
     AgentMachine m = new AgentMachine(agent);
 
-// callback which will notify us when result has been populated with content
+    // callback which will notify us when result has been populated with content
     ContentToSGMLConverter cb =  new ContentToSGMLConverter(result, ii, process, tsname);
     m.setCallback(cb);
-
-// set query string if any -- null is OK
+    
+    // set query string if any -- null is OK
     String query = it.attrString("query");
     if(query != null) query = query.replace('?','&');
     query = "?"+query;
@@ -111,27 +130,27 @@ public class Read_href extends crc.interform.Handler {
     agent.createRequest(m, method, href,  query);
 
 
-// if we are supposed to wait, do so now
-// since other interforms may need this handler
-// have the ii wait
-    if(it.hasAttr("wait")) synchronized(ii){
+    // if we are supposed to wait, do so now
+    // since other interforms may need this handler
+    // have the ii wait
+    
+    
+    if(waitTime>0) synchronized(ii){
       try{
-	      long  maxdelay = 1000000;
-              if(it.hasAttr("wait"))
-		 {
-		   String time = it.attr("wait").toString();
-		   // time specified in seconds
-                   if(time != null) maxdelay = Long.parseLong(time) * 1000;
-		 }
-		   
-	      ii.wait(maxdelay);
+	ii.wait( waitTime);
       }
       catch( Exception e){
-	// number format or interrupted... in any case just continue
+	//interrupted... in any case just continue
       }
     }
-    
-    ii.replaceIt(result);
+
+    SGML  results = result;
+    // if name exists, use as an index
+    if(it.hasAttr("name")){
+      results = getValue(result,it);
+    }
+    results=processResult(results,it);
+    ii.replaceIt(results);
       
 
   }

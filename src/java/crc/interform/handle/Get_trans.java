@@ -24,7 +24,7 @@ import crc.sgml.SGML;
  *	HEADERS (optionally from REQUEST) or a FEATURE.
  *  </dl>
  */
-public class Get_trans extends crc.interform.Handler {
+public class Get_trans extends Get {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<get-trans [name=\"name\"]>\n" +
@@ -38,7 +38,7 @@ public class Get_trans extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
 
-    SGML result = null;
+
     Run env = Run.environment(ii);
     Transaction trans = env.transaction;
     if (trans == null) {
@@ -58,7 +58,9 @@ public class Get_trans extends crc.interform.Handler {
       else
 	ii.replaceIt(trans.header(name));
     } else {
-      ii.replaceIt(env.transaction.attr(name));
+      SGML result = env.transaction.attr(name);
+      result = processResult(result, it);
+      ii.replaceIt(result);
     }
   }
 }

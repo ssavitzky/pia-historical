@@ -26,35 +26,42 @@ import java.util.Enumeration;
  * this description is out of date please update from syntax
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;set name="name" [copy]
- *	     [ pia | agent [hook] | trans [feature] | env 
- *  	     | [element [tag=ident] | entity [local] ]&gt;...&lt;/set&gt;
+ *	&lt;set name="name" [copy] [attr=attr | insert=where [replace] ]
+ *	     [ pia | agent | trans [feature] | env 
+ *  	     | [element [tag=ident] | [global | local] ]&gt;...&lt;/set&gt;
  * <dt>Dscr:<dd>
  *	set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, 
- *	ENVironment, ELEMENT, or ENTITY context.  ENTITY may define
+ *	ENVironment, ELEMENT, or ENTITY context.  Entity may be
  *	a LOCAL or GLOBAL binding.   Default is to replace the lowest 
- *      current binding and create global binding if none exists.
+ *      current binding or create a global binding if none exists.
+ *      NAME may be a path, e.g. \"foo.bar\" sets the bar item of foo.
+ *      Intermediate objects on the path are created if they don't exist.
+ *      If WHERE is \"-1\" then the CONTENT will get appended to the specified object.
  *      ELEMENT may have a TAG.  TRANSaction item
  *	may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. 
  *	Optionally COPY content as result.
  *  </dl>
+ * Subclasses are used to set items in the PIA AGENT TRANS ENV  contexts.
  */
 public class Set extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<set name=\"name\" [copy] [attr=attr | insert=where [replace] ]\n" +
-    "[ pia | agent [hook] | trans [feature] | env \n" +
+    "[ pia | agent | trans [feature] | env \n" +
     "| [element [tag=ident]] | entity [global | local] ]>...</set>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "replace or insert content or ATTR of NAMEd object with CONTENT. \n"+
-  "context may be optionally in PIA, AGENT, TRANSaction, \n" +
+    "REPLACE or INSERT content or ATTR of NAMEd object with CONTENT. \n"+
+  "Context may be optionally in PIA, AGENT, TRANSaction, \n" +
     "ENVironment, ELEMENT, or ENTITY context.  ENTITY may define\n" +
     "a LOCAL or GLOBAL binding.   Default is to replace the lowest current binding\n" +
-    "and create global binding if none exists.\n" +
+    "or create a global binding if none exists.\n" +
+  "NAME may be a path, e.g. \"foo.bar\" sets the bar item of foo.\n" +
+  "Intermediate objects on the path are created if they don't exist.\n" +
+  "If WHERE is \"-1\" then the CONTENT will get appended to the specified object.\n" +
     "ELEMENT may have a TAG.  TRANSaction item\n" +
-    "may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. \n" +
+    "may be FEATURE.  \n" +
     "Optionally COPY content as result.\n" +
 "";
  
@@ -68,22 +75,24 @@ public class Set extends crc.interform.Handler {
       /* The following are all in the Basic tagset,
        *     so it's cheaper not to dispatch on them.
         */
-      String name = Util.getString(it, "name", null);
-      if (ii.missing(ia, "name", name)) return;
-    
-      SGML value = it.isEmpty()? new Text("") : it.content().simplify();
-      // at this point value may be token or tokens
-      debug(this, " setting value of "+name+" to instance of "+value.getClass().getName());
 
-      Index index = new Index(name);
-      String key = index.shift();
+      // get the appropriate index
+      Index index = getIndex(it);
+      if(index == null){
+	ii.error(ia, " name attribute missing or null");
+	 return;
+      }
+    
+      SGML value = getValue(it);
+      // at this point value may be token or tokens
+
+
       //  do we need an SGML context?
-      boolean isComplexSet = ( index.size()>0 || 
-			       it.hasAttr("attr") ||
-			       it.hasAttr("insert") ||
-			       it.hasAttr("row") || it.hasAttr("col") ||
-			       it.hasAttr("key") ||
-			       it.hasAttr("element"));
+      boolean isComplexSet = isComplex( index, it);
+
+      // get the first item for finding the correct table
+      String key = index.shift();
+      debug(this, " setting value of "+key+" to instance of "+value.getClass().getName());
 
       if(isComplexSet){
 	debug(this," doing complex set " + it);
@@ -91,23 +100,67 @@ public class Set extends crc.interform.Handler {
 	doComplexSet(key, index, value , ia, it, ii);
       }  else {
 	// do a simple set
+	// these could be dispatch to set.local
 	if (it.hasAttr("local")) {
 	// is key already defined?
-	  ii.defvar(name,  value);
+	  ii.defvar( key,  value);
 	} else if (it.hasAttr("global")) {
-	  ii.setGlobal(name, value);
+	  ii.setGlobal( key, value);
 	} else {
-	ii.setvar(name, value);
+	ii.setvar( key, value);
 	}
       }
-  
-      if (it.hasAttr("copy")) {
-	ii.replaceIt(value);
-      } else {
-	ii.deleteIt();
-      }
+      doFinish(it,value,ii);
     }
   }
+
+  /************************************************************
+  ** utility functions 
+  ************************************************************/
+
+  /**
+   * replace content with value if necessary otherwise delete it
+   */
+  protected void doFinish(SGML it, SGML value, Interp ii){
+    if (it.hasAttr("copy")) {
+      ii.replaceIt(value);
+    } else {
+      ii.deleteIt();
+    }
+  }
+
+
+  /**
+   * return the index derived from name attribute
+   */
+
+  protected Index getIndex(SGML it){
+    String name = Util.getString(it, "name", null);
+    if(name == null || "".equals(name)) return null;
+    return new Index(name);
+  }
+
+  /**
+   * return the contents of it
+   */
+  protected SGML getValue(SGML it){
+    return it.isEmpty()? new Text("") : it.content().simplify();
+  }
+
+  /**
+   * return true return true if index has more than one item or 
+   * attributes which affect the specified item
+   */
+  protected boolean isComplex(Index index, SGML it){
+    // 
+    return ( index.size()>1 || 
+	     it.hasAttr("attr") ||
+	     it.hasAttr("insert") ||
+	     it.hasAttr("row") || it.hasAttr("col") ||
+	     it.hasAttr("key") ||
+	     it.hasAttr("element"));
+  }
+
 
   void debug(Object o, String s){
     crc.pia.Pia.debug(o,s);
@@ -123,57 +176,69 @@ public class Set extends crc.interform.Handler {
 
   void doComplexSet(String key, Index index, SGML value,  Actor ia, SGML it, Interp ii){
 	
-      // the context to make modifications in
-      SGML root = null;
-
-      if (it.hasAttr("element")) {
-	root = ii.getElementWithAttr(key, it.attr("tag").toString());
-      } else if (it.hasAttr("local")) {
-	// is key already defined?
-	root=ii.getLocalBinding(key);
-	if(root == null){
-	  debug(this,"  defining top level var " + key);
-	  root=new Element("");
-	  ii.defvar(key, root);
-	}
-      } else if (it.hasAttr("global")) {
-	root = ii.getGlobal(key); 
-	if(root == null){
-	  debug(this," creating new entity " + key);
+    // the context to make modifications in
+    SGML root = null;
+    
+    if (it.hasAttr("element")) {
+      root = ii.getElementWithAttr(key, it.attr("tag").toString());
+    } else if (it.hasAttr("local")) {
+      // is key already defined?
+      root=ii.getLocalBinding(key);
+      if(root == null){
+	debug(this,"  defining top level var " + key);
+	root=new Element("");
+	ii.defvar(key, root);
+      }
+    } else if (it.hasAttr("global")) {
+      root = ii.getGlobal(key); 
+      if(root == null){
+	debug(this," creating new entity " + key);
 	  root=new Element("");
 	  ii.setGlobal(key, root);
-	}
-      } else {
-	root = ii.getEntity(key);
-	if(root == null) {
-	  debug(this,"creating new entity " + key);
-	  root=new Element("");
-	  ii.setGlobal(key,root);
-	}
       }
+    } else {
+      root = ii.getEntity(key);
       if(root == null) {
-	ii.error(ia,"SET FAILED" + it);
+	debug(this,"creating new entity " + key);
+	root=new Element("");
+	ii.setGlobal(key,root);
       }
-      if(index.size()>0){
-	try{
-	  root = index.path(root);
-	} catch (Exception e){
-	  // path could not be created
-	  ii.error(ia,"SET FAILED could not create path"+it);
-	  root = null;
-	}
-      }
-      // process all the attributes
-      // if root is a tokens, perform set on each token 
-      if( root instanceof Tokens){
-	Enumeration e = ((Tokens) root).elements();
-	while(e.hasMoreElements()){
-	  setQueryRequest((SGML) e.nextElement(), value, it);
-	}
-      }else{
-	setQueryRequest(root, value, it);
-      }
+    }
+    if(root == null) {
+      ii.error(ia,"SET FAILED" + it);
+    }
+    doComplexSet( index, root, value, ia ,it, ii);
   }
+  
+
+  /**
+   * given the root SGML object, do the complex set
+   */
+  protected void doComplexSet(Index index, SGML root, SGML value, Actor ia, SGML it, Interp ii){
+    if(index==null || root == null || it == null) return;
+    if(index.size()>0){
+      try{
+	root = index.path(root);
+      } catch (Exception e){
+	// path could not be created
+	debug(this,"SET FAILED could not create path"+it);
+	ii.error(ia,"SET FAILED could not create path"+it);
+	//root = null;
+	return;
+      }
+    }
+
+    // process all the attributes
+    // if root is a tokens, perform set on each token 
+    if( root instanceof Tokens){
+      Enumeration e = ((Tokens) root).elements();
+      while(e.hasMoreElements()){
+	setQueryRequest((SGML) e.nextElement(), value, it);
+	}
+    }else{
+      setQueryRequest(root, value, it);
+    }
+  }    
 
 
 

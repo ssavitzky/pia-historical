@@ -11,9 +11,9 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
-
+import crc.interform.SecureAttrs;
 import crc.pia.Transaction;
-
+import crc.ds.Index;
 
 /** Handler class for &lt;set.trans&gt tag 
  * <dl>
@@ -24,7 +24,7 @@ import crc.pia.Transaction;
  *	or HEADER.  Optionally COPY content as result.
  *  </dl>
  */
-public class Set_trans extends crc.interform.Handler {
+public class Set_trans extends Set {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<set.trans name=\"name\" [copy] [feature|header]>...</set.trans>\n" +
@@ -36,9 +36,17 @@ public class Set_trans extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    // name (with  dots) may be used for setting headers or features
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;
-    SGML value = it.content().simplify();
+
+    Index index = getIndex(it);
+    if(index == null){
+      ii.error(ia, " name attribute missing or null");
+      return;
+    }
+    
+    SGML value = getValue(it);
 
     Run env = Run.environment(ii);
     Transaction trans = env.transaction;
@@ -49,14 +57,15 @@ public class Set_trans extends crc.interform.Handler {
     } else if (it.hasAttr("headers")) {
       trans.setHeader(name, value.toString());
     } else {
-      trans.attr(name, value);
+      if(isComplex(index,it)){
+	doComplexSet(index,new SecureAttrs(trans, ii), value, ia,it,ii);
+      }else {
+	trans.attr(name, value);
+      }
     }
 
-    if (it.hasAttr("copy")) {
-      ii.replaceIt(value);
-    } else {
-      ii.deleteIt();
-    }
+    doFinish(it,value,ii);
+
   }
 }
 

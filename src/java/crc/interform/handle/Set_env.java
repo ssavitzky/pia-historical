@@ -22,7 +22,7 @@ import crc.sgml.SGML;
  *	Optionally COPY content as result.
  *  </dl>
  */
-public class Set_env extends crc.interform.Handler {
+public class Set_env extends Set {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<set.env name=\"name\" [copy]>...</set.env>\n" +
@@ -37,18 +37,14 @@ public class Set_env extends crc.interform.Handler {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;
 
-    SGML value = it.content().simplify();
+    SGML value = getValue(it);
 
     // === The system properties are not the environment, but they are
     //	   as close as we get in Java.  You can probably mess yourself
     //	   amazingly by changing some of the system properties.
     System.getProperties().put(name, value.toString());
 
-    if (it.hasAttr("copy")) {
-      ii.replaceIt(value);
-    } else {
-      ii.deleteIt();
-    }
+    doFinish(it,value,ii);
   }
 }
 

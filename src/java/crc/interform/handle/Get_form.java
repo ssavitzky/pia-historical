@@ -12,9 +12,11 @@ import crc.interform.Run;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
+import crc.sgml.AttrWrap;
+import crc.sgml.AttrTable;
 
 import crc.ds.Table;
-
+import crc.ds.Index;
 
 /** Handler class for &lt;get-form&gt tag 
  * <dl>
@@ -25,7 +27,7 @@ import crc.ds.Table;
  *	With no name, returns entire form. 
  *  </dl>
  */
-public class Get_form extends crc.interform.Handler {
+public class Get_form extends Get {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<get.form [name=\"name\"]>\n" +
@@ -37,17 +39,27 @@ public class Get_form extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", null);
 
-    Run env = Run.environment(ii);
-    Table form = env.transaction.getParameters();
+    // get the form ... should be same as env.transaction.getParameters();
+    //should be same as env.transaction.getParameters();
+    // but possibly not if someone changed the entity 
+    // -- if you  need the real original
+    // form parameters, first set the FORM entity to null
+    SGML form = ii.getEntity("FORM");
+    if(form == null){
+      Run env = Run.environment(ii);
+      form =new AttrWrap(new AttrTable(env.transaction.getParameters()));
+    }
+
     if (form == null) {
       ii.deleteIt();
       return;
-    } else if (name == null || "".equals(name)) {
-      // return the whole form
-      ii.replaceIt(Util.queryResult(it, new crc.sgml.AttrTable(form))); 
-    }
-    ii.replaceIt(Util.toSGML(form.at(name)));
+    } 
+
+    Index index = getIndex(it);
+    SGML result = ( index != null) ? getValue(form, index) : form;
+    result =  processResult(result, it);
+      
+    ii.replaceIt( result);
   }
 }

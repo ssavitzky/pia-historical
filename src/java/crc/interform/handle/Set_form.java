@@ -20,22 +20,34 @@ import crc.sgml.SGML;
  */
 
 /** Handler class for &lt;set.form&gt tag */
-public class Set_form extends crc.interform.Handler {
+public class Set_form extends Set {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
-
-    SGML value = it.content().simplify();
-
-    ii.unimplemented(ia);
-    //crc.pia.Pia.instance().properties().put(name, value.toString());
-    // === almost certainly hae to run something to notify about prop. chg.
-
-    if (it.hasAttr("copy")) {
-      ii.replaceIt(value);
-    } else {
-      ii.deleteIt();
+    // get the appropriate index
+    Index index = getIndex(it);
+    if(index == null){
+      ii.error(ia, " name attribute missing or null");
+      return;
     }
+    
+    SGML value = getValue();
+
+    //  do we need an SGML context?
+    boolean isComplexSet = isComplex( index, it);
+    // these may not be the original form parameters -- but
+    // use this SGML object for consistency 
+    SGML form = ii.getEntity("FORM");
+    if(form == null){
+      ii.error(ia,"No  form context");
+    } else {
+      if(isComplexSet) {
+	 doComplexSet( index, form, value, ia, it, ii);
+      } else {
+	String key = index.shift();
+	form.attr(key,value);
+      }
+    }
+
+    doFinish(it,value,ii);
   }
 }
 

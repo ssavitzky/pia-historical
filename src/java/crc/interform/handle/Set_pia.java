@@ -22,7 +22,7 @@ import crc.sgml.SGML;
  *	Optionally COPY content as result.
  *  </dl>
  */
-public class Set_pia extends crc.interform.Handler {
+public class Set_pia extends Set {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<set.pia name=\"name\" [copy]>...</set.pia>\n" +
@@ -37,16 +37,13 @@ public class Set_pia extends crc.interform.Handler {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;
 
-    SGML value = it.content().simplify();
+    SGML value = getValue(it);
 
+    // properties are not SGML objects so treat differently than most sets
     crc.pia.Pia.instance().properties().put(name, value.toString());
     // === almost certainly hae to run something to notify about prop. chg.
 
-    if (it.hasAttr("copy")) {
-      ii.replaceIt(value);
-    } else {
-      ii.deleteIt();
-    }
+    doFinish(it, value, ii);
   }
 }
 

@@ -9,10 +9,12 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
 import crc.interform.Run;
+import crc.interform.SecureAttrs;
 
 import crc.sgml.SGML;
-import crc.sgml.Tokens;
 
+import crc.ds.Index;
+import crc.sgml.Tokens;
 
 /** Handler class for &lt;set.agent&gt tag 
  * <dl>
@@ -23,7 +25,7 @@ import crc.sgml.Tokens;
  *	or string value.  Optionally COPY content as result.  
  *  </dl>
  */
-public class Set_agent extends crc.interform.Handler {
+public class Set_agent extends Set {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<set.agent name=\"name\" [hook] [copy]>...</set.agent>\n" +
@@ -35,29 +37,39 @@ public class Set_agent extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
+    // get the appropriate index
+    Index index = getIndex(it);
+    if(index == null){
+      ii.error(ia, " name attribute missing or null");
+      return;
+    }
+
+    //  do we need an SGML context?
+    boolean isComplexSet = isComplex( index, it);
+
+    SGML value = getValue(it);
+
     String aname= Util.getString(it, "agent", Run.getAgentName(ii));
 
     Run env = Run.environment(ii);
-    SGML value = (it.content() == null)? Tokens.nil : it.content().simplify();
 
     crc.pia.Agent a = env.getAgent(aname);
 
     if (a == null) {
       ii.error(ia, "agent " + aname + " not running");
-    } else if (it.hasAttr("hook")) {
-      ii.debug("setting hook "+name+" on agent "+a.name()+"\n");
-      a.attr(name, value);	// security unimplemented! ===
-    } else {
-      a.attr(name, value.toString());
+      doFinish(it,value,ii);
+      return;
     }
+    if(isComplexSet){
+      debug(this," agent "+aname+" doing complex set " + it);
+      // do complex set
+      doComplexSet(index,new SecureAttrs(a, ii),  value ,ia, it, ii);
+    } else {
+      // do the simple set
+      a.attr(name, value);	// security unimplemented! ===  
+    }
+    doFinish(it,value,ii);
 
-    if (it.hasAttr("copy")) {
-      ii.replaceIt(value);
-    } else {
-      ii.deleteIt();
-    }
   }
 }
 
