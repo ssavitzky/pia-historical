@@ -12,7 +12,6 @@ package crc.pia ;
  */
 
 public class PiaRuntimeException extends RuntimeException {
-
     /**
      * Create a new Runtime exception. 
      * @param o The object were the error originated.
@@ -21,9 +20,12 @@ public class PiaRuntimeException extends RuntimeException {
      */
 
     public PiaRuntimeException (Object o, String mth, String msg) {
+      /*
 	super (o.getClass().getName()
 	       + "[" + mth + "]: "
 	       + msg) ;
+      */
+	super ( msg );
     }
 
 }
