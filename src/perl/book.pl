@@ -1,3 +1,5 @@
+###	$Id$
+###	Copyright &copy; 1997 Ricoh Silicon Valley
 
 
 package BOOK;

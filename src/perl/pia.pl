@@ -3,6 +3,7 @@
 
 ###### Small perl5 agency
 ###	$Id$
+###	Copyright &copy; 1997 Ricoh Silicon Valley
 
 
 ### Globals.  Must be customized for each site.

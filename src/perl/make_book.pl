@@ -1,4 +1,5 @@
-
+###	$Id$
+###	Copyright &copy; 1997 Ricoh Silicon Valley
 
 # return a pointer to actual book (postscript or images)
 # maybe return pointer to show book.if
