@@ -6,6 +6,7 @@ FILES = \
 	Agency.java \
 	AgentMachine.java \
 	Dofs.java \
+	Fallback.java \
 	Logo.java \
 	AgentInstallException.java
 
@@ -22,6 +23,8 @@ AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \
 
 Dofs.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
 	../Transaction.java ../Machine.java 
+
+Fallback.class: Agency.java
 
 Logo.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
 	../Transaction.java ../Machine.java ../HTTPResponse.java
