@@ -9,12 +9,12 @@ FILES = \
 	T_indexLookup.java 
 
 
-include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make
+#include $(TOPDIR)/makefiles/package.make
 
 CASEFILES = \
-	normalLookup_0.case \
-	dlLookup_0.case \
+	normalLookup.case \
+	dlLookup.case \
 	makePath_0.case \
 	buildHtml_0.case
 
@@ -25,7 +25,6 @@ DEBUG=-d
 CLASS=crc.interform.Filter
 
 .case.out:
-
 	$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
