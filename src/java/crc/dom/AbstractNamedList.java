@@ -77,12 +77,16 @@ public abstract class AbstractNamedList {
   protected void initialize( AbstractNamedList list )
   {
     Enumeration e = list.getKeys();
-    
+
+    if( list == null ) return;
+
     String key = null;
+    AbstractNode v = null;
     for(;e.hasMoreElements();)
       {
-	key = (String)e.nextElement();
-	setItem( key, list.getItem( key ));
+	key = new String( (String)e.nextElement() );
+	v = (AbstractNode)list.getItem( key );
+	setItem( key, v.clone() );
       }
   }
 
