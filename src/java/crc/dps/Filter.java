@@ -27,7 +27,6 @@ import crc.dps.tagset.TagsetProcessor;
 import crc.dps.output.*;
 import crc.dps.active.*;
 import crc.dps.handle.GenericHandler;
-// import crc.dps.handle.LegacyHandler;
 
 /**
  * Filter an input stream or file with the DPS.

@@ -20,8 +20,7 @@ BASE_CLASSES = \
 JAVA_TAGSETS = \
 	BOOT_ts.java \
 	HTML_ts.java \
-	tagset.java \
-	legacy.java
+	tagset.java 
 
 FILES = $(BASE_CLASSES) $(JAVA_TAGSETS)
 
@@ -111,7 +110,6 @@ HTML_ts.class: BasicTagset.java
 basic.class: BasicTagset.java HTML_ts.java
 standalone.class: BasicTagset.java HTML_ts.java
 standard.class: BasicTagset.java HTML_ts.java
-legacy.class: BasicTagset.java HTML_ts.java
 
 ### Tagset dependencies:
 

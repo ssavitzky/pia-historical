@@ -76,18 +76,18 @@ public class GenericAgent implements Agent, Registered, Serializable {
    *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
    *	processed with the DPS. 
    */
-  protected int firstDPSType = 2;
+  protected int firstDPSType = 1;
   protected String executableTypes[] = {
-    "cgi", 	"if",   	"lif",  	"xh",	  	"xx"};
+    "cgi", 	"xh",	  	"xx"};
   protected String resultTypes[] = {
-    null, 	"text/html",	"text/html",	"text/html",	"text/xml"};
+    null, 	"text/html",	"text/xml"};
   protected String tagsetNames[] = {
-    null, 	"Standard",	"legacy", 	"xhtml", 	"xxml"};
+    null, 	"xhtml", 	"xxml"};
 
 
   /** A ``search path'' of filename suffixes for (possibly) executable files. */
   protected String codeSearch[] = {
-    "xh", "xx", "lif", "if", "cgi",
+    "xh", "xx", "cgi",
     "html", "xml", "htm", "txt", 
   };
 

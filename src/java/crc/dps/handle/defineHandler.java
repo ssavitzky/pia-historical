@@ -119,8 +119,6 @@ public class defineHandler extends GenericHandler {
 
 /** Define an element.  Corresponds to &lt!ELEMENT ...&gt; */
 class define_element extends defineHandler {
-  /** cache for the legacy tagset in case we need it. */
-  protected static Tagset legacyTS = null; 
 
   /** The actual action routine. */
   public void action(Input in, Context cxt, Output out, 
@@ -153,12 +151,14 @@ class define_element extends defineHandler {
     } else  {
       // Handler: load the class
       GenericHandler h = null;
-      if (handlerClass.startsWith("legacy:")) {
-	handlerClass = handlerClass.substring("legacy:".length());
-	if (legacyTS == null)
-	  legacyTS = crc.dps.tagset.Loader.loadTagset("legacy");
+      int nsIndex = handlerClass.indexOf(":");
+      if (nsIndex >= 0) {
+	// Use an existing tagset as a namespace.
+	String tsName = handlerClass.substring(0, nsIndex);
+	handlerClass = handlerClass.substring(nsIndex);
+	Tagset otherTagset = crc.dps.tagset.Loader.loadTagset(tsName);
 	try {
-	  h = (GenericHandler) legacyTS.getHandlerForTag(handlerClass);
+	  h = (GenericHandler) otherTagset.getHandlerForTag(handlerClass);
 	}  catch (Exception ex) {}
       } else {
 	h = (GenericHandler) Loader.loadHandler(tagname, handlerClass,

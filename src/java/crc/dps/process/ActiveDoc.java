@@ -97,8 +97,6 @@ public class ActiveDoc extends TopProcessor {
   static {
     // Preload known handler classes.
     Loader.defHandle("submit", new crc.dps.handle.submitHandler());
-
-    crc.dps.tagset.legacy.preload();
   }
 
   /** Initialize the various entities.  

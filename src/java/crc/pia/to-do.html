@@ -27,12 +27,16 @@ See also:
 
 <h2>Main List</h2>
 <ol>
+  <li> <b>Bug</b> Agent.put("criteria", v) must split <br>
+       Need to split <code>v</code> on whitespace.
+       (1999-02-22)
+
   <li> <b>Bug</b> Directory uses redirect for index.html. <br>
        Redirection breaks when the system name is not what
        <code>hostname</code> returns (e.g., <code>localhost</code>).  There
        are only two choices here: redirect and hope the full URL is in the
        headers, or returning the file and fixing the links.  
-       (199-02-19) <br>
+       (1999-02-19) <br>
 
   <li> <b>Hole</b> Regexp and Jigsaw must go! (<b>critical</b>) <br>
        (1999-02-09) <br>
