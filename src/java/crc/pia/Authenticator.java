@@ -78,7 +78,7 @@ public class Authenticator implements java.io.Serializable{
     byte[] mybuf = Utilities.decodeBase64(authorization);
 
     if (mybuf.length == 0) return false;
-    String user=null, password=null; 
+    String user="", password=""; 
     String decoded=new String(mybuf);
     
     int icolon = decoded.indexOf (':') ;

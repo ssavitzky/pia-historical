@@ -71,18 +71,30 @@ public class Accepter extends Thread {
   * @return nothing. 
   */ 
   public void run(){
-    try{
-      while( !finish && listenSocket != null ){
-	Socket clientSocket = listenSocket.accept();
-	if( listenSocket != null && clientSocket != null ){
-	  handleConnection( clientSocket );
+    // make sure we never die GJW
+    while( !finish ){
+      try{
+        //Do internal loop for slight effieciency
+        while(!finish){
+	  if(listenSocket == null) {
+	    listenSocket = new ServerSocket( port ); 
+	  } else  // listen for connections only if listen is not null
+	  {	  
+	    Socket clientSocket = listenSocket.accept();
+	    if( listenSocket != null && clientSocket != null ){
+	      handleConnection( clientSocket );
+	    }
+	  }
 	}
+      }catch(IOException e){
+        Pia.debug(this, "There is an exception while listening for connection.");
+        Pia.errSys(e, "There is an exception while listening for connection.");
+      }catch(Exception e){
+        Pia.errSys(e, "General exception while listening for connection.");
       }
-    }catch(IOException e){
-      Pia.debug(this, "There is an exception while listening for connection.");
-      Pia.errSys(e, "There is an exception while listening for connection.");
-    }
+    //at this point acceptor has thrown an error...clean up (and loop if !finished)
     cleanup(false);
+    }
   }
 
   /**
@@ -97,7 +109,7 @@ public class Accepter extends Thread {
     String hostName = iaddr.getHostName();
 
     Pia.debug( this, "connection from : "+ hostName + " at: " + String.valueOf( port ) );
-    Pia.log( "connection from : "+ hostName + " at: " + String.valueOf( port ) );
+    Pia.log( "connection from : "+ hostName + " at: " + String.valueOf( port ) +"\n" );
     
     createRequestTransaction(hostName, port, clientSocket);
 
@@ -115,7 +127,7 @@ public class Accepter extends Thread {
  }
 
   /**
-   * Restart accepter
+   * Restart accepter  ??? never used ??? GJW 4/98
    */
   protected void restart(){
     try {
