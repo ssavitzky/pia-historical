@@ -58,8 +58,8 @@ push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 ###
 ###   Output Queue:
 ###	The output queue contains tokens or strings that have been fully
-###	processed and so are ready to be sent to the user.  Exactly what
-###	goes on the output queue depends on the output type.
+###	processed and so are ready to be sent to the user.  It is in
+###	the form of an anonymous token for easy processing.
 
 sub new {
     my ($class, @attrs) = @_;
@@ -67,7 +67,7 @@ sub new {
 
     $self->{_dstack} =  [];	# The stack of items under construction.
     $self->{_cstack} =  [];	# The control stack.
-    $self->{_out_queue} =  [];	# a queue of tokens to be output.
+    $self->{_out_queue} = IF::IT->new(); # a queue of tokens to be output.
     $self->{_in_stack} =  [];	# a stack of tokens to be input.
     $self->{_state} = {};	# A ``stack frame''
 
@@ -80,7 +80,6 @@ sub new {
 	print "  $attr = $val\n" if $main::debugging > 1;
     }
 
-    $self->{_out_queue} = '' if $self->streaming;
     $self;
 }
 
@@ -468,7 +467,7 @@ sub run {
     ##	   going to a file or input stream as needed.
 
     $self->flush;
-    return $self->out_queue;
+    return $self->streaming? $self->out_queue->as_string : $self->out_queue;
 }
 
 sub flush {
@@ -651,24 +650,6 @@ sub resolve {
 ###	appropriate place. 
 ###
 
-### === This would be a lot cleaner if the output queue was always an array.
-###	We should consolidate text tokens the same way an IT does.
-
-sub output {
-    my ($self, $str) = @_;
-
-    ## Append a string to the output queue.
-    ##	  Does the right thing for both string and list output.
-
-    my $out_queue = $self->out_queue;
-
-    if (ref $out_queue) { 
-	push(@$out_queue, $str); 
-    } else {
-	$self->{'_out_queue'} = $out_queue . $str;
-    }
-}
-
 sub pass_it {
     my ($self, $it, $incomplete) = @_;
 
@@ -677,21 +658,21 @@ sub pass_it {
     return unless defined $it;
     my $out_queue = $self->out_queue;
 
-    if (ref($out_queue)) {
+    if (! $self->streaming) {
 	$it = $it->endtag if $incomplete < 0;
-	push(@$out_queue, $it);
+	$out_queue->push($it);
     } elsif ($incomplete > 0) {
 	print "  passing ". $it->starttag ." \n" if $main::debugging > 1;
-	$self->output($it->starttag);
+	$out_queue->push($it->starttag);
     } elsif ($incomplete < 0) {
 	print "  passing ".$it->endtag." \n" if $main::debugging > 1;
-	$self->output($it->endtag);
+	$out_queue->push($it->endtag);
     } elsif (! ref($it)) {
 	print "  passing $it \n" if $main::debugging > 1;
-	$self->output($it);
+	$out_queue->push($it);
     } else {
 	print "  passing ".$it->starttag."... \n" if $main::debugging > 1;
-	$self->output($it->as_HTML);
+	$out_queue->push($it->as_HTML);
     }
 }
 

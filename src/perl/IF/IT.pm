@@ -340,6 +340,73 @@ sub endtag {
     "</$name>";
 }
 
+
+
+#############################################################################
+###
+### Traversal:
+###
+
+sub traverse
+{
+    my($self, $callback, $ignoretext, $depth) = @_;
+    $depth ||= 0;
+
+    print "traversing $depth tag = " . $self->{_tag} . "\n" if $main::debugging;
+
+    if (! defined $self->{_tag} || &$callback($self, 1, $depth)) {
+	for (@{$self->{'_content'}}) {
+	    if (ref $_) {
+		$_->traverse($callback, $ignoretext, $depth+1);
+	    } else {
+		&$callback($_, 1, $depth+1) unless $ignoretext;
+	    }
+	}
+	&$callback($self, 0, $depth) 
+	    unless ! defined $self->{_tag} || $emptyElement{$self->{'_tag'}};
+    }
+    $self;
+}
+
+sub extract_links
+{
+    my $self = shift;
+    my %wantType; @wantType{map { lc $_ } @_} = (1) x @_;
+    my $wantType = scalar(@_);
+    my @links;
+    $self->traverse(
+	sub {
+	    my($self, $start, $depth) = @_;
+	    return 1 unless $start;
+	    my $tag = $self->{'_tag'};
+	    return 1 if $wantType && !$wantType{$tag};
+	    my $attr = $linkElements{$tag};
+	    return 1 unless defined $attr;
+	    $attr = [$attr] unless ref $attr;
+            for (@$attr) {
+	       my $val = $self->attr($_);
+	       push(@links, [$val, $self]) if defined $val;
+            }
+	    1;
+	}, 'ignoretext');
+    \@links;
+}
+
+# Elements that might contain links and the name of the link attribute
+%linkElements =
+(
+ body   => 'background',
+ base   => 'href',
+ a      => 'href',
+ img    => [qw(src lowsrc usemap)],   # lowsrc is a Netscape invention
+ form   => 'action',
+ input  => 'src',
+'link'  => 'href',          # need quoting since link is a perl builtin
+ frame  => 'src',
+ applet => 'codebase',
+ area   => 'href',
+);
+
 #############################################################################
 ###
 ### Syntax:

@@ -33,6 +33,8 @@ use IF::IT;
 	     'parsing' => 1,	# push completed tags onto their parent.
 	     'passing' => 0,
 	     'syntax' => $IF::IT::syntax,
+	     'active_agents' => {},
+	     'passive_agents' => [],
 	     );
 
 
@@ -103,13 +105,13 @@ sub run_stream {
 
 }
 
-sub parse_HTML_file {
+sub parse_html_file {
     my ($file, $interp) = @_;
 
     ## Run the interpretor parser over a file in ``parser mode''.
     ##	  The result is a parse tree.  No agents are used.
 
-    print "\nrunning file $file\n" if $main::debugging;
+    print "\parsing file $file\n" if $main::debugging;
 
     if (!defined $interp) {
 	$interp = IF::II->new(@html_defaults);
@@ -121,7 +123,7 @@ sub parse_HTML_file {
     return $interp->run;
 }
 
-sub parse_HTML_string {
+sub parse_html_string {
 
     my ($input, $interp) = @_;
 
