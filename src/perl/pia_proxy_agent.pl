@@ -35,6 +35,12 @@ sub  handle {
     print "redirecting request to " if  $main::debugging;
     print $request->url() . "\n" if  $main::debugging;
 
+    if ($self->option('network') eq "none") {
+	if($request->url()->host() !~ /(local)|(pc6)/) {
+	    return 0;
+	}
+    }
+
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($request); 
     $response=TRANSACTION->new($response);

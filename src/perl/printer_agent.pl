@@ -73,7 +73,7 @@ sub create_preview{
     my $response=create_postscript($request);
     
 #    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
-    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r72 -dNOPAUSE -q $ps_file | ppmtogif > $image_file";
+    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r72 -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
 #    print $cmd;
     my $status=system ($cmd);
     #shouldgetstatushere & check for multiple pages...put %d in output filename
