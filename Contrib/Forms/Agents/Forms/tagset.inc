@@ -64,7 +64,7 @@ VALUE -- CONTENT should be a dl">
  </actor>
 
 <actor tag=full-name empty dscr=" return full-name of USER"><set  name=value
-local><if><get name=content><then><get name=content></then><else><get trans
+local><if><get element name=user><then><get element name=user></then><else><get trans
 name=AuthenticatedUser></else></set><set local name=userdat><get agent
 name=users key=&value;></set><if><get index=userdat.username.Text><then><get
 index=userdat.username.Text></then><else><get name=value></else></if></actor>	 
