@@ -8,7 +8,7 @@
 
 <form action="http://amazon:8888/Bughistory/buglog.if" method=post>
 Platform:<select name="machine">
-	<option>Suns
+	<option>Sun
 	<option>Linux
 	</select>
 <br>
