@@ -118,25 +118,35 @@ III. Setup
 
     A. Environment Variables
 	The PIA allows you to indicate the location of the installed PIA
-	directory and the directory for storing Agent data and customization files.
-	They are the following with their default values:
+	directory.  Its the following with its default value:
 
 	a. For Unix
 
-		PIA_DIR=/usr/local/src
+		PIA_DIR=/usr/local/src/pia
+
+	b. For Windows
+
+		PIA_DIR=<cd-rom-drivename>:\pia
+
+ 	Because agents write data to disk, you can specify a directory for storing
+	Agent data and customization files.  Below is its directory name with default
+	value:
+
+	a. For Unix
+
 		USR_DIR=~/.pia
 
 	b. For Windows
 			
-		PIA_DIR=<cd-rom-drivename>:\pia
 		USR_DIR=c:\PIAUSERS\<username>
 
-	Please note that the directory for storing Agent data, is
-	automatically created by the PIA if you do not specify it neither in the
-	USR_DIR environment variable nor the -u command line option.
-	In the case of Unix the directory will be .pia under the login user.
-	In the case of Windows the directory will be c:\PIAUSERS\<username>
-	 
+	Please note that USR_DIR,the directory for storing Agent data, is
+	automatically created by the PIA.  If you want a different directory
+	please change USR_DIR's value.
+
+	If you use the -u command line option to specify USR_DIR, the directory
+	on the command line will take precedence over the one you specify in
+	the environment variable.
 
 	Also, if you are proxying through another server, please indicate the
 	server like below:
@@ -166,38 +176,34 @@ IV. Running the PIA
 
 	a. Under Unix
 
-		Run the pia with the command:
+	   If you have set up the environment variables as mentioned in section III,
+	   run the pia with the command:
 
-		  pia/bin/pia
+		  PIA_DIR/bin/pia
 
-		This is a one-line shell script that runs "pia_wrapper".  A
-		complete list of command-line options can be found by running
+	   This is a one-line shell script that runs "pia_wrapper".  A
+           complete list of command-line options can be found by running
 
-		  pia/bin/pia -?
-
-		The first time the PIA is run, it will create a directory under
-		your home directory:
-
-		  ~/.pia/
-
-		This is used for storing Agent data and customization files.
+		  PIA_DIR/bin/pia -?
 
 	b. Under Windows95
 		
-		If you are using JRE, run the pia with the command:
+		Run the pia with the command:
 			
-		   pia/bin/piajre.bat
-		
-		otherwise
-			
-		   pia/bin/pia.bat	
+		   PIA_DIR/bin/pia.bat
+
+	   This is a batch file that make use of PIA_DIR and USR_DIR environment variables.
+	   It is equivalent to the following( Please note the -root and -u options):
+
+		  java -classpath <CPATH> crc.pia.Pia -root <PIAHOME> -u <UHOME>
+
 
     B. Using the PIA
 
 	The PIA is essentially a Web server.  Assuming you are running
 	a Web browser on the same host as the PIA, simply browse to
 
-	  http://localhost:8888/PIA/Doc
+	  http://piaHOST:piaPORT/PIA/Doc
 
 	You will eventually want to set your browser's proxies to the
 	PIA as well.
