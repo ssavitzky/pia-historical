@@ -8,7 +8,8 @@ TOPDIR=../../..
 FILES = \
 	t1.txt \
 	t2.html \
-	t3.if
+	t3.if \
+	t4.if
 
 .SUFFIXES: .txt .html .if .out .ok .diff .run
 
@@ -52,4 +53,4 @@ all:: $(FILES:.if=.out)
 all:: $(FILES:.html=.out)
 
 clean::
-	rm -f *.out *.diff *.log
+	rm -f *.out *.diff *.log *.tmp*
