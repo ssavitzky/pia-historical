@@ -545,65 +545,16 @@ public class  HTTPRequest extends Transaction {
    * Construct and return an error response.
    */
   public void errorResponse(int code, String msg){
-    int mycode = code;
-    String reason = standardReason(mycode);
-    Pia.debug(this, "This is the err msg :"+msg);
-    StringReader inputStream = null;
-    String masterMsg = "<H2>Error " + mycode + " " + reason + "</H2>\n" +
-      "on request for <code>" + requestURL() + "</code><br>\n";
-
-    if ( msg != null ){
-      masterMsg += msg + "\n<hr>\n";
-    } else{
-      String standardMsg = standardReason( mycode );
-      if ( standardMsg == null )
-	masterMsg += ".\n";
-      else
-	masterMsg = standardMsg;
-      masterMsg += "\n<hr>\n";
-    }
-
-    inputStream = new StringReader( masterMsg );
+    msg = errorMessage(code, msg);
+    StringReader inputStream = new StringReader( msg );
     Content ct = new crc.content.text.html( inputStream );
     Transaction response = new HTTPResponse( this, Pia.instance().thisMachine,
 					     ct, false);    
-    response.setStatus( mycode );
+    response.setStatus( code );
     response.setContentType( "text/html" );
-    response.setContentLength( masterMsg.length() );
+    response.setContentLength( msg.length() );
     Pia.debug(this, "The header : \n" + response.headersAsString() );
     response.startThread();
-  }
-
-  /** 
-   * Construct and return an error response appropriate for a given
-   *	exception.
-   */
-  public void errorResponse(Exception e) {
-    int code = 500;
-    String msg = e.toString();
-
-    if (e instanceof PiaRuntimeException) {
-      msg = "PIA internal error: " + e.getMessage();
-    } else if (e instanceof java.net.UnknownHostException) {
-      code = 400;
-      msg = "Unknown host: <code>" + e.getMessage() + "</code>";
-    } else if (e instanceof java.net.UnknownServiceException) {
-      code = 400;
-      msg = "Unknown service: " + e.getMessage();
-    } else if (e instanceof java.net.ConnectException) {
-      code = 400;
-      msg = "Cannot connect to host: " + e.getMessage();
-    } else if (e instanceof java.net.NoRouteToHostException) {
-      code = 400;
-      msg = "No Route to host: " + e.getMessage();
-    } else if (e instanceof java.net.MalformedURLException) {
-      code = 400;
-      msg = "Malformed URL: " + e.getMessage();
-    } else if (e instanceof IOException) {
-      msg = "IO error: " + e.toString();
-    }
-
-    errorResponse(code, msg);
   }
 
   /************************************************************************

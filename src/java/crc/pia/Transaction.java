@@ -825,6 +825,58 @@ public abstract class Transaction extends AttrBase
   public void errorResponse(int code, String msg){
   }
 
+  /** 
+   * Construct and return an error response appropriate for a given
+   *	exception.
+   */
+  public void errorResponse(Exception e) {
+    int code = 500;
+    String msg = e.toString();
+
+    if (e instanceof PiaRuntimeException) {
+      msg = "PIA internal error: " + e.getMessage();
+    } else if (e instanceof java.net.UnknownHostException) {
+      code = 400;
+      msg = "Unknown host: <code>" + e.getMessage() + "</code>";
+    } else if (e instanceof java.net.UnknownServiceException) {
+      code = 400;
+      msg = "Unknown service: " + e.getMessage();
+    } else if (e instanceof java.net.ConnectException) {
+      code = 400;
+      msg = "Cannot connect to host: " + e.getMessage();
+    } else if (e instanceof java.net.NoRouteToHostException) {
+      code = 400;
+      msg = "No Route to host: " + e.getMessage();
+    } else if (e instanceof java.net.MalformedURLException) {
+      code = 400;
+      msg = "Malformed URL: " + e.getMessage();
+    } else if (e instanceof IOException) {
+      msg = "IO error: " + e.toString();
+    }
+
+    errorResponse(code, msg);
+  }
+
+  /** 
+   * Construct and return an appropriate HTML-formatted error message.
+   */
+  public String errorMessage(int code, String msg){
+    String reason = standardReason(code);
+    if (reason == null) reason = "code " + code;
+
+    Pia.debug(this, "Code: " + code + " Message : " + msg );
+
+    String masterMsg = "<H2>Error " + code + ": " + reason + "</H2>\n" +
+      "on request for <code>" + requestURL() + "</code><br>\n";
+
+    if ( msg != null ){
+      masterMsg += msg + "\n<hr>\n";
+    } else {
+      masterMsg += "\n<hr>\n";
+    }
+    return masterMsg;
+  }
+
   /**
    * Satisfying transactions:
    * A transaction can handle a request by pushing itself
@@ -909,11 +961,11 @@ public abstract class Transaction extends AttrBase
       // and the content
       if(contentObj ==  null) initializeContent();
     }catch (PiaRuntimeException e){
-      errorResponse(500, "Server internal error");
+      errorResponse(e);
       Thread.currentThread().stop();      
       notifyThreadPool();
     }catch( IOException ioe ){
-      errorResponse(500, "Server internal error");
+      errorResponse(ioe);
       Thread.currentThread().stop();      
       notifyThreadPool();
     }

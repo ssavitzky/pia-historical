@@ -90,11 +90,14 @@ public class  HTTPResponse extends Transaction {
   }
 
 
-/** 
- * parse the first line
- * parse the request line to get method, url, http's major and minor version numbers
-   */
-  protected void parseInitializationString(String firstLine)throws IOException, PiaRuntimeException{
+ /** 
+  * Parse the first line of a response.
+  * This line contains the protocol major and minor version numbers,
+  *	response code, and message.
+  */
+  protected void parseInitializationString(String firstLine)
+       throws IOException, PiaRuntimeException
+  {
     if( firstLine == null ){
       String msg = "firstLine is null...\n";
       throw new PiaRuntimeException (this
@@ -104,9 +107,13 @@ public class  HTTPResponse extends Transaction {
 
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
     protocol = tokens.nextToken();
-    if( protocol==null ) throw new RuntimeException("Bad reply.  Invalid status line.");
+    if( protocol==null )
+      throw new IOException("Bad reply: '" + firstLine + "'");
 
     Pia.debug(this, "The first response line" + firstLine);
+
+    if (! protocol.toLowerCase().startsWith("http/")) 
+      throw new IOException("Bad reply: '" + firstLine + "'");
     String majorMinor = protocol.substring("HTTP/".length());
     StringTokenizer mytokens = new StringTokenizer( majorMinor, "." );
     String zmajor = mytokens.nextToken();
@@ -175,28 +182,14 @@ public class  HTTPResponse extends Transaction {
    *	toMachine, in effect replacing this one.
    */
   public void errorResponse(int code, String msg){
-    int mycode = code;
-    StringReader foo = null;
-    String masterMsg = "Agency is unable to process " + requestURL() + ": ";
-
-    if ( msg != null ){
-      masterMsg += msg;
-    }
-    else{
-      String standardMsg = standardReason( mycode );
-      if ( standardMsg == null )
-	masterMsg += ".\n";
-      else
-	masterMsg = standardMsg;
-    }
-    foo = new StringReader(masterMsg);
-
-    Content ct = new crc.content.text.html( foo );
+    msg = errorMessage(code, msg);
+    StringReader inputStream = new StringReader( msg );
+    Content ct = new crc.content.text.html( inputStream );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     toMachine(), ct, false);
-    response.setStatus( mycode );
-    response.setContentType( "text/plain" );
-    response.setContentLength( masterMsg.length() );
+    response.setStatus( code );
+    response.setContentType( "text/html" );
+    response.setContentLength( msg.length() );
     Pia.debug(this, "The header : \n" + response.headersAsString() );
     response.startThread();
   }
@@ -513,10 +506,13 @@ public class  HTTPResponse extends Transaction {
 	// and the content
 	if(contentObj ==  null) initializeContent();
       }catch (PiaRuntimeException e){
-	errorResponse(500, "Server internal error");
+	errorResponse(e);
 	Thread.currentThread().stop();
-      }catch (IOException ioe){
-	errorResponse(500, "Server internal error");
+      }catch (IOException e){
+	errorResponse(e);
+	Thread.currentThread().stop();
+      }catch (Exception e){
+	errorResponse(e);
 	Thread.currentThread().stop();
       }
 
