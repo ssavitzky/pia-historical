@@ -436,10 +436,9 @@ Add spaces to <b>content</b> to fill it out to a specified number of spaces.
 <hr> <!-- ========================================================== -->
 <h2>OS Operations</h2>
 
-<h3><name>os-command</name></h3>
-<adscr>os-command</os-command>
+<adscr>os-command</adscr>
 
-<adscr>os-command-results</adscr>
+<adscr>os-command-output</adscr>
 
 
 
