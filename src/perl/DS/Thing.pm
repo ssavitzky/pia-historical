@@ -42,8 +42,8 @@ sub new {
 	    $self->push($attr);
 	    return $self;
 	}
+	push(@$list, $attr) unless (exists $self->{$attr} || $attr =~ /^\_/);
 	$self->{$attr} = $val;
-	push(@$list, $attr) unless $attr =~ /^\_/;
     }
     $self;
 }
@@ -81,7 +81,7 @@ sub attr {
 
     my $old = $self->{$attr};
     if (defined $val) {
-	if (! defined $old && $attr !~ /^_/) {
+	if (! defined $old && $attr !~ /^\_/) {
 	    my $list = $self->{_list};
 	    push(@$list, $attr);
 	}
@@ -98,7 +98,7 @@ sub attr_default {
     my $v = $self->{$attr};
     if (! defined $v) {
 	$self->{$attr} = $v = $val;
-	if ($attr !~ /^_/) {
+	if ($attr !~ /^\_/) {
 	    my $list = $self->{_list};
 	    push(@$list, $attr);
 	}
@@ -129,7 +129,7 @@ sub attr_names {
 	@list = sort keys %$self;
 	$attrs = [];
 	for (@$list) {
-	    next if /^_/;
+	    next if /^\_/;
 	    push(@$attrs, $_);
 	}
     }
@@ -263,13 +263,13 @@ sub features {
     if (defined $features) {
 	$$self{_features} = $features;
     } elsif (! defined ($features = $$self{_features})) {
-	$$self{_features} = $features = new DS::Features($self);
+	$$self{_features} = $features = new DS::Features;
     }
     return $features;
 }
 
 sub feature_computers {
-    my ($self, $features, $demand) = @_;
+    my ($self, $demand) = @_;
 
     ## Return a reference to the hash that associates feature names
     ##	 with the functions that compute them.  Override in subclasses 
@@ -286,13 +286,36 @@ sub feature_computer {
 
     ## Add a new feature computer.
 
-    my $computers = $self->feature_computers($self->features, 1);
+    my $computers = $self->feature_computers(1);
     $$computers{$feature} = $computer;
+}
+
+sub compute_feature {
+    my ($self, $feature) = @_;
+
+    ## Compute a named feature and return its value.
+    ##	 the feature's value is _not_ cached; that's done by compute.
+
+    my $computers = $self->feature_computers;
+    return '' unless $computers;
+    my $computer = $computers->{$feature};
+    return $computer? &{$computer}($self, $feature) : '';
+}
+
+### The following are all delegated to DS::Features:
+
+sub get_feature {
+    my ($self, $feature) = @_;
+    $self->features->get_feature($feature, $self);
+}
+
+sub set_feature {
+    my ($self, $feature, $value) = @_;
+    $self->features->set_feature($feature, $value);
 }
 
 sub has {
     my ($self, $feature) = @_;
-
     $self->features->has($feature);
 }
 

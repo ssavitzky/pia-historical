@@ -30,26 +30,25 @@ sub new {
 
     bless $self,$class;
 
-    ## Set the parent's features to $self.
-    ##    This is essential in order for initialization to work.
-
-    $parent->features($self);
-    $self->initialize($parent);
     return $self;
 }
 
 ############################################################################
 ###
-### Access to feature values.
+### Access to feature values:
 ###
+
+### Boolean:
 
 sub assert {
     my ($self, $feature, $value) = @_;
 
-    ## Assert a named feature, with an optional value.
+    ## Assert a named feature, with an optional boolean value.
 
     $value = 1 unless defined $value;
     $value = 0 if $value eq '';
+    print "deprecated assert $feature => $value\n"
+	if ($value != 1 && $value != 0);
     print " $feature=>$value" if $main::debugging;
     $$self{$feature} = $value;
     return $value;
@@ -76,10 +75,34 @@ sub has {
 sub test {
     my ($self, $feature, $parent) = @_;
 
-    ## Test a named feature and return its value.
+    ## Test a named feature and return a boolean.
 
     my $value = $$self{$feature};
     $value = $self->compute($feature, $parent) if ! defined $value;
+    return !!$value;
+}
+
+### Aribtrary:
+
+sub get_feature {
+    my ($self, $feature, $parent) = @_;
+
+    ## Return the value associated with a named feature.
+
+    my $value = $$self{$feature};
+    $value = $self->compute($feature, $parent) if ! defined $value;
+    return $value;
+}
+
+sub set_feature {
+    my ($self, $feature, $value) = @_;
+
+    ## Associate a named feature with an arbitrary value.
+
+    $value = 1 unless defined $value;
+    $value = 0 if $value eq '';
+    print " $feature=>$value" if $main::debugging;
+    $$self{$feature} = $value;
     return $value;
 }
 
@@ -89,31 +112,9 @@ sub compute {
     ## Compute and assert the value of the given feature.
     ##	 Can be used to recompute features after changes
 
-    my $computer = $self->computer_for($feature, $parent);
-
-    if (defined $computer) {
-	print "computing $feature with $computer \n" if $main::debugging;
-	return $self->assert($feature, &{$computer}($parent, $feature)); 
-    } else {
-	## Not defined:
-	##   Undefined features get asserted as a null string, so you can
-	##   tell the difference between false and undefined, but don't
-	##   have to recompute things you know aren't there.
-
-	print "No computer for feature $feature\n" if $main::debugging;
-	return $self->assert($feature, '');
-    }
+    return $self->set_feature($feature, $parent->compute_feature($feature));
 }
 
-sub computer_for {
-    my ($self, $feature, $parent) = @_;
-
-    ## Return the feature computer (if any) for the named feature.
-
-    my $computers = $parent->feature_computers($self);
-    return unless defined $computers;
-    return $computers->{$feature};
-}
 
 ############################################################################
 ###
@@ -135,19 +136,6 @@ sub initialize {
 
 }
 
-sub register {
-    my ($feature, $sub) = @_;
-
-    ## Register a subroutine that computes a feature.
-
-    my $computers = $parent->feature_computers($self, 1);
-    
-    if (defined $computers->{$feature}) {
-	print "Multiply-defined feature: $feature\n" if ! $main::quiet;
-#	return;			# === dubious ===
-    }
-    $computers->{$feature} = $sub;
-}
 
 ############################################################################
 ###

@@ -14,8 +14,9 @@ package PIA::Transaction; ###### HTTP Transactions
 use HTTP::Request;
 use HTTP::Response;
 
-use PIA::TFeatures;
+use PIA::TF::Factory;
 use PIA::Content;
+
 use DS::Thing;
 push(@ISA, DS::Thing);
 
@@ -61,7 +62,7 @@ sub new {
 
     ## Initialize features and compute a few that we already know.
 
-    new PIA::TFeatures $self;  # automatically points $self at it.
+    $self->init_features();
 
     ## get any parameters from url or post
 
@@ -217,40 +218,42 @@ sub is_request{
 
 ### Features
 
-sub features {
-    my($self, $features) = @_;
-    $$self{_features} = $features if defined $features;
-    return $$self{_features};
+sub feature_computers {
+    my ($self, $demand) = @_;
+
+    ## Return a reference to the hash that associates feature names
+    ##	 with the functions that compute them. 
+
+    ## All transactions share the same feature computers...
+    return PIA::TF::Factory::computers();
 }
 
-sub is {
-    my ($self, $feature) = @_;
-    return $self->features->test($feature, $self);
-}
+sub init_features {
+    my ($self) = @_;
 
-sub test {
-    my ($self, $feature) = @_;
-    return $self->features->test($feature, $self);
-}
+    ## Compute and assert the value of some initial features.
+    ##    We do this here because the features are closely related, so
+    ##    we can get many assertions out of a small number of requests.
 
-sub compute {
-    my ($self, $feature) = @_;
-    return $self->features->compute($feature, $self);
-}
+    $self->deny('NEVER');
 
-sub assert {
-    my ($self, $feature, $value) = @_;
-    $self->features->assert($feature, $value);
-}
+    if ($self->is_request) {
+	$self->assert('request');
+	my $f = $self->compute('agent_request');
+	$self->assert('proxy_request', ! $f);
 
-sub deny {
-    my ($self, $feature) = @_;
-    $self->features->deny($feature);
-}
+	$self->deny('response');
+	$self->deny('proxy_response');
+	$self->deny('agent_response');
+    } else {
+	$self->assert('response');
+	my $f = $self->compute('agent_response');
+	$self->assert('proxy_response', ! $f);
 
-sub has {
-    my ($self, $feature) = @_;
-    $self->features->has($feature);
+	$self->deny('request');
+	$self->deny('proxy_request');
+	$self->deny('agent_request');
+    }
 }
 
 ### Satisfier queue handlers.
