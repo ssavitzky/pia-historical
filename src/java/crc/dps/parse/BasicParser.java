@@ -8,16 +8,14 @@ import crc.dom.NodeList;
 
 import crc.dps.NodeType;
 import crc.dps.Parser;
-import crc.dps.Token;
-import crc.dps.TokenList;
-import crc.dps.BasicToken;
-import crc.dps.BasicTokenList;
+import crc.dps.active.*;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.BitSet;
 
 import java.io.Reader;
+import java.io.InputStream;
 import java.io.IOException;
 
 /**
@@ -26,7 +24,8 @@ import java.io.IOException;
  *	BasicParser operates with no knowledge of the DTD of the
  *	document it is parsing, except for what it can get from the
  *	Tagset.  In particular, the lexical level is essentially the
- *	SGML reference syntax as used by HTML and XML. <p>
+ *	SGML reference syntax as used by HTML and XML.  The simplified
+ *	syntax offered by the Syntax interface is used. <p>
  *
  *
  * @version $Id$
@@ -52,7 +51,7 @@ public class BasicParser extends AbstractParser {
    * @return false if the next available character does not belong in
    *	an entity name.
    */
-  boolean getEntity(boolean strict) throws IOException {
+  protected boolean getEntity(boolean strict) throws IOException {
     if (last != entityStart) return false;
     last = 0;
     if (!eatIdent()) {
@@ -67,9 +66,8 @@ public class BasicParser extends AbstractParser {
       return false;
     }
 
-    next = new BasicToken(NodeType.ENTITY); // === probably wants to use tagset
-    next.setName(ident);
-    if (last == entityEnd) next.setHasClosingDelimiter(true);
+    next = tagset.createActiveEntity(ident, null);
+    //if (last == entityEnd) next.setHasClosingDelimiter(true);
     if (last == entityEnd) last = 0;
     return true;
   }
@@ -78,16 +76,16 @@ public class BasicParser extends AbstractParser {
    *	Clear endString and ignoreEntities when the end string is seen.
    *	If ignoreEntities is false, entities will be recognized.
    */
-  TokenList getLiteral(String endString, boolean ignoreEntities) {
+  protected ParseNodeList getLiteral(String endString, boolean ignoreEntities) {
 
     buf = new StringBuffer();
-    TokenList list = new crc.dps.BasicTokenList();
+    ParseNodeList list = new ParseNodeList();
     
     try {
       for ( ; ; ) {
 	if (eatUntil(endString, !ignoreEntities)) {
 	  if (buf.length() != 0) 
-	    list.append(createTextToken(buf.toString()));
+	    list.append(createActiveText(buf.toString(), false));
 	  break;
 	}
 	if (last == '&' && getEntity(strictEntities)) {
@@ -103,9 +101,9 @@ public class BasicParser extends AbstractParser {
    *	
    *	@return the value; <code>null</code> if no "=" is present.
    */
-  NodeList getValue() throws IOException {
+  protected ParseNodeList getValue() throws IOException {
     if (last != '=') return null;
-    BasicTokenList list = new BasicTokenList();
+    ParseNodeList list = new ParseNodeList();
 
     last = in.read();
     if (last == '\'' || last == '"') {
@@ -116,7 +114,7 @@ public class BasicParser extends AbstractParser {
       for ( ; ; ) {
 	if (eatUntil(quote, true)) {
 	  if (buf.length() != 0) {
-	    list.append(createTextToken(buf.toString()));
+	    list.append(createActiveText(buf.toString(), false));
 	    buf.setLength(0);
 	  }
 	  if (last == quote) break;
@@ -131,7 +129,7 @@ public class BasicParser extends AbstractParser {
       buf = tmp;
       return list;
     } else if (last <= ' ' || last == '>') {
-      list.append(createTextToken(""));
+      list.append(createActiveText("", false));
       return list;
     } else {
       StringBuffer tmp = buf;
@@ -139,7 +137,7 @@ public class BasicParser extends AbstractParser {
       for ( ; ; ) {
 	if (eatUntil(notAttr, true)) {
 	  if (buf.length() != 0) {
-	    list.append(createTextToken(buf.toString()));
+	    list.append(createActiveText(buf.toString(), false));
 	    buf.setLength(0);
 	  }
 	} else break;
@@ -159,17 +157,20 @@ public class BasicParser extends AbstractParser {
    *	tag, it returns false and leaves the bad characters appended
    *	to <code>buf</code>.  getTag is only called from getText. <p>
    *
-   *	One could argue that it should allow space after the &lt;. */
-  boolean getTag() throws IOException {
-      int tagStart = buf.length(); // save position in case we lose
-      buf.append("<");		// append the "<" that we know is there
-      last = 0;			// force eatIdent to read the next char.
+   *	An end tag is returned with <code>null</code> in <code>next</code>
+   *	and the tag in <code>nextEnd</code>.
+   */
+  protected boolean getTag() throws IOException {
+    int tagStart = buf.length(); // save position in case we lose
+    buf.append("<");		// append the "<" that we know is there
+    last = 0;			// force eatIdent to read the next char.
+    next = null;
 
     if (eatIdent()) {		// <tag...	start tag
       buf.append(ident);
       //debug(ident);
 
-      Token it = createStartToken(ident, null);
+      ActiveElement it = createActiveElement(ident, null);
       String a; StringBuffer v;
 
       // Now go after the attributes.
@@ -186,18 +187,13 @@ public class BasicParser extends AbstractParser {
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  it.setHasEmptyDelimiter(true);
-	  it.setSyntax(-2);
 	  it.setIsEmptyElement(true);
 	  last = 0;
 	} else break;
       }
       if (last != '>') return false;
 
-      // Look the token up in the Tagset.
-      crc.dps.Handler h = it.getHandler();
-      if (h != null) {		// Dispatching on attrs may be needed.
-	it.setHandler(h);	// calls h.getHandlerForToken again.
-      }
+      it.setAction(it.getSyntax().getActionForNode(it));
 
       // === Check for content entity and element handling ===
 
@@ -213,8 +209,8 @@ public class BasicParser extends AbstractParser {
 
       eatSpaces();
       if (last != '>') return false;
-      Token it = createEndToken(ident); // cannonicalize name?
-      next = it;
+      next = null;
+      nextEnd = (ident == null)? "" : ident;
       buf.setLength(tagStart);
       if (last >= 0) last = 0;
     } else if (last == '!') {	// <!...	comment or declaration
@@ -227,14 +223,14 @@ public class BasicParser extends AbstractParser {
 	// it must be a comment
 	if (last != '>') eatUntil("-->", false);
 	if (last == '>') last = 0;
-	next = createToken(NodeType.COMMENT, buf.toString());
+	next = createActiveNode(NodeType.COMMENT, buf.toString());
       } else {
 	// it's an SGML declaration: <!...>
 	// == Comments or occurrences of '>' inside will fail.
 	eatUntil('>', false);
 	if (last == '>') last = 0;
 	// === bogus -- really a declaration, and must be further analyzed. //
-	next = createToken(NodeType.COMMENT, ident, buf.toString());
+	next = createActiveNode(NodeType.DECLARATION, ident, buf.toString());
       }
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
@@ -246,11 +242,11 @@ public class BasicParser extends AbstractParser {
       eatIdent();
       eatUntil('>', false);
       if (last == '>') last = 0;
-      next = createToken(NodeType.PI, ident, buf.toString());
+      next = createActiveNode(NodeType.PI, ident, buf.toString());
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
     } else if (last == '>') {	// <>		empty start tag
-      next = createStartToken(ident, null);
+      next = createActiveElement(ident, null);
     } else {			// not a tag.
       return false;
     }
@@ -264,41 +260,14 @@ public class BasicParser extends AbstractParser {
    *
    * === This will eventually get split so we can detect space, etc. ===
    */
-  Token getText() throws IOException {
+  protected ActiveText getText() throws IOException {
 
     while (eatText()) {
       if ((last == '&' && getEntity(strictEntities)) ||
 	  (last == '<' && getTag()) ||
 	  (last < 0)) break;
     }
-    return (buf.length() > 0)? createTextToken(buf.toString()) : null;
-  }
-
-  /** Get the SGML token starting with <code>last</code>.  If the
-   *	token consists of text, the entity or tag that terminates it
-   *	ends up in <code>next</code>, and the character that
-   *	terminated <em>it</em> (in the case of an entity with no
-   *	semicolon) is left in <code>last</code>.  This is necessary
-   *	because anything that is <em>not</em> a complete tag or entity
-   *	has to be part of the text. <p>
-   *
-   *	It would not simplify the parser to return text in chunks,
-   *	breaking it at each &amp; or &lt;, because we'd only have to
-   *	run the full test next time around.  On the other hand, it
-   *	might be useful to return words, punctuation, etc. as separate
-   *	tokens, and the interpretor might appreciate getting entities
-   *	separately.  Subclasses will do this differently.  <p>
-   *
-   */
-  public Token nextToken() {
-    if (nextText == null && next == null) try {
-      buf.setLength(0);
-      nextText = getText();	// Try to get some text.
-    } catch (IOException e) {};
-    
-    // At this point we have to check for nesting and the presence of 
-    // ignorable whitespace between, e.g., list tags.
-    return checkNextToken();
+    return (buf.length() > 0)? createActiveText(buf.toString(), false) : null;
   }
 
 
@@ -310,16 +279,12 @@ public class BasicParser extends AbstractParser {
     super();
   }
 
-  public BasicParser(crc.dps.InputStack previous) {
-    super(previous);
+  public BasicParser(InputStream in) {
+    super(in);
   }
 
-  public BasicParser(java.io.InputStream in, crc.dps.InputStack previous) {
-    super(in, previous);
-  }
-
-  public BasicParser(Reader in, crc.dps.InputStack previous) {
-    super(in, previous);
+  public BasicParser(Reader in) {
+    super(in);
   }
 
 }

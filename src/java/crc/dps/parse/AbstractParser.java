@@ -12,16 +12,21 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.IOException;
 
-import crc.dps.Token;
+import crc.dom.Node;
+import crc.dom.Element;
+import crc.dom.Attribute;
+
 import crc.dps.Tagset;
 import crc.dps.Parser;
 import crc.dps.Processor;
 import crc.dps.Handler;
 import crc.dps.NodeType;
-import crc.dps.BasicToken;
-import crc.dps.InputStack;
 import crc.dps.EntityTable;
-import crc.dps.input.AbstractInputFrame;
+import crc.dps.Util;
+
+import crc.dps.active.*;
+
+import crc.dps.aux.CursorStack;
 
 import crc.dom.AttributeList;
 
@@ -29,8 +34,8 @@ import crc.dom.AttributeList;
  * An abstract implementation of the Parser interface.  <p>
  *
  *	This class contains the methods required to recognize the basic
- *	low-level syntactic elements of SGML such as identifiers and tags.
- *
+ *	low-level syntactic elements of SGML such as identifiers and tags,
+ *	and to traverse the resulting Document.
  *	<p>
  *
  * @version $Id$
@@ -38,23 +43,19 @@ import crc.dom.AttributeList;
  * @see crc.dps.Parser
  */
 
-public abstract class AbstractParser extends AbstractInputFrame
-				     implements Parser
+public abstract class AbstractParser extends CursorStack implements Parser
 {
 
   /************************************************************************
   ** Processor Access:
   ************************************************************************/
 
-  protected int		 guardedDepth;
   protected Processor    processor;
 
   public Processor getProcessor() { return processor; }
 
   public void setProcessor(Processor aProcessor) {
     processor 	 = aProcessor;
-    guardedDepth = aProcessor.getDepth();
-    tagset	 = aProcessor.getHandlers();
   }
 
   /************************************************************************
@@ -164,9 +165,6 @@ public abstract class AbstractParser extends AbstractInputFrame
   public boolean atEnd() {
     return last < 0;
   }
-
-  /** Holds the next item, usually either an entity reference or a tag. */
-  protected Token next;
 
   /** Starting at <code>last</code> (or the next available character
    *	if <code>last</code> is zero), append characters to
@@ -314,157 +312,134 @@ public abstract class AbstractParser extends AbstractInputFrame
   ** Parsing Utilities:
   ************************************************************************/
 
-  /** Get the syntax (Handler) for a Token.
-   *	It is more efficient to consult the Tagset directly if the type
-   *	is known ahead of time.
-   *
-   * @return the Token with its handler field set.
-   */
-  protected final Token getSyntax(Token t) {
-    if (tagset == null) return t;
 
-    int nodeType = t.getNodeType();
-    Handler handler = null;
-    if (nodeType == NodeType.ELEMENT && ! t.isEndTag()) {
-      handler = tagset.getHandlerForTag(t.getTagName());
-      handler = handler.getHandlerForToken(t);
-      if (handler.isEmptyElement(t)) { 
-	t.setIsEmptyElement(true);
-	// === Do we need to set syntax=0 if isEmptyElement???
-      }
-    } else if (nodeType == NodeType.TEXT) {
-      handler = tagset.getHandlerForText(t.getIsWhitespace());
-    } else if (nodeType == NodeType.ENTITY) {
-      handler = tagset.getHandlerForEntity(t.getName());
-    } else {
-      handler = tagset.getHandlerForType(nodeType);
-    }
-    t.setHandler(handler);
-    return t;
-  }
+  /** Holds the next non-text item, usually an Entity or an Element. */
+  protected ActiveNode next;
 
-  /** Current text token.
-   *	Along with <code>next</code>, this lets the Parser look at both
-   *	the text and the tag (if that's what it is) that follows it.  
-   */
-  protected Token nextText = null;
+  /** Holds the next text item. */
+  protected ActiveText nextText;
 
-  /** Perform syntax checking. 
-   *	Uses <code>nextText</code> and <code>next</code>.  Assumes that
-   *	<code>next</code> was recognized after <code>nextText</code>.
-   *
-   * @return the correct result to return from <code>nextToken</code>
+  /** Holds the next unmatched end tag. */
+  protected String nextEnd;
+
+  protected abstract ActiveText getText() throws IOException;
+
+  /** Advance to the next ``token''. <p>
+   *	
+   *	The next ``token'' might be either text, in <code>nextText</code>, 
+   *	an ordinary Node, in <code>next</code>, or an end tag, in 
+   *	<code>nextEnd</code>.  They are checked in that order. 
    */
-  protected Token checkNextToken() {
-    Token it;
+  protected ActiveNode nextToken() {
+    ActiveNode n = null;
+    if (nextText == null && next == null && nextEnd == null) try {
+      buf.setLength(0);
+      nextText = getText();	// Try to get some text.
+    } catch (IOException e) {};
     if (nextText != null) {
-      if (next != null && next.isStartTag()) {
-	// === check for ignorable whitespace before list element ===
-	// === requires one more bit of state, in returnedEndTag ...
-      }
-      it = nextText;
+      n = nextText;
       nextText = null;
-      return it;
     } else if (next != null) {
-      if (next.isEndTag()) {
-	returnedEndTag = true;
-
-	// check for missing end tags, and supply them if necessary.
-	// This is tedious, but straightforward.
-	String tag = next.getTagName();
-	String inside = processor.elementTag();
-	if (caseFoldTagnames) {
-	  tag = tag.toLowerCase();
-	  inside = inside.toLowerCase();
-	}
-	if (tag == null || tag.equals(inside)) {
-	  // Current tag.  Everything's fine.
-	} else if (!checkedBadNesting) {
-	  // Not the current element.  Are we somewhere inside it?
-	  checkedBadNesting = true;
-	  if (processor.insideElement(tag, caseFoldTagnames, guardedDepth)) {
-	    // ... Yes, we're OK.  End the current element.
-	    return new BasicToken(inside, 1, true);
-	  } else {
-	    // ... Bad nesting.  Change next to an appropriate comment.
-	    next = new BasicToken(NodeType.COMMENT, "Bad end tag: " + tag);
-	  }
-	} else {
-	  // We've already checked for bad nesting, and we're OK.
-	  // End the current element.
-	  return new BasicToken(inside, 1, true);
-	}
-      } else if (tagset != null &&
-		 tagset.checkElementNesting(next, processor) > 0) {
-	returnedEndTag = true;
-	return new BasicToken(processor.elementTag(), 1);
-      } else {
-	returnedEndTag = false;
-      }
-      checkedBadNesting = false;
-      it = next;
+      n = next;
       next = null;
-      return it;
-    } else if (processor.getDepth() > guardedDepth) {
-      // Cribbed from crc.dps.input.Guard: 
-      //   make sure we pop back to the depth we started at.
-      return new BasicToken(processor.elementTag(), 1, false);
+    } 
+    return n;
+  }
+
+  /** Perform syntax checking for an end tag. 
+   *	The normal action for an end tag is to set the atLast flag,
+   *	causing the next call on <code>toNextSibling</code> to return null.
+   *
+   * @return <dl compact> 
+   *		<dt>-1<dd> if it is unmatched (and should be ignored), 
+   *	      	<dt> 0<dd> if it ends the current Element (normal),
+   *		<dt> 1<dd> if it ends a higher level.
+   *	     </dl>
+   */
+  protected int checkEndTag(String tag) {
+    if (stack == null) {
+      next = new ParseTreeComment("Bad end tag: " + tag);
+      return -1;
+    }
+    String inside = stack.getTagName();
+    if (caseFoldTagnames) {
+      tag = tag.toLowerCase();
+      inside = inside.toLowerCase();
+    }
+    if (tag == null || tag.equals(inside)) {
+      // Current tag.  Everything's fine.
+      return 0;
+    } if (insideElement(tag, caseFoldTagnames)) {
+      // ... Yes, we're OK.  End the current element.
+      return 1;
     } else {
-      return null;
+      // ... Bad nesting.  Change next to an appropriate comment.
+      next = new ParseTreeComment("Bad end tag: " + tag);
+      return -1;
     }
   }
 
-  /** <code>true</code> if <code>checkNextToken</code> has checked for
-   *	an end tag with no corresponding start tag.
-   */
-  protected boolean checkedBadNesting = false;
 
-  /** <code>true</code> if <code>checkNextToken</code> has just returned
-   *	an end tag.
+  /** Perform syntax checking for a start tag. 
+   *
+   * @return <dl compact> 
+   *		<dt>-1<dd> if a different element should be started first.
+   *			   (The handler will tell us which one.)
+   *	      	<dt> 0<dd> if it is acceptable in this context (normal),
+   *		<dt> 1<dd> if it ends the current Element.
+   *	     </dl>
    */
-  protected boolean returnedEndTag = false;
+  protected int checkStartTag(String tag) {
+    return 0;			// === checkStartTag doesn't work yet.
+  }
+
 
   /************************************************************************
-  ** Mode Creation:
+  ** Node Creation:
   ************************************************************************/
   
-  /** Called during parsing to return a suitable start tag Token for the
-   *	given tagname and attribute list. 
+  /** Creates an ActiveElement; otherwise identical to CreateElement. 
    */
-  protected Token createStartToken(String tagname, AttributeList attrs) {
-    if (tagset != null) return tagset.createStartToken(tagname, attrs, this);
-    return new BasicToken(tagname, -1, attrs, null);
+  protected ActiveElement createActiveElement(String tagname,
+					      AttributeList attributes) {
+    return (tagset == null)
+      ? new ParseTreeElement(tagname, attributes)
+      : tagset.createActiveElement(tagname, attributes);
   }
 
-  /** Called during parsing to return an end tag Token. 
+  /** Creates an ActiveNode of arbitrary type with (optional) data.
    */
-  protected Token createEndToken(String tagname) {
-    return new BasicToken(tagname, 1);
+  protected ActiveNode createActiveNode(int nodeType, String data) {
+    return createActiveNode(nodeType, null, data);
   }
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with String data. 
+  /** Creates an ActiveNode of arbitrary type with name and (optional) data.
    */
-  protected Token createToken(int nodeType, String data) {
-    if (tagset != null) return tagset.createToken(nodeType, data, this);
-    return new BasicToken(nodeType, data);
+  protected ActiveNode createActiveNode(int nodeType,
+					String name, String data) {
+    return (tagset == null)
+      ? Util.createActiveNode(nodeType, name, data)
+      : tagset.createActiveNode(nodeType, name, data);
   }
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with a name, and String data. 
+  /** Creates an ActiveText node.  Otherwise identical to createText.
    */
-  protected Token createToken(int nodeType, String name, String data) {
-    if (tagset != null) return tagset.createToken(nodeType, name, data, this);
-    return new BasicToken(nodeType, name, data);
+  protected ActiveText createActiveText(String text, boolean isIgnorable) {
+    return (tagset == null)
+      ? new ParseTreeText(text, isIgnorable)
+      : tagset.createActiveText(text, isIgnorable);
   }
 
-  /** Called during parsing to return a suitable Token for a new Text.
+  /** Creates an ActiveText node.  Includes the <code>isWhitespace</code>
+   *	flag, which would otherwise have to be tested for.
    */
-  protected Token createTextToken(String text) {
-    if (tagset != null) return tagset.createTextToken(text, this);
-    return new BasicToken(text);
+  protected ActiveText createActiveText(String text,
+					boolean isIgnorable,
+					boolean isWhitespace) {
+    return (tagset == null)
+      ? new ParseTreeText(text, isIgnorable, isWhitespace)
+      : tagset.createActiveText(text, isIgnorable, isWhitespace);
   }
-
 
   /************************************************************************
   ** Construction:
@@ -474,21 +449,80 @@ public abstract class AbstractParser extends AbstractInputFrame
     if (isIdent == null) initializeTables();
   }
 
-  public AbstractParser(InputStack previous) {
-    super(previous);
-    if (isIdent == null) initializeTables();
-  }
-
-  public AbstractParser(InputStream in, InputStack previous) {
-    super(previous);
+  public AbstractParser(InputStream in) {
     this.in = new InputStreamReader(in);
     if (isIdent == null) initializeTables();
   }
 
-  public AbstractParser(Reader in, InputStack previous) {
-    super(previous);
+  public AbstractParser(Reader in) {
     this.in = in;
     if (isIdent == null) initializeTables();
   }
 
+  /************************************************************************
+  ** Traversal:
+  ************************************************************************/
+  
+  public Node toNextSibling() {
+    // Need to know whether we've seen all the children...
+    ActiveNode n = nextToken();
+    if (n != null) {
+      setNode(n);
+      return n;
+    } else {
+      // End tag, in nextEnd.
+      int i = checkEndTag(nextEnd);
+      if (i < 0) { 
+	n = next;
+	next = null;
+	nextEnd = null;
+	return n;
+      }
+      // If the end tag terminates THIS level, we're done with it.
+      if (i == 0) nextEnd = null;
+      atLast = true;
+      return null;
+    }
+  }
+
+  public Node toFirstChild() {
+    pushInPlace();
+    return toNextSibling();
+  }
+
+  public Node toNextNode() {
+    // Actually need a bit to say whether we should start the children.
+    Node n = toNextSibling();
+    if (n == null) {
+      if (toParent() == null) return null;
+      return toNextSibling();
+    } else {
+      return n;
+    }
+  }
+  
+  public Attribute toFirstAttribute() {
+    return null;		// ===
+  }
+
+  public Attribute toNextAttribute() {
+    return null;		// ===
+  }
+
+  public boolean atLast() {
+    return false;		// ===
+  }
+
+  public boolean hasChildren() {
+    return node.hasChildren()
+      || (element != null && !active.asElement().isEmptyElement());
+  }
+
+  public Node getTree() {
+    return null;
+  }
+
+  public void retainTree() {
+
+  }
 }
