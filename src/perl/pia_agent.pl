@@ -7,8 +7,9 @@
 ###	This imposes a primitive class system on agents.
 
 package PIA_AGENT;
-use HTML::Parse;
-use HTML::FormatPS;
+
+### === HTML::Element and HTML::AsSubs are now used only in 
+### === legacy InterForms and in the printer agent.
 use HTML::Element;
 use HTML::AsSubs;		# defines element constructor functions.
 				# very useful for interforms.
@@ -38,12 +39,14 @@ sub new {
 
 sub initialize{
     my $self=shift;
-    #sub classes override
-#should emit a request for /$name/initialize.if
+
+    ## Default initialization; sub classes may override
+
     my $name=$self->name;
     my $type=$self->option('type');
     $self->type($type) if defined $type && $type ne $name;
 
+    ## Issue a request for the initialization document.
     my $url="/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->request($request);
@@ -305,27 +308,30 @@ sub max {
 sub options_form{
     my($self,$url, $label)=@_;
     $label ="change_options" unless defined $label;
-    my $string, $e;
-    my $form = HTML::Element->new( 'form', method=>"POST", action=>$url);
-    my $t = HTML::Element->new('table');
-    $form->push_content($t);
+    my $e;
+    my $form = IF::IT->new('form', method=>"POST", action=>$url);
+    my $t = IF::IT->new('table');
+    $form->push($t);
     # $e = $form;
 
     my %attributes;
     foreach $key ($self->options()) {
 	my $values=$self->option($key);
-	$e = HTML::Element->new('tr');
-	$e->push_content(td("$key: "));
-	$e->push_content(td(input({'name'=>$key, 'value'=>$values,
-				'size'=>max(30, length($values))})));
-	$e->push_content(br);
-	$e->push_content("\n");
-	$t->push_content($e);
+	$e = IF::IT->new('tr');
+	$e->push(IF::IT->new('td')->push("$key: "));
+	$e->push(IF::IT->new('td')
+		 ->push(IF::IT->new('input',
+				    'name'=>$key, 'value'=>$values,
+				    'size'=>max(30, length($values)))));
+	$e->push(IF::IT->new('br'));
+	$e->push("\n");
+	$t->push($e);
     }
-    $e = HTML::Element->new('tr');
-    $e->push_content(td(" "));
-    $e->push_content(td(input({'type'=>submit, 'value'=>$label})));
-    $t->push_content($e);
+    $e = IF::IT->new('tr');
+    $e->push(IF::IT->new('td')->push(" "));
+    $e->push(IF::IT->new('td')
+	     ->push(IF::IT->new('input', 'type'=>submit, 'value'=>$label)));
+    $t->push($e);
 
     return $form;
 }
@@ -512,28 +518,9 @@ sub run_hook {
 ### Utility functions for responding to requests:
 ###
 
-#merges html
-sub integrate_responses{
-    my($response)=shift; 
-    if(ref($response)){
-	$response=$response->content;
-    }
-    my $foo;
-    
-    while($foo=shift){
-	if(ref($foo)){
-	    #bad news if type not html check foo  contenttype
-	    $foo=$foo->content;
-	}
-	$response.=$foo;
-	
-    }
-    return $response;
-}
-
 #return html element
 sub make_form{
-    my $element=HTML::Element->new( 'form',method => "POST",action => shift);
+    my $element=IF::IT->new( 'form',method => "POST",action => shift);
     my %attributes,$particle;
     my @widgets=@_;
 
@@ -541,7 +528,7 @@ sub make_form{
     foreach $widget (@widgets){
 	%attributes=%$widget;
 	$attributes{tag}='input' unless $attributes{tag};
-	$particle=HTML::Element->new( $attributes{tag});
+	$particle=IT::IT->new( $attributes{tag});
 	delete $attributes{tag};
 	$particle->push_content($attributes{text}) if exists $attributes{text};
 	delete $attributes{text};
@@ -561,6 +548,7 @@ sub make_form{
 }
 
 
+### === Appears to be used only in run_init_file;
 sub request{
 #put request on stack for resolution
     my($self,$request)=@_;
@@ -581,6 +569,7 @@ sub create_request {
  # TBD proper handling of content and types and headers
 
     my $request=new HTTP::Request  $method,$url;
+    print "making $method request to $url\n" if $main::debugging;
 
     if (ref($content)){
 	## treat as html element
@@ -702,8 +691,8 @@ sub find_interform {
     return;			#found no file
 }
 
-### === We need to be able to handle CGI scripts and plain HTML
-###	eventually.  We need this for the DOFS, in particular.
+### === We need to be able to handle CGI scripts eventually.  
+###	We need this for the DOFS, in particular.
 
 sub respond_to_interform {
     my($self, $request, $url)=@_;
@@ -712,10 +701,6 @@ sub respond_to_interform {
     ##	  The InterForm's url may be passed separately, since the agent may
     ##	  need to modify the URL in the request.  It can pass either a full
     ##	  URL or a path.
-
-    ## === At some point we're going to have to have a hash that maps
-    ##	  extensions into handlers, because not everything is an
-    ##	  interform.  We should allow plain HTML and CGI's.
 
     $url = $request->url unless defined $url;
     my $file=$self->find_interform($url);
@@ -739,11 +724,13 @@ sub respond_to_interform {
 
 	if($request->is('interform')) {
 	    $string=IF::Run::interform_file($self, $file, $request);
-#	    $string=$self->parse_interform_file($file,$request);
+	} elsif ($file =~ /\.cgi$/i && -x $file) {
+	    print $self->name . " Executing $file \n" if $main::debugging;
+	    ## === not entirely clear what to do for CGI's ===
+	    ## === have to handle the MIME header ===
 	} else {
 	    my $new_url= newlocal URI::URL $file;
 ### I don't think we need to clone the request,url should be enough
-
 	    
 	    my $new_request=$request->clone;
 	    print $self->name . " looking up $new_url\n" if $main::debugging;
@@ -772,6 +759,7 @@ sub respond_to_interform {
     return $response;
 }
 
+
 ############################################################################
 ###
 ### Initialization Files:
@@ -779,9 +767,6 @@ sub respond_to_interform {
 ###	Initialization files are looked up like InterForms, but instead
 ###	of containing code to evaluate, they just contain forms to
 ###	submit.  Every link is fetched, and every form is submitted.
-###
-### ===	It might be better to make them interforms, and have the first
-###	code chunk auto_submit flag.
 ###
 
 sub run_init_file {
@@ -799,11 +784,11 @@ sub run_init_file {
     my $request;
 
     if ($find < 0) {
-	$html = parse_html($fn);
+	$html = IF::Run::parse_html_string($fn);
     } else {
 	my $file = $find? $file = $self->find_interform($fn) : $fn;
 	return unless -e $file;
-	$html = parse_htmlfile($file);
+	$html = IF::Run::parse_html_file($file);
     }
     for (@{ $html->extract_links(qw(a form)) }) {
 	my ($url, $element) = @$_;
@@ -817,7 +802,7 @@ sub run_init_file {
 	my $status=$self->request($request);
 	$count+=1;
     }
-    $html->delete;
+    ## $html->delete;
     return $count;
 }
 
