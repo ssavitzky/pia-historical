@@ -127,7 +127,7 @@
         &prev;<then><a href="#&prev;">&toPrev;</a><else>&noPrev;</if><if>
 	<test zero>&slide;</test>
               <then>&nbsp;<else><a href="#TOC">&nbsp;&slide;&nbsp;</a></if><if>
-        &next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if>
+        &next;<then><a href="#&next;">&toNext;</a><else>&noNext;</if></td>
 <tr><td bgcolor="&leftBg;" fgcolor="&leftFg;" height="&hh;" width=10
          valign=top>&nbsp;</td>
     <td bgcolor="&mainBg;" fgcolor="&mainFg;" valign=top colspan=2>
