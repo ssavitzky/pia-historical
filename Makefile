@@ -100,7 +100,7 @@ crfixbat::
 
 ### Binary release
 
-pia_bin.toc:: rm_bin_tar prep_rel crfixbat
+pia_bin.toc:: rm_bin_tar prep_rel crfixbat cp_build_noa
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
@@ -115,7 +115,7 @@ pia_bin.tar:	pia_bin.toc
 
 ### Source release
 
-pia.toc:: rm_pia_tar prep_rel crfixbat
+pia.toc:: rm_pia_tar prep_rel crfixbat cp_build_noa
 	cd ..;	find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
@@ -129,7 +129,7 @@ pia.tar:	pia.toc
 	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src
 
 ### Binary and source release
-pia_bin_src.toc:: rm_bin_tar rm_pia_tar prep_rel crfixbat
+pia_bin_src.toc:: rm_bin_tar rm_pia_tar prep_rel crfixbat cp_build_noa
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
@@ -155,4 +155,5 @@ pia_cdrom::	pia_bin_src
 	cp pia_bin.tgz $(CDROMDIR); cp pia_src.tgz $(CDROMDIR)
 	cp Doc/Release/readme $(CDROMDIR)
 	cp bin/autorun.inf $(CDROMDIR)
+
 
