@@ -20,10 +20,12 @@ import crc.interform.Input;
 import crc.interform.Interp;
 import crc.interform.Tagset;
 import crc.interform.Environment;
-
+import crc.interform.SecureAttrs;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Token;
+import crc.sgml.AttrTable;
+import crc.sgml.AttrWrap;
 
 import crc.pia.Pia;
 import crc.pia.Agent;
@@ -71,6 +73,13 @@ public class Run  extends Environment {
   /************************************************************************
   ** Association with Interpretor:
   ************************************************************************/
+
+  //override use to add secure entities
+  public void use(Interp ii) {
+    super.use(ii);
+    secureEntities(ii);
+  }
+  
 
   public static Run environment(Interp ii) {
     try {
@@ -128,8 +137,14 @@ public class Run  extends Environment {
 
       ent("url", transaction.requestURL().toString());
       ent("urlPath", transaction.requestURL().getFile());
-      ent("urlQuery", transaction.hasQueryString()? 
-	  (SGML)new Text(transaction.queryString()) : (SGML)Token.empty);
+
+    // form parameters have 2 access methods
+      if(transaction.hasQueryString()){
+        ent("urlQuery",  (SGML)new Text(transaction.queryString()));
+        ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
+       } else {
+            ent("urlQuery",  (SGML)Token.empty);
+       }
 
       Object aname = transaction.getFeature("agent");
       Agent  ta = (aname == null)? null : resolver.agent(aname.toString());
@@ -148,8 +163,6 @@ public class Run  extends Environment {
 
       // === shouldn't have to convert these to text.
       ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " ").toText());
-      ent("entityNames", "");
-      ent("entityNames", new crc.sgml.Tokens(entities.keys(), " ").toText());
     }
 
     /* Set these even if we retrieved the entity table from the */
@@ -158,9 +171,23 @@ public class Run  extends Environment {
     ent("agentName", agent.name());
     ent("agentType", agent.type());
 
+    ent("entityNames", "");
+    ent("entityNames", new crc.sgml.Tokens(entities.keys(), " ").toText());
+
     return entities;
   }
 
+  /** add things like agent and transaction to the entity table with
+       a mechanism for controlling access. 
+   */
+  public Table secureEntities(Interp context) {
+    // construct entries for "AGENT.foo" lookup
+    ent("AGENT",new SecureAttrs(agent, context));
+    ent("TRANS",new SecureAttrs(transaction, context));
+    return entities;
+    
+  }
+  
 
 
   /************************************************************************

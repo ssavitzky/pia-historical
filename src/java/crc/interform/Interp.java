@@ -6,6 +6,7 @@ package crc.interform;
 import crc.interform.Actor;
 import crc.interform.Input;
 import crc.interform.State;
+import crc.interform.Util;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
@@ -13,6 +14,8 @@ import crc.sgml.Text;
 import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Entity;
+import crc.sgml.AttrWrap;
+
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -171,6 +174,7 @@ public class Interp extends State {
   }
 
   /** Make a copy of the current tagset if we don't already have one. */
+ // this should probably be renamed --GJW
   public final void useTagset() {
     if (tagset.isLocked) {
       tagset = (Tagset)tagset.clone();
@@ -207,6 +211,18 @@ public class Interp extends State {
     return variables;
   }
 
+  /** Get the binding table that includes name, if any 
+       start local and move up stack frame.  Return null 
+       if none includes name*/
+  public final Table getLocalBindings(String name) {
+    for (State state=this; state != null; state = state.stack) {
+      if (state.variables != null && state.variables.has(name)) {
+	return state.variables;
+	}
+    }
+    return null;
+  }
+
   /** Get the current local binding for a variable, if any */
   public final SGML getLocalBinding(String name) {
     return (variables != null)? (SGML)variables.at(name) : null;
@@ -218,37 +234,16 @@ public class Interp extends State {
    *	binding.  Returns null if no local binding is found.
    */
   public final SGML getvar (String name) {
-    for (State state = this; state != null; state = state.stack) {
-      if (state.variables != null && state.variables.has(name)) {
-	return (SGML)state.variables.at(name);
-      }
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+    Table bindings = getLocalBindings(name);
+    if(bindings == null){
+      return null;
     }
-    return null;
+    return getEntityInternal(names,(SGML)bindings.at(name));
   }
 
-  /** Set the value of a named variable (entity).
-   *	If no local binding is found, a new one is created in the current 
-   *	stack frame.
-   */
-  public final void setvar(String name, SGML value) {
-    for (State state = this; state != null; state = state.stack) {
-      if (state.variables != null && state.variables.has(name)) {
-	if (value == null) value = Token.empty;
-	state.variables.at(name, value);
-	return;
-      }
-    }
-    defvar(name, value);
-  }
-
-  /** Define a new local variable (entity) with a given name and value.
-   */
-  public final void defvar(String name, SGML value) {
-    if (variables == null) variables = new Table();
-    if (value == null) value = Token.empty;
-    variables.at(name, value);
-  }
-
+  
   /** Get the value of a named variable (entity) with path lookup.
    *	Dynamic scoping is used, with an optional variable (entity) table
    *	in each State stack frame.  If no local variable is found, the 
@@ -256,26 +251,122 @@ public class Interp extends State {
    *	path, picks it apart and does a series of lookups.
    */
   public final SGML getEntity(String name) {
-    // === Multi-level path lookup unimplemented. ===
-    for (State state=this; state != null; state = state.stack) {
-      if (state.variables != null && state.variables.has(name)) {
-	return (SGML)state.variables.at(name);
-      }
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+    Table bindings = getLocalBindings(name);
+    if(bindings == null){
+      bindings = entities;
     }
-    return (SGML)entities.at(name);
+    return getEntityInternal(names,(SGML)bindings.at(name));
   }
 
+
   /** Get the value of a named global variable (entity).
-   */
+    */
   public final SGML getGlobal(String name) {
-    return (SGML)entities.at(name);
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+
+    //lookup rest of path
+    return  getEntityInternal(names, (SGML)entities.at(name));
+    
   }
+  
+  /** Implement recursion to get entity for a.b.c notation.
+       Semantics of get depend on type of SGML element.
+       Currently no provision made to avoid masking names.
+      */
+  private final SGML getEntityInternal(List names, SGML context)
+  {
+    if(names.isEmpty()){ //end of path
+      return context;
+    }
+    String n = (String) names.shift();
+    SGML newContext = context.attr(n);
+    return getEntityInternal(names,newContext);
+  }
+
+
+/** Set the value of a named variable (entity).
+   *	If no local binding is found, a new one is created in the current 
+   *	stack frame.
+   */
+  public final void setvar(String name, SGML value) {
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+    Table bindings = getLocalBindings(name);
+    if(bindings == null){
+      bindings=entities;
+    }
+    setEntityInternal(name,names,value,bindings);
+   }
+
+  /** Define a new local variable (entity) with a given name and value.
+   */
+  public final void defvar(String name, SGML value) {
+    if (variables == null) variables = new Table();
+    if (value == null) value = Token.empty;
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+    setEntityInternal(name,names,value,variables);
+  }
+
 
   /** Set the value of a named global variable (entity).
    */
   public final void setGlobal(String name, SGML value) {
-    entities.at(name, value);
+    List names = Util.split(name,'.');
+    name = (String) names.shift();
+    setEntityInternal(name,names,value,entities);
   }
+
+  /** Sets the value of a.b.c in given table (This should be top level, eg. 
+      entities or variables.)  New SGMLattr created as needed
+   */  
+  private final void setEntityInternal(String name, List names, SGML value, Table context) {
+    if(names.isEmpty()){
+      context.at(name,value);
+      return;
+    }
+    SGML newContext;
+    
+    if(context.has(name)){
+      newContext = (SGML)context.at(name);
+    } else{
+      //create SGML AttrTable to hold data structures
+      newContext = new AttrWrap();   
+      context.at(name,newContext);
+    }
+    String newName = (String) names.shift();
+    setEntityInternal(newName,names,value,newContext);
+    
+  }
+  
+
+  /**  recursive function for setting path to value for SGML subjects
+        semantics of set, attr(name,value), depend on object
+	*/
+  private final void setEntityInternal(String name, List names, SGML value, SGML context)
+  {
+    if(names.isEmpty()){
+      //set value and done
+      context.attr(name,value);
+      return;
+    }
+    SGML newContext;
+    
+    if(context.hasAttr(name)){
+      newContext = context.attr(name);
+    } else{
+      //create SGML AttrTable to hold data structures
+      newContext = new AttrWrap();   
+      context.attr(name,newContext);
+    }
+    String newName = (String) names.shift();
+    setEntityInternal(newName,names,value,newContext);
+  }
+  
+
 
   /** Get the value of a named attribute.  Looks up the context tree until
    *	it finds one, or if tag is specified, an element with that tag.
@@ -293,7 +384,7 @@ public class Interp extends State {
   /** Set the value of a named attribute.  If a tag is specified, looks up 
    *	the context tree for an element with that tag.
    */
-  public final void setAttr(String name, SGML value, String tag) {
+ public final void setAttr(String name, SGML value, String tag) {
     for (State state=stack; state != null; state = state.stack) {
       if (state.it != null && (tag == null || tag.equals(state.it.tag()))) {
 	try {
