@@ -15,23 +15,34 @@ sub initialize {
 
 ############################################################################
 
-#handles are done by super class-- things like processing interform
+sub act_on {
+    my($self, $transaction, $resolver) = @_;
 
-# here  we translate proxy requests into responses
-sub  act_on {
+    ## Act on the transaction by pushing $self as a satisfier.
+
+    print "Proxy->act_on\n" if $main::debugging;
+    $transaction -> push($self);
+}
+
+
+sub  handle {
     my($self, $request, $resolver)=@_;
+
+    ## Handle (satisfy) the request.
+
+    if (FEATURES::is_agency_request($request)) {
+	return $self->PIA_AGENT::handle($request, $resolver);
+    }
 
     print "redirecting request to " if  $main::debugging;
     print $request->url() . "\n" if  $main::debugging;
-
-    ## If it's actually making the request at this point, it shouldn't be. 
 
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($request); 
     $response=TRANSACTION->new($response);
     $response->to_machine($request->from_machine());
 
-    $request->push($response);	# push the response transaction
+    $resolver->push($response);	# push the response transaction
 }
 
 1;

@@ -11,13 +11,32 @@ push(@ISA,PIA_AGENT);
 
 sub initialize{
     my $self=shift;
-    #sub classes override
-#should emit a request for /$name/initialize.if
+
+    ## Overridden so we can set type.
+
     my $name=$self->name;
-    $self->type('dofs');
-    my $url="/$name/initialize.if";
+    my $type='dofs';
+    $self->type($type);
+    my $url="/$type/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->request($request);
+}
+
+sub parse_options {
+    my ($self, $request) = @_;
+
+    ## Override so we can do special handling on ~ in document_root.
+
+    $self->PIA_AGENT::parse_options($request);
+
+    my $docs = $self->option('document_root');
+    if (defined $docs && $docs =~ m:^\~/:) {
+	my $home = $ENV{'HOME'};
+	$docs =~ s:^\~/:$home/:;
+	print "substituting $home for ~ in $docs\n";
+	$self->option('document_root', $docs);
+    }
+
 }
 
 ### === need a feature for name != type ===
@@ -32,17 +51,21 @@ sub initialize{
 
 #TBD figure  out proper way to specify machine
 
-sub  act_on {
-    my($self, $request, $resolver)=@_;
-    my  $url=$request->url();
-    return unless $url;
-    my $name=$self->name;
-    my $path=$url->path;
-    print "DOFS generating new requests for $url\n" if $main::debugging;
+sub act_on {
+    my($self, $transaction, $resolver)=@_;
+    ## Act on a transaction that we have matched.
+
+    ## Don't have to do anything.  Really shouldn't match anything!
+    ##	  the agency will push our handle.
+    return 0;
+}
+
+sub retrieve_file {
+    my($self, $url, $request, $resolver)=@_;
+
+    print "DOFS generating response for $url\n" if $main::debugging;
     
 #    return if $self->ignore($request);
-
-    return unless $path =~ m:^/$name/:;
 
 #     my $wreck=$self->create_request('POST',"/$name/retrieve.if");
 #     $response=TRANSACTION->new($response);
@@ -74,7 +97,9 @@ sub  act_on {
 #    $response->{'_content'} =~ s/<BASE/<a/;
     print "base is <BASE HREF=$base> \n"  if $main::debugging;
 
-    $request->push($response);	# push the response transaction
+    $resolver->push($response);	# push the response transaction
+
+    return 1;
 }
 
 ###### DOFS -> handle($transaction, $resolver)
@@ -91,10 +116,20 @@ sub handle{
     my $path = ref($url) ? $url->path() : $url;
     my $type = $self->type();
     my $name = $self->name();
+    my $response;
 
-    return 0 if $path =~ m:^/$name/:;
-    
-    my $response = $self->respond_to_interform($request,"/$name/home.if");
+    if ($name ne $type && $path =~ m:^/$name/:) {
+	return $self->retrieve_file($url, $request, $resolver);
+    } elsif ($name ne $type && $path =~ m:^/$name$:) {
+	$path = "/$name/home.if";
+    } elsif ($path =~ m:^/$name/([^/]+)/:) {
+	$type = $1;
+	my $agent = $resolver->agent($type);
+	$path =~ s:^/$type:: if defined $agent;
+	$self = $agent if defined $agent;
+    }
+
+    $response = $self->respond_to_interform($request,$path);
     return 0 unless defined $response;
     $resolver->push($response);
     return 1;
@@ -108,8 +143,8 @@ sub url_to_filename{
     my $document_root=$self->option('document_root');
     return  unless $url;
     my $path=$url->path;
-    my $prefix = $self->option('path_prefix');
-    return unless $path=~ /^$prefix(.*)$/;
+    my $prefix = $self->name;
+    return unless $path=~ m:^/$prefix(.*)$:;
     my $filename="$document_root$1"; # bogus $prefix removed from path.
     return $filename;
     

@@ -17,6 +17,12 @@ sub initialize {
     $self->match_criterion('request',1,\&FEATURES::is_request);
     $self->match_criterion('agent_request',1,\&FEATURES::is_agent_request);
 
+    ## === We don't need these, but the CIA does; this forces them to exist.
+    ## === This will disappear when features go onto transactions.
+
+    $self->match_criterion('agent_response',0,\&FEATURES::is_agent_response);
+    $self->match_criterion('response',0,\&FEATURES::is_response);
+
     &PIA_AGENT::initialize($self);
     return $self;
 }

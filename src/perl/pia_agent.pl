@@ -24,8 +24,8 @@ sub new {
     bless $self,$class;
     $self->name($name) if defined $name;
     $self->type($name) if defined $name;
-    $$self{options}=$options;
-    $$self{criterion}=$criterion;
+    $$self{'options'}=$options;
+    $$self{'criterion'}=$criterion;
     $$self{computation}=$computation;
     
     $self->initialize;
@@ -37,6 +37,9 @@ sub initialize{
     #sub classes override
 #should emit a request for /$name/initialize.if
     my $name=$self->name;
+    my $type=$self->option('type');
+    $self->type($type) if defined $type && $type ne $name;
+
     my $url="/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->request($request);
@@ -44,8 +47,8 @@ sub initialize{
 
 sub name {
     my($self,$name)=@_;
-    $$self{name}=$name if defined $name;
-    return $$self{name} ;
+    $$self{'name'}=$name if defined $name;
+    return $$self{'name'} ;
 }
 
 sub type {
@@ -139,8 +142,10 @@ sub act_on {
 ###	interform; subclasses or instances should override this or install
 ###	methods if different behavior is required.
 ###
+local $current_resolver;
 sub handle{
     my($self, $request, $resolver)=@_;
+    $current_resolver = $resolver;
 
     my $response = $self->respond_to_interform($request);
     return 0 unless defined $response;
@@ -247,8 +252,7 @@ sub options {
     ## Return the names, but not the values, of the options.
 
     my $self=shift;
-    return keys(%{$$self{options}});
-    
+    return keys(%{$$self{'options'}});
 }
 
 sub options_as_html {
@@ -262,14 +266,19 @@ sub options_as_html {
 	## === size should be parameter; value should be quoted. ===
     }
     return $string;
-    
 }
 
 sub as_html{
-#returns html element which embodies this agent--appropriate for installing agent in future
+    ## Return a form element that can re-install the agent.
+    my($self)=@_;
     my $name=$self->name;
     my $element=$self->options_form("/agency/install_agent.if","install_$name");
     return $element; 
+}
+
+sub max {
+    my ($x, $y)=@_;
+    return ($x >= $y)? $x : $y;
 }
 
 # need to add functions for multiple values and comments
@@ -281,21 +290,16 @@ sub options_form{
     $element->push_content("\n"); # === I think this is helpful. ===
 
     my %attributes,$particle;
-    foreach $key ($self->options){
+    foreach $key ($self->options()){
 	my $values=$self->option($key);
-	$particle=HTML::Element->new(input);
-	  $particle->attr('name',$key);
-	  $particle->attr(value,$values);
-	  $particle->attr(size,length($values));
+	$particle=input({'name'=>$key, 'value'=>$values,
+			 'size'=>max(30, length($values))});
 	$element->push_content("$key :");
 	$element->push_content($particle);
-	$particle=HTML::Element->new(br);
-	$element->push_content($particle);
+	$element->push_content(br());
 	$element->push_content("\n"); # === I think this is helpful. ===
     }
-    $particle=HTML::Element->new(input);
-	$particle->attr(type,submit);
-	$particle->attr(value,$label);
+    $particle=input({'type'=>submit, 'value'=>$label});
     $element->push_content($particle);
     return $element;
     
@@ -313,8 +317,9 @@ sub  parse_options{
 
 sub option{
     my($self,$key,$value)=@_;
-    my $options=$$self{options};
+    my $options=$$self{'options'};
     $$options{$key}=$value if defined $value;
+#    my $v = $$options{$key};    print "option($key $value) -> $v\n";
     return $$options{$key};
     
 }
