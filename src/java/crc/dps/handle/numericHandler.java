@@ -94,7 +94,6 @@ class numeric_sum extends numericHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
-    System.err.println("numeric_sum action called");
     double fresult = 0;
     long   iresult = 0;
     boolean intOp  = true;
