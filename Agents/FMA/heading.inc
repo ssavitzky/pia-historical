@@ -12,7 +12,7 @@
     ><img src="/Agency/Icons/blackline425.gif" height=2 width=425></td></tr>
 <tr nowrap nobr><th align=left valign=top><a href="/"><img
 	src="/&agentName/Icons/fma.gif" alt="FMA"
-	border=0 width=170 height=21></a>
+	border=0 height=45></a>
     <th></th>
     <th align=left><font face=helvetica><if><get entity name=title>
 	<then><get entity name=title></then>

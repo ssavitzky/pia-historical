@@ -11,23 +11,24 @@
 <!-- create table with image on left controls on right -->
 <table align=center cellspacing=0 cellpadding=0 border=0>
 
-<TR><th rowspan=3 valign=center>
+<TR><th rowspan=3 valign=center align=left width=160>
    <a href="http://www.ricoh.co.jp/fax/hl5200_e/shinka_e.html">
     <img src="/&agentName;/r3.jpg" width=144 border=0></a>
 
 <!-- controls -->
- <TD align=right><td>
+<td  align=right>
    <a href="/&agentName;/view_incoming.if">
-        <img src="/&agentName;/Icons/incoming.gif"  height=32 width=32
-        border=0 alt="INBOX"> Incoming Faxes</a><br>
+        <img src="/&agentName;/Icons/incoming.gif"  height=32 width=64
+        border=0 alt="INBOX"></a> <td align=left><a href="/&agentName;/view_incoming.if"> Incoming Faxes</a><br>
 
-<TR><TD align=right><td> <a href="/&agentName;/send_fax.if">
-        <img src="/&agentName;/Icons/send.gif"  height=32 width=32 border=0> Send Fax</a><br>
+<TR><TD align=right><a href="/&agentName;/send_fax.if">
+        <img src="/&agentName;/Icons/send.gif"  height=32 width=64
+        border=0></a> <TD align=left><a href="/&agentName;/send_fax.if"> Send Fax</a><br>
 
 <TR>
-    <TD align=right><td>
+    <TD align=right>
         <a href="/&agentName;/find_fax.if"><img src="/&agentName;/Icons/previews.gif"
-        height=32 width=32 border=0 > Find Fax </a>
+        height=32 width=32 border=0> </a><td align=left><a href="/&agentName;/find_fax.if"> Find Fax </a>
 </table>
 
 
