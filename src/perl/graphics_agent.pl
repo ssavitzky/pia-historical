@@ -51,7 +51,7 @@ sub make_icon_html{
     local    $blue = $im->colorAllocate(0,0,255);
         # make the background transparent and interlaced
         $im->transparent($white);
-    $im->rectangle(0,0,$width-1,$height-1,$black);
+
 #       print $im->gif;
     my $html= IF::Run::parse_html_string($transaction->content);
 
@@ -111,7 +111,7 @@ sub make_icon_html{
 # #	$im->string(gdTinyFont,$position[0],$position[1],$element->as_string('contentOnly'),$black);
 	
 #     }
-
+    $im->rectangle(0,0,$width-1,$height-1,$black);
     return $im->gif;
     
 }
@@ -131,19 +131,35 @@ sub make_icon_gif{
     ##need to make copy
 }
 
+sub machine_callback{
+    my($self,$newresponse)=@_;
+    print "\nProcessing called back for thumbnail\n";
+#    my $newresponse=$self->retrieve($newrequest);
+    my $request=$newresponse->request;
+    my $destination=$$request{_thumbnail_requestor}; #hack for now
+    my $image=$self->make_icon($newresponse);
+    my $response=HTTP::Response->new(&HTTP::Status::RC_OK,"OK"); 
+$response=TRANSACTION->new($response,$self->machine,$destination);
+    $response->content_length(length($image));
+    $response->content_type('image/gif');
+    $response->content($image);
+    $main::main_resolver->push($response);
+    
+    return $response;
+    
+}
+
 sub respond_to_interform{
     my($self, $request, $url)=@_;
     my %hash=%{$request->parameters};
     return &PIA_AGENT::respond_to_interform($self,$request,$url) unless exists $hash{'url_to_iconify'};
     my $newrequest=$self->create_request('GET',$hash{'url_to_iconify'});
-    my $newresponse=$self->retrieve($newrequest);
-    my $image=$self->make_icon($newresponse);
-    my $response=HTTP::Response->new(&HTTP::Status::RC_OK,"OK"); 
-#    $response=TRANSACTION::new($response,$response->from_machine,$response->to_machine);
-    $response->content_length(length($image));
-    $response->content_type('image/gif');
-    $response->content($image);
-    return $response;
+    my $machine=$self->machine;
+    $machine->callback(\&machine_callback);
+    $$newrequest{_thumbnail_requestor}=$request->from_machine;
+    $newrequest=TRANSACTION->new($newrequest,$machine);
+    return $newrequest;
+    
 }
 
 1;

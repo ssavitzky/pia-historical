@@ -251,6 +251,8 @@ sub  get_request{
     my($self)=@_;
 
     my $destination=$self->to_machine;
+    return $self->error_response unless $destination;
+    
     my $response=$destination->get_request($self);
     
     $response=TRANSACTION->new($response);

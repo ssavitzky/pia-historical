@@ -763,6 +763,9 @@ sub respond_to_interform {
     ##	  need to modify the URL in the request.  It can pass either a full
     ##	  URL or a path.
 
+    if($request->method eq 'PUT' && ! $url){
+	return $self->respond_to_interform_put($request);
+    }
     $url = $request->url unless defined $url;
     my $file=$self->find_interform($url);
     my $name = $self->name();
@@ -821,6 +824,26 @@ sub respond_to_interform {
     return $response;
 }
 
+##Puts need a slightly different processing...
+##for now uses above method after hacking url
+sub respond_to_interform_put{
+    my($self,$request)=@_;
+    print "interform put request \n" if $main::debugging;
+    #agents may subclass
+    my $url=$request->url;
+    
+    my $path = ref($url) ? $url->path() : $url;
+    ##for now stickeverything after the .if onto form params
+    if($path=~/(.*\.if)(.*)$/){
+	my %parameters;
+	$parameters{'_post_path'}=$2;
+	$request->parameters(\%parameters);
+         return $self->respond_to_interform($request,$1);
+}
+print ".if not found\n";
+return $self->respond_to_interform($request,$url);
+
+}
 
 ############################################################################
 ###

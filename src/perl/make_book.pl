@@ -45,7 +45,10 @@ sub book_ps{
     my($self,$book)=@_;
     return "no book in progress\n" unless $book;
     #createpostscript for book
-    my $string=$book->html->as_string;
+    my $html=$book->html;
+#toc added in?
+#$html->push($book->table_of_contents);
+    
     my @files=file_names($self);
         my $image_file=shift @files;
     my $ps_file=shift @files;
@@ -62,7 +65,7 @@ sub book_ps{
     my $f = HTML::Format_PS->new;
     open(PSFILE,">$ps_file");
     print "putting ps in $ps_file\n";
-    print PSFILE $f->format($book->html);
+    print PSFILE $f->format($html);
     close PSFILE;
 
 

@@ -15,11 +15,19 @@ sub url_to_filename{
     $name=$spool . $name;
     return $name;
 }
+
+##maintain hash of directories that we know  about
+# maybe should use url as key, not  directory name
+## also should check modified date
 sub entry{
     my($self,$url,$directory)=@_;
     my $hash=$$self{'_entries'};
     my $key=$self->url_to_filename( $url);
-    $$hash{$key}=$directory if $directory;
+    if ($directory){
+	$$hash{$key}=$directory ;
+    } elsif (! exists($$hash{$key})){
+#	$$hash{$key}=$key if -e $key && ! $self->option('no_cache');
+    }
     return $$hash{$key};
 }
 

@@ -35,8 +35,10 @@ sub callback{
 ## use the agent call back, or just dump it
 sub send_response{
     my($self,$response)=@_;
+    print "\n response for agent " if $main::debugging;
     my $callback=$self->callback;
     if(ref($callback) eq 'CODE'){
+
 	&$callback($self->agent,$response);
     }
 #otherwise just drop it

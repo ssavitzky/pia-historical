@@ -41,12 +41,18 @@ sub bookmaker_callback{
 #    print $response->content;
     my $html= IF::Run::parse_html_string($response->content);
     $self->add_page($html);
-    my $old_depth=${$response->request}{_book_depth};
+    my $old_request=$response->request;
+    
+    my $old_depth;
+    $old_depth=${$response->request}{_book_depth} if $old_request;
+$old_depth=$$self{_max_depth} unless $old_depth;
+
     if($old_depth+1 < $$self{_max_depth}){
 	for (@{ $html->extract_links(qw(a)) }) {
 	    my ($urltext, $element) = @$_;
 	    my $url=URI::URL->new($urltext,$response->request->url);
-	    $self->add_link($url,$old_depth+1);
+#	    print "new: " . $url->as_string . " base: " . $response->request->url->as_string ." \n";
+	    $self->add_link($url,$old_depth+1) if $url->host;
 	}
     }
     return 1;
@@ -87,6 +93,25 @@ $element_title="unknown" unless $element_title;
 $$contents{$element_title}=$$self{page};
 	    
     $$self{page}++;
+    
+}
+
+sub  table_of_contents{
+    my($self)=@_;
+    my $contents=$$self{toc};
+    my $element=IF::IT->new('table');
+    my $temp,$data;
+    for (keys(%{$contents})){
+	$temp=IF::IT->new('tr');
+	$element->push($temp);
+	$data=IF::IT->new('td', 'align' => 'left');
+	$data->push($_);
+	$temp->push($data);
+	$data=IF::IT->new('td', 'align' => 'right');
+	$data->push($$contents{$_});
+	$temp->push($data);
+    }
+    return $element;
     
 }
 
