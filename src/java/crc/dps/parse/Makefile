@@ -7,7 +7,8 @@ TOPDIR=../../..
 
 FILES = \
 	AbstractParser.java \
-	BasicParser.java
+	BasicParser.java \
+	HTMLParser.java
 
 include $(TOPDIR)/makefiles/file.make
 
@@ -16,4 +17,7 @@ include $(TOPDIR)/makefiles/file.make
 AbstractParser.class: ../Token.java ../Tagset.java ../Parser.java \
 	../EntityTable.java ../input/AbstractInputFrame.java
 BasicParser.class: AbstractParser.java ../Token.java ../Tagset.java \
+	../Parser.java ../EntityTable.java ../input/AbstractInputFrame.java
+HTMLParser.class: BasicParser.java AbstractParser.java \
+	../Token.java ../Tagset.java \
 	../Parser.java ../EntityTable.java ../input/AbstractInputFrame.java

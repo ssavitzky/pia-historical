@@ -29,7 +29,7 @@ import crc.dps.input.AbstractInputFrame;
  *	This class contains the methods required to recognize the basic
  *	low-level syntactic elements of SGML such as identifiers and tags.
  *
- *	  <p>
+ *	<p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -44,12 +44,14 @@ public abstract class AbstractParser extends AbstractInputFrame
   ** Processor Access:
   ************************************************************************/
 
-  protected Processor processor;
+  protected int		 guardedDepth;
+  protected Processor    processor;
 
   public Processor getProcessor() { return processor; }
 
   public void setProcessor(Processor aProcessor) {
-    processor = aProcessor;
+    processor 	 = aProcessor;
+    guardedDepth = aProcessor.getDepth();
   }
 
   /************************************************************************
@@ -65,16 +67,21 @@ public abstract class AbstractParser extends AbstractInputFrame
   ** Access to Bindings:
   ************************************************************************/
 
-  protected Tagset tagset;
-  protected EntityTable entities; 
+  protected Tagset tagset = null;
+  protected EntityTable entities = null; 
 
   public Tagset getTagset() { return tagset; }
-  public void setTagset(Tagset aTagset) { tagset = aTagset; }
+  public void setTagset(Tagset aTagset) {
+    tagset = aTagset;
+    if (aTagset != null) caseFoldTagnames = aTagset.caseFoldTagnames();
+  }
 
   public EntityTable getEntities() { return entities; }
   public void setEntities(EntityTable anEntityTable) {
     entities = anEntityTable;
   }
+
+  protected boolean caseFoldTagnames = true;
 
   /************************************************************************
   ** Syntax tables:
@@ -351,12 +358,16 @@ public abstract class AbstractParser extends AbstractInputFrame
 	// This is tedious, but straightforward.
 	String tag = next.getTagName();
 	String inside = processor.elementTag();
+	if (caseFoldTagnames) {
+	  tag = tag.toLowerCase();
+	  inside = inside.toLowerCase();
+	}
 	if (tag == null || tag.equals(inside)) {
 	  // Current tag.  Everything's fine.
 	} else if (!checkedBadNesting) {
 	  // Not the current element.  Are we somewhere inside it?
 	  checkedBadNesting = true;
-	  if (processor.insideElement(tag)) {
+	  if (processor.insideElement(tag, caseFoldTagnames, guardedDepth)) {
 	    // ... Yes, we're OK.  End the current element.
 	    return new BasicToken(inside, 1, true);
 	  } else {
@@ -379,6 +390,10 @@ public abstract class AbstractParser extends AbstractInputFrame
       it = next;
       next = null;
       return it;
+    } else if (processor.getDepth() > guardedDepth) {
+      // Cribbed from crc.dps.input.Guard: 
+      //   make sure we pop back to the depth we started at.
+      return new BasicToken(processor.elementTag(), 1, false);
     } else {
       return null;
     }

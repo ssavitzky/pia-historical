@@ -4,11 +4,14 @@
 
 package crc.dps.parse;
 
+import crc.dom.NodeList;
+
 import crc.dps.NodeType;
 import crc.dps.Parser;
 import crc.dps.Token;
 import crc.dps.TokenList;
 import crc.dps.BasicToken;
+import crc.dps.BasicTokenList;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
@@ -94,22 +97,18 @@ public class BasicParser extends AbstractParser {
 
 
   /** Get a value (after an attribute name inside a tag).
-   *	Returns true if <code>last</code> is an equal sign and is 
-   *	followed by either an identifier or a quoted string.
-   *	=== should really allow any URL-permissible chars. ===
-   * === should return value in an Attribute ===
-   *	@return the value in the children of <code>next</code>
+   *	
+   *	@return the value; <code>null</code> if no "=" is present.
    */
-  boolean getValue() throws IOException {
-    if (last != '=') return false;
+  NodeList getValue() throws IOException {
+    if (last != '=') return null;
+    BasicTokenList list = new BasicTokenList();
 
     last = in.read();
     if (last == '\'' || last == '"') {
       int quote = last;
       StringBuffer tmp = buf;
       buf = new StringBuffer();
-      if (next == null) next = new BasicToken();
-      Token list = next; next = null;
       last = 0;
       for ( ; ; ) {
 	if (eatUntil(quote, true)) {
@@ -123,26 +122,20 @@ public class BasicParser extends AbstractParser {
 	  list.append(next);
 	}
       }
-      next = list;
-      //eatUntil(quote, false);
-      //next = new Text(buf);	// === need to check for entities
       last = 0;
       //debug("=" + (char)quote + (list.isText()? ".." : ".&.") + (char)quote);
       //debug("=" + (char)quote + next.toString() + (char)quote);
       buf = tmp;
-      return true;
+      return list;
     } else if (last <= ' ' || last == '>') {
-      if (next == null) next = new BasicToken();
-      next.append(new BasicToken(""));	// === problems here -- want unspec.
-      return true;
+      list.append(new BasicToken(""));
+      return list;
     } else {
       StringBuffer tmp = buf;
       buf = new StringBuffer();
-      if (next == null) next = new BasicToken();
-      Token list = next; next = null;
       for ( ; ; ) {
 	if (eatUntil(notAttr, true)) {
-	  if (buf.length() == 0) {
+	  if (buf.length() != 0) {
 	    list.append(new BasicToken(buf.toString()));
 	    buf.setLength(0);
 	  }
@@ -151,22 +144,11 @@ public class BasicParser extends AbstractParser {
 	  list.append(next);
 	} else break;
       }
-      // === using next=list.simplify() here drops pieces.
-      next = list;
       //debug("=" + (list.isText()? ".." : ".&."));
       buf = tmp;
-      return true;
+      return list;
     }
-    /* === checking for an Ident doesn't work; too many missing quotes ===
-    } else if (eatIdent()) {
-      next = new Text(ident);
-      debug("="+ident);
-      return true;
-    } else {
-      next = new Text("");
-      return true;
-    }
-    === */
+    /* === checking for an Ident doesn't work; too many missing quotes === */
   }
 
   /** Get a tag starting with <code>last='&amp;'</code> and return it in
@@ -197,8 +179,7 @@ public class BasicParser extends AbstractParser {
 	  a = ident.toLowerCase();
 	  buf.append(ident);
 	  //debug(" "+a);
-	  if (getValue()) it.addAttr(a, next.getChildren());
-	  else		  it.addAttr(a, null);
+	  it.addAttr(a, getValue());
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  it.setHasEmptyDelimiter(true);
