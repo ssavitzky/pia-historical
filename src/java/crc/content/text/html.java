@@ -4,6 +4,9 @@
 
 package crc.content.text;
 
+import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
+
 /**
  * class for html which is not parsed. only difference with plain text is
  * that inserts of text happen after the body tag.
@@ -22,25 +25,50 @@ public class html extends Default
       if(additions == null || !additions.has(k)) return ;
 
       String add = (String) additions.at(k);
-    crc.pia.Pia.debug(" inserting "+add + " at "+  position);
+    crc.pia.Pia.debug( this," inserting "+add + " at "+  position);
+
 
       if(position == 0){
 	// insert after body tag
 	// this is a hack -- eventually use html parser
-	 String s =  new String(buf,0,nextIn);
-	 int bstart = s.indexOf("<body");
-	 if(bstart == -1) bstart = s.indexOf("<Body");
-	 if(bstart == -1) bstart = s.indexOf("<BODY");
-	 if(bstart > -1) {
-	   bstart = -1; //s.indexOf(">", bstart);
-	 }
-	 if(bstart > -1) {
-	   ++bstart;
-    crc.pia.Pia.debug(" putting at"+  bstart);
-	   insert(add,bstart);
-	   return;
-	 }
+	RegExp re = null;
+	MatchInfo mi = null;
+	// size of string to look for head and body in
+	// this may be too small
+        int size = 2048;
+	if(buf.length < size) size = buf.length;
+        if(! wrapped && size > nextIn)  size = nextIn;
+
+	String s =  new String(buf,0, size);
+	int bend=0; // end of body tag
+	int hend = 0;  // end of head tag
+	try{
+	  // first look for a head
+	  re = new RegExp("</(head|Head|HEAD)[^>]*>");
+	  mi = re.match(s );
+	  hend = mi.end();
+	  bend = hend;
+
+	  re = new RegExp("<(body|Body|BODY)[^>]*>");
+	  mi = re.match(s, bend, s.length() );
+	  bend=mi.end();
+
+	  // if there is a head, but no body, assume it is a frame
+	  // specification and we should do nothing
+	  if(bend > 0 && hend == bend)  return;
+
+	}catch(Exception e){
+	  crc.pia.Pia.debug( this,"reg exp failed" );     
+	  e.printStackTrace();
+	}
+	
+	crc.pia.Pia.debug( this," putting at"+  bend);
+	
+	 insert(add,bend);
+         return;
+	 
       }
+      
       // else
     crc.pia.Pia.debug(" super insert");
       super.insertAddition(position);
