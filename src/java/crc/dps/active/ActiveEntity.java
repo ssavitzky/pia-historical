@@ -4,6 +4,7 @@
 
 package crc.dps.active;
 import crc.dom.Node;
+import crc.dom.NodeList;
 import crc.dom.Entity;
 
 import crc.dps.Action;
@@ -26,6 +27,9 @@ import crc.dps.Handler;
  */
 
 public interface ActiveEntity extends Entity, ActiveNode {
+
+  public NodeList getValue();
+  public void setValue(NodeList value);
 
   public boolean getIsAssigned();
   public void setIsAssigned(boolean value);
