@@ -28,12 +28,14 @@ import crc.dps.aux.*;
 import crc.dps.active.*;
 
 /**
- * An abstract implementation of the Parser interface.  <p>
+ * An abstract implementation of the Parser interface.  
  *
- *	This class contains the methods required to recognize the basic
+ * <p>	This class contains the methods required to recognize the basic
  *	low-level syntactic elements of SGML such as identifiers and tags,
- *	and to traverse the resulting Document.
- *	<p>
+ *	and to traverse the resulting Document.  It should probably be called
+ *	something more descriptive of what it actually does, like ``Scanner.''
+ *
+ * <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -82,8 +84,6 @@ public abstract class AbstractParser extends CursorStack implements Parser
     entities = anEntityTable;
   }
 
-  protected boolean caseFoldTagnames = true;
-
   /************************************************************************
   ** Syntax tables:
   ************************************************************************/
@@ -127,6 +127,12 @@ public abstract class AbstractParser extends CursorStack implements Parser
 
   /************************************************************************
   ** SGML flags:
+  **
+  ** <p> The flags in this section control various parameters of the SGML
+  **	 parsing process.  Strictly speaking they ought to be set from the
+  **	 Tagset (DTD).  Defaults will usually differ among Parser
+  **	 implementation classes.
+  **
   ************************************************************************/
 
   /** If <code>true</code>, entities must be terminated by ';' */
@@ -135,8 +141,26 @@ public abstract class AbstractParser extends CursorStack implements Parser
   /** The character that starts an entity (default '<code>&amp;</code>'). */
   protected char entityStart = '&';
 
+  /** The character that starts a parameter entity (default '<code>%</code>').
+   *	=== Parameter entities are presently not recognized. 
+   */
+  protected char parameterStart = '%';
+
   /** The character that ends an entity (default '<code>;</code>'). */
   protected char entityEnd = ';';
+
+  /** Do we case-fold tagnames? */
+  protected boolean caseFoldTagnames = true;
+
+  /** Do we split text into whitespace and non-whitespace? */
+  protected boolean splitTextTokens = false;
+
+  /** Do we require non-identifier attributes to be quoted, or are we lenient?
+   *	This interacts with both HTML (where URL's are often mistakenly not
+   *	quoted), and XML (where the closing ``<code>/</code>'' that indicates
+   *	an empty tag is often next to an identifier).
+   */
+  protected boolean strictAttributeQuotes = false;
 
 
   /************************************************************************

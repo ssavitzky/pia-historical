@@ -9,7 +9,9 @@ import crc.dom.AttributeList;
 
 import crc.dps.NodeType;
 import crc.dps.Parser;
+import crc.dps.Syntax;
 import crc.dps.active.*;
+import crc.dps.aux.Copy;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
@@ -132,6 +134,11 @@ public class BasicParser extends AbstractParser {
     } else if (last <= ' ' || last == '>') {
       list.append(createActiveText("", false));
       return list;
+    } else if (strictAttributeQuotes) {
+      if (eatIdent()) {
+	list.append(createActiveText(ident, false));
+      }
+      return list;
     } else {
       StringBuffer tmp = buf;
       buf = new StringBuffer();
@@ -198,12 +205,19 @@ public class BasicParser extends AbstractParser {
       }
       if (last != '>') return false;
 
-      // === Check for content entity and element handling ===
-
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
       next = createActiveElement(tag, attrs, hasEmptyDelim);
       if (last >= 0) last = 0;
+
+      // Check for content entity and element handling 
+      Syntax syn = next.getSyntax();
+      if (!syn.parseElementsInContent()) {
+	ParseNodeList content = getLiteral(next.endString(),
+					   !syn.parseEntitiesInContent());
+	Copy.appendNodes(content, next);
+      }
+
     } else if (last == '/') {	// </...	end tag
       // debug("'/'");
       buf.append("/"); last = 0;
