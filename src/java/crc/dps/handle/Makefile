@@ -38,13 +38,15 @@ PRIM_HANDLERS = \
 	outputHandler.java \
 	parseHandler.java \
 	protectHandler.java \
+	queryHandler.java \
 	repeatHandler.java \
 	selectHandler.java \
 	statusHandler.java \
 	substHandler.java \
 	tagsetHandler.java \
 	testHandler.java \
-	textHandler.java
+	textHandler.java \
+	urlHandler.java 
 
 ### Additional actions for StandAlone XML
 

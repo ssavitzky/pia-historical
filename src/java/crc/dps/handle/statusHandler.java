@@ -92,7 +92,8 @@ public class statusHandler extends GenericHandler {
     TopContext top = cxt.getTopContext();
     if (url.indexOf(":") < 0 || url.startsWith("file:") ||
 	url.indexOf("/") >= 0 && url.indexOf(":") > url.indexOf("/")) {
-      File local = top.locateSystemResource(url, false);
+      File local = top.locateSystemResource(url, true);
+      // === specify forWriting in case it's a data file
       if (local != null) {
 	putList(out, Status.getStatusItem(local, item));
       }
