@@ -40,6 +40,10 @@ public class T_Node{
   * 
   */ 
   private static void test1(String foo){
+    Report.debugToFile( true );
+    Report.setDebugFilePath("logfile");
+    Report.debug("Hello world");
+
     NodeEnumerator ne = null;
 
     Element be = new BasicElement();
@@ -153,6 +157,9 @@ public class T_Node{
   * 
   */ 
   private static void test2( String foobar ){
+    Report.debugToFile( true );
+    Report.setDebugFilePath("logfile");
+
     NodeEnumerator ne = null;
 
     Element be = new BasicElement();
@@ -192,6 +199,8 @@ public class T_Node{
       Report.debug( "Removing lonely Child...");
       be.removeChild( t2 );
       printChildNodeList( ne );
+      Report.debug("End of test...");
+      Report.closeTraceFile();
 
     }catch(NotMyChildException e){
       Report.debug(e.toString());
