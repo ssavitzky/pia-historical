@@ -13,8 +13,124 @@
 
 <h2>Classes</h2>
 
+Most objects in the PIA are subclasses of either <code>DS::Thing</code> (a
+generalization of an SGML element) or <code>DS::List</code>.  A List is used
+for the content of a Thing.<p>
 
-<h2>Modules</h2>
+A Thing has both named <em>attributes</em> and indexed <em>items</em>; a List
+has only items.  In most cases a List is equivalent to a Thing with no
+attributes. <p>
+
+
+<h3>DS::Thing</h3>
+
+A Thing has both named <em>attributes</em> and indexed <em>items</em>
+(content).   <p>
+
+Attribute names are normally lowercased.  Attribute names starting with
+``<code>_</code>'' (underscore) are used for ``instance variables'' and are
+normally accessed only through access functions.  These include, for example,
+<code>_tag</code> and <code>_content</code>, which are accessed via the
+<code>tag</code> and <code>content</code> methods respectively.<p>
+
+<h4>Access Functions:</h4>
+
+<h5>Attributes</h5>
+<dl>
+  <dt> $<em>thing</em>-&gt;attr($<em>name</em>)
+  <dd> Access the value of an attribute
+  <dt> $<em>thing</em>-&gt;attr($<em>name</em>, $<em>value</em>)
+  <dd> Set the value of an attribute
+</dl>
+<dl>
+  <dt> $<em>thing</em>-&gt;attr_names()
+  <dd> Returns a reference to an array of attribute names, in the order
+       defined.  Special attributes (starting with underscore) are omitted.
+  <dt> $<em>thing</em>-&gt;attr_list()
+  <dd> Returns a reference to an array of [<em>name</em>, <em>value</em>...].
+</dl>
+
+<h5>Items</h5>
+
+These operations are shared by <code>DS::List</code>.
+
+<dl>
+  <dt> $<em>thing</em>-&gt;at($<em>index</em>)
+  <dd> Access the value of an item
+  <dt> $<em>thing</em>-&gt;at($<em>item</em>, $<em>value</em>)
+  <dd> Set the value of an item
+  <dt> $<em>thing</em>-&gt;shift()
+  <dd> Returns and removes the first item in the content.
+  <dt> $<em>thing</em>-&gt;pop()
+  <dd> Returns and removes the last item in the content.
+  <dt> $<em>thing</em>-&gt;unshift($<em>value</em>...)
+  <dd> Inserts item(s) at the front of the content.
+  <dt> $<em>thing</em>-&gt;push($<em>value</em>...)
+  <dd> Appends item(s) to the end of the content.
+</dl>
+<dl>
+  <dt> $<em>thing</em>-&gt;content()
+  <dd> Returns a reference to the List of items.
+  <dt> $<em>thing</em>-&gt;content_size()
+  <dd> Returns the number of items in the content.
+  <dt> $<em>thing</em>-&gt;size()
+  <dd> Returns the number of items in the content
+</dl>
+
+<h3>DS::List</h3>
+
+<h4>Access Functions:</h4>
+
+<h5>Items</h5>
+
+<dl>
+  <dt> $<em>list</em>-&gt;at($<em>index</em>)
+  <dd> Access the value of an item
+  <dt> $<em>list</em>-&gt;at($<em>item</em>, $<em>value</em>)
+  <dd> Set the value of an item
+  <dt> $<em>list</em>-&gt;shift()
+  <dd> Returns and removes the first item in the list.
+  <dt> $<em>list</em>-&gt;pop()
+  <dd> Returns and removes the last item in the list.
+  <dt> $<em>list</em>-&gt;unshift($<em>value</em>...)
+  <dd> Inserts item(s) at the front of the list.
+  <dt> $<em>list</em>-&gt;push($<em>value</em>...)
+  <dd> Appends item(s) to the end of the list.
+</dl>
+<dl>
+  <dt> $<em>list</em>-&gt;content()
+  <dd> Returns a reference to self
+  <dt> $<em>list</em>-&gt;content_size()
+  <dd> Returns the number of items in the list
+  <dt> $<em>list</em>-&gt;size()
+  <dd> Returns the number of items in the list
+</dl>
+
+<h3>DS::Features</h3>
+
+A Features object is used as a cache for ``lazy evaluation'' of information
+associated with a Thing.<p>
+
+
+<h2>Subclasses of Thing</h2>
+
+<dl>
+  <dt> <code>PIA::Agent</code>
+  <dd> a PIA ``agent''.  Subclass code is automatically loaded, if it exists,
+       when an agent is installed; the class name is the value of the agent's
+       <code>type</code> attribute.
+  <dt> <code>IF::IT</code>
+  <dd> ``InterForm Token'' -- a parsed SGML element
+       <dl>
+	 <dt> <code>IF::IA</code>
+	 <dd> ``InterForm Agent'' -- an <em>active</em> element.
+       </dl>
+  <dt> <code>PIA::Transaction</code>
+  <dd> an HTML request or response
+</dl>
+
+Plain instances of <code>DS::Thing</code> can be used as hash tables or
+associative arrays.<p>
 
 
 <h2>The Resolver Algorithm</h2>
@@ -55,7 +171,7 @@ Given a resolver R:
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Sep  5 10:48:44 1996
+Last modified: Tue Dec 17 23:19:19 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
