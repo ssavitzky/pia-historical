@@ -38,7 +38,8 @@ public class Util extends crc.sgml.Util {
    *
    * Note: This code has been in the Savitzky family for generations:
    *	the original implementation was done in FORTRAN by Abraham
-   *	Savitzky in 1963 or thereabouts.
+   *	Savitzky in 1963 or thereabouts.  This code actually computes
+   *	JD-1721119L, because otherwise the sum doesn't fit in 31 bits.
    */
   public static long julianDay(long y, long m, long d) {
     if (m > 2) {			  /* march = 0 kludge */
@@ -48,7 +49,8 @@ public class Util extends crc.sgml.Util {
     }
     long c = y/100; long ya = y % 100;
     return((146097L * c) / 4L + (1461L * ya) / 4L +
-             (153L * m + 2L) / 5L + d + 1721119L);
+             (153L * m + 2L) / 5L + d /* + 1721119L */);
+				//    ^^^^^^^^^^^^^^^^  sum is > 31 bits!
   }
 
   /** Compute Julian day from a Date object. */
@@ -59,14 +61,14 @@ public class Util extends crc.sgml.Util {
   /** Compute day of the week (Sunday = 0) from a Julian day. */
   public static int getWeekday(Date aDate) {
     // === should be +1; indicates an arithmetic problem in julianDay ===
-    return (int)((julianDay(aDate) +2L) % 7L);
+    return (int)((julianDay(aDate) +1L) % 7L);
   }
 
   /** Compute day of the month from a Julian day. */
   public static int day(long j) {
     long ji, jy, jm, jd;
 
-    ji = j - 1721119L;
+    ji = j /* - 1721119L */;
     jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
     ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
     jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
@@ -82,7 +84,7 @@ public class Util extends crc.sgml.Util {
   public static int month(long j) {
     long ji, jy, jm, jd;
 
-    ji = j - 1721119L;
+    ji = j /* - 1721119L */;
     jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
     ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
     jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
@@ -97,7 +99,7 @@ public class Util extends crc.sgml.Util {
   public static int year(long j) {
     long ji, jy, jm, jd;
 
-    ji = j - 1721119L;
+    ji = j /* - 1721119L */;
     jy = 4 * ji - 1;        jd = (jy % 146097L) / 4;    jy /= 146097L;
     ji = 4 * jd + 3;        jd = (ji % 1461L + 4) / 4;  ji /= 1461L;
     jm = 5 * jd - 3;        jd = (jm % 153L + 5) / 5;   jm /= 153L;
