@@ -38,8 +38,8 @@ FILES = \
 #	ParseStack -> BasicContext
 #	Filter -> Process
 
-include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
+include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 ###	Compiling a class will automatically build the classes it

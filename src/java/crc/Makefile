@@ -10,16 +10,16 @@ TOPDIR=..
 ###	make descends into each one recursively.
 
 PACKAGES = \
+	ds \
+	util \
 	dom \
 	dps \
-	ds \
 	sgml \
-	content \
-	util \
 	interform \
+	content \
 	tf \
-	pia \
-	dom
+	pia
+
 
 include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make
