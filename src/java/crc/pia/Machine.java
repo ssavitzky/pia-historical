@@ -52,7 +52,7 @@ public class Machine {
   /**
    * Return inputStream
    */
-  public InputStream getInputStream() throws IOException{
+  public InputStream inputStream() throws IOException{
     if( socket )
       try
       {
@@ -67,7 +67,7 @@ public class Machine {
   /**
    * Return outputStream
    */
-  public OutputStream getOutputStream() throws IOException{
+  public OutputStream outputStream() throws IOException{
     if( socket )
       try
       {
@@ -105,13 +105,13 @@ public class Machine {
 
     out = new PrintStream( outputStream );
 
-    String message = reply.getStatusMsg();
-    String outputString = "HTTP/1.0 " + reply.getStatusCode() + " " + message + "\n";
+    String message = reply.statusMsg();
+    String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\n";
 
-    String type = reply.getContentType();
+    String type = reply.contentType();
     if( type && type.toLowerCase().indexOf("/text/html") != -1 ){
       
-      Thing[] c = reply.getControls();
+      Thing[] c = reply.controls();
       if( c ){
 	for( int i = 0; i < c.length; i++ ){
 	  Object o = c[i];
@@ -123,13 +123,13 @@ public class Machine {
     }
 
     if( ctrlString.length() > 0 ){
-      if( reply.getContentLength() != -1 )
-	reply.setContentLength( reply.getContentLength() + ctrlString.length() );
-      plainContent = content = reply.getContentObj().source();
+      if( reply.contentLength() != -1 )
+	reply.setContentLength( reply.contentLength() + ctrlString.length() );
+      plainContent = content = reply.contentObj().source();
     }
     
     out.println( outputString );
-    out.println( reply.getHeadersAsString() );
+    out.println( reply.headersAsString() );
     out.println( "\n" );
 
     RegExp re = new RegExp("<body[^>]*>");
@@ -163,10 +163,10 @@ public class Machine {
     InputStream in;
 
     try{
-      URL urlObject = new URL( request.getURI() );
+      URL urlObject = new URL( request.requestURL() );
       URLConnection agent = urlObject.openConnection();
       // not sure what to do here
-      proxy = proxy( request.getProtocol() );
+      proxy = proxy( request.protocol() );
       if( proxy )
 	agent.setRequestProperty("proxy", proxy);
       */
@@ -180,7 +180,7 @@ public class Machine {
    * get proxy string.
    * @returns the number of bytes read. 
    */
-  public String getProxy (String scheme, String proxystring) {
+  public String proxy (String scheme, String proxystring) {
     return proxy;
   }
 
@@ -193,7 +193,7 @@ public class Machine {
       proxy = proxystring;
 
     if(!proxy){
-	String mainproxy= Pia.getAgency().proxyFor(address, scheme);	
+	String mainproxy= Pia.agency().proxyFor(address, scheme);	
 	if ( mainproxy )
 	  proxy = mainproxy;
     }

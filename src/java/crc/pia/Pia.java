@@ -120,56 +120,56 @@ public class Pia{
   /**
    * @return this machine
    */
-  public Machine getThisMachine(){
+  public Machine thisMachine(){
     return thisMachine;
   }
   
   /**
    * @return resolver
    */
-  public Resolver getResolver(){
+  public Resolver resolver(){
     return resolver;
   }
 
   /**
    * @return agency
    */
-  public Agency getAgency(){
+  public Agency agency(){
     return agency;
   }
 
   /**
    * @return the URL for the documentation
    */
-  public String getDocUrl(){
+  public String docUrl(){
     return docurl;
   } 
 
   /**
    * @return the root directory path-- i.e /pia
    */
-  public String getRoot(){
+  public String root(){
     return rootStr;
   }  
 
  /**
    * @return a File object representing the root directory
    */
-  public File getRootDir(){
+  public File rootDir(){
     return rootDir;
   }  
 
   /**
    * @return the user directory path -- i.e ~/PIA
    */
-  public String getPiaUsrRoot(){
+  public String piaUsrRoot(){
     return piaUsrRootStr;
   }  
 
   /**
    * @return a File object for the user directory path -- i.e ~/PIA
    */
-  public File getPiaUsrRootDir(){
+  public File piaUsrRootDir(){
     return piaUsrRootDir;
   }  
 
@@ -177,14 +177,14 @@ public class Pia{
   /**
    * @return this host name
    */
-  public String getHost(){
+  public String host(){
     return host;
   } 
 
   /**
    * @return this port name
    */
-  public String getPort(){
+  public String port(){
     return port.toString();
   } 
 
@@ -206,21 +206,21 @@ public class Pia{
  /**
    * @return the directory path where agents live
    */
-  public String getPiaAgents(){
+  public String piaAgents(){
     return piaAgentsStr;
   } 
 
   /**
    * @return a File object for the directory where agents live
    */
-  public File getPiaAgentsDir(){
+  public File piaAgentsDir(){
     return piaAgentsDir;
   } 
 
   /**
    * @return the directory where user agents live
    */
-  public String getPiaUsrAgents(){
+  public String piaUsrAgents(){
     return piaUsrAgentsStr;
   } 
 
@@ -229,21 +229,21 @@ public class Pia{
   /**
    * @return the directory where user agents live
    */
-  public File getPiaUsrAgentsDir(){
+  public File piaUsrAgentsDir(){
     return piaUsrAgentsDir;
   } 
 
   /**
    * @return the proxy string
    */
-  public HashTable getProxies(){
+  public HashTable proxies(){
     return proxies;
   } 
 
   /**
    * @return the no proxy schemes
    */
-  public String[] getNoProxies(){
+  public String[] noProxies(){
     return noProxies;
   } 
 
@@ -350,7 +350,7 @@ public class Pia{
    * Get the server URL.
    */
 
-   public String getURL() {
+   public String url() {
      if ( url == null ) {
        if ( port != 80 ) 
 	 url = "http://" + host + ":" + port ;
@@ -534,7 +534,7 @@ public class Pia{
 	piaUsrAgentsDir = new File( piaUsrAgentsStr );
 	
 
-	url = getURL();
+	url = url();
 	
   }
 

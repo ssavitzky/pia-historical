@@ -22,6 +22,7 @@
 package crc.pia;
 import java.util.Enumeration;
 import java.net.URL;
+import java.io.IOException;
 
 import crc.ds.Thing;
 import crc.ds.Queue;
@@ -88,36 +89,36 @@ public class Transaction extends Thing{
   /**
    *  @returns the content length for this request, or -1 if not known. 
    */
-  public int getContentLength(){} 
+  public int contentLength(){} 
 
   /**
    *  @returns the content type for this request, or null if not known. 
    *
    */
-  public String getContentType(){}
+  public String contentType(){}
 
   /**
    *  @returns the value of the nth header field, or null if there are fewer than n fields. 
    *
    */
-  public String getHeader(int pos){}
+  public String header(int pos){}
 
   /**
    * @returns the value of a header field, or null if not known. 
    *
    */
-  public String getHeader(String name){}
+  public String header(String name){}
 
   /**
    * @returns the name of the nth header field, or null if there are fewer than n fields.  
    *
    */
-  public String getHeaderName(int pos){}
+  public String headerName(int pos){}
 
   /**
    * @returns all header information as string. Machine.java uses this.
    * 
-   public String getHeaderAsString(){}
+   public String headerAsString(){}
 
   /**
    * @returns the value of an integer header field. 
@@ -125,49 +126,49 @@ public class Transaction extends Thing{
    * name - the header field name 
    * default - the value to return if the field is unset or invalid.
    */
-  public int getIntHeader(String name, int def) {}
+  public int intHeader(String name, int def) {}
 
   /**
    * @returns the request method. 
    */
-  public String getMethod() {}
+  public String method() {}
 
   /**
    *   @returns the protocol of the request. 
    *
    */
-  public String getProtocol() {}
+  public String protocol() {}
   
   /**
    *     @returns the query string, or null if none. 
    *
    */
-  public String getQueryString(){} 
+  public String queryString(){} 
   
   /**
    *   @returns the IP address of the remote agent, or null if not known. 
    *
    */
-  public String getRemoteAddr() {}
+  public String remoteAddr() {}
   
   /**
    *   @returns the host name of the remote agent, or null if not known. 
    *
    */
-  public String getRemoteHost() {}
+  public String remoteHost() {}
   
   /**
    * @returns the user name for this request, or null if not known. 
    *
    */
-  public String getRemoteUser() {}
+  public String remoteUser() {}
 
   /**
    *   @returns the full request URI. 
    *
    */    
-  public URL getRequestURL(){
-      URL url = contentObj.getRequestURL();
+  public URL requestURL(){
+      URL url = contentObj.requestURL();
       return url;
   }
 
@@ -175,13 +176,13 @@ public class Transaction extends Thing{
    *      @returns the host on which this request was received. 
    *
    */
-  public String getServerName() {}
+  public String serverName() {}
 
   /**
    *    @returns the port on which this request was received. 
    *
    */
-  public int getServerPort() {}
+  public int serverPort() {}
   
   /**
    * Set header info.
@@ -199,7 +200,7 @@ public class Transaction extends Thing{
    *   @returns the status code for this response. 
    *
    */
-  public int getStatusCode() {}
+  public int statusCode() {}
   
   /**
    *   Writes an error response using the specified status code. 
@@ -289,7 +290,7 @@ public class Transaction extends Thing{
    * @returns status message. Use in Machine.java
    *
    */
-  public String getStatusMsg() {}
+  public String statusMsg() {}
      
   /**
    * Unsets the value of a header field. 
@@ -303,7 +304,7 @@ public class Transaction extends Thing{
   /**
    * @return requested transaction
    */
-  public Transaction getRequestTran(){
+  public Transaction requestTran(){
     if( requestTran )
       return requestTran;
     else
@@ -375,7 +376,7 @@ public class Transaction extends Thing{
    * return a ds's Feature object 
    */
 
-  public Features getFeatures (){
+  public Features features (){
     // return from Thing's _features
     return features;
   }
@@ -432,7 +433,7 @@ public class Transaction extends Thing{
   public Object computeFeature( String featureName ) throws UnknownNameException{
     UnaryFunctor c;
     try{
-     c = (UnaryFunctor)Registry.getCalculatorFor( featureName );
+     c = (UnaryFunctor)Registry.calculatorFor( featureName );
      return c.execute();
     }catch(UnknownNameException e){
       // log here
@@ -444,7 +445,7 @@ public class Transaction extends Thing{
    * Accessing function to content object
    * 
    */
-  public Content getContentObj(){
+  public Content contentObj(){
     return contentObj;
   }
 
@@ -466,7 +467,7 @@ public class Transaction extends Thing{
   protected void initializeContent( ContentFactory cf ){
     //content source set in fromMachine method
 
-    contentObj = cf.createContent( fromMachine().getInputStream() );
+    contentObj = cf.createContent( fromMachine().inputStream() );
   }
 
 
@@ -485,8 +486,8 @@ public class Transaction extends Thing{
   public void fromMachine(Machine machine){
     if( machine ){
       fromMachine = machine;
-      contentObj.source( machine.getInputStream() );
-      machine.sLength( contentObj.getContentLength() );
+      contentObj.source( machine.inputStream() );
+      machine.sLength( contentObj.contentLength() );
     }
   }
 
@@ -496,7 +497,7 @@ public class Transaction extends Thing{
    */
   public Machine toMachine(){
     String host;
-    URL url = getRequestURL();
+    URL url = requestURL();
     String urlString;
 
     if(!toMachine && is_request){
@@ -587,7 +588,7 @@ public class Transaction extends Thing{
     
     response.setStatus( 404, "Not found" );
     response.setContentType( "text/plain" );
-    response.setContent("Agency could not find " + getURI() + ".\n");
+    response.setContent("Agency could not find " + requestURL() + ".\n");
     return response;
   }
 
@@ -648,8 +649,8 @@ public class Transaction extends Thing{
    * actual final form determined by machine
    * NOTE: not implemented
    */
-  public Thing[] getControls(){
-    int size 0;
+  public Thing[] controls(){
+    int size = 0;
 
     size = controls.size();
     if( size > 0 ){

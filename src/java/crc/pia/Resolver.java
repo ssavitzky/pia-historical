@@ -182,7 +182,7 @@ public class Resolver implements Runnable{
     
     while (size() > 0){
       tran = pop();
-      url = tran.getUrl();
+      url = tran.requestURL();
       
       /*
       Look for matches.
@@ -252,7 +252,7 @@ public class Resolver implements Runnable{
     if( fileName ){
       destinationFile = new File( fileName );
       destination = new PrintStream( destinationFile );
-      String str = response.getContent();
+      String str = response.content();
       destination.print( str );
       destination.close();
     }
