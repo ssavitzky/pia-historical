@@ -535,7 +535,9 @@ sub push_into {
     ##	  Attributes in the copy are entity-expanded in the current context
 
     my $in_stack = $self->in_stack;
-    if (ref($it) eq 'ARRAY') {
+    if (!ref($it)) {
+	push(@$in_stack, $it);
+    } elsif (ref($it) eq 'ARRAY') {
 	push(@$in_stack, ['', 0, $it]);
 	return $st;
     } else {
