@@ -76,9 +76,9 @@ public class Write_file extends crc.interform.Handler {
 	  errmsg = "Could not create directory " + name;
 	}
       } else if (it.hasAttr("append")) {
-	crc.util.Utilities.writeTo(name, content);
-      } else {
 	crc.util.Utilities.appendTo(name, content);
+      } else {
+	crc.util.Utilities.writeTo(name, content);
       }
     } catch (Exception e) {
       errmsg = "Write failed on " + name;
