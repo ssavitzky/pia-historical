@@ -35,7 +35,21 @@
        </form></if>
     </table>
 </table>
-
+<hr>
+<!-- generic navigation bar -->
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
 <hr>
 
 <set entity name=opts><agent-options></set>

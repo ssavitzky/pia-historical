@@ -2,7 +2,6 @@
 <html><head>
 <title>Generic Help Page for &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity name=title>Help Page</set>
@@ -17,7 +16,7 @@
 <table cellspacing=0 cellpadding=0>
 <tr>
   <th width=170>
-    <!-- read quiet interform file="insert.if" process -->
+    <read quiet href="/Agency/insert.if" process>
   <td>
     <table cellspacing=0 cellpadding=0>
     <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
@@ -44,10 +43,31 @@
     </table>
 </table>
 <hr>
+<!-- generic navigation bar -->
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+          <a href="/&agentType;/&agentName;/">help</a> (
+	     <a href="#context-specific">specific</a>
+	     <a href="#general">general</a> )
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/options.if">options</a>
+	  <a href="/&agentName;/">help</a> (
+	     <a href="#context-specific">specific</a>
+	     <a href="#general">general</a> )
+</if>
+<hr>
+<h2><a name="context-specific">Context-Specific Help</a></h2>
 
+<set name=referer><get trans headers name="Referer"></set>
 <dl>
-  <dt> Where am I?
-  <dd>  &lt;URL:&url;&gt; <br>
+  <dt> <strong>Where am I?</strong>
+  <dd>  &lt;URL:<a href="&url;">&url;</a>&gt; <br>
        This is the 
        <if><test not exact match="&agentType;">&agentName;</test>
               <then><a href="/&agentType;/home.if">&agentType;</a>
@@ -60,15 +80,27 @@
 		<else><a href="/My/">&piaUSER;'s</a>
        			Personal Information Agency</else>
        </if>
+<if>&referer;<then>       
+  <dt> <strong>Where was I?</strong>
+  <dd> &lt;URL:<a href="&referer;">&referer;</a>&gt;<br>
+       This is the page you were looking at when you clicked on a link
+       labeled ``<a href="&url;">help</a>''.
+</if>       
 </dl>
 <hr>
+
 <!-- See whether there's a "help" file for this agent. -->
 <read interform file="help.inc" quiet process>
 
 <hr>
+<h2><a name="general">General Help</a></h2>
+
 This online help page is automatically customized for every agent that makes a
 link to it; you can <em>always</em> find a link to it from an Agent's
-<a href="&agentPath;/">index page</a>.  
+<a href="&agentPath;/">index page</a>.  More general information, including
+links to the documentation and to many useful InterForms, can be
+found on the <a href="/Agency">Agency's home page</a>.
+
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
@@ -76,12 +108,16 @@ link to it; you can <em>always</em> find a link to it from an Agent's
           <a href="/&agentType;/"> / </a>
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
-          <a href="/&agentType;/&agentName;/">help</a>
 	  <a href="/&agentType;/&agentName;/options.if">options</a>
+          <a href="/&agentType;/&agentName;/">help</a> (
+	     <a href="#context-specific">specific</a>
+	     <a href="#general">general</a> )
     <else><a href="/&agentName;/home.if">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/">help</a>
 	  <a href="/&agentName;/options.if">options</a>
+	  <a href="/&agentName;/">help</a> (
+	     <a href="#context-specific">specific</a>
+	     <a href="#general">general</a> )
 </if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
