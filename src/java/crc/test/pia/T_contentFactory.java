@@ -13,14 +13,6 @@ import crc.pia.Content;
 public class T_contentFactory
 {
   /**
-   * usage
-   */
-  private static void usage(){
-    System.out.println("Testing the creation of a FormContent using requestbody.txt");
-    System.out.println("java crc.pia.ContentFactory requestbody.txt");
-  }
-
-  /**
    * For testing.
    * 
    */ 
@@ -29,6 +21,11 @@ public class T_contentFactory
       System.out.println("Need file content filename.");
 
     String filename = args[0];
+
+    System.out.println("Test creating a form content from the FormContent class.");
+    System.out.println("Input is read from a file input/requestbody.txt.");
+    System.out.println("Output is a dump of the created form content.\n\n");
+
 
     ContentFactory cf = new ContentFactory();
 
