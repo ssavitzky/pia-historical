@@ -574,7 +574,7 @@ public class FormContent extends Properties implements Content {
 
       int pos = s.indexOf('=');
       if( pos == -1 ){
-	String eparam = s.trim().toLowerCase();
+	String eparam = s.trim();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
 	Pia.debug(this, "a param1-->"+ param);
@@ -583,7 +583,7 @@ public class FormContent extends Properties implements Content {
 	Pia.debug(this, "a val1-->"+ value);
       }else{
 	String p = s.substring(0, pos);
-	String eparam = p.trim().toLowerCase();
+	String eparam = p.trim();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
 	Pia.debug(this, "a param2-->"+ param);
