@@ -1,25 +1,30 @@
-<meta HTTP-EQUIV="Refresh" CONTENT="10;
-URL=show_slide.if"></meta>
+<set entity name=slide><if><test><get form name="slide"></test><then>&FORM.slide;</then><else>&AGENT.next_slide;</else></if></set>
+<set entity name=next><sum>&slide; 1</sum></set>
+<if><test><get name="AGENT.slides.&next;"></test><then><set entity name=pause>1</set></then><else><set entity name=pause>0</set></else></test></if>
+<if><test><get name="pause"></test><then><meta HTTP-EQUIV="Refresh" CONTENT="&AGENT.slide_pause;;
+URL=show_slide.if"><meta></then></if>
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>slideshow</title>
+<title>slideshow &AGENT.slide_directory;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<set name=slide><if>&FORM.slide<then>&FORM.slide</then><else>&AGENT.next_slide</else></if></set>
-<set name=file><get>AGENT.slides.&slide;</get></set>
-<set name=sfile><subst match=".jpg" result="">&file;</subst></set>
-<h1><read file=&sfile;.cap></read></h1>
-<img src="/Photos/&file;">
-<set name=previous><subtract>&slide; 1</subtract></set>
-<set name=next><add>&slide; 1</add></set>
-<form method=POST action=show_slide.if><input type=hidden name=slide value=&previous;><input type=submit value=Previous></form>
-<form method=POST action=show_slide.if><input type=hidden name=slide value=&next;><input type=submit value=Next></form>
+
+<set name=previous><difference>&slide; 1</difference></set>
+<h4>Slide: <a href="show_slide.if?slide=&previous;">&previous;</a>  &slide;
+<a href="show_slide.if?slide=&next;">&next;</a></h4>
+
+<set entity name=myfile><get name="AGENT.slides.&slide;"></set>
+<set name=sfile><subst match=".jpg" result="">&myfile;</subst></set>
+<h1><read file="&AGENT.slide_directory;/&sfile;.cap"></h1>
+<img src="/Photos/&AGENT.slide_directory;/&myfile;">
+
 <set name="AGENT.next_slide">&next;</set>
+<read interform file="banner.if">
 <!-- onlyoneslideshowatatime -->
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Apr 16 21:55:09 1997
+Last modified: Thu Apr 17 18:55:25 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

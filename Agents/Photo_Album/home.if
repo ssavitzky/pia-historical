@@ -4,9 +4,9 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <h1>&agentName; home page</h1>
-<set entity  name=latest><read file=".latest"></read></set>
+<set entity  name=latest><read file=".latest"></set>
 <ul>
-  <li><a href="/Photos/&latest;">Latest photos</a>
+  <li><a href="/Photos/&latest;/">Latest photos</a>
   <li><a href="/Photos/">All photos</a>
   <li><a href="/&agentName;/slide_show.if">Slideshows</a>
   <li><a href="/&agentName;/catalog.if">Catalog</a>
