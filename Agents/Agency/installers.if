@@ -26,16 +26,16 @@ add a default start-up form to this file.  <p>
        name: <input name="agent" value="History">
        </form></if>
   <dt> <a name="CIA">CIA agent</a>
-       <if><agent-running name=CIA><then><em>installed</em></then><else>
+       <if><agent-running name=cia><then><em>installed</em></then><else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
-       name: <input name="agent" value="CIA">
+       name: <input name="agent" value="cia">
        </form></if>
   <dt> <a name="FBI">FBI agent</a>
-       <if><agent-running name=FBI><then><em>installed</em></then><else>
+       <if><agent-running name=fbi><then><em>installed</em></then><else>
   <dd> <form action="/Agency/install_agent.if" METHOD="POST">
        <input type="submit" value="Install">
-       name: <input name="agent" value="FBI">
+       name: <input name="agent" value="fbi">
        </form></if>
   <dt> <a name="logo">Logo agent</a>
        <if><agent-running name=Logo><then><em>installed</em></then><else>
@@ -146,7 +146,7 @@ add a default start-up form to this file.  <p>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Mar 11 16:59:47 1997
+Last modified: Wed Mar 12 11:08:20 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
