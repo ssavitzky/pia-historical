@@ -99,6 +99,7 @@ public class Filter {
 
     /* Start by getting a Tagset. */
 
+    crc.dps.tagset.Loader.setVerbosity(verbosity);
     Tagset ts = crc.dps.tagset.Loader.getTagset(tsname);
     if (ts == null) {
       System.err.println("Unable to load Tagset " + tsname);
@@ -113,23 +114,7 @@ public class Filter {
     }
 
     if (debug) {
-      System.err.print("Tags defined in Tagset(" + tsname + "): ");
-      java.util.Enumeration names = ts.allHandlerNames();
-      while (names.hasMoreElements()) {
-	String name = names.nextElement().toString();
-	Handler h = ts.getHandlerForTag(name);
-	GenericHandler gh =
-	  (h instanceof GenericHandler)? (GenericHandler)h : null;
-	if (gh != null) {
-	  name += gh.getSyntaxCode() < 0? "E" : h.expandContent()? "X" : "Q";
-	  String cname = gh.getClass().getName();
-	  if (cname.equals("crc.dps.handle.GenericHandler")
-	      || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
-	  else if (gh instanceof LegacyHandler) name += "L";
-	}
-	System.err.print(" " + name);
-      }
-      System.err.print("\n");
+      dumpTagset(ts);
     }
     if (in == null || out == null) System.exit(-1);
 
@@ -172,6 +157,10 @@ public class Filter {
     if (noaction) ii.copy();
     else ii.run();
 
+    if (loadTagset && verbose) {
+      dumpTagset(((TagsetProcessor)ii).getNewTagset());
+    }
+
     if (parsing) { 
       if (debug) {
 	System.err.println("\n\n========= parse tree: ==========\n");
@@ -190,6 +179,26 @@ public class Filter {
     if (out != null) try {
       out.close();
     } catch (java.io.IOException e){}
+  }
+
+  public static void dumpTagset(Tagset ts) {
+    System.err.print("Tags defined in Tagset(" + ts.getName() + "): ");
+    java.util.Enumeration names = ts.allHandlerNames();
+    while (names.hasMoreElements()) {
+      String name = names.nextElement().toString();
+      Handler h = ts.getHandlerForTag(name);
+      GenericHandler gh =
+	(h instanceof GenericHandler)? (GenericHandler)h : null;
+      if (gh != null) {
+	name += gh.getSyntaxCode() < 0? "E" : h.expandContent()? "X" : "Q";
+	String cname = gh.getClass().getName();
+	if (cname.equals("crc.dps.handle.GenericHandler")
+	    || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
+	else if (gh instanceof LegacyHandler) name += "L";
+      }
+      System.err.print(" " + name);
+    }
+    System.err.print("\n");
   }
 
   /** Print a usage string.

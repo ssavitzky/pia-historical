@@ -61,6 +61,13 @@ public interface Tagset  {
    */
   public Tagset getContext();
 
+  /** Include definitions from a given tagset. 
+   */
+  public void include(Tagset ts);
+
+  /** Get the tagset's name. */
+  public String getName();
+
   /************************************************************************
   ** Lookup Operations:
   ************************************************************************/
@@ -229,7 +236,7 @@ public interface Tagset  {
   ************************************************************************/
 
   /** Convenience function to define a tag with a given syntax. */
-  public Handler defTag(String tag, String notIn, int syntax,
+  public Handler defTag(String tag, String notIn, String parents, int syntax,
 			String cname, NodeList content);
 
 }

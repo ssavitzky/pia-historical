@@ -4,11 +4,19 @@
 
 package crc.dps.tagset;
 
+import crc.dps.Parser;
+import crc.dps.Input;
+import crc.dps.Processor;
 import crc.dps.Tagset;
+
+import crc.dps.output.DiscardOutput;
+
 import crc.ds.Table;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 /** Loader for Tagsets.
@@ -30,6 +38,11 @@ public class Loader {
    *	=== we will have multiple tagset namespaces at some point.
    */
   static Table tagsets = new Table();
+
+  static int verbosity = 0;
+
+  /** Set the verbosity to be used when loading tagsets. */
+  public static void setVerbosity(int v) { verbosity = v; }
 
   /** Initialize the static table with the HTML, BOOT, and tagset tagsets. */
   static {
@@ -85,16 +98,19 @@ public class Loader {
   public static Tagset loadTagset(String name) {
     Tagset ts = null;
 
-    if (name.indexOf("/") >= 0) {
+    if (name.indexOf("/") >= 0
+	|| name.endsWith(".ts")
+	|| name.endsWith(".tss")
+	|| name.endsWith(".obj")) {
       // Definitely a file. 
-
+      loadTagsetFile(name);
     } else if (name.indexOf(".") >= 0) {
       // Definitely a resource or class
-
+      loadTagsetFromResource(name);
     }
     ts = loadTagsetSubclass(name);
     if (ts != null) return ts;
-    ts = loadTagsetFile(name);
+    ts = loadTagsetFromResource(name);
     return ts;
   }
 
@@ -116,8 +132,19 @@ public class Loader {
   }
 
   /** Load a Tagset implementation from an InputStream. */
-  protected static Tagset loadTagsetFromStream(InputStream src) {
-    return null; // ===
+  protected static Tagset loadTagsetFromStream(InputStream src, boolean boot) {
+    Tagset ts = boot? (Tagset)new BOOT_ts() : (Tagset)new tagset();
+    Parser p = ts.createParser();
+    p.setReader(new InputStreamReader(src));
+    TagsetProcessor proc = new TagsetProcessor();
+    proc.setInput(p);
+    proc.setTagset(ts);
+    proc.setOutput(new DiscardOutput());
+
+    proc.setVerbosity(verbosity);
+
+    proc.run();
+    return proc.getNewTagset();
   }
 
   /** Load a Tagset implementation from a Java ``resource''. 
@@ -127,7 +154,8 @@ public class Loader {
    *	presumably the master copy.
    */
   protected static Tagset loadTagsetFromResource(String name) {
-    return null; // ===
+    
+    return loadTagsetFile(name); // ===
   }
 
   /** Load a Tagset from a file.  
@@ -137,7 +165,25 @@ public class Loader {
    *	presumably the master copy.
    */
   protected static Tagset loadTagsetFile(String name) {
-    return null;		// ===
+    boolean boot = false;
+
+    if (name.endsWith(".ts")
+	|| name.endsWith(".tss")
+	|| name.endsWith(".obj")) {
+      // We know the extension already.
+    } else {
+      // === loadTagsetFile needs to check search path ===
+      name += ".ts";
+    }
+    FileInputStream s = null;
+    try {
+      s = new FileInputStream(name);
+    } catch (FileNotFoundException ex) {
+      ex.printStackTrace(System.err);
+    }
+    Tagset ts = (s == null)? null : loadTagsetFromStream(s, boot);
+    if (s != null) try { s.close(); } catch (Exception ex) {}
+    return ts;
   }
 
 }

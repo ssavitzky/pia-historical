@@ -18,11 +18,11 @@ JAVA_TAGSETS = \
 	BOOT_ts.java \
 	HTML_ts.java \
 	tagset.java \
-	basic.java \
 	legacy.java
 
 ### Obsolete Java tagsets.
 OBS_TAGSETS = \
+	basic.java \
 	standalone.java \
 	standard.java
 

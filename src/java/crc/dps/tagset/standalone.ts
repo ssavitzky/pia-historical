@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=standalone include=basic recursive>
+<tagset name=standalone parent=basic recursive>
 
 <h1>Standard Tagset</h1>
 
@@ -31,10 +31,17 @@
 <define element=get empty handler >
   <doc> The main advantage of <tag>get</tag> over the equivalent entity
 	reference is that the name can be computed by entity substitution, and
-	is not limited to strict entity syntax.  
+	is not limited to strict entity syntax.  A further advantage is that
+	it works in situations (e.g. ECMAscript and other, mainly client-side
+	DOM Level 1 applications) where entities are expanded automatically
+	before the document processor can see them.
   </doc>
   <define attribute=entity required>
     <doc> Specifies the name of the entity to be retrieved.
+    </doc>
+  </define>
+  <define attribute=namespace optional>
+    <doc> Specifies the namespace from which the entity is to be retrieved.
     </doc>
   </define>
 </define>
@@ -46,6 +53,10 @@
   </doc>
   <define attribute=entity required>
     <doc> Specifies the name of the entity to be set.
+    </doc>
+  </define>
+  <define attribute=namespace optional>
+    <doc> Specifies the namespace in which the entity is to be stored.
     </doc>
   </define>
 </define>

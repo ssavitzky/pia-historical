@@ -99,6 +99,22 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    */
   public Tagset getContext() { return context; }
 
+  /** Include definitions from a given tagset. 
+   */
+  public void include(Tagset ts) {
+    BasicTagset bts = (BasicTagset)ts; // === include is VERY kludgy. ===
+    if (verbosity > 0) {
+      message(1, getName() + " including " + bts.getName(), 2, true);
+    }
+    Table t = bts.handlersByTag;
+    Enumeration e = t.keys();
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      AbstractHandler h = (AbstractHandler)t.at(tag);
+      setHandlerForTag(tag, h);
+    }
+  }
+
   /************************************************************************
   ** Adding a Handler:
   ************************************************************************/
@@ -106,10 +122,11 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   /** Add the handler to the content of the tagset Node. */
   protected void addHandler(String name, int type, Handler newHandler) {
     ActiveNode h = (ActiveNode)newHandler;
-    addChild(h);
+    // === handlers can't deepcopy yet! === 
+    if (h.getParentNode() == null) addChild(h);
     if (verbosity > 0) {
       message(1, getName() + " defining " + NodeType.getName(type)
-	      + " " + name, 2, true);
+	      + " " + name + ": " + h.getClass().getName(), 2, true);
     }
   }
 
@@ -363,13 +380,20 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   ************************************************************************/
 
   /** Convenience function to define a tag with a given syntax. */
-  public Handler defTag(String tag, String notIn, int syntax,
+  public Handler defTag(String tag, String notIn, String parents, int syntax,
 			String cname, NodeList content) {
+    BasicHandler h = null;
     if (cname == null && content == null) 
-      return defTag(tag, notIn, syntax);
-
-    GenericHandler h = defTag(tag, notIn, syntax, cname);
-    Copy.appendNodes(content, h);
+      h = defTag(tag, notIn, syntax);
+    else
+      h = defTag(tag, notIn, syntax, cname);
+    if (content != null) Copy.appendNodes(content, h);
+    if (parents != null) {
+      Enumeration nt = new java.util.StringTokenizer(parents);
+      while (nt.hasMoreElements()) {
+	h.setIsChildOf(nt.nextElement().toString());
+      }
+    }
     return h;
   }
 

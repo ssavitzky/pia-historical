@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=tsdoc context=HTML tagset=standard>
+<tagset name=tsdoc parent=HTML tagset=standard>
 
 <h1>Tagset Documentation Tagset</h1>
 
@@ -70,7 +70,7 @@ documented in <a href="tagset.html">tagset.html</a>.
 <h2>Additional Constructs:</h2>
 
 <define element=cvs-id>
-  <action><h3>&content;</h3></action>
+  <action><h5>&content;</h5></action>
 </define>
 
 <define element=tag>

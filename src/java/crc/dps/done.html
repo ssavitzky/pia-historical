@@ -231,6 +231,11 @@ See also:
 	  specifies.  The XML identifier, however, definitely does require a ?.
        <p>
 
+  <li> <b>Wish:</b> <code>ParseTreeGenericNode</code> <br>
+       Eventually there should be a ParseTreeGenericNode, basically Token, so
+       that we can build trees with arbitrary node types.
+       <br>
+
   <li> 1998-07-22 <b>Bug:</b> XML names include extra characters. <br>
        XML names may contain `<code>"." | "-" | "_" | ":"</code>' in addition
        to anything Unicode defines as a letter, combining character, or
@@ -242,6 +247,27 @@ See also:
        <code>correctActiveElement</code> is evil.
        (1998-07-22)<br>
 
+  <li> 1998-08-10 <b>Bug:</b> need to give an error on missing handlers. <br>
+       (1998-08-04) <br>
+
+  <li> 1998-08-11 <b>Impr:</b> tag handler classes need loader methods <br>
+       Tagset shouldn't have to know how to load classes for handlers.  Having
+       static methods for this would allow tag handlers to manage their own
+       name spaces. 
+       (1998-06-16) <br>
+
+  <li> 1998-08-11 <b>Hole:</b> New Handlers <br>
+       A significant amount of language design is needed here.
+       <br>
+       The language design is done and the basics are working; missing
+       handlers are now at the level of bugs.
+
+  <li> 1998-08-11 <b>Hole:</b> Loading Tagset from file <br>
+       <br>
+       The language design is done and the basics are working; missing
+       handlers are now at the level of bugs.
+
+       
 </ul>
 <a name="end">End of list.</a>
 <hr>

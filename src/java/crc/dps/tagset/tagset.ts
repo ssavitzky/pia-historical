@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=tagset context=HTML>
+<tagset name=tagset parent=HTML>
 <title>Tagset for Tagset Definition Files</title>
 <cvs-id>$Id$</cvs-id>
 

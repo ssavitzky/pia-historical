@@ -155,4 +155,8 @@ public interface Syntax {
    */
   public boolean implicitlyEnds(String tag);
 
+  /** Return true if this kind of token is a potential child of the given one.
+   */
+  public boolean isChildOf(String tag);
+
 }

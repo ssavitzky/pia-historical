@@ -17,6 +17,20 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug:</b> Tagsets not loaded from resources. No search path. <br>
+       Need to be able to use class loader; check <code>.tss</code> and
+       <code>.obj</code> files.
+       (1998-08-11) <br>
+
+  <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>
+       Best done with a predefined tagset (STRIP_ts). 
+       (1998-08-07) <br>
+
+  <li> <b>Bug:</b> Can't <em>use</em> a tagset. <br>
+       The &lt;tagset&gt; tag only really works in a tagset definition file.
+       (1998-08-11) <br>
+       -- may require separate useTagset handler.
+
   <li> <b>Bug:</b> Rename TextHandler to avoid conflict. <br>
        Rename to TextNodeHandler to avoid Windows conflict with textHandler.
        (1998-08-07) <br>
@@ -33,9 +47,6 @@ See also:
   <li> <b>Hole:</b> Major changes needed for new DOM. <br>
        Do this after Level 1 stabilizes.
        (1998-08-05) <br>
-
-  <li> <b>Bug:</b> need to give an error on missing handlers. <br>
-       (1998-08-04) <br>
 
   <li> <b>Check:</b> entity-reference termination in InterForms <br>
        The old parser accepts entity references without a closing semicolon.
@@ -173,10 +184,10 @@ See also:
        (of course, the really obvious one is <code>.dpml</code> -- Document
        Processing Markup Language. (6-29)
        <dl compact>
-	 <dt> .mh
+	 <dt> .mh (xh?)
 	 <dd> ``Meta-HTML'' -- resulting in a MIME type of
 	      <code>text/html</code> 
-	 <dt> .mx
+	 <dt> .mx (xx?)
 	 <dd> ``Meta-XML'' -- resulting in a MIME type appropriate for XML.
 	 <dt> .md
 	 <dd> ``Meta-Data'' -- the MIME type is computed by the file
@@ -209,12 +220,6 @@ See also:
        the DPS equivalent of <code>crc.sgml.AttrWrap</code>.
        (1998-06-16) <br>
 
-  <li> <b>Impr:</b> tag handler classes need loader methods <br>
-       Tagset shouldn't have to know how to load classes for handlers.  Having
-       static methods for this would allow tag handlers to manage their own
-       name spaces. 
-       (1998-06-16) <br>
-
   <li> <b>Impr:</b> <code>Filter</code> parse tree input <br> 
        Filter should  be able to read a serialized parse tree.
        (1998-06-15) <br>
@@ -224,11 +229,6 @@ See also:
        <code>cd <a href="../interform/handle">../interform/handle</a>;
        make dps-check </code> for report.
        (1998-06-15) <br>
-
-  <li> <b>Hole:</b> New Handlers <br>
-       A significant amount of language design is needed here.
-       <br>
-       <b>done:</b> subst if else then elsf test get set 
 
   <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
@@ -270,10 +270,6 @@ See also:
        constructing an node and then processing it.
        <br>
 
-  <li> <b>Wish:</b> <code>ParseTreeGenericNode</code> <br>
-       Eventually there should be a ParseTreeGenericNode, basically Token, so
-       that we can build trees with arbitrary node types.
-       <br>
 </ol>
 
 <a name="end">(End of list)</a>

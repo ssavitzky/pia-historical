@@ -7,12 +7,9 @@ package crc.dps.tagset;
 import crc.ds.Table;		// for cache
 import crc.dps.handle.*;	// for cache initialization
 
-/** The BOOT tagset consists of NOTHING except what is needed to bootstrap
- *	a tagset. <p>
+/** The <code>tagset</code> tagset contains what is <em>normally</em> needed
+ *	for defining a tagset. <p>
  *
- *	This class includes a static cache for handler instances by class name
- *	(actually by ``<code>cname</code>'').  This greatly speeds up 
- *	initialization because all classes are identified at compile time. <p>
  */
 public class tagset extends HTML_ts {
 
@@ -21,7 +18,7 @@ public class tagset extends HTML_ts {
   }
 
   tagset(String name) {
-    super(name, false);
+    super(name, true);
     
     defTag("tagset", null, NORMAL, "tagset");
     defTag("define", null, NORMAL, "define");

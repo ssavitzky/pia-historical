@@ -270,7 +270,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
          </define>
        </define>
 
-  <li> <define element=action parent=define quoted>
+  <li> <define element=action parent=define quoted handler>
          <doc> The <tag>action</tag> sub-element defines an action for the
 	       node being defined.  Note that it is possible for a node to
 	       have both an action and a value.
@@ -339,8 +339,8 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   </note>
 
   <define attribute=name required/>
-  <define attribute=context implied>
-    <doc> The <code>context</code> attribute specifies the tagset in which
+  <define attribute=parent implied>
+    <doc> The <code>parent</code> attribute specifies the tagset in which
 	  names not defined in the current tagset will be looked up.  It is
 	  effectively <em>included</em> in the tagset being defined.
     </doc>
@@ -648,8 +648,49 @@ example).
 	operation, but it is used almost exclusively inside control-flow
 	operations for computing conditions.
   </doc>
-  <define attribute= implied>
-    <doc> 
+  <define attribute=text implied>
+    <doc> Performs the indicated test on the text portion of the content,
+	  discarding the markup.  In some cases, this has no effect.
+    </doc>
+  </define>
+  <define attribute=not implied>
+    <doc> Inverts the sense of the indicated test.
+    </doc>
+  </define>
+  <define attribute=zero implied>
+    <doc> Tests for the content being numerically equal to zero.  Whitespace
+	  is considered to be zero, but nonblank text that cannot be converted
+	  to a number is not.
+    </doc>
+  </define>
+  <define attribute=positive implied>
+    <doc> Tests for the content being numerically greater than zero.
+    </doc>
+  </define>
+  <define attribute=negative implied>
+    <doc> Tests for the content being numerically less than zero.
+    </doc>
+  </define>
+  <define attribute=numeric implied>
+    <doc> Tests for the content being convertable to a number.
+    </doc>
+  </define>
+  <define attribute=match implied>
+    <doc> The value of the attribute is a regular expression which is matched
+	  against the content, converted to a string.   
+    </doc>
+  </define>
+  <define attribute=exact implied>
+    <doc> With the <code>match</code> attribute, performs an exact match. 
+    </doc>
+  </define>
+  <define attribute=case implied>
+    <doc> With the <code>match</code> attribute, performs a case-sensitive
+	  match.  
+    </doc>
+  </define>
+  <define attribute=null implied>
+    <doc> Tests for the content being totally empty, even of whitespace.
     </doc>
   </define>
 </define>
@@ -711,7 +752,7 @@ example).
          <doc>
          </doc>
        </define>
-  <li> <define element=paren parent=select handlert>
+  <li> <define element=parent parent=select handler>
          <doc>
          </doc>
        </define>
@@ -733,7 +774,8 @@ example).
 
 <blockquote><em>
   Expansion control elements modify the processing of their contents, but are
-  not conditional in the same way that control-structure operations are. 
+  not conditional in the same way that control-structure operations are.  No
+  tests are performed.
 </em></blockquote>
 
 <h3>Expand</h3>
@@ -1009,7 +1051,7 @@ open-ended; tagset authors are free to define new ones as needed.
   ordinary Element.  (Currently <code>crc.dps.active.ParseTreeElement</code>).
 </em></blockquote>
 
-<!--template -->
+<!--template 
 <h3>Xxx and its components</h3>
 <define element=xxx >
   <doc>
@@ -1027,7 +1069,7 @@ open-ended; tagset authors are free to define new ones as needed.
          </doc>
        </define>
 </ul>
-<!--/template -->
+ --/template -->
 
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
