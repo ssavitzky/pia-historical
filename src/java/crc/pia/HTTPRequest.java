@@ -437,12 +437,15 @@ public class  HTTPRequest extends Transaction {
   
     if( destination == null )
       errorResponse(500, null);
-    try{
-      destination.getRequest( this, resolver );
-    }catch(PiaRuntimeException e){
-      errorResponse( 500, e.getMessage() );
-    }catch(UnknownHostException e2){
-      errorResponse( 400 , null );
+    else{
+      try{
+	Pia.instance().debug(this, "Going to get request...");
+	destination.getRequest( this, resolver );
+      }catch(PiaRuntimeException e){
+	errorResponse( 500, e.getMessage() );
+      }catch(UnknownHostException e2){
+	errorResponse( 400 , null );
+      }
     }
     
   }
@@ -472,7 +475,7 @@ public class  HTTPRequest extends Transaction {
     }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, toMachine(), ct, false);
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
     
     response.setStatus( mycode );
     response.setContentType( "text/plain" );
