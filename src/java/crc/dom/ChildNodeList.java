@@ -81,13 +81,15 @@ public class ChildNodeList implements NodeList{
   {
     if( parent == null ) return 0;
 
-    Node ptr = parent.getFirstChild();
-    long count = 0;
-    while( ptr != null ){
-      count++;
-      ptr = ptr.getNextSibling();
-    }
-    return count;
+    //  Node ptr = parent.getFirstChild();
+    //long count = 0;
+    //while( ptr != null ){
+    //  count++;
+    //  ptr = ptr.getNextSibling();
+    //}
+    //return count;
+
+    return parent.getChildCount();
   }
 
   /**
