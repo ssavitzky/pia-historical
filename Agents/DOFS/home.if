@@ -1,11 +1,13 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>DOFS home page</title>
+<title>DOFS<if><test not exact match="&agentName;">&agentType;</test>
+       <then>/&agentName;</then></if> home page</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Home page for 
     <if><test exact match="&agentName;">&agentType;</test>
-        <then>the &agentName; agent</then>
+        <then>the &agentName; agent <br>
+	      (Document-Oriented Filing System)</then>
         <else>&agentType;/&agentName;</else>
     </if></set>
 
@@ -124,7 +126,23 @@ the Agent's home page:
   <dd> A generic listing of the &name; agent's top-level directory.
 </dl>
 
-<h3>Note:</h3>
+<h3>Note:  Document-Oriented Filing System</h3>
+
+One might well ask why a simple file-server is called by the grandiose title
+of ``Document-Oriented Filing System''.  Several extensions are planned,
+including:
+<ul>
+  <li> treating entire directory trees as compound documents, 
+  <li> splitting a single file into multiple sub-documents
+  <li> mapping URL's to filenames  in ways not supported by the underlying OS
+  <li> ``mounting'' a CGI program or remote server as a directory.
+</ul>
+
+The result will be something that resembles an operating-system-independent
+file system rather than a simple server.
+
+
+<h3>Note:  Pronunciation</h3>
 
 There is some debate as to how ``DOFS'' should be pronounced.  ``Doffs'' means
 ``takes off'' (usually applied to an article of clothing), whereas ``doofus''
