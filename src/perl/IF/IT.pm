@@ -1,7 +1,7 @@
 ###### Interform Token
 ###	$Id$
 ###
-###	An InterForm Token is like an HTML::Element, only much simpler.
+###	An InterForm Token is like an HTML::Element, only somewhat simpler.
 ###	In particular, it does not have a _parent link, and the _tag is
 ###	optional (i.e. it may be a simple list of elements).  Tokens may
 ###	also include declarations, comments, MIME headers, and simple text.
@@ -189,8 +189,14 @@ sub push {
     $self;
 }
 
-sub pop
-{
+sub push_content {
+    ## Push something into the content.  Same as push, for legacy code.
+
+    my $self = shift;
+    $self->push(@_);
+}
+
+sub pop {
     ## Pop the content
 
     my $self = shift;
@@ -199,8 +205,7 @@ sub pop
     pop @$content;
 }
 
-sub shift
-{
+sub shift {
     ## Shift the content
 
     my $self = shift;
@@ -209,8 +214,7 @@ sub shift
     shift @$content;
 }
 
-sub unshift
-{
+sub unshift {
     ## unshift something into the content
 
     my $self = shift;
@@ -347,7 +351,7 @@ sub endtag {
 
 @empty_tags = (	
 	       '!', '!--', '?', 
-	       'img', 'hr', 'br', 'link',
+	       'img', 'hr', 'br', 'link', 'input',
 
 	       ## The following are dubious; there's no good way to
 	       ##    handle implicit end tags yet.

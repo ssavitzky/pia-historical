@@ -1,106 +1,10 @@
-package HTML::Parser;
+package IF::Parser;
 
-# $Id$
+#### $Id$
 
-=head1 NAME
-
-HTML::Parser - SGML parser class
-
-=head1 SYNOPSIS
-
- require HTML::Parser;
- $p = HTML::Parser->new;  # should really a be subclass
- $p->parse($chunk1);
- $p->parse($chunk2);
- #...
- $p->parse(undef)         # signal EOF
-
- # Parse directly from file
- $p->parse_file("foo.html");
- # or
- open(F, "foo.html") || die;
- $p->parse_file(\*F);
-
-=head1 DESCRIPTION
-
-The C<HTML::Parser> will tokenize a HTML document when the
-$p->parse() method is called.  The document to parse can be supplied
-in arbitrary chunks.  Call $p->parse(undef) at the end of the document
-to flush any remaining text.  The return value from parse() is a
-reference to the parser object.
-
-The $p->parse_file() method can be called to parse text from a file.
-The argument can be a filename or an already opened file handle. The
-return value from parse_file() is a reference to the parser object.
-
-In order to make the parser do anything interesting, you must make a
-subclass where you override one or more of the following methods as
-appropriate:
-
-=over 4
-
-=item $self->declaration($decl)
-
-This method is called when a I<markup declaration> has been
-recognized.  For typical HTML documents, the only declaration you are
-likely to find is <!DOCTYPE ...>.  The initial "<!" and ending ">" is
-not part of the string passed as argument.  Comments are removed and
-entities have B<not> been expanded yet.
-
-=item $self->start($tag, $attr)
-
-This method is called when a complete start tag has been recognized.
-The first argument is the tag name (in lower case) and the second
-argument is a reference to a hash that contain all attributes found
-within the start tag.  The attribute keys are converted to lower case.
-Entities found in the attribute values are already expanded.
-
-
-=item $self->end($tag)
-
-This method is called when an end tag has been recognized.  The
-argument is the lower case tag name.
-
-=item $self->text($text)
-
-This method is called when plain text in the document is recognized.
-The text is passed on unmodified and might contain multiple lines.
-Note that for efficiency reasons entities in the text are B<not>
-expanded.  You should call HTML::Entities::decode($text) before you
-process the text any further.
-
-=item $self->comment($comment)
-
-This method is called as comments are recognized.  The leading and
-trailing "--" sequences have been stripped off the comment text.
-
-=back
-
-The default implementation of these methods does nothing, I<i.e.,> the
-tokens are just ignored.
-
-There is really nothing in the basic parser that is HTML specific, so
-it is likely that the parser can parse many kinds of SGML documents,
-but SGML has many obscure features (not implemented by this module)
-that prevent us from renaming this module as C<SGML::Parse>.
-
-=head1 SEE ALSO
-
-L<HTML::TreeBuilder>, L<HTML::HeadParser>, L<HTML::Entities>
-
-=head1 COPYRIGHT
-
-Copyright 1996 Gisle Aas. All rights reserved.
-
-This library is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-Gisle Aas <aas@sn.no>
-
-=cut
-
+### Copied from HTML::Parser by Gisle Aas <aas@sn.no>
+### Modified to fit into the PIA code hierarchy by 
+###	Stephen Savitzky <steve@crc.ricoh.com>
 
 use strict;
 
@@ -226,7 +130,7 @@ sub parse
 	    if ($$buf =~ s|^(([a-zA-Z][a-zA-Z0-9\.\-]*)\s*)||) {
 		$eaten .= $1;
 		my $tag = lc $2;
-		my %attr;
+		my @attr;
 
 		# Then we would like to find some attributes
 		while ($$buf =~ s|^(([a-zA-Z][a-zA-Z0-9\.\-]*)\s*)||) {
@@ -253,12 +157,13 @@ sub parse
 			# assume attribute with implicit value
 			$val = $attr;
 		    }
-		    $attr{$attr} = $val;
+		    push(@attr, $attr, $val);
+		    #$attr{$attr}=$val
 		}
 
 		# At the end there should be a closing ">"
 		if ($$buf =~ s|^>||) {
-		    $self->start($tag, \%attr);
+		    $self->start($tag, \@attr);
 		} elsif (length $$buf) {
 		    # Not a conforming start tag, regard it as normal text
 		    $self->text($eaten);

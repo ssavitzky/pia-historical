@@ -10,12 +10,12 @@
 
 package IF::II;
 
-require HTML::Parser;
+require IF::Parser;
 
 use IF::IT;
 use IF::IA;
 
-push(@ISA,'HTML::Parser');	# === At some point we will use our own. ===
+push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 				#     the problem is that HTML::Parser
 				#     does some things we don't want.
 				#     We should eventually move to the
@@ -68,7 +68,7 @@ sub new {
     $self->{_dstack} =  [];	# The stack of items under construction.
     $self->{_cstack} =  [];	# The control stack.
     $self->{_out_queue} =  [];	# a queue of tokens to be output.
-    $self->{_in_queue} =  [];	# a queue of tokens to be input.
+    $self->{_in_stack} =  [];	# a stack of tokens to be input.
     $self->{_state} = {};	# A ``stack frame''
 
     bless $self, $class;
@@ -103,9 +103,9 @@ sub out_queue {
     my $self = shift;
     return $self->{_out_queue};
 }
-sub in_queue {
+sub in_stack {
     my $self = shift;
-    return $self->{_in_queue};
+    return $self->{_in_stack};
 }
 
 sub state {
@@ -360,8 +360,10 @@ sub start {
 	    print " $_=" . $attrs->{$_} if $main::debugging>1;
 	}
     } elsif (ref($attrs) eq 'ARRAY') {
-	while (my ($attr, $val) = splice(@$attrs, 0, 2)) {
+	my $attr, $val;
+	while (($attr, $val) = splice(@$attrs, 0, 2)) {
 	    $it->attr($attr, $val);
+	    print " $attr=$val " if $main::debugging>1;
 	}
     }
     $self->start_it($it);
@@ -372,7 +374,7 @@ sub end {
 
     ## End tag.
 
-    $self->end_it($tag);
+    $self->end_it($tag, !$tag);
 }
 
 sub comment {
@@ -479,6 +481,8 @@ sub flush {
 ###
 ### The Parse Stack(s):
 ###
+### ===	These are now inlined in resolve, for efficiency.
+###
 
 sub push_state {
     my ($self) = @_;
@@ -487,12 +491,8 @@ sub push_state {
 
     my $cstack = $self->cstack;
     my $state = $self->state;
-    push(@$cstack, $state);
-
-    ## There's probably a way to do this in a one-liner, but...
     my %newstate = %$state;	# copy the state
-    $self->state(\%newstate);
-
+    push(@$cstack, \%newstate);	# push the copy
     $self->variables({});	# clear the variable table.
 }
 
@@ -536,11 +536,12 @@ sub end_it {
     ##	  entire stack.
 
     my $dstack = $self->dstack;
+    my $cstack = $self->cstack;
     my $it, $t;
     print " </$tag> " if $main::debugging > 1;
     while (defined($it = pop(@$dstack))) {
 	my $was_parsing = $self->parsing;
-	$self->pop_state;
+	$self->state(pop(@$cstack));
 	$t = $it->tag;
 	$self->resolve($it, $was_parsing? 0 : -1);
 	return if ($t eq $tag) or $one;
@@ -549,7 +550,7 @@ sub end_it {
 
 #############################################################################
 ###
-###  ``Resolver'':
+###  The ``Resolver'':
 ###
 ###	This is the heart of the Interpretor:  it takes a start tag, end 
 ###	tag, or completed subtree and ``does the right thing'' with it.
@@ -558,8 +559,7 @@ sub end_it {
 ###	   2.	apply any interested agents
 ###	   3.	put the token in the right place.
 ###
-### ===	Really needs a loop so you can do process_it iteratively.
-###	maybe [tokens] in $incomplete?
+### ===	Really needs to do process_it iteratively.
 
 sub resolve {
     my ($self, $it, $incomplete) = @_;
@@ -567,60 +567,78 @@ sub resolve {
     ## Do the right thing to an incoming token.  
     ##	  $incomplete = 0 -- complete subtree
     ##	  $incomplete > 0 -- start tag
+    ##	              = 2 -- reprocess tree
     ##	  $incomplete < 0 -- end tag
 
     my $dstack = $self->dstack;
-    $self->token($it);
-    $incomplete = 0 unless defined $incomplete;
-    $it->status($incomplete) if ref($it);
+    my $cstack = $self->cstack;
 
-    print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
-	if $main::debugging > 1;
+    while ($it) {
+	## Loop as long as there are tokens to be processed.
 
-    if ($incomplete > 0) {
-	## check for interested agents.
-	##	keep track of any that register as handlers.
-	##	The little dance we do with the handlers makes sure
-	##	that while we are checking for them, the array
-	##	reference in state is the same as the one we just
-	##	pushed.  After that we can make a new one.
+	$self->token($it);
+	$incomplete = 0 unless defined $incomplete;
+	$it->status($incomplete) if ref($it);
 
-	$self->handlers([]);
-	$self->push_state;
-	push(@$dstack, $it);
+	print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
+	    if $main::debugging > 1;
 
-	$self->check_for_interest($it, 1) unless $self->quoting;
-	$it = $self->token;	# might have been changed.
+	if ($incomplete > 0) {
 
-	if (!defined($it) || (! ref($it) && $it eq '')) {
-	    ## Some agent has deleted the token.
-	    print " deleted " if $main::debugging > 1;
-	    $self->pop_state;
-	    pop(@$dstack);
+	    ## Start tag: 
+	    ##	 Push $it onto the data stack, and push $state onto the 
+	    ##	 control stack.
+
+	    $self->handlers([]);	# Clear the handler list.
+	    my $state = $self->state;
+	    my %newstate = %$state; 	# copy the state
+	    push(@$cstack, \%newstate);	# Push it on the control stack
+	    $self->variables({});	# clear the variable table.
+	    push(@$dstack, $it);	# push token on the data stack
+
+	    ## check for interested agents.
+	    ##	keep track of any that register as handlers.
+
+	    $self->check_for_interest($it, 1) unless $self->quoting;
+
+	    ## See if any interested agent modified the token 
+
+	    $it = $self->token;	# might have been changed.
+	    if (!defined($it) || (! ref($it) && $it eq '')) {
+		## Some agent has deleted the token.
+		print " deleted " if $main::debugging > 1;
+		$self->state(pop(@$cstack));
+		pop(@$dstack);
+		return;
+	    } elsif (!ref($it) || !$it->status) {
+		## Some agent has marked the token as finished
+		##	so pop it and go 'round again.
+		print " finished " if $main::debugging > 1;
+		$self->state(pop(@$cstack));
+		pop(@$dstack);
+		$incomplete = 0;
+		next;
+	    } else {
+		## Nothing serious happened, so we're done.
+		##	Clear the handler lisst in the new state.
+		$self->handlers([]);
+		$self->pass_it($it, 1) if $self->passing;
+		return;
+	    }
+	} elsif ($incomplete <= 0) {
+	    ## End tag or complete token (already popped)
+	    ## 	check for interested agents and handler actions.
+
+	    $self->check_for_interest($it) unless $self->quoting;
+	    $self->check_for_handlers($it);
+
+	    $it = $self->token;	# might have been changed.
+	    return if (!defined($it) || $it eq ''); # might have been deleted.
+
+	    $self->push_it($it) if $self->parsing;
+	    $self->pass_it($it, $incomplete) if $self->passing;
 	    return;
-	} elsif (!ref($it) || !$it->status) {
-	    ## Some agent has marked the token as finished
-	    print " finished " if $main::debugging > 1;
-	    $incomplete = 0;
-	    $self->pop_state;
-	    pop(@$dstack);
-	    $self->token($it);
-	} else {
-	    $self->pass_it($it, 1) if $self->passing;
-	    $self->handlers([]);
 	}
-    } 
-    if ($incomplete <= 0) {
-	## check for interested agents and handler actions.
-
-	$self->check_for_interest($it) unless $self->quoting;
-	$self->check_for_handlers($it);
-
-	$it = $self->token;	# might have been changed.
-	return if (!defined($it) || $it eq ''); # might have been deleted.
-
-	$self->push_it($it) if $self->parsing;
-	$self->pass_it($it, $incomplete) if $self->passing;
     }
 }
 
