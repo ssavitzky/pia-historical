@@ -1,4 +1,6 @@
 PACKAGE=crc.pia.agent
+TOPDIR=../../..
+
 
 FILES = \
 	Agency.java \
@@ -6,4 +8,4 @@ FILES = \
 	Dofs.java \
 	AgentInstallException.java
 
-include $(MAKEDIR)/file.make
+include $(TOPDIR)/makefiles/file.make
