@@ -20,14 +20,14 @@ import crc.util.regexp.RegExp;
 
 public class Machine {
   /**
-   * Attribute index - client address
+   * Attribute index - client hostName
    */
-  protected String address;
+  protected String hostName;
 
   /**
    * Attribute index - port
    */
-  protected int port;
+  protected int port = -1;
 
   /**
    * Attribute index - client socket
@@ -37,7 +37,7 @@ public class Machine {
   /**
    * Attribute index - proxy
    */
-  protected String proxy;
+  protected Hashtable proxyTab = new Hashtable();
 
   /**
    * Attribute index - input stream
@@ -157,21 +157,43 @@ public class Machine {
    * getRequest string.
    * @returns the number of bytes read. 
    */
-  public Transaction getRequest(Transaction request, Resolver resolver) {
+  public Transaction getRequest(Transaction request, Resolver resolver) throws UnknownHostException, IOException  {
     String proxy;
+    URL agentURL;
+    URL url;
+    URLConnection agent;
+    int zport;
+    int zhost;
+
     Transaction reply;
-    InputStream in;
 
+    url = request.requestURL();
+
+
+    proxy = proxy( request.protocol() );
+    if( proxy ){
+	int p        = proxy.getPort();
+	int zport    = (p == -1) ? 80 : p;
+	zhost        = proxy.getHost();
+    }else{
+      zport        = ( port == -1 ) ? 80 : port;
+      zhost        = hostName;
+    }
+    
     try{
-      URL urlObject = new URL( request.requestURL() );
-      URLConnection agent = urlObject.openConnection();
-      // not sure what to do here
-      proxy = proxy( request.protocol() );
-      if( proxy )
-	agent.setRequestProperty("proxy", proxy);
-
-      return new Transaction(request, Content( URLConnection ) );
+      socket       = new Socket(zhostName, zport);
+      outputStream = new BufferedOutputStream(socket.getOutputStream());
+      inputStream  = new BufferedInputStream(socket.getInputStream());
+      //Actually, need to spit the first line too
+      //spit header, Becareful about the content length;
+      //spit body if there is a body;
+      //outputStream.flush()
+      //need to create a response transaction with the inputStream tie to its
+      //content.  Return the transaction.
+    }catch(UnknownHostException ue){
+      throw ue;
     }catch(IOException e){
+      throw e;
     }
   }
 
@@ -179,8 +201,13 @@ public class Machine {
    * get proxy string.
    * @returns the number of bytes read. 
    */
-  public String proxy (String scheme, String proxystring) {
-    return proxy;
+  public URL proxy ( String scheme ) {
+    URL myproxy = null;
+
+    Object o = proxyTab.get( scheme );
+    if( o )
+      myproxy = (URL) o;
+    return myproxy;
   }
 
   /**
@@ -188,25 +215,39 @@ public class Machine {
    *
    */
   public void setProxy (String scheme, String proxystring) {
-    if( proxystring )
-      proxy = proxystring;
+    String p = null;
 
-    if(!proxy){
-	String mainproxy= Pia.agency().proxyFor(address, scheme);	
+    if( proxystring )
+      p = proxystring;
+
+    if(!p){
+	String mainproxy= Pia.agency().proxyFor(hostName, scheme);	
 	if ( mainproxy )
-	  proxy = mainproxy;
+	  p = mainproxy;
     }
-    return proxy;
+    if(p){
+      try{
+	myproxy = new URL( p );
+	proxyTab = put(scheme, myproxy);
+      }catch(MalformedURLException e ){
+      }
+    }
   }
 
   /**
    * Constructor 
    * @returns nothing. 
    */ 
-  public Machine( String address, int port, Socket socket ){
-    this.address = address;
+  public Machine( String hostName, int port, Socket socket ){
+    this.hostName = hostName;
     this.port = port;
     this.socket = socket ;
+  }
+
+  public Machine( String hostName, int port ){
+    this.hostName = hostName;
+    this.port = port;
+    socket = null;
   }
 
 }
