@@ -40,15 +40,15 @@ src="&li;.small.gif"><br><get form name="&li;"></a>
 </table>
 </write>
 
- <if> <test><read info file="&AGENT.master_list;"></test><then>
-</then><else><write file="&AGENT.master_list;">
+ <if> <test><read info file="&AGENT.masterlist;"></test><then>
+</then><else><write file="&AGENT.masterlist;">
 <h3>Created &dayName; &monthName; &day; by &piaUSER;</h3>
 <!-- this file  will have a set of table entries of captions -->
 <!--  need to figure out how to edit rather than just append -->
 <!-- for now, requires table wrapper around -->
 </write>
 </else></if>
-<write append file="&AGENT.master_list;">
+<write append file="&AGENT.masterlist;">
 <TR><TD><a href="&mydirectory;/captions.html">&titleimg;</a><TD><a
 href="&mydirectory;/captions.html"> "&FORM.captTitle;"</a><TD>
 &dayName; &monthName; &day;

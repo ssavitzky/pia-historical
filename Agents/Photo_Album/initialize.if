@@ -7,7 +7,7 @@
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
  set defaults
-<set agent name="master_list">master_list.html</set>
+<set agent name="masterlist">master_list.html</set>
 <set agent name="rowsize">6</set>
 
 <dl>

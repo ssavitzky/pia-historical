@@ -22,7 +22,7 @@ Most recent pictures captured on  &latest;.
 </ul>
 
 <repeat list="&AGENT.slides;">
-<set name="small"><subst match=".jpg" result=".small.gif">&li;</subst></set>
+<set name="small"><subst match=".jpg" result=".small.gif">&li; </subst></set>
  <a href="/Photos/&latest;/&li;"><img  src="/Photos/&latest;/&small;" ></a>
 </repeat>
 
