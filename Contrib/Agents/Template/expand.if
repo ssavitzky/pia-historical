@@ -1,0 +1,48 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html>
+<tagset-load name=template-form interform file=tagset.inc>
+
+<t-form-setup><!-- perform setup -->
+<!-- ============================================================= -->
+<head>
+<title>Template Expansion</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Template Expansion</set>
+<if><get form name=no-includes>
+    <then><h1>&title;</h1>
+	  <blockquote><em>headings omitted for speed</em></blockquote>
+    <else><read interform file="heading.inc" process>
+          <read interform file="subhead.inc" process>
+</if>
+<hr><!-- ============================================================= -->
+This form is used internally for expanding a template's prototype files.<p>
+<hr>
+
+<if><get name="data-file"><then><read process quiet file="&data-file;"></if>
+
+<if><get name=dDir>
+    <else><if><get name=dRoot-path>
+	  <then><set name=dDir>&dRoot-path;/&dPath;/&dName;</set>
+</if></if>
+
+<if>&urlQuery;
+<then>
+
+<h4>Expanding:</h4>
+<set name=t-expanding>1</set>
+
+<!-- With t-expanding off this just generates the file report. -->
+<read quiet process interform file="expand.inc">
+
+<else>
+
+<h4>Incomplete -- needs a form for selecting the template to expand. </h4>
+
+</if>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

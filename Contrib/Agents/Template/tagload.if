@@ -1,0 +1,47 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html>
+<set name=title>Tagset Loader</set>
+<head>
+<title>&agentName;: &title;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<read interform file="heading.inc" process>
+<read interform file="subhead.inc" process>
+<hr>
+
+The &agentName; agent uses a special extended tagset for processing data files
+and constructing forms out of the results.  This tagset is  read
+automatically the first time it is needed; this form can be used to reload it 
+(if, for example, it just been modified).
+
+<hr>
+
+<if><tagset-exists name=template-form>
+    <then>Re-reading:
+    <else>Reading: 
+</if> <code><a href="tagset.inc">tagset.inc</a></code>...
+
+<read process quiet interform file=tagset.inc>
+<em>done</em>
+
+
+<hr><!-- ============================================================= -->
+<a href="/">PIA</a> || <a href="/Admin">Admin</a> ||
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/help">help</a>
+	  <a href="/&agentType;/&agentName;/options">options</a>
+	  <a href="/&agentType;/&agentName;/tagload">tags</a>
+    <else><a href="/&agentName;/home">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/help">help</a>
+	  <a href="/&agentName;/options">options</a>
+	  <a href="/&agentName;/tagload">tags</a>
+</if>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
