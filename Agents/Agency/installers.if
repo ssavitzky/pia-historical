@@ -107,7 +107,7 @@ which is only useful for agents which have no options.
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="My">
        type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="~/.pia">
+       root:<input name="root" value="&usrDIR;">
        <input type="submit" value="Install">
        </form></if>
   <dt> <a name="PIA">DOFS/PIA</a>
@@ -173,7 +173,7 @@ which is only useful for agents which have no options.
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="Photos">
        type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="~/.pia/Photo_Album/">
+       root:<input name="root" value="&usrDIR;/Photo_Album/">
        <input type="submit" value="Install">
        </form></if>
 
@@ -193,28 +193,28 @@ which is only useful for agents which have no options.
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="archive">
        type:<input name="type" value="DOFS"><br>
-       root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
+       root:(absolute) <input name="root" value="&usrDIR;/CDRW/archive">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="publish">
        type:<input name="type" value="DOFS"><br>
-       root:(absolute) <input name="root" value="~/.pia/CDRW/publish">
+       root:(absolute) <input name="root" value="&usrDIR;/CDRW/publish">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="shared">
        type:<input name="type" value="DOFS"><br>
-       root:(absolute) <input name="root" value="~/.pia/CDRW/shared">
+       root:(absolute) <input name="root" value="&usrDIR;/CDRW/shared">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="backup">
        type:<input name="type" value="DOFS"><br>
-       root:(absolute) <input name="root" value="~/.pia/CDRW/backup">
+       root:(absolute) <input name="root" value="&usrDIR;/CDRW/backup">
        <input type="submit" value="Install">
        </form>
 
@@ -224,10 +224,10 @@ which is only useful for agents which have no options.
        <if><agent-running name=WebPrinter><then><em>installed</em></then>
        <else>
   <dd> <form action="/Agency/install_agent.if" method="POST">
-       <input type="submit" value="Install">
-       name: <input name="agent" value="WebPrinter">
-       type: <input name="type" value="printer">
+       name: <input name="agent" value="WebPrinter"><br>
+       type: <input name="type" value="printer"><br>
        class: <input name="class" value="PIA::Agent::Printer">
+       <input type="submit" value="Install">
        </form></else></if>
   <dt>  spool
        <if><agent-running name=spool><then><em>installed</em></then>
@@ -235,7 +235,7 @@ which is only useful for agents which have no options.
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="spool">
        type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="~/.pia/WebPrinter/spool/">
+       root:<input name="root" value="&usrDIR;/WebPrinter/spool/">
        <input type="submit" value="Install">
        </form></else></if>
 </dl>
