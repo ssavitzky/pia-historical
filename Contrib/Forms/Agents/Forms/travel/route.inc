@@ -5,12 +5,12 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>manager</routeuser>
+            <routeuser>Manager</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>3</routeid>
-            <routeuser>deptAdmin</routeuser>
+            <routeuser>DivAdmin</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep></route>

@@ -18,9 +18,13 @@
 href=show_signatures.if?formurl=&FORM.formurl;>&FORM.formurl;</a></h4>
 (Click on user name to send this form to that user.)
 <ol>
-<for-every object=&myroute; tag=routeuser entity=u>
-<li><a href=route_form.if?touser=&u.Text;&fparam;> &u; </a></li>
-</for-every>
+  <set name=routes><dummy><get name=myroute findall=routeuser></set>
+<repeat list=&routes; entity=u>
+   <if><get index=u.authorizor attr=type> <then><set name=myto><get
+   index=u.authorizor.Text>&signas=<get index=u.authorizor attr=type></set></then>
+   <else><set name=myto><get index=u.Text></set></else> </if>
+<li><get index=u.authorizor attr=type><a href=route_form.if?touser=&myto;&fparam;> &u; </a></li>
+</repeat>
 </ol>
 <h4> This is what has hapened to the form so far </h4>
 <show-form-history form=&FORM.formurl;>
@@ -39,6 +43,6 @@ href=show_signatures.if?formurl=&FORM.formurl;>&FORM.formurl;</a></h4>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Fri Feb 13 17:14:41 1998
+Last modified: Sun Aug  9 16:26:03 1998
 <!-- hhmts end -->
 </body></html>

@@ -1,0 +1,23 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; edit route</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> Show authorization chart</set>
+<read interform file="heading.inc" process>
+
+<tagset-load name=Form-agent-actors>
+
+ <h3> Authorization Chart </h3>
+      
+<set name=atab><table border=1> <tr> </tr>   <tr> </tr>  <tr> </tr>  <tr> </tr> </table></set>
+<show-auth-list authlist=&AGENT.authlist; maxdepth=4 table=&atab;>
+<get name=atab>
+
+<h4> Instructions </h4>
+Click on the name of a group to edit that group (change authorized signers,
+remove/add employees, etc.).  Click on a userid to edit the profile for that user.
+<expand><get agent name=navbar></expand>
+<b>Copyright Å© 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+</body></html>

@@ -14,30 +14,33 @@
 
  <if> <get form name=euser>
  <then>
- <set name=euser> <get  form name=euser></set>
- <set name=uid> <get  form name=euser></set>
-<form action="&url;" id="euser1"  copy method=post>
-<input name="euser" type=hidden  value="&euser;">
- <process copy>
+   <set name=euser> <get  form name=euser></set>
+   <set name=uid> <get  form name=euser></set>
+   <set name=alistid><user-info user=&euser; attribute=authlistid></set>
+   
+   <form action="&url;" id="euser1"  copy method=post>
+   <input name="euser" type=hidden  value="&euser;">
+   <input name="alistid" type=hidden  value="&alistid;">
+   <process copy>
+   
+   <if><get name=allow>
+     <then>
+       <set name=u><get agent name=users key=&uid;></set>
+       <set index=u.username replace><get name=username form></set>
+       <set index=u.userext replace><get name=userext form></set>
 
-   <if><get name=allow>  <then>
-   <set name=u><get agent name=users key=&uid;></set>
-    <set index=u.username replace><get name=username form></set>
-     <set name=olddept><user-dept user=&uid;></set>
-     <if><test match=&FORM.userdept;><get name=olddept></test> <else>
-         <set index=u.userdept replace><get name=userdept form></set>
-	 <if><get name=olddept><then><dept-remove-member member=&uid; department=&olddept;></then></if>
-	 <dept-add-member member=&uid; department=&FORM.userdept;>
-	 <save-data data=departments>
-     </else> </if>
-    <set index=u.userext replace><get name=userext form></set>
-
-
-  
-
-		    <!-- Saving new data to disk -->
-		    <save-data data=users>
-		    <save-data data=groups>
+       <if><get name=manager form>
+	 <then>
+	   <if><test match=&FORM.manager; exact><manager user=&uid;></test>
+	     <else>
+	       <!-- add 2  managers authorization list -->
+	       <set name=alist><user-info user=&FORM.manager;
+	       attribute=authlist></set>
+	       <set index=alist.users insert=-1><get name=euser></set>
+	     </else></if>
+	   </then></if>
+	   <!-- Saving new data to disk -->
+	   <save-data data=users>
 
    </then> <else>
    <h2>NOT Authorized</h2>
@@ -51,28 +54,18 @@
  <table>
 <TR><TD>user-id: <TD><get name=uid>
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
-<TR> <TD> <a href=show_depts.if>Department:</a><TD><select name="userdept">
-<option>&u.userdept.Text;</option>
- <repeat list=&AGENT.departments.keys;> <option><get name=li></option></repeat>
-</select>
-<TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
+<TR> <TD>Manager:<TD><select name=manager><option><manager user=&uid></option>
+ <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat> </select >
+  <TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
 </table>
 
-<h3>Groups:<h3>
-  <ul foreach list=&AGENT.groups.keys; entity=mgrp>
-   <set name=mylist><get agent index=groups.&mgrp;.li.Text></set>
-   <if> &mylist; <then></then> <else><set name=mylist> nobody</set></else></if>
-<if>
-	<is-in-list value=&euser;>&mylist;</is-in-list>
-	 <then><li> &mgrp;  <input type="checkbox" name=group&li; value=keep checked></li></then>
-       
-   </if> 
-   </ul>
 
   <br>
   <input type="SUBMIT" value="Submit">  
  </form>
-
+<h4> Authorized signers for &uid;</h4>
+ <get agent name=cachedroutes key=&uid;>
+ <p>
    <set name=myuser><get name=users agent key=&uid;></set>
    <if> <get index=myuser.userpublickey.Text> <then> </then>
    <else>
@@ -100,17 +93,10 @@
    <set name=duser> <get form name=deluser></set>
    <set name=u><get agent name=users key=&duser;></set>
    <set agent name=users key=&duser; delete></set>
-   <set name=udept><get index=u.userdept.Text></set>
-    <if> <get name=udept><then>
-	 <dept-remove-member member=&duser; department=&udept;>
-	 <save-data data=departments>
-	 </then> </if>
-   <repeat list=&AGENT.groups.keys;>
-   <group-remove-user user=&duser; group=&li;>
-   </repeat>
+<!-- TBD delete from authlist -->
     <b>  Deleted &duser; </b><br>
     <save-data data=users>
-    <save-data data=groups>
+
   </process>
  Delete userid:
   
@@ -129,6 +115,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Fri Jun 19 11:47:57 1998
+Last modified: Sun Aug  9 14:37:17 1998
 <!-- hhmts end -->
 </body></html>

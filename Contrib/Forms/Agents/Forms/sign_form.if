@@ -46,14 +46,11 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
 	 Signature added to <a href=show_signatures.if?formurl=&myformurl;>form.</a>
 	 <append-form-history form=&myformurl;>Signed by <get form name=user></append-form-history>
 	 <notify-next-recipient form=&myformurl; user=&FORM.user; signedas=&FORM.signas;>
+        <!-- notify-originator action=Signed user=&FORM.signas; form=&myformurl;-->
 
 <hr><!-- show next forms for user to sign -->
          <show-pending user=&FORM.user;>
-         <repeat list=&AGENT.groups.keys; entity=mygrpo>
-         <if-in-group user=&FORM.user; group=&mygrpo;>
-           <show-pending user=&mygrpo;>
-         </if-in-group>
-         </repeat>
+         
 	</then>
 	 <else> Signature not valid -- please go  <a
 		href="&url;?formurl=&myformurl;"> back </a> and try
@@ -69,6 +66,7 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
 	  <if> <read file=&myformurl;.sig info> <then>	
           <set name=sigfile><read file=&myformurl;.sig process></set>
           </then></if>
+
    Please sign the following document:
 	   <hr>
 	<get name=document>
@@ -76,6 +74,7 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
         <if><get name=sigfile><then>
 	<show-sig-table signatures=&sigfile;>
         </then></if>
+
 	<form action="&url;" method="post">
 	
 	<input name="formurl" type=hidden value=&myformurl;>
@@ -95,6 +94,8 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
 	<input type="SUBMIT" value="SIGN"><br>
 	Notes:<textarea name="comments" rows=2 cols=60></textarea>
 </form>
+<hr>
+<show-form-options form=&FORM.formurl;>
 	  </then> 
  <else>NO form found -- please report this error ---</else>
 	</if>

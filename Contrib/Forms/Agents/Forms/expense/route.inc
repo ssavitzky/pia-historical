@@ -5,8 +5,8 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>printer</routeuser>
-            <routewhen>always</routewhen>
+            <routeuser>Accounting</routeuser>
+            <routewhen>notify</routewhen>
             <routecond><conditional>
   <condvar>name</condvar>
   <condtest>equalto</condtest>
@@ -14,7 +14,7 @@
   </conditional></routecond>
             </routestep><routestep>
             <routeid>3</routeid>
-            <routeuser>Accounting</routeuser>
+            <routeuser>printer</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep></route>

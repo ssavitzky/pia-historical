@@ -45,11 +45,21 @@
      <get index=var.Text>
      </textarea>
      </set></then> <else>
-     <if><get name=var attr=size> <then> <set name=mysize><get name=var attr=size></set><set name=var insert=0 replace><input
+      <if><get name=var attr=checkboxes> <then>
+      <set name=items><get name=var attr=checkboxes></set>
+
+      <set name=var insert=0 replace><if><get index=var.Text> <then><input
+      type="RADIO" name="&varname;" checked value=&var.Text;><get
+       index=var.Text><br></then></if>
+      <repeat list=&items; entity=cb><input
+      type="RADIO" name="&varname;" value=&cb;><get name=cb><br></repeat>
+      </set></then> <else>
+       <if><get name=var attr=size> <then> <set name=mysize><get name=var attr=size></set><set name=var insert=0 replace><input
     name="&varname;" value=&var.Text; size=&mysize;></set></then> <else>
   <set name=var insert=0 replace><input name="&varname;" value=&var.Text;></set>
-</else></if>
-</else></if>
+       </else></if>
+      </else></if>
+    </else></if>
 </else></if>
 </else></if>
   </repeat>

@@ -151,9 +151,16 @@ as dd value -->
 </actor>
 	 
 <!-- this is ugly because we want no spaces in the result -->	 
-<actor tag=manager  empty dscr="return manager of USER"><set  name=value local><if><get element name=user><then><get element name=user></then><else><get trans name=AuthenticatedUser></else></set><set local name=userd><user-dept user=&value;></set><set local name=myman><dept-get-manager department=&userd;></set><if><test match=&value; exact><get name=myman></test><then><dept-get-secondmanager department=&userd></then><else><get name=myman></else></if></actor>	 
+<actor tag=manager  empty dscr="return manager of USER"><set  name=value
+local><if><get element name=user><then><get element
+name=user></then><else><get trans name=AuthenticatedUser></else></set><set name=myman local><user-info  user=&value; attribute=Manager></set><get index=myman.Text></actor>	 
 
-<actor tag=user-dept  empty dscr="return department number of USER"><set  name=value local><if><get element name=user><then><get element name=user></then><else><get trans name=AuthenticatedUser></else></set><set local name=userdat><get agent name=users key=&value;></set><get index=userdat.userdept.Text></actor>	 
+<actor tag=user-dept  empty dscr="return department number of USER"><set  name=value local><if><get element name=user><then><get element name=user></then><else><get trans name=AuthenticatedUser></else></set><user-info  user=&value; attribute=Department></actor>	 
+
+
+<actor tag=user-info  empty desc=" get the current binding for ATTRIBUTE for
+  USER"><set local name=myuser><get name=user element></set><set local
+  name=myrole><get name=attribute element></set><set local name=replacements><get agent name=cachedroutes key=&myuser;></set><get name=replacements key=&myrole;></actor>
 
 
 <actor tag=set-manager   dscr=" sets manager of USER">
@@ -196,179 +203,221 @@ index=userdat.username.Text></then><else><get name=value></else></if></actor>
 
 <actor tag=show-pending empty  dscr="  show pending forms for USER">
  <set  name=value local><get element name=user></set>
- <if><read file="users/&value;.html" info>
- <then>
-    <set local name=mysignas>&signas=<get name=value></set>
-   <set name=pending><read file="users/&value;.html"  process></set>
-	<set name=pending><b><get name=pending findall=a></b></set>
-	    
-	<if> <test positive> <get name=pending size></test> <then>
-	<h3><a href=edit_pending.if?uid=&value;>Pending forms for &value;</a></h3>
-	     <ul foreach list="&pending;" entity=myli>
-<set local name=myurl><get name=myli attr=href></set>
-	     <set local name=mydesc><get name=myli text></set>
-	     <li><a href=sign_form.if?formurl=&myurl;&mysignas;>&mydesc.Text;</a></li></ul>
-	</then> <else><h3>No Pending forms for &value;</h3> </else></if>
- </then><else><h3>No Pending forms for &value;</h3> </else></if>
+ <show-inbox inbox=&value;>
+   <set name=boxes><get name=inboxes key=&value; agent></set>
+   <if><get name=boxes>
+     <then>
+       <repeat list=&boxes; entity=mbox>
+	  <if> <read file="users/&mbox;.&value;.html" info>
+	    <then><show-inbox inbox=&mbox;.&value; signas=&mbox;></then>
+	    <else><show-inbox inbox=&mbox; signas=&mbox;></else>
+	  </if>
+       </repeat></then>
+     <else></else> </if>
 </actor>
 
-
- <actor tag=notify-next-recipient-old empty desc="add FORM to pending list for
- recipient after USER">
-<set  name=myuser local><get element name=user></set>
-<set  name=myform local><get element name=form></set>
-<!--  see if  current route is a user or a group -->
-
- <set name=myroute local><get element name=route></set>	     
- <if><get name=myroute> <then></then><else>
-  <set local name=rfile><subst result=".route.html"
-  match=".html"><get name=myform></subst></set>
- <set name=myroute><read file=&rfile; process></set>
- </else>
- </if>
-
- <set name=next local>NoMoreRoute</set>
- <if><get name=myroute >
-     <then>
-     <!-- old style route is easier   user is key -->
-     <if> <get name=myroute key=&myuser;>
-         <then> <set name=toremove>&myuser;</set>
-          <set name=next><get name=myroute key=&myuser;></set>
-          <if> <test match=NULL>&next;</test> <then>
-	       <set name=next>NoMoreRoute</set></then>
-          </if>
-     </then>
-     <else>
-          <!-- loop to get at next user on list -->
-          <set name=myflag local>start</set>
-	   <set name=steps><dummy><get name=myroute findall=routestep></dummy></set>
-          <repeat list=&steps; entity=step>
-	    <set name=rentry><get index=step.routeuser.Text></set>
-	      <if><test match=next><get name=myflag></test> <then>
-	          <if> <get  name=rentry> <then>
-	           <set  name=next><get  name=rentry></set>
-	          </then>
-	          </if>
-	      <set name=myflag>done</set>
-	     </then>
-	     <else>
-                 <if><test match=start><get name=myflag></test> <then>
-	             <if> <test match=&myuser;><get name=rentry></test><then>
-	              <set name=myflag>next</set>
-	              <set name=toremove>&myuser;</set>
-	             </then>
-	             <!--  check for group membership -->
-	             <else>
-   	                 <if> <test match=&myuser;><get agent name=groups
-			   key=&rentry;></test>
-	                 <then>
-	                  <set name=myflag>next</set>
-                          <set name=toremove>&rentry;</set>
-	                 </then>
-                         </if>
-	             </else>
-	             </if>
-	        </then>
-	        </if>
-              </else>
-	      </if>
-	  </repeat>
-     </else>
-     </if>
-
-     <if> <get name=next> <else>
-          <h2>CANNOT DETERMINE NEXT STEP</h2>  <a href=show_route.if?formurl=&myform;>Please click here to route manually</a> </else></if>
-
-     <if> <test match=NoMoreRoute><get name=next></test> <then>
-          <h4>No more steps for &myform;</h4> 
-         <a href=show_route.if?formurl=&myform;>Click here if this form should be sent to someone else.</a> <br>
-	  </then>
-	<else>
-	  <notify-user form=&myform; user=&next;>
-	  Routing &myform;  to &next;
-        </else>
-     </if>
-     <if> <get name=toremove> <then>
-          <remove-notify-user user=&toremove; form=&myform;>
-     </then>
-     <else>  user not identified in route... no pending forms removed</else>
-     </if>
- </then>
- <else>
-  NO Route for &myform; specified, <form action="panic.if" method=post>
-<input name="problem" type=hidden value="no route found for &myform; for &myuser;">
-Please hit the <input type="SUBMIT" value="Panic Button"> 
-</form>
-   </else></if>	     
-</actor>
-
-
- <actor tag=notify-next-recipient empty desc="add FORM to pending list for
- recipient after USER">
-<set  name=myuser local><get element name=user></set>
-<set  name=myform local><get element name=form></set>
-<set  name=mysignas local><get element name=signedas></set>
- <if><get name=mysignas> <then> <set local name=lastsigner><get name=mysignas></set></then> <else><set local name=lastsigner><get name=myuser></set></else> </if>
-<!-- load the route  -->
-
- <set name=myroute local><get element name=route></set>	     
- <if><get name=myroute> <then></then><else>
-  <set local name=rfile><subst result=".route.html"
-  match=".html"><get name=myform></subst></set>
- <set name=myroute><read file=&rfile; process></set>
- </else>
- </if>
-
- <set name=next local>NoMoreRoute</set>
- <if><get name=myroute >
-     <then>
-          <!-- loop to get at next user on list -->
-      <set name=steps><dummy><get name=myroute findall=routestep></dummy></set>
-        <repeat list=&steps; entity=step>
-	  <set name=rentry><get index=step.routeuser.Text></set>
-	   <if><test match=next><get name=myflag></test> <then>
-	         <set  name=next><get  name=rentry></set>
-		 <set name=myflag>found</set>
-           </then>
-	   <else>
-             <if> <test match=&lastsigner; exact><get name=rentry></test><then>
-	              <set name=myflag>next</set>
-	              <set name=next>NoMoreRoute</set>
-	     </then>
-	     </if>
-            </else>
-	    </if>
-	</repeat>
-
-   <if> <get name=lastsigner> <then>
-          <remove-notify-user user=&lastsigner; form=&myform;>
-     </then>
-     <else>  PROBLEM: no user identified ... no pending forms removed</else>
-     </if>
-
-  <if> <get name=next> <then>
-      <if> <test match=NoMoreRoute><get name=next></test> <then>
-         No more steps for &myform; 
-	 <append-form-history>Completed</append-form-history></then>
-	<else>
-	  <notify-user form=&myform; user=&next;>
-	  Routing &myform;  to &next;
-        </else>
-      </if>
-   </then><else> 
-    <append-form-history>Routing error -- blank name</append-form-history>
-   </else>
+<actor tag=show-inbox empty  dscr="  show inbox of forms for USER">
+  <set  name=myin local><get element name=inbox></set>
+  <set  name=mysignas local><get element name=signas></set>
+   <if><get  name=mysignas>
+     <then><set name=mysignas>&signas=<get name=mysignas></set></then>
+       <else><set name=mysignas> </set> </else>
    </if>
- </then>
- <else>
-  NO Route for &myform; specified, <form action="panic.if" method=post>
-<input name="problem" type=hidden value="no route found for &myform; for &myuser; signedas &signedas;">
-Please hit the <input type="SUBMIT" value="Panic Button"> 
-</form>
-   </else></if>	     
+   <if><read file="users/&myin;.html" info>
+     <then>
+       <set name=pending><read file="users/&myin;.html"  process></set>
+       <set name=pending><b><get name=pending findall=a></b></set>
+	    
+       <if> <test positive> <get name=pending size></test> <then>
+	 <h3><a href=edit_pending.if?uid=&myin;>Pending forms for &myin;</a></h3>
+	 <ul foreach list="&pending;" entity=myli>
+	   <set local name=myurl><get name=myli attr=href></set>
+	   <set local name=mydesc><get name=myli text></set>
+	   <li><a href=sign_form.if?formurl=&myurl;&mysignas;>&mydesc.Text;</a></li></ul>
+	 </then>
+	 <else><h3>No Pending forms for &myin;</h3> </else>
+       </if>
+     </then>
+     <else><h3>No Pending forms for &myin;</h3> </else>
+   </if>
 </actor>
 
-	     
+
+
+ <!-- main routing function -- needs get parent and get sibling-->
+
+
+<actor tag=notify-next-recipient empty desc="add FORM to pending list for
+  recipient after USER">
+  <set  name=myuser local><get element name=user></set>
+  <set  name=myform local><get element name=form></set>
+  <set  name=mysignas local><get element name=signedas></set>
+  <if><get name=mysignas> <then> <set local name=lastsigner><get name=mysignas></set></then> <else><set local name=lastsigner><get name=myuser></set></else> </if>
+  <!-- load the route  -->
+
+  <set name=myroute local><get element name=route></set>	     
+  <if><get name=myroute>
+    <else>
+    <set local name=rfile><subst result=".route.html"
+    match=".html"><get name=myform></subst></set>
+    <set name=myroute><read file=&rfile; process></set>
+    </else>
+  </if>
+
+  <set name=next local>NoMoreRoute</set>
+  <if><get name=myroute >
+    <then>
+      <!-- loop to get at next user on list -->
+      <set name=steps><dummy><get index=myroute.routestep></dummy></set>
+      <repeat list=&steps; entity=step>
+	<set name=rauthorizor><get index=step.routeuser.1></set>
+	<set name=rentry><authorizor-canonical-name authorizor=&rauthorizor;></set>
+	<if><test match=next><get name=myflag></test>
+	  <then>
+	    <if><test match=notify><get index=step.routewhen.Text></test>
+	      <then>
+		<notify-user form=&myform; user=&rauthorizor;>
+	      </then>
+	      <else>
+		<set  name=next><get  name=rauthorizor></set>
+		<set name=myflag>found</set>
+		</else> </if>
+	  </then>
+	  <else>
+	    <if> <test match=&lastsigner; exact><get name=rentry></test>
+	      <then>
+		<set name=myflag>next</set>
+		<set name=next>NoMoreRoute</set>
+	      </then>
+	    </if>
+	  </else>
+	</if>
+      </repeat>
+    
+      <if> <get name=lastsigner>
+	<then>
+	  <remove-notify-user user=&myuser; signedas=&mysignas; form=&myform;>
+	</then>
+	<else>  PROBLEM: no user identified ... no pending forms removed</else>
+      </if>
+
+      <if> <get name=next>
+	<then>
+	  <if> <test match=NoMoreRoute><get name=next></test>
+	    <then>
+	      No more steps for &myform; 
+	      <append-form-history form=&myform;><b>Completed</b></append-form-history>
+	      <write file=&myform;.completed>&date;</write>
+	    </then>
+	    <else>
+	      <notify-user form=&myform; user=&next;>
+	      Routing &myform;  to <authorizor-canonical-name authorizor=&next;>
+	    </else>
+	  </if>
+	</then>
+	<else> 
+	  <append-form-history form=&myform;>Routing error -- blank name</append-form-history>
+	</else>
+      </if>
+    </then>
+    <else>
+      NO Route for &myform; specified, <form action="panic.if" method=post>
+      <input name="problem" type=hidden value="no route found for &myform; for &myuser; signedas &signedas;">
+      Please hit the <input type="SUBMIT" value="Panic Button"> 
+      </form>
+    </else>
+  </if>	     
+</actor>
+
+
+ <actor tag=notify-originator empty desc=" change status of FORM for originator">
+<set  name=myform local><get element name=form></set>
+<set  name=mysigner local><get element name=signer></set>
+<set  name=myaction local><get element name=action></set>
+<set  name=myroute local><get element name=route></set>
+ <set name=myoriginator><get name=originator></set>
+ <if><get name=myoriginator> <else>
+  <set name=parsedform><read file=&myform; process></set>
+ <set name=myoriginator><get name=parsedform
+ findall=formoriginator></set>
+ <set name=myoriginator>&myoriginator.Text;</set></else> </if>
+
+ <if><test match=create> <get name=myaction> </test> <then>
+<set name=mysigners><dummy><get name=myroute findall=routeuser></dummy></set>
+<write file=users/&myoriginator;.status append>
+<formstatus form=&myform; originator=&myoriginator; date=&date;>
+ <repeat list=&mysigners; entity=mys><formsigner user=&mys;>Pending</formsigner></repeat>
+</formstatus>
+</write>
+ </then><else>
+ <set local name=myflag></set>
+ <set name=mystatus><read file=users/&myoriginator;.status process></set>
+  <repeat list=&mystatus; entity=fstat>
+  <if><test match=&myform;><get name=fstat attr=form></test>
+   <then>
+    <repeat list=&fstat; entity=mys>
+    <if><test match=&mysigner;><get name=mys attr=user></test><then>
+      <set name=mys insert=0 replace><get name=&myaction;></set>
+       <set name=myflag>done</set></then></if>
+   </repeat>
+   <if><get name=myflag><else><set name=fstat insert=-1><formsigner
+   user=&mysigner;><get name=&myaction;></formsigner></set></else></if>
+   <file name=users/&myoriginator;.status dst=users/&myoriginator;.status.bak
+   rename></file>
+   <write file=users/&myoriginator;.status><get name=mystatus></write>
+   </then>
+  </if></repeat>
+  <!-- should check for missing forms -->
+ </else> </if>
+
+</actor>
+
+<actor tag=show-status empty desc=" showe the status of forms originated by this
+ user">
+<set local name=myoriginator><get element name=user></set>
+<if><get element name=user><else><set local name=myoriginator><get trans
+name=AuthenticatedUser></set></else></if>
+ <if> <read file=users/&myoriginator;.status info> <then>
+   <set name=myflag local> </set>
+   <set name=mynewlist><ul> </ul> </set>
+   <set name=mystatus><dummy><read file=users/&myoriginator;.status
+   process></dummy></set>
+   <if> <get index=mystatus.a><then>
+   <h3><a href=edit_status.if> Status of forms that you originated</a></h3>
+  
+   <table > 
+   <repeat list=&mystatus; entity=fstat>
+    <set name=myf><get name=fstat attr=form></set>
+     <if> <get name=myf>
+       <then>
+	 <if><read info file=&myf;.completed>
+	   <then> <set name=myflag >1</set></then>
+	   <else><set name=mynewlist insert=-1><get name=fstat></set></else>
+	 </if>
+	 <tr >
+	 <td ><a href=show_signatures.if?formurl=&myf;><get
+	 name=myf></a></td >
+    	 <td><show-form-history form=&myf;> </td>
+	 </tr>
+	 
+       </then>
+     </if>
+ </repeat>
+ </table >
+
+ <if><get name=myflag>
+   <then>
+     <write file=users/&myoriginator;.status><get index=mynewlist.-1->
+     </write>
+   </then>
+ </if>
+</then> <else></else> </if>
+</then>
+<else></else> </if>
+
+</actor>
+
+
  <actor tag=notify-user empty desc="add FORM to pending list for USER">
 <set  name=myuser local><get element name=user></set>
 <set  name=nextsigner local><get element name=user></set>
@@ -398,68 +447,108 @@ Please hit the <input type="SUBMIT" value="Panic Button">
 
   </then>
   <else>
-  <if> <get agent name=notified key=&myuser;> <then></then>
-       <else><set agent name=notified key=&myuser;>1</set>
-       <if><get agent name=groups key=&myuser;> <then>
-           <set local name=members><get agent name=groups key=&myuser;></set>
-           <set name="tonotify"><get index=members.li-1.Text></set>
-           <set local name=mygroup>&user;</set>
-           </then>
-           <else><set name="tonotify"><get name=myuser></set></else>
-         </if>
-       <mail-user-notification user=&tonotify;>
+    <!-- handle authorizors  -->
+    <if><get name=myuser attr=tag>
+       <set name=nuser local><get index=myuser.1></set>
+      <then>
+	<if> <get name=&myuser; attr=group>
+	  <then> <set name=inbox><get name=myuser attr=type></set>
+	    <set name=nuser><subst match=" .*$" result=""><get name=nuser> </subst></set>
+	  </then>
+	  <else><set name=inbox><get name=myuser attr=type>.<get name=nuser></set></else>
+	</if>
+      </then>
+      <else><set name=inbox><get name=myuser</set>
+	<set name=nuser><get name=myuser</set>
+      </else>
+    </if>
+    <if> <get agent name=notified key=&nuser;> <then></then>
+       <else>
+	 <set agent name=notified key=&nuser;>1</set>
+	 <mail-user-notification user=&nuser;>
        </else>
-  </if>
- <write file=users/&nextsigner;.html append><a href="&myform;"> &myform; </a></write>
- <append-form-history form=&myform;>Added to pending list for <get name=nextsigner></append-form-history>
-</else></if>
+     </if>
+     <add-inbox-entry inbox=&inbox; form=&myform;>
+   </else>
+ </if>
 </actor>
 
-<actor tag=remove-notify-user empty desc="remove FORM from pending list for USER">
-<set  name=myuser local><get element name=user></set>
-<set  name=myform local><get element name=form></set>
- <set agent name=notified delete key=&myuser;></set>
- <set local name=mylist><read file=users/&myuser;.html  process></set>
- <write file="users/.&myuser;.html.tmp">&mylist;</write>
- <set local name=oldpend><get name=mylist findall=a></set>
-<set local name=mynewlist>
- <repeat list=&oldpend; entity=myli>
- <if> <test match="&myform;" exact><get name=myli attr=href></test> <then> </then>
- <else><get name=myli></else> </if>
-</repeat>
-</set>
- <write file=users/&myuser;.html><get name=mynewlist></write>
- <write file="users/&myuser;_complete.html" append><a href="&myform;"> &myform; </a></write>
-<append-form-history form=&myform;>Removed from pending list for <get name=myuser></append-form-history>
+
+
+<actor tag=remove-notify-user empty empty desc="remove FORM from pending list for USER">
+  <set  name=myuser local><get element name=user></set>
+  <set  name=mysignas local><get element name=signedas></set>
+  <set  name=myform local><get element name=form></set>
+  <set agent name=notified delete key=&myuser;></set>
+  <if> <get name=mysignas>
+   <then>
+     <set agent name=notified delete key=&signedas;></set>
+      <remove-inbox-entry inbox=&mysignas;.&myuser; form=&myform;>
+      <remove-inbox-entry inbox=&mysignas; form=&myform;>
+   </then>
+ </if>
+ <remove-inbox-entry inbox=&myuser; form=&myform;>
+
  </actor>	     
 
-
+ 
+ <actor tag=add-inbox-entry  empty desc="adds FORM to INBOX">
+   <set name=myf local><get name=form element></set>
+   <set name=minefile local><get name=inbox element></set>
+   <write file=users/&minefile;.html append><a href="&myf;"> &myf; </a></write>
+   <append-form-history form=&myf;>Pending for <get name=minefile></append-form-history>
+ </actor>
+ 
+ <actor tag=remove-inbox-entry empty desc=" removes FORM from specified INBOX">
+   <set name=myf local><get name=form element></set>
+   <set name=minefile local><get name=inbox element></set>
+   <set local name=flag>0</set>
+   <user-message> removing &myf; from &minefile;.html </user-message>
+   <if> <read file=users/&minefile;.html info>
+     <then>
+       <set name=mylist><read file=users/&minefile;.html process></set>
+       <write file="users/.&minefile;.tmp">&mylist;</write>
+       <set local name=oldpend><dummy><get name=mylist findall=a></dummy></set>
+       <set local name=mynewlist>
+       <repeat list=&oldpend; entity=myli>
+	 <if> <test match="&myf;" exact><get name=myli attr=href></test>
+	   <then> <set name=flag>1</set> </then>
+	   <else><get name=myli></else> </if>
+       </repeat>
+       </set>
+        <if> <get name=flag>
+	  <then>
+	    <write file=users/&minefile;.html><get name=mynewlist></write>
+	    <write file="users/&minefile;_complete.html" append><a href="&myf;"> &myf; </a></write>
+	    <append-form-history form=&myf;>Removed: <get name=&minefile;></append-form-history>       
+	  </then>
+	</if>
+      </then> 
+    </if>
+</actor>
 
 <!--  add tag for hash and signing -->
 
  <actor tag=hash handle></actor>
  <actor tag=sign handle></actor>
 
-
+ 
 <!--  generate route object for this context -->
  <actor tag=process-route desc=" processes the content as a route object for
  this context --  e.g. replaces manager and such with appropriate values">
  <set name=routeobject><route> </route></set>
 <set local name=mysteps><get index=content findall=routestep></set>
  <set local name=mydept><user-dept user=&myuser;></set>
- <set local name=replacements><dl>
-      <dt>user</dt><dd><get name=myuser></dd>
-      <dt>manager</dt><dd><manager user=&myuser;></dd>
-      <dt>deptAdmin</dt><dd><dept-get-admin department=&mydept;></dd>
-      <dt>deptManager</dt><dd><dept-get-manager department=&mydept;></dd>
-      <dt>secondManager</dt><dd><dept-get-secondmanager department=&mydept;></dd>
-      </dl></set>
-
+ <set local name=replacements><get agent name=cachedroutes key=&myuser;></set>
+ <set name=replacements key=user><get name=myuser></set>
+ 
  <repeat list=&mysteps; entity=myli>
  <!-- replace user or manager variables -->
  <if> <get name=replacements key=&myli.routeuser.Text;>
  <then> <set index=myli.routeuser insert=0 replace><get name=replacements key=&myli.routeuser.Text;></set>
- </then></if>
+ </then> <else> <if><get name=users agent key=&myli.routeuser.Text;>
+	 <else><!-- something is wrong -- send to admin -->
+         <set index=myli.routeuser insert=0 replace><get name=administrator agent></set></else> </if> </else></if>
 
  <!--  add to robject if condition is met or always -->
 <if> <test match=onlyif><get index=myli.routewhen.Text></test>
@@ -471,7 +560,7 @@ Please hit the <input type="SUBMIT" value="Panic Button">
  <else>
  <!-- always add -->
  <set index=routeobject insert=-1><get index=myli></set>
- </else>
+ </else> 
  </if>
  </repeat>
 </actor>
@@ -731,7 +820,7 @@ of TAG in OBJECT, ENTITY will be bound to each instance">
    <write file=&histfile; append><formevent>
 &content;
 <eventdate>&dateString;</eventdate>
-</formevent>
+</formevent> <br>
  </write>
 </actor>
 
@@ -758,6 +847,200 @@ of TAG in OBJECT, ENTITY will be bound to each instance">
    </tr>
    </repeat>
  </table>
+</actor>
+
+<actor tag=show-form-options empty desc=" shows table of options for this form">
+ <set name=f local><get name=form element></set>
+ <table border=1>
+ <caption >Handling options for form: <get name=f> </caption >
+ <tr>
+   <td><form action="/&agentName;/show_route.if" method=post>
+  <input name="formurl" type="hidden" value="&f;">
+  View the history of this form and/or send it to someone else for approval.
+  <input type="SUBMIT" value="Status / Send">
+  </form>
+ </td>
+ <td><form action="/&agentName;/sign_form.if" method=post>
+  <input name="formurl" type="hidden" value="&f;">
+   Add a  note to this form (and sign it).
+  <input type="SUBMIT" value="Add Note">
+  </form>
+ </td>
+<td><form action="/&agentName;/reject_form.if" method=post>
+  <input name="formurl" type="hidden" value="&f;">
+    <input name="signas" type="hidden" value="&signas;">
+   Reject this form (remove from pending list and do not
+   forward to anyone else.)
+  <input type="SUBMIT" value="Reject">
+  </form>
+ </td>
+<td><form action="/&agentName;/print_form.if" method=post>
+  <input name="formurl" type="hidden" value="&f;">
+  Print this form.
+  
+  on: <select name="printer">
+  <option>ps3
+  <option>ps4
+  <option>ps5
+  <option>ps6
+  <option>ps2
+  <option>ps1
+  <option>psfile
+  <option>DownloadPostscript
+ </select><br>
+(or fill in the name of another printer: <input name="otherprinter" size="8">)
+<br><input type="SUBMIT" value="Print">
+</form>  
+
+ </td> 
+ </tr>
+ </table >
+</actor>
+
+
+<!-- another no space in result tag -->
+<actor tag=find-tag-with-id desc="Finds the element with TAG that has IDATTR
+ as value of ID attribute"><set name=myid local><get name=idattr
+  element></set><set name=mytag local><get name=tag element></set><set name=myc local><get name=agentname element></set><if><get
+    name=myc><then><set name=myc local><get name=&myc;
+      agent></set></then><else><set name=myc local>&content;</set></else> </if><set name=tags local><dummy><get name=myc findall=&mytag;></dummy></set><repeat list=&tags entity=myli><if><test match=&myid; exact><get name=myli attr=id></test> <then><get name=myli></then> <else></else> </if></repeat></actor>
+
+
+<!-- More routing stuff for complex system -  -->
+ <!-- no space In result  -->
+ <actor tag=authorizor-canonical-name empty desc="get standard form of
+   AUTHORIZOR"><set name=mya local><get  element name=authorizor></set><if>
+     <get name=mya attr=tag>
+     <then><get name=mya attr=type></then>
+     <else><get name=mya></else> </if></actor>
+ 
+<!-- this would be easier if we could walk up a list  -->
+<actor tag=create-route-cache empty desc=" for every user, create a binding for authorizors">
+ <set local name=thecash><dl>
+ </dl></set>
+ <set local name=alist><get name=authlist agent></set>
+ <set local name=currentbindings><dl>
+ </dl></set>
+ <set name=inboxes agent><dl> </dl></set>
+ <set agent name=authorizors><dl> </dl></set>
+   <if><get name=alist> <then>
+ <internal-create-route bindings=&currentbindings; cache=&thecash;
+     authlist=&alist;>
+     </then> </if> 
+<set agent name=cachedroutes>&thecash;</set>
+ </actor>
+
+<!-- does not to proper scoping of names because we are changing internal data -->
+<!-- need to figure out how do todo ay copy -->
+<actor empty tag=internal-create-route desc="recursively descend authorization
+list computing route bindings">
+ <set name=parentbindings local><get name=bindings element></set>
+ <set name=myalist local><get name=authlist element></set>
+ <set name=myc local><get name=cache element></set>
+  <set name=mybindings local><dl> </dl></set>
+
+ 
+  <if><get name=parentbindings keys>
+   <then>
+      
+   <set name=parentkeys><dummy><get name=parentbindings keys></dummy></set>
+   <repeat list=&parentkeys; entity=k><set name=mybindings key=&k;><get
+   name=parentbindings key=&k;></set> </repeat>
+   </then></if>
+   <set name=mybindings key=authlistid><get name=myalist attr=id></set>
+   <if><get  index=myalist.authorizor>
+     <then>
+       <set name=myzors><dummy><get  index=myalist.authorizor></dummy></set>
+       <repeat list=&myzors; entity=myz><set local name=mk><get name=myz
+	 attr=type></set><set name=mybindings key=&mk;><get name=myz></set>
+	 
+	 <!-- add this type to the global list  -->
+	 <set agent name=authorizors key=&mk;><get name=myz></set>
+	 <if><get name=myz	attr=group>
+	   <then>
+	     <repeat list=&myz; entity=u> 
+	       <add-inbox-for inbox=&mk; user=&u;>
+	     </repeat>
+	   </then>
+	   <else><add-inbox-for inbox=&mk; user=&myz.Text;></else>
+	 </if>
+     </repeat>
+   </then></if>
+   
+   <if><get  index=myalist.users><then>
+     <set name=myusers><dummy><get  index=myalist.users.Text></dummy></set>
+     <repeat list=&myusers; entity=myu>
+       <set name=myc key=&myu;><get name=mybindings></set></repeat>
+     </then></if>
+       
+     <if><get  index=myalist.authlist>
+       <then>
+	 <set name=next><dummy><get  index=myalist.authlist></dummy></set>
+	 <repeat list=&next; entity=myl>
+	  
+	   <internal-create-route bindings=&mybindings;
+	   authlist=&myl; cache=&myc;></repeat>
+	 </then>
+       </if>
+ </actor>
+
+ <actor tag=add-inbox-for empty desc="adds INBOX for USER">
+   <set name=inb local><get name=inbox element></set>
+   <set name=myu local><get name=user element></set>
+    <if> <get name=inboxes agent key=&myu;>
+      <else> <set name=inboxes agent key=&myu;><ul> </ul></set></else>
+    </if>
+    <set name=myboxes><get name=inboxes agent key=&myu;></set>
+    <set name=myboxes insert=-1><get name=inb></set>
+</actor>
+
+<actor tag=show-auth-list empty desc="">
+  <set name=myalist local><get name=authlist element></set>
+    <set name=mytable local><get name=table element></set>
+  <set name=mymaxdepth local><get name=maxdepth element></set>
+
+  <set name=mynextlists local><dummy><get index=myalist.authlist></dummy></set>
+  <set name=myspan local><sum digits=0><get name=mynextlists size></sum></set>
+  <set name=mylistid local><get name=myalist attr=id></set>
+  <set name=mydepth local><get name=myalist attr=level></set>
+  <set name=mysubcols local><dummy><get name=mynextlists
+  findall=authlist></dummy></set>
+  
+   <set name=kidcols local>0</set>
+  <repeat list=&mysubcols; entity=myl>
+   <if><get index=myl.authlist> <else><set name=kidcols ><sum digits=0> 1
+   <get name=kidcols></sum ></set></else> </if></repeat>
+
+   <set name=mynewmaxdepth local><difference digits=0><get name=mymaxdepth>
+   <get name=mydepth> </difference></set>
+
+    <set index=mytable.tr-&mydepth; insert=-1><td colspan=&kidcols;  align=center>
+  <a href=edit_auth_list.if?authid=&mylistid;><get index=myalist.authdescription></a>
+  <set name=authorizors><dummy><get index=myalist.authorizor></dummy></set>
+  <repeat list=&authorizors; entity=a><br> <set name=thistype><get name=a
+    attr=type></set><b><get name=thistype>: <get name=a></b>
+  </repeat>
+  <if> <get index=myalist.users><then>
+    <br>  Employees:   <repeat list=&myalist.users.Text; entity=myu>
+      <a href=edit_user.if?euser=&myu;><get name=myu></a></repeat>
+    </then>
+  </if>
+  </td>
+  </set>
+  
+  <if><get index=myalist.authlist> <then>
+    <repeat list=&mynextlists;  entity=l>
+      <show-auth-list authlist=&l;
+      table=&mytable; maxdepth=&mymaxdepth;>
+      
+    </repeat>
+  </then>
+  <else><set name=mydeeper><sum digits=0>1 <get name=mydepth></set>
+    <set index=mytable.tr-&mydeeper; insert=-1><td
+    colspan=1 rowspan=&mynewmaxdepth;> </td>
+  </else></if>
+ 
+
 </actor>
 
 <!-- $Id$ -->

@@ -36,6 +36,15 @@ Initializing options (stored in formsoptions.dat in a dl)
 <!-- now load the options -->
  <load-options> <read file=formsoptions.dat process> </load-options>
 
+ <if> <get name=administrator agent>
+   <else> <set agent
+     name=administrator><authorizor type="Admin" group> wolff
+     </authorizor></set>
+   </else>
+ </if>
+
+ <load-data data=authlist>
+ <create-route-cache>
 
 <br>
  Initializing  navigation bar

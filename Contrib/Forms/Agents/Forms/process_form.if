@@ -78,6 +78,14 @@
         </if>
 </else>
 </if>
+
+<set name=formurl>&dir;/&year;/&month;/&day;/&time;:&second;</set>	
+
+<if> <read info file="&myformtype;/post_process.inc" interform>
+ <then>
+ <read interform file="&myformtype;/post_process.inc" process>
+</then></if>
+
  <!--  generate the routeobject if does not exist -->
  <!-- need to know name of user on form -->	
   <set name=myuser><if> <get form name=name><then><get form name=name></then>
@@ -111,7 +119,7 @@
 
 
    <!-- save the form and route -->
-    <set name=formurl>&dir;/&year;/&month;/&day;/&time;:&second;</set>
+
 	<!-- generate unique name if necessary -->
 	 <if> <read info file=&formurl;> <then>
 	 <set  name=unique><read info dir
@@ -123,14 +131,19 @@
    route=&routeobject;>&dataobject;</save-form>
    <!-- add .html to url -->
     <set name=formurl>&formurl;.html</set>
-
+   <set name=myuser><get trans name=AuthenticatedUser></set>
+   <notify-originator originator=&myuser; action=create form=&formurl;>
+	
    <!-- figure out first user -->
  <if> <get index=routeobject.dt-1.Text> <then>
       <set name=firstuser><get index=routeobject.dt-1.Text></set></then></if>
  <if> <get index=routeobject.routestep-1.routeuser.Text> <then>
       <set name=firstuser><get index=routeobject.routestep-1.routeuser.Text></set></then></if>	
-	
- <set name=myuser><get trans name=AuthenticatedUser></set>
+      <!-- manager? -->
+      <if> <test match=&myuser;><get index=routeobject.routestep-2.routeuser.authorizor.Text></test> <then>
+      <set name=firstusertype><get
+      index=routeobject.routestep-2.routeuser.authorizor attr=type></set></then></if>	
+ 
    <if> <test match=&myuser;><get name=firstuser></test>
    <then>
    <!-- add to this user's list but don't send mail -->
@@ -145,6 +158,7 @@
    <form action="sign_form.if" method="post">
    <input name="formurl" type=hidden value=&formurl;>
    <input name="hash" type=hidden value=&hash;>
+     <if><get name=firstusertype><then> <input name="signas" type=hidden value=&firstusertype;></if>
    <a href="help_signature.html">Signature for</a>
    <select name="user"> <option><get trans name=AuthenticatedUser></option>
     <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
@@ -152,10 +166,12 @@
    PassPhrase:<input type="password" name="password" size="25"> 
    <input type="SUBMIT" value="SIGN">
    </form>
+<hr>
+<show-form-options form=&formurl;>
    </then>
    <else>
     Routing to &firstuser;
-   <a href="/~&agentName;/&formurl;"> Form</a> has been processed and routed.
+   <a href="/~&agentName;/show_signatures.if?formurl=&formurl;"> Form</a> has been processed and routed.
    <notify-user user=&firstuser; form=&formurl;>
    </else>
 

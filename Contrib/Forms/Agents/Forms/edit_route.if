@@ -9,7 +9,7 @@
 <!-- should change from dl tags to route tags -->
 
 <tagset-load name=Form-agent-actors>
-<if-in-group group=admin>
+
  <if> <get form name=form> <then>
 <set name=form><get form name=form></set>
 <set name=formfile><read file=&form;/&form;.form interform process></set>
@@ -25,8 +25,25 @@ attr=name></text></repeat></set>
      <set name=genericroute>true</set>
 </else></if>
 
+<if> <get form name=setcannedroute> <then>
+ <if-in-group group=admin reporterrors=true>
+<set name=fsteps><get form name=cannedsteps></set>
+ <set name=route><route>
+ <repeat start=1 stop=&fsteps;><routestep>
+<routeid><get name=li></routeid>
+ <routeuser><get form name=user&li;></routeuser>
+ <routewhen><get form name=when&li;></routewhen>
+ <routecond><get form name=cond&li;></routecond>
+  </routestep>
+  </repeat>
+  </route></set>
+ <write file=&routefile;><get name=route>
+ </write>
+ </if-in-group>
+ </then>
 
-<if> <read info file=&routefile;>
+ <else> 
+    <if> <read info file=&routefile;>
       <then> <set name=theroute><read
 	     file=&routefile; process></set>
             <set name=route><get name=theroute findall=route></set>
@@ -45,8 +62,11 @@ attr=name></text></repeat></set>
             </routestep>
             </route></set>
         </else></if>
+</else> </if>
+
 <form action="&url;" method=post process copy>
  <process copy>
+ <if-in-group group=admin reporterrors=true>
  <file name=&routefile; dst=&routefile;.bak rename></file>
  <!-- process route changes -->
  <set name=newroute><route> </route></set>
@@ -90,6 +110,7 @@ attr=name></text></repeat></set>
  <write file=&routefile;><get name=route>
 	  </write>
 	    Route &routefile; for &form; updated.
+ </if-in-group>
 </process>
 
 
@@ -100,7 +121,7 @@ attr=name></text></repeat></set>
  <table border=1>
  <TR><TH>Step
      <TH>Delete?
-     <TH>User or Group
+     <TH>Authorization
      <TH>When
      <TH> <a href="conditions.html">Condition</a></TR>
 
@@ -112,16 +133,10 @@ attr=name></text></repeat></set>
        <TD>
 	    <select name="user&rid;">
 	     <option selected><get  index=step.routeuser.Text></option>
-            <if><get name=genericroute> <then>
              <option>user</option>
-             <option>manager</option>
-             <option>secondManager</option>
-	     <option>deptAdmin</option>
-	     <option>deptManager</option>
-            </then></if>
-            <option>printer</option>
-            <repeat list=&AGENT.groups.keys; entity=mygrp>
+             <repeat list=&AGENT.authorizors.keys; entity=mygrp>
             <option>&mygrp;</option></repeat>
+            <option>printer</option>
             <repeat list=&AGENT.users.keys; entity=mygrp>
             <option>&mygrp;</option></repeat> 	    
             </select>
@@ -129,7 +144,8 @@ attr=name></text></repeat></set>
       <select name="when&rid;">	    
        <option><get  index=step.routewhen.Text></option>
        <option>always</option>
-       <option>onlyif</option>	    
+       <option>onlyif</option>
+       <option>notify</option>	    
         </select>
       <TD>
       <if> <test match="onlyif"><get  index=step.routewhen.Text></test><then>
@@ -161,13 +177,58 @@ attr=name></text></repeat></set>
 Add <input type="INT" name="addsteps" size="2"> additional steps (enter # in
 box). <br>
 <input type="SUBMIT" value="Change Route">
-</form>	    
+</form>
+<hr>
+<h3 > Or specify a standard route </h3 >
+ <table border=1>
+<tr><th>Route 1 </th><th> Route 2 </th><th> Route 3 </th> </tr>
+<tr><td><form action="&url;"  method=post>
+ <input name="form" value=&form; type=hidden>
+ <input name="cannedsteps" value="2" type=hidden>
+<input name="user1" value="user" type=hidden>user <br>
+<input name="when1" value="always" type=hidden>
+<input name="cond1" value="" type=hidden>
+<input name="user2" value="Manager" type=hidden>Manager
+<input name="when2" value="always" type=hidden>
+<input name="cond2" value="" type=hidden>
+<br><input type="SUBMIT" value="Use Route1" name=setcannedroute>
+</form></td>
+<td><form action="&url;"  method=post>
+ <input name="form" value=&form; type=hidden>
+ <input name="cannedsteps" value="2" type=hidden>
+<input name="user1" value="user" type=hidden>user <br>
+<input name="when1" value="always" type=hidden>
+<input name="cond1" value="" type=hidden>
+<input name="user2" value="DivAdmin" type=hidden>DivAdmin<br>
+<input name="when2" value="always" type=hidden>
+<input name="cond2" value="" type=hidden>
+<input type="SUBMIT" value="Use Route2" name=setcannedroute>
+</form></td>
+<td><form action="&url;"  method=post>
+<input name="cannedsteps" value="3" type=hidden>
+ <input name="form" value=&form; type=hidden>
+ <input name="user1" value="user" type=hidden>user <br>
+<input name="when1" value="always" type=hidden>
+<input name="cond1" value="" type=hidden>
+<input name="user2" value="Manager" type=hidden>Manager <br>
+<input name="when2" value="always" type=hidden>
+<input name="cond2" value="" type=hidden>
+<input name="user3" value="Purchasing" type=hidden>purchasing <br>
+<input name="when3" value="always" type=hidden>
+<input name="cond3" value="" type=hidden>
+<input type="SUBMIT" value="Use Route3" name=setcannedroute>
+</form></td>
+
+
+ </table>
+
 </then>
 <else> Please <a href="edit_route.if"> specify form route to edit</a> </else>
 </if>
-</if-in-group>
+
 <hr>
- 
+
+
 <expand><get agent name=navbar></expand>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->

@@ -5,7 +5,7 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>manager</routeuser>
+            <routeuser>Manager</routeuser>
             <routewhen>always</routewhen>
             <routecond><conditional>
   <condvar>estcost</condvar>
@@ -14,7 +14,7 @@
   </conditional></routecond>
             </routestep><routestep>
             <routeid>3</routeid>
-            <routeuser>Finance</routeuser>
+            <routeuser>DivHead</routeuser>
             <routewhen>onlyif</routewhen>
             <routecond><conditional>
   <condvar>estcost</condvar>
@@ -23,7 +23,7 @@
   </conditional></routecond>
             </routestep><routestep>
             <routeid>4</routeid>
-            <routeuser>President</routeuser>
+            <routeuser>CFO</routeuser>
             <routewhen>onlyif</routewhen>
             <routecond><conditional>
   <condvar>estcost</condvar>
@@ -32,7 +32,16 @@
   </conditional></routecond>
             </routestep><routestep>
             <routeid>5</routeid>
-            <routeuser>Purchasing</routeuser>
+            <routeuser>President</routeuser>
+            <routewhen>onlyif</routewhen>
+            <routecond><conditional>
+  <condvar>estcost</condvar>
+  <condtest>greaterthan</condtest>
+  <condval>10000</condval>
+  </conditional></routecond>
+            </routestep><routestep>
+            <routeid>6</routeid>
+            <routeuser>Finance</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep></route>

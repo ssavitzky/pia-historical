@@ -10,38 +10,40 @@
 <tagset-load name=Form-agent-actors>
  <set name=user><get trans name=AuthenticatedUser></set>
  <set name=printfile>printouts/&user;.&day;.&time;.&second;.html</set>
+<set name=fullprintfile>&usrDIR;/&agentName;/printouts/&user;.&day;.&time;.&second;.html</set>
 <!-- create static html file to be printed -->
 
- <write file=&printfile;><read interform file="show_signatures_simple.if" process></write>
- <if> <test match=other><get form name=printer></test>
+ <write file=&printfile;><read interform file="show_signatures_simple.if"
+ process></write>
+
+ <os-command-output> html2ps < &fullprintfile; > &fullprintfile;.ps
+		     </os-command-output>
+
+ <if> <get form name=otherprinter></test>
  <then> <set name="printer"><get form name=otherprinter></set></then>
- <else> <set name="printer"><get form name=printer></set></else>
+ <else><if><test match=DownloadPostscript><get form name=printer></test> <then>
+  <set name="dload"><get form name=printer></set></then><else>
+ <set name="printer"><get form name=printer></set></else>
 </if>
+</if>
+
 <if><get name=printer> <then>
  Printing &myformurl; on &printer; for &user;
-<set name=success><read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi"
-query="username=&user;?src_url=http://&piaHOST;:&piaPORT;/My/&agentName;/&printfile;?printer=&printer;"></set>
 
+<!-- os-command lpr -P&printer; &printfile;.ps  /os-command -->
+</then><else>
+<if><get name=dload> <then><hr>
+<h3>Click <a href=/~&agentName;/&printfile;.ps> here to download the postscript</a></h3>
+</then> <else> No printer specified, please go back and specify a
+	printer.</else> </if>
 <hr>
          <show-pending user=&user;>
-         <repeat list=&AGENT.groups.keys; entity=mygrpo>
-         <if-in-group user=&FORM.user; group=&mygrpo;>
-           <show-pending user=&mygrpo;>
-         </if-in-group>
-         </repeat>
+         
 	</then>
 <hr>
-</then> <else> No printer specified, please go back and specified a
-	printer.</else> </if>
 
-<if><get name=success><else>If an error occurs...<form
-action="panic.if" method=post> Hit the 
-<input name="form" type=hidden value=&myformurl;>
-<input name="printer" type=hidden value=&printer;>
-<input name="user" type=hidden value=&user;>
-<input type="SUBMIT" value="PanicButton">
-</form>
-</else></if>
+
+
 <expand><get agent name=navbar></expand>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->

@@ -9,11 +9,7 @@
  <set name=uid><get trans name=AuthenticatedUser></set>
 
 <show-pending user=&uid;>
-<repeat list=&AGENT.groups.keys; entity=mygrpo>
-         <if-in-group user=&uid; group=&mygrpo;>
-           <show-pending user=&mygrpo;>
-         </if-in-group>
-</repeat>
+
 <hr>
 
 

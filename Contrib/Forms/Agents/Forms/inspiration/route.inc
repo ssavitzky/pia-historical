@@ -5,7 +5,7 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>manager</routeuser>
+            <routeuser>Manager</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep></route>

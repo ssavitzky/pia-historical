@@ -1,21 +1,52 @@
 <h1>Time Card</h1>
 
+
+<!-- figure out the current pay day -->
+ <set name=defaultd>16-31</set>
+ <if><test positive><difference>25 &day; </difference > </test > <then>
+ <if><test positive><difference>&day; 9 </difference ></test> <then><set name=defaultd>1-15</set></then> </if></then> </if>
  <table>
-<TR><TH>Employee<TH>Month<TH>Payday<TH>Exception<TH>Dates</TR>
-<TR><TD rowspan=4> <formvariable name=employee options=users> </formvariable>
-    <TD rowspan=4> <formvariable name=paymonth options="01 02 03 04 05 06 07 08 09 10 11 12">&month; </formvariable>
-    <TD rowspan=4> <formvariable name=payday options="15 30">&day; </formvariable>
+<TR><TH>Employee<TH>Month<TH>Period</TR>
+<TR><TD> <formvariable name=employee options=users> </formvariable>
+    <TD> <formvariable name=paymonth options="01 02 03 04 05 06 07 08 09 10 11 12">&month; </formvariable>
+    <TD> <formvariable name=payday options="1-15 16-31"><get name=defaultd></formvariable>
 
-<TD> Sick Days  <TD> <formvariable name=sick> </formvariable> </TR>
-<TR><TD> Personal Holidays  <TD> <formvariable name=holiday> </formvariable>
+<TD> 
 </TR>
-<TR><TD> Vacation Days  <TD> <formvariable name=vacation> </formvariable>
-</TR>
-<TR><TD> Other Days  <TD> <formvariable name=other> </formvariable> </TR>
 </table>
+ <table border=1 id=datatable> 
+<caption> Enter hours missed in the appropriate boxes below (1day = 8 hours)</caption>
+ <TR> <th> Day: </th>
+      <th>1<br>16</th> 
+      <th>2<br>17</th> 
+      <th>3<br>18</th> 
+      <th>4<br>19</th> 
+      <th>5<br>20</th> 
+      <th>6<br>21</th> 
+      <th>7<br>22</th> 
+      <th>8<br>23</th> 
+      <th>9<br>24</th> 
+      <th>10<br>25</th> 
+      <th>11<br>26</th> 
+      <th>12<br>27</th> 
+      <th>13<br>28</th> 
+      <th>14<br>29</th> 
+      <th>15<br>30</th> 
+      <th>  <br>31</th> 
+ </TR>
+ <tr><th>Personal<br>
+Holidays</th><repeat start=1 stop=16 entity=pd><td><formvariable
+name=personal&pd; size="2"> </formvariable></td></repeat> </tr>
+ <tr><th>Vacation<br>days</th><repeat start=1 stop=16 entity=pd><td><formvariable
+name=vacation&pd; size="2"> </formvariable></td></repeat> </tr>
+ <tr><th>Sick<br>days</th><repeat start=1 stop=16 entity=pd><td><formvariable
+name=sick&pd; size="2"> </formvariable></td></repeat> </tr>
+ <tr><th>Other<br><formvariable name=otherreason size=8> </formvariable></th><repeat start=1 stop=16 entity=pd><td><formvariable name=other&pd; size="2"> </formvariable></td></repeat> </tr>
 
+ </table >
+Additional Notes: <formvariable name=notes textarea=true rows=2 cols=40> </formvariable>
 <p>
 Time cards for regular employees ("Exempt Personnel") are reported by
 exception. If you did not miss any workdays this pay period, leave the dates
-above blank and click on the Process button. Otherwise enter the dates missed
-in the appropriate boxes and then click Process.
+above blank and click on the Process button. Otherwise enter the hours
+missed in the appropriate boxes and then click Process.

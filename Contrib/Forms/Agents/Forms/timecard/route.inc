@@ -5,8 +5,8 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>deptAdmin</routeuser>
-            <routewhen>always</routewhen>
+            <routeuser>DivAdmin</routeuser>
+            <routewhen>notify</routewhen>
             <routecond> </routecond>
             </routestep></route>
 	  

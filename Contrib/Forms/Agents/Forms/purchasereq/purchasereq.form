@@ -10,7 +10,7 @@ Expense Type: <TD><formvariable name="expensetype" options=&accountlist;> </form
 Suggested Supplier:<formvariable name=supplier size=60> </formvariable>
 <br>
 
-Contact Information:<formvariable name=contact textarea rows=2 cols=60> </formvariable>
+Contact Information:<formvariable name=contact textarea=1 rows=3 cols=60> </formvariable>
 
 <br>
 
@@ -42,6 +42,8 @@ Contact Information:<formvariable name=contact textarea rows=2 cols=60> </formva
 </table>
 
 <p>
-Special Instructions:<formvariable name=comments size=60> </formvariable>
+Special Instructions:<formvariable name=comments textarea=1 rows=4 cols=60> </formvariable>
 <p>
-Related Material: (e.g. URL of Kiansho, supplier, etc.)<references> </references>
+Related Material: (<a href=fill_out_form.if?formtype=kiansho>Kiansho</a> required for items greater than $10,000)<references> </references>
+
+

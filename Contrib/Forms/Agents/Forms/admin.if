@@ -16,8 +16,8 @@
   <table border=1>
   <TR> <th>Task (What you want to do)</th><th>How (Click on this) </th>
   <th>Description (what it does) </th> </TR>
-  <tr><td>Show or edit departments or users<td> <a href=show_depts.if>Show
-  Departments </a> </td> <td> gives a list of departments and all the
+  <tr><td>Show or edit departments or users<td> <a href=show_auth_list.if>Show
+  Authorization lists </a> </td> <td> gives a list of departments and all the
   members of each department.  Click on the name of a department  to edit it
   (change manager or administrator) or on a member id to edit the member's
   profile (including  moving them to a different department) </td></tr>
@@ -82,6 +82,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Tue Feb 17 15:56:10 1998
+Last modified: Mon Aug 10 13:30:45 1998
 <!-- hhmts end -->
 </body></html>
