@@ -1,6 +1,0 @@
-
-
-<code language=perl>
-$main::timeout*= 0.5;
-return "timeout is " . $main::timeout;
-</code>
