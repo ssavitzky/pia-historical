@@ -314,6 +314,14 @@ public class Token implements SGML {
     specialFormat = true;
   }
 
+  public Token (String tag, String start, StringBuffer content, String end) {
+    this.tag = tag;
+    if (start != null) append(new Text(start));
+    append(new Text(content));
+    if (end != null) append(new Text(end));
+    specialFormat = true;
+  }
+
   public static Token endTagFor(String tag) {
     Token t = new Token(tag);
     t.incomplete = (byte)-1;
