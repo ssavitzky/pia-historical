@@ -1,0 +1,161 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Slides for LinuxWorld</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Slides for LinuxWorld 1999</h1>
+
+<hr>
+<slide>
+<p><p>
+<div align=center valign=center>
+<font size='+2'
+  ><strong>An Open-Source Web-Based Document Processing System</font>
+
+<p> Stephen Savitzky
+<p> Ricoh Silicon Valley
+</div>
+
+</slide>
+
+
+<hr>
+<slide>
+<h2>Document Processing</h2>
+
+<ul>
+  <li> Input: <a href="lw99.html">a document</a>
+       <pre>
+       &lt;slide&gt; &lt;h2&gt;Document Processing&lt;/h2&gt;
+          &lt;ul&gt;
+             &lt;li&gt; Input: a document
+          &lt;/ul&gt;
+       &lt;/slide&gt;
+       </pre>
+  <li> ... processing using a ``<a href="slides.ts">tagset</a>''
+       <ul>
+	 <li> A ``spreadsheet'' for documents
+	 <li> Describes what to do with each tag
+       </ul>
+  <li> Output: another document (this slide).
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2>Agency Architecture Layers</h2>
+
+<ul>
+  <li> Server Front End
+       <ul>
+	 <li> Handles HTTP requests
+	 <li> Dispatches requests to ``agents''
+       </ul>
+  <li> Agent handlers
+       <ul>
+	 <li> Manage a group of pages
+	 <li> May have special-purpose code.
+       </ul>
+  <li> Document Processor for active pages
+       <ul>
+	 <li> Interprets markup in active documents
+	 <li> Rarely needs to be changed
+	 <li> Recently re-written
+       </ul>
+  <li> ``Action'' handlers for tags
+       <ul>
+	 <li> Written in Java or C
+	 <li> Loaded as needed at run-time
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2>PIA's New Document Processor</h2>
+<em>(compared with last year's implementation)</em>
+<ul>
+  <li> Simpler
+       <ul>
+	 <li> Main loop fits on a single page.
+	 <li> Much easier to maintain than the old one.
+       </ul>
+  <li> Faster
+       <ul>
+	 <li> 20% faster than old InterForm processor on HTML files
+	 <li> Other speedups are possible
+       </ul>
+  <li> More versatile
+       <ul>
+	 <li> stream, string and parse tree input and output 
+	 <li> can build parse trees while processing
+       </ul>
+  <li> More portable
+       <ul>
+	 <li> based on W3C's Document Object Model
+	 <li> C or C++ version would be feasible
+       </ul>
+  <li> 
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2>The Old InterForm Interpretor</h2>
+<ul>
+  <li> Operates on a stream of ``tokens''
+  <li> Algorithm:
+       <ul>
+	 <li> Convert character stream into a stream of ``tokens''
+	 <li> Each ``element'' has a start token, content, and end token.
+	 <li> Associate each token with actions (by table lookup)
+	 <li> Perform the actions, producing new tokens
+	 <li> Either feed the new tokens back as input, <br>
+	      ...or send them on to the output
+	 <li> Where they are converted back to a character stream.
+       </ul>
+  <li> Problems:
+       <ul>
+	 <li> Actions are looked up multiple times for each token
+	 <li> Handling start and end tokens is very complex
+	 <li> Information known at parse time is thrown away
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2>The New Implementation</h2>
+
+<ul>
+  <li> General Technique:
+       <ul>
+	 <li> Processor gets input from a parse tree traverser
+	 <li> Sends output to a parse tree constructor
+       </ul>
+  <li> Algorithm:
+       <ul>
+	 <li> Convert input to a parse tree.
+	 <li> Each ``element'' has a parent Node and content NodeList.
+	 <li> Parser associates an action with each node
+	 <li> Traverse the parse tree depth first
+	 <li> Actions pass result nodes to an output tree constructor
+       </ul>
+  <li> Advantages:
+       <ul>
+	 <li> Basic algorithm is very simple
+	 <li> All table lookup is done once, in the parser
+	 <li> Saving parse trees gives a major speedup
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<TOC>Table of Contents</TOC>
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
