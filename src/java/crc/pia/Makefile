@@ -10,7 +10,7 @@ PACKAGES = \
 
 FILES = \
 	Athread.java \
-	HttpBuffer \
+	HttpBuffer.java \
 	Accepter.java \
 	Transaction.java \
 	Machine.java \
