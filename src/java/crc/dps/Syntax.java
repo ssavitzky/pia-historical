@@ -6,6 +6,9 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.DOMFactory;
+import crc.dom.AttributeList;
+
+import crc.dps.active.*;
 
 /**
  * The interface for a Node's Syntax handler. 
@@ -64,6 +67,46 @@ public interface Syntax {
    * @see crc.dps.Tagset
    */
   public boolean isEmptyElement(Node n);
+
+  /** Called to construct a node for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.  
+   *	May perform additional dispatching on <code>name</code> 
+   *	or <code>data</code>
+   *
+   * @param nodeType the node type
+   * @param name an optional node name
+   * @param data optional data
+   * @return a new ActiveNode having <code>this</code> as its Syntax. 
+   */
+  public ActiveNode createNode(int nodeType, String name, String data);
+
+  /** Called to construct a node for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.  
+   *	May perform additional dispatching on <code>name</code> 
+   *	or <code>data</code>
+   *
+   * @param nodeType the node type
+   * @param name an optional node name
+   * @param value optional value
+   * @return a new ActiveNode having <code>this</code> as its Syntax. 
+   */
+  public ActiveNode createNode(int nodeType, String name, NodeList value);
+
+  /** Called to construct an element for the given handler. 
+   *
+   *	Internally calls getActionForNode if necessary.
+   *	May perform additional dispatching on <code>tagname</code> or
+   *	<code>attributes</code>.
+   *
+   * @param tagname the Element's tag name.
+   * @param attributes the Element's attributes.
+   * @param hasEmptyDelim an XML `empty' delimiter (closing `/') is present.
+   * @return a new ActiveElement having <code>this</code> as its Syntax. 
+   */
+  public ActiveElement createElement(String tagname, AttributeList attributes,
+				     boolean hasEmptyDelim);
 
   /** Called to determine the correct Action handler for a Node. 
    *
