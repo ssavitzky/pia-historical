@@ -17,7 +17,13 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <p>
+  <li> <b>Check:</b> entity-reference termination in InterForms <br>
+       The old parser accepts entity references without a closing semicolon.
+       The new one doesn't.
+       (1998-07-23) <br>
+       
+
+  <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <br>
        Not clear at this point exactly what use to make of this.
        (1998-07-16)<br>
 
@@ -33,17 +39,6 @@ See also:
        application, not of an operation.
        (1998-07-15)<br>
        <p>
-
-  <li> <b>Bug:</b> PI's need to end in `<code>?&gt;</code>' <br>
-       present parser ends them with `<code>&gt;</code>'.
-       (1998-07-16)<br>
-
-  <li> <b>Bug:</b> XML names include extra characters. <br>
-       XML names may contain `<code>"." | "-" | "_" | ":"</code>' in addition
-       to anything Unicode defines as a letter, combining character, or
-       extender.  Colon is the namespace delimiter, and the prefix "xml" is
-       reserved.  HTML4.0 has these, too.
-       (1998-07-16)<br>
 
   <li> <b>Bug:</b> Node construction <em>must</em> set handler. <br>
        All new nodes have to have their handler set properly; this means

@@ -223,6 +223,25 @@ See also:
        (1998-07-08) <br>
        -- moved to <code>crc.dps.process</code>
       
+  <li> 1998-07-20 <b>Bug?:</b> XML PI's need to end in `<code>?&gt;</code>' <br>
+       present parser ends them with `<code>&gt;</code>'.
+       (1998-07-16)<br>
+       -- This may be a misunderstanding.  Certainly in generic SGML, PI's end
+	  with plain `<code>&gt;</code>', and even some XML documentation so
+	  specifies.  The XML identifier, however, definitely does require a ?.
+       <p>
+
+  <li> 1998-07-22 <b>Bug:</b> XML names include extra characters. <br>
+       XML names may contain `<code>"." | "-" | "_" | ":"</code>' in addition
+       to anything Unicode defines as a letter, combining character, or
+       extender.  Colon is the namespace delimiter, and the prefix "xml" is
+       reserved.  HTML4.0 has these, too.
+       (1998-07-16)<br>
+
+  <li> 1998-07-22 <b>Hole:</b> Parser must call createElement with attr list. <br>
+       <code>correctActiveElement</code> is evil.
+       (1998-07-22)<br>
+
 </ul>
 <a name="end">End of list.</a>
 <hr>
