@@ -23,8 +23,8 @@
 
 package crc.ds;
 
-import crc.ds.Thing;
-import crc.ds.UnaryFunctor;
+//import Thing;
+//import UnaryFunctor;
 
 public class Features{
   /**
