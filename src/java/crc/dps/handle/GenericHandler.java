@@ -14,6 +14,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.*;
 
 /**
  * Generic implementation for an Element Handler. <p>
@@ -116,70 +117,77 @@ public class GenericHandler extends BasicHandler {
    */
   public int action(Input in, Processor p) {
     action(in, p, p.getOutput());
-    return 0;
+    return Action.COMPLETED;
   }
 
-  /** This routine does the setup.  It obtains the expanded attribute list
-   *	and content; it will rarely have to be overridden.  
-   *	It will, however, die horribly if the current node is not an 
-   *	ActiveElement. 
+  /** This routine does the setup for the ``7-argument'' action routine. 
+   *
+   *	It obtains the expanded attribute list and content, and will rarely
+   *	have to be overridden. 
    */
   public void action(Input in, Context aContext, Output out) {
-    AttributeList atts = getExpandedAttrs(in, aContext);
+    ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
     if (atts != null) aContext.debug("   atts: " + atts.toString() + "\n");
     ParseNodeList content = null;
     String cstring = null;
     if (!in.hasChildren()) {
       aContext.debug("   no children...\n");
     } else if (stringContent) {
-      aContext.debug("   getting content as string\n");
-      cstring = expandContent? getProcessedContentString(in, aContext)
-	: getContentString(in, aContext);
+      aContext.debug("   getting content as "
+		     + (expandContent? "" : "un") + "expanded string\n");
+      cstring = expandContent? Expand.getProcessedContentString(in, aContext)
+	: Expand.getContentString(in, aContext);
       aContext.debug("     -> '" + cstring + "'\n");
     } else {
-      aContext.debug("   getting content as parse tree\n");
+      aContext.debug("   getting content as "
+		     + (expandContent? "" : "un") + "expanded parse tree\n");
       content = expandContent
-	? getProcessedContent(in, aContext)
-	: getContent(in, aContext);
-      aContext.debug("     -> " + content.getLength() + " nodes\n");
+	? Expand.getProcessedContent(in, aContext)
+	: Expand.getContent(in, aContext);
+      aContext.debug("     -> " + content.toString() + content.getLength() + " nodes\n");
     }
-    ActiveElement e = in.getActive().asElement();
-    action(e, aContext, out, e.getTagName(), atts, content, cstring);
+    String tag = in.getTagName();
+    aContext.debug("   Performing action for <" + tag + ">\n");
+    action(in, aContext, out, tag, atts, content, cstring);
+    aContext.debug("   Completed action for <" + tag + ">\n");
   }
 
-  /** This routine does the work.
+  /** This routine does the work; it should be overridden in specialized
+   *	subclasses, and subclasses in which the current node is not an Element.
    *
    *	Note that the element we construct (in order to bind &amp;ELEMENT;) is
    *	empty, and the expanded content is kept in a separate NodeList, unless
-   *	noCopyNeeded is <code>true</code>.  This means that unexpanded nodes
-   *	don't have to be reparented.
+   *	noCopyNeeded is <code>false</code>.  This means that unexpanded nodes
+   *	don't have to be reparented in the usual case. <p>
+   *
+   *	If the handler has no children, we simply copy the newly-constructed
+   *	Element to the Output.  This should be equivalent to the default
+   *	action obtained by returning Action.EXPAND_NODE as an action code.
    */
-  public void action(ActiveElement e, Context aContext, Output out, String tag, 
-  		     AttributeList atts, NodeList content, String cstring) {
-    ParseTreeElement element = new ParseTreeElement(e);
-    element.setAttributes(atts);
-    if (!noCopyNeeded) Util.appendNodes(content, element);
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    aContext.debug("in action for " + in.getNode());
+    ActiveElement e = in.getActive().asElement();
+    ActiveElement element = e.editedCopy(atts, null);
+    if (!noCopyNeeded) Copy.appendNodes(content, element);
     if (hasChildren()) {
       // Create a suitable sub-context:
+      aContext.debug("expanding definition in sub-context\n");
       EntityTable ents = new BasicEntityTable(aContext.getEntities());
       ents.setValueForEntity("CONTENT", content, true);
       ents.setValueForEntity("ELEMENT", new ParseNodeList(element), true);
-      Input in = new crc.dps.input.FromParseTree(this);
-      BasicProcessor p = new BasicProcessor(in, aContext, out, ents);
-      // expand children in the sub-context.
+      // ... in which to expand this Actor's definition
+      Input def = new crc.dps.input.FromParseTree(this);
+      BasicProcessor p = new BasicProcessor(def, aContext, out, ents);
+      // ... Expand the definition in the sub-context
       p.processChildren();
     } else if (content == null) {
+      // No content: just put the new element. 
       out.putNode(element);
     } else {
-      out.startElement(e);
-      if (atts != null) {
-	for (int i = 0; i < atts.getLength(); i++) { 
-	  try {
-	    out.putNode(atts.item(i));
-	  } catch (crc.dom.NoSuchNodeException ex) {}
-	}
-      }
-      Util.copyNodes(content, out);
+      // Content. 
+      out.startElement(element);
+      Copy.copyNodes(content, out);
       out.endElement(element.isEmptyElement() || element.implicitEnd());
     }
   }

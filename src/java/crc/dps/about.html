@@ -67,11 +67,28 @@ in a single depth-first, left-to-right traversal.
 <h3>To Be Done</h3>
 
 <ul>
+  <li> The current major implementation holes are:
+       <ol>
+	 <li> Handlers
+	 <li> getIndexValue, setIndexValue, ...
+	 <li> Entity-table initialization
+	 <li> Global context (i.e. PIA environment).  Context should have a
+	      getTop() operation; maybe a GlobalContext subclass.
+       </ol>
+
+  <li> Nothing is careful about cannonical attribute and tag names yet.
+
+  <li> deepCopy should use a method in the abstract parent to copy the children.
+
+  <li> Fairly soon we will want to expand ParseTree* to a full DOM
+       implementation. 
+
   <li> It will probably be necessary to add Tagset to Context, so we can have
-       &lt;read&gt; (for example) use the same tagset.
+       &lt;read&gt; (for example) use the same tagset.  It might be desirable
+       to have the Tagset refer to the external (PIA) context.
 
   <li> Currently Parser does not check syntax of current node to see whether
-       to look for entities or elements in the content.
+       to look for entities or elements in the content.  
 
   <li> Need flag that tells whether the current node has been processed yet.
        (really relevant only for toNextNode, to keep track of whether we've
@@ -87,20 +104,6 @@ in a single depth-first, left-to-right traversal.
   <li> We will want a ParseTreeIterator that implements both Input and
        Output (and of course TreeIterator).  The main use would be
        constructing an node and then processing it.
-
-  <li> The processor context stack is a linked list of contexts, built as
-       needed by recursion.  It is isomorphic to the actor invocation stack,
-       i.e. it only contains <em>relevant</em> nodes.  It should <em>not</em>
-       implement Cursor -- it should have input, output, and entities
-       <em>only</em>.  At any given time it can get the current node from
-       the <code>input</code>, in the most useful form!  Therefore, Context
-       should not extend Cursor. 
-
-  <li> The parser might be simplified by adding an auxiliary node type for end
-       tags (for use in <code>next</code>).  Alternatively could simply have
-       an additional flag (atLast) and state: <code>currentEndTag</code>.  The
-       latter requires more hacking in the parser, but is clearly the
-       <em>Right Thing<sup>TM</sup></em>.
 
   <li> Rename ParseTree* -&gt; Tree*  (A*??) and move to a separate subdir (?)
 

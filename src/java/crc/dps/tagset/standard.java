@@ -10,11 +10,11 @@ public class standard extends standalone {
 
   static String emptyActors = "agent-criteria"
   + " agent-home agent-list agent-options agent-running agent-remove"
-  + " agent-set-criterion agent-restore agent-save authenticate"
+  + " agent-set-criterion agent-restore agent-save"
   + " pia-exit get.agent get.form get.pia get.trans";
 
   static String parsedActors = "agent-set-criteria agent-set-options"
-  + " agent-install password-file-entry" 
+  + " agent-install" 
   + " submit-forms trans-control set.agent set.form set.pia set.trans"; 
 
   public standard() {

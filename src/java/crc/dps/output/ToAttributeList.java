@@ -14,9 +14,6 @@ import crc.dom.Element;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
 
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
-
 /**
  * Output to an AttributeList.<p>
  *
@@ -33,13 +30,13 @@ public class ToAttributeList extends ActiveOutput implements Output {
   ** State:
   ************************************************************************/
 
-  protected AttributeList list = new crc.dom.AttrList();
+  protected ActiveAttrList list = new ParseTreeAttrs();
 
   /************************************************************************
   ** Methods:
   ************************************************************************/
 
-  public AttributeList getList() { return list; }
+  public ActiveAttrList getList() { return list; }
 
   public void putNode(Node aNode) {
     if (aNode.getNodeType() == NodeType.ATTRIBUTE && depth == 0) {
@@ -64,7 +61,7 @@ public class ToAttributeList extends ActiveOutput implements Output {
       return;
     }
     if (p != null || aNode.hasChildren()) {
-      aNode = Util.copyNodeAsActive(aNode);
+      aNode = Copy.copyNodeAsActive(aNode);
     }
     appendNode(aNode, active);
     descend();

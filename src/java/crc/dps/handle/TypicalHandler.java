@@ -12,6 +12,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.*
 
 /**
  * Handler for <>....</>  <p>
@@ -40,11 +41,9 @@ public class TypicalHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(ActiveElement e, Context aContext, Output out, String tag, 
+  public void action(Input in, Context aContext, Output out, String tag, 
   		     AttributeList atts, NodeList content, String cstring) {
-    ParseTreeElement element = new ParseTreeElement(e);
-    element.setAttributes(atts);
-    if (!noCopyNeeded) Util.appendNodes(content, element);
+    // Actually do the work. 
   }
 
   /************************************************************************

@@ -12,6 +12,7 @@ import crc.dom.BasicPI;
 import crc.dom.PI;
 
 import crc.dps.*;
+import crc.dps.aux.Copy;
 
 /**
  * An implementation of the ActivePI interface, suitable for use in 
@@ -141,7 +142,7 @@ public class ParseTreePI extends BasicPI implements ActivePI {
 	 child != null;
 	 child = child.getNextSibling()) {
       ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
+      Copy.appendNode(newChild, node);
     }
     return node;
   }

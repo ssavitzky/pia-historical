@@ -35,8 +35,8 @@ public class basic extends HTML_ts {
     //a.initMatch();
     //define(a);
 
-    // ... or could do defActors("then else", "quoted", true);
-    defActive("then else", "then else", QUOTED);
+    defActive("then", "else", QUOTED);
+    defActive("else else-if", "then else-if", QUOTED);
   }
 
 }

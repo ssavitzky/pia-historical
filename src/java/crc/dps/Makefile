@@ -30,8 +30,7 @@ FILES = \
 	Processor.java \
 	ProcessorInput.java \
 	Syntax.java \
-	Tagset.java \
-	Util.java
+	Tagset.java 
 
 # === Potential renames:
 #	ParseStack -> BasicContext

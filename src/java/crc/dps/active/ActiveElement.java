@@ -8,6 +8,7 @@ import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
 import crc.dom.Attribute;
+import crc.dom.AttributeList;
 
 import crc.dps.Action;
 import crc.dps.Syntax;
@@ -46,7 +47,13 @@ public interface ActiveElement extends Element, ActiveNode {
   public String getAttributeString(String name);
 
   /** Convenience function: Set an attribute's value to a NodeList. */
-  public void setAttribute(String name, NodeList value);
+  public void setAttributeValue(String name, NodeList value);
+
+  /** Convenience function: Set an attribute's value to a Node. */
+  public void setAttributeValue(String name, Node value);
+
+  /** Convenience function: Set an attribute's value to a String. */
+  public void setAttributeValue(String name, String value);
 
   /** Convenience function: Set an attribute's value to a NodeList,
    *	given the optimistic assumption that the attribute is currently
@@ -54,11 +61,12 @@ public interface ActiveElement extends Element, ActiveNode {
    */
   public void addAttribute(String name, NodeList value);
 
-  /** Convenience function: Set an attribute's value to a Node. */
-  public void setAttribute(String name, Node value);
+  /************************************************************************
+  ** Copying:
+  ************************************************************************/
 
-  /** Convenience function: Set an attribute's value to a String. */
-  public void setAttribute(String name, String value);
+  /** Create a copy with a different attribute list and content */
+  public ActiveElement editedCopy(AttributeList atts, NodeList content);
 
   /************************************************************************
   ** Syntax:  DTD entry:

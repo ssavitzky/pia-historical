@@ -11,6 +11,7 @@ import crc.dom.Attribute;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.Copy;
 
 /**
  * The base class for objects with a current node.
@@ -316,7 +317,7 @@ public class CurrentNode implements Cursor {
 	putNode(n);
       endNode();
     } else {
-      Util.appendNode(aNode, node);
+      Copy.appendNode(aNode, node);
     }
   }
 
@@ -333,7 +334,7 @@ public class CurrentNode implements Cursor {
       if (p != null || aNode.hasChildren()) {
 	p = shallowCopy(aNode);
       }
-      Util.appendNode(aNode, node);
+      Copy.appendNode(aNode, node);
       descend();
       setNode(aNode);
   }
@@ -350,7 +351,7 @@ public class CurrentNode implements Cursor {
    *	<code>endElement</code> or <code>endNode</code>.  */
   protected void startElement(Element anElement) {
     Element e = shallowCopyElt(anElement);
-    Util.appendNode(anElement, node);
+    Copy.appendNode(anElement, node);
     descend();
     setNode(anElement, null);
   }

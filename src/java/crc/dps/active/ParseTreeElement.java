@@ -19,6 +19,7 @@ import crc.dom.Comment;
 import crc.dom.PI;
 
 import crc.dps.*;
+import crc.dps.aux.Copy;
 
 /**
  * An implementation of the ActiveElement interface, suitable for use in 
@@ -94,18 +95,16 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     //			 + " value= " + attr.getChildren());
   }
 
-  public void setAttribute(String name, NodeList value) {
-    Attribute attr = getAttribute(name);
-    if (attr != null) attr.setValue(value);
-    else setAttribute(new ParseTreeAttribute(name, value));
+  public void setAttributeValue(String name, NodeList value) {
+    setAttribute(new ParseTreeAttribute(name, value));
   }
 
-  public void setAttribute(String name, Node value) {
-    setAttribute(name, new ArrayNodeList(value));
+  public void setAttributeValue(String name, Node value) {
+    setAttributeValue(name, new ArrayNodeList(value));
   }
 
-  public void setAttribute(String name, String value) {
-    setAttribute(name, new ParseTreeText(value));
+  public void setAttributeValue(String name, String value) {
+    setAttributeValue(name, new ParseTreeText(value));
   }
 
   /************************************************************************
@@ -131,49 +130,64 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
   ** Construction:
   ************************************************************************/
 
+  protected final void copyActiveInfo(ActiveElement e) {
+    setTagName(e.getTagName());
+    handler = (Handler)e.getSyntax();
+    action = e.getAction();
+    isEmptyElement = e.isEmptyElement();
+    hasEmptyDelim  = e.hasEmptyDelimiter();
+    implicitEnd = e.implicitEnd();
+  }
+
+  public ActiveElement editedCopy(AttributeList atts, NodeList content) {
+    return new ParseTreeElement(this, atts, content);
+  }
+
   /** Construct a ParseTreeElement with all fields to be filled in later. */
   public ParseTreeElement() {
   }
 
   public ParseTreeElement(ActiveElement e) {
     super((BasicElement)e);
-    setTagName(e.getTagName());
-    handler = (Handler)e.getSyntax();
-    action = e.getAction();
-    isEmptyElement = e.isEmptyElement();
-    hasEmptyDelim  = e.hasEmptyDelimiter();
-    implicitEnd = e.implicitEnd();
+    copyActiveInfo(e);
   }
 
   public ParseTreeElement(ActiveElement e, AttributeList atts) {
     super((BasicElement)e, atts);
-    setTagName(e.getTagName());
-    handler = (Handler)e.getSyntax();
-    action = e.getAction();
-    isEmptyElement = e.isEmptyElement();
-    hasEmptyDelim  = e.hasEmptyDelimiter();
-    implicitEnd = e.implicitEnd();
+    copyActiveInfo(e);
+  }
+
+  public ParseTreeElement(ActiveElement e,
+			  AttributeList atts, NodeList content) {
+    super((BasicElement)e, atts, content);
+    copyActiveInfo(e);
   }
 
   public ParseTreeElement(Element e) {
     super(e);
-    setTagName(e.getTagName());
-    if (e instanceof ParseTreeElement) {
-      ParseTreeElement ee = (ParseTreeElement)e;
-      handler = ee.handler;
-      action = ee.action;
-      isEmptyElement = ee.isEmptyElement;
-      hasEmptyDelim  = ee.hasEmptyDelim;
-      implicitEnd = ee.implicitEnd;
-    }
+    if (e instanceof ActiveElement) copyActiveInfo((ActiveElement)e);
+    else setTagName(e.getTagName());
   }
 
-  /** Construct a ParseTreeElement with given tagname and syntax. 
+  public ParseTreeElement(Element e, AttributeList atts) {
+    super((BasicElement)e, atts);
+    if (e instanceof ActiveElement) copyActiveInfo((ActiveElement)e);
+    else setTagName(e.getTagName());
+  }
+
+  /** Construct a ParseTreeElement with given tagname and attributes. 
    * @see crc.dom.Element
    */
   public ParseTreeElement(String tagname, AttributeList attrs) {
     setTagName(tagname);
     if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
+  }
+
+  /** Construct a ParseTreeElement with given tagname, attributes, and content. 
+   * @see crc.dom.Element
+   */
+  public ParseTreeElement(String tagname, AttributeList attrs, NodeList nl) {
+    super(tagname, attrs, nl);
   }
 
   /** Construct a ParseTreeElement with given tagname and syntax,
@@ -263,7 +277,7 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
 	 child != null;
 	 child = child.getNextSibling()) {
       ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
+      Copy.appendNode(newChild, node);
     }
     return node;
   }

@@ -12,6 +12,7 @@ import crc.dom.BasicNamedNode;
 import crc.dom.Entity;
 
 import crc.dps.*;
+import crc.dps.aux.Copy;
 
 /**
  * An implementation of the ActiveEntity interface, suitable for use in 
@@ -163,7 +164,7 @@ public class ParseTreeEntity extends BasicNamedNode implements ActiveEntity {
 	 child != null;
 	 child = child.getNextSibling()) {
       ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
+      Copy.appendNode(newChild, node);
     }
     return node;
   }

@@ -70,7 +70,7 @@ public interface Action {
    *	<code>action</code> method, but may eventually be called directly
    *	from a Processor.
    *
-   * @param e the <em>original</em> element obtained from the Input.
+   * @param the Input, with the current node being the one to be processed.
    * @param aContext the context in which to look up entity bindings
    * @param out the Output to which to send results
    * @param tag the element's tagname
@@ -78,8 +78,8 @@ public interface Action {
    * @param content the (possibly-processed) content.
    * @param cstring the (possibly-processed) content as a string. 
    */
-  public void action(ActiveElement e, Context aContext, Output out, String tag, 
-  		     AttributeList atts, NodeList content, String cstring);
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring);
 
   /** Returns the value associated with the given Node in the given context.
    *	The node need not be the current one, but it must be the one to which

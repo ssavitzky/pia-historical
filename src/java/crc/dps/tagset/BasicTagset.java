@@ -16,9 +16,9 @@ import crc.dps.Tagset;
 import crc.dps.Handler;
 import crc.dps.Parser;
 import crc.dps.Context;
-import crc.dps.Util;
 
 import crc.dps.active.*;
+import crc.dps.aux.*;
 
 import crc.dps.handle.BasicHandler;
 import crc.dps.handle.GenericHandler;
@@ -264,7 +264,7 @@ public class BasicTagset implements Tagset {
   /** Creates an ActiveNode of arbitrary type with name and (optional) data. */
   public ActiveNode createActiveNode(int nodeType, String name, String data) {
     Handler h = getHandlerForType(nodeType);
-    ActiveNode n = Util.createActiveNode(nodeType, name, data);
+    ActiveNode n = Create.createActiveNode(nodeType, name, data);
     n.setHandler(h);
     return n;
   }
@@ -305,7 +305,7 @@ public class BasicTagset implements Tagset {
 
   /** Creates an ActiveText node.  Otherwise identical to createText. */
   public ActiveText createActiveText(String text, boolean isIgnorable) {
-    return createActiveText(text, isIgnorable, Util.isWhiteSpace(text));
+    return createActiveText(text, isIgnorable, Test.isWhitespace(text));
   }
 
   /** Creates an ActiveText node.  Includes the <code>isWhitespace</code>
@@ -446,11 +446,12 @@ public class BasicTagset implements Tagset {
       h.setElementSyntax(syntax);
       h.setParseEntitiesInContent(parseEnts);
       h.setParseElementsInContent(parseElts);
+      h.setExpandContent(expand);
     } catch (Exception e) { 
     }
     if (h == null) {
       h = new GenericHandler(syntax, parseElts, parseEnts);
-      if (expand) h.setExpandContent(true);
+      h.setExpandContent(expand);
     }
     if (notIn != null) {
       Enumeration nt = new java.util.StringTokenizer(notIn);

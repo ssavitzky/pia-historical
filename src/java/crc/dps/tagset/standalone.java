@@ -8,9 +8,10 @@ package crc.dps.tagset;
  *	actors that are meaningful and useful outside the PIA. */
 public class standalone extends basic {
 
-  static String emptyActors = "file read get.env read.file read.href";
+  static String emptyActors = "file read get.env read.file read.href"
+  + " authenticate";
   static String parsedActors = "os-command os-command-output set.env" 
-  + " write write.file write.href";
+  + " write write.file write.href password-file-entry";
 
   public standalone() {
     this("StandAlone", true);

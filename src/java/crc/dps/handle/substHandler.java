@@ -45,12 +45,12 @@ public class substHandler extends GenericHandler {
     elementSyntax = -1;			// -1: non-empty 1: empty 0: check
   }
 
-  public void action(ActiveElement e, Context aContext, Output out, String tag, 
-  		     AttributeList atts, NodeList content, String cstring) {
-    String match = getAttributeString("match", atts);
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    String match = atts.getAttributeString("match");
     //if (ii.missing(ia, "match", match)) return;
 
-    String repl = getAttributeString("result", atts);
+    String repl = atts.getAttributeString("result");
     //System.err.println("*** match = " + match + ", result = " + repl
     //		         + " in " + atts.toString());
     String text = cstring;

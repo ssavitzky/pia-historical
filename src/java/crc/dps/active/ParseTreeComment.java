@@ -12,6 +12,7 @@ import crc.dom.BasicComment;
 import crc.dom.Comment;
 
 import crc.dps.*;
+import crc.dps.aux.Copy;
 
 /**
  * An implementation of the ActiveComment interface, suitable for use in 
@@ -141,7 +142,7 @@ public class ParseTreeComment extends BasicComment implements ActiveComment {
 	 child != null;
 	 child = child.getNextSibling()) {
       ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
+      Copy.appendNode(newChild, node);
     }
     return node;
   }

@@ -7,7 +7,8 @@ TOPDIR=../../..
 
 ### Base classes:
 BASE_CLASSES = \
-	BasicTagset.java
+	BasicTagset.java \
+	Loader.java
 
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
@@ -26,7 +27,8 @@ TAGSETS = \
 	HTML_ts.java \
 	basic.java \
 	standalone.java \
-	standard.java
+	standard.java \
+	legacy.java
 
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
 
@@ -35,7 +37,8 @@ FILES = $(BASE_CLASSES) $(TAGSETS)
 TAGSET_DOCS =  \
 	Basic-tagset.html  \
 	StandAlone-tagset.html  \
-	Standard-tagset.html
+	Standard-tagset.html \
+	Legacy-tagset.html
 
 include $(TOPDIR)/makefiles/file.make
 
@@ -46,7 +49,7 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 
 DOC_CMD= $(BINDIR)/pia_wrapper crc.dps.Filter
 
-Basic-tagset.html::	 $(BASIC_ACTORS) Basic.java
+Basic-tagset.html::	 $(BASIC_ACTORS) basic.java
 	$(DOC_CMD) -t Basic actor-doc.if > Basic-tagset.html
 
 StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) standalone.java
@@ -55,6 +58,9 @@ StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) standalone.java
 Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
 	standard.java
 	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
+
+Legacy-tagset.html::	 $(LEGACY_ACTORS) legacy.java
+	$(DOC_CMD) -t Legacy actor-doc.if > Legacy-tagset.html
 
 #doc:: actor-doc report
 

@@ -84,6 +84,8 @@ public interface Cursor {
    */
   public boolean hasAttributes();
 
+  /** Return the current node's tagName if it is an element. */
+  public String getTagName();
 
   /** Returns <code>true</code> if and only if <code>toParent</code> will
    *	return <code>null</code>. <p>

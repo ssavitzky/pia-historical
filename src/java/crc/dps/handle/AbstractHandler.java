@@ -13,6 +13,7 @@ import crc.dom.DOMFactory;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.*;
 
 /**
  * An abstract base class for a Node Handler. <p>
@@ -56,15 +57,26 @@ implements Handler {
   }
 
   /** It's unlikely that this will be called, but allow for the possibility. */
-  public void action(ActiveElement e, Context aContext, Output out, String tag, 
-  		     AttributeList atts, NodeList content, String cstring) {
-    ParseTreeElement element = new ParseTreeElement(e);
-    element.setAttributes(atts);
-    if (content == null) out.putNode(element);
-    else {
-      out.startElement(e);
-      Util.copyNodes(content, out);
-      out.endElement(element.isEmptyElement() || element.implicitEnd());
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Element e = in.getElement();
+    if (e == null) {
+      Node node = in.getNode();
+      if (content == null) {
+	out.putNode(node);
+      } else {
+	out.startNode(node);
+	Copy.copyNodes(content, out);
+	out.endNode();
+      }
+    } else {
+      ParseTreeElement element = new ParseTreeElement(e, atts);
+      if (content == null) out.putNode(element);
+      else {
+	out.startElement(e);
+	Copy.copyNodes(content, out);
+	out.endElement(element.isEmptyElement() || element.implicitEnd());
+      }
     }
   }
 
@@ -160,62 +172,4 @@ implements Handler {
   }
 
 
-  /************************************************************************
-  ** Utilities:
-  ************************************************************************/
-
-  /** Get the expanded attribute list of the current node. 
-   *	The list is not expanded if it doesn't have to be. 
-   */
-  public AttributeList getExpandedAttrs(Input in, Context c) {
-    if (in.hasActiveAttributes()) {
-      return Util.expandAttrs(c, in.getElement().getAttributes());
-    } else if (in.hasAttributes()) {
-      return in.getElement().getAttributes();
-    } else {
-      return null;
-    }
-  }
-
-  /** Get the processed content of the current node. */
-  public ParseNodeList getProcessedContent(Input in, Context c) {
-    crc.dps.output.ToNodeList out = new crc.dps.output.ToNodeList();
-    new BasicProcessor(in, c, out).processChildren();
-    return out.getList();
-  }
-
-  /** Get the processed content of the current node as a string. */
-  public String getProcessedContentString(Input in, Context c) {
-    crc.dps.output.ToString out = new crc.dps.output.ToString();
-    new BasicProcessor(in, c, out).processChildren();
-    return out.getString();
-  }
-
-  /** Get the unprocessed content of the current node. */
-  public ParseNodeList getContent(Input in, Context c) {
-    crc.dps.output.ToNodeList out = new crc.dps.output.ToNodeList();
-    Util.copyChildren(in, out);
-    return out.getList();
-  }
-
-  /** Get the unprocessed content of the current node as a string. */
-  public String getContentString(Input in, Context c) {
-    crc.dps.output.ToString out = new crc.dps.output.ToString();
-    Util.copyChildren(in, out);
-    return out.getString();
-  }
-
-  /** Retrieve an attribute from an attribute list and return its value. */
-  public NodeList getAttributeValue(String name, AttributeList atts) {
-    Attribute attr = atts.getAttribute(name);
-    if (attr == null) return null;
-    return attr.getValue();
-  }
-  /** Retrieve an attribute from an attribute list and return it as a String */
-  public String getAttributeString(String name, AttributeList atts) {
-    Attribute attr = atts.getAttribute(name);
-    if (attr == null) return null;
-    NodeList value = attr.getValue();
-    return (value == null)? null : value.toString();
-  }
 }

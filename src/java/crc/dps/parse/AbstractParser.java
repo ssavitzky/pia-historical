@@ -22,8 +22,8 @@ import crc.dps.Processor;
 import crc.dps.Handler;
 import crc.dps.NodeType;
 import crc.dps.EntityTable;
-import crc.dps.Util;
 
+import crc.dps.aux.*;
 import crc.dps.active.*;
 
 import crc.dps.aux.CursorStack;
@@ -420,7 +420,7 @@ public abstract class AbstractParser extends CursorStack implements Parser
   protected ActiveNode createActiveNode(int nodeType,
 					String name, String data) {
     return (tagset == null)
-      ? Util.createActiveNode(nodeType, name, data)
+      ? Create.createActiveNode(nodeType, name, data)
       : tagset.createActiveNode(nodeType, name, data);
   }
 

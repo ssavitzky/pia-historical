@@ -20,9 +20,9 @@ import crc.dps.Input;
 import crc.dps.Processor;
 import crc.dps.BasicProcessor;
 import crc.dps.Tagset;
-import crc.dps.Util;
 import crc.dps.output.*;
 import crc.dps.active.*;
+import crc.dps.handle.GenericHandler;
 
 /**
  * Interpret an input stream or file as an InterForm.  
@@ -84,7 +84,7 @@ public class Filter {
 
     /* Start by getting a Tagset. */
 
-    Tagset ts = Util.getTagset(tsname);
+    Tagset ts = crc.dps.tagset.Loader.getTagset(tsname);
     if (ts == null) {
       System.err.println("Unable to load Tagset " + tsname);
       System.exit(-1);
@@ -94,7 +94,13 @@ public class Filter {
       System.err.print("Tags defined in Tagset(" + tsname + "): ");
       java.util.Enumeration names = ts.elementNames();
       while (names.hasMoreElements()) {
-	System.err.print(" " + names.nextElement().toString());
+	String name = names.nextElement().toString();
+	System.err.print(" " + name);
+	Handler h = ts.getHandlerForTag(name);
+	GenericHandler gh =
+	  (h instanceof GenericHandler)? (GenericHandler)h : null;
+	if (gh != null)
+	  System.err.print(h.expandContent()? "X" : "Q");
       }
       System.err.print("\n");
     }

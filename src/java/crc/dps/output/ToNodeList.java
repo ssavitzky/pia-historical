@@ -56,7 +56,7 @@ public class ToNodeList extends ActiveOutput implements Output {
       return;
     }
     if (p != null || aNode.hasChildren()) {
-      aNode = Util.copyNodeAsActive(aNode);
+      aNode = Copy.copyNodeAsActive(aNode);
     }
     appendNode(aNode, active);
     descend();
@@ -81,7 +81,7 @@ public class ToNodeList extends ActiveOutput implements Output {
 
   protected void appendNode(Node aNode, Node aParent) {
     if (depth == 0)  	list.append(aNode); 
-    else 		Util.appendNode(aNode, aParent);
+    else 		Copy.appendNode(aNode, aParent);
   }
 
   /************************************************************************

@@ -1,4 +1,4 @@
-////// FromParseTree.java: Input from ParseTree
+////// FromParseNodes.java: Input from NodeList
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -9,13 +9,14 @@ import crc.dps.aux.*;
 import crc.dps.active.*;
 
 import crc.dom.Node;
-import crc.dom.Element;
+import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
- * Input from a parse tree, comprised entirely of Active nodes.<p>
+ * Input from a NodeList containing Active nodes.<p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -24,32 +25,31 @@ import java.util.NoSuchElementException;
  * @see crc.dps.Processor
  */
 
-public class FromParseTree extends ActiveInput implements Input {
+public class FromParseNodes extends ActiveInput implements Input {
 
   /************************************************************************
   ** State:
   ************************************************************************/
 
-  protected ActiveNode root = null;
+  protected NodeList list;
+  protected NodeEnumerator enum;
 
   /************************************************************************
-  ** Methods:
+  ** Overridden Methods:
   ************************************************************************/
 
-  public ActiveNode getRoot() { return root; }
-  public void setRoot(ActiveNode newRoot) { root = newRoot; setNode(newRoot); }
+  public Node toNextSibling() {
+    if (depth > 0) return super.toNextSibling();
+    setNode(enum.getNext());
+    return active;
+  }
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
-  public FromParseTree() {
-  }
 
-  public FromParseTree(ActiveNode newRoot) {
-    setRoot(newRoot);
-  }
-
-  public FromParseTree(String tagName) {
-    this(new ParseTreeElement(tagName, null));
+  public FromParseNodes(NodeList nodes) {
+    list = nodes;
+    enum = list.getEnumerator();
   }
 }

@@ -17,6 +17,7 @@ import crc.dom.Comment;
 import crc.dom.PI;
 
 import crc.dps.*;
+import crc.dps.aux.*;
 
 /**
  * An implementation of the ActiveText interface, suitable for use in 
@@ -97,13 +98,13 @@ public class ParseTreeText extends BasicText implements ActiveText {
   /** Construct a node with given data. */
   public ParseTreeText(String data) {
     super(data);
-    setIsWhitespace(Util.isWhiteSpace(data));
+    setIsWhitespace(Test.isWhitespace(data));
   }
 
   /** Construct a node with given data and handler. */
   public ParseTreeText(String data, Handler handler) {
     super(data);
-    setIsWhitespace(Util.isWhiteSpace(data));
+    setIsWhitespace(Test.isWhitespace(data));
     setHandler(handler);
   }
 
@@ -128,7 +129,7 @@ public class ParseTreeText extends BasicText implements ActiveText {
   public ParseTreeText(String data, boolean isIgnorable) {
     super(data);
     setIsIgnorableWhitespace(isIgnorable);
-    setIsWhitespace(Util.isWhiteSpace(data));
+    setIsWhitespace(Test.isWhitespace(data));
   }
 
 
@@ -187,7 +188,7 @@ public class ParseTreeText extends BasicText implements ActiveText {
 	 child != null;
 	 child = child.getNextSibling()) {
       ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Util.appendNode(newChild, node);
+      Copy.appendNode(newChild, node);
     }
     return node;
   }

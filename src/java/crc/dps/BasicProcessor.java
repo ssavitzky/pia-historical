@@ -36,6 +36,21 @@ public class BasicProcessor extends ContextStack implements Processor {
   ** Processing:
   ************************************************************************/
 
+  protected boolean running = false;
+
+  public boolean isRunning() { return running; }
+  public void stop() { running = false; }
+
+  /** Run the Processor, pushing a stream of Token objects at its
+   *	registered Output, until we either run out of input or the 
+   *	<code>isRunning</code> flag is turned off.
+   */
+  public void run() {
+    running = true;
+    processNode();
+    while (running && input.toNextSibling() != null) processNode();
+  }
+
   /** Process the current Node */
   public void processNode() {
     Action action = input.getAction();
@@ -56,8 +71,13 @@ public class BasicProcessor extends ContextStack implements Processor {
     case Action.COPY_NODE: copyCurrentNode(); return;
     case Action.COMPLETED: return;
     case Action.EXPAND_NODE: expandCurrentNode(); return;
+    case Action.EXPAND_ATTS: expandCurrentAttrs(); return;
     }
   }
+
+  /************************************************************************
+  ** Convenience and Utility Methods:
+  ************************************************************************/
 
   /** Process the current node in the default manner, expanding entities
    *	in its attributes and processing its children re-entrantly.
@@ -66,21 +86,39 @@ public class BasicProcessor extends ContextStack implements Processor {
     Node node = input.getNode();
     if (node.getNodeType() == NodeType.ENTITY) {
       expandEntity((Entity) node, output);
-    } else if (input.hasChildren() || input.hasActiveAttributes()) {
-      if (input.hasActiveAttributes()) {
-	ActiveElement oe = input.getActive().asElement();
-	ActiveElement e = new ParseTreeElement(oe,
-					       expandAttrs(oe.getAttributes()));
-	//debug("Starting element" + logNode(e) + "\n");
-	output.startElement(e);
-	if (input.hasChildren()) { debug("children\n"); processChildren(); }
-	output.endElement(e.isEmptyElement() || e.implicitEnd());
-	//debug("  done\n");
-      } else {
-	output.startNode(node);
-	if (input.hasChildren()) processChildren();
-	output.endNode();
-      }
+    } else if (input.hasActiveAttributes()) {
+      ActiveElement oe = input.getActive().asElement();
+      ActiveElement e = oe.editedCopy(expandAttrs(oe.getAttributes()), null);
+      //debug("Starting element" + logNode(e) + "\n");
+      output.startElement(e);
+      if (input.hasChildren()) { processChildren(); }
+      output.endElement(e.isEmptyElement() || e.implicitEnd());
+      //debug("  done\n");
+    } else if (input.hasChildren()) {
+      output.startNode(node);
+      if (input.hasChildren()) processChildren();
+      output.endNode();
+    } else {
+      output.putNode(node);
+    }
+  }
+
+  /** Process the current node by expanding entities in its attributes, but
+   *	blindly copying its children (content).
+   */
+  public void expandCurrentAttrs() {
+    Node node = input.getNode();
+    if (input.hasActiveAttributes()) {
+      ActiveElement oe = input.getActive().asElement();
+      ActiveElement e = new ParseTreeElement(oe,
+					     expandAttrs(oe.getAttributes()));
+      output.startElement(e);
+      if (input.hasChildren()) { copyChildren(); }
+      output.endElement(e.isEmptyElement() || e.implicitEnd());
+    } else if (input.hasChildren()) {
+      output.startNode(node);
+      if (input.hasChildren()) copyChildren();
+      output.endNode();
     } else {
       output.putNode(node);
     }
@@ -124,23 +162,22 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   /** Copy nodes in a nodelist. */
   public void copyNodes(NodeList nl) {
-    Util.copyNodes(nl, output);
+    Copy.copyNodes(nl, output);
   }
 
   /** Expand entities in the attributes of the current Node.
    */
   public AttributeList expandAttrs(AttributeList attrs) {
-    return Util.expandAttrs(this, attrs);
+    return Expand.expandAttrs(this, attrs);
   }
 
   /** Expand entities in the value of a given attribute. */
   public void expandAttribute(Attribute att,  ActiveElement e) {
-    e.setAttribute(att.getName(), expandNodes(att.getValue()));
+    e.setAttributeValue(att.getName(), expandNodes(att.getValue()));
   }
 
   /** Expand nodes in a nodelist. */
   public NodeList expandNodes(NodeList nl) {
-    debug("*** Null value expanded\n");
     if (nl == null) return null;
     ToNodeList dst = new ToNodeList();
     expandNodes(nl, dst);
@@ -168,27 +205,8 @@ public class BasicProcessor extends ContextStack implements Processor {
     if (value == null) {
       dst.putNode(n);
     } else {
-      Util.copyNodes(value, dst);
+      Copy.copyNodes(value, dst);
     }
-  }
-
-  /************************************************************************
-  ** Processing:
-  ************************************************************************/
-
-  protected boolean running = false;
-
-  public boolean isRunning() { return running; }
-  public void stop() { running = false; }
-
-  /** Run the Processor, pushing a stream of Token objects at its
-   *	registered Output, until we either run out of input or the 
-   *	<code>isRunning</code> flag is turned off.
-   */
-  public void run() {
-    running = true;
-    processNode();
-    while (running && input.toNextSibling() != null) processNode();
   }
 
   /************************************************************************
