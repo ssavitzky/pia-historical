@@ -21,7 +21,7 @@ import crc.ds.Table;
 /** Handler class for &lt;process&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;process [tagset=tsname] [copy]&gt;content&lt;/process&gt;
+ *	&lt;process [tagset=tsname] [copy] [anyway]&gt;content&lt;/process&gt;
  * <dt>Dscr:<dd>
  *	Process CONTENT with optional TAGSET, then either skip or COPY 
  *	the result.  Inside form, only process if submitted or ANYWAY,
@@ -31,8 +31,7 @@ import crc.ds.Table;
 public class Process extends Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<process [tagset=tsname] [copy]>\n" +
-    "  content</process>\n" +
+    "<process [tagset=tsname] [copy] [anyway]>content</process>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=

@@ -31,7 +31,8 @@ import java.io.ByteArrayOutputStream;
 /** Handler class for &lt;read-href&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;read href="url" [method="get|head"] [base="path"] [process [tagset="name"]] &gt;
+ *	&lt;read.href href="url" [method="get|head"] [query="query-string"]
+ *	              [base="path"] [process [tagset="name"]][wait="time"]&gt;
  * <dt>Dscr:<dd>
  *	Input from HREF, with optional BASE path.  
  *	Optionally PROCESS with optional TAGSET.
@@ -41,7 +42,8 @@ import java.io.ByteArrayOutputStream;
 public class Read_href extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<read href=\"url\" [method=get|head|put] [query=\"name1=value1?name2=value2\"] [base=\"baseurl\"] [process [tagset=\"name\"]] [wait=\"time\" >\n" +
+    "<read.href href=\"url\" [method=get|head|put] [query=\"query-string\"]\n"+
+    "      [base=\"baseurl\"] [process [tagset=\"name\"]] [wait=\"time\"]>\n"+
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
