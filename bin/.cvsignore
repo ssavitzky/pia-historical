@@ -1,8 +1,9 @@
 Makefile
+be_pia
 ccwriter
 formatter
-scsitest
-be_pia
-run_pia
-shutdown
+jpia
 ppia
+run_pia
+scsitest
+shutdown
