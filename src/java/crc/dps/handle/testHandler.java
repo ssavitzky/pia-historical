@@ -58,6 +58,7 @@ public class testHandler extends GenericHandler {
     if (dispatch(e, "negative")) return new test_negative(e);
     if (dispatch(e, "match")) 	 return new test_match(e);
     if (dispatch(e, "null")) 	 return new test_null(e);
+    if (dispatch(e, "numeric"))	 return new test_numeric(e);
 
     if (e.getAttributes() == null || e.getAttributes().getLength() == 0)
       return this;
@@ -221,6 +222,15 @@ class test_negative extends testHandler {
     returnBoolean(a.doubleValue() < 0.0, aContext, out);
   }
   public test_negative(ActiveElement e) { super(e, true, true); }
+}
+
+class test_numeric extends testHandler {
+  public void action(Input in, Context aContext, Output out, String tag, 
+  		     ActiveAttrList atts, NodeList content, String cstring) {
+    Association a = Association.associateNumeric(null, cstring);
+    returnBoolean(a.isNumeric());
+  }
+  public test_numeric(ActiveElement e) { super(e, true, true); }
 }
 
 class test_match extends testHandler {
