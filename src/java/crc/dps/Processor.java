@@ -83,9 +83,11 @@ public interface Processor extends Context {
    */
   public void run();
 
-  /** Test whether the Processor is ``running'' (in ``push mode'').
+  /** Test whether the Processor is ``running''.
    */
   public boolean isRunning();
 
+  /** Turn off the Processor's ''running'' flag. */
+  public void stop();
 
 }

@@ -109,6 +109,9 @@ public class GenericHandler extends BasicHandler {
   ** Semantic Operations:
   ************************************************************************/
 
+  public int action(Input in, Context aContext, Output out) {
+    return 1;
+  }
 
   /************************************************************************
   ** Documentation Operations:

@@ -93,6 +93,7 @@ public class Filter {
       while (names.hasMoreElements()) {
 	System.err.print(" " + names.nextElement().toString());
       }
+      System.err.print("\n");
     }
     
     /* Ask the Tagset for an appropriate parser, and set its Reader. */
@@ -101,14 +102,15 @@ public class Filter {
 
     /* Finally, create a Processor and set it up. */
     BasicProcessor ii = new BasicProcessor();
-    ii.setTagset(ts);
     ii.setInput(p);
 
-    if (parsing) {
-      ii.setOutput(new crc.dps.output.ToParseTree());
-    } else {
-      ii.setOutput(new crc.dps.output.ToWriter(new OutputStreamWriter(out)));
-    }
+    Output output = (parsing)
+      ? (Output)new crc.dps.output.ToParseTree()
+      : (Output)new crc.dps.output.ToWriter(new OutputStreamWriter(out));
+
+    if (debug) output = new crc.dps.output.OutputTrace(output);
+    ii.setOutput(output);
+
     //if (entities) new Environment(infile).use(ii);
     if (debug) ii.setDebug();
 
@@ -117,7 +119,7 @@ public class Filter {
 
     if (parsing) { 
       System.err.println("\n\n========= parse tree: ==========\n");
-      System.err.println(ii.getNode());
+      // === System.err.println(ii.getOutput().getNode());
     }
   }
 

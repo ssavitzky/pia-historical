@@ -58,6 +58,8 @@ public class CursorStack implements Cursor {
   ** Construction and Copying:
   ************************************************************************/
 
+  protected void initialize() {	/* override if necessary */ }
+
   protected void copy(CursorStack old) {
     depth 	= old.depth;
     node 	= old.node;
@@ -136,9 +138,16 @@ public class CursorStack implements Cursor {
   ** State Accessors:
   ************************************************************************/
 
-  public final Node       getNode() 	{ return node; }
-  public final Element    getElement()	{ return element; }
-  public final ActiveNode getActive() 	{ return active; }
+  public final Node       getNode() 	{ 
+    if (node == null) initialize();
+    return node;
+  }
+  public final Element    getElement()	{  
+    if (node == null) initialize();
+    return element; }
+  public final ActiveNode getActive() 	{  
+    if (node == null) initialize();
+    return active; }
   public final int	  getDepth() 	{ return depth; }
   public final String 	  getTagName() 	{ return tagName; }
 
@@ -218,6 +227,21 @@ public class CursorStack implements Cursor {
     if (element == null) return false;
     crc.dom.AttributeList atts = element.getAttributes();
     return (atts != null) && (atts.getLength() > 0);
+  }
+
+  /** This should be overridden to if more information is available. */
+  public boolean hasActiveAttributes() {
+    return hasAttributes();
+  }
+
+  /** This will have to be overridden if the tree is being built on the fly. */
+  protected boolean hasChildren() {
+    return node.hasChildren();
+  }
+
+  /** This should be overridden to if more information is available. */
+  public boolean hasActiveChildren() {
+    return hasChildren();
   }
 
   public String getTagName(int level) {

@@ -67,12 +67,23 @@ in a single depth-first, left-to-right traversal.
 <h3>To Be Done</h3>
 
 <ul>
-  <li> Order:  Cursor implementations (add insideElement, etc.),
-       ParseTreeIterator (mixed input/output for parse trees),
-       BasicParser, Tagset/BasicTagset, Handler/BasicHandler/...,
-       Context/Processor,  ContextStack/BasicProcessor.<br>
-       The idea would be to get as quickly as possible to something that
-       can operate in copy mode, so we can test it.
+  <li> One problem:  attributes don't have a next sibling.
+       When we get to the end of a list we mustn't call advanceParser,
+       so we need a flag that says whether we're in a list.  Could be done by
+       depth, but a flag might be easier.
+
+  <li> Need flag that tells whether the current node has been processed yet.
+       (really relevant only for toNextNode, to keep track of whether we've
+       enumerated the children yet)
+
+  <li> Context needs getEntityValue, getIndexValue
+
+  <li> ParseTreeElement should keep information about whether any of its
+       attributes contain entities that need to be expanded.  Should be much
+       faster, since most don't and it's known at parse time. <p>
+
+       The other possibility is lazy evaluation -- don't even look at them
+       until they're needed when converting an attribute's value to a string.<p>
 
   <li> We will want a ParseTreeIterator that implements both Input and
        Output (and of course TreeIterator).  The main use would be

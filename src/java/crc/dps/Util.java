@@ -170,7 +170,7 @@ public class Util {
     if (n == null) return;
     Action h = in.getAction();
     if (h != null) {
-      h.action(n, c, in, out);
+      h.action(in, c, out);
     } else if (in.hasChildren()) {
       out.startNode(n);
       // context for children? ===

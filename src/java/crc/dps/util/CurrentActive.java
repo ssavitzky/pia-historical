@@ -133,10 +133,30 @@ public class CurrentActive implements Cursor {
   public boolean atFirst() 	{ return atFirst; }
 
   /** This will have to be overridden if the tree is being built on the fly. */
+  protected boolean atLast() {
+    return active.getNextSibling() == null;
+  }
+
+  /** This will have to be overridden if the tree is being built on the fly. */
+  protected boolean hasChildren() {
+    return active.hasChildren();
+  }
+
+  /** This should be overridden to if more information is available. */
+  public boolean hasActiveChildren() {
+    return hasChildren();
+  }
+
+  /** This will have to be overridden if the tree is being built on the fly. */
   public boolean hasAttributes() {
     if (element == null) return false;
     crc.dom.AttributeList atts = element.getAttributes();
     return (atts != null) && (atts.getLength() > 0);
+  }
+
+  /** This should be overridden to if more information is available. */
+  public boolean hasActiveAttributes() {
+    return hasAttributes();
   }
 
   public String getTagName(int level) {
@@ -269,20 +289,8 @@ public class CurrentActive implements Cursor {
    */
   protected Attribute toNextAttribute() {
     if (active.getNodeType() != NodeType.ATTRIBUTE) return null;
-    else return (Attribute) toNextNode();
+    else return (Attribute) toNextSibling();
   }
-
-
-  /** This will have to be overridden if the tree is being built on the fly. */
-  protected boolean atLast() {
-    return active.getNextSibling() == null;
-  }
-
-  /** This will have to be overridden if the tree is being built on the fly. */
-  protected boolean hasChildren() {
-    return active.hasChildren();
-  }
-
 
 
   /************************************************************************

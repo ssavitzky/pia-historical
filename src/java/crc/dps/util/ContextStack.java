@@ -60,6 +60,7 @@ public class ContextStack  implements Context {
   public Output getOutput() { return output; }
   public void  setOutput(Output out) { output = out; }
 
+  public int getDepth() { return depth; }
 
   /************************************************************************
   ** Construction and Copying:

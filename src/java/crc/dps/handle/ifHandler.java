@@ -9,8 +9,6 @@ import crc.dom.NodeList;
 import crc.dom.DOMFactory;
 
 import crc.dps.NodeType;
-import crc.dps.Token;
-import crc.dps.BasicToken;
 import crc.dps.Handler;
 import crc.dps.Processor;
 import crc.dps.Context;
@@ -31,7 +29,6 @@ import crc.dps.Util;
  * @see crc.dps.Processor
  * @see crc.dps.Tagset
  * @see crc.dps.BasicTagset
- * @see crc.dps.Token
  * @see crc.dps.Input 
  * @see crc.dom.Node
  */
@@ -42,7 +39,7 @@ public class ifHandler extends GenericHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** endAction must assume that the contents have been expanded. */
+  /** endAction must assume that the contents have been expanded.
   public Token endAction(Token t, Processor p, Node n) {
     // n is the result of expanding the condition.
     boolean trueCondition = false;
@@ -68,8 +65,8 @@ public class ifHandler extends GenericHandler {
     }
     return null;
   }
-
-  /** expandAction must assume that the contents still need expansion. */
+ */
+  /** expandAction must assume that the contents still need expansion.
   public Token expandAction(Token t, Context c) {
 
     // We have to expand the children at this point.  We do it
@@ -104,7 +101,7 @@ public class ifHandler extends GenericHandler {
     }
     return null;
   }
-
+ */
   /************************************************************************
   ** Constructor:
   ************************************************************************/

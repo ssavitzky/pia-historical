@@ -41,75 +41,84 @@ public class BasicProcessor extends ContextStack implements Processor {
   ** Processing:
   ************************************************************************/
 
-  // === we're assuming that a Processor is a Context and has node and handler
-  // === Should the input and output also be part of the context?  Unclear.
-
   /** Process the current Node */
-  public void processNode(Input in, Output out) {
-    action = in.getAction();
+  public void processNode() {
+    Action action = input.getAction();
     if (action != null) {
-      action.action(node, this, in, out);
+      additionalAction(action.action(input, this, output));
     } else {
-      defaultNodeProcessing(in, out);
+      expandNode();
     }
   }
 
-  // === we're going to want to split action to permit an iterative Processor:
-  // === startAction, endAction.
+  /** Perform any additional action requested by the action routine. */
+  protected final void additionalAction(int flag) {
+    switch (flag) {
+    case -1: copyNode(); return;
+    case  0: return;
+    case  1: expandNode(); return;
+    }
+  }
 
-  public void defaultNodeProcessing(Input in, Output out) {
+  public void expandNode() {
+    Node node = input.getNode();
     if (node.getNodeType() == NodeType.ENTITY) {
-      // === expand entity maybe.  Very simple:  push value onto input.
-    } else if (in.hasChildren() || in.hasAttributes()) {
-      if (in.hasAttributes()) {
-	out.startElement(getElement());
-	processAttributes(in, out);
+      // === expand entity.  Very simple:  copy value to output.
+      output.putNode(node);	// === for now ===
+    } else if (input.hasChildren() || input.hasActiveAttributes()) {
+      if (/*===*/false && input.hasActiveAttributes()) {
+	output.startElement(input.getElement());
+	processAttributes();
       } else {
-	out.startNode(node);
+	output.startNode(node);
       }
-      // === push, or create a new Context?
-      if (in.hasChildren()) processChildren(in, out);
-      out.endNode();
+      if (input.hasChildren()) processChildren();
+      // === if element and no end tag, need endElement(true)
+      output.endNode();
     } else {
-      out.putNode(node);
+      output.putNode(node);
     }
   }
 
-  /** Process the next Node. */
-  public void processNextNode(Input in, Output out) {
-    node = in.toNextNode();
-    if (node == null) return;
-    processNode(in, out);
+  public void copyNode() {
+    if (input.hasChildren()) {
+      output.startNode(input.getNode());
+      copyChildren();
+      output.endNode();
+    } else {
+      output.putNode(input.getNode());
+    }
   }
 
   /** Process the children of the current Node */
-  public void processChildren(Input in, Output out) {
-    for (node = in.toFirstChild() ; node != null; node = in.toNextNode()) {
-      processNode(in, out);
+  public void processChildren() {
+    for (Node node = input.toFirstChild() ;
+	 node != null;
+	 node = input.toNextSibling()) {
+      processNode();
     }
-    in.toParent();
+    input.toParent();
+  }
+
+  /** Process the children of the current Node */
+  public void copyChildren() {
+    for (Node node = input.toFirstChild() ;
+	 node != null;
+	 node = input.toNextSibling()) {
+      copyNode();
+    }
+    input.toParent();
   }
 
   /** Process the attributes  of the current Node */
-  public void processAttributes(Input in, Output out) {
-    for (node = in.toFirstAttribute() ; node != null;
-	 node = in.toNextAttribute()) { 
-      processNode(in, out);
+  public void processAttributes() {
+    for (Node node = input.toFirstAttribute() ; node != null;
+	 node = input.toNextAttribute()) { 
+      processNode();
     }
-    in.toParentElement();
+    input.toParentElement();
   }
 
-  public void process() {
-    
-  }
-
-  /************************************************************************
-  ** Generating Output:
-  ************************************************************************/
-
-  protected boolean running;
-
-  public boolean isRunning() { return running; }
 
   /************************************************************************
   ** Input and Output:
@@ -128,14 +137,19 @@ public class BasicProcessor extends ContextStack implements Processor {
   ** Processing:
   ************************************************************************/
 
+  protected boolean running;
+
+  public boolean isRunning() { return running; }
+  public void stop() { running = false; }
+
   /** Run the Processor, pushing a stream of Token objects at its
-   *	registered Output, until the Output's <code>nextToken</code>
-   *	method returns <code>false</code>.
+   *	registered Output, until we either run out of input or the 
+   *	<code>isRunning</code> flag is turned off.
    */
   public void run() {
     running = true;
-    process();
-    //    if (running && output != null) { output.endOutput(); }
+    processNode();
+    while (running && input.toNextSibling() != null) processNode();
   }
 
 

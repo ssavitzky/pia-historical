@@ -36,8 +36,9 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
   ** Semantic Operations:
   ************************************************************************/
 
-  public void action(Input in, Context aContext, Output out) {
-
+  public int action(Input in, Context aContext, Output out) {
+    return (in.hasActiveChildren() || in.hasActiveAttributes())
+      ? 1 : -1;
   }
 
 

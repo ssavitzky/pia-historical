@@ -43,7 +43,7 @@ import crc.dom.Element;
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException */
 
-public interface Input {
+public interface Input extends Cursor {
 
   /************************************************************************
   ** State Accessors:
@@ -133,6 +133,18 @@ public interface Input {
   public boolean hasChildren();
 
 
+  /** Test whether the current node is expected to have children <em>that
+   *	may need expansion</em>. <p>
+   *
+   *	Note that implementations are free to return the pessimistic
+   *	answer of <code>true</code> in all cases, but it will be more
+   *	efficient if they can be more discriminating. <p>
+   *
+   * @return <code>true</code> if the current node has active children.
+   */
+  public boolean hasActiveChildren();
+
+
   /** Test whether the current node has attributes.
    *
    * @return <code>true</code> if the current node has attributes.
@@ -140,12 +152,24 @@ public interface Input {
   public boolean hasAttributes();
 
 
+  /** Test whether the current node has attributes <em>that may need
+   *	expansion</em>. <p>
+   *
+   *	Note that implementations are free to return the pessimistic
+   *	answer of <code>true</code> in all cases, but it will be more
+   *	efficient if they can be more discriminating. <p>
+   *
+   * @return <code>true</code> if the current node has active attributes.
+   */
+  public boolean hasActiveAttributes();
+
+
   /** Returns <code>true</code> if and only if <code>getParent</code> will
    *	return <code>null</code>. <p>
    *
    *	Note that <code>atTop</code> may be <code>true</code> even if the
    *	current node actually has a parent, if the Input is iterating over
-   *	a subtree or fragment of a document. <p>
+   *	a subtree, nodelist, or document fragment. <p>
    */
   public boolean atTop();
 

@@ -37,9 +37,15 @@ public interface Action {
    *	necessary assumptions about the type of the node, and call
    *	the appropriate access function to obtain it.  This is much
    *	more efficient than copying the input node into yet another
-   *	cursor to operate on it.
+   *	cursor to operate on it. <p>
+   *
+   * @return integer indicating what additional action to take:
+   *	<dl compact>
+   *	   <dt> -1 <dd> Copy node without expansion.
+   *	   <dt>  0 <dd> No additional action required.
+   *	   <dt>  1 <dd> Copy node with expansion.
    */
-  public void action(Input in, Context c, Output out);
+  public int action(Input in, Context c, Output out);
 
 
   /** === probably want start, end actions for elements. === */

@@ -35,7 +35,7 @@ public class OutputTrace implements Output {
   }
 
   public void debug(String message, int indent) {
-    String s = "";
+    String s = "=>";
     for (int i = 0; i < indent; ++i) s += " ";
     s += message;
     log.print(s);
@@ -45,7 +45,10 @@ public class OutputTrace implements Output {
     switch (aNode.getNodeType()) {
     case crc.dom.NodeType.ELEMENT:
       Element e = (Element)aNode;
-      return e.toString();
+      AttributeList atts = e.getAttributes();
+      return "<" + e.getTagName()
+	+ ((atts != null && atts.getLength() > 0)? " " + atts.toString() : "")
+	+ ">";
 
     case crc.dom.NodeType.TEXT: 
       Text t = (Text)aNode;
@@ -71,6 +74,7 @@ public class OutputTrace implements Output {
   }
   public boolean endNode() { 
     depth --;
+    debug("end " + NL, depth);
     return (target != null)? target.endNode() : depth >= 0;;
   }
   public void startElement(Element anElement) {
