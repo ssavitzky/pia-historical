@@ -234,20 +234,34 @@ does not exist, nothing gets inserted.)
 <P>To create your own agent, first create a directory, <TT>~/.pia/Agents/HelloWorld</TT>.
 Now create a home page for your agent, <TT>~/.pia/Agents/HelloWorld/home.xh</TT>
 with something like the following content:
-<BR><TT>&lt;html> &lt;body></TT>
-<BR><TT>&lt;h2> I am the &amp;agentName; agent &lt;/h2></TT>
-<BR><TT>My owner is &amp;piaUSER;.</TT>
-<BR><TT>&lt;if>&lt;get form name=data>&lt;then></TT>
-<BR><TT>You asked &lt;get form name=data></TT>
-<BR><TT>to which I have no answer yet.</TT>
-<BR><TT>&lt;/then>&lt;else></TT>
-<BR><TT>&lt;form action="&amp;urlPath;" method="post"></TT>
-<BR><TT>&lt;input type="submit" value="AskMe"></TT>
-<BR><TT>A Question: &lt;input name="data"></TT>
-<BR><TT>&lt;/form></TT>
-<BR><TT>&lt;/else></TT>
-<BR><TT>&lt;/if></TT>
-<BR><TT>&lt;/body>&lt;/html></TT>
+<pre>
+
+&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"&gt;&lt;HTML&gt;
+&lt;html&gt; &lt;body&gt; 
+&lt;header&gt; Hello World&lt;/header&gt;
+&lt;h2&gt; I am the &agentName; agent &lt;/h2&gt; 
+
+&lt;if&gt;&lt;get name=FORM:data&gt;&lt;then&gt; 
+	You entered the greeting:
+	&lt;p&gt;
+	 &lt;font size=+5 color="FF0000"&gt;&lt;get name=FORM:data&gt; &lt;/font&gt;
+	&lt;p&gt;
+&lt;/then&gt;&lt;else&gt; 
+	&lt;form action="&urlPath;" method="post"&gt; 
+	My mission is to display a greeting.  "Hello World!" is customary, but I am very flexible.  
+	My owner, &piaUSER;, may decide.
+	&lt;p&gt;
+	&lt;input type="submit" value="Enter"&gt; 
+	A Greeting: &lt;input name="data"&gt; 
+	&lt;p&gt;
+&lt;/form&gt; 
+
+&lt;/else&gt; 
+&lt;/if&gt; 
+&lt;footer /&gt;
+&lt;/body&gt;&lt;/html&gt; 
+
+</pre>
 
 <P>Now install your agent using the <A HREF="http://jaguar.crc.ricoh.com:8888/Agency/install_agent.if">/Agency/install_agent.if</A>
 InterForm. (Go to that page, enter <TT>HelloWorld</TT> as the name of your
@@ -268,10 +282,19 @@ the net</A>). The InterForm extensions are explained below:
 </TR>
 
 <TR>
+<TD>&lt;header&gt;Hello World&lt;/header&gt;</TD>
+<TD>This is an element that puts a standard agent header at the top of the page.
+This includes the PIA logo, that lets you navigate back to the Agency
+home page. This tag is part of the predefined pia-xhtml tagset. This means
+it is available to any agent running within PIA. </TD>
+</TR>
+
+<TR>
 <TD>&amp;agentName;&nbsp;</TD>
 
 <TD>entity (like a variable) specifying current agent's name&nbsp;</TD>
 </TR>
+
 
 <TR>
 <TD>&amp;piaUSER;&nbsp;</TD>
@@ -280,19 +303,19 @@ the net</A>). The InterForm extensions are explained below:
 </TR>
 
 <TR>
-<TD>&lt;if>&lt;get form name=data>&lt;then>&nbsp;</TD>
+<TD>&lt;if>&lt;get name=FORM:data>&lt;then>&nbsp;</TD>
 
 <TD><TT>if</TT> the request for this document included a non-empty form
-input field named <TT>data</TT>, <TT>then</TT> do the following.&nbsp;</TD>
+input field, in the FORM namespace, named <TT>data</TT>, <TT>then</TT> do the following.&nbsp;</TD>
 </TR>
 
 <TR>
-<TD>&lt;get form name=data>&nbsp;</TD>
+<TD>&lt;get name=FORM:data>&nbsp;</TD>
 
 <TD>specifies the value (if any) of the <TT>data </TT>field of the form
 submitted as part of the request for this document. (The <TT>get</TT> tag
-is another way to look up variables. &lt;get form name=data>&lt; is synonymous
-with &amp;FORM.data;)&nbsp;</TD>
+is another way to look up variables. &lt;get name=FORM:data>&lt; is synonymous
+with &amp;FORM:data;)&nbsp;</TD>
 </TR>
 
 <TR>
@@ -314,6 +337,13 @@ current document&nbsp;</TD>
 
 <TD>end of <TT>else</TT> and <TT>if</TT> tags&nbsp;</TD>
 </TR>
+<TR>
+<TD>&lt;footer /&gt;
+<TD>This element is similar to <TT>&lt;header></TT> and also a member of the
+pia-xhtml tagset. It provides the navigation bar at the bottom of the screen,
+along with a copyright notice.</TD>
+</TR>
+
 </TABLE>
 Basically, what this InterForm does is check to see if the user submitted
 a form. If so, the form data is processed and the results displayed, otherwise
@@ -419,7 +449,9 @@ followed by an explanation of all PIA tags.
 
 &lt;input type="submit" value="Edit"&gt; 
 &lt;/form&gt;
-&lt;footer&gt;
+&lt;footer /&gt;
+&lt;p>
+&lt;code&gt;&lt;A HREF="file:&piaDIR;/Agents/Swifty/home.txt" TARGET=_blank&gt;View source code&lt;/A&gt;&lt;/code&gt;
 
 &lt;/BODY&gt;
 &lt;/HTML&gt;
@@ -548,7 +580,11 @@ page.
 &lt;input type="checkbox" name="his"value="History"&gt;History &lt;p&gt; &lt;HR&gt; 
 &lt;input type="submit" name="submission"value="Submit"&gt; 
 &lt;input type="reset" value="Reset"&gt; &lt;/form&gt; 
-&lt;footer&gt;
+&lt;footer /&gt;
+
+&lt;p&gt;
+&lt;code&gt;&lt;A HREF="file:&piaDIR;/Agents/Swifty/edit_page.txt" TARGET=_blank&gt;View source code&lt;/A&gt;&lt;/code&gt;
+
 &lt;/body&gt;&lt;/html&gt;
 </PRE>
 
