@@ -91,51 +91,6 @@ public class Hook extends ActiveDoc {
     initializeHookEntities();
   }
 
-  public void initializeLegacyEntities() {
-    if (transaction != null) {
-      URL url = transaction.requestURL();
-      if (url != null) {
-	define("url", transaction.requestURL().toString());
-	define("urlPath", transaction.requestURL().getFile());
-      }
-      // form parameters might be either query string or POST data
-      if(transaction.hasQueryString()){
-        define("urlQuery",  transaction.queryString());
-	// === define("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
-      } else {
-	define("urlQuery",  "");
-	//define("FORM",new AttrWrap(new AttrTable()));
-      }
-      // if no parameters this is an empty table
-
-      if (transaction.test("agent-request") ||
-	   transaction.test("agent-response")) {
-
-	String aname = transaction.getFeatureString("agent");
-	String atype = transaction.getFeatureString("agent-type");
-
-	define("transAgentName", aname);
-	define("transAgentType", atype); 
-	if (aname.equals(atype)) {
-	  define("transAgentPath", "/"+aname);
-	} else {
-	  define("transAgentPath", "/"+atype+"/"+aname);
-	}
-      } else {
-	define("transAgentName", null);
-	define("transAgentType", null);
-	define("transAgentPath", null);
-      }
-    }
-    Pia pia = Pia.instance();
-    define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
-    define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
-    define("piaPORT", pia.properties().getProperty(Pia.PIA_PORT));
-    define("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
-
-    define("usrDIR", pia.properties().getProperty(Pia.USR_ROOT));
-
-  }
 
   /** Initialize entities that differ for each hook called on a transaction. */
   public void initializeHookEntities() {
