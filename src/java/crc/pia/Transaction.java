@@ -28,6 +28,7 @@ import crc.ds.Features;
 import crc.ds.HasFeatures;
 import crc.ds.Queue;
 import crc.ds.Table;
+import crc.ds.Tabular;
 import crc.ds.List;
 import crc.ds.UnaryFunctor;
 import crc.ds.Criteria;
@@ -48,7 +49,7 @@ import crc.tf.TFComputer;
 import w3c.www.http.HTTP;
 
 public abstract class Transaction extends AttrBase
-    implements Runnable, HasFeatures
+    implements Runnable, HasFeatures, Tabular
 {
 
   public boolean DEBUG = false;
@@ -599,6 +600,14 @@ public abstract class Transaction extends AttrBase
     if (s != null) return new crc.sgml.Text(name);
 
     return null;
+  }
+
+  /** Retrieve an attribute by name.  Returns null if no such
+   *	attribute exists. */
+  public synchronized Object get(String name) {
+    Object o = getFeature(name);
+    if (o != null) return o;
+    else return header(name);
   }
 
   /** Enumerate the defined attributes. */
