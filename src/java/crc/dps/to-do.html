@@ -17,6 +17,25 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug</b> no way to get name of a node in &lt;select&gt;. <br>
+       We can select nodes <em>by</em> name, but not <em>get</em> their
+       names. 
+       (1998-10-12) <br>
+       
+  <li> <b>Bug</b> no namespace for all installed agents. <br>
+       (1998-10-12) <br>
+       
+  <li> <b>Impr</b> passthrough action for elements. <br>
+       Call the action first; let it set entities before-tag, before-content,
+       after-content, and after-tag.
+       (1998-10-12) <br>
+
+  <li> <b>Impr</b> Simplify Namespace and Context ops. <br>
+       getEntityValue, etc. should be removed from Context; the more general
+       operations in Index should be used to give a single point of
+       definition. 
+       (1998-10-12) <br>
+
   <li> <b>Impr</b> piaUSER, etc should become PIA:user, etc. <br>
        (1998-10-11) <br>
 

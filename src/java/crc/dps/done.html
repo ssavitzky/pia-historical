@@ -450,7 +450,15 @@ See also:
        (1998-10-8) <br>
        -- was using <code>instanceof</code> instead of testing
 	  <code>asNamelist() != null</code>.  Entities test their value for
-	  being a namelist. 
+	  being a namelist.
+
+  <li> 1998-10-12 <b>Bug</b> indexed names incorrect in attrs. <br>
+       Either they're not getting defined correctly or, more likely, not
+       getting expanded under certain circumstances.  The symptom shows up
+       in <code>&lt;a href="&AGENT:foo;"&gt;&AGENT:foo;&lt;/&gt;</code>
+       (1998-10-11) <br>
+       -- Expand.expandEntity: checking for period instead of colon.
+       
 </ol>
 <a name="end">End of list.</a>
 <hr>
