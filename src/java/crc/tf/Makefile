@@ -1,6 +1,7 @@
 PACKAGE=crc.tf
 
 FILES = \
+	 GetTitle.java \
 	 GetAgent.java \
          IsAgReq.java \
  	 IsAgResp.java \
