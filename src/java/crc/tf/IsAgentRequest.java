@@ -20,7 +20,6 @@ public final class IsAgentRequest extends TFComputer {
   public Object computeFeature(Transaction trans){
 
     String lhost = null;
-    String lport = null;
     
     if( !trans.isRequest() ) return False;
     URL url = trans.requestURL();
@@ -31,12 +30,20 @@ public final class IsAgentRequest extends TFComputer {
       lhost = host.toLowerCase();
     else
       lhost = "";
-    
-    if( lhost.startsWith("agency") || lhost == "" )
+
+    if( lhost.startsWith("agency") || lhost.equals(""))
       return True;
-    
-    if( Pia.instance().portNumber() == url.getPort()
-	&& Pia.instance().host().startsWith( lhost ) ){
+
+    // === Sometimes url.getPort() returns -1 --  probably means it's missing.
+
+    int lport = url.getPort();
+    if (lport == -1) lport = 80;
+
+    if( (Pia.instance().portNumber() == lport
+	 || Pia.instance().realPortNumber() == lport)
+	&& (Pia.instance().host().startsWith( lhost )
+	    || lhost.startsWith(Pia.instance().host())
+	    || lhost.equals("localhost"))){
       return True;
     }
     

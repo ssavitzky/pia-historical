@@ -68,9 +68,15 @@ public class Pia {
   public static final String PIA_ROOT = "crc.pia.piaroot";
 
   /**
-   * Property name of server port
+   * Property name of port the PIA is accessed through.
    */
   public static final String PIA_PORT = "crc.pia.port";
+
+  /**
+   * Property name of port the PIA listens on.  May differ from PIA_PORT
+   *	if PIA_PORT is what a proxy server is listening to.
+   */
+  public static final String REAL_PORT = "crc.pia.realport";
 
   /**
    * Property name of this host
@@ -128,6 +134,7 @@ public class Pia {
   private String  url        = null;
   private String  host       = null;
   private int     port       = 8888;
+  private int	  realPort   = 8888;
   private int     reqTimeout = 50000;
 
   private static boolean verbose = false;
@@ -302,6 +309,13 @@ public class Pia {
    */
   public int portNumber() {
     return port;
+  }
+
+  /**
+   * @return this port number
+   */
+  public int realPortNumber() {
+    return realPort;
   }
 
   /**
@@ -614,6 +628,7 @@ public class Pia {
     usrRootStr 		= properties.getProperty(USR_ROOT, null);
     host 		= properties.getProperty(PIA_HOST, thisHost);
     port 		= properties.getInteger(PIA_PORT, port);
+    realPort		= properties.getInteger(REAL_PORT, port);
     reqTimeout 		= properties.getInteger(PIA_REQTIMEOUT, 60000);
     loggerClassName 	= properties.getProperty(PIA_LOGGER, loggerClassName);
     agencyClassName 	= properties.getProperty(PIA_AGENCY, agencyClassName);
@@ -669,6 +684,7 @@ public class Pia {
     properties.setProperty(USR_ROOT, usrRootStr);
     properties.setProperty(PIA_HOST, host);
     properties.setInteger(PIA_PORT, port);
+    properties.setInteger(REAL_PORT, realPort);
     properties.setInteger(PIA_REQTIMEOUT, reqTimeout);
     properties.setProperty(PIA_LOGGER, loggerClassName);
     properties.setProperty(PIA_AGENCY, agencyClassName);
@@ -697,7 +713,7 @@ public class Pia {
     resolver.registerAgent( agency );
 
     try{
-      accepter = new Accepter( port );
+      accepter = new Accepter( realPort );
     }catch(IOException e){
       System.out.println("Can not create Accepter: " + e.getMessage());
       System.out.println(  "  Try using a different port number:\n" 

@@ -42,6 +42,7 @@ class Setup extends Configuration {
     "PIA_DIR",	"crc.pia.piaroot",
     "USR_DIR",	"crc.pia.usrroot",
     "PIA_PORT",	"crc.pia.port",
+    "REAL_PORT", "crc.pia.realport",
   };
 
   /** PIA option table: */
@@ -51,16 +52,20 @@ class Setup extends Configuration {
     "-d",	"crc.pia.debug",	"bool",		null,
     "-v",	"crc.pia.verbose",	"bool",		null,
     "-port",	"crc.pia.port",		"number",	"8888",
+    "-real",	"crc.pia.realport", 	"number",	"8888",
     "-root",	"crc.pia.piaroot",	"dir",		null,
     "-profile",	"crc.pia.profile",	"file",		null,
     "-filemap",	"crc.pia.filemap",	"file",		null,
+    "-host",	"crc.pia.host", 	"name",		null,
   };
 
   /* Perl options: ================================================
 	-s PIA_DIR	source dir: (.:~/pia/src:/pia1/pia/src)
 	-u USR_DIR	(~/.PIA)
 	-l logfile
-	-p port		(8001)
+	-p port		(8888)
+	-port port	(8888) the port reported in URL's.
+	-real port	(8888) the port actually listened to
 	-c command
 	-v		verbose
 	-q		quiet
@@ -76,10 +81,11 @@ class Setup extends Configuration {
 	PrintStream o = System.out ;
 
 	o.println("usage: PIA [OPTIONS]") ;
-	o.println("-port <8001>          : listen on the given port number.");
+	o.println("-port <8888>          : URL contains given port number.");
+	o.println("-real <8888>          : listen on the given port number.");
 	o.println("-root <pia dir : /pia>: pia directory.");
 	o.println("-u    <~/Agent>       : user directory.") ;
-	o.println("-p    </pia/config/pia.props>       : property file to read.");
+	o.println("-profile    </pia/config/pia.props>       : property file to read.");
 	o.println("-d                    : turns debugging on.") ;
 	o.println("-v                    : print pia Piaproperties.");
 	o.println("?                     : print this help.");

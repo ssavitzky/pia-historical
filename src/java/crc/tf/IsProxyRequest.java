@@ -34,12 +34,20 @@ public final class IsProxyRequest implements UnaryFunctor{
 	lhost = host.toLowerCase();
       else
 	lhost = "";
-      String lport = Integer.toString( url.getPort() );
       
-      if( lhost.startsWith("agency") || lhost == "" )
+      if( lhost.startsWith("agency") || lhost.equals("") )
 	return zfalse;
       
-      if( Pia.instance().port() == lport && Pia.instance().host().startsWith( lhost ) )
+      // === Sometimes url.getPort() returns -1 --  probably means it's missing.
+
+      int lport = url.getPort();
+      if (lport == -1) lport = 80;
+
+      if( (Pia.instance().portNumber() == lport
+	   || Pia.instance().realPortNumber() == lport)
+	  && (Pia.instance().host().startsWith( lhost )
+	      || lhost.startsWith(Pia.instance().host())
+	      || lhost.equals("localhost")))
 	return zfalse;
 
       return ztrue;
