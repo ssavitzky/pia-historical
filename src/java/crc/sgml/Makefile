@@ -10,6 +10,7 @@ FILES = \
 	AttrBase.java \
 	AttrSGML.java \
 	AttrTable.java \
+	AttrTabular.java \
 	AttrWrap.java \
 	DescriptionList.java \
 	Element.java \
