@@ -13,6 +13,7 @@
 package crc.pia;
 
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.StringBufferInputStream;
 import java.io.OutputStream;
@@ -44,8 +45,7 @@ class zTimeout implements UnaryFunctor{
   public Object execute( Object object ){
     Transaction req = (Transaction) object;
     Machine m = req.toMachine();
-    m.closeProxyConnection();
-    m.closeURLConnection();
+    m.closeConnection();
 
     String msg = "Your request has used up alotted time.  Server is possibly down.";
     Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
@@ -93,22 +93,6 @@ public class Machine {
    * Attribute index - output stream
    */
   protected OutputStream outputStream;
-
-
-  /**
-   * Attribute index - input stream from URL connection
-   * Need to save this cause incase of time out, need to close it
-   */
-  protected InputStream inputFromURL;
-
-  /**
-   * Attribute index - proxy socket
-   * Need to save this cause incase of time out, need to close it
-   */
-  protected Socket proxySocket;
-  protected InputStream proxyIStream;
-  protected OutputStream proxyOStream;
-
 
   /**
    * set inputStream -- use for debuggging
@@ -179,11 +163,9 @@ public class Machine {
   */
   public void closeConnection() {
     try {
-      if( socket != null ){
-	socket.close();
-	inputStream.close();
-	outputStream.close();
-      }
+      if( socket != null ) socket.close();
+      if( inputStream != null ) inputStream.close();
+      if( outputStream != null ) outputStream.close();
     }catch(IOException e) {
       if( DEBUG )
 	System.out.println("Exception while closing socket streams." );
@@ -278,6 +260,7 @@ public class Machine {
     }
     else if( contentString != null && isTextHtml ){
       Pia.instance().debug(this, "Transmitting text/html content...");
+      System.out.println( contentString );
       out.println( contentString );
     }else if( plainContent != null ){
       Pia.instance().debug(this, "Transmitting images content...");
@@ -316,35 +299,6 @@ public class Machine {
     }
 
 
-  public void closeProxyConnection() {
-    try {
-      if( proxySocket != null ){
-	proxySocket.close();
-	proxyIStream.close();
-	proxyOStream.close();
-      }
-    }catch(IOException e) {
-      if( DEBUG )
-	System.out.println("Exception while closing proxy socket streams." );
-      else
-	Pia.instance().errLog( this, "Exception while closing proxy socket streams." );
-    }
-  }
-
-  public void closeURLConnection() {
-    if( inputFromURL != null ){
-      try{
-	inputFromURL.close();
-      }catch(IOException e){
-	if( DEBUG )
-	  System.out.println("Exception while closing url stream." );
-	else
-	  Pia.instance().errLog( this, "Exception while closing url stream." );
-      }
-    }
-  }
-
-
   /**
    * Get request through a proxy by opening the proxy socket
    */
@@ -357,28 +311,15 @@ public class Machine {
     zport        = (p == -1) ? 80 : p;
     zhost        = proxy.getHost();
     try{
-      proxySocket          = new Socket(zhost, zport);
-      proxyOStream = proxySocket.getOutputStream();
-      proxyIStream = proxySocket.getInputStream();
-      
-      request.printOn( proxyOStream );
-      proxyOStream.flush();
 
-      byte[] zdata = null;
-      zdata = suckData( proxyIStream );
-      if( DEBUG ){
-	Pia.instance().debug("The data got from server is :");
-	Pia.instance().debug(this, new String(zdata, 0, 0, zdata.length) );
-      }
-      
-      InputStream bi = new ByteArrayInputStream( zdata ); 
+      socket = new Socket(zhost, zport);
+      outputStream = socket.getOutputStream();
+      inputStream  = new BufferedInputStream( socket.getInputStream() );
 
-      closeProxyConnection();
+      request.printOn( outputStream );
+      outputStream.flush();
       
-      Machine m = new Machine();
-      m.setInputStream( bi );
-
-      new HTTPResponse(request, m );
+      new HTTPResponse(request, this);
 
     }catch(UnknownHostException ue){
       String msg = "Unknown proxy host\n";
@@ -412,9 +353,9 @@ public class Machine {
 	getReqThruProxy( proxy, request, resolver);
       else{
 	if( url != null ){
-	  inputFromURL = url.openStream();
+	  inputStream = url.openStream();
 	  
-	  Content c = new ByteStreamContent( inputFromURL );
+	  Content c = new ByteStreamContent( inputStream );
 	  if ( DEBUG ){
 	    Pia.instance().debug("Dumping data buffer's address");
 	    byte[] data = c.toBytes();
