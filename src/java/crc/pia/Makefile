@@ -20,6 +20,7 @@ FILES = \
 	GenericAgent.java \
 	Logger.java \
 	Pia.java \
+	Piaproperties.java \
 	PiaInitException.java \
 	PiaRuntimeException.java \
 	FormContent.java \
