@@ -15,6 +15,7 @@
 <set entity name=FaxExch>&FORM.FaxExch;</set>
 <set entity name=Fax>&FORM.Fax;</set>
 <set entity name=imagefn>&FORM.imagefn;</set>
+<set entity name=notrecog>&FORM.notrecog;</set>
 <set name=mysrc>http://salmon.crc.ricoh.com:8001/&imagefn;</set>
 <set name=server>http://salmon.crc.ricoh.com:8001/cgi-bin/page_viewer_72.cgi</set>
 
@@ -34,6 +35,10 @@
 </form>
 </table>
 
+<hr>
+Can not recognize the following...<br>
+&notrecog;
+<hr>
 <form action="http://&piaHOST:&piaPORT/Buss/Buss.if" method=post>
  <input type="SUBMIT" value="Add">  <INPUT TYPE="reset" value="Clear Page Data"><hr>
 
@@ -59,4 +64,8 @@
  Business Fax (<input type="text" name="FaxArea" size="3" MAXLENGTH="3" value="&FaxArea;">)
  <input type="text" name="FaxExch" size="3" MAXLENGTH="3" value="&FaxExch;">-<input type="text" name="Fax" size="4" MAXLENGTH="4" value="&Fax;"><br>
 </form>
+
+
+
+
 
