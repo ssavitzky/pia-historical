@@ -48,6 +48,7 @@ public class TextUtil {
   ************************************************************************/
 
   static BasicEntityTable charEnts = new BasicEntityTable();
+  public static BasicEntityTable getCharacterEntities() { return charEnts; }
 
   static protected void dc(char c, String name) {
     charEnts.addBinding(name, new ParseTreeEntity(name, c));
@@ -260,7 +261,9 @@ public class TextUtil {
   ************************************************************************/
 
   /** Protect markup in a string by converting &lt;, &gt;, and &amp; to
-   *	the corresponding entities. */
+   *	the corresponding entities.  The string remains a string.
+   * === should handle &amp;#... character entities!
+   */
   public static final String protectMarkup(String s) {
     if (s == null || s.length() < 1) return s;
     String n = "";
@@ -272,6 +275,10 @@ public class TextUtil {
     }
     return n;    
   }
+
+  /** === There should be a corresponding insertCharacterEntities that actually
+   *	outputs a NodeList.
+   */
 
   /** Replace character entities in a NodeList with their values. */
   public static final String expandCharacterEntities(NodeList nl) {
