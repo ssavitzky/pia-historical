@@ -18,6 +18,7 @@ import crc.dps.NodeType;
 import crc.dps.Context;
 import crc.dps.EntityTable;
 import crc.dps.Namespace;
+import crc.dps.Tagset;
 import crc.dps.active.*;
 import crc.dps.output.*;
 
@@ -84,12 +85,13 @@ public class Index {
   public static void setValue(Context c, String space, String name,
 			      NodeList value) {
     Namespace ns = c.getNamespace(space);
+    Tagset ts = c.getTopContext().getTagset();
 
     // If there's nothing there, make a namespace and populate it.
     if (ns == null) {
       System.err.println("Creating new namespace currently unimplemented");
     } else {
-      ns.setValue(name, value);
+      ns.setValue(name, value, ts);
     }
   }
 

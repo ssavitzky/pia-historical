@@ -22,8 +22,10 @@ UTILITIES = \
 	Copy.java \
 	Create.java \
 	Expand.java \
+	Forms.java \
 	Index.java \
 	Log.java \
+	Status.java \
 	Test.java \
 	ListUtil.java \
 	MathUtil.java \
