@@ -14,6 +14,16 @@
     <else>if false is working</else>
 </if>
 
+<h2>Test problems with empty quotes inside quotes</h2>
+<blockquote>
+ should be 'xxyyzz': '<if>1<then>xx<protect>yy</protect>zz</then></if>'
+ should be 'xxzz': '<if>1<then>xx<protect></protect>zz</then></if>'
+ should be 'aabbcc': '<actor tag=xx>bb</actor>aa<xx></xx>cc'
+ should be 'aabb': '<actor tag=xxx></actor>aaa<xxx></xxx>bbb'
+ should be 'xxxyyyzzz': '<if>1<then>xxx<actor tag=bar empty>zzz</actor>yyy</then></if><bar>'
+ should be 'xxxyyy..': <if>1<then>xxx<actor tag=bar empty></actor>yyy</then></if><bar>..'
+</blockquote>
+
 foo set to "<set name=foo copy>value of foo</set>"
 get: "<get name=foo>"
 entity: "&foo;"
