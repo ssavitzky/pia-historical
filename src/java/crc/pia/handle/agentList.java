@@ -32,14 +32,16 @@ public class agentList extends crc.dps.handle.GenericHandler {
 
     Resolver resolver = env.getResolver();
 
-    List list = new List();
+    ParseNodeArray list = new ParseNodeArray();
+    list.setSep(" ");
 
     Enumeration names = resolver.agentNames();
     while (names.hasMoreElements()) {
       String name = names.nextElement().toString();
       Agent agent = resolver.agent(name);
       if (subs && name.equals(agent.type())) continue;
-      if (type == null || type.equals(agent.type())) list.push(name);
+      if (type == null || type.equals(agent.type()))
+	list.append(new ParseTreeText(name));
     }
 
     // === should really return list of agent names as a list ===

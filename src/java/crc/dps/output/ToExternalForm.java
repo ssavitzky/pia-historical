@@ -100,9 +100,6 @@ public abstract class ToExternalForm extends CursorStack implements Output {
     setNode(aNode);
     if (active != null) {
       write(active.startString());
-    } else if (node instanceof AbstractNode) {
-      AbstractNode n = (AbstractNode) node;
-      write(n.startString());
     } else {
       // === punt -- should never happen.
     }
@@ -113,9 +110,6 @@ public abstract class ToExternalForm extends CursorStack implements Output {
       write(active.endString());
     } else if (node == null) {
       // null node indicates nothing to do.
-    } else if (node instanceof AbstractNode) {
-      AbstractNode n = (AbstractNode) node;
-      write(n.endString());
     }  else {
       // === punt -- should never happen.
     }   
