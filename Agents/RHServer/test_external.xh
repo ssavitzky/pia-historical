@@ -1,0 +1,68 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>test_external.xh</title>
+<link rev="made" href="mailto:pgage@rsv.ricoh.com">
+</head><body>
+
+<define element=extract-content>
+	<doc> Extracts a phrase from a node
+	</doc>
+	<define attribute=entity required></define>
+		<action>
+		<set name="num">0</set>
+			<select><from>&attributes:entity;</from> #TEXT </select>
+				<repeat> <foreach entity=x>&selected;</foreach>
+					<for><start>0</start><stop>19</stop></for>
+						<set name=num>&n;</set>
+				</repeat>
+			<repeat start=0 stop=&num;>
+				<select><from>&attributes:entity;</from>
+					<child>&n;</child> 
+				</select>
+			</repeat>
+		</action>
+	</define>
+</define>
+
+
+
+<define element=extract-phraselist>
+	<doc> Extracts a phrase from a node
+	</doc>
+	<define attribute=entity required></define>
+		<action>
+		<select><from>&attributes:entity;</from><name recursive>rhconcept-phrase</name>
+			<repeat list=&selected;>
+				&li;
+			</repeat>
+		</select>
+		</action>
+	</define>
+</define>
+
+
+
+
+<define element=concepts>
+	<doc> Extracts all concept strings from the rhconcept-phrase fields
+		in the concept data structure.
+	</doc>
+	<define attribute=path required></define>
+	<action>
+	<set name=consrc><connect src=&attributes:path; entity=rhcon></connect></set>
+	<select><from>&rhcon;</from><name recursive>rhconcept-phrase</name>
+		<repeat list=&selected;>
+			<text split sep=" "><extract-content entity=&li;></extract-content></text>
+		</repeat>
+	</select>
+	</action>
+</define>
+
+
+OUTPUT:  <concepts path="simple.xml"></concepts>
+
+
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+</body></html>

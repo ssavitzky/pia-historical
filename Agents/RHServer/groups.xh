@@ -1,0 +1,47 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0"><HTML>
+<html><head>
+<title>Readers' Helper Groups</title>
+</head>
+
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<header>Readers' Helper Groups</header>
+
+<h1>Readers' Helper Groups</h1>
+
+<FORM METHOD="POST" ACTION="/RHServer/group_edit">
+
+<p>
+<CENTER>
+<TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=1 WIDTH="40%" HEIGHT="33%" NOSAVE >
+<TR>
+<!-- Add column headers -->
+<TD><b><u><font size=+2>Groups</font></u></b></TD>
+</TR>
+
+<TR>
+<TD>
+<!-- Add list of groups -->
+<SELECT NAME="gmenu" SIZE=10>
+<select><from><group-list /> </from>
+	<repeat list=&selected;>
+		<OPTION> &li;
+	</repeat>
+</select>
+
+</TD>
+</TR>
+<TR>
+<TD>
+<!-- Add group command buttons -->
+<input type="submit" name="AddGroup" value="Add"> 
+<input type="submit" name="EditGroup" value="Edit"> 
+<input type="submit" name="DeleteGroup" value="Delete"> 
+</TD>
+</TR>
+</TABLE>
+</CENTER>
+</form>
+<footer />
+</BODY>
+</HTML>

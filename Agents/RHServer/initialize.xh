@@ -1,0 +1,18 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the &agentName; agent</title>
+</head><body>
+<h1>Initialize the &agentName; agent</h1>
+
+<!-- =================================================================== -->
+<!-- Initialize variables used by Readers' Helper Server.
+<!-- =================================================================== -->
+<user-message>Initializing &agentName; from &filePath;</user-message>
+
+<set name="AGENT:groupName">""</set>
+
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
