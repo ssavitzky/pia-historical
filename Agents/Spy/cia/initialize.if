@@ -15,12 +15,7 @@
 <a href="&pia;/"><img src="&pia;/cia/Logo/pent24.gif" height=24 width=24
 			border=0></a>
 <a href="&pia;/My/">[~]</a>
-[<a href="&pia;/History">Hist</a>
- <a href="&pia;/My/History/">*</a>/<a
-    href="&pia;/My/History/&year;/">&year;</a>/<a
-    href="&pia;/My/History/&year;/&month;/">&month;</a>/<a
-    href="&pia;/My/History/&year;/&month;/&day;.html">&day;</a>
- <a href="&pia;/My/History/last.html">&time;</a>]
+<expand><get agent=History name=controls></expand>
 <a href="&url;">&lt;URL:&url;&gt;</a>
 <hr>
 </trans-control>

@@ -13,12 +13,7 @@
 <a href="&pia;/"><img src="&pia/fbi/Logo/pia24.gif" height=24 width=43
 			border=0></a>
 <a href="&pia;/My/">[~]</a>
-[<a href="&pia;/History">Hist</a>
- <a href="&pia;/My/History/">*</a>/<a
-    href="&pia;/My/History/&year;/">&year;</a>/<a
-    href="&pia;/My/History/&year;/&month;/">&month;</a>/<a
-    href="&pia;/My/History/&year;/&month;/&day;.html">&day;</a>
- <a href="&pia;/My/History/.last.html">&time;</a>]
+<expand><get agent=History name=controls></expand>
 ( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
           <a href="&pia;/&transAgentType;/"> / </a></then>
