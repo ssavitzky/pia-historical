@@ -10,7 +10,7 @@
 <caption>User Pages</caption>
 <th>pending<th>completed<tr>
 <td><set entity name=namelist><read file="namelist2.dat"></set>
-<repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/&agentName;/users-pending.if?username=&li;">&li;<a></repeat>
+<repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/&agentName;/user-pending.if?username=&li;">&li;<a></repeat>
 <td><repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=&li;">&li;<a></repeat><tr>
 </table><p>
 
