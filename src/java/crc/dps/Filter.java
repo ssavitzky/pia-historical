@@ -43,6 +43,7 @@ public class Filter {
   static int verbosity = 0;
   static boolean noaction = false;
   static boolean loadTagset = false;
+  static boolean writeTagset = false;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -102,9 +103,14 @@ public class Filter {
     if (tsname.equals("tagset")) loadTagset = true;
     if (tsname.equals("BOOT")) loadTagset = true;
 
-    if (false&&loadTagset) {
+    Tagset ts = crc.dps.tagset.Loader.getTagset(tsname);
+    if (ts == null) {
+      System.err.println("Unable to load Tagset " + tsname);
+      System.exit(-1);
+    }
+
+    if (writeTagset) {
       // === Crock!
-      Tagset ts = crc.dps.tagset.Loader.loadTagset(infile);
       if (debug) dumpTagset(ts);
       try {
 	ObjectOutputStream destination = new ObjectOutputStream(outs);
@@ -115,12 +121,6 @@ public class Filter {
 	e.printStackTrace(System.err);
       }
       System.exit(0);
-    }
-
-    Tagset ts = crc.dps.tagset.Loader.getTagset(tsname);
-    if (ts == null) {
-      System.err.println("Unable to load Tagset " + tsname);
-      System.exit(-1);
     }
 
     if (verbose && loadTagset) {
@@ -234,6 +234,7 @@ public class Filter {
     o.println("        -o file	specify output file");
     o.println("	       -p	build parse tree");
     o.println("        -t ts	specify tagset name");
+    o.println("        -w	write tagset");
     o.println("	       -s	silent");
     o.println("	       -q	quiet");
     o.println("	       -v	verbose");
@@ -272,6 +273,8 @@ public class Filter {
 	tsname = args[++i];
       } else if (args[i].equals("-v")) {
 	verbosity += 1;
+      } else if (args[i].equals("-w")) {
+	writeTagset = true;
       } else if (args[i].charAt(0) != '-') {
 	if (infile != null) return false;
 	infile = args[i];
