@@ -187,7 +187,13 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 *
 ***********************************************************************/
 
-.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif
+.SUFFIXES: .tex .dvi .html .idx .ps .xbm .fig .eps .gif .mif
+
+/* .mif (framemaker) to html
+ */
+.mif.html:
+	webmaker -c ../pia.wml -w ./ -t "$*" -n "page" -f BOTTOM -e \
+ CONVERT-TO-IMAGES  $< ; ln page-1.html $*.html
 
 /* .fig (xfig) to various output formats.
  * 	Works even with GNU ghostscript, which doesn't have GIF drivers.
