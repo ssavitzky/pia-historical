@@ -444,7 +444,7 @@ public class Transaction extends Thing{
    * Accessing function to content object
    * 
    */
-  public Content contentObj(){
+  public Content getContentObj(){
     return contentObj;
   }
 
@@ -632,14 +632,6 @@ public class Transaction extends Thing{
       }
     }
 
-  }
-
- /**
-   * title -- Return the title of an HTML page, if it has one.
-   * @return the URL if the content-type is not HTML.
-   * This should be a feature.
-   */
-  public String title(){
   }
 
   /**
