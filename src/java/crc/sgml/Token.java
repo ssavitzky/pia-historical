@@ -117,10 +117,45 @@ public class Token implements SGML {
   public SGML attr(String name) {
     return null;
   }
-
+ 
   /** Retrieve an attribute by  index object. */
-  public SGML attr(Index name) {
-    return null;
+  public SGML attr(Index i) {
+    System.out.println("in single token attr.");
+
+    Tokens ts = content();
+    //System.out.println("single attr ts is-->"+ts.toString());
+    String ztag = i.getTag();
+    int zstart  = i.getStart();
+    int zend    = i.getEnd();
+
+    if ( ztag.equalsIgnoreCase( Index.TEXT ) )
+      ts = content().withTag( "" );
+    else if( ztag != Index.ANY )
+      ts = content().withTag( ztag );
+
+    return getContentRange(ts, zstart, zend);
+  }
+
+
+  protected SGML getContentRange(Tokens ts, int start, int stop){
+    Tokens result = new Tokens();
+    int size = ts.nItems();
+    
+    int first = 0;
+    int last  = size;
+    
+    if( start > size )
+      return result;
+    
+    first = start - 1;
+    if( stop != Index.LAST && stop <= size )
+      last = stop;
+    
+    System.out.println("copying from " + first +" "+ last);
+    
+    result = ts.copy( first, last );
+    
+    return result;
   }
 
 
