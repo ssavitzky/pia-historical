@@ -10,7 +10,7 @@
 
 <body><center><h1>Installing the PIA</h1></center><p>This manual
 describes how to install the Platform for Information Applications
-(PIA). This information is directed at PIA users. Developers intending
+(PIA).  Developers intending
 to create applications should also consult <a href = "author.html">Authoring
 Agents</a>.</p><p>Topics covered include:</p>
 
@@ -46,8 +46,7 @@ The PIA files are available via HTTP, from <code>
 <a href = "http://www.risource.org/PIA/">http://www.risource.org/PIA/</a>.</code></p>
 <p>
 The latest stable releases are maintained in compressed form in the
-directories <code>ftp://www.risource.org/PIA/pia_src.tgz</code> and 
-<code>ftp://www.risource.org/PIA/pia_src.tgz</code>.
+directories <code>ftp://ftp.risource.org/PIA/pia_src.tgz</code>.
 </p>
 
 <h2>Uncompressing the Files</h2>
@@ -56,7 +55,7 @@ Before the PIA files can be extracted from the tar file, it must first
 be uncompressed.  For example:
 </p>
 <blockquote>
-<code>gunzip pia_src_2_0.tgz</code>
+<code>gunzip pia_src.tgz</code>
 </blockquote>
 
 <h2><a name = "Installing">Installing the Files</a></h2>
@@ -66,10 +65,11 @@ directory to the intended parent directory for the PIA files.
 Extract the files using <code>tar</code>.  For example:
 </p>
 
-<blockquote><code>tar xvf pia_src_2_0</code></blockquote>
+<blockquote><code>tar xvf pia_src</code></blockquote>
 
 <p>
-This creates the directory <code>pia/</code> under your home directory.</p>
+This creates the directory <code>pia/</code> under your current directory. (The default
+environment variables below assume this is your home directory.)</p>
 
 <h3 id = "CHDCECIE">Setting Up</h3>
 <p>
@@ -78,20 +78,22 @@ PIA uses two environment variables:</p>
 <ul><li><var>PIA_DIR</var> indicates the location of the PIA directory just installed.</li>
 
 <li><var>USR_DIR</var> indicates the location to which the PIA writes
-its data files.</li></ul><p>On Unix, set the <var>PIA_DIR</var> to <kbd>$HOME/pia</kbd> or
-whatever installation location you chose above.On Windows, set the <var>PIA_DIR</var> to <code><var>drivename</var>:\pia</code>.</p>
+its data files.</li></ul><p>On Unix, <var>PIA_DIR</var> defaults <kbd>$HOME/pia</kbd>, if the pia is installed
+somewhere else, you must set this variable.On Windows, <var>PIA_DIR</var> defaults to
+<code><var>drivename</var>:\pia</code>.</p>
 
 <p>
 <var>USR_DIR</var> is automatically created by the PIA. You are free to reset its location
 if desired.  On Unix, the default directory for <var>USR_DIR</var> is <kbd>~/.pia</kbd>.
-On Windows, the default directory is <code>c:\PIAUSERS\<var>username</var></code>.</p>
+On Windows, the default directory is <code>c:\PIAUSERS\<var>username</var></code> (if a username is
+not available <code> nobody</code> is used).</p>
 
 <p>If you use the <kbd>-u</kbd> command line option to specify <var>USR_DIR</var>,
 that setting takes precedence over the one you specify in the environment
 variable.</p><p>When the PIA starts, it looks for the <code>pia.props</code> under <code>~/.pia/Config</code>.
 You can create a customizable copy in your home directory under <code>~/.pia/Config</code> by
 copying <tt>pia/Config/pia.props</tt> and modifying it using a text
-editor. Note that this is <var>USR_DIR</var>.</p>
+editor. (Note that this example assumes <var>USR_DIR is ~/.pia)</var></p>
 
 <p>The default settings of the PIA are contained in <code>pia/Config/pia.props</code>.
 </p>
@@ -122,7 +124,8 @@ variables. It is equivalent to the following:<kbd>java -classpath <var>CPATH</va
 -root <var>PIA_DIR</var> -u <var>PIA_HOME</var></kbd></p>
 
 <p>Note the <code>-root</code> and <code>-u</code> options. The <code>-p</code> option
-can be used to set the port.</p><h2>Using the PIA</h2>
+can be used to set the port (default is 8888 to allow normal users to run the
+PIA.  Set to 80 if you don't like URL's like http://HOST:8888).</p><h2>Using the PIA</h2>
 
 <p>The PIA is essentially a Web server. Assuming you are running on a machine
 called <code>PiaHOST</code> using <code>piaPORT</code>, simply browse

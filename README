@@ -1,9 +1,23 @@
 README: for Platform for Information Appliances (PIA) release 2.0
 ==================================================
 
-For information on installing the PIA, go to 
-http://www.RiSource.org/PIA/
+This is the initial open source release of the PIA a framework for quickly,
+and easily developing web document processing systems. 
+Release 2.0 is usable, but intended mainly for software developers helping
+to create the core software.  As the code matures, future releases will
+include more examples and support for people using the PIA to create
+information applications.
+
+
+The PIA is OPEN SOURCE, you can use it as you like.  Modifications that you
+distribute to others must be made publically available.  See the license at 
+http://www.RiSource.org/RPL for details.  
+
+For information on installing and using the PIA, see the files in the Doc
+directory (install.html and intro.html). 
+
+The latest information can be obtained from http://www.RiSource.org/PIA/
 
 ========================================================================
-Copyright 1997 Ricoh Silicon Valley
+Copyright 1999 Ricoh Silicon Valley
 $Id$
