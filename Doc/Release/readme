@@ -16,8 +16,10 @@ I. CD-ROM contents
 ------------------
 	README		this file
 	autorun.inf	Windows auto play information
-	pia_bin.tar.gz  PIA 1.0 binary release
-	pia.tar.gz      PIA 1.0 source release
+	HEADER.htm	HTML description of disc
+	pia.pif		Windows shortcut to running the PIA
+	pia_bin.tgz	PIA 1.0 binary release (tar, gzip file)
+	pia_src.tgz     PIA 1.0 source release (tar, gzip file)
 	pia	    	PIA home directory
 	java		java-jdk 
 	  windows	java-jdk.1.1.4
@@ -56,18 +58,18 @@ system so that long file names can be used).
 	Windows
 	   If "autoplay" is enabled, then the agency should start
 	   automatically when the CD is inserted.
-	   Otherwise, you can start the agency by running
-	   	   pia\bin\pia.bat
+	   Otherwise, you can start the agency by clicking on the 
+	           pia icon (a shortcut for running pia\bin\pia.bat)
 	   The directory C:\PIAUSERS will be created to store local
            data.  (To change the location of this directory or other 
  	   options, see the installation manual in pia\Doc\Manuals\INSTALL.)
 	   (NOTE if this batch file fails, try enlarging the size of
-	    the environment memory.  Select pia.bat and use
+	    the environment memory.  Select pia.pif and use
 	    the Properties->Memory dialog to set InitialEnvironment)
 
 	Unix 
-	    	cd pia
-		./bin/pia
+	    	cd pia/bin
+		./pia
 	   The directory ~/.pia will be created to store local data.
 
 
