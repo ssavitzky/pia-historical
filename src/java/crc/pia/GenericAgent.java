@@ -330,7 +330,7 @@ public class GenericAgent extends AttrBase implements Agent {
   }
 
   /**
-   *  returns a directory that we can write data into.
+   *  Returns a path to a directory that we can write data into.
    *  creates one if necessary, starts with the following directory in order:
    *  piaUsrRoot/agentName/  --> example, ~/Joe/pia/myHistory/ ( ~/Joe/pia is piaUsrRoot ) 
    *  piaUsrRoot/agentType/  --> example, ~/Joe/pia/History/   ( ~/Joe/pia is piaUsrRoot ) 
@@ -368,6 +368,49 @@ public class GenericAgent extends AttrBase implements Agent {
     Pia.instance().errLog( name()+ "could not find appropriate, writable directory");
     return null;
   }
+
+
+  /**
+   *  Returns a path to a directory that we can write InterForms into.
+   *  Creates one if necessary, starting with the following directory in order:
+   *  piaUsrRoot/Agents/agentName/,
+   *  piaUsrRoot/Agents/agentType/,
+   *  /tmp/Agents/agentName
+   * @return the first qualified directory out of the possible three above.
+   * A directory is qualified if it can be writen into.
+   */
+  public String agentIfDir(){
+    List directories = dirAttribute("agent_if_directory");
+    if( directories!=null && directories.nItems() > 0)
+      return (String)directories.at(0);
+
+    String name = name();
+    String type = type();
+    String root = Pia.instance().piaUsrRoot();
+    root += filesep + "Agents";
+
+    String[] possibilities = { root + filesep + name() + filesep,
+			       root + filesep + type() + filesep,
+			       filesep + "tmp" + filesep + name() + filesep };
+
+    for(int i = 0; i < possibilities.length; i++){
+      String dir = possibilities[i];
+
+      File myFileDir = new File( dir );
+      if( myFileDir.exists() || myFileDir.mkdir() ){
+	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
+	  List dirs = new List();
+	  dirs.push( dir );
+	  dirAttribute( "agent_if_directory", dirs );
+	  return dir;
+	}
+      }
+    }
+
+    Pia.instance().errLog( name()+ "could not find appropriate, writable directory");
+    return null;
+  }
+
 
 
   /**

@@ -57,18 +57,18 @@ public interface Agent extends Attrs {
   public void version(String version);
 
   /**
-   *  returns a directory that we can write data into.
-   *  creates one if necessary, starts with agent_directory,
+   *  returns a path to a directory that we can write data into.
+   *  Creates one if necessary, starting with agent_directory,
    *  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
    */
   public String agentDirectory();
 
   /**
-   * returns a directory that we can write InterForms into
-   * creates one if necessary, starts with if_root, then
-   * USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
+   * returns a path to a directory that we can write InterForms into
+   * Creates one if necessary, starting with
+   * USR_ROOT/Agents/name, PIA_ROOT/Agents/type, /tmp/Agents/name
    */
-  //public StringBuffer agentIfRoot();
+  public String agentIfDir();
 
 
   /**
