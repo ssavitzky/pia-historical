@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<repeat list="..." [entity="name"]>...</repeat>
  * Dscr:
- *	
+ *	Repeat CONTENT with ENTITY (default &amp;li; in LIST of words.
  */
 
 /** Handler class for &lt;repeat&gt tag */

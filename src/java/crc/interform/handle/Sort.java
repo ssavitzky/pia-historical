@@ -14,9 +14,10 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<sort [case][text][numeric][reverse]>item, ...</sort>
  * Dscr:
- *	
+ *	Sort items in CONTENT.  Optionally 
+ *	CASE (sensitive), TEXT, NUMERIC, REVERSE.
  */
 
 /** Handler class for &lt;sort&gt tag */

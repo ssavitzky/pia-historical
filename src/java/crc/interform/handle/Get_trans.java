@@ -25,15 +25,12 @@ import crc.interform.Run;
 public class Get_trans extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
-      if (name == null || "".equals(name)) {
-	ii.error(ia, "name attribute required");
-	return;
-      }
+    if (ii.missing(ia, "name", name)) return;
     SGML result = null;
     Run env = Run.environment(ii);
     crc.pia.Transaction trans = env.transaction;
 
-    ii.unimplemented(ia); // === really not clear how to do get.trans!
+    ii.unimplemented(ia);
   }
 }
 

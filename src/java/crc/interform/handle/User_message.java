@@ -18,7 +18,7 @@ import crc.interform.SGML;
 /** Handler class for &lt;user-message&gt tag */
 public class User_message extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    ii.message(it.content().toString());
+    ii.message(it.contentString());
     ii.deleteIt();
   }
 }

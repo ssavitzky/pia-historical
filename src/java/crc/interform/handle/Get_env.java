@@ -23,11 +23,13 @@ import crc.interform.Util;
 public class Get_env extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
-      if (name == null || "".equals(name)) {
-	ii.error(ia, "name attribute required");
-	return;
-      }
+    if (ii.missing(ia, "name", name)) return;
+
     SGML result = null;
+
+    // === The system properties are not the environment, but they are
+    //	   as close as we get in Java. ===
+
     ii.replaceIt(System.getProperty(name));
   }
 }

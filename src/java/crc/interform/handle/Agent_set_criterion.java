@@ -12,11 +12,14 @@ import crc.interform.Token;
 import crc.interform.Tokens;
 import crc.interform.Text;
 import crc.interform.Util;
+import crc.interform.Run;
 
 /* Syntax:
- *	
+ *	<agent-set-criterion name="name" [value="value"] 
+ *			     [agent="agent-name"]>
  * Dscr:
- *	
+ *	set match criterion NAME to VALUE (default 1), 
+ *	optionally in AGENT.
  */
 
 /** Handler class for &lt;agent-set-criterion&gt tag */

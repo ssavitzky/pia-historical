@@ -14,13 +14,14 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	<get [name="name"] [pia|agent|form|trans|env|element|local|entity]
- *	 [file="filename"|href="url"|[file|href] name="string"] >
+ *	<get [name="name"] 
+ *	     [pia|agent|form|trans|env|element[tag=tag]|local|entity
+ *	     | [file="filename"|href="url"|[file|href] name="string" ] >
  * Dscr:
  *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
  *	ELEMENT, TRANSaction, or LOCAL or global ENTITY context.
  *	Default is the generic lookup that includes paths.
- *	If FILE or HREF specified, functions as read.
+ *	If FILE or HREF specified, functions as <read>.
  */
 
 /** Handler class for &lt;get&gt tag */
@@ -40,20 +41,18 @@ public class Get extends crc.interform.Handler {
        *     so it's cheaper not to dispatch on them.
        */
       String name = Util.getString(it, "name", null);
-      if (name == null || "".equals(name)) {
-	ii.error(ia, "name attribute required");
-	return;
-      }
+      if (ii.missing(ia, "name", name)) return;
+
       SGML result = null;
 
-      if (it.hasAttr("element")) { // dispatch("get.element", ia, it, ii);
-	result = (ii.getAttr(name));
-      } else if (it.hasAttr("local")) { // dispatch("get.local", ia, it, ii);
-	result = (ii.getvar(name));
-      } else if (it.hasAttr("entity")) { // dispatch("get.entity", ia, it, ii);
-	result = (ii.getGlobal(name));
+      if (it.hasAttr("element")) {
+	result = ii.getAttr(name, it.attr("tag").toString());
+      } else if (it.hasAttr("local")) {
+	result = ii.getvar(name);
+      } else if (it.hasAttr("entity")) {
+	result = ii.getGlobal(name);
       } else {
-	result = (ii.getEntity(name));
+	result = ii.getEntity(name);
       }
       ii.replaceIt(result);
     }

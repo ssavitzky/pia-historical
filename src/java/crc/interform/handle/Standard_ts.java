@@ -22,8 +22,9 @@ public class Standard_ts extends StandAlone_ts {
   static String emptyActors = "actor-dscr agent-criteria agent-install"
   + " agent-home agent-list agent-options agent-running agent-remove"
   + " agent-set-criterion pia-exit get.agent get.form get.pia get.trans";
-  static String parsedActors = "agent-set-criteria" 
-  + " agent-set-options submit trans-control"; 
+
+  static String parsedActors = "agent-set-criteria agent-set-options" 
+  + " submit-forms trans-control set.agent set.pia set.trans"; 
 
   public Standard_ts() {
     super("Standard", true);

@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<agent-list [type=type][subs]>
  * Dscr:
- *	
+ *	List the agents with given TYPE. Possibly SUBS only.
  */
 
 /** Handler class for &lt;agent-list&gt tag */
@@ -29,8 +29,6 @@ public class Agent_list extends crc.interform.Handler {
 
 /* ====================================================================
 
-define_actor('agent-list', 'content' => 'type', 
-	     'dscr' => "List the agents with given TYPE. Possibly SUBS only." );
 
 sub agent_list_handle {
     my ($self, $it, $ii) = @_;

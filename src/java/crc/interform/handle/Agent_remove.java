@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<agent-remove name="agent-name">
  * Dscr:
- *	
+ *	Remove (uninstall) the agent with the given NAME.
  */
 
 /** Handler class for &lt;agent-remove&gt tag */

@@ -14,9 +14,11 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<os-command [bypass]>command</os-command>
  * Dscr:
- *	
+ *	Execute CONTENT as an operating system command 
+ *	in the background with proxies set to PIA.  
+ *	Optionally BYPASS proxies.
  */
 
 /** Handler class for &lt;os-command&gt tag */

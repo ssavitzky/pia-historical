@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<agent-set-options [name="agent-name"]>options</agent-set-options>
  * Dscr:
- *	
+ *	Sets CONTENT as options for agent NAME.
  */
 
 /** Handler class for &lt;agent-set-options&gt tag */

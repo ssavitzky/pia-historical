@@ -15,7 +15,7 @@ import crc.interform.Util;
 
 /* Syntax:
  *	<write.href href="url" [post] [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] >content</output>
+ *	       [copy [protect [markup]]] >content</write.href>
  * Dscr:
  *	Output CONTENT to HREF, with optional BASE path. 
  *	Optionally POST.  Optionally TRIM
@@ -26,7 +26,19 @@ import crc.interform.Util;
 /** Handler class for &lt;write.href&gt tag. */
 public class Write_href extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    String url = it.attrString("href");
+    if (url == null || "".equals(url)) url = it.attrString("name");
+    if (url == null || "".equals(url)) {
+      ii.error(ia, "must have non-null name or href attribute");
+      return;
+    }
 
     ii.unimplemented(ia);
+
+    if (it.hasAttr("copy")) {
+      ii.replaceIt(it.content());
+    } else {
+      ii.deleteIt();
+    }
   }
 }

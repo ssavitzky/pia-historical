@@ -12,37 +12,20 @@ import crc.interform.Token;
 import crc.interform.Tokens;
 import crc.interform.Text;
 import crc.interform.Util;
+import crc.interform.Run;
 
 /* Syntax:
- *	
+ *	<trans-control>...</trans-control>
  * Dscr:
- *	
+ *	Add CONTENT as a control to the current response transaction.
  */
 
 /** Handler class for &lt;trans-control&gt tag */
 public class Trans_control extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.unimplemented(ia);
+    Run env = Run.environment(ii);
+    env.transaction.addControl(it.contentString());
+    ii.deleteIt();
   }
 }
-
-/* ====================================================================
-
-### Transaction
-
-define_actor('trans-control', 
-	     'dscr' => "Add a control to the current response." );
-
-sub trans_control_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $text = $it->content_string;
-    my $response = IF::Run::request();
-
-    $response -> add_control($text);
-    print "add_control($text)\n" if $main::debugging;
-
-    $ii->delete_it;
-}
-*/

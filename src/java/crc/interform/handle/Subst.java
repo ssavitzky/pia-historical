@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<subst match="pattern" result="string">text</subst>
  * Dscr:
- *	
+ *	Substitute RESULT string for MATCH pattern in CONTENT.
  */
 
 /** Handler class for &lt;subst&gt tag */

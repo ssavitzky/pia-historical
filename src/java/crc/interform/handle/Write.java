@@ -16,7 +16,7 @@ import crc.interform.Util;
 /* Syntax:
  *	<write [file="name" [interform] [append] | href="url" [post]] 
  *	       [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] >content</output>
+ *	       [copy [protect [markup]]] >content</write>
  * Dscr:
  *	Output CONTENT to FILE or HREF, with optional BASE path.  FILE
  *	may be looked up as an INTERFORM.  BASE directory is created

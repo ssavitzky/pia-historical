@@ -15,7 +15,7 @@ import crc.interform.Util;
 /* Syntax:
  *	<sum>n1 n2 ... </sum>
  * Dscr:
- *	Return sum of numbers in CONTENT
+ *	Return sum of numbers in CONTENT.
  */
 
 /** Handler class for &lt;sum&gt tag */

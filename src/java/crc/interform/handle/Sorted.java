@@ -14,6 +14,10 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
+ *	<sorted [case][text][numeric][reverse]>item, ...</sorted>
+ * Dscr:
+ *	Test whether items in CONTENT are sorted.  Optionally 
+ *	CASE (sensitive), TEXT, NUMERIC, REVERSE.
  *	
  * Dscr:
  *	

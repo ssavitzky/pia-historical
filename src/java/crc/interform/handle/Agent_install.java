@@ -24,11 +24,13 @@ import crc.interform.Run;
 /** Handler class for &lt;agent-install&gt tag */
 public class Agent_install extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", "=undefined=");
+    String name = Util.getString(it, "name", null);
+    if (ii.missing(ia, "name", name)) return;
+
     String type = Util.getString(it, "type", name);
     Run env = Run.environment(ii);
 
-    ii.error(ia, "incomplete"); // === incomplete ===
+    ii.unimplemented(ia);
 
     ii.replaceIt(name);
   }

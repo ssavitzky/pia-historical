@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<agent-running name="agent-name">
  * Dscr:
- *	
+ *	Tests whether the agent with the given NAME is running.
  */
 
 /** Handler class for &lt;agent-running&gt tag */

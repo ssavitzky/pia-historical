@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<... foreach list="list" [entity=ident]>element</>
  * Dscr:
- *	
+ *	Repeat ELEMENT for each ENTITY (default &amp;li;) in LIST of words.
  */
 
 /** Handler class for &lt;... foreach list=...&gt */

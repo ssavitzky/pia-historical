@@ -14,9 +14,11 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<equal [not] [case] [text] [link] [numeric]>list...</equal>
  * Dscr:
- *	
+ *	Test list items in CONTENT for equality; 
+ *	return null or IFFALSE if false, else '1' or IFTRUE. 
+ *	Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.
  */
 
 /** Handler class for &lt;equal&gt tag */

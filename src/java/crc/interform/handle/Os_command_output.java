@@ -14,9 +14,10 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<os-command-output [bypass]>command</os-command-output>
  * Dscr:
- *	
+ *	Execute CONTENT as an operating system command 
+ *	and capture its output.  Optionally BYPASS proxies.
  */
 
 /** Handler class for &lt;os-command-output&gt tag */

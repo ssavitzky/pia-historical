@@ -14,79 +14,49 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<set name="name" [copy]
+ *	     [ pia | agent [hook] | trans [feature] | env 
+ *  	     | [element [tag=ident] | entity [local] ]>...</set>
  * Dscr:
- *	
+ *	set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, 
+ *	ENVironment, ELEMENT, or ENTITY context.  ENTITY may define
+ *	a LOCAL binding.  ELEMENT may have a TAG.  TRANSaction item
+ *	may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. 
+ *	Optionally COPY content as result.
  */
 
 /** Handler class for &lt;set&gt tag */
 public class Set extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    if (it.hasAttr("pia")) dispatch("set.pia", ia, it, ii);
+    else if (it.hasAttr("agent")) dispatch("set.agent", ia, it, ii);
+    //else if (it.hasAttr("form")) dispatch("set.form", ia, it, ii);
+    else if (it.hasAttr("trans")) dispatch("set.trans", ia, it, ii);
+    //else if (it.hasAttr("env")) dispatch("set.env", ia, it, ii);
+    else {
+      /* The following are all in the Basic tagset,
+       *     so it's cheaper not to dispatch on them.
+       */
+      String name = Util.getString(it, "name", null);
+      if (ii.missing(ia, "name", name)) return;
 
-    ii.unimplemented(ia);
+      SGML value = it.content().simplify();
+      if (it.hasAttr("element")) {
+	ii.setAttr(name, value, it.attr("tag").toString());
+      } else if (it.hasAttr("local")) {
+	ii.defvar(name, value);
+      } else if (it.hasAttr("entity")) {
+	ii.setGlobal(name, value);
+      } else {
+	ii.setvar(name, value);
+      }
+
+      if (it.hasAttr("copy")) {
+	ii.replaceIt(value);
+      } else {
+	ii.deleteIt();
+      }
+    }
   }
 }
 
-/* ====================================================================
-
-### <set name="name" value="value">
-### <set name="name">value</set>
-
-define_actor('set', 'content' => 'value',
-	     'dscr' => "set NAME to VALUE, 
-optionally in PIA, AGENT, ACTOR, ELEMENT, TRANSaction, or ENTITY context.   
-ELEMENT and ENTITY may define a LOCAL binding.  ELEMENT may have a TAG.  
-TRANSaction item may be FEATURE.
-Optionally COPY new or PREVIOUS value.");
-
-### === COPY / COPY PREVIOUS ===
-### === TAG= / ACTOR ===
-
-sub set_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $name = $it->attr('name');
-    my $value = $it->attr('value');
-
-    $value = $it->content unless defined $value;
-    
-    if ($it->attr('pia')) {
-	local $agent = IF::Run::agent();
-	local $request = IF::Run::request();
-	$name = "\$" . $name; 
-        $value = $value->as_string if ref $value;
-	my $status = $agent->run_code("$name='$value';", $request);
-	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-	print "code status is $status\n" if  $main::debugging;
-	$ii->replace_it($status);
-    } elsif ($it->attr('agent')) {
-	local $agent = IF::Run::agent();
-        if ($it->attr('hook')) {
-            $value = IF::IT->new()->push($it->content);
-        } else {
-            $value = $value->as_string if ref $value;
-	}
-	$agent->option($name, $value) if defined $agent;
-    } elsif ($it->attr('trans')) {
-	local $trans = IF::Run::transaction();
-        if ($it->attr('feature')) {
-	    $trans->set_feature($name, $value) if defined $trans;
-	} else {
-	    $trans->attr($name, $value) if defined $trans;
-	}
-    } elsif ($it->attr('local')) {
-	$ii->defvar($name, $value);
-    } elsif ($it->attr('entity')) {
-	$ii->entities->{$name} = $value;
-    } elsif ($it->attr('element')) {
-	$ii->in_token->attr($name, $value);
-    } else {
-	$ii->setvar($name, $value);
-    }
-    if ($it->attr('copy')) {
-    	$ii->replace_it($it->content);
-    } else {
-	$ii->delete_it;
-    }
-}
-*/

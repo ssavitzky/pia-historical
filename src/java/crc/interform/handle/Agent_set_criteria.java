@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<agent-set-criteria name="agent-name">query_string</agent-set-criteria>
  * Dscr:
- *	
+ *	Sets CONTENT (query string or dl) as criteria for agent NAME.
  */
 
 /** Handler class for &lt;agent-set-criteria&gt tag */

@@ -14,33 +14,20 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	
+ *	<pia-exit [status=N]>message</pia-exit>
  * Dscr:
- *	
+ *	Exit from the pia, after printing CONTENT.  Optional STATUS 
+ *	(default 1).
  */
 
 /** Handler class for &lt;pia-exit&gt tag */
 public class Pia_exit extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.unimplemented(ia);
+    //=== should set a flag to allow the resolver to quit cleanly
+
+    ii.message(it.contentString());
+    System.exit(Util.getInt(it, "status", 1));
   }
 }
 
-/* ====================================================================
-### <pia-exit>
-
-define_actor('pia-exit', 'unsafe' => 1, _handle => \&pia_exit_handle,
-	     'dscr' => "Exit from the pia, after printing CONTENT." );
-
-sub pia_exit_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $content = $it->content_string;
-
-    ## === should really set a flag and let the resolver quit cleanly.
-    die "$content\n";
-
-    $ii->delete_it;
-}
-*/

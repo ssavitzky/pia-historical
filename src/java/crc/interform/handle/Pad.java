@@ -24,7 +24,7 @@ import crc.interform.Util;
 /** Handler class for &lt;pad&gt tag */
 public class Pad extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String text = it.content().toString();
+    String text = it.contentString();
     String align = Util.getString(it, "align", "left");
     align = align.toLowerCase();
     int width = Util.getInt(it, "width", 8);

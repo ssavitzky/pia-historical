@@ -26,13 +26,11 @@ import crc.interform.Run;
 public class Read_href extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
-      if (name == null || "".equals(name)) {
-	ii.error(ia, "name attribute required");
-	return;
-      }
+    if (ii.missing(ia, "name", name)) return;
+
     SGML result = null;
     Run env = Run.environment(ii);
 
-    ii.unimplemented(ia); // === really not clear how to do read.href!
+    ii.unimplemented(ia); 
   }
 }

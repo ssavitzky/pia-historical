@@ -14,9 +14,9 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	<write_file file="name" [interform] [append]
+ *	<write.file file="name" [interform] [append]
  *	       [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] >content</output>
+ *	       [copy [protect [markup]]] >content</write.file>
  * Dscr:
  *	Output CONTENT to FILE, with optional BASE path.  FILE
  *	may be looked up as an INTERFORM.  BASE directory is created
@@ -28,8 +28,20 @@ import crc.interform.Util;
 /** Handler class for &lt;write.file&gt tag. */
 public class Write_file extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    String file = it.attrString("file");
+    if (file == null || "".equals(file)) file = it.attrString("name");
+    if (file == null || "".equals(file)) {
+      ii.error(ia, "must have non-null name or file attribute");
+      return;
+    }
 
     ii.unimplemented(ia);
+
+    if (it.hasAttr("copy")) {
+      ii.replaceIt(it.content());
+    } else {
+      ii.deleteIt();
+    }
   }
 }
 
@@ -100,8 +112,6 @@ sub write_handle {
     } elsif ($href && ! $file) {	# Href (PUT or POST)
 	my $post = $it->attr('post');
 
-	## === write href unimplemented ===
-
     } elsif ($href) {
 	my $err = "InterForm error: both HREF and FILE specified\n";
 	print $err;
@@ -114,11 +124,6 @@ sub write_handle {
 	return;
     }
 
-    if ($it->attr('copy')) {
-	$ii->replace_it($it->content);
-    } else {
-	$ii->delete_it;
-    }
 }
 
 */
