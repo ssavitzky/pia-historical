@@ -6,13 +6,18 @@
 </head><body>
 <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="formsbutton.gif"></a><img src="user.gif"><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
 
-<h2>Completed forms for &FORM.username;</h2>
-<read file="users/&FORM.username;_completed.html">
+
+ <if><read file="users/&FORM.username;_completed.html" info>
+ <then>
+ <h2>Completed forms for &FORM.username;</h2>
+ <read file="users/&FORM.username;_completed.html">
+ </then>
+ <else><h2>No Completed forms for &FORM.username;</h2></else></if>
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Sep 10 19:10:09 1997
+Last modified: Wed Sep 10 19:15:51 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
