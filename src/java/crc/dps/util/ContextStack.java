@@ -85,8 +85,8 @@ public class ContextStack  implements Context {
    */
   public NodeList getEntityValue(String name, boolean local) {
     EntityTable ents = getEntities();
-    debug("Looking up " + name + (local? " locally" : " globally")
-	  + (ents == null? " NO TABLE" : "") + "\n");
+    //debug("Looking up " + name + (local? " locally" : " globally")
+    //  + (ents == null? " NO TABLE" : "") + "\n");
     return (ents == null)? null : ents.getEntityValue(name, local);
   }
 
