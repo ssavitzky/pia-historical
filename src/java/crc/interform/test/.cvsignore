@@ -1,2 +1,2 @@
-*.out *.diff *.log
+*.out *.diff *.log *.tmp*
 t0.*
