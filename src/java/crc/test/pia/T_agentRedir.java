@@ -32,7 +32,7 @@ import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 import crc.pia.HTTPResponse;
 import crc.pia.Content;
-import crc.pia.ByteStreamContent;
+import crc.content.ByteStreamContent;
 import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;

@@ -12,6 +12,7 @@ FILES = \
 	T_headerFactory.java \
 	T_headers.java \
 	T_contentFactory.java \
+	T_content.java \
 	T_formContent.java \
 	T_hTTPRequest.java \
 	T_hTTPResponse.java \
@@ -28,6 +29,11 @@ CASEFILES = \
 	formcont_1.case \
 	formcont_2.case \
 	formcont_3.case \
+	cont_1.case \
+	cont_2.case \
+	cont_3.case \
+	cont_4.case \
+	cont_5.case \
 	httpreq_1.case \
 	httpreq_2.case \
 	httpreq_3.case \

@@ -28,7 +28,7 @@ import crc.pia.Transaction;
 
 import crc.tf.Registry;
 import crc.pia.HTTPResponse;
-import crc.pia.ByteStreamContent;
+import crc.content.ByteStreamContent;
 import crc.pia.HTTPRequest;
 import crc.pia.Headers;
 

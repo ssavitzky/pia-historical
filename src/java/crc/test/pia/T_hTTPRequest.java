@@ -29,7 +29,7 @@ import crc.pia.Pia;
 import crc.pia.Machine;
 import crc.pia.agent.AgentMachine;
 import crc.pia.Content;
-import crc.pia.ByteStreamContent;
+import crc.content.ByteStreamContent;
 import crc.pia.Transaction;
 import crc.pia.HTTPResponse;
 
