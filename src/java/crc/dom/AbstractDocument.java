@@ -11,10 +11,14 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.Document;
-import w3c.dom.Element;
-import w3c.dom.Node;
-import w3c.dom.NodeEnumerator;
+
+
+
+
+
+
+
+
 
 
 public abstract class AbstractDocument implements Document {

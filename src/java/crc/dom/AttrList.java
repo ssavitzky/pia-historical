@@ -6,12 +6,6 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.Attribute;
-import w3c.dom.AttributeList;
-import w3c.dom.Node;
-import w3c.dom.NoSuchNodeException;
-import w3c.dom.NodeEnumerator;
-
 public class AttrList extends AbstractNamedList implements AttributeList {
 
   public AttrList(){

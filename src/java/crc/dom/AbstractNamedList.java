@@ -6,8 +6,10 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.AttributeList;
-import w3c.dom.NoSuchNodeException;
+
+
+
+
 import java.util.Hashtable;
 import java.util.Vector;
 

@@ -11,16 +11,26 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.DOMFactory;
-import w3c.dom.Document;
-import w3c.dom.DocumentContext;
-import w3c.dom.Element;
-import w3c.dom.Text;
-import w3c.dom.Comment;
-import w3c.dom.PI;
-import w3c.dom.Attribute;
-import w3c.dom.AttributeList;
-import w3c.dom.NodeList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public abstract class AbstractDOMFactory implements DOMFactory {
 
