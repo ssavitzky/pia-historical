@@ -20,7 +20,7 @@ import crc.sgml.SGML;
  *			     [agent="agent-name"]&gt;
  * <dt>Dscr:<dd>
  *	set match criterion NAME to VALUE (default true), 
- *	optionally in AGENT.
+ *	optionally in AGENT.  NAME ending in '-' negates test.
  *  </dl>
  */
 public class Agent_set_criterion extends crc.interform.Handler {
@@ -32,7 +32,7 @@ public class Agent_set_criterion extends crc.interform.Handler {
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "set match criterion NAME to VALUE (default true), \n" +
-    "optionally in AGENT.\n" +
+    "optionally in AGENT.  NAME ending in '-' negates test.\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
