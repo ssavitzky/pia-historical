@@ -285,13 +285,22 @@ sub feature_computers {
     my ($self, $features, $demand) = @_;
 
     ## Return a reference to the hash that associates feature names
-    ##	 with the functions that compute them.  This should be
-    ##	 overridden in subclasses.
+    ##	 with the functions that compute them.  Override in subclasses 
+    ##	 that share computers among their instances.
 
     ##   If $demand is true, create the hash if it's not defined.
 
     return $self->attr_default('_computers', {}) if $demand;
     return $self->attr('_computers');
+}
+
+sub feature_computer {
+    my ($self, $feature, $computer) = @_;
+
+    ## Add a new feature computer.
+
+    my $computers = $self->feature_computers($self->features, 1);
+    $$computers{$feature} = $computer;
 }
 
 sub has {
