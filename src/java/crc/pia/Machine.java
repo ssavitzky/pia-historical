@@ -191,9 +191,8 @@ public class Machine {
     try{
       out = outputStream();
 
-      String message = reply.reason();
-      String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\r";
-      // HTTP/1.0 200 OK
+      String outputString =
+	"HTTP/1.0 " + reply.statusCode() + " " + reply.reason() + "\r";
 
       String type = reply.contentType();
 
@@ -260,17 +259,19 @@ public class Machine {
        * page that has its first body tag enclosed in a comment. */
 
       if( ctrlStrings != null && mi != null ){
-	String ms = mi.matchString();
-	StringBuffer buf = new StringBuffer( ms );
-	buf.append( ctrlStrings );
-	contentString = re.substitute(contentString, new String(buf), true);
+	// We cannot use substitution here because some characters in
+	// ctrlStrings are interpreted specially by re.substitute.
+	int where = mi.end();
+	contentString = contentString.substring(0, where)
+	  + ctrlStrings + contentString.substring(where);
       } else if (ctrlStrings!= null){
 
 	/* === No body.  The right thing to do is put out the controls
 	 * === before the &lt;/html&gt; tag.  Putting them at the front
 	 * === will screw up pages with frames. */
 
-	shipOutput( out, new String( ctrlStrings ), true );
+	//shipOutput( out, ctrlStrings, true );
+	contentString += ctrlStrings;
       }
       
       if( ctrlStrings != null ){
