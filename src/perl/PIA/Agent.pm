@@ -50,8 +50,8 @@ sub initialize {
     ## Issue a request for the initialization document.
 
     my $url="/$name/initialize.if";
-    my $request=$self->create_request('GET',$url);
-    $self->submit($request);
+    my $request=$self->create_request('GET', $url);
+    $main::resolver->unshift($request);
 }
 
 ############################################################################
@@ -502,32 +502,42 @@ sub create_request {
     ##	  HTML element containing a form, so construct the appropriate 
     ##	  contents for a PUT request.
 
+    ## === fails for GET requests with a query passed in content.
+    ## === looks like the form encoding may be bad, too.
+
  # TBD proper handling of content and types and headers
 
     my $request=new HTTP::Request  $method,$url;
     print "making $method request to $url\n" if $main::debugging;
 
-    if (ref($content)){
+    if (ref($content)) {
 	## treat as html element
 	my $string="";
 	## create string out of form parameters, perhaps should check tag type
 	$content->traverse(
-	sub {
-	    my($self, $start, $depth) = @_;
-	    return 1 unless $start;
-	    my $tag = $self->tag;
-	    return 1 unless $tag =~ /input/;
-	    my $key = $self->attr('name');
-	    return 1 unless defined $key;
-	    my $value = $self->attr('value');
-	    return 1 unless defined $value;
-	    $string.="$key=$value&";
-	    1;
-	}, 1);
-	$request->content($string);
-    }else {
+	    sub {
+		my($self, $start, $depth) = @_;
+		return 1 unless $start;
+		my $tag = $self->tag;
+		return 1 unless $tag =~ /input/;
+		my $key = $self->attr('name');
+		return 1 unless defined $key;
+		my $value = $self->attr('value');
+		return 1 unless defined $value;
+		$string.="$key=$value&";
+		1;
+	    }, 
+        1);
+	$string =~ s/\&$//;
+	if (uc $request eq 'GET') { # === This still doesn't do it.
+	    $request = new HTTP::Request $method, "$url?$string";
+	} else {
+	    $request->content($string);
+	}
+    } else {
 	$request->content($content) if defined $content ;
     }
+    $request=PIA::Transaction->new($request,$main::this_machine);
     return $request;
 }
 

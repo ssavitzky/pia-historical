@@ -20,7 +20,7 @@ sub initialize{
 
     my $url="/$type/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
-    $self->submit($request);
+    $main::resolver->unshift($request);
 }
 
 sub root {

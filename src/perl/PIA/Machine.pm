@@ -173,8 +173,9 @@ sub get_request {
 	#$ua->proxy($trans->url->scheme,$proxy) if $proxy;
     }
 
-    ## Set request content if we're posting.
+    $ua->agent($trans->request->user_agent . ' PIA/1.0 ' . $user_agent_id);
 
+    ## Set request content if we're posting.
     my $content = $trans->content;
     if ($content) {
 	$trans->request->content($content) unless $trans->request->content; 
@@ -184,7 +185,6 @@ sub get_request {
 	print $trans->request->url->as_string . "\n" unless $main::quiet;
 	print $trans->request->headers_as_string . "\n" . $trans->request->content . "\n" unless $main::quiet;
     }
-    $ua->agent($trans->request->user_agent . ' PIA/1.0 ' . $user_agent_id);
 
     ## Actually make the request.
     ##	  We _must_ use simple_request and pass the results, whatever they
