@@ -537,8 +537,8 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public void actOn(Transaction ts, Resolver res){
     if (actOnHook != null) {
-      Pia.debug(this, name()+".actOnHook ="+actOnHook.toString());
-      Run.interformHook(this, actOnHook, ts, res);
+      Pia.debug(this, name()+".actOnHook", "="+actOnHook.toString());
+      Run.interformHook(this, actOnHook, name()+".act-on", ts, res);
     }
   }
 
@@ -548,10 +548,10 @@ public class GenericAgent extends AttrBase implements Agent {
    * the "handle" method is used only by agents like "cache" that
    * may want to intercept a transaction meant for somewhere else.
    */
-  public boolean handle(Transaction ts, Resolver res){
+  public boolean handle(Transaction ts, Resolver res) {
     if (handleHook != null) {
-      Pia.debug(this, name()+".handleHook ="+handleHook.toString());
-      Run.interformHook(this, handleHook, ts, res);
+      Pia.debug(this, name()+".handleHook", "="+handleHook.toString());
+      Run.interformHook(this, handleHook, name()+".act-on", ts, res);
       return true;
     } else
       return false;
@@ -602,10 +602,10 @@ public class GenericAgent extends AttrBase implements Agent {
     attributes.attr(name, value);
     if (name.equals("act-on") || name.equals("_act_on")) {
       actOnHook = value;
-      Pia.debug(this, "ActOn hook :="+value.toString());
+      Pia.debug(this, "Setting ActOn hook", ":="+value.toString());
     } else if (name.equals("handle") || name.equals("_handle")) {
       handleHook = value;
-      Pia.debug(this, "handle hook :="+value.toString());
+      Pia.debug(this, "Setting handle hook", ":="+value.toString());
     }
   }
 
