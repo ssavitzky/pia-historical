@@ -945,7 +945,7 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public void sendStreamResponse ( Transaction trans, InputStream in ) {
 
-    ByteStreamContent c = new ByteStreamContent( in );
+    Content c = new crc.content.text.html( in );
 
     Transaction response = new HTTPResponse( trans, false );
     response.setStatus( 200 ); 
