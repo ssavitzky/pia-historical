@@ -12,7 +12,7 @@
 
 <p> Tags Defined:
 <ul>
-  <li> &lt;slide&gt;<h2>slide caption</h2> content &lt;/slide&gt;
+  <li> &lt;slide&gt;&lt;h2&gt;slide caption&lt;/h2&gt; content &lt;/slide&gt;
 		The slide tag is designed so that the ``rough draft'' of
 		a presentation is still a valid, readable HTML file.
 
@@ -40,9 +40,21 @@
 <doc> These are easily overridden in the document itself. </doc>
 
 <h3>Dimensions</h3>
-<define entity=hh><value>300</define>
+<define entity=hh>
+  <doc> The height of the main portion of a table.  This needs to be tweeked
+	for the screen size of the presentation device; the default is 300,
+	which is correct for a large-screen TV pretending to be a 640x480
+	monitor.
+    <p> For 640x480, e.g. a Magio laptop, use <br>
+	<code>&lt;set name=DOC:hh&gt;445&lt;/set&gt;</code>
+  </doc>
+  <value>300</define>
 
 <h3>Colors</h3>
+<doc> These define the colors of various portions in the table that represents
+      a slide.
+</doc>
+
 <define entity=topBg><value>lightblue</define>
 <define entity=topFg><value>black</define>
 <define entity=leftBg><value>#c40026</define>
@@ -53,8 +65,17 @@
 <define entity=mainFg><value>black</define>
 
 <h3>Logos and Buttons</h3>
+
 <define entity=logo>
-  <value><img src="/PIA/Doc/Graphics/pent16.gif" alt="&nbsp;"></define>
+  <doc> This appears in the upper-left-corner of each slide.  It needs to be
+	almost exactly the same height as the text, because it is used as the
+	anchor for the ``next slide'' button.
+    <p> This presently assumes you're presenting via a PIA.  If you want to
+	produce stand-alone HTML you'll have to move it into the same
+	directory as your slides. 
+  </doc>
+  <value><img src="/PIA/Doc/Graphics/pent16.gif" alt="&nbsp;"></value>
+</define>
 <define entity=toPrev><value>&lt;&lt;</define>
 <define entity=toNext><value>&gt;&gt;</define>
 <define entity=noPrev><value>&nbsp;&nbsp;</define>
@@ -62,11 +83,31 @@
 <define entity=toToc><value>^^</define>
 
 <h3>Default text</h3>
-<define entity=subCaption><value>Ricoh Silicon Valley</define>
+<define entity=subCaption>
+  <doc> the ``subCaption'' is the text along the <em>bottom</em> line of each
+	slide.  If your presentation is long, you may want to put your section
+	caption in here. 
+    <p> Usage: <br>
+	<code>&lt;set name=subCaption&gt;text for bottom line&lt;/set&gt;</code>
+  </doc>
+  <value>Ricoh Silicon Valley</value>
+</define>
 
 <h2>&lt;Slide&gt;</h2>
 
 <define element=slide parent=body>
+  <doc>	This is the element that defines a ``slide''.   Usage is something
+	like:
+	<pre>
+	&lt;slide&gt; &lt;h2&gt;Document Processing&lt;/h2&gt;
+	   &lt;ul&gt;
+	      &lt;li&gt; Input: a document
+	   &lt;/ul&gt;
+	&lt;/slide&gt;
+	</pre>
+	The &lt;h2&gt; element is <em>required</em>, since it provides the
+	caption for the slide.  
+  </doc>
 <action>
 <hide><!-- first time through we initialize the variables -->
   <if>&DOC:slide;<else><set name=DOC:slide>0</set></if>
@@ -126,10 +167,15 @@
 </define>
 
 <define element=h1>
+  <doc> The top-level heading in the file (typically there is only one)
+	becomes the default subCaption.  This may not be exactly what you
+	want, but is easily overridden.  It also generates a link with the
+	text ``Start here'', linked to the top of the first slide.  
+  </doc>
 <action>
-  <set name=DOC:subCaption>&content;</set>
 <h1>&content;</h1>
 <hide><!-- first time through we initialize the variables -->
+  <set name=DOC:subCaption>&content;</set>
   <if>&DOC:slide;<else><set name=DOC:slide>0</set></if>
   <if>&DOC:next;<else><set name=DOC:next><numeric sum>1 &slide;</set></if>
   <if>&DOC:prev;<else><set name=DOC:prev> </set></if>
