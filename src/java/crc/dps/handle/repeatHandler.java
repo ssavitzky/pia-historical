@@ -33,8 +33,16 @@ public class repeatHandler extends GenericHandler {
   /** This will normally be the only thing to customize. */
   public void action(Input in, Context aContext, Output out, String tag, 
   		     ActiveAttrList atts, NodeList content, String cstring) {
-    // Actually do the work. 
-    // === Dispatching has already shown that there is nothing to repeat. 
+    // Actually do the work.  
+    // There were no attributes to dispatch on, so repeat the content until
+    // something stops the processor.
+
+    FromParseNodes src = iterationSrc(content);
+    Processor process  = iterationCxt(src, aContext, out, null);
+
+    /** === should scan the content and tell each iterator to set itself up */
+
+    while (process.run()) src.toFirstNode();
   }
 
   /** This does the parse-time dispatching. <p>
@@ -73,7 +81,7 @@ public class repeatHandler extends GenericHandler {
   public Processor iterationCxt(Input in, Context cxt, Output out,
 				ActiveEntity var) {
     EntityTable ents = new BasicEntityTable(cxt.getEntities());
-    ents.setBinding(var);
+    if (var != null) ents.setBinding(var);
     return cxt.subProcess(in, out, ents);
   }
 
