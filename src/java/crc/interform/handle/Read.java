@@ -45,5 +45,22 @@ public class Read extends crc.interform.Handler {
 
     // === could do read.file in place.
   }
+
+  /** Legacy action: default is to flag as unimplemented. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return legacyError(aContext, tag, "Shouldn't get here -- dispatched.");
+  }
+
+  /** getActionForNode: override to perform parse-time dispatching */
+  public crc.dps.Action getActionForNode(crc.dps.active.ActiveNode n,
+					 crc.dps.handle.LegacyHandler h) {
+    crc.dps.active.ActiveElement e = n.asElement();
+    if (h.dispatch(e, "href")) return h.wrap(new Read_href());
+    if (h.dispatch(e, "file")) return h.wrap(new Read_file());
+    return h;
+  }
+
 }
 
