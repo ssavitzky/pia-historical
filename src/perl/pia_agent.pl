@@ -12,6 +12,8 @@ use HTML::FormatPS;
 use HTML::Element;
 use HTML::AsSubs;		# defines element constructor functions.
 				# very useful for interforms.
+use IF::II;
+
 sub new {
     my($class, $name, $type) = @_;
     my $self = {};
@@ -351,6 +353,161 @@ sub option{
 
 ############################################################################
 ###
+### Code Files:
+###
+
+local $agent;
+local $resolver;	
+local $context;
+local $request;
+local $response;
+local $url;
+local $path;
+local $current_self;		# old name for $agent
+local $current_request;		# old name for $request
+
+sub readFrom {
+    my ($fn, $str) = @_;
+
+    open(FILE, "<$fn");
+    while (<FILE>) {
+	$str .= $_;
+    }
+    close(FILE);
+    return $str;
+}
+
+sub load_file {
+    my ($self, $attr, $fn_attr, $default) = @_;
+
+    ## Read the file whose name is in attribute $fn_attr (or $default)
+    ##	  and stash it as one enormous string attribute in $attr.
+
+    my $name = $self->name;
+    my $fn = $self->file_attribute($fn_attr);
+    $fn = $default unless defined $fn && $fn ne '';
+    $fn = $self->find_interform($fn);
+
+    return unless defined $fn;
+
+    my $code = readFrom($fn);
+    print "  $name loaded $attr from $fn\n" unless $main::quiet;
+
+    $self->attribute($attr, $code);
+    return 1;
+}
+
+sub compile_file {
+    my ($self, $attr, $fn_attr, $default) = @_;
+
+    ## Read the file whose name is in attribute $fn_attr (or $default)
+    ##	  and make it into an anonymous subroutine in &$attr.  UCK!
+    ##	  Note that the code is compiled in PIA_AGENT and not in the
+    ##	  appropriate agent subclass.  Not too good.
+
+    my $name = $self->name;
+    my $fn = $self->file_attribute($fn_attr);
+    $fn = $default unless defined $fn && $fn ne '';
+    $fn = $self->find_interform($fn);
+
+    return unless defined $fn;
+
+    my $code = readFrom($fn);
+    $code = "\$subr = sub {\n" . $code . "\n};\n";
+
+    local $subr;
+    my $status = eval($code) if defined $code;
+    print "  $name: error in $fn: $@\n" if $@ ne '';
+    print "  $name compiled $attr from $fn\n" unless $main::quiet;
+
+    $self->attribute($attr, $subr);
+    return 1;
+}
+
+sub require_file {
+    my ($self, $fn_attr, $default) = @_;
+
+    ## require the file whose name is in attribute $fn_attr (or $default)
+    ##	  The file is located as an interform and require'd.
+
+    my $name = $self->name;
+    my $fn;
+    $fn = $self->file_attribute($fn_attr);
+    $fn = $default unless defined $fn;
+    $fn = $self->find_interform($fn);
+
+    return unless defined $fn;
+
+    require $fn;
+
+    print "  $name loaded $attr from $fn\n" unless $main::quiet;
+
+    $self->attribute($code_attr, $code);
+    return 1;
+}
+
+
+############################################################################
+###
+### Evaluating Code in Context:
+###
+### 	Execute some code in the context of the current agent.  
+###	This allows other objects (e.g. InterForms and hooks) to be run
+###	as if they were part of the agent that owns them.
+
+sub run_code {
+    my ($self, $code, $trans, $res, $op) = @_;
+
+    ## Run some code in the context of this agent.
+    ##	  The context, defined by local variables, is suitable for either
+    ##	  an act_on or a handle operation.
+
+    return if !defined $code;
+    $op = 'run' if !defined $op;
+    my $status;
+
+    local $agent = $self;
+    local $resolver;	
+    local $context = $trans;
+    local $request = $trans;
+    local $url;
+    local $path;
+
+    $resolver = $res if defined $res;
+    if (defined $trans && $trans->is_response) {
+	$response = $trans;
+	$request  = $trans->request;
+    }
+    $url = $request->url if defined $request;
+    $path = $url->path if defined $url;
+
+    local $current_self = $agent;		# old name for $agent
+    local $current_request = $request;		# old name for $request
+
+    if (ref($code) eq 'CODE') {
+	$status = &$code($trans, $res);
+    } elsif (ref($code)) {
+	$status = $code -> $op($trans, $res);
+    } else {
+	$status = eval ($code) if defined $code;
+	print "Error in $attr string: $@\n" if $@ ne '';
+    }
+    return $status;
+}
+
+
+sub run_hook {
+    my ($self, $attr, $trans, $res) = @_;
+
+    ## Run the code attached to a hook attribute.
+
+    my $code = $self->attribute($attr);
+    return $self->run_code($code, $trans, $res, $attr);
+}
+
+
+############################################################################
+###
 ### Utility functions for responding to requests:
 ###
 
@@ -448,9 +605,12 @@ sub create_request {
     return $request;
 }
 
-sub retrieve{
+sub retrieve {
     my($self,$request)=@_;
-    ##simple utility to grab a file or other
+
+    ## simple utility to grab a file or other URL.
+    ##	  Because it uses LWP::UserAgent it gets the content type right.
+
     my $ua = new LWP::UserAgent;
     $response=$ua->simple_request($request); 
     return $response;
@@ -458,9 +618,8 @@ sub retrieve{
 
 ############################################################################
 ###
-### Find Interforms for agent:
+### Interform Processing:
 ###
-###	The caller should map extension to file type if necessary.
 
 sub find_interform {
     my($self, $url, $noDefaults) = @_;
@@ -542,124 +701,8 @@ sub find_interform {
     return;			#found no file
 }
 
-############################################################################
-############################################################################
-###
-### Interform Processing:
-###
-###	Interforms must execute in the context of an agent; therefore we
-###	cannot create a new class for interforms.
-###
-### ===	It would be better to use something like <html language=perl> and
-###	have a new element type, e.g. <eval>, for code elements.  Another
-###	possibility would be to use the extension.  Knowing the language up
-###	front makes it possible to pass different languages off to an
-###	appropriate agency for evaluation.
-###
 ### === We need to be able to handle CGI scripts and plain HTML
 ###	eventually.  We need this for the DOFS, in particular.
-###
-
-### Environment in which the code is run:
-
-local $agent;			# The agent that owns the interform
-local $request;			# The request being handled
-#local $response;		# The response being constructed.
-
-local $current_self;		# old name for $agent
-local $current_request;		# old name for $request
-
-#this is  a callback for html traverse
-#TBD change for multi-threads
-sub execute_interform{
-    my $element=shift;
-    my $start=shift;
-    return 1 unless $start;	# only do it once, when entering a node.
-
-    my $tag = lc($element->tag);
-    return 1 unless  ($tag eq "code" || $tag eq "eval");
-
-    ## At this point we have a code element.  Branch on language attribute.
-    my $code_status;
-    my $language=lc($element->attr('language'));
-#obvious branching on language TBD
-    if ($language eq 'perl'){
-
-	my $code_array=$element->content;
-#       replace with new array
-	my @new_elements;
-
-	my $code;
-	while($code=shift(@$code_array)){
-	    print "execing $code \n" if $main::debugging > 1;
-	    if (ref($code)){
-		$code_status = $code; #this is an html element
-	    } else {
-		#evaluate string and return last expression value
-		$code_status=eval $code;
-		print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-		print "code status is $code_status\n" if  $main::debugging;
-	    }
-	    push(@new_elements,$code_status) if $code_status;
-	}
-	my $parent=$element->parent();
-	$parent->pos($element);
-	while($code=shift(@new_elements)){
-	    if (ref($code)) {
-		$parent->insert_element($code);
-		$element->tag('output'); # === kludge because pos broken ===
-	    } else {
-		push(@$code_array,$code);
-	    }
-	}
-	$element->attr('language',"perl_output");
-    } 
-#other languages?
-    return 0;#do children?
-    
-}
-
- # remember to delete parse tree otherwise memory leak occurs
-sub run_interform{
-    my ($self,$html,$req)=@_;
-
-    ## Set up appropriate environment:
-
-    $agent = $self;
-    $request = $req;
-    $current_request=$req;
-    $current_self=$self;	# old name
-    
-    ## execute the code:
-
-    my $status=$html->traverse(\&execute_interform,1);
-    return $status;
-}
-
-sub parse_interform_string{
-    my($self,$string,$request)=@_;
-    $HTML::Parse::IGNORE_UNKNOWN = 0;
-    $HTML::Parse::IGNORE_TEXT = 0;
-    $HTML::Parse::IMPLICIT_TAGS = 0;
-    my $html=parse_html($string);
-    my $status=$self->run_interform($html,$request);
-    my $string=$html->as_HTML;
-    $html->delete;
-    return $string;
-}
-
-sub parse_interform_file{
-    my($self,$file,$request)=@_;
-    $HTML::Parse::IGNORE_UNKNOWN = 0;
-    $HTML::Parse::IGNORE_TEXT = 0;
-    $HTML::Parse::IMPLICIT_TAGS = 0;
-    my $html=parse_htmlfile($file);
-    my $status=$self->run_interform($html,$request);
-    my $string=$html->as_HTML;
-    #my $string = as_HTML($html);
-    $html->delete;
-    return $string;
-}
 
 sub respond_to_interform {
     my($self, $request, $url)=@_;
@@ -676,7 +719,6 @@ sub respond_to_interform {
     $url = $request->url unless defined $url;
     my $file=$self->find_interform($url);
     my $name = $self->name();
-    print "$name parsing $file\n" if  $main::debugging;
 
     local $response;		# available for interforms.
     my $string;
@@ -687,12 +729,16 @@ sub respond_to_interform {
 	$response->header('Version',$self->version());
 	## === should really just return 0 ===
     } else {
-#TBD check for path parameters  
-	## === TBD verify extension and file type.
 
-##This test is not quite correct...
+	if ($file =~ /\.if$/i) {
+	    ## If find_interform substituted .../home.if for .../ 
+	    ## we have to tell what follows that it's an interform.
+	    $request->assert('interform');
+	}
+
 	if($request->is('interform')) {
-	    $string=$self->parse_interform_file($file,$request);
+	    $string=IF::II::parse_interform_file($self, $file, $request);
+#	    $string=$self->parse_interform_file($file,$request);
 	} else {
 	    my $new_url= newlocal URI::URL $file;
 ### I don't think we need to clone the request,url should be enough
@@ -705,7 +751,8 @@ sub respond_to_interform {
 	    my $content=$response->content;
 	    $content =~ s/<BASE HREF[^>]*>//;
 	    $response->content($content);
-	    print $self->name . "contenttype: " . $response->content_type ."  \n" if $main::debugging;
+	    print $self->name." contenttype: " . $response->content_type."\n" 
+		if $main::debugging;
 	}	    
        
 	if (! defined $response) {
