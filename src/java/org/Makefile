@@ -1,6 +1,6 @@
 ###### org/Makefile:	Imported organizations' Java classes
 #	$Id$
-#	Copyright 1997, Ricoh California Research Center
+
 
 PACKAGE="org"
 TOPDIR=..

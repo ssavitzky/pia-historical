@@ -1,6 +1,6 @@
 ###### org/w3c/dom/Makefile:	Document Object Model
 # 	$Id$
-#	Copyright 1997, Ricoh California Research Center
+
 
 PACKAGE=org.w3c.dom
 TOPDIR=../../..

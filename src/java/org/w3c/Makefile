@@ -1,6 +1,5 @@
 ###### org/w3c/Makefile:	World Wide Web Consortium
 # 	$Id$
-#	Copyright 1998, Ricoh Silicon Valley
 
 PACKAGE=org.w3c
 TOPDIR=../..

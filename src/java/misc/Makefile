@@ -1,6 +1,5 @@
 ###### misc/Makefile:	Miscelaneous Java classes.
 #	$Id$
-#	Copyright 1997, Ricoh California Research Center
 
 PACKAGE="misc"
 TOPDIR=..
