@@ -66,7 +66,6 @@ public class InterFormStream extends InputStream {
   public InterFormStream(Interp ii) {
     this();
     interp = ii;
+    ii.setStreaming();
   }
-
-
 }

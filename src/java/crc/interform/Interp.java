@@ -736,7 +736,7 @@ public class Interp extends State {
   final void passToken(SGML it) {
     if (output == null) return;	// skipping.
     if (! streaming) {		// Not streaming: just pass the tree
-      output.append(it);
+      output.push(it);		// === probably not necessary to append ===
     } else {
       /* The PERL version used to elaborately check "incomplete" and 
        *   do the right thing, including expand lists.  appendTextTo
