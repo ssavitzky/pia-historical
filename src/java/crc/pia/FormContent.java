@@ -457,7 +457,7 @@ public String[] states()
 	if(bytesRead == -1) break;
 
 	Pia.debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
-	Pia.debug(this, new String(buffer,0,0,bytesRead));
+	Pia.debug(this, new String(buffer, 0, bytesRead));
 
 
 	data.append( buffer, 0, bytesRead );
@@ -487,7 +487,7 @@ public String[] states()
     if ( headers == null ){
       byte[] bytes = suckFromSource();
       if (bytes == null) return null;
-      String zdata = new String ( bytes,0,0, bytes.length);
+      String zdata = new String ( bytes );
       return zdata; // === should really be setting the headers! ===
     }
       
@@ -510,7 +510,7 @@ public String[] states()
 	len -= bytesRead;
 
 	Pia.debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
-	Pia.debug(this, new String(buffer,0,0,buffer.length));
+	Pia.debug(this, new String(buffer, 0, buffer.length));
 
 	data.append( buffer, 0, bytesRead );
       }

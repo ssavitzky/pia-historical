@@ -5,8 +5,11 @@
 package crc.pia;
 
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.StringBufferInputStream;
+import java.io.FileInputStream;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.StringReader;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -156,10 +159,9 @@ public class FileAccess {
 	  + agent.type() + "/" + agent.name() + ":</a> " + mypath + "</h3>"
 	+ "<h4><a href=\"file:" + path + "\">file:" + path + "</a></h4>"
 	+ "<UL>" + allurls + "</UL>" + "</BODY>\n</HTML>\n";
-     
-      InputStream in = new StringBufferInputStream( html );
-      ByteStreamContent bs = new ByteStreamContent( in );
-
+	  
+      Content bs = new crc.content.text.Default(new StringReader(html));
+      
       response = new HTTPResponse( request, false);
       response.setContentObj( bs );
       response.setStatus( HTTP.OK );
@@ -205,27 +207,34 @@ public class FileAccess {
 	
 	try{
 	  Pia.instance().debug(agent, "Retrieving file :"+ filename );
-	  String data = null;
-	  byte[] fromFile = null;
-	  
-	  
-	  fromFile = Utilities.readFrom( filename );
-	  data = new String ( fromFile,0,0, fromFile.length);
 	  
 	  String contentType = contentType( filename );
-	  if( ! FIX_BASE || contentType.indexOf("html") == -1 ){
-	    
-	    InputStream newdata  = new ByteArrayInputStream( fromFile );
+	  if(contentType.indexOf("html") == -1 ){
+
+	    FileInputStream newdata = new FileInputStream(filename);
 	    Content finalContent = new ByteStreamContent( newdata );
 	    
 	    reply.setContentType( contentType );
 	    reply.setContentObj( finalContent );
 	    reply.startThread();
+
+	  } else if (! FIX_BASE ) {
+
+	    // === should use a FileReader and content.text.html ===
+	    //FileInputStream newdata = new FileInputStream(filename);
+	    //Content finalContent = new ByteStreamContent( newdata );
+	    FileReader newdata = new FileReader(filename);
+	    Content finalContent = new crc.content.text.html( newdata );
 	    
+	    reply.setContentType( contentType );
+	    reply.setContentObj( finalContent );
+	    reply.startThread();
+
 	  }else{
-	    
 	    // yes I am a html file
 	    
+	    String data = Utilities.readStringFrom( filename );
+
 	    // Fixing <base> wastes time === probably best not to do it.
 	    
 	    String base = "<BASE HREF";
@@ -257,8 +266,9 @@ public class FileAccess {
 	      tmp.append( data.substring( afterindex ) );
 	    }
 	    Pia.instance().debug(agent, "before creating reply" );
-	    InputStream newdata  = new StringBufferInputStream( new String(tmp) );
-	    Content finalContent = new ByteStreamContent( newdata );
+	    String ts = new String(tmp);
+	    Reader newdata  = new StringReader( ts );
+	    Content finalContent = new crc.content.text.html( newdata );
 	    
 	    reply.setContentType( contentType );
 	    reply.setContentObj( finalContent );
@@ -320,7 +330,7 @@ public class FileAccess {
 
     Pia.debug(msg);
 
-    Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
+    Content ct = new crc.content.text.html( new StringReader(msg) );
     Transaction response = new HTTPResponse( Pia.instance().thisMachine,
 					     req.fromMachine(), ct, false);
     response.setHeader("Location", redirUrlString);
@@ -337,8 +347,7 @@ public class FileAccess {
     StringBuffer data = new StringBuffer();
 
     try{
-      byte [] fromfile = Utilities.readFrom( filename );
-      data = new StringBuffer ( new String ( fromfile,0,0, fromfile.length) );
+      data = new StringBuffer ( Utilities.readStringFrom(filename) );
       String zhead = "<head.*</head>";
       String htmlBeginBrak = "<html>";
       String htmlEndBrak   = "</html>";

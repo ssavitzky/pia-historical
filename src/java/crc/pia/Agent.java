@@ -15,6 +15,7 @@ import crc.pia.Content;
 import crc.ds.Table;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
+import crc.ds.Registered;
 
 import crc.sgml.SGML;
 import crc.sgml.Attrs;
@@ -23,8 +24,9 @@ import crc.tf.UnknownNameException;
 
 /**
  * An agent is an object which maintains state and context  (which is
- * why agents conform to the attribute interface). 
- *  Agents can receive requests directly (http://Agency/AGENT_NAME/...), 
+ * why agents conform to the Attrs interface). <p>
+ *
+ * Agents can receive requests directly (http://Agency/AGENT_NAME/...), 
  * they can also operate on other transactions.  Direct requests are handled
  * by the respondToInterform methods.  To operate on other transactions,
  * Agents register with the resolver a set of
@@ -33,12 +35,9 @@ import crc.tf.UnknownNameException;
  * the agent can modify the transaction.  The agent can completely
  * handle a transaction by putting itself on the transaction's list of
  * handlers --  which results in a call back to the agents handle method.
-
-
  */
+public interface Agent extends Attrs, Registered {
 
-
-public interface Agent extends Attrs {
   /**
    * Default initialization; implementors may override
    */

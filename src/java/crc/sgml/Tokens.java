@@ -25,6 +25,14 @@ public class Tokens extends List implements SGML {
 
   
   /************************************************************************
+  ** Constants:
+  ************************************************************************/
+
+  /** An empty list, used as the value for an attribute with an empty 
+   *	or false value. */
+  public static final Tokens nil = new Tokens();
+
+  /************************************************************************
   ** Instance Variables:
   ************************************************************************/
 

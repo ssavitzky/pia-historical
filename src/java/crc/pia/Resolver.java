@@ -19,10 +19,9 @@
 
 package crc.pia;
 import java.io.File;
-import java.io.PrintStream;
+import java.io.FileWriter;
 import java.util.Enumeration;
 import java.io.IOException;
-import java.io.FileOutputStream;
 
 import java.net.URL;
 
@@ -378,8 +377,7 @@ public class Resolver extends Thread {
   public Transaction simpleRequest( Transaction tran, String fileName )
        throws IOException{
     File destinationFile;
-    FileOutputStream destination = null;
-    PrintStream out = null;
+    FileWriter out = null;
 
     match( tran );
     tran.satisfy( this );
@@ -388,10 +386,9 @@ public class Resolver extends Thread {
     if( fileName != null ){
       try{
 	destinationFile = new File( fileName );
-	destination = new FileOutputStream( destinationFile );
-	out = new PrintStream( destination );
+	out = new FileWriter( destinationFile );
 	String str = response.contentObj().toString();
-	out.print( str );
+	out.write( str );
 	out.flush();
 	out.close();
       }catch(IOException e){

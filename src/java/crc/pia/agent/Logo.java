@@ -70,7 +70,7 @@ public class Logo extends GenericAgent {
 
       String redirUrlString = "http://gelion:8001"+path;
       String msg = "Extreme kludge: see "+redirUrlString;
-      Content ct = new ByteStreamContent( new StringBufferInputStream(msg));
+      Content ct = new crc.content.text.StringContent(msg);
       Transaction response = new HTTPResponse( Pia.instance().thisMachine(),
 					       request.fromMachine(),
 					       ct, false);

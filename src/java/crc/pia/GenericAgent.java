@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 import java.io.IOException;
+
+import java.io.OutputStream;
+
 import java.io.PrintStream;
 import java.io.OutputStream;
 
@@ -123,11 +126,15 @@ public class GenericAgent extends AttrBase implements Agent {
   ** Initialization:
   ************************************************************************/
 
+  protected boolean initialized = false;
+
   /** Initialization.  Subclasses may override, but this should rarely
    *	be necessary.  If they <em>do</em> override this method it is
    *	important to call <code>super.initialize()</code>.
    */
   public void initialize(){
+    if (initialized) return;
+
     String n = name();
     String t = type();
     String url = "/" + n + "/" + "initialize.if";
@@ -153,8 +160,7 @@ public class GenericAgent extends AttrBase implements Agent {
        * are made on partially-initialized agents.
        */
       String fn = findInterform("initialize.if");
-      if (fn == null) return;
-      try {
+      if (fn != null) try {
 	Run.interformSkipFile(this, fn,
 			      makeRequest(machine(), "GET", url, null),
 			      Pia.instance().resolver());
@@ -164,7 +170,23 @@ public class GenericAgent extends AttrBase implements Agent {
 	System.err.println("PIA recovering.");
       }
     }
+    initialized = true;
   }
+
+  /************************************************************************
+  ** Registration and Unregistration:
+  ************************************************************************/
+
+  /** Register the Agent with the Resolver. */
+  public void register() {
+    Pia.instance().resolver().registerAgent( this );
+  }
+
+  /** Remove the Agent from the Resolver's registry */
+  public void unregister() {
+    Pia.instance().resolver().unRegisterAgent( this );
+  }
+
 
   /************************************************************************
   ** Creating and Submitting Requests:
@@ -1010,7 +1032,7 @@ public class GenericAgent extends AttrBase implements Agent {
     Runtime rt = Runtime.getRuntime();
     Process process = null;
     InputStream in;
-    PrintStream out;
+    OutputStream out;
 
     try{
       String[] envp = setupEnvironment( request );
@@ -1018,8 +1040,8 @@ public class GenericAgent extends AttrBase implements Agent {
       process = rt.exec( file, envp );
 
       if( request.method().equalsIgnoreCase( "POST" ) ){
-	out = new PrintStream( process.getOutputStream() );
-	out.print( request.queryString() );
+	out = process.getOutputStream();
+	out.write( request.queryString().getBytes() );
 	out.flush();
       }
 

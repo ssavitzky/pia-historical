@@ -12,7 +12,6 @@
 package crc.pia.agent;
 
 
-import java.io.StringBufferInputStream;
 import w3c.www.http.HTTP;
 
 import crc.ds.TernFunc; 
@@ -106,7 +105,6 @@ public class AgentMachine extends Machine {
    */
   public void getRequest(Transaction request, Resolver resolver)
        throws PiaRuntimeException {
-    StringBufferInputStream sb = null;
 
     Agent agnt = agent;
     if( agnt != null ){

@@ -34,7 +34,12 @@ import crc.ds.Index;
  */
 public class Token implements SGML {
 
-  /** An empty token, used as the value for an attribute with no value */
+  /************************************************************************
+  ** Constants:
+  ************************************************************************/
+
+  /** An empty token, used as the value for an attribute with no value
+   *	or a true value. */
   public static final Token empty = new Token();
 
   /************************************************************************
@@ -218,7 +223,7 @@ public class Token implements SGML {
   }
 
   public String toString() {
-    return "";
+    return "1";
   }
 
   public void appendTextTo(SGML t) {

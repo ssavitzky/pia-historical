@@ -50,7 +50,7 @@ import w3c.www.http.HTTP;
 import crc.ds.UnaryFunctor;
 
 
-public class Machine {
+public class Machine implements java.io.Serializable {
 
   /************************************************************************
   ** Components:
@@ -422,7 +422,7 @@ public class Machine {
     if( s == null )
       return;
 
-    bytestring = getBytes( s );
+    bytestring = s.getBytes();
     try{
       if( bytestring != null )
 	out.write( bytestring, 0, bytestring.length  );
@@ -433,16 +433,6 @@ public class Machine {
       String msg = "Can not write...\n";
       throw new PiaRuntimeException (this, "shipOutput", msg) ;
     }
-  }
-
-  private byte[] getBytes(String s){
-    int len = s.length();
-    byte[] data = null;
-    if( len > 0 ){
-      data = new byte[ len ];
-      s.getBytes(0, len, data, 0 );
-    }
-    return data;
   }
 
   private void sendImageContent(OutputStream out, Content c)
@@ -699,13 +689,7 @@ class zTimeout implements UnaryFunctor{
     m.closeConnection();
 
     String msg = "Request timed out.  Server may be down.";
-    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
-    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
-					 req.fromMachine(), ct, false);
-    abort.setStatus(HTTP.REQUEST_TIMEOUT);
-    abort.setContentType( "text/html" );
-    abort.setContentLength( msg.length() );
-    abort.startThread();
+    req.errorResponse(HTTP.REQUEST_TIMEOUT, msg);
 
     return object;
   }

@@ -77,11 +77,12 @@ class HttpBuffer {
 	len += l;
     }
 
+    void append(byte b[]) {
+      append(b, 0, b.length);
+    }
+
     void append(String str) {
-	int l = str.length();
-	ensureCapacity(l);
-	str.getBytes(0, l, buf, len);
-	len += l;
+      append (str.getBytes());
     }
 
     void appendQuoted(String str) {
@@ -141,7 +142,7 @@ class HttpBuffer {
     }
 
     public String toString() {
-	return new String(buf, 0, 0, len);
+	return new String(buf, 0, len);
     }
 
     /**

@@ -47,10 +47,8 @@ public class Logger {
     protected synchronized void output (RandomAccessFile f, String msg)
        throws IOException
     {
-	int len = msg.length() ;
-	if ( len > msgbuf.length ) 
-	    msgbuf = new byte[len] ;
-	msg.getBytes (0, len, msgbuf, 0) ;
+	byte[] msgbuf = msg.getBytes();
+	int len = msgbuf.length ;
 	f.write (msgbuf, 0, len) ;
     }
 

@@ -22,11 +22,14 @@ public class Util {
   ** SGML utilities:
   ************************************************************************/
 
-  /** Wrap an object in a Text if it isn't already SGML. */
+  /** Wrap an object in something appropriate if it isn't already SGML. */
   public static final SGML toSGML(Object o) {
     if (o instanceof SGML) return (SGML)o;
+    if (o instanceof Attrs) return new AttrWrap((Attrs)o);
     if (o instanceof Boolean) {
-      return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
+      // === should probably return Token.empty or Tokens.empty ===
+      //return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
+      return ((Boolean)o).booleanValue() ? (SGML)Token.empty : (SGML)Tokens.nil;
     }
     return new Text(o);
   }
@@ -35,8 +38,9 @@ public class Util {
    *	the strings "", "0", and "false" are false; anything else is true.
    */
   public static final boolean valueIsTrue(SGML o) {
-    if (o == null) return false;
+    if (o == null) 	  return false;
     if (o == Token.empty) return true;
+    if (o == Tokens.nil)  return false;
     if (o instanceof Tokens) return !o.isEmpty();
     if (! o.isText()) return true;
     String s = o.toString();

@@ -2,40 +2,85 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
+/**
+ * This class contains only static functions; all are general-purpose 
+ *	utilities, mainly file-handling and data-format conversion.
+ */
+
 package crc.util;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
+import java.io.StreamCorruptedException;
+import java.io.OptionalDataException;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
-import java.io.DataOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+
+import java.lang.ClassNotFoundException;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+
 import crc.gnu.regexp.RegExp;
 
-public class Utilities{
+import crc.ds.List;
+import crc.ds.Registered;
+
+public class Utilities {
+
+  /************************************************************************
+  ** String and Byte Array I/O:
+  ************************************************************************/
 
   /**
-   * return a string read from a file
+   * Read an entire file and return it as a String.
    */
-  public static String readStringFrom( String filename ) throws NullPointerException, FileNotFoundException, IOException{
+  public static String readStringFrom( String filename )
+       throws NullPointerException, FileNotFoundException, IOException{
 
       byte[] fromFile = readFrom( filename );
-      String data = new String ( fromFile,0,0, fromFile.length);
+      String data = new String ( fromFile );
       return data;
-
   }
 
-public static synchronized byte[] readFrom( String fileName ) throws NullPointerException, FileNotFoundException, IOException{
-    File f = null;
+  /**
+   * Read from an InputStream and return it as a String.
+   */
+  public static String readStringFrom( InputStream stream )
+       throws NullPointerException, FileNotFoundException, IOException
+  {
+    StringBuffer buffer = new StringBuffer();
+    int i;
+
+    // === very inefficient; should use InputStreamReader ===
+    
+    for ( i = stream.read(); i != -1; i = stream.read()) {
+      buffer.append((char)i);
+    }
+    return buffer.toString();
+  }
+
+  /**
+   * Read to the end of a file and return it as a byte array.
+   */
+  public static synchronized byte[] readFrom( String fileName )
+       throws NullPointerException, FileNotFoundException, IOException
+  {
     FileInputStream source = null;
+    File f = null;
     byte[]tmp = new byte[1024];
     byte[]buffer = null;
     int bytesRead = -1;
     int total = 0;
 
-    try{
-
+    try {
       f = new File( fileName );
       long len = f.length();
       buffer = new byte[ (int)len ];
@@ -73,26 +118,21 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
   
 
   /**
-   * Given a string, write to file.
-   *
+   * Write a String to a file.
    */
-  public static synchronized void writeTo( String fileName, String str )throws IOException{
+  public static synchronized void writeTo( String fileName, String str )
+       throws IOException{
     File f;
-    FileOutputStream fileStream;
-    PrintStream destination = null;
-    
+    FileWriter destination = null;
 
     if(str == null) return;
-
     try{
       f = new File(fileName);
-      fileStream = new FileOutputStream( f );
-      destination = new PrintStream( fileStream );
-      
-      destination.print( str );
+      destination = new FileWriter( f );
+      destination.write( str );
       destination.flush();
     }catch(IOException e1){
-      //either from writeChars or Fileoutputstream creation
+      // either from open or write.
       throw e1;
     }finally{
       if(destination!=null)
@@ -101,22 +141,20 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
   }
 
   /**
-   * Given a string, append to file.
+   * Append a String to a file.
    *
    */
-  public static synchronized  void appendTo( String fileName, String str ) throws NullPointerException, IOException{
+  public static synchronized  void appendTo( String fileName, String str )
+       throws NullPointerException, IOException{
     RandomAccessFile f = null;
 
-    if(str==null) return;
-    byte huge[] = new byte[str.length()];
+    if(str == null) return;
 
     try{
       f = new RandomAccessFile(fileName, "rw");
       long length = f.length();
       f.seek( length );
-
-      str.getBytes(0, str.length(), huge, 0);
-      f.write( huge, 0, str.length() );
+      f.write( str.getBytes() );
     }catch(NullPointerException e1){
       // bad file name
       throw e1;
@@ -131,9 +169,201 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
 	throw e3;
       }
     }
-    
   }
 
+
+  /************************************************************************
+  ** Object I/O:
+  ************************************************************************/
+
+  /**
+   * Read an Object from a file.  If the object implements the Registered
+   *	interface it is registered.  If the object is a List, every object
+   *	on the list is registered if necessary.
+   *
+   *	@see crc.ds.List, crc.ds.Registered
+   */
+  public static synchronized Object readObjectFrom( String fileName )
+       throws NullPointerException, FileNotFoundException, IOException
+  {
+    FileInputStream f = null;
+    ObjectInputStream source = null;
+
+    try {
+      f = new FileInputStream( fileName );
+      source = new ObjectInputStream(f);
+      return register(source.readObject());
+    }catch(NullPointerException e1){
+      throw e1;
+    }catch(FileNotFoundException e2){
+      throw e2;
+    }catch(ClassNotFoundException e){
+      return null; //throw e;
+    }catch(InvalidClassException e){
+      return null; //throw e;
+    }catch(StreamCorruptedException e){
+      return null; //throw e;
+    }catch(OptionalDataException  e){
+      return null; //throw e;
+    }catch(IOException e3){
+      throw e3;
+    }finally{
+      try {
+	if (source != null) source.close();
+	else if (f != null) f.close();
+      }catch(IOException e5){
+	throw e5;
+      }
+    }
+    
+  }
+  
+  /**
+   * Read an entire file into a List.  Any objects that implement the 
+   *	Registered interface are registered.  Lists in the input file are
+   *	quietly appended.
+   *
+   *	@see crc.ds.List, crc.ds.Registered
+   */
+  public static synchronized List readObjectsFrom( String fileName )
+       throws NullPointerException, FileNotFoundException, IOException
+	 //, ClassNotFoundException, InvalidClassException, 
+	 //StreamCorruptedException, OptionalDataException 
+  {
+    FileInputStream f = null;
+    ObjectInputStream source = null;
+    List list = new List();
+
+    try {
+      f = new FileInputStream( fileName );
+      source = new ObjectInputStream(f);
+      for ( ;; ) {
+	Object o = source.readObject();
+	if (o instanceof List) list.append((List)o);
+	else		       list.push(o);
+      }
+    }catch(NullPointerException e1){
+      throw e1;
+    }catch(FileNotFoundException e2){
+      throw e2;
+    }catch(ClassNotFoundException e){
+      report(e); //throw e;
+    }catch(InvalidClassException e){
+      report(e); //throw e;
+    }catch(StreamCorruptedException e){
+      report(e); //throw e;
+    }catch(OptionalDataException  e){
+      report(e); //throw e;
+    }catch(IOException e){
+      if ( list.nItems() > 0 ) report(e);
+      else throw e;
+    }finally{
+      try {
+	if (source != null) source.close();
+	else if (f != null) f.close();
+      }catch(IOException e5){
+	throw e5;
+      }
+    }
+    register(list);
+    return list;
+  }
+  
+  /** 
+   * Report an exception.
+   */
+  public static void report(Exception e) {
+    System.err.println(e.toString() + " " + e.getMessage());
+    e.printStackTrace();
+  }
+
+  /** 
+   * Obtain a complete report on an exception as a String;
+   */
+  public static String reportString(Exception e) {
+    java.io.StringWriter s = new java.io.StringWriter();
+    s.write(e.toString() + " " + e.getMessage());
+    e.printStackTrace(new java.io.PrintWriter(s));
+    return s.toString();
+  }
+
+  /**
+   * Register an object if it needs it.  
+   *	If the object is a List, register every object in its contents.
+   */
+  public static Object register(Object obj) {
+    if (obj instanceof List) {
+      List list = (List) obj;
+      for (int i = 0; i < list.nItems(); ++i) {
+	Object o = list.at(i);
+	if (o instanceof Registered) ((Registered)o).register();
+      }
+      return list;
+    } else {
+      if (obj instanceof Registered) ((Registered)obj).register();
+      return obj;
+    }
+  }
+
+  /**
+   * Write an Object to a file.
+   */
+  public static synchronized void writeObjectTo( String fileName, Object o )
+       throws IOException{
+
+    FileOutputStream f = null;
+
+    if (o == null) return;
+    try{
+      f = new FileOutputStream( fileName );
+      ObjectOutputStream destination = new ObjectOutputStream(f);
+      destination.writeObject( o );
+      destination.flush();
+    }catch(IOException e1){
+      throw e1;
+    }finally{
+      if(f!=null) f.close();
+    }
+  }
+
+  /**
+   * Append an Object to a file.
+   *
+   */
+  public static synchronized  void appendObjectTo( String fileName, Object o )
+       throws NullPointerException, IOException{
+    RandomAccessFile f = null;
+
+    if (o==null) return;
+
+    try{
+      f = new RandomAccessFile(fileName, "rw");
+      long length = f.length();
+      f.seek( length );
+      FileOutputStream ff = new FileOutputStream(f.getFD());
+      ObjectOutputStream destination = new ObjectOutputStream(ff);
+      destination.writeObject( o );
+      destination.flush();
+    }catch(NullPointerException e1){
+      // bad file name
+      throw e1;
+    }catch(IOException e2){
+      throw e2;
+    }
+    finally{
+      if(f!=null)
+	try {
+	f.close();
+      }catch(IOException e3){
+	throw e3;
+      }
+    }
+  }
+
+
+  /************************************************************************
+  ** Conversion:
+  ************************************************************************/
 
   /**
    * Conversion Utilities:

@@ -14,9 +14,11 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.net.URLEncoder;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.io.StringBufferInputStream;
@@ -316,7 +318,7 @@ public class  HTTPRequest extends Transaction {
    * output protocolInitializationString, headers, and content if request.
    */
   public void printOn(OutputStream stream) throws IOException{
-     PrintStream out = new PrintStream( stream );
+     PrintWriter out = new PrintWriter( new OutputStreamWriter(stream) );
 
     String requestLine = protocolInitializationString();
      if( requestLine != null )

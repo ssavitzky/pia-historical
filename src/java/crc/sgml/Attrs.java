@@ -8,7 +8,7 @@ package crc.sgml;
  *	They are used not only for element attributes but for entity
  *	lookup tables and InterForm interpretor variables.
  */
-public interface Attrs {
+public interface Attrs extends java.io.Serializable {
 
   /** Test whether attributes exist.  Almost always returns true; may
    *	true even if no attributes are currently defined. */
@@ -36,10 +36,10 @@ public interface Attrs {
   /** Enumerate the defined attributes. */
   java.util.Enumeration attrs();
 
-  /** Set an attribute to a String.  */
+  /** Set an attribute to an SGML value.  */
   void attr(String name, SGML value);
 
-  /** Set an attribute.  Returns the object itself. */
+  /** Set an attribute to a String value. */
   void attr(String name, String value);
 
   /** Add an attribute.  Returns the object itself.  In some

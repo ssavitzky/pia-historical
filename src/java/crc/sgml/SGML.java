@@ -9,11 +9,15 @@ import crc.ds.Index;
 /**
  * Interface for SGML tokens and collections of tokens.<p>
  *
+ * <strong>Note:</strong> SGML objects are not immutable, so we must not 
+ * 	define an implementation of <code>equals</code> that compares 
+ * 	SGML's on content. <p>
+ *
  * === All implementations of <code>crc.sgml.SGML</code> should
- *      support <code>equals</code>, <code>equalsIgnoreCase</code>,
- *      and <code>compareTo</code> methods as well.
+ *      support <code>compareTo</code> and <code>compareIgnoreCase</code>
+ *	methods as well.
  */
-public interface SGML extends java.lang.Cloneable {
+public interface SGML extends java.lang.Cloneable, java.io.Serializable {
 
   /** Return true if the object is an individual SGML token. */
   boolean isToken();
