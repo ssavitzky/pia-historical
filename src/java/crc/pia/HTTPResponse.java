@@ -145,18 +145,26 @@ public class  HTTPResponse extends Transaction {
    */
   protected void errorResponse(String msg){
     StringBufferInputStream foo = null;
+    String masterMsg = "Agency is unable to process " + requestURL() + ": ";
 
-    if ( msg != null )
-      foo = new StringBufferInputStream( msg );
-    else
-      foo = new StringBufferInputStream( "Agency could not find " + requestURL() + ".\n" );
+    if ( msg != null ){
+      masterMsg += msg;
+      foo = new StringBufferInputStream( masterMsg );
+    }
+    else{
+      masterMsg += ".\n";
+      foo = new StringBufferInputStream( masterMsg );
+    }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct);
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
     
     response.setStatus( 404 );
     response.setReason( "Not found" );
     response.setContentType( "text/plain" );
+    response.setContentLength( masterMsg.length() );
+    Pia.instance().debug(this, "The header : \n" + response.headersAsString() );
+    response.startThread();
   }
 
   /**
@@ -287,10 +295,31 @@ public class  HTTPResponse extends Transaction {
     fromMachine( from );
     toMachine(  to );
 
-    if( !DEBUG )
-      startThread();
+    startThread();
   }
  
+  /**
+   * no header, content, and thread does not automatically start
+   * 
+   */
+  public HTTPResponse(  Transaction t, boolean doStart  ){
+    Pia.instance().debug(this, "Constructor-- [ transaction t, boolean startThread ] on duty...");
+
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = null;
+    headersObj = new Headers(); //  blank header
+
+    requestTran = t;
+    fromMachine( t.toMachine() );
+    toMachine( t.fromMachine() );
+
+    if( doStart )
+      startThread();
+  }
+  
+
   /**
    *  constructors
    */
@@ -303,16 +332,15 @@ public class  HTTPResponse extends Transaction {
     fromMachine( from );
     toMachine(  t.fromMachine() );
 
-    if( !DEBUG )
-      startThread();
+    startThread();
   }
  
 
 
   /**
-   *  constructors
+   *  constructor use in error response.  Thread does not started automatically
    */
-  public HTTPResponse( Machine from, Machine to, Content ct ){
+  public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart ){
     Pia.instance().debug(this, "Constructor-- [ machine from, machine to, content ct ] on duty...");
 
     handlers = new Queue();
@@ -320,13 +348,16 @@ public class  HTTPResponse extends Transaction {
     
     contentObj = ct;
     headersObj = new Headers(); //  blank header
+
     if( contentObj != null )
       contentObj.setHeaders( headersObj );
-  
+
     fromMachine( from );
     toMachine(  to );
-    if( !DEBUG )
+    
+    if( doStart )
       startThread();
+     
   }
  
 
@@ -342,15 +373,14 @@ public class  HTTPResponse extends Transaction {
 
     contentObj = ct;
     headersObj = new Headers(); //  blank header
+
     if( contentObj != null )
       contentObj.setHeaders( headersObj );
-
   
     requestTran = t;
     fromMachine( t.toMachine() );
     toMachine( t.fromMachine() );
-    if( !DEBUG )
-      startThread();
+    startThread();
   }
   
   /**
@@ -364,15 +394,15 @@ public class  HTTPResponse extends Transaction {
 
     contentObj = ct;
     headersObj = hd; //  maybe generate?
+
     if( contentObj != null )
       contentObj.setHeaders( headersObj );
-
   
     requestTran = t;
     fromMachine( t.toMachine() );
     toMachine( t.fromMachine() );
-    if( !DEBUG )
-      startThread();
+
+    startThread();
   }
   
   /**
@@ -408,37 +438,28 @@ public class  HTTPResponse extends Transaction {
      String responseLine = protocolInitializationString();
      if( responseLine != null )
        out.println( responseLine );
-
+     
      String headersString= headersAsString();
      if( headersString != null )
        out.print( headersString );
-
+     
      Content c = contentObj();
      if( c!= null )
        out.print( c.toString() );
-
+       
      out.flush();
   }
 
 
+  private static void sleep(int howlong){
+   Thread t = Thread.currentThread();
 
+   try{
+     t.sleep( howlong );
+   }catch(InterruptedException e){;}
 
-  /**
-   * get response from input stream
-   */
-  public HTTPResponse( Transaction t ){
-    handlers = new Queue();
-    new Features( this );
-
-    contentObj = null;
-    headersObj  = null; 
-  
-    requestTran = t;
-    fromMachine( t.toMachine() );
-    toMachine( t.fromMachine() );
-    if( !DEBUG )
-      startThread();
   }
+
 
   private static void test1( String filename ){
     try{
@@ -451,15 +472,19 @@ public class  HTTPResponse extends Transaction {
 
       Machine machine2 = new Machine();
 
-      Transaction trans1 = new HTTPResponse( machine1, machine2 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPResponse( machine1, machine2, debug );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
+
       printMethods( trans1 );
+      System.exit( 0 );
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -480,16 +505,20 @@ public class  HTTPResponse extends Transaction {
       ByteStreamContent c = new ByteStreamContent();
       c.source( in );
 
-
-      Transaction trans1 = new HTTPResponse( machine1, machine2, c );
+      boolean dostart = false;
+      boolean debug   = true;
+      Transaction trans1 = new HTTPResponse( machine1, machine2, c, false, debug );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
+
       printMethods( trans1 );
+      System.exit(0);
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -507,24 +536,31 @@ public class  HTTPResponse extends Transaction {
       Machine machine1 = new Machine();
       machine1.setInputStream( in );
 
-      Transaction trans1 = new HTTPRequest( machine1 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPRequest( machine1, debug );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
+
+
       ByteStreamContent c = new ByteStreamContent();
-      Transaction trans2 = new HTTPResponse( trans1, c );
+      Transaction trans2 = new HTTPResponse( trans1, c, debug );
       Thread thread2 = new Thread( trans2 );
       thread2.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread2.isAlive() )
 	  break;
       }
+
       printMethods( trans2 );
+      System.exit(0);
     }catch(Exception e){
     }
   }
@@ -542,20 +578,25 @@ public class  HTTPResponse extends Transaction {
       Machine machine2 = new Machine();
       machine2.setInputStream( out );
 
-      Transaction trans1 = new HTTPRequest( machine1 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPRequest( machine1, debug );
       trans1.toMachine( machine2 );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
-      Transaction trans2 = new HTTPResponse( trans1 );
+
+      boolean start = false;
+      Transaction trans2 = new HTTPResponse( trans1, start, debug );
       Thread thread2 = new Thread( trans2 );
       thread2.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread2.isAlive() )
 	  break;
       }
@@ -570,7 +611,7 @@ public class  HTTPResponse extends Transaction {
       trans2.setStatus(400);
       trans2.setReason("not found");
       printMethods( trans2 );
-
+      System.exit(0);
 
     }catch(Exception e){
     }
@@ -590,24 +631,36 @@ public class  HTTPResponse extends Transaction {
       Machine machine2 = new Machine();
       machine2.setInputStream( out );
 
-      Transaction trans1 = new HTTPRequest( machine1 );
+      boolean debug = true;
+      Transaction trans1 = new HTTPRequest( machine1, debug );
       trans1.toMachine( machine2 );
       Thread thread1 = new Thread( trans1 );
       thread1.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
-      Transaction trans2 = new HTTPResponse( trans1 );
+
+
+      boolean start = false;
+      Transaction trans2 = new HTTPResponse( trans1, start, debug );
+
       Thread thread2 = new Thread( trans2 );
       thread2.start();
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread2.isAlive() )
 	  break;
       }
 
+      Headers head = null;
+      if( (head = trans2.headers())!= null ){
+	head.setHeader("Version","PIA/blah.blah");
+	head.setHeader("Content-type", "image/gif");
+      }
 
       System.out.println( "Is agent response? ->" + trans2.compute("IsAgentResponse").toString() ); 
 
@@ -616,7 +669,7 @@ public class  HTTPResponse extends Transaction {
 	String title = (String)o;
 	System.out.println( "What is the tile, ya? ->" + title ); 
       }
-
+      System.exit(0);
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -628,7 +681,7 @@ public class  HTTPResponse extends Transaction {
     System.out.println("For test 1, (const. 1) --> java crc.pia.HTTPResponse -1 response.txt");
     System.out.println("For test 2, (const. 2) --> java crc.pia.HTTPResponse -2 responsebody.txt");
     System.out.println("For test 3, (const. 3) --> java crc.pia.HTTPResponse -3 get.txt");
-    System.out.println("For test 4, (const. 4) --> java crc.pia.HTTPResponse -4 get.txt response.txt");
+    System.out.println("For test 4, (const. 4) --> java crc.pia.HTTPResponse -4 get.txt responsebody.txt");
     System.out.println("For test 5, (trans. features) --> java crc.pia.HTTPResponse -5 post.txt response.txt");
   }
 
@@ -694,7 +747,7 @@ public class  HTTPResponse extends Transaction {
       try{
 	t.printOn( out );
       }catch(Exception e){;}
-      
+
 
   }
   
@@ -719,13 +772,93 @@ public class  HTTPResponse extends Transaction {
 	  }
 	}
       }
+      Pia.instance().debug(this, "Done running");
 
     }
   }
 
+  /**
+   *  constructors
+   */
+  public HTTPResponse( Machine from, Machine to, boolean debug ){
+    DEBUG = debug;
+
+    Pia.instance().debug(this, "Constructor-- [ machine from, machine to ] on duty...");
+    handlers = new Queue();
+    new Features( this );
+    
+    fromMachine( from );
+    toMachine(  to );
+
+  }
  
+  /**
+   *  constructor use in error response.  Thread does not started automatically -- for debugging only
+   */
+  public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart, boolean debug ){
+    DEBUG = debug;
+
+    Pia.instance().debug(this, "Constructor-- [ machine from, machine to, content ct ] on duty...");
+
+    handlers = new Queue();
+    new Features( this );
+    
+    contentObj = ct;
+    headersObj = new Headers(); //  blank header
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+
+    fromMachine( from );
+    toMachine(  to );
+    
+  }
+ 
+  /**
+   * content is known, but no header -- for debugging only
+   */
+  public HTTPResponse(  Transaction t, Content ct, boolean debug ){
+    DEBUG = debug;
+    Pia.instance().debug(this, "Constructor-- [ transaction t, content ct ] on duty...");
+
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = ct;
+    headersObj = new Headers(); //  blank header
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+  
+    requestTran = t;
+    fromMachine( t.toMachine() );
+    toMachine( t.fromMachine() );
+  }
+  
+  /**
+   * no header, content, and thread does not automatically start
+   * 
+   */
+  public HTTPResponse(  Transaction t, boolean doStart, boolean debug  ){
+    DEBUG = debug;
+    Pia.instance().debug(this, "Constructor-- [ transaction t, boolean startThread ] on duty...");
+
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = null;
+    headersObj = new Headers(); //  blank header
+
+    requestTran = t;
+    fromMachine( t.toMachine() );
+    toMachine( t.fromMachine() );
+
+  }
+  
+
   
 }
+
 
 
 

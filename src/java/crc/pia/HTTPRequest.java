@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 
 import crc.pia.Machine;
+import crc.pia.agent.AgentMachine;
 import crc.pia.Content;
 import crc.pia.ByteStreamContent;
 import crc.pia.Transaction;
@@ -36,7 +37,6 @@ import crc.util.Utilities;
 import crc.tf.Registry;
 
 public class  HTTPRequest extends Transaction {
-  public boolean DEBUG = false;
 
   /**  method
    * should be get, post, put, head, etc.
@@ -142,14 +142,7 @@ public class  HTTPRequest extends Transaction {
 
     if( url != null ){
       try{
-	/*
-	if (DEBUG)
-	  u = new URL("http" + "://" + "localhost" + "/");
-	else
-	*/
-
-	  u = new URL( Pia.instance().url() + "/" );
-
+	u = new URL( Pia.instance().url() + "/" );
 
 	myurl = new URL( u, url );
       }catch( MalformedURLException e ){
@@ -288,8 +281,11 @@ public class  HTTPRequest extends Transaction {
      if( headersString != null )
        out.print( headersString );
 
-     if( method().equals("POST") && contentLength() > 0 )
-       out.print( queryString() );
+     if( method().equals("POST")  ){
+       String qs = queryString(); 
+       if( qs != null )
+	 out.print( queryString() );
+     }
      out.flush();
   }
 
@@ -316,10 +312,7 @@ public class  HTTPRequest extends Transaction {
     try{
       URL u;
 
-      if (DEBUG)
-	u = new URL("http" + "://" + "localhost" + "/");
-      else
-	u = new URL( Pia.instance().url() + "/" );
+      u = new URL( Pia.instance().url() + "/" );
 
       URL myurl = new URL(u, zurlandmore );
       protocol = myurl.getProtocol();
@@ -399,7 +392,11 @@ public class  HTTPRequest extends Transaction {
 	host = url.getHost();
       if( host != null ){
 	port = url.getPort();
-	toMachine = new Machine( host, port );
+	String zport = Integer.toString( port );
+	if( host.equals( Pia.instance().host() ) && zport.equals( Pia.instance().port() ))
+	  toMachine = new AgentMachine( null );
+	else
+	  toMachine = new Machine( host, port );
       }
     }
     return toMachine;
@@ -439,19 +436,28 @@ public class  HTTPRequest extends Transaction {
    *
    */
   protected void errorResponse(String msg){
+    Pia.instance().debug(this, "This is the err msg :"+msg);
     StringBufferInputStream foo = null;
+    String masterMsg = "Agency could not retrieve " + requestURL() + ": ";
 
-    if ( msg != null )
-      foo = new StringBufferInputStream( msg );
-    else
-      foo = new StringBufferInputStream( "Agency could not find " + requestURL() + ".\n" );
+    if ( msg != null ){
+      masterMsg += msg;
+      foo = new StringBufferInputStream( masterMsg  );
+    }
+    else{
+      masterMsg += ".\n";
+      foo = new StringBufferInputStream( masterMsg );
+    }
 
     Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct);
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
     
     response.setStatus( 404 );
     response.setReason( "Not found" );
     response.setContentType( "text/plain" );
+    response.setContentLength( masterMsg.length() );
+    Pia.instance().debug(this, "The header : \n" + response.headersAsString() );
+    response.startThread();
   }
 
   /**
@@ -463,13 +469,14 @@ public class  HTTPRequest extends Transaction {
     handlers = new Queue();
     new Features( this );
 
-// we probably only need one instance of these objects
+    // we probably only need one instance of these objects
     
     fromMachine( from );
     toMachine( null );// done by default anyway
-    if(!DEBUG)
-      startThread();
+
+    startThread();
   }
+
 
   /**
    * A Request transaction w/ default header
@@ -487,8 +494,8 @@ public class  HTTPRequest extends Transaction {
 
     fromMachine( from );
     toMachine( null );
-    if( !DEBUG )
-      startThread();
+
+    startThread();
   }
  
   /**
@@ -507,10 +514,18 @@ public class  HTTPRequest extends Transaction {
 
     fromMachine( from );
     toMachine( null );
-    if( !DEBUG )
-      startThread();
+
+    startThread();
   }
 
+  private static void sleep(int howlong){
+   Thread t = Thread.currentThread();
+
+   try{
+     t.sleep( howlong );
+   }catch(InterruptedException e){;}
+
+  }
 
   private static void test1( String filename ){
     System.out.println("Testing request w/ from machine as the only argument.");
@@ -521,15 +536,22 @@ public class  HTTPRequest extends Transaction {
       Machine machine1 = new Machine();
       machine1.setInputStream( in );
 
-      Transaction trans1 = new HTTPRequest( machine1 );
+      // make use of debugging version, which uses HTTPRequest run method
+      boolean debug = true;
+      Transaction trans1 = new HTTPRequest( machine1, debug );
+
       Thread thread1 = new Thread( trans1 );
       thread1.start();
+   
 
-      for(;;){
+      while( true ){
+	sleep( 1000 );
 	if( !thread1.isAlive() )
 	  break;
       }
+      
       printMethods( trans1 );
+      System.exit(0);
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -548,17 +570,23 @@ public class  HTTPRequest extends Transaction {
       InputStream in = new FileInputStream (filename);
       c.source( in );
 
-      Transaction trans = new HTTPRequest( machine, c );
+      boolean debug = true;
+      Transaction trans = new HTTPRequest( machine, c, debug );
       //printOn only prints if method is post and content has data
       trans.setMethod( "POST" );
-      Thread thread = new Thread( trans );
-      thread.start();
 
-      for(;;){
-	if( !thread.isAlive() )
+      Thread thread1 = new Thread( trans );
+      thread1.start();
+   
+
+      while( true ){
+	sleep( 1000 );
+	if( !thread1.isAlive() )
 	  break;
       }
+
       printMethods( trans );
+      System.exit(0);
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -580,16 +608,19 @@ public class  HTTPRequest extends Transaction {
 
     FormContent c = new FormContent();
 
-    Transaction trans = new HTTPRequest( machine, c, h );
+    boolean debug = true;
+    Transaction trans = new HTTPRequest( machine, c, h, debug );
     Thread thread = new Thread( trans );
     thread.start();
 
-    for(;;){
+    while( true ){
+      sleep( 1000 );
       if( !thread.isAlive() )
 	break;
     }
-    printMethods( trans );
 
+    printMethods( trans );
+    System.exit( 0 );
   }
 
   private static void test4( ){
@@ -607,7 +638,8 @@ public class  HTTPRequest extends Transaction {
 
     FormContent c = new FormContent();
 
-    Transaction trans = new HTTPRequest( machine, c, h );
+    boolean debug = true;
+    Transaction trans = new HTTPRequest( machine, c, h, debug );
     trans.setRequestURL("http://agency/im3/initialize.inf");
     System.out.println( "----->>>> Headers are the following: <<<<<------ " );
     System.out.println(trans.headersAsString());
@@ -639,6 +671,7 @@ public class  HTTPRequest extends Transaction {
     System.out.println("Recheck IsText (should be false) ->" + trans.test( "IsText" ));
     System.out.println("Checking has( IsText ) (should be true) ->" + trans.has( "IsText" ));
     System.out.println("Checking is ( IsImage ) (should be true) ->" + trans.is( "IsImage" ).toString());
+    System.exit( 0 );
   }
 
 
@@ -715,11 +748,16 @@ public class  HTTPRequest extends Transaction {
       super.run();
     else{
       // make sure we have the header information
+      Pia.instance().debug(this, "Running HTTPRequest's run method");
       if(headersObj ==  null) initializeHeader();
-
+      Pia.instance().debug(this, "Got a head...");
     
       // and the content
       if(contentObj ==  null) initializeContent();
+      Pia.instance().debug(this, "Got a body...");
+      // incase body needs to update header about content length
+      if( headersObj!= null && contentObj != null )
+	contentObj.setHeaders( headersObj );
    
       if( contentObj != null ){
 	boolean done = false;
@@ -729,12 +767,74 @@ public class  HTTPRequest extends Transaction {
 	  }
 	}
       }
+
+      Pia.instance().debug(this, "Done running");
    
     }
   }
 
+  /**
+   * A request transaction 
+   *  constructor           -- for debugging only
+   */
+  public HTTPRequest( Machine from, boolean debugflag ){
+    DEBUG = debugflag;
+
+    Pia.instance().debug(this, "Constructor-- [ machine from ] -- on duty...");
+    handlers = new Queue();
+    new Features( this );
+
+    // we probably only need one instance of these objects
+    
+    fromMachine( from );
+    toMachine( null );// done by default anyway
+  }
+
+  /**
+   * A Request transaction w/ default header -- for debugging only
+   */
+  public HTTPRequest( Machine from, Content ct, boolean debugflag ){
+    DEBUG = debugflag;
+
+    Pia.instance().debug(this, "Constructor-- [ machine from, content ct ] on duty...");
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = ct;
+    headersObj = new Headers(); // blank header  
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+
+    fromMachine( from );
+    toMachine( null );
+  }
+ 
+  /**
+   * A Request transaction w/ a defined header -- for debugging only
+   */
+  public HTTPRequest( Machine from, Content ct, Headers hd, boolean debug ){
+    DEBUG = debug;
+
+    Pia.instance().debug(this, "Constructor-- [ machine from, content ct, headers hd ] -- on duty...");
+    handlers = new Queue();
+    new Features( this );
+
+    contentObj = ct;
+    headersObj = hd; 
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+
+    fromMachine( from );
+    toMachine( null );
+  }
+
+
 
 }
+
+
 
 
 
