@@ -104,6 +104,12 @@ public class Expand {
     return out.getList();
   }
 
+  /** Process a node list and return the result. */
+  public static void processNodes(NodeList nl, Context c, Output out) {
+    Input in = new FromParseNodes(nl);
+    c.subProcess(in, out).run();
+  }
+
   /** Process the children of a Node and return the result. */
   public static ParseNodeList processChildren(ActiveNode aNode, Context c) {
     Input in = new FromParseTree(aNode);
