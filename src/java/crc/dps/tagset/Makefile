@@ -29,7 +29,11 @@ FILES = $(BASE_CLASSES) $(JAVA_TAGSETS)
 MAIN_TAGSETS = \
 	basic.ts \
 	xxml.ts \
-	xhtml.ts \
+	xhtml.ts
+
+### Specialized tagsets but still meant for ordinary users
+SPECIAL_TAGSETS = \
+	slides.ts \
 	pia-xhtml.ts
 
 ### Auxiliary tagsets: used internally..
@@ -38,7 +42,7 @@ AUX_TAGSETS = \
 	tsdoc.ts \
 	tsstrip.ts
 
-TAGSETS = $(MAIN_TAGSETS) $(AUX_TAGSETS)
+TAGSETS = $(MAIN_TAGSETS) $(AUX_TAGSETS) $(SPECIAL_TAGSETS)
 
 TAGSET_DOCS = $(TAGSETS:.ts=.html)
 TAGSET_TSOS = $(TAGSETS:.ts=.tso)
