@@ -1,0 +1,73 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agency start up file</title>
+</head><body>
+<h1>Photo_Album Agency start up file</h1>
+
+Any links found in this file will be requested by the agency at start-up.
+Most useful for doing things like initializing agents and the like.  Note
+that the agency currently makes no attempt to save state across sessions.
+
+<h2>Start up agents</h2>
+<dl> 
+  <dt> DOFS agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="DOFS">
+       </form>
+  <dt> Logo
+  <dd> <FORM ACTION="/Agency/install_agent.if" METHOD="POST">
+       <INPUT TYPE="submit" VALUE="Install">
+       name: <INPUT NAME="agent" VALUE="Logo">
+       </form>
+</dl>
+<h3>And Document-Oriented File Systems</h3>
+
+<dl>
+  <dt> dofs/My
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="My">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia">
+       </form>
+  <dt> dofs/PIA
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="PIA">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="&piaDIR;">
+       </form>
+  <dt> dofs/Root
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Root">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="/">
+       </form>
+  <dt> dofs/Home
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Home">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/">
+       </form>
+<dl>
+  <dt> <a name="Photo_Album">Photo Album</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photo_Album"><br>
+       <br>
+       <input type="submit" value="Install"><br>
+       </form>
+  <dt> Photos
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photos">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia/Photo_Album/">
+       <input type="submit" value="Install">
+       </form>
+       
+</dl>
+<hr>
+
+</body></html>
