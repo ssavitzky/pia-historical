@@ -699,6 +699,8 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /** Set an attribute. */
   public synchronized void attr(String name, SGML value) {
+    if( name == null ) return;
+
     name = name.toLowerCase();
     attributes.attr(name, value);
     if (name.equals("act-on") || name.equals("_act_on")) {
