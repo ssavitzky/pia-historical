@@ -72,7 +72,7 @@ public class TagsetProcessor extends TopProcessor {
   }
 
   public TagsetProcessor(Input in, Output out) {
-    super(in, null, out, null);
+    super(in, null, out, (Tagset)null);
     initializeEntities();
   }
 
