@@ -20,6 +20,7 @@ import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Element;
 import crc.sgml.TableElement;
+import crc.sgml.Tokens;
 
 import java.lang.Process;
 import java.lang.Runtime;
@@ -87,7 +88,10 @@ public class Calendar_day extends crc.interform.Handler {
   }
 
   protected SGML addEntryToTable(SGML table, String day, SGML content){
-    return new Text("Not implemented");
+    System.out.println("\n\nInside addEntryToTable\n");
+    Index foobar = new Index("5");
+    SGML r = foobar.lookup(table);
+    return r;
   }
 
 }
