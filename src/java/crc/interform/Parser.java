@@ -403,6 +403,7 @@ public class Parser extends Input {
     }
     if (last == '=') {
       buf.append("&" + ident + "=");
+      last = 0;
       return false;
     }
     next = new Entity(ident, last == ';');
