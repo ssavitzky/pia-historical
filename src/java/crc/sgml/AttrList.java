@@ -164,15 +164,15 @@ public class AttrList extends Tokens {
   ** Construction:
   ************************************************************************/
 
-  public Attrs () {
+  public AttrList () {
     super();
   }
 
-  public Attrs (SGML content) {
+  public AttrList (SGML content) {
     append(content);
   }
 
-  public Attrs (Attrs content) {
+  public AttrList (Attrs content) {
     append(content);
   }
 
