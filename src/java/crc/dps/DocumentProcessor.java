@@ -154,24 +154,29 @@ public class DocumentProcessor extends BasicProcessor implements TopContext
 
   DocumentProcessor() {
     initializeEntities();
+    top = this;
   }
 
   DocumentProcessor(boolean defaultEntities) {
     if (defaultEntities) initializeEntities();
+    top = this;
   }
 
   public DocumentProcessor(Input in, Output out) {
     super(in, null, out, null);
     initializeEntities();
+    top = this;
   }
 
   public DocumentProcessor(Input in, Output out, EntityTable ents) {
     super(in, null, out, ents);
+    top = this;
   }
 
   public DocumentProcessor(Input in, Context prev, Output out,
 			   EntityTable ents) {
     super(in, prev, out, ents);
+    top = this;
   }
 
 }
