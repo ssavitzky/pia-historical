@@ -6,6 +6,8 @@ PACKAGE=crc.dps.input
 TOPDIR=../../..
 
 FILES = \
+	ToDocument.java \
+	ToWriter.java
 
 include $(TOPDIR)/makefiles/file.make
 
