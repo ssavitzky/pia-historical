@@ -22,7 +22,6 @@ import crc.interform.Tagset;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
 
 import crc.ds.List;
@@ -235,21 +234,21 @@ public class Environment {
   ** Used by Actors:
   ************************************************************************/
 
-  /** Look up a file on behalf of the agent invoked on the given Token. */
-  public String lookupFile(String fn, Token it, boolean write) {
+  /** Look up a file on behalf of the agent invoked on the given SGML. */
+  public String lookupFile(String fn, SGML it, boolean write) {
     
     // === unimplemented()
     return fn;
   }
 
   /** Retrieve a URL. */
-  public InputStream retrieveURL(String url, Token it) {
+  public InputStream retrieveURL(String url, SGML it) {
     // === unimplemented()
     return null;
   }
 
   /** Return a suitable base directory for read or write operations. */
-  public String baseDir(Token it) {
+  public String baseDir(SGML it) {
     return "";
   }
 

@@ -6,7 +6,7 @@ package crc.interform;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
+import crc.sgml.Element;
 
 import crc.ds.Table;
 import crc.ds.List;
@@ -30,7 +30,7 @@ import java.util.Enumeration;
  *	extraneous text for more efficient loading.  The latter two
  *	will usually be used to generate .html and .ts files, respectively.  
  */
-public class Tagset extends Token {
+public class Tagset extends Element {
 
   /************************************************************************
   ** Global tagset table:
@@ -161,7 +161,7 @@ public class Tagset extends Token {
   }
 
   protected Tagset(Tagset t) {
-    super((Token)t);
+    super((Element)t);
     actors = new Table(t.actors);
     matching = new List(t.matching);
     entities = new Table(t.entities);

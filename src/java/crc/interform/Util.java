@@ -11,8 +11,6 @@ import crc.interform.Handler;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -132,7 +130,7 @@ public class Util extends crc.sgml.Util {
   }
 
   /** Extract a filename from a token. */
-  public static String getFileName(Token it, Interp ii, boolean write) {
+  public static String getFileName(SGML it, Interp ii, boolean write) {
     String file = getString(it, "file", it.attrString("name"));
     if (file == null) return null;
 

@@ -8,6 +8,8 @@ import crc.interform.Input;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Token;
+import crc.sgml.Element;
+import crc.sgml.Entity;
 import crc.sgml.Tokens;
 
 import java.io.InputStream;
@@ -360,7 +362,7 @@ public class Parser extends Input {
       buf.append("&"); 
       return false;
     }
-    next = Token.entityReference(ident, last == ';');
+    next = new Entity(ident, last == ';');
     if (last == ';') last = 0;
     return true;
   }
@@ -452,7 +454,7 @@ public class Parser extends Input {
       buf.append(ident);
       debug(ident);
 
-      Token it = new Token(ident);
+      Element it = new Element(ident);
       String a; StringBuffer v;
 
       // Now go after the attributes.
@@ -484,7 +486,7 @@ public class Parser extends Input {
 
       eatSpaces();
       if (last != '>') return false;
-      Token it = Token.endTagFor(ident);
+      Element it = Element.endTagFor(ident);
       it.incomplete((byte)-2);
       it.endTagRequired((byte)1);
       next = it;
@@ -500,18 +502,18 @@ public class Parser extends Input {
 	// it must be a comment
 	if (last != '>') eatUntil("-->", false);
 	if (last == '>') last = 0;
-	next = new Token("!--", "<!" + ident, buf, "-->");
+	next = new Element("!--", "<!" + ident, buf, "-->");
       } else {
 	// it's an SGML declaration: <!...>
 	// == Comments or occurrences of '>' inside will fail.
 	eatUntil('>', false);
 	if (last == '>') last = 0;
-	next = new Token("!", "<!" + ident, buf, ">");
+	next = new Element("!", "<!" + ident, buf, ">");
       }
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
     } else if (last == '>') {	// <>		empty start tag
-      next = new Token(ident);
+      next = new Element(ident);
       next.incomplete((byte)2);
     } else {			// not a tag.
       return false;

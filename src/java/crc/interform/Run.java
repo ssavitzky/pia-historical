@@ -25,6 +25,7 @@ import crc.sgml.SGML;
 import crc.sgml.Text;
 import crc.sgml.Token;
 
+import crc.pia.Pia;
 import crc.pia.Agent;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
@@ -144,9 +145,9 @@ public class Run  extends Environment {
       }
 
       crc.pia.Pia pia = crc.pia.Pia.instance();
-      ent("piaHOST", pia.properties().getProperty("PIA_HOST"));
-      ent("piaPORT", pia.properties().getProperty("PIA_PORT"));
-      ent("piaDIR", pia.properties().getProperty("PIA_DIR"));
+      ent("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
+      ent("piaPORT", pia.properties().getProperty(Pia.PIA_PORT));
+      ent("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
 
       ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " "));
       ent("entityNames", "");
@@ -204,22 +205,22 @@ public class Run  extends Environment {
   ************************************************************************/
 
   /** Look up an interform file on behalf of the agent invoked on the
-   *      given Token. */
-  public String lookupFile(String fn, Token it, boolean write) {
+   *      given SGML. */
+  public String lookupFile(String fn, SGML it, boolean write) {
     // === both agentIfRoot and findInterform(String) are unimplemented! 
     // === if (write) return Util.makePath(agent.agentIfRoot(), fn);
     return fn; // === return agent.findInterformFile(fn);
   }
 
   /** Retrieve a URL. */
-  public InputStream retrieveURL(String url, Token it) {
+  public InputStream retrieveURL(String url, SGML it) {
 
     // === unimplemented()
     return null;
   }
 
   /** Return a suitable base directory for read/write files. */
-  public String baseDir(Token it) {
+  public String baseDir(SGML it) {
     // === if (it.hasAttr("interform")) return agent.agentIfRoot();
     return agent.agentDirectory();
   }

@@ -8,9 +8,11 @@ import crc.interform.Input;
 import crc.interform.State;
 
 import crc.sgml.SGML;
+import crc.sgml.Element;
 import crc.sgml.Text;
 import crc.sgml.Token;
 import crc.sgml.Tokens;
+import crc.sgml.Entity;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -295,7 +297,7 @@ public class Interp extends State {
     for (State state=stack; state != null; state = state.stack) {
       if (state.it != null && (tag == null || tag.equals(state.it.tag()))) {
 	try {
-	  ((Token)state.it).attr(name, value);
+	  ((Element)state.it).attr(name, value);
 	} catch (Exception e) {}
 	return;
       }
@@ -317,15 +319,16 @@ public class Interp extends State {
     if (it == null || it == Token.empty) return it;
     if (it.isList()) {
       Tokens old = it.content();
-      if (old.nItems() == 0) return it;
+      if (old == null || old.nItems() == 0) return it;
       Tokens tl = new Tokens();
       for (int i = 0; i < old.nItems(); ++i) {
 	tl.append(expandEntities(old.itemAt(i)));
       }
       return tl;
-    } else if ("&".equals(it.tag())) {
-      SGML v = getEntity(it.entityName());
-      return (v == null)? it : v;
+    } else if (it instanceof Entity) {
+      debug("looking up &"+((Entity)it).entityName() + "; ");
+      SGML v = getEntity(((Entity)it).entityName());
+      return (v == null)? it : v.isText()? new Text(v) : v;
     } else {
       return it;
     }
@@ -337,9 +340,9 @@ public class Interp extends State {
    *	unchanged.  Start tags are expanded in place; others are copied.
    */
   SGML expandAttrs(SGML it) {
-    if (it.isElement() && !"&".equals(it.tag())) {
+    if (it.isElement()) {
       if (it.incomplete() > 0) {
-	Token t = it.toToken();	// should be a no-op.
+	Element t = Element.valueOf(it); // should be a no-op.
 	for (int i = 0; i < t.nAttrs(); ++i) 
 	  t.attrValueAt(i, expandEntities(t.attrValueAt(i)));
 	it = t;			// but just to make sure...
@@ -353,8 +356,7 @@ public class Interp extends State {
   }
 
   /** Expand entities in some SGML according to a given table.
-   *	The object is copied.  We really only have to worry about Tokens
-   *	(token lists) and Token elements with a tag of ampersand.
+   *	The object is copied recursively.
    */
   public static SGML expandEntities(SGML it, Table tbl) {
     if (it == null || it == Token.empty) return it;
@@ -366,14 +368,15 @@ public class Interp extends State {
 	tl.append(expandEntities(old.itemAt(i), tbl));
       }
       return tl;
-    } else if ("&".equals(it.tag())) {
-      SGML v = (SGML) tbl.at(it.entityName());
-      return (v == null)? it : v;
+    } else if (it instanceof Entity) {
+      SGML v = (SGML) tbl.at(((Entity)it).entityName());
+      return (v == null)? it : v.isText()? new Text(v) : v;
     } else if (it.isElement()) {
-      Token t = new Token();
-      for (int i = 0; i < t.nAttrs(); ++i) 
-	t.attrValueAt(i, expandEntities(t.attrValueAt(i), tbl));
-      t.content(expandEntities(t.content(), tbl));
+      Element itt = (Element)it;
+      Element t = new Element();
+      for (int i = 0; i < itt.nAttrs(); ++i) 
+	t.attrValueAt(i, expandEntities(itt.attrValueAt(i), tbl));
+      t.content(expandEntities(itt.content(), tbl));
       return t;
     } else {
       return it;
@@ -666,7 +669,7 @@ public class Interp extends State {
   /** Flush the interpretor's input queue, running it to completion.
    */
   public void flush() {
-    resolve(Token.endTagFor(null));
+    resolve(Element.endTagFor(null));
   }
 
 
@@ -831,9 +834,8 @@ public class Interp extends State {
     }
   }
 
-  /** Collect output in a Tokens list.  Use
-   *	<code>run().simplify()</code> or <code>run().toToken()</code>
-   *	as appropriate for simplifying the tree. */
+  /** Collect output in a Tokens list.  Simplify the result if
+   *	necessary using <code>run().simplify()</code>. */
   public Interp toTokens() {
     output = new Tokens();
     return this;
@@ -949,7 +951,7 @@ class InputList extends Input {
  * Input stack frame for a complete element
  */
 class InputExpand extends Input {
-  Token 	it;
+  Element 	it;
   int 		item;
   int		limit;
 
@@ -976,7 +978,7 @@ class InputExpand extends Input {
 
   public InputExpand(SGML t, Input p) {
     super(p);
-    it = t.toToken();
+    it = Element.valueOf(t);
     item  = -1;
     limit = it.nItems();
   }

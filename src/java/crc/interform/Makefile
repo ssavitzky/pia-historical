@@ -31,7 +31,7 @@ include $(TOPDIR)/makefiles/package.make
 ###	seems to cope with it and not build anything twice.
 
 Actor.class: Actor.java Interp.java Handler.java \
-	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java 
+	../sgml/Element.java ../sgml/Tokens.java ../sgml/SGML.java 
 
 Environment.class: Environment.java Interp.java ../ds/Table.java
 
@@ -41,16 +41,17 @@ Handler.class: Handler.java Actor.java Interp.java \
 	../sgml/SGML.java ../ds/Table.java
 
 Interp.class: Interp.java Actor.java Input.java State.java \
+	../sgml/Element.java ../sgml/Entity.java \
 	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java
 
-Parser.class: Parser.java Input.java \
+Parser.class: Parser.java Input.java ../sgml/Entity.java ../sgml/Element.java \
 	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java
 
 Run.class: Run.java Environment.java Interp.java ../ds/Table.java
 
 State.class: ../ds/List.java ../ds/Table.java
 
-Tagset.class: Tagset.java ../sgml/Token.java ../sgml/SGML.java
+Tagset.class: Tagset.java ../sgml/Element.java ../sgml/SGML.java
 
 TokenStream.class: TokenStream.java ../sgml/Tokens.java 
 

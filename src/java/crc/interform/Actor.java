@@ -8,6 +8,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
+import crc.sgml.Element;
 import crc.sgml.Token;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
@@ -28,7 +29,7 @@ import java.util.Enumeration;
  *	Those that are purely syntactic have the tag
  *	<code>-syntax-</code>, and do not have a <code>name</code>
  *	attribute.  */
-public class Actor extends Token {
+public class Actor extends Element {
 
   /** Cache for name attribute. */
   String name = null;
@@ -63,7 +64,7 @@ public class Actor extends Token {
 
     // Note that at this point it must be a Token.
 
-    Token itt = it.toToken();
+    Element itt = Element.valueOf(it);
 
     for (int i = 0; i < criteria.nItems(); i += 2) {
       String a = criteria.itemAt(i).toString();
@@ -201,7 +202,7 @@ public class Actor extends Token {
 
   /** Create an actor out of an SGML element (typically an &lt;actor&gt;
    * element) */
-  public Actor(Token it) {
+  public Actor(SGML it) {
     super("-actor-");
     initialize(it, null, null);
   }
@@ -216,7 +217,7 @@ public class Actor extends Token {
   }
 
   /** Create a syntax actor from the given token. */
-  public Actor(Token it, String syntax) {
+  public Actor(SGML it, String syntax) {
     super("-syntax-");
     if (syntax != null) attr(syntax, Token.empty);
     initialize(it, null, null);
@@ -243,7 +244,8 @@ public class Actor extends Token {
 
   /** Initialize from a Token (typically an &lt;actor&gt; element)
    *	and/or a name and tag. */
-  void initialize(Token it, String name, String tag) {
+  void initialize(SGML sgml, String name, String tag) {
+    Element it = Element.valueOf(sgml);
     //System.err.println("<"+tag+" name="+name+"> defined");
     if (it != null) {
       copyAttrsFrom(it);
