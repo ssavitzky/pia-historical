@@ -14,7 +14,7 @@ import java.util.Vector;
  * in this collection bears no relation to each other.
  */
 
-public class ArrayNodeList implements EditableNodeList {
+public class ArrayNodeList implements EditableNodeList, Serializable {
 
   /** The actual elements.  Should be protected, but the enumerator needs it. */
   Vector elements = new Vector();
@@ -24,18 +24,14 @@ public class ArrayNodeList implements EditableNodeList {
   }
 
   public ArrayNodeList(Node aNode){
-    if (aNode != null) elements.addElement(aNode);
+    if (aNode != null) append(aNode);
   }
 
   /**
    * Deep copy of another list.
    */
-  public ArrayNodeList(NodeList list)throws NullPointerException{
-    if( list == null ){
-      String err = ("Illegal list.");
-      throw new NullPointerException(err);
-    }
-    initialize( list );
+  public ArrayNodeList(NodeList list) {
+    if (list != null) append(list);
   }
 
   /**
@@ -143,17 +139,6 @@ public class ArrayNodeList implements EditableNodeList {
    */
   public long getLength(){ return size(); }
   
-  /**
-   * Deep copy
-   */
-  private void initialize( NodeList list ){
-    NodeEnumerator e = list.getEnumerator();
-
-    Node n = null;
-    for(n=e.getFirst(); n != null; n=e.getNext())
-      elements.addElement( n );
-  }
-
   /** Append a new element.
    */
   public void append(Node newChild) { elements.addElement(newChild); }

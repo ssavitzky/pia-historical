@@ -84,7 +84,7 @@ public abstract class AbstractNamedList implements Serializable {
        throws NoSuchNodeException
   {
     
-    if( index >= nameSpace.size() || index < 0){
+    if( index >= itemList.size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
