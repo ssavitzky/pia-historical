@@ -1122,7 +1122,7 @@ sub read_handle {
 	} elsif ($it->attr('process')) {
 	    ## Really just want to push the input stream.
 	    ## Requires an input stack that can handle streams.
-	    print "processing $fn\n" unless $main::quiet;
+	    print "processing $fn\n" if $main::verbose;
 	    $content = IF::Run::parse_html_file($fn);
 #	    $content = IF::Run::run_file($fn, $ii);
 	} else {
