@@ -732,6 +732,25 @@ sub end_it {
 %notP           = map { $_ => 1 } qw(p h1 h2 h3 h4 h5 h6 pre textarea);
 %notList	= map { $_ => 1 } qw(h1 h2 h3 h4 h5 h6);
 
+sub in_token {
+    my ($self) = @_;
+
+    ## Return the token we are inside of.
+    
+    return $self->dstack->[-1];
+}
+
+sub in_tag {
+    my ($self) = @_;
+
+    ## Return the tag of the token we are inside of.
+    
+    my $in_it = $self->dstack->[-1];
+    return '' unless ref $in_it;
+    return $in_it->tag;
+}
+
+
 sub implicit_end {
     my ($self, $tag) = @_;
 
