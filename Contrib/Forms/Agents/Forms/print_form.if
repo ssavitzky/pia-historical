@@ -16,7 +16,7 @@
 <write file=&printfile;><read interform file="show_signatures_simple.if"
 process></write>
 
-<os-command-output> html2ps < &fullprintfile; > &fullprintfile;.ps
+<os-command-output> /usr/local/bin/html2ps < &fullprintfile; > &fullprintfile;.ps
 </os-command-output>
 
 <if> <get form name=otherprinter></test>

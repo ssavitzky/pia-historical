@@ -212,7 +212,7 @@ this value:
  </then></if>
 <!-- Add input type="INT" name="conditions" size="2" value=&nconditions;
 condition(s). -->
-<!-- input type="SUBMIT" value="Show Forms (+data)" --> (temporarily disabled data reports)
+<input type="SUBMIT" value="Show Forms (+data)"> 
 <if><get form name=form><else><input type="SUBMIT" value="ListForms(quicker)" name=quicklist></else></if>
 </form>
 
