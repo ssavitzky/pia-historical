@@ -109,8 +109,8 @@ public class Table extends Hashtable implements Stuff {
   }
 
   public Table(Table t) {
-    this(t.size());
-    append(t);
+   this((t.size()>0)?t.size():1) ;
+   append(t);
   }
 
   public Table(List l) {
