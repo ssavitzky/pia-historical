@@ -190,6 +190,8 @@ public class Utilities {
   public static synchronized void copyFile( File src, File dst )
        throws IOException{
 
+    System.err.println("Substituting "+src.getPath() + "->" + dst.getPath());
+
     FileWriter destination = null;
     FileReader source      = null;
 
@@ -215,8 +217,12 @@ public class Utilities {
    *	and end them with <code>end</code>. 
    */
   public static synchronized void substFile( File src, File dst,
-					     Table subst, char beg, char end)
-       throws IOException{
+					     crc.sgml.Attrs subst, char beg, char end)
+       throws IOException
+  {
+
+    //System.err.println("Substituting "+src.getPath() + "->" + dst.getPath());
+    //System.err.println("Table = " +subst.toString());
 
     FileWriter destination = null;
     FileReader source      = null;
@@ -233,12 +239,10 @@ public class Utilities {
 	       i = source.read()) {
 	    buf.append((char)i);
 	  } 
-	  if (buf.length() != 0) {
-	    Object o = subst.at(buf.toString());
-	    if (o != null) {
-	      destination.write(o.toString());
-	      continue;
-	    }
+	  Object o = (buf.length() == 0)? null : subst.attr(buf.toString());
+	  //System.err.println("`"+beg+buf.toString()+end+"'->"+o);
+	  if (o != null) {
+	    destination.write(o.toString());
 	  } else {
 	    destination.write(beg);
 	    destination.write(buf.toString());
