@@ -105,7 +105,7 @@ public class Table extends Hashtable implements Stuff {
   }
 
   public Table(int initialCapacity) {
-    super(initialCapacity);
+    super(initialCapacity < 16? 16 : initialCapacity);
   }
 
   public Table(Table t) {
