@@ -537,6 +537,7 @@ public class GenericAgent extends AttrBase implements Agent {
        throws PiaRuntimeException{
     URL zurl = trans.requestURL();
 
+    crc.pia.Pia.instance().debug(this, "Running interform...");
     if (! respondToInterform( trans, zurl, res ) ){
       interformErr( trans, zurl );
       //throw new PiaRuntimeException(this, "respond",
