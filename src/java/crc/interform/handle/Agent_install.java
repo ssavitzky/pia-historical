@@ -47,7 +47,7 @@ public class Agent_install extends crc.interform.Handler {
       name = form.has("name")? form.at("name").toString() : null;
 
     if (name == null) {
-      ii.error(ia, "Name or Agent attribute must be supplied");
+      ii.error(ia, "name or agent attribute must be supplied");
       ii.replaceIt("name or agent attribute must be supplied");
       return;
     }
@@ -56,6 +56,7 @@ public class Agent_install extends crc.interform.Handler {
     try {
       crc.pia.agent.Agency agency = (crc.pia.agent.Agency) env.agent;
       agency.install(form); 
+      ii.message("Agent "+name+" installed.");
     } catch (Exception e) {
       ii.error(ia, "only works in the Agency agent");
     }
