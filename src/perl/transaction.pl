@@ -256,7 +256,7 @@ sub  get_request{
     ##	  complain if there's no destination to ask.
 
     my $destination=$self->to_machine;
-    return $self->error_response unless $destination;
+    return $self->error_response($destination) unless ref $destination;
     
     my $response=$destination->get_request($self);
 
@@ -270,7 +270,7 @@ sub  get_request{
 }
 
 sub error_response{
-    my($self)=@_;
+    my($self, $message)=@_;
 
     ## Return a "not found" error for a request with no destination.
 
@@ -280,7 +280,7 @@ sub error_response{
     
     print "Sending error respose for $url\n" if $main::debugging;
 
-    $response->content("Agency could not find $url\n");
+    $response->content("Agency could not find $url.\n$message\n");
 
     $response=TRANSACTION->new($response,
 			       $main::this_machine,  # there was no to_machine

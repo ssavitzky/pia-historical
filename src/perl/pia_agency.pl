@@ -56,19 +56,20 @@ sub act_on {
     my($self, $transaction, $resolver) = @_;
 
     print "Agency->act_on\n" if $main::debugging;
-    if ($transaction->is('agent_request')) {
-	my $url=$transaction->url;
-	return unless $url;
+    return unless $transaction->is('agent_request');
+    my $url=$transaction->url; 
+    return unless $url;
 
-	print "  Acting on agency request for $url\n" if $main::debugging;
+    print "  Acting on agency request for $url\n" if $main::debugging;
 
-	my $path=$url->path;
-	my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : $self->name();
+    my $path=$url->path;
+    my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : $self->name();
 
-	my $agent=$resolver->agent($name);
-	print "  no agent in $path\n" if ! defined $agent && $main::debugging;
-	next if not defined $agent;
-
+    my $agent=$resolver->agent($name);
+    if (not defined $agent) {
+	print "  no agent $name in $path\n" if  $main::debugging;
+	$transaction->to_machine("No agent called '$name' is running.");
+    } else {
 	my $class = ref($agent);
 	print "  found agent $name class $class in $path\n" if $main::debugging;
 	# modified default now request is set to virtual agent machine
