@@ -1146,6 +1146,13 @@ example).
   </define>
 </define>
 
+<h3>Debug</h3>
+<define element=debug handler>
+  <doc> Prints all children of the current node as an indented tree.
+  </doc>
+</define>
+
+
 <h2>Data Manipulation Elements</h2>
 
 <blockquote><em>
