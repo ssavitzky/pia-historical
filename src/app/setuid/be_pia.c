@@ -16,5 +16,6 @@ main(int argc, char** argv, char** env)
   }
   setgid(pw->pw_gid);	
   argv[0] = "-";
-  execve (pw->pw_shell, argv, env);	
+  /* pw->pw_shell doesn't work if it's set to "false" to prevent logins */
+  execve (/bin/bash, argv, env);	
 }
