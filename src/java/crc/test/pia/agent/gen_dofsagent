@@ -1,0 +1,16 @@
+HOST=$(uname -n)
+PORT=8888
+TEMP=input/dofsagent.txt
+
+cat > $TEMP << EOF
+GET http://$HOST:$PORT/popart/doc/foobar.if HTTP/1.0
+Date: Wed, 19 Sep 1994 11:12:31 GMT
+MIME-Version: 1.0
+Pragma: no-cache
+User-Agent: Mozilla/2.0 (X11; I; Linux 1.2.13 i586)
+Referer:  http://napa:2345/cgi-bin/getdirs.pl
+Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*
+
+EOF
+
+
