@@ -43,7 +43,7 @@ sub format{
     ##setup locals for various things
     local $footnotes=$$self{_footnotes};
     local $tableofcontents=$$self{_table_contents};
-    
+    local $authors=0;
 
     if(ref($html) eq "BOOK"){
 	return $self->format_book($html);
@@ -82,11 +82,19 @@ sub preprocess{
 sub header{
     my $self=shift;
     
-    my $string="\\documentstyle[psfig";
+#    my $string="\\documentstyle[psfig";
+#    $string.="," . $$self{_font_size} . "pt" if $$self{_font_size};
+#    $string.=",twocolumn" if $$self{_columns} == 2;
+
+#    $string.="]{" . $$self{_type} . "}\n";
+#use new latex style
+   my $string="\\documentclass[";
     $string.="," . $$self{_font_size} . "pt" if $$self{_font_size};
     $string.=",twocolumn" if $$self{_columns} == 2;
 
     $string.="]{" . $$self{_type} . "}\n";
+    $string.="\\usepackage{psfig}\n";
+
 $string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
     $string.="\\begin{document}\n"; 
 
@@ -208,7 +216,11 @@ sub latex_base{
     my $tag=shift;
     my $string;
     my $url_reference=$tag->attr('href');
-    $string.="\\author{$tag}\n";
+    if($authors < 1 ){
+	$string.="\\author{$url_reference}\n" if $url_reference;
+	$authors++;
+    }
+    $string.=latex($tag,1);
     return($string);
 }
 sub latex_title{
