@@ -341,4 +341,23 @@ public class Actor extends Token {
     // ===
   }
 
+  /************************************************************************
+  ** Error Messages:
+  ************************************************************************/
+
+  public void error(Interp ii, String message) {
+    String msg = errheader() + message;
+    System.err.println(msg);
+  }
+
+  public void unimplemented(Interp ii) {
+    error(ii, "unimplemented");
+  }
+
+  public String errheader() {
+    String s = "\nError: ";
+    if (tag() != null) s += "<" + tag() + "> ";
+    else if (name() != null) s += "<... " + name() + "> ";
+    return s;
+  }
 }
