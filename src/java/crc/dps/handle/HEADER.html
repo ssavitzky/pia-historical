@@ -4,7 +4,8 @@
 <a href="#files">[files]</a><p>
 
 This directory contains primarily tag-handler classes (implementations of
-crc.dps.Handler) for use as actor handles.  They are loaded dynamically. <p>
+<a href="../Handler.java"><code>crc.dps.Handler</code></a>) for use as actor
+handles.  Tag handler classes are loaded dynamically. <p> 
 
 <h2>Base Classes</h2>
 
@@ -13,21 +14,25 @@ crc.dps.Handler) for use as actor handles.  They are loaded dynamically. <p>
   <dd> Abstract base class for handlers.  
   <dt> <a href="BasicHandler.java">BasicHandler</a>
   <dd> Class for ``non-active'' node handlers. 
+  <dt> <a href="EntityHandler.java">EntityHandler</a>
+  <dd> Class for the handlers of
+       <a href="../active/ActiveEntity.java">ActiveEntity</a> nodes.
   <dt> <a href="GenericHandler.java">GenericHandler</a>
-  <dd> Class for the handlers of <em>active</em> nodes.  
+  <dd> Class for the handlers of
+       <a href="../active/ActiveElement.java">ActiveElement</a> nodes.  
   <dt> <a href="LegacyHandler.java">LegacyHandler</a>
   <dd> Class for handlers of ``legacy'' Actor nodes.  Processing is
        delegated to the corresponding handler in
-       <code>crc.interform.handle</code>. 
+       <a href="../../interform/handle"><code>crc.interform.handle</code></a>. 
 </dl>
 
-<h2>Handler Classes</h2>
+<h2>Tag Handler Classes</h2>
 
 Tag handler classes have <em>lowercase</em> names, with periods replaced by
 underscores, and hyphens elided by capitalizing the next letter.  If the name
 of a tag happens to match a Java keyword (for example, <code>if</code>) the
 string <code>Handler</code> must be suffixed to the name.  It is optional
-otherwise. <p>
+(but customary) otherwise. <p>
 
 The class names reflect the structure of the naming scheme:  period is used to
 separate a ``package'' or namespace from an associated name, while hyphen is
