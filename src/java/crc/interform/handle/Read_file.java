@@ -20,7 +20,7 @@ import java.util.Date;
 /** Handler class for &lt;read-file&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;read.file file="name" [interform [agent="agentName"]]
+ *	&lt;read.file file="name" [interform [agent="agentName"]] [quiet]
  *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
  *	      [base="path"] [process [tagset="name"] skip] &gt;
  * <dt>Dscr:<dd>
@@ -29,13 +29,14 @@ import java.util.Date;
  *	only INFO or HEAD.  For DIRECTORY, read names or LINKS, and
  *	return TAG or ul.  DIRECTORY can read ALL names or those that
  *	MATCH; default is all but backups.  Optionally PROCESS with
- *	optional TAGSET and optionally SKIP results.  
+ *	optional TAGSET and optionally SKIP results.  Optionally be
+ *	QUIET if file does not exist.
  *  </dl>
  */
 public class Read_file extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<read.file file=\"name\" [interform [agent=\"agentName\"]]\n" +
+    "<read.file file=\"name\" [interform [agent=\"agentName\"]] [quiet]\n" +
     "[info|head|directory [links] [tag=tag] [all|match=\"regexp\"]] \n" +
     "[base=\"path\"] [process [tagset=\"name\"]] >\n" +
 "";
@@ -46,13 +47,22 @@ public class Read_file extends crc.interform.Handler {
     "only INFO or HEAD.  For DIRECTORY, read names or LINKS, and\n" +
     "return TAG or ul.  DIRECTORY can read ALL names or those that\n" +
     "MATCH; default is all but backups.  Optionally PROCESS with\n" +
-    "optional TAGSET and optionally SKIP results.  \n" +
+    "optional TAGSET and optionally SKIP results.  Optionally be  \n" +
+    "QUIET if file does not exist. \n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    boolean info = it.hasAttr("info");
+    boolean quiet= it.hasAttr("quiet");
+
     String name = Util.getFileName(it, ii, false);
     if (name == null) {
-      ii.error(ia, "Must have non-null name or file attribute.");
+      // might be either non-existent InterForm, or missing attribute
+      String file = Util.getString(it, "file", it.attrString("name"));
+      if (file == null)
+	ii.error(ia, "Must have non-null name or file attribute.");
+      else if (!info && !quiet)
+	ii.error(ia, "File '"+file+"' does not exist.");
       ii.deleteIt();
       return;
     }
@@ -62,7 +72,6 @@ public class Read_file extends crc.interform.Handler {
 
     boolean exists = file.exists();
     boolean isdir  = file.isDirectory();
-    boolean info = it.hasAttr("info");
     boolean dir  = it.hasAttr("directory");
 
     SGML result = null;
