@@ -4,8 +4,8 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <h1>&agentName; captions</h1>
-<set name=directory>&FORM.directory;</set>
-<set name=files>&FORM.files;</set>
+<set entity name=mydirectory>&FORM.directory;</set>
+<set entity name=files>&FORM.files;</set>
 <if><test>&AGENT.rowsize;</test><else><set agent name=rowsize>6</set></else></if>
 <p>
 
@@ -15,14 +15,14 @@
 <tr>
 <repeat list="&files;">
 <if><test><get form name="&li;"></test><then>
-<td><a href="/Photos/&directory;/&li;.jpg"><img src="/Photos/&directory;/&li;.small.gif"><br><get form name="&li;"></get></a>
+<td><a href="/Photos/&mydirectory;/&li;.jpg"><img src="/Photos/&mydirectory;/&li;.small.gif"><br><get form name="&li;"></get></a>
 <set name=rowelements>&rowelements; 1</set>
 </then></if>
-<if><test><equal numeric>&rowelements; &AGENT.rowsize;</equal></test><then><TR></then></if>
+<if><test><equal numeric>&rowelements;&AGENT.rowsize;</equal></test><then><TR></then></if>
 </repeat>
 </table>
 
-<write file="&directory;/captions.html" append>
+<write file="&mydirectory;/captions.html" append>
 <h1>&FORM.captTitle;</h1>
 <table><set name=rowelements>0</set>
 <tr>
@@ -40,17 +40,17 @@ src="&li;.small.gif"><br><get form name="&li;"></get></a>
 <!-- also write cap file for each-->
 <repeat list="&files;">
 <if><test><get form name="&li;"></get></test>
-<then><write append file="&directory;/&li;.cap"><get form name=&li;></get>
+<then><write append file="&mydirectory;/&li;.cap"><get form name=&li;></get>
 </write></then>
 </if>
 </repeat>
 <write append file=&AGENT.master_list;>
-<a href="/Photos/&directory;/captions.html">&FORM.captTitle;</a>
+<a href="/Photos/&mydirectory;/captions.html">&FORM.captTitle;</a>
 </write>
 <hr>
  <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Apr 16 21:52:32 1997
+Last modified: Thu Apr 17 00:25:57 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
