@@ -11,6 +11,7 @@ INTERFACES = \
 	ActiveAttrList.java \
 	ActiveAttribute.java \
 	ActiveComment.java \
+	ActiveDeclaration.java \
 	ActiveDocument.java \
 	ActiveElement.java \
 	ActiveEntity.java \
@@ -24,6 +25,7 @@ BASE_CLASSES = \
 NODE_CLASSES = \
 	ParseTreeAttribute.java \
 	ParseTreeComment.java \
+	ParseTreeDecl.java \
 	ParseTreeElement.java \
 	ParseTreeEntity.java \
 	ParseTreePI.java \

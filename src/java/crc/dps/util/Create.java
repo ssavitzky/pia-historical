@@ -85,6 +85,8 @@ public class Create {
       return new ParseTreeEntity(name, (NodeList)null);
     case NodeType.ELEMENT:
       return new ParseTreeElement(name, null);
+    case NodeType.DECLARATION:
+      return new ParseTreeDecl(name, null, data);
     default:
       return new ParseTreeComment("Undefined type " + nodeType
 				  + " name=" + name + " data=" + data);
