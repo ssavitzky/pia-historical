@@ -185,6 +185,18 @@ public class Default extends StreamingContent {
       cWriter = streamToWriter(stream);
    }
 
+    /** Needed by annotatedhtml.  Need to clone the
+     * content class and get access to the sink
+     */
+    public OutputStream getSink() {
+	return sink;
+    }
+
+    public InputStream getSource() {
+	return source;
+    }
+
+
    /**
     * unset sink -- output complete
     */
