@@ -17,15 +17,27 @@
 # ----------
 #
 # This make file defines the following targets:
-# all:	 to build the class files from the java files.
-# clean: to clean all sub packages
-# doc:   to build the appropriate documentation files from the source
-# The 'doc' target uses DESTDIR variable that should point to the absolute 
-# path of the target directory (in which doc files will be created).
+# all:	   to build the class files from the java files.
+# clean:   to clean all sub packages
+# doc:     to build the appropriate documentation files from the source
+# alldoc:  to build all the documentation at once
 
 # <steve@crc.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
 #	This has serious problems when you're trying to use source control.
+
+CLASSDIR= $(TOPDIR)/classes
+PIADIR  = $(TOPDIR)/../../..
+DOCDIR  = $(TOPDIR)/Doc
+ADOCDIR = $(PIADIR)/Doc/Manuals/Internal/JavaDoc
+LIBDIR  = $(TOPDIR)/../../../lib/java
+BINDIR  = $(TOPDIR)/../../../bin
+
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
+##javac wrapper should find these  .. specify explicitly if problem
+ #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
+#sun 1.0.2 location
+JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
 
 all::
 	for p in `ls -d $(PACKAGES)`; do \
@@ -33,6 +45,11 @@ all::
 		(cd $$p; make TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
 	done
 
+# non-recursive doc.
+alldoc::
+	javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) $(PACKAGENAMES)
+
+# Recursive doc -- generates all the class files but damages the indexes
 doc::
 	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'doc ' $(PACKAGE).$$p; \

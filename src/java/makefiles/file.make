@@ -53,7 +53,6 @@ doc::	$(DOCDIR)
 	@echo $(DOCDIR) made
 
 $(DOCDIR):
-
 	mkdir $(DOCDIR)
 
 doc::
