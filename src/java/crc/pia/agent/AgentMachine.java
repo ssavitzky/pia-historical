@@ -111,7 +111,10 @@ public class AgentMachine extends Machine {
       }
     }else{
       request.errorResponse(HTTP.NOT_FOUND,
-			    "Unable to find agent to handle request");
+			    "Unable to find agent to handle request. "
+			    + "See the <a href=\"/Agency/\">"
+			    + "Agent Index</a> for a complete list."
+			    );
     }
 
   }
