@@ -123,6 +123,7 @@ public abstract class AbstractNode implements Node, Cloneable {
       n.setNext( null );
       n.setHead( null );
       n.setTail( null );
+      n.setChildCount( 0 );
       return n;
     }catch(CloneNotSupportedException e){
       return null;
@@ -162,27 +163,6 @@ public abstract class AbstractNode implements Node, Cloneable {
     return "-->";
   }
 
-
-  /**
-   * printChildren depth first.
-   * This should be call at the root node.
-   */ 
-  public  void printChildren(String indent){
-    AbstractNode child = null;
-
-    Report.debug(indent+ "<" + toString() + ">");
-    if( hasChildren() ){
-       NodeEnumerator enum = getChildren().getEnumerator();
-       child =  (AbstractNode)enum.getFirst();
-       while( child != null ) {
-	 child.printChildren( indent + "    ");
-	 child = (AbstractNode)enum.getNext();
-       }
-    }
-    Report.debug(indent + "</" + toString()+ ">");
-  }
-
-
   /**************************************
    * protected functions
    */
@@ -204,7 +184,7 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected synchronized AbstractNode getHead(){ return head; }
   protected synchronized AbstractNode getTail(){ return tail; }
   protected synchronized int getChildCount(){ return childCount; }
-
+  protected synchronized void setChildCount(int count){ childCount = count; }
 
   /*******************************************************************
    * Implementing insert, remove, and replace child node.
