@@ -14,9 +14,6 @@ public interface DocumentType extends Node {
   void setInternalSubset(NodeList internalSubset);
   NodeList getInternalSubset();
 
-  void setGeneralEntities(NamedNodeList generalEntities);
-  NamedNodeList getGeneralEntities();
-  
   void setNotations(NamedNodeList notations);
   NamedNodeList getNotations();
 
