@@ -2,11 +2,11 @@
 ###	$Id$
 ###
 ###	The Interform Interpretor parses a string or file, evaluating any 
-###	Interform Agents it runs across in the process.  Evaluation is
+###	Interform Actors it runs across in the process.  Evaluation is
 ###	usually done concurrently with parsing because new tags and
 ###	entities can be defined at any time.  However, it is also
 ###	possible to execute a saved parse tree.  This is a good thing,
-###	because agents are *stored* as parse trees.
+###	because actors are *stored* as parse trees.
 
 package IF::II;
 
@@ -44,7 +44,7 @@ push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 ###	either start tags, end tags, declarations (e.g. <!DOCTYPE...>),
 ###	comments, or text.  It is a subclass of HTML::Parser.
 ###
-###	A set of ``agents'' may be provided which are matched against
+###	A set of ``actors'' may be provided which are matched against
 ###	tags and other features of items in the token stream.
 ###
 ###   Parse Stack:
@@ -145,44 +145,44 @@ sub token {
 sub handlers {
     my ($self, $v) = @_;
 
-    ## Handler agents for the current token
+    ## Handler actors for the current token
 
     $self->state->{'_handlers'} = $v if defined($v);
     return $self->state->{'_handlers'};
 }
 
-sub agents {
+sub actors {
     my ($self, $v) = @_;
 
-    ## agents
-    ##	  Should be a reference to a hash table of Interform Agent, 
+    ## actors
+    ##	  Should be a reference to a hash table of Interform Actor, 
     ##	  keyed by name.  Basically a symbol table.  This is not  
-    ##	  defined until we start defining local agents. 
+    ##	  defined until we start defining local actors. 
 
-    $self->state->{'_agents'} = $v if defined($v);
-    $self->state->{'_agents'};
+    $self->state->{'_actors'} = $v if defined($v);
+    $self->state->{'_actors'};
 }
 
-sub active_agents {
+sub active_actors {
     my ($self, $v) = @_;
 
-    ## active_agents:
-    ##	Should be a reference to a hash table of agents registered as 
+    ## active_actors:
+    ##	Should be a reference to a hash table of actors registered as 
     ##  associated with particular tags.
 
-    $self->state->{'_active_agents'} = $v if defined($v);
-    $self->state->{'_active_agents'};
+    $self->state->{'_active_actors'} = $v if defined($v);
+    $self->state->{'_active_actors'};
 }
 
-sub passive_agents {
+sub passive_actors {
     my ($self, $v) = @_;
 
-    ## passive_agents:
-    ##	Should be a reference to an array of agents that might be interested
+    ## passive_actors:
+    ##	Should be a reference to an array of actors that might be interested
     ##	in objects going by.
 
-    $self->state->{'_passive_agents'} = $v if defined($v);
-    $self->state->{'_passive_agents'};
+    $self->state->{'_passive_actors'} = $v if defined($v);
+    $self->state->{'_passive_actors'};
 }
 
 sub syntax {
@@ -212,7 +212,7 @@ sub entities {
 
     ## entity table:
     ##	  A hash table that defines the current set of entities.
-    ##	  Unlike variables and like agents, entities are rarely rebound.
+    ##	  Unlike variables and like actors, entities are rarely rebound.
 
     $self->state->{'_entities'} = $v if defined($v);
     $self->state->{'_entities'};
@@ -464,7 +464,7 @@ sub process_it {
 
     ## Process an Interform Token parse tree.  
     ##	  This is not the same as simply pushing it on the output.
-    ##	  The idea is that this is the body of an agent, so we have to
+    ##	  The idea is that this is the body of an actor, so we have to
     ##	  run it through the interpretor again in the current context.
     ##	  If nothing is active, this has the effect of making a deep
     ##	  copy of the original tree.
@@ -491,8 +491,8 @@ sub process_it {
 ###	stepping through the content of a token without excessive copying.
 ###	When the end of the token list is reached, the entire list is returned.
 ###
-###	"tag" might actually be a reference to an agent, and additional state
-###	can be provided.  The agent's end_input method is called.
+###	"tag" might actually be a reference to an actor, and additional state
+###	can be provided.  The actor's end_input method is called.
 
 sub next_input {
     my ($self) = @_;
@@ -551,6 +551,24 @@ sub push_into {
 	}
 	return IF::IT->new($it->tag, @$attrs);
     }
+}
+
+sub expand_attrs {
+    my ($self, $it) = @_;
+
+    ## Expand entities in the attributes of an empty tag
+
+    return $it unless ref($it);
+    my $expanded = 0;
+    my $attrs = [];
+    my $list = $it->attr_names;
+    for (@$list) {
+	my $v = $it->{$_};
+	my $ev = $self->expand_entities($v);
+	push(@$attrs, $_, $ev);
+	++ $expanded;
+    }
+    return $expanded? IF::IT->new($it->tag, @$attrs) : $it;
 }
 
 sub need_start_tag {
@@ -673,12 +691,13 @@ sub end_it {
 ###	tag, or completed subtree and ``does the right thing'' with it.
 ###	This means:
 ###	   1.	push or pop the parse stack
-###	   2.	apply any interested agents
+###	   2.	apply any interested actors
 ###	   3.	put the token in the right place.
 ###
 
 sub resolve {
-    my ($self, $it, $incomplete) = @_;
+    my $self, $it; local $incomplete;
+    ($self, $it, $incomplete) = @_;
 
     ## Do the right thing to an incoming token.  
     ##	  $incomplete = 0 -- complete subtree
@@ -708,7 +727,7 @@ sub resolve {
 	if ($incomplete > 0) {
 
 	    ## Start tag: 
-	    ## check for interested agents.
+	    ## check for interested actors.
 	    ##	keep track of any that register as handlers.
 
 	    $self->handlers([]);	# Clear the handler list.
@@ -724,18 +743,18 @@ sub resolve {
 	    push(@$cstack, \%newstate);	# Push it on the control stack
 	    push(@$dstack, $it);	# push token on the data stack
 
-	    $self->check_for_interest($it, 1) unless $self->quoting;
+	    $self->check_for_interest($it, 1);
 
-	    ## See if any interested agent modified the token 
+	    ## See if any interested actor modified the token 
 
 	    $it = $self->token;	# might have been changed.
 	    if (!defined($it) || (! ref($it) && $it eq '')) {
-		## Some agent has deleted the token.
+		## Some actor has deleted the token.
 		print " deleted " if $main::debugging > 1;
 		$self->state(pop(@$cstack));
 		pop(@$dstack);
 	    } elsif (!ref($it) || !$it->status) {
-		## Some agent has marked the token as finished
+		## Some actor has marked the token as finished
 		##	so pop it and go 'round again.
 		print " finished " if $main::debugging > 1;
 		$self->state(pop(@$cstack));
@@ -751,12 +770,14 @@ sub resolve {
 	    }
 	} elsif ($incomplete <= 0) {
 	    ## End tag or complete token (already popped)
-	    ## 	check for interested agents and handler actions.
+	    ## 	check for interested actors and handler actions.
 
-	    $self->check_for_interest($it) unless $self->quoting;
+	    $self->check_for_interest($it);
 	    $self->check_for_handlers($it);
 
 	    $it = $self->token;	# might have been changed or even deleted.
+	    ## === should really get the status at this point. 
+	    $incomplete = 0 unless ref($it);
 	    if (defined($it) && $it ne '') {
 		$self->push_it($it) if $self->parsing;
 		$self->pass_it($it, $incomplete) if $self->passing;
@@ -782,6 +803,7 @@ sub resolve {
 		$incomplete = 1;
 	    } else {
 		## Complete token which is either empty or quoted
+		$it = $self->expand_attrs($it) if ref($it) && ! $self->quoting;
 		$incomplete = 0;
 	    }
 	} until ($it);
@@ -844,28 +866,29 @@ sub push_it {
 
 #############################################################################
 ###
-### Checking for agents:
+### Checking for actors:
 ###
 
 sub check_for_interest {
     my ($self, $it, $incomplete) = @_;
     my $a;
-    my $passive_agents = $self->passive_agents;
+    my $passive_actors = $self->passive_actors;
+    my $quoting = $self->quoting;
 
-    foreach $a (@$passive_agents) {
-	if ($a->matches($it, $self, $incomplete)) {
-	    $a->act_on($it, $self, $incomplete);
-	    print "    agent ".$a->name." is interested\n" if $main::debugging>1;
+    foreach $a (@$passive_actors) {
+	if ($a->matches($it, $self, $incomplete, $quoting)) {
+	    $a->act_on($it, $self, $incomplete, $quoting);
+	    print "    actor ".$a->name." is interested\n" if $main::debugging>1;
 	}
     }
     my $t = ref($it)? $it->tag : '';
-    if (defined($a = $self->active_agents->{$t})) {
-	$a->act_for($it, $self, $incomplete);
-	print "    agent ".$a->name." acted for it\n" if $main::debugging>1;
+    if (defined($a = $self->active_actors->{$t})) {
+	$a->act_for($it, $self, $incomplete, $quoting);
+	print "    actor ".$a->name." acted for it\n" if $main::debugging>1;
     }
     return unless ref($it);
     if ($it->is_active) {
-	$it->act($self, $incomplete);
+	$it->act($self, $incomplete, $quoting);
 	print "    token ".$it->tag." is active\n" if $main::debugging>1;
     }
 }
@@ -876,7 +899,7 @@ sub check_for_handlers {
     my $a;
 
     while ($a = shift @$handlers) {
-	print "    agent ".$a->name." handles it\n" if $main::debugging>1;
+	print "    actor ".$a->name." handles it\n" if $main::debugging>1;
 	$a->handle($it, $self);
     }
 }
@@ -885,13 +908,13 @@ sub check_for_handlers {
 
 #############################################################################
 ###
-### Routines called by agents:
+### Routines called by actors:
 ###
 
 sub add_handler {
-    my ($self, $agent) = @_;
+    my ($self, $actor) = @_;
     my $handlers = $self->handlers;
-    push(@$handlers, $agent);
+    push(@$handlers, $actor);
 }
 
 sub complete_it {
@@ -907,23 +930,23 @@ sub complete_it {
     }
 }
 
-sub open_agent_context {
+sub open_actor_context {
     my ($self, $active, $passive) = @_;
 
-    ## Start using a new set of agents.
+    ## Start using a new set of actors.
     ##	  The old set are copied unless $active and $passive are
     ##	  supplied.
 
-    $active = $self->active_agents unless defined $active;
-    $passive = $self->passive_agents unless defined $passive;
+    $active = $self->active_actors unless defined $active;
+    $passive = $self->passive_actors unless defined $passive;
 
-    my %newactive = %$active;	# copy the active agent table
-    $self->state->{_active_agents} = (\%newactive);
+    my %newactive = %$active;	# copy the active actor table
+    $self->state->{_active_actors} = (\%newactive);
 
-    my @newpassive = @$passive;	# copy the passive agent list
-    $self->state->{_passive_agents} = (\@newpassive);
+    my @newpassive = @$passive;	# copy the passive actor list
+    $self->state->{_passive_actors} = (\@newpassive);
 
-    $self->state->{_agents} = {}; # make a new agent symbol table
+    $self->state->{_actors} = {}; # make a new actor symbol table
 }
 
 
@@ -945,26 +968,26 @@ sub define_entity {
     $self->state->{_entities}->{$name} = $value;
 }
 
-sub define_agent {
-    my ($self, $agent, @attrs) = @_;
+sub define_actor {
+    my ($self, $actor, @attrs) = @_;
 
-    ## Define an agent local to the current interpretor.
+    ## Define an actor local to the current interpretor.
     ##	  Exactly what to do with names and tags is unsettled so far.
 
-    $self->open_agent_context unless defined $self->agents;
-    if (! ref($agent)) {
-      $agent = IF::IA->new($agent, @attrs)
+    $self->open_actor_context unless defined $self->actors;
+    if (! ref($actor)) {
+      $actor = IF::IA->new($actor, @attrs)
     }
 
-    my $name = $agent->attr('name');
-    my $active = $agent->attr('active');
+    my $name = $actor->attr('name');
+    my $active = $actor->attr('active');
 
     if ($active) {
-	$self->active_agents->{$name} = $agent;
+	$self->active_actors->{$name} = $actor;
     } else {
-	$self->passive_agents->push($agent);
+	$self->passive_actors->push($actor);
     }
-    $self->agents->{$name} = $agent;
+    $self->actors->{$name} = $actor;
 }
 
 sub parse_it {
@@ -984,7 +1007,8 @@ sub quote_it {
 sub replace_it {
     my ($self, $it) = @_;
 
-    $self->token($it);
+    $self->state->{_token} = ($it);	# handles undefined
+    $incomplete = 0;
 }
 
 sub delete_it {

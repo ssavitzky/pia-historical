@@ -8,7 +8,8 @@
 ###
 
 package IF::IT;
-
+use Exporter;
+push(@ISA, Exporter);
 
 #############################################################################
 ###
@@ -295,7 +296,6 @@ sub as_string {
     ##	  to a string.
 
     my $string = '';
-
     $string .= $self->starttag unless $contentOnly;
 
     my $content = $self->content;
@@ -319,6 +319,32 @@ sub content_string {
     ## Returns the content as a string
 
     return $self->as_string(1);
+}
+
+sub content_text {
+    my ($self) = @_;
+
+    ## Returns only the text part of the content.  
+    ##	  All markup is stripped off.
+
+    my $string = '';
+    my $content = $self->content;
+    if (defined $content) {
+	for (@$content) {
+	    if (ref($_)) { $string .= $_ -> content_text; }
+	    else         { $string .= $_; }
+	}
+    }
+    return $string;
+}
+
+sub is_text {
+    my ($self) = @_;
+
+    ## Returns true if the content is a single string.
+
+    my $content = $self->content;
+    return @$content == 1 && !ref($content->[0]);
 }
 
 sub content_token {
@@ -488,6 +514,7 @@ sub needs_end_tag {
     my ($self, $interp) = @_;
 
     return 0 unless $self->tag;
+    return 0 if $self->{_endless};
     (defined $empty_elements{$self->tag})? 0 : 1;
 }
 

@@ -1,7 +1,7 @@
 ###### Run the Interform Interpretor
 ###	$Id$
 ###
-###	This module contains the routines that actuall *run* the
+###	This module contains the routines that actually *run* the
 ###	InterForm Interpretor on inputs of various sorts.
 ###
 
@@ -10,6 +10,7 @@ package IF::Run;
 use IF::II;
 use IF::IA;
 use IF::IT;
+use IF::Actors;
 
 
 #############################################################################
@@ -20,21 +21,13 @@ use IF::IT;
 ###	most common kinds of interpretors and parsers.
 ###
 
-@if_defaults = (
-	     'streaming' => 1,	# output is a string
-	     'passing' => 1,	# pass completed tags to the output.
-	     'syntax' => $IF::IA::syntax,
-	     'active_agents' => $IF::IA::active_agents,
-	     'passive_agents' => $IF::IA::passive_agents,
-	     );
-
 @html_defaults = (
 	     'streaming' => 0,	# output is a tree
 	     'parsing' => 1,	# push completed tags onto their parent.
 	     'passing' => 0,
 	     'syntax' => $IF::IT::syntax,
-	     'active_agents' => {},
-	     'passive_agents' => [],
+	     'active_actors' => {},
+	     'passive_actors' => [],
 	     );
 
 local $entities;
@@ -57,7 +50,7 @@ sub run_file {
     print "\nrunning file $file\n" if $main::debugging;
 
     if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
+	$interp = IF::II->new(@IF::Actors::if_defaults);
 	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
@@ -75,7 +68,7 @@ sub run_string {
     ##	  The result is a string.
 
     if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
+	$interp = IF::II->new(@IF::Actors::if_defaults);
     } elsif (! ref($interp)) {
 	shift;
 	$interp = IF::II->new(@_);
@@ -92,7 +85,7 @@ sub run_tree {
     ##	  The result is a string.
 
     if (!defined $interp) {
-	$interp = IF::II->new(@if_defaults);
+	$interp = IF::II->new(@IF::Actors::if_defaults);
     } elsif (! ref($interp)) {
 	shift;
 	$interp = IF::II->new(@_);
@@ -111,7 +104,7 @@ sub parse_html_file {
     my ($file, $interp) = @_;
 
     ## Run the interpretor parser over a file in ``parser mode''.
-    ##	  The result is a parse tree.  No agents are used.
+    ##	  The result is a parse tree.  No actors are used.
 
     print "\parsing file $file\n" if $main::debugging;
 
@@ -130,7 +123,7 @@ sub parse_html_string {
     my ($input, $interp) = @_;
 
     ## Run the interpretor parser over a string in ``parser mode''.
-    ##	  The result is a parse tree.  No agents are used.
+    ##	  The result is a parse tree.  No actors are used.
 
     if (!defined $interp) {
 	$interp = IF::II->new(@html_defaults);
@@ -145,7 +138,7 @@ sub parse_html_string {
 
 #############################################################################
 ###
-### Evaluating Interforms on behalf of PIA agents:
+### Evaluating Interforms on behalf of PIA Agents:
 ###
 
 local $agent, $request, $resolver;
@@ -190,13 +183,17 @@ sub if_entities {
     my $url = $request->url if defined $request;
     my $path = $url->path if defined $url;
     my $query = $url->query if defined $url;
+    $file =~ m:([^/]*)$:;
+    my $fn = $1;
 
     my $agentNames = join(' ', sort($resolver->agent_names));
 
     my $ents = {
 	'agentName' 	=> $agent->name,
-	'fileName' 	=> $file,
-	'url'		=> $url,
+	'fileName' 	=> $fn,
+	'filePath' 	=> $file,
+
+	'url'		=> $url->as_string,
 	'urlQuery'	=> $query,
 	'urlPath'	=> $path,
 
@@ -206,6 +203,8 @@ sub if_entities {
 	'piaPORT'	=> $main::PIA_PORT,
 
 	'agentNames'	=> $agentNames,
+	'entityNames'   => '',
+	'actorNames'	=> join(' ', sort( keys %$IF::Actors::actors)),
 
 	'second'	=> $sec,
 	'minute'	=> $min,
@@ -221,10 +220,11 @@ sub if_entities {
 	'time'		=> $time,
     };
 
+    $ents->{'entityNames'} = join(' ', sort keys %$ents);
     $ents;
 }
 
-### === These really ought to be in Agent.
+### === These really ought to be in Agent
 
 sub agent {
     return $agent;
