@@ -15,8 +15,8 @@ it describes:</p><ul><li><a href = "#Files">Agent files</a></li>
 <li><a href = "#Naming">Agent naming</a></li>
 <li><a href = "#Tips">Tips on agent creation</a></li></ul><p>The
 extended HTML tags needed to create agents are described in the <a
-    href = "pia-xhtml.html">PIA XHTML Manual</a>.</p><p>Source code
-for sample agents is in the <a href = "../../../Agents">Agents</a> directory
+    href = "Manuals/InterForm/Tagset/pia-xhtml.html">PIA XHTML Manual</a>.</p><p>Source code
+for sample agents is in the <a href = "../Agents">Agents</a> directory
 at the top-level of the PIA's installation tree. Feel free to use
 these files as a source of ideas and examples, and as a basis for
 creating new agents.</p><h2><a name = "Files"></a>Agent Files</h2><p>This
@@ -146,7 +146,7 @@ or of mixed icons and text.</p><h3>No Nasty Surprises</h3><p>It
 is perfectly possible to put a query string into a link, and so
 have an ordinary-looking link or icon that is equivalent to submitting
 a form. In a PIA this can have drastic effects (there is, for example,
-an XHTML form you can use to <a href = "/Agency/shutdown.if">shut
+an XHTML form you can use to <a href = "/Admin/shutdown.if">shut
 down the PIA</a>).</p><p>Many users experiment, clicking links at
 random. You may want to use a robot to build an index of your PIA,
 or to identify broken links. It's a good idea to make any irreversible
@@ -204,7 +204,7 @@ the value <code>~/.pia</code>. </p><ol><li>Create a file, <tt>~/.pia/Agents/Hist
 Web pages visited Today&#60;/h2></tt><br><tt>&#60;include src="&#38;year;/&#38;month;/&#38;day;.html"></tt><br><tt>&#60;/body>&#60;/html></tt></li>
 <li>Save the file <code>today.xh</code>. </li>
 <li>Use your browser to view the URL <code><a
-    href = "http://jaguar.crc.ricoh.com:8888/History/today.xh">/History/today.xh</a></code> If
+    href = "/History/today.xh">/History/today.xh</a></code> If
 you have been using your agency as a proxy to view external documents,
 you should get a listing of all places you visited today.</li></ol><h5>What
 Is Going On?</h5><p>To understand the workings of this interform,
