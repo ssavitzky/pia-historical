@@ -405,10 +405,9 @@ public class Default extends StreamingContent {
   protected void insertAdditions(){
 
     // if there's something at 0, try to insert it
-    if(additions.at("0") != null) {
+    if(additions != null && additions.at("0") != null) {
       insertAddition(0);
     }
-    
    
   }
 
