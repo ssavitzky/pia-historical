@@ -7,10 +7,8 @@ package crc.dps.util;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
-import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 import crc.dom.Entity;
 import crc.dom.NodeEnumerator;
 

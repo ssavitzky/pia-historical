@@ -9,10 +9,8 @@ import crc.dom.Element;
 import crc.dom.Text;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
-import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 import crc.dom.Entity;
  
 import crc.dps.*;

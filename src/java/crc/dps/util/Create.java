@@ -7,10 +7,8 @@ package crc.dps.util;
 import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
-import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
 import crc.dps.NodeType;
@@ -37,12 +35,12 @@ public class Create {
 
   /** Create a singleton NodeList containing a given node. */
   public static NodeList createNodeList(Node aNode) {
-    return new ArrayNodeList(aNode);
+    return new ParseNodeArray(aNode);
   }
 
   /** Create a singleton NodeList containing a given String. */
   public static NodeList createNodeList(String aString) {
-    return new ArrayNodeList(new ParseTreeText(aString));
+    return new ParseNodeArray(new ParseTreeText(aString));
   }
 
   /** Create a NodeList by splitting a string on whitespace. */
@@ -55,7 +53,7 @@ public class Create {
    */
   public static NodeList createNodeList(Enumeration enum, String sep) {
     boolean iws = (sep != null) && Test.isWhitespace(sep);
-    ArrayNodeList nl = new ArrayNodeList();
+    ParseNodeArray nl = new ParseNodeArray();
     while (enum.hasMoreElements()) {
       Object o = enum.nextElement();
       if (o instanceof Node) { nl.append((Node)o); }

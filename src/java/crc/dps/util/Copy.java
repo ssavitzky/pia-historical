@@ -8,10 +8,8 @@ import crc.dom.Node;
 import crc.dom.Element;
 import crc.dom.NodeList;
 import crc.dom.NodeEnumerator;
-import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
-import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
 import crc.dps.NodeType;
@@ -121,49 +119,6 @@ public class Copy {
     }
   }
 
-  /** Create a shallow copy of a given Node using a given DOMFactory. 
-   */
-  public static Node copyNode(Node node, DOMFactory f) {
-    int nodeType = node.getNodeType();
-    switch (nodeType) {
-    case NodeType.ELEMENT: 
-      crc.dom.Element e = (crc.dom.Element)node;
-      return f.createElement(e.getTagName(), e.getAttributes());
-
-    case NodeType.TEXT:
-      crc.dom.Text t = (crc.dom.Text)node;
-      crc.dom.Text nt = f.createTextNode(t.getData());
-      nt.setIsIgnorableWhitespace(t.getIsIgnorableWhitespace());
-      return nt;
-
-    case NodeType.COMMENT: 
-      crc.dom.Comment c = (crc.dom.Comment)node;
-      return f.createComment(c.getData());
-
-    case NodeType.PI:
-      crc.dom.PI pi = (crc.dom.PI)node;
-      return f.createPI(pi.getName(), pi.getData());
-
-    case NodeType.ATTRIBUTE: 
-      crc.dom.Attribute attr = (crc.dom.Attribute)node;
-      return f.createAttribute(attr.getName(), attr.getValue());
-
-    default: 
-      return null;		// node.shallowCopy();
-    }
-  }
-
-  /** Create a deep copy of a given Node using a given DOMFactory. 
-   *	Recursively copy the children.
-   */
-  public static Node deepCopyNode(Node node, DOMFactory f) {
-    Node newNode = copyNode(node, f);
-    if (node.hasChildren()) {
-      appendCopies(node.getChildren(), newNode, f);
-    }
-    return newNode;
-  }
-
   /************************************************************************
   ** Appending (copying into children):
   ************************************************************************/
@@ -231,19 +186,6 @@ public class Copy {
       parentNode.addChild((ActiveNode)node);
     }
     return parentNode;
-  }
-
-  /** Append copies of the nodes in a NodeList to a given parent.
-   *
-   * @see #appendNode
-   */
-  public static void appendCopies(NodeList aNodeList, Node parent,
-				  DOMFactory f) {
-    if (aNodeList == null) return;
-    NodeEnumerator e = aNodeList.getEnumerator();
-    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      appendNode(deepCopyNode(node, f), parent);
-    }
   }
 
 }
