@@ -354,6 +354,11 @@ public abstract   class  StreamingContent  extends GenericContent {
 	 moreToRead = false;
        }
 
+       if( headers().contentLength() >0 && headers().contentLength() == totalIn){
+       	 exitState(READING);
+       	 moreToRead=false;
+       }
+
        if(length > 0 && moreToRead){
 	 try{
 	   len = readData(length);      
