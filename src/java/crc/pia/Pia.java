@@ -650,10 +650,7 @@ public class Pia{
     /*
     debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
     Table ht = new Table();
-    ht.put("agent", "PIA");
-    ht.put("type", "DOFS");
-    ht.put("root", "~/pia");
-    ht.put("all", "false");
+    ht.put("agent", "DOFS");
     try{
       agency.install( ht );
     }catch(AgentInstallException e){

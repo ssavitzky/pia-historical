@@ -52,7 +52,12 @@ public class GenericAgent extends AttrBase implements Agent {
   private String filesep = System.getProperty("file.separator");
   public static boolean DEBUG = false;  
 
- /**
+  /** If true, run the request for <code>initialize.if</code> through the 
+   *	Resolver.  Otherwise, run the interpretor over it directly.
+   */
+  public static boolean RESOLVE_INITIALIZE = false;
+
+  /**
    * Attribute table for storing options
    */
   protected AttrTable attributes = new AttrTable();
@@ -60,31 +65,26 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /**
    * Attribute index - name of this agent
-   *
    */
   protected String agentname;
 
   /**
    * Attribute index - type of this agent
-   *
    */
   protected String agenttype;
 
   /**
    * Attribute index - type of this agent
-   *
    */
   protected String version;
 
   /**
    * Attribute index - directory that this agent can write to
-   *
    */
   protected Table dirTable;
 
   /**
    * Attribute index - files that this agent can write to
-   *
    */
   protected Table fileTable;
 
@@ -101,13 +101,14 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected AgentMachine virtualMachine;
 
-  /**
-   * Initialization; sub classes may override
+  /** Initialization.  Subclasses may override, but this should rarely
+   *	be necessary.  If they <em>do</em> override this method it is
+   *	important to call <code>super.initialize()</code>.
    */
   public void initialize(){
     String n = name();
     String t = type();
-    String url;
+    String url = "/" + n + "/" + "initialize.if";
     Transaction request;
 
     if( t != null && !n.equalsIgnoreCase( t ) ) 
@@ -116,13 +117,19 @@ public class GenericAgent extends AttrBase implements Agent {
     option("name", n);
     option("type", type());
 
-    if( DEBUG )
-      System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode.  No interform request is put onto the resolver.");
-    else{
-      url = "/" + n + "/" + "initialize.if";
-      createRequest("GET", url, null );
+    if( DEBUG ) {
+      System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode." +
+			 "No interform request is put onto the resolver.");
+      return;
     }
 
+    if (RESOLVE_INITIALIZE) {
+      createRequest("GET", url, null );
+    } else {
+      String fn = findInterform("initialize.if", true);
+      Run.interformSkipFile(this, fn, makeRequest(machine(), "GET", url, null),
+			    Pia.instance().resolver());
+    }
   }
 
   /**
@@ -164,6 +171,12 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public void createRequest(Machine m, String method, String url,
 			    String queryString) {
+    makeRequest(m, method, url, queryString).startThread();
+  }
+
+  /** Make a new request Transaction on this agent. */
+  public Transaction makeRequest(Machine m, String method, String url, 
+				 String queryString) {
     Transaction request = null;
 
     if( queryString == null ){
@@ -176,14 +189,17 @@ public class GenericAgent extends AttrBase implements Agent {
     } else {
       FormContent c = new FormContent( queryString );
       request = new HTTPRequest( m, c, false );
+
+      request.setHeader("Version", version());
+      request.setContentType( "application/x-www-form-urlencoded" );
+      request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
       request.setContentLength( queryString.length() );
     }
 
     request.toMachine( Pia.instance().thisMachine() );
     request.setMethod( method );
     request.setRequestURL( url );
-
-    request.startThread();
+    return request;
   }
  
   /************************************************************************
@@ -724,6 +740,92 @@ public class GenericAgent extends AttrBase implements Agent {
     return true;
   }
 
+  /** 
+   * Return a suitable path list for InterForm search.
+   *  The path puts any  defined if_root first 
+   *   (if_root/myname, if_root/mytype/myname if_root/mytype, if_root),
+   *  If the above is not defined, it will try:
+   *    .../name, .../type/name, .../type
+   *    relative to each of (piaUsrAgentsStr, piaAgentsStr)
+   *
+   * and finally  (piaUsrAgentsStr, piaAgentsStr)
+   */
+  public List interformSearchPath() {
+    List path = dirAttribute("if_path");
+    if (path != null) return path;
+
+    /* The path attribute wasn't defined, so do it now. */
+
+    path = new List();
+
+    /* Tails: name/, type/name, type */
+
+    String myname = name();
+    String mytype = type();
+
+    List tails = new List();
+    tails.push(myname + filesep);
+    if (!myname.equals(mytype)) {
+      tails.push(mytype + filesep + myname + filesep);
+      tails.push(mytype + filesep);
+    }
+
+    /* Roots: if_root, ~/.pia/Agents, pia/src/Agents, pia/Agents */
+
+    List roots = dirAttribute( "if_root" );
+    if (roots == null) roots = new List();
+
+    for (int i = 0; i < roots.nItems(); ++i) {
+      int fslength = filesep.length();
+
+      // handle a user-defined root first:  Trim a trailing /name or /type
+      // because it gets automatically added below.
+	
+      String root = (String)roots.at(i);
+      if ( !root.endsWith( filesep ) ) { root = root + filesep; }
+      if ( root.endsWith( filesep + myname + filesep )) {
+	root = root.substring(0, root.length() - myname.length() - fslength);
+      } else if ( root.endsWith( filesep + mytype + filesep )) {
+	root = root.substring(0, root.length() - mytype.length() - fslength);
+      }
+
+      roots.at(i, root);
+    }	
+
+    roots.push(Pia.instance().piaUsrAgents());
+    roots.push(Pia.instance().root() +
+	       filesep + "src" + filesep + "Agents" + filesep);
+    roots.push(Pia.instance().piaAgents());
+
+    /* Make sure all the roots end in filesep */
+
+    for (int i = 0; i < roots.nItems(); ++i) {
+      String root = (String)roots.at(i);
+      if ( !root.endsWith(filesep) ) { roots.at(i, root + filesep); }
+    }	
+
+    /* Now combine the roots and tails */
+
+    for (int j = 0; j < roots.nItems(); ++j)
+      for (int i = 0; i < tails.nItems(); ++i) 
+	path.push(roots.at(j).toString() + tails.at(i).toString());
+    
+    /* Finally, try just the roots */
+
+    for (int j = 0; j < roots.nItems(); ++j)
+      path.push(roots.at(j).toString());
+
+    if(DEBUG )
+      for(int i=0; i < path.nItems(); i++){
+	String onePath = path.at(i).toString();
+	System.out.println("GenericAgent findInterform-->"+(String)onePath );
+      }
+
+    // Now cache the lookup path list as a dirAttribute
+
+    dirAttribute("if_path", path );
+    return path;
+  }
 
   /**
    * Find a filename relative to this Agent.
@@ -754,86 +856,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( path.startsWith("/") )	path = path.substring(1);
     Pia.debug(this, "Looking for -->"+ path);
 
-    List if_path = dirAttribute( "if_path" );
-    if ( if_path == null ) {
-      if_path = new List();
-
-      /**
-       * If the path isn't already defined, set it up now.
-       *
-       *  the path puts any  defined if_root first 
-       *   (if_root/myname, if_root/mytype/myname if_root/mytype, if_root),
-
-       * If the above is not defined, it will try:
-       *    .../name, .../type/name, .../type
-       *    relative to each of (piaUsrAgentsStr, piaAgentsStr)
-       *
-       * and finally  (piaUsrAgentsStr, piaAgentsStr)
-       */
-      String home = Pia.instance().piaAgents();
-      if ( !home.endsWith( filesep ) ){ home = home + filesep; }
-      
-      List roots = dirAttribute( "if_root" );
-      String root;
-      if ( roots!= null && roots.nItems() > 0 ){
-
-	// handle a user-defined root first:  Trim a trailing /name or /type
-	// because it gets automatically added below.
-	
-	root = (String)roots.at(0);
-	if ( !root.endsWith( filesep ) ) { root = root + filesep; }
-	if ( root.endsWith( filesep + myname + filesep )) {
-	  root = root.substring(0, root.length() - myname.length() -
-				filesep.length());
-	} else if ( root.endsWith( filesep + mytype + filesep )) {
-	  root = root.substring(0, root.length() - mytype.length() -
-				filesep.length());
-	}
-
-	if_path.push( root+myname+filesep );
-	if( myname != mytype ) {
-	  if_path.push( root+mytype+filesep+myname+filesep );
-	  if_path.push( root+mytype+filesep );
-	}
-	if_path.push( root );
-      }	
-
-      /*
-       * Then see whether the user has overridden the form.
-       *    It's possible that one of these will be a duplicate.
-       *    That slows us down, but not much.
-       */
-      
-      root = Pia.instance().piaUsrAgents();
-      if ( !root.endsWith( filesep ) ) { root = root + filesep; }
-      if_path.push( root+myname+filesep );
-
-      if ( myname != mytype ) {
-	if_path.push( root+mytype+filesep+myname+filesep );
-	if_path.push( root+mytype+filesep );
-      }
-
-      if_path.push( home+myname+filesep );
-
-      if( myname != mytype ) {
-	if_path.push( home+mytype+filesep+myname+filesep );
-	if_path.push( home+ mytype+filesep );
-      }
-
-      if_path.push( root );
-      if_path.push( home );
-      
-      
-      if( DEBUG )
-	for(int i=0; i < if_path.nItems(); i++){
-	  String onePath = if_path.at(i).toString();
-	  System.out.println("GenericAgent findInterform-->"+(String)onePath );
-	}
-
-      // Now cache the lookup path list as a dirAttribute
-
-      dirAttribute("if_path", if_path );
-    }
+    List if_path = interformSearchPath();
 
     File f;
     Enumeration e = if_path.elements();
@@ -976,7 +999,6 @@ public class GenericAgent extends AttrBase implements Agent {
       this.type( type );
     else
       this.type( name );
-    initialize();
   }
 
   /**

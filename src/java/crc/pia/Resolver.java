@@ -135,6 +135,8 @@ public class Resolver extends Thread {
       name = agent.name();
       agent( name, agent );
     }
+
+    agent.initialize();
     
   }
 

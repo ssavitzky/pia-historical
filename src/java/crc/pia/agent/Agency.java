@@ -29,24 +29,22 @@ import crc.pia.HTTPRequest;
 
 public class Agency extends GenericAgent {
   /**
-   * take the agent off the resolver list
-   *
+   * Uninstall (unRegister) an agent.
    */
   public void unInstallAgent(String name){
     Pia.instance().resolver().unRegisterAgent( name );
   }
 
   /**
-   * install agent
-   *
+   * Install (register) an agent.
    */
   public void installAgent(Agent newAgent){
     Pia.instance().resolver().registerAgent( newAgent );
   }
 
   /**
-   * Install a named agent.  Automatically loads the class if necessary.
-   *
+   * Create and install a named agent.
+   *	Automatically loads the class if necessary.
    */
   public void install(Table ht)
        throws NullPointerException, AgentInstallException {
@@ -54,31 +52,34 @@ public class Agency extends GenericAgent {
     if( ht == null ) throw new NullPointerException("bad parameter Table ht\n");
     String name      = (String)ht.get("agent");
     String type      = (String)ht.get("type");
-    String className = null;
-    className = (String)ht.get("class");
-    Agent newAgent = null;
+    String className = (String)ht.get("class");
 
-    if( name == null )
+    if (name == null)
       throw new AgentInstallException("No agent name");
 
-    if(type == null )
+    if (type == null)
       type = name;
 
-    String zname = null;
-    if( className == null ){
+    /* Compute a plausible class name from the type. */
+
+    if (className == null){
       char[] foo = new char[1]; 
       foo[0] = type.charAt(0);
 
-      // Capitalize name.  Should really check for "class" attribute,
+      // Capitalize name.  
       //	=== Should preserve case in rest of agent name ===
       //	=== should use interform.Util.javaName ===
-      zname = (new String( foo )).toUpperCase();
+      String zname = (new String( foo )).toUpperCase();
       if (type.length() > 1) zname += type.substring(1).toLowerCase();
-
       className = "crc.pia.agent." + zname; 
+    } else if (className.length() > 0 && className.indexOf('.') < 0) {
+      className = "crc.pia.agent." + className; 
     }
 
-    if( className != null ){
+    /* Load the class, if it exists. */
+
+    Agent newAgent = null;
+    if( className != null && className.length() > 0){
       try{
 	newAgent = (Agent)Class.forName(className).newInstance() ;
 	newAgent.name( name );
@@ -86,8 +87,15 @@ public class Agency extends GenericAgent {
       }catch(Exception ex){
       }
     }
+
+    /* If the class doesn't exist, use GenericAgent. */
+
     if (newAgent == null) newAgent = new GenericAgent(name, type);
-    newAgent.initialize();
+
+    /* Install and initialize the new agent.  The Resolver actually 
+       does the intialization, after installing the agent.
+     */
+
     newAgent.parseOptions(ht);
     installAgent( newAgent );
   }
