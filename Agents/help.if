@@ -23,15 +23,14 @@
     <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
 	                   width=170 height=1></th>
         <td><br>
-    <tr><th><td><a href="home.if">Home Page</a>
-    <tr><th><td><a href="index.if">Index Page</a>
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
-	<td> <strong>Help Page</strong>
-    <tr><th>
-	<td><a href="options.if">Options</a>
-	    <if><read info interform file="initialize.if">
-	        <then><a href="initialize.if">[re-initialize]</a></then></if>
+	    <td> <a href="home.if">Home</a>
+    		 <a href="index.if">Index</a>
+    		 <b href="help.if">Help</b>
+<if><read info interform file="initialize.if"><then>
+    <tr><th><td><a href="options.if">Options</a>
+	    	      <a href="initialize.if">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
     <if>&subs;<then>

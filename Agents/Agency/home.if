@@ -24,8 +24,13 @@
     <td width="170"><img src="Icons/blank170x1.gif" width=170 height=1></td>
     <td valign=top> &year; &monthName; &day;, &time;:&second;<br>
 
+    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*">
+	    <td> <b href="home.if">Home</b>
+    		 <a href="index.if">Index</a>
+    		 <a href="help.if">Help</a>
   <tr>
-    <th valign=top align=right><b>&agentName;:</b>
+    <th valign=top align=right>
     <td valign=top> <a href="/Agency/agents.if">list</a> / 
 	<a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>

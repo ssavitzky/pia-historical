@@ -19,6 +19,7 @@
 	    </else></if>
     </then>
     <else>
+	<set agent name=do-not-remove>true</set>
 	<user-message>Loading startup file <read interform info=path
 		file="/Agency/START-UP.html"></user-message> 
 	<!-- Define an actor to handle forms -->
