@@ -1,0 +1,63 @@
+New Form Creation Instructions: 
+
+(1) Create a new directory with the form name at the following location:
+    /home/dgillen/.pia/Agents/Forms     
+    Example:
+     cd /home/dgillen/.pia/Agents/Forms
+     mkdir timecard
+
+(2) Create two interform files in the new directory. The first uses only standard html
+commands to create a form with entry fields and their associated names (PIA commands,
+although not needed, can be used as well). The only important thing to know is that the name 
+associated with the entry field for the person filling out the form should ALWAYS be 
+the word "name" in lower case. The "action" of this file occurs on the second file, 
+whose purpose is to process the entered data. The process file must include the following 
+lines in this order:
+
+     -Set an entity named "dir" to the name of the directory that was just created.
+       Example:
+       <set entity name=dir>timecard</set>
+
+     -Set an entity named "dataobject" to an easily readable data-structure containing ALL 
+     of the form field data along with accompanying descriptions of each field.
+       Example:
+       <set entity name=dataobject><dl><dt><b>Name:</b><dd><u>&FORM.name;</u>
+       <dt><b>Pay period number:</b><dd><u>&FORM.paydate;</u>
+       <dt><b>Exceptions:</b><dd><u>&FORM.exceptions;</u>
+       <dt><b>Dates:</b><dd><u>&FORM.dates;</u></dl></set>
+    
+     -Include the following lines exactly as they appear:
+       <set entity name=mlist><read file="mgr.dat" process></set>    
+       <set entity name=manager><get name="mlist.&FORM.name;"></set>
+
+      -Set an entity named "routeobject" to a data list containing the routing information.
+       It should model the following pattern: 
+      <dl><dt>1st person to sign <dd>2nd person to sign
+          <dt>2nd person to sign <dd>3rd person to sign 
+              ...
+          <dt>last person to sign <dd>NULL</dl>
+       The first person to sign is ALWAYS the original person to fill out the form,
+       namely "&FORM.name;". Other possible signers are other users, "&manager;",
+       "FrontOffice" , "Accounting" , "Auditor" , and "Purchasing".
+        Example:
+        <set entity name=routeobject><dl><dt>&FORM.name;<dd>FrontOffice
+        <dt>FrontOffice<dd>&manager;<dt>&manager;<dd>NULL</dl></set>
+    
+       -Include the following lines exactly as they appear:
+        <set entity name=timesec>&time;:&second;</set> 
+        <read interform file="write.inc" process>
+
+--------------------
+Misc. Info:
+
+The data that is both used and stored by the forms that you create is located 
+in the following directory: /home/dgillen/.pia/Forms/. Global data is stored directly
+in /Forms, while form-specific data is located in that forms' particular directory 
+within /Forms. Each form-specific directory for data contains a series of subdirectories 
+that are automatically created based on the date of the form submission. There is also 
+an html-based report within each subdirectory which contains links to all of the data 
+files within its child directories.
+
+Actions performed by write.inc:
+  (1) creates an html document for signing, and immediately presents it
+  (2) updates all appropriate report and data files

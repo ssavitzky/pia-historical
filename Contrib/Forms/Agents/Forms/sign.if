@@ -1,7 +1,7 @@
 <title>&FORM.dir; Signature Result</title>
 <body bgcolor="#ffffff">
 
-<center><a href="http://rhine:8888/Forms/forms.if"><img src="formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
 
 <h2>&FORM.dir; Signature Result</h2><p>
 

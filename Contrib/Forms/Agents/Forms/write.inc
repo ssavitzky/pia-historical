@@ -2,7 +2,7 @@
    
 <write append file="&dir;/&year;/&month;/&timesec;.html">
    <body bgcolor="#ffffff">
-   <center><a href="http://rhine:8888/Forms/forms.if"><img src="../formsbutton.gif"></a><a href="http://rhine:8888/Forms/users.if"><img src="../userbutton.gif"></a><a href="http://rhine:8888/Forms/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><br>
+   <center><a href="http://&piaHOST;:&piaPORT;/&agentName;/forms.if"><img src="../formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/users.if"><img src="../userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/&agentName;/reports.if"><img src="../reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="../feedbackbutton.gif"></a></center><br>
    Please sign the following document.<p>
    <h2>&dir; form</h2><p>
    &dataobject;<p>
@@ -29,13 +29,13 @@
 <li><a href="../&dir;/&year;/&month;/&timesec;.html">
 &dir; form --- &FORM.name; &dateString;</a><br></write>
 
-<write append line file="&dir;/&dir;_report.html"><li><a href="http://rhine:8888/My/Forms/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
 &FORM.name; &dateString;</a><br></write>
       
-<write append line file="&dir;/&year;/&dir;_report.html"><li><a href="http://rhine:8888/My/Forms/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&year;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
 &FORM.name; &dateString;</a><br></write>   
       
-<write append line file="&dir;/&year;/&month;/&dir;_report.html"><li><a href="http://rhine:8888/My/Forms/&dir;/&year;/&month;/&timesec;.html">
+<write append line file="&dir;/&year;/&month;/&dir;_report.html"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/&dir;/&year;/&month;/&timesec;.html">
 &FORM.name; &dateString;</a><br></write> 
 
 <read file="&dir;/&year;/&month;/&timesec;.html" process>
