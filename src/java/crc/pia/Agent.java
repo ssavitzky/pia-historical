@@ -2,14 +2,16 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.pia;
-import java.util.Hashtable;
-import java.util.Vector;
+
 import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.Resolver;
 import crc.pia.Content;
 import java.net.URL;
 
+
+import crc.ds.Features;
+import crc.ds.Table;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
 
@@ -155,7 +157,7 @@ public interface Agent extends Attrs {
    * Set options with a hash table
    *
    */
-  public void parseOptions(Hashtable hash);
+  public void parseOptions(Table hash);
 
 
   /**
@@ -179,7 +181,22 @@ public interface Agent extends Attrs {
 
   public Object computeFeature(String featureName) throws UnknownNameException;
 
+  /*
+   * Given a url string and content create a request transaction
+   * Note: content is used for POST request.
+   *       Also, the from machine is default to the agent's machine
+   */
+  public void createRequest(String method, String url, String queryString);
+
+  /*
+   * Given a url string and content create a request transaction
+   * Note: content is used for POST request.
+   *       User must specify from machine.
+   */
+  public void createRequest(Machine m, String method, String url, String queryString);
 }
+
+
 
 
 
