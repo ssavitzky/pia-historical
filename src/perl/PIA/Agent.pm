@@ -435,7 +435,7 @@ sub cron_add{
 
     my $cron =$self->{'_cron'};
     if(! exists  $self->{'_cron'}){
-	$self->{'_cronjobs'};  #counter
+	$self->{'_cronjobs'}=1;  #counter
 	$cron=IF::IT->new('table');
 				# create new table
 				# currently timing implicit in order oftags
@@ -688,8 +688,11 @@ sub find_interform {
     ## Find interform name in URL.
 
     if ($noDefaults) {		# are we doing defaults?
+	$form = $path;
 	## no
-    } elsif ($path =~ m:$name/(.*)$:) {
+    } elsif ($path =~ m:^([^/]+)$:) { # noslashes, just name
+	$form = $1;
+    }    elsif ($path =~ m:$name/(.*)$:) {
 	$form = $1 || "index.if";	# default to index.if
     } elsif ($path =~ m:$name$:) {
 	$form = "home.if";		# default to home.if
