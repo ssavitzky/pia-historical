@@ -1542,12 +1542,16 @@ sub os_command_handle {
     my ($self, $it, $ii) = @_;
 
     my $command = get_text($it, 'command');
+
+				# replace &gt; with > symbol
+    $command .="  > /dev/null " unless $command =~ s/\&gt\;/>/g;
+
     print "Executing command '$command'\n" unless $main::quiet;
 
     my $pid;
     unless ($pid = fork) {
 	unless (fork) {
-	    system("sh -c '$main::proxies cat /dev/null | $command &>/dev/null&'");
+	    system("sh -c '$main::proxies cat /dev/null | $command '");
 	    exit 0;
 	}
 	exit 0;
@@ -1567,7 +1571,11 @@ sub os_command_output_handle {
     my ($self, $it, $ii) = @_;
 
     my $command = get_text($it, 'command');
+				# replace &gt; with > symbol
+    $command =~ s/\&gt\;/>/g;
+
     print "Executing command `$command`\n" unless $main::quiet;
+
 
     my $result;
     eval {
