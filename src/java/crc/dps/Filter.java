@@ -64,6 +64,7 @@ public class Filter {
       if (infile != null) in = new FileInputStream(infile);
     } catch (Exception e) {
       System.err.println("Cannot open input file " + infile);
+      System.exit(-1);
       in = null;
     }
       
@@ -71,6 +72,7 @@ public class Filter {
       if (outfile != null) outs = new FileOutputStream(outfile);
     } catch (Exception e) {
       System.err.println("Cannot open output file " + outfile);
+      System.exit(-1);
       outs = null;
     }
     if (outs != null) out = new OutputStreamWriter(outs);
@@ -185,7 +187,7 @@ public class Filter {
   public static void usage() {
     PrintStream o = System.err ;
 
-    o.println("Usage: java crc.interform.Filter [option]... [infile]");
+    o.println("Usage: java crc.dps.Filter [option]... [infile]");
     o.println("    options:");
     o.println("        -e	no entities");
     o.println("        -h	print help string");
