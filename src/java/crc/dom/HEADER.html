@@ -1,0 +1,49 @@
+<h1>DOM Extension for Active Documents</h1>
+
+<a href="../">[..]</a>
+<a href="#files">[files]</a><p>
+
+<p> This directory contains an extension of the Document Object Model
+    (DOM: <a href="../../org/w3c/dom"><code>org.w3c.dom</code></a>) for
+    ``active documents'' as used in the <a href="../pia">PIA</a> and its <a
+    href="../dps">Document Processing System</a>.  
+
+<blockquote><em>
+  Originally this package simply contained a complete implementation of (an
+  earlier version of) the DOM, and <a href="../dps/active">dps.active</a>
+  extended it.  Now that the ``official'' interfaces are in <a
+  href="../../org/w3c/dom"><code>org.w3c.dom</code></a> we have taken the
+  opportunity to correct the situation.
+</em></blockquote>
+
+<h2>Interfaces</h2>
+
+<p> Interfaces in this package have names that start with
+    ``<code>Active</code>''.  In general, they are also
+    <em>implementations</em> of
+    <a href="../Active.java"><code>crc.dps.Active</code></a> and its extension
+    <a href="ActiveNode.java"><code>ActiveNode</code></a>.
+
+<dl>
+  <dt> <a href="ActiveNode.java">ActiveNode</a>
+  <dd> 
+</dl>
+
+<h2>Classes</h2>
+
+<dl>
+  <dt> <a href="tree"><code>crc.dom.tree</code></a>
+  <dd> contains classes that implement the Active DOM interfaces in this
+       package using a simple doubly-linked tree representation.
+</dl>
+
+<p> Eventually it is possible that we will have multiple implementations.
+    Some of the obvious possibilities are a threaded tree (to make the dynamic
+    nodelists returned by <code>getElementsByTagName</code> efficient)
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+<a name="files"><hr></a>
+
+

@@ -7,30 +7,50 @@ TOPDIR=../..
 
 PACKAGES =
 
-FILES = \
-	NodeWrapper.java \
-	LinkedList.java \
-	LinkedNodeListEnumerator.java \
+INTERFACES = \
 	Attribute.java \
 	AttributeList.java \
 	Comment.java \
 	Declaration.java \
-	DOM.java \
 	DOMFactory.java \
 	Document.java \
-	CRCDocument.java \
 	DocumentContext.java \
-	ArrayNodeListEnumerator.java \
 	Element.java \
 	NamedNodeList.java \
-	NoSuchNodeException.java \
 	Node.java \
-	NodeType.java \
-	NodeEnumerator.java \
-	NodeList.java \
-	NotMyChildException.java \
 	PI.java \
 	Text.java \
+	CDATASection.java \
+	Notation.java \
+	Entity.java 
+
+EXCEPTIONS = \
+	NoSuchNodeException.java \
+	NotMyChildException.java 
+
+OTHER_CLASSES = \
+	NodeType.java 
+
+# All of the following appear to be unused in the DPS
+
+ENUMERATORS = \
+	LinkedNodeListEnumerator.java \
+	NodeEnumerator.java \
+	NodeList.java \
+	ArrayNodeListEnumerator.java \
+	ChildNodeListEnumerator.java 
+
+LIST_CLASSES = \
+	LinkedList.java \
+	LinkedNodeList.java \
+	ArrayNodeList.java \
+	AttrList.java 
+
+NODE_CLASSES = \
+	NodeWrapper.java \
+	DOM.java \
+	CRCDocument.java \
+	NotMyChildException.java \
 	AbstractDOMFactory.java \
 	AbstractDocument.java  \
 	AbstractNamedList.java \
@@ -48,14 +68,9 @@ FILES = \
 	CRCAttribute.java \
 	BasicComment.java \
 	ChildNodeList.java \
-	ChildNodeListEnumerator.java \
-	LinkedNodeList.java \
-	ArrayNodeList.java \
-	AttrList.java \
 	Report.java \
 	Logger.java \
 	AttributeDefinition.java \
-	CDATASection.java \
 	ConnectionType.java \
 	ContentType.java \
 	DeclaredValueType.java \
@@ -64,11 +79,9 @@ FILES = \
 	ElementDefinition.java \
 	ElementToken.java \
 	ModelGroup.java \
-	Notation.java \
 	OccurrenceType.java \
 	PCDATAToken.java \
 	CRCElement.java \
-	Entity.java \
 	InternalEntity.java \
 	ExternalEntity.java \
 	ExternalTextEntity.java \
@@ -79,6 +92,8 @@ FILES = \
 	AgentEntity.java \
 	LocalEntity.java \
 	SystemEntity.java
+
+FILES = $(INTERFACES) $(EXCEPTIONS) $(OTHER_CLASSES)
 
 include $(TOPDIR)/makefiles/file.make
 #include $(TOPDIR)/makefiles/package.make
