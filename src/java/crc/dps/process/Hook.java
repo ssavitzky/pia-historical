@@ -34,7 +34,7 @@ import crc.pia.Resolver;
  * @see crc.dps.Processor
  * @see crc.dps.Context */
 
-public class Hook extends TopProcessor {
+public class Hook extends ActiveDoc {
 
   /************************************************************************
   ** Variables:
