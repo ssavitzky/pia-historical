@@ -21,7 +21,6 @@ import crc.pia.Agent;
 import crc.pia.Pia;
 import crc.pia.Resolver;
 import crc.pia.Transaction;
-import crc.content.ByteStreamContent;
 import crc.pia.Content;
 import crc.pia.HTTPResponse;
 import crc.pia.PiaRuntimeException;

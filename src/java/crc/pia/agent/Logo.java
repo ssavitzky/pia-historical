@@ -33,7 +33,6 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPResponse;
 import crc.pia.Content;
-import crc.content.ByteStreamContent;
 import crc.pia.FileAccess;
 
 import crc.util.Utilities;

@@ -143,15 +143,17 @@ public class Dofs extends GenericAgent {
   /**
    *Transaction handling.
    * === We need to be able to handle CGI scripts and plain HTML
-   * eventually.  We need this for the DOFS, in particular.
+   *     eventually.  We need this for the DOFS, in particular.
    * === URL-to-filetype mappings, whether interforms are permitted,
-   * local interforms, and similar annotations belong in the
-   * interform directory that corresponds to the DOFS agent.
+   *     local interforms, and similar annotations belong in the
+   *     interform directory that corresponds to the DOFS agent.
    */
 
   /**
-   * @return the file name corresponding to this url
-   * @return null unless url path begins with prefix
+   * Convert a DOFS URL to a corresponding filename.
+   * @param url the URL to convert
+   * @return the file name corresponding to this url.
+   * 	Returns null unless url path begins with <code>/AgentName</code>
    */
   protected String urlToFilename(URL url){
     if( url == null ) return null;

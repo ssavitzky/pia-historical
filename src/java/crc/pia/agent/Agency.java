@@ -45,6 +45,9 @@ public class Agency extends GenericAgent {
   /**
    * Create and install a named agent.
    *	Automatically loads the class if necessary.
+   *	@param ht initial options.
+   *	@exception crc.pia.agent.AgentInstallException if problems are
+   *	  found, for example a null table or missing parameter.
    */
   public void install(Table ht)
        throws NullPointerException, AgentInstallException {
