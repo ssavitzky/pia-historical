@@ -11,6 +11,7 @@ import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
 
+import crc.dps.Syntax;
 import crc.dps.NodeType;
 import crc.dps.Tagset;
 import crc.dps.Handler;
@@ -47,7 +48,18 @@ import crc.ds.List;
  * @see crc.dps.Input 
  * @see crc.dom.Node */
 
-public class BasicTagset extends ParseTreeElement implements Tagset {
+public class BasicTagset extends ParseTreeGeneric implements Tagset {
+
+  /************************************************************************
+  ** Flags: (for convenience in setting up tables):
+  ************************************************************************/
+
+  /** Syntax for an empty element. */
+  public final static int EMPTY   = Syntax.EMPTY;
+  /** Syntax for a normal element.  The contents are expanded. */
+  public final static int NORMAL  = Syntax.NORMAL;
+  /** Syntax for a quoted element:  contents are parsed but not expanded. */
+  public final static int QUOTED  = Syntax.QUOTED;
 
   /************************************************************************
   ** Data:
@@ -61,7 +73,7 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
 
   protected Table handlersByTag = new Table();
   protected List  handlerNames = new List();
-  protected List  allNames = null;
+  protected List  contextHandlerNames = null;
 
   protected int  MAX_TYPE = 10;
   protected int  MIN_TYPE = -3;
@@ -70,23 +82,6 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
   protected boolean locked = false;
 
   protected String paragraphElementTag = null;
-
-  /** Syntax for an empty element. */
-  public final static int EMPTY   = -1;
-  /** Syntax for a normal element.  The contents are expanded. */
-  public final static int NORMAL  =  1;
-  /** Syntax for a quoted element:  contents are parsed but not expanded. */
-  public final static int QUOTED  =  2;
-
-  /** Syntax flag (to be or'ed in) to suppress expansion. */
-  public final static int NO_EXPAND	= 2;
-  /** Syntax flag (to be or'ed in) to suppress parsing of entities. */
-  public final static int NO_ENTITIES	= 4;
-  /** Syntax flag (to be or'ed in) to suppress parsing of elements. */
-  public final static int NO_ELEMENTS	= 8;
-
-  /** Syntax for a literal: elements and entities are not recognized. */
-  public final static int LITERAL =  NO_ENTITIES | NO_ELEMENTS | NO_EXPAND;
 
   /************************************************************************
   ** DOM Factory:
@@ -190,6 +185,13 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
   public void setHandlerForTag(String tagname, Handler newHandler) {
     handlersByTag.at(tagname, newHandler);
     handlerNames.push(tagname);
+    addHandler(tagName, NodeType.ELEMENT, newHandler);
+  }
+
+  /** Add the handler to the content of the tagset Node. */
+  protected void addHandler(String name, int type, Handler newHandler) {
+    ActiveNode h = (ActiveNode)newHandler;
+    addChild(h);
   }
 
   /** Called during parsing to return a suitable Handler for a new Text
@@ -228,6 +230,7 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
       // === At this point we need to resize handlersByType
     }
     handlersByType[nodeType - MIN_TYPE] = newHandler;
+    addHandler(null, nodeType, newHandler);
   }
 
   public boolean isLocked() { return locked; }
@@ -374,17 +377,18 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
    *	Node types other than Element unless the implementation gives
    *	them distinctive, generated names.
    */
-  public Enumeration elementNames() {
+  public Enumeration handlerNames() {
     return handlerNames.elements();
   }
 
   /** Returns an Enumeration of the element names defined in this table and
-   *	its context. */
-  public Enumeration allNames() {
-    if (allNames == null) {
-      allNames = new List(elementNames());
-      if (context != null) allNames.append(context.allNames());
+   *	its context, in order of definition (most recent last). */
+  public Enumeration allHandlerNames() {
+    if (contextHandlerNames == null) {
+      contextHandlerNames = new List(context.allHandlerNames());
     }
+    List allNames = new List(contextHandlerNames());
+    allNames.append(handlerNames());
     return allNames.elements();
   }
 
@@ -407,8 +411,8 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
    */
   protected BasicHandler defTag(String tag, String notIn, int syntax) {
     BasicHandler h = (BasicHandler) handlersByTag.at(tag);
-    boolean parseEnts = syntax > 0 && (syntax & NO_ENTITIES) == 0;
-    boolean parseElts = syntax > 0 && (syntax & NO_ELEMENTS) == 0;
+    boolean parseEnts = syntax > 0 && (syntax & Syntax.NO_ENTITIES) == 0;
+    boolean parseElts = syntax > 0 && (syntax & Syntax.NO_ELEMENTS) == 0;
     if (h == null) h = new BasicHandler(syntax, parseElts, parseEnts);
     if (notIn != null) {
       Enumeration nt = new java.util.StringTokenizer(notIn);
@@ -439,9 +443,9 @@ public class BasicTagset extends ParseTreeElement implements Tagset {
   protected GenericHandler defTag(String tag, String notIn, int syntax,
 				  String cname) {
     GenericHandler h = null;
-    boolean parseEnts = syntax > 0 && (syntax & NO_ENTITIES) == 0;
-    boolean parseElts = syntax > 0 && (syntax & NO_ELEMENTS) == 0;
-    boolean expand    = syntax > 0 && (syntax & NO_EXPAND)   == 0;
+    boolean parseEnts = syntax > 0 && (syntax & Syntax.NO_ENTITIES) == 0;
+    boolean parseElts = syntax > 0 && (syntax & Syntax.NO_ELEMENTS) == 0;
+    boolean expand    = syntax > 0 && (syntax & Syntax.NO_EXPAND)   == 0;
     h = loadHandler(tag, cname);
     if (h != null) {
       h.setElementSyntax(syntax);
