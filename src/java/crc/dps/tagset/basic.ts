@@ -1452,6 +1452,25 @@ open-ended; tagset authors are free to define new ones as needed.
   </define>
 </define>
 
+<h3>Output</h3>
+<define element=output handler >
+  <doc> Output the content to a remote or local resource.  Essentially a
+	convenience function that replaces a suitable <tag>connect</tag>,
+	except that the resulting document, if any, is not returned.  This
+	makes it more suitable for use with files than with URL's.
+  </doc>
+  <define attribute=dst required>
+    <doc> Specifies the URL (or path relative to the current document or its
+	  server's document root) of the document to be output to.
+    </doc>
+  </define>
+  <define attribute=append optional>
+    <doc> If true, the document is appended to (using a POST request if it is
+	  a URL).
+    </doc>
+  </define>
+</define>
+
 <h3>Connect</h3>
 <define element=connect handler >
   <doc> Perform an HTTP request to connect to a remote or local resource.  The
