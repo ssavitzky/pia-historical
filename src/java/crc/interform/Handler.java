@@ -145,9 +145,9 @@ public class Handler implements java.io.Serializable {
    *	it has the advantage of not dragging in the entire PIA if we're
    *	running in a standalone document processor.
    */
-  public crc.dps.InterFormProcessor getInterFormContext(crc.dps.Context c) {
-    if (c.getTopContext() instanceof crc.dps.InterFormProcessor) {
-      return (crc.dps.InterFormProcessor)c.getTopContext();
+  public crc.dps.process.ActiveDoc getInterFormContext(crc.dps.Context c) {
+    if (c.getTopContext() instanceof crc.dps.process.ActiveDoc) {
+      return (crc.dps.process.ActiveDoc)c.getTopContext();
     } else {
       return null;
     }
