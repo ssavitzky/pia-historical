@@ -242,7 +242,7 @@ public class  HTTPRequest extends Transaction {
     try{
       in = fromMachine().inputStream();
 
-      if( contentType() == null && method().equals("GET") )
+      if( contentType() == null && method().equalsIgnoreCase("GET") )
 	ztype = "application/x-www-form-urlencoded";
       else
 	ztype = contentType();
@@ -286,7 +286,9 @@ public class  HTTPRequest extends Transaction {
       proxy = m.proxy( protocol() );
 
     buf = new StringBuffer();
-    buf.append( method() );
+    // Send method as upper case, as some servers e.g. NCSA 1.5a
+    // do not recognize it otherwise
+    buf.append( method().toUpperCase() );
     buf.append( ' ' );
 
     if( myurl != null ){
@@ -313,26 +315,71 @@ public class  HTTPRequest extends Transaction {
     return new String( buf );
  }	
 
-  /**
+  /**	 try {
+	   c.writeTo(stream);
+	 } catch (Exception e) {
+	   Pia.debug(this,"Failed to write MultipartFormContent "+e.toString());
+	 }
    * output protocolInitializationString, headers, and content if request.
    */
   public void printOn(OutputStream stream) throws IOException{
      PrintWriter out = new PrintWriter( new OutputStreamWriter(stream) );
 
     String requestLine = protocolInitializationString();
-     if( requestLine != null )
-       out.print( requestLine );
+    if( requestLine != null ) {
+      Pia.debug(this,"Sending request line "+requestLine);
+      out.print( requestLine );
+    }
+
 
      String headersString= headersAsString();
      if( headersString != null )
+       Pia.debug(this,"Sending headers string "+headersString);
        out.print( headersString );
 
      if( method().equalsIgnoreCase("POST")  ){
-       String qs = queryString(); 
-       if( qs != null ){
-	 Pia.debug(this, "the content is ..." + qs);
-	 out.println( qs );
+
+       /*
+	* Handle two kinds of POST: encoded query
+	* strings, or multipart/form-data
+	*/
+       
+       Content c = contentObj();
+
+       if (c instanceof FormContent) {
+
+	 /* This is a request with a query string
+	  */
+	 String qs = queryString(); 
+	 if( qs != null ){
+	   Pia.debug(this, "the content is ..." + qs);
+	   out.println( qs );
+	 }
+
+       } else if (c instanceof MultipartFormContent) {
+
+	 /* This is a multipart/form-data request
+	  */
+	 out.flush();
+
+	 Pia.debug(this,"Sending multipart content straight to output stream");
+
+	 try {
+	   c.writeTo(stream);
+	 } catch (Exception e) {
+	   Pia.debug(this,"Failed to write MultipartFormContent "+e.toString());
+	 }
+	   
+       } else {
+	 Pia.debug(this,"Unknown form content type, sending anyway");
+	 try {
+	   c.writeTo(stream);
+	 } catch (Exception e) {
+	   Pia.debug(this,"Failed to write content "+e.toString());
+	 }
        }
+
+
      }
      if( method().equalsIgnoreCase("PUT")  ){
        if( contentObj() != null ){
@@ -616,7 +663,8 @@ public class  HTTPRequest extends Transaction {
   }
 
  /**
-   * A request transaction with default blank header and a define content.
+   * A request transaction with default blank header and a define contentbj
+.
    * @param from originator of request -- later data will be sent to this machine.
    * @param ct a define content.
    * @param start flag -- if true starts thread automatically;otherwise,

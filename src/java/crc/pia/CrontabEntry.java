@@ -20,7 +20,10 @@ import crc.sgml.Element;
 import crc.sgml.Attrs;
 import crc.sgml.Util;
 
+import crc.util.Utilities;
+
 import java.io.Serializable;
+import java.io.ByteArrayOutputStream;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -43,7 +46,10 @@ public class CrontabEntry extends Element implements Serializable {
   String url;
 
   /** The request content (for POST or PUT). */
-  String content;
+  ByteArrayOutputStream content;
+
+  /** The request content type (for POST or PUT). */
+  String contentType;
 
   /** The minute at which to make the request.  Wildcard if negative. */
   int minute = -1;
@@ -90,18 +96,40 @@ public class CrontabEntry extends Element implements Serializable {
    *	@param agent the Agent submitting the request.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryString (optional) -- content for a POST request.
+   *	@param queryStream (optional) -- content for a POST request.
+   *    @param contentType MIME type for the request content.
    *	@param itt an SGML object, normally an Element, with attributes
    *		that contain the timing information.
    */
   public CrontabEntry(Agent agent, String method, String url,
 		      String queryString, SGML itt) {
-    this();			// initialize the times to wildcards
+    // Convert query string to byte array
+    // Assume default content type
+    this(agent, method, url,
+	 Utilities.StringToByteArrayOutputStream(queryString),
+	 "application/x-www-urlencoded", itt);
+  }
 
+  
+  /**
+   * Construct a Crontab entry.
+   *	@param agent the Agent submitting the request.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryString (optional) -- content for a POST request.
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   */
+  public CrontabEntry(Agent agent, String method, String url,
+		      ByteArrayOutputStream queryStream,
+		      String contentType, SGML itt) {
+    this();			// initialize the times to wildcards
+    
     this.agent 	 = agent;
     this.method  = method;
     this.url 	 = url;
-    this.content = queryString;
+    this.content = queryStream;
+    this.contentType = contentType;
 
     hour 	= entry(itt, "hour");
     minute 	= entry(itt, "minute");
@@ -167,7 +195,7 @@ public class CrontabEntry extends Element implements Serializable {
    */
   public boolean submitRequest() {
     Pia.verbose("Submitting CrontabEntry " + method + " " + url);
-    agent.createRequest(method, url, content);
+    agent.createRequest(method, url, content, contentType);
     if (repeat > 0) {
       if (--repeat == 0) {
 	Pia.verbose("--Maximal repeat count reached.");

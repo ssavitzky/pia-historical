@@ -17,11 +17,15 @@ import java.io.OptionalDataException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+
+import java.io.PrintWriter;
+import java.io.ByteArrayOutputStream;
 
 import java.lang.ClassNotFoundException;
 
@@ -260,6 +264,19 @@ public class Utilities {
       if (source != null)      source.close();
       if (destination != null) destination.close();
     }
+  }
+
+
+  /**
+   * Convert a String to a ByteArrayOutputStream
+   *
+   */
+  public static synchronized ByteArrayOutputStream StringToByteArrayOutputStream(String s) {
+    ByteArrayOutputStream B = new ByteArrayOutputStream();
+    PrintWriter P = new PrintWriter((OutputStream)B);
+    P.write(s);
+    P.close();
+    return B;
   }
 
 

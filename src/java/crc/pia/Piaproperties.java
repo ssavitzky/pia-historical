@@ -147,13 +147,18 @@ public class Piaproperties extends Properties {
 
     /**
      * Set this property value, as a string
+     * Return null (needs to return type Object to
+     * be compatible with new version of Properties class
+     * in JDK1.2beta4, previously this method was void)
      * @param name The name of the property to be defined.
      * @param def The value to define.
      */
-    public void setProperty(String name, String def) {
+    public Object setProperty(String name, String def) {
       put(name, def);
+      return null;
     }
 
+  
     /**
      * Set this property value, as a boolean.
      * @param name The name of the property to be defined.

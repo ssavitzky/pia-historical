@@ -385,27 +385,41 @@ public class FileAccess {
   }
 
   /**
-   * content type mapping
+   * Content type mapping given file name or URL
+   * If content type cannot be determined, return deflt
    */
-  protected static String contentType( String fn ){
-    String lfilename = fn.toLowerCase();
-
-    String fileExt     = null;
-    String contentType = "text/plain";
-    
-    Properties map = Pia.instance().piaFileMapping();
+  public static String contentType(String fn, String deflt)
+    {
+      String lfilename = fn.toLowerCase();
+      
+      String fileExt     = null;
+      String contentType = deflt;
+      
+      Properties map = Pia.instance().piaFileMapping();
        
-    //find extension
-    int i = lfilename.lastIndexOf('.');
-    if( i != -1 )
-      fileExt = lfilename.substring( i + 1);
-    
-    //get content type
-    if( fileExt != null && map.containsKey( fileExt ) )
-      contentType = (String) map.get( fileExt );
-    
-    return contentType;
-  }
+      //find extension
+      int i = lfilename.lastIndexOf('.');
+      if( i != -1 )
+	fileExt = lfilename.substring( i + 1);
+      
+      //get content type
+      if( fileExt != null && map.containsKey( fileExt ) )
+	contentType = (String) map.get( fileExt );
+      
+      return contentType;
+    }
+
+  /**
+   * Content type mapping given file name or URL
+   * Use text/plain as the default if the content type
+   * cannot be determined
+   * (For backwards compatibility)
+   */
+  public static String contentType(String fn)
+    {
+      return contentType(fn,"text/plain");
+    }
+
 
   private static void sendReply(int code, String reason, Transaction request,
 				Agent agent ){

@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Enumeration;
 import java.util.Vector;
-
+import java.util.Hashtable;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -33,7 +33,7 @@ import crc.pia.HttpBuffer;
 import crc.ds.Table;
 import crc.ds.List;
 
-public class FormContent extends Properties implements Content {
+public class FormContent extends Properties implements InputContent {
  
   /**
    * headers
@@ -320,13 +320,28 @@ public class FormContent extends Properties implements Content {
   }
 
   /**
-   * set content length
+   * set content length to a supplied value
    */
   private void setContentLength( int len ){
     Headers myheader = headers();
     if( myheader != null )
       myheader.setContentLength( len );
   }
+
+
+
+  /**
+   * get content length from current data stream
+   */
+  public int getCurrentContentLength() {
+    if (queryString == null) {
+      return 0;
+    } else {
+      return queryString.length();
+    }
+  }
+
+
  
   /**
   * Get the next chunk of data as bytes and store in byte array passed in as parameter.
@@ -604,7 +619,12 @@ public class FormContent extends Properties implements Content {
 	value = Utilities.unescape( evalue );
 	Pia.debug(this, "a val2-->"+ value);
       }
-      put(param, value);
+      // Route this call to the Hashtable superclass
+      // (to avoid the fact that in JDK1.2beta4 the put
+      //  method was introduced to java.util.Properties, but
+      //  that it requires two Strings as arguments (value is
+      //  not necessarily a String))
+      ((Hashtable)this).put(param, value);
     }
   }
 

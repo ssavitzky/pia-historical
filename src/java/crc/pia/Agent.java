@@ -4,6 +4,7 @@
 package crc.pia;
 
 import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 import crc.pia.Transaction;
@@ -227,12 +228,51 @@ public interface Agent extends Attrs, Registered {
    *       The results are discarded.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
+   *	@param queryStream (optional) -- content for a POST request.
+   *    @param contentType MIME type of content
+   */
+  public void createRequest(String method, String url, 
+			    ByteArrayOutputStream queryStream,
+			    String contentType);
+
+  /**
+   * Given a url string and content create a request transaction.
+   *	@param m the Machine to which the response is to be sent.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream (optional) -- content for a POST request.
+   *    @param contentType MIME type of content
+   */
+  public void createRequest(Machine m, String method, String url,
+			    ByteArrayOutputStream queryStream,
+			    String contentType);
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
    *	@param itt an SGML object, normally an Element, with attributes
    *		that contain the timing information.
    */
   public void createTimedRequest(String method, String url,
 				 String queryString, SGML itt);
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream (optional) -- content for a POST request.
+   *    @param contentType MIME type of content
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   */
+  public void createTimedRequest(String method, String url,
+				 ByteArrayOutputStream queryStream,
+				 String contentType,
+				 SGML itt);
 
   /** 
    * Handle timed requests.

@@ -11,6 +11,7 @@ import java.io.StringReader;
 import java.io.IOException;
 
 import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 import java.io.PrintStream;
 import java.io.OutputStream;
@@ -29,6 +30,7 @@ import crc.pia.Content;
 import crc.content.ByteStreamContent;
 import crc.pia.Authenticator;
 import crc.pia.Pia;
+import crc.pia.ContentOperationUnavailable;
 
 import crc.ds.Features;
 import crc.ds.Table;
@@ -43,8 +45,10 @@ import crc.sgml.AttrTable;
 import crc.sgml.Text;
 import crc.util.NullOutputStream;
 
+import crc.util.Utilities;
 
 import java.util.Enumeration;
+import java.util.Properties;
 import crc.interform.Run;
 import w3c.www.http.HTTP;
 
@@ -156,6 +160,11 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected String destFileName;
   
+  /**
+   * Default content type for form submissions
+   */
+  protected final static String DefaultFormSubmissionContentType = "application/x-www-form-urlencoded";
+
 
   /************************************************************************
   ** Initialization:
@@ -197,7 +206,8 @@ public class GenericAgent extends AttrBase implements Agent {
       String fn = findInterform("initialize.if");
       if (fn != null) try {
 	Run.interformSkipFile(this, fn,
-			      makeRequest(machine(), "GET", url, null),
+			      makeRequest(machine(), "GET", url, null, 
+					  DefaultFormSubmissionContentType),
 			      Pia.instance().resolver());
       } catch (Exception e) {
 	System.err.println(e.toString());
@@ -236,8 +246,27 @@ public class GenericAgent extends AttrBase implements Agent {
    *	@param queryString (optional) -- content for a POST request.
    */
   public void createRequest(String method, String url, String queryString){
-    makeRequest(machine(), method, url, queryString).startThread();
+    makeRequest(machine(), method, url,
+		Utilities.StringToByteArrayOutputStream(queryString),
+		DefaultFormSubmissionContentType).startThread();
   }
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream (optional) -- content for a POST request.
+   *    @param contentType MIME type for the submission
+   */
+  public void createRequest(String method, String url,
+			    ByteArrayOutputStream queryStream,
+			    String contentType)
+    {
+      makeRequest(machine(), method, url,
+		  queryStream,
+		  contentType).startThread();
+    }
 
   /**
    * Given a url string and content create a request transaction.
@@ -248,7 +277,23 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public void createRequest(Machine m, String method, String url,
 			    String queryString) {
-    makeRequest(m, method, url, queryString).startThread();
+    makeRequest(m, method, url, 
+		Utilities.StringToByteArrayOutputStream(queryString),
+		DefaultFormSubmissionContentType).startThread();
+  }
+
+  /**
+   * Given a url string and content create a request transaction.
+   *	@param m the Machine to which the response is to be sent.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream content for a POST request.
+   *    @param contentType MIME type for the submission
+   */
+  public void createRequest(Machine m, String method, String url,
+			    ByteArrayOutputStream queryStream,
+			    String contentType) {
+    makeRequest(m, method, url, queryStream, contentType).startThread();
   }
 
   /**
@@ -266,26 +311,68 @@ public class GenericAgent extends AttrBase implements Agent {
     crontab.makeEntry(this, method, url, queryString, itt);
   }
 
+
+  /**
+   * Given a url string and content create a request transaction.
+   *       The results are discarded.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream content for a POST request.
+   *    @param contentType MIME type for the submission
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   */
+  public void createTimedRequest(String method, String url,
+				 ByteArrayOutputStream queryStream, String contentType,
+				 SGML itt) {
+    if (crontab == null) crontab = new Crontab();
+    crontab.makeEntry(this, method, url, queryStream, contentType, itt);
+  }
+
+
   /** Make a new request Transaction on this agent. */
   public Transaction makeRequest(Machine m, String method, String url, 
-				 String queryString) {
-    Pia.debug(this, "makeRequest -->"+method+" "+url 
-	      + ((queryString == null)? "" : "?"+queryString));
+				 ByteArrayOutputStream queryStream,
+				 String contentType) {
+    Pia.debug(this, "makeRequest -->"+method+" "+url);
+    //      + ((queryStream == null)? "" : "?"+queryStream.toString()));
+    Pia.debug(this, "Content type "+contentType);
 
     Transaction request;
+    InputContent c;
 
-    Content c = new FormContent( queryString );
-
+    if (contentType.startsWith("multipart/form-data")) {
+      crc.pia.Pia.debug(this,"Making new MultipartFormContent");
+      c = new MultipartFormContent(queryStream);
+    } else {
+      // Convert stream to String, taking care of nulls
+      if (queryStream == null) {
+	// Make sure correct constructor of FormContent is called
+	c = new FormContent((String)null);
+      } else {
+	c = new FormContent( queryStream.toString());
+      }
+    }
 
     // create things normally gotten from header
     String initString = "HTTP/1.0 "+ method +" "+url;
 
 
     // create the request but don't start processing
-    request = new HTTPRequest( m, c, false );
+    request = new HTTPRequest( m, (Content)c, false );
 
-    request.setHeader("Version", version());
-    request.setContentType( "application/x-www-form-urlencoded" );
+    // Changed "Version" to "User-Agent", not sure why
+    // it was version in the first place as it gets assigned
+    // to PIA/{agent name} 
+    request.setHeader("User-Agent", version());
+    //request.setHeader("User-Agent", "Mozilla/4.5b1 [en] (Win95; I)");
+
+    request.setContentType(contentType);
+    try {
+      request.setContentLength(c.getCurrentContentLength());
+    } catch (ContentOperationUnavailable e) {
+      // If we cannot find content length, do not set header
+    }
     request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
     //    request.setHeader("Agent", name);
     //    request.setContentLength( queryString.length() );

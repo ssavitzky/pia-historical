@@ -292,8 +292,10 @@ public abstract class Transaction extends AttrBase
    *
    */
   public void setHeader(String key, String value){
-    if( headers() != null )
+    if( headers() != null ) {
       headers().setHeader(key, value);
+      crc.pia.Pia.debug(this,"Setting header "+key+" "+value);
+    }
    }
 
 

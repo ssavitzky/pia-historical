@@ -17,6 +17,7 @@ FILES = \
 	Resolver.java \
 	Configuration.java \
 	Content.java \
+	InputContent.java \
 	ContentOperationUnavailable.java \
 	Crontab.java \
 	CrontabEntry.java \
@@ -30,6 +31,7 @@ FILES = \
 	PiaInitException.java \
 	PiaRuntimeException.java \
 	FormContent.java \
+	MultipartFormContent.java \
 	HeaderFactory.java \
 	Headers.java \
 	ThreadPool.java \

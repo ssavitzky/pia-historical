@@ -23,6 +23,7 @@ import crc.sgml.Element;
 import crc.sgml.Attrs;
 
 import java.io.Serializable;
+import java.io.ByteArrayOutputStream;
 
 public class Crontab extends Element implements Serializable {
 
@@ -64,7 +65,31 @@ public class Crontab extends Element implements Serializable {
    */
   public void makeEntry(Agent agent, String method, String url,
 			String queryString, SGML itt) {
+    // CrontabEntry will assume defaults for contentType, and will
+    // convert queryString to a ByteArrayOutputStream
     addRequest(new CrontabEntry(agent, method, url, queryString, itt));
+  }
+
+
+  /**
+   * Given a url string, content, and timing information, create a
+   *	Crontab entry.
+   *
+   *	@param agent the Agent submitting the request.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param queryStream (optional) -- content for a POST request.
+   *	@param contentType MIME type for the request content.
+   *	@param itt an SGML object, normally an Element, with attributes
+   *		that contain the timing information.
+   *
+   *	@see crc.pia.CrontabEntry
+   */
+  public void makeEntry(Agent agent, String method, String url,
+			ByteArrayOutputStream queryStream,
+			String contentType, SGML itt) {
+    addRequest(new CrontabEntry(agent, method, url, queryStream,
+				contentType, itt));
   }
 
   /**

@@ -65,11 +65,24 @@ public class Headers {
       try{
 	MimeType mt = new MimeType( type );
 	zheaders.setContentType( mt );
+	crc.pia.Pia.debug(this,"Content type set to "+type);
       }catch( MimeTypeFormatException e ){
 	throw new BadMimeTypeException("Bad mime type.");
       }
     }
   }
+
+  /**
+   * Set content type
+   * @param type the Mime type
+   */
+  public void setContentType(MimeType type)
+    {
+      if (zheaders != null) {
+	zheaders.setContentType(type);
+	crc.pia.Pia.debug(this,"Content type set to "+type.toString());
+      }
+    }
 
   /**
    * @return a header field value as a String.
@@ -88,6 +101,16 @@ public class Headers {
                        String strval){
     if( zheaders!= null )
       zheaders.setValue( name, strval );
+  }
+
+
+  /**
+   * remove a field
+   */
+  public void removeHeader(String name) {
+    if (zheaders != null) {
+      zheaders.removeHeader(name);
+    }
   }
 
   /** 
