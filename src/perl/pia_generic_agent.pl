@@ -35,6 +35,14 @@ sub re_initialize {
     return bless $self;
 }
 
+
+############################################################################
+###
+### Code Files:
+###
+### === This stuff probably belongs in pia_agent.pl or a separate class.
+###
+
 sub load_file {
     my ($self, $attr, $fn_attr, $default) = @_;
 
@@ -107,39 +115,59 @@ sub require_file {
 
 ############################################################################
 ###
-### Handler for responses.
+### Running Hooks:
+###
+### ===	 Wouldn't it be nice if we could run an interform, too...
+
+sub run_hook {
+    my ($self, $attr, $trans, $res) = @_;
+
+    ## Run the code attached to a hook attribute.
+    ##	  The context, defined by local variables, is suitable for either
+    ##	  an act_on or a handle operation.
+
+    my $code = $$self->attribute($attr);
+    return if !defined $code;
+    my $status;
+
+    local $agent = $self;
+    local $resolver;	$resolver = $res if defined $res;
+    local $context = $trans;
+    local $request = $trans;
+    local $response;
+    local $url;
+
+    if (defined $trans && $trans->is_response) {
+	$response = $trans;
+	$request  = $trans->request;
+    }
+    $url = $request->url if defined $request;
+    
+
+    if (ref($code) eq 'CODE') {
+	$status = &$code($trans, $res);
+    } elsif (ref($code)) {
+	$status = $code -> $attr($trans, $res);
+    } else {
+	$status = eval ($code) if defined $code;
+	print "Error in $attr string: $@\n" if $@ ne '';
+    }
+    return $status;
+}
+
+############################################################################
+###
+### Acting on matched transactions:
 ###
 
 sub  act_on {
-    my($self, $response, $res) = @_;
-
-    my $request = $response -> request;  return unless defined $request;
-    my $code = $$self{act_on};           return unless defined $code;
-
-    ## Declare local variables for use by spies
-
-    local $type   = $response->content_type();    return unless $type;
-    local $isHTML = ($type =~ m:text/html:)? 1 : 0;
-    local $url    = $request->url();
-    local $title  = $response->title();
-    local $dir    = $main::USR_DIR . "/" . $self->option('dir');
-    local $debug  = $main::debugging; 		# !$main::quiet; 
-
-    local $agent    = $self;	 # in case a spy wants to contact us.
-    local $context  = $response; # in case a spy needs more information
-    local $resolver = $res;
-
-    ## Run the spies
-
-    my $status = eval ($code) if defined $code;
-    print "act_on code error: $@\n" if $@ ne '';
+    my($self, $transaction, $resolver) = @_;
+    return $self->run_hook('act_on', $transaction, $resolver);
 }
 
 ###### handle($transaction, $resolver)
 ###
-###	Handle a DOFS request.  
-###	Start by making sure the URL matches the agent's type;
-###	   if it doesn't we can assume that act_on handled it.
+###	Handle a transaction, typically a request.  
 ###
 sub handle{
     my($self, $request, $resolver)=@_;
@@ -151,8 +179,26 @@ sub handle{
     my $name = $self->name();
     my $response;
 
+    ## Declare local variables for use by spies
+
+    local $type   = $response->content_type();    return unless $type;
+    local $isHTML = ($type =~ m:text/html:)? 1 : 0;
+    local $url    = $request->url();
+    local $title  = $response->title();
+    local $debug  = $main::debugging; 		# !$main::quiet; 
+
+    local $agent    = $self;	 # in case a spy wants to contact us.
+    local $context  = $response; # in case a spy needs more information
+    local $resolver = $res;
+
+    ## Examine the path to see what we have:
+    ##    $name/path  -- this is a real, DOFS-style request.
+    ##	  $name       -- home page InterForm
+    ##	  $type/$name -- Interforms for $name
+    ##	  $type/path  -- Interforms for $type
+
     if ($name ne $type && $path =~ m:^/$name/:) {
-	return $self->retrieve_file($url, $request, $resolver);
+	return $self->handle_path($url, $request, $resolver);
     } elsif ($name ne $type && $path =~ m:^/$name$:) {
 	$path = "/$name/home.if";
     } elsif ($path =~ m:^/$name/([^/]+)/:) {
@@ -166,6 +212,15 @@ sub handle{
     return 0 unless defined $response;
     $resolver->push($response);
     return 1;
+}
+
+
+sub handle_path {
+    my($self, $request, $resolver)=@_;
+
+    ## Handle a DOFS-style request.  Subclass must override.
+
+    return 0;
 }
 
 
