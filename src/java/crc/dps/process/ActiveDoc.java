@@ -17,7 +17,11 @@ import java.net.URL;
 import crc.dps.*;
 import crc.dps.aux.*;
 import crc.dom.NodeList;
+import crc.dps.active.ParseNodeList;
+
 import crc.ds.List;
+import crc.ds.Table;
+import crc.ds.Tabular;
 
 import crc.pia.Pia;
 import crc.pia.Agent;
@@ -104,10 +108,10 @@ public class ActiveDoc extends TopProcessor {
       // form parameters might be either query string or POST data
       if(transaction.hasQueryString()){
         define("urlQuery",  transaction.queryString());
-	// === define("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
+	define("FORM", new NamespaceWrap("FORM", transaction.getParameters()));
       } else {
 	define("urlQuery",  "");
-	//define("FORM",new AttrWrap(new AttrTable()));
+	define("FORM", new NamespaceWrap("FORM", new Table()));
       }
       // if no parameters this is an empty table
 
@@ -130,6 +134,7 @@ public class ActiveDoc extends TopProcessor {
 	define("transAgentPath", null);
       }
     }
+
     Pia pia = Pia.instance();
     define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
     define("piaHOST", pia.properties().getProperty(Pia.PIA_HOST));
@@ -153,6 +158,15 @@ public class ActiveDoc extends TopProcessor {
       define("agentPath", "/"+agent.type()+"/"+agent.name());
     }
 
+    try {
+      define("AGENT", new NamespaceWrap("AGENT", (Tabular)agent));
+    } catch (Exception e) {
+    }
+
+   define("agentNames", new ParseNodeList(resolver.agentNames()));
+
+   define("entityNames", "");
+   define("entityNames", new ParseNodeList(entities.entityNames()));
   }
 
   /************************************************************************
@@ -249,18 +263,3 @@ public class ActiveDoc extends TopProcessor {
 
 }
 
-/* === entity initialization from crc.interform.Run
-
-
-
-
-      // === shouldn't have to convert these to text.
-      Tokens anames = new Tokens(resolver.agentNames(), " ").sortAscending();
-      define("agentNames", anames);
-    }
-
-    define("entityNames", "");
-    Tokens enames = new Tokens(entities.keys(), " ").sortAscending();
-    define("entityNames", enames);
-
-*/
