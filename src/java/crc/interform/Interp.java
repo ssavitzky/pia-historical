@@ -238,16 +238,37 @@ public class Interp extends State {
     return (SGML)entities.at(name);
   }
 
-  /** Get the value of a named attribute.  Looks up the context tree until
-   *	it finds one.
+  /** Set the value of a named global variable (entity).
    */
-  public final SGML getAttr(String name) {
+  public final SGML setGlobal(String name, SGML value) {
+    return (SGML)entities.at(name, value);
+  }
+
+  /** Get the value of a named attribute.  Looks up the context tree until
+   *	it finds one, or if tag is specified, an element with that tag.
+   */
+  public final SGML getAttr(String name, String tag) {
     for (State state=stack; state != null; state = state.stack) {
-      if (state.it != null && state.it.hasAttr(name)) {
+      if (state.it != null && ((tag == null && state.it.hasAttr(name)) 
+			       || tag.equals(state.it.tag()))) {
 	return state.it.attr(name);
       }
     }
     return null;
+  }
+
+  /** Set the value of a named attribute.  If a tag is specified, looks up 
+   *	the context tree for an element with that tag.
+   */
+  public final void setAttr(String name, SGML value, String tag) {
+    for (State state=stack; state != null; state = state.stack) {
+      if (state.it != null && (tag == null || tag.equals(state.it.tag()))) {
+	try {
+	  ((Token)state.it).attr(name, value);
+	} catch (Exception e) {}
+	return;
+      }
+    }
   }
 
   /************************************************************************
@@ -743,25 +764,41 @@ public class Interp extends State {
   ** Error Messages:
   ************************************************************************/
 
-  /** Eisplay a message to the user. */
-  public void message(String message) {
+  /** Display a message to the user. */
+  public final void message(String message) {
     if (debug) message = "\n" + message;
     if (debug || ! quiet()) System.err.println(message);
   }
 
-  /** Generate an error message and display it to the user. */
-  public void error(Actor ia, String message) {
+  /** Generate an error message and display it to the user.  We need to know 
+   *	which actor generated the message; the token itself is in 
+   *	<code>it</code> in case we decide to display it.
+   */
+  public final void error(Actor ia, String message) {
     String msg = errheader(ia) + message;
-    if (debug || ! quiet()) System.err.println(msg);
+    /*if (debug || ! quiet())*/ System.err.println(msg); // === not if quiet?
   }
 
-  /** Generate an "unimplemented" error message for the given actor. */
-  public void unimplemented(Actor ia) {
-    error(ia, "unimplemented");
+  /** Generate an "unimplemented" error message for the given actor.
+   *	This is especially convenient when implementing new primitive
+   *	actors; handle/Makefile reports all unimplemented actors.  */
+  public final void unimplemented(Actor ia) {
+    error(ia, "actor unimplemented");
+  }
+
+  /** Test a string value for null and return an ``attribute missing'' 
+   *	error message.  Either null or "" is an error.  */
+  public final boolean missing(Actor ia, String name, String value) {
+    if (value == null || "".equals(value)) {
+      error(ia, name + " attribute missing or null");
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /** Return an error-message header for the given Actor. */
-  public String errheader(Actor ia) {
+  public final String errheader(Actor ia) {
     String s = "Interform Error: ";
     if (debug) s = "\n"+s;
     String tag = (ia == null)? null : ia.tag();
