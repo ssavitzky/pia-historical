@@ -1,0 +1,105 @@
+<!doctype  tagset system "tagset.dtd">
+<html><head>
+    <title>&lt;tagset  name='standard'  parent='HTML'  include='basic'  recursive &gt;</title>
+    </head><body>
+      <h1>&lt;tagset  name='standard'  parent='HTML'  include='basic'  recursive &gt;</h1>
+	<blockquote>
+	  This documentation generated from &DPS:inputFile; using
+	  &DPS:tagsetName; 
+	</blockquote>
+      
+
+<h1>Standard Tagset</h1>
+
+ <blockquote><em> This tagset consists of the primitive operations from the <a href='basic.html'>basic</a> tagset, the additional non-primitive
+      convenience functions of <a href='standalone.html'>standalone</a>, and
+      HTML syntax.  It is intended for use in active HTML documents.
+</em></blockquote> 
+
+This file contains the XML definition for the Standard (new) Tagset.  It
+should be possible to process this file into either documentation or a DTD.
+It's concievable that we could even process it into Java. <p>
+
+Note the SGML requirement that the element named in the &lt;!doctype...&gt;
+declaration be the outermost element in the document.
+
+<h2>Definition Tags</h2>
+
+<blockquote><em>
+  These must already be defined for bootstrapping, but they will not be in the
+  tagset we are defining unless we put them there.  This is a feature, not a
+  bug.  Note that because the tagset is recursive, we are free to define new
+  tags in terms of old ones.  This means, however, that we have to be careful
+  not to use a tag until it has been defined.
+</em></blockquote>
+
+<h2>Control Structure Tags</h2>
+
+
+<h2>Data Manipulation Tags</h2>
+
+
+<h2>Data Structure Tags</h2>
+
+
+<h2>Form-Processing Tags</h2>
+
+<h3>Submit</h3>
+ <strong>&lt;define</strong>
+	    element='submit'  handler <strong>&gt;</strong> <br>
+	<blockquote>
+   <blockquote><em>
+  </em></blockquote> 
+   <strong>&lt;define</strong>
+	    attribute=''  optional <strong>&gt;</strong> <br>
+	<blockquote>
+     <blockquote><em> 
+    </em></blockquote> 
+  </blockquote>
+	<p>
+  
+</blockquote>
+	<p>
+  
+
+<h3>Form and its components</h3>
+ <strong>&lt;define</strong>
+	    element='form' <strong>&gt;</strong> <br>
+	<blockquote>
+   <blockquote><em>
+  </em></blockquote> 
+   <strong>&lt;define</strong>
+	    attribute=''  optional <strong>&gt;</strong> <br>
+	<blockquote>
+     <blockquote><em> 
+    </em></blockquote> 
+  </blockquote>
+	<p>
+  
+</blockquote>
+	<p>
+  
+
+<h4>Sub-elements of <code>&lt;form&gt;</code></h4>
+<ul>
+  <li>  <strong>&lt;define</strong>
+	    element='process'  parent='form'  quoted  handler <strong>&gt;</strong> <br>
+	<blockquote>
+          <blockquote><em> The content of a <code>&lt;process&gt;</code> element is expanded only
+	       when the <code>&lt;form&gt;</code> that contains it is being processed as
+	       a result of a <code>post</code> or <code>query</code>
+	       submission. 
+         </em></blockquote> 
+       </blockquote>
+	<p>
+  
+</li></ul>
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+
+    </body></html>
+  
+
