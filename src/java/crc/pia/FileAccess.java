@@ -122,8 +122,8 @@ public class FileAccess {
 	f = new File(myfile, zfile);
 	filepath = f.getPath();
 
-	if (zfile.toLowerCase().startsWith("header.") 
-	    && ! zfile.endsWith("~")) {
+	if (zfile.toLowerCase().startsWith("header") 
+	    && ! ignoreFile(zfile, filepath)) {
 	  head = suckBody(filepath);
 	  if (!all) continue;
 	}
@@ -288,6 +288,7 @@ public class FileAccess {
     if ( filename.startsWith("#") ) 	return true;
     if ( filename.startsWith(".#") ) 	return true;
     if ( filename.endsWith("~") )	return true;
+    if ( filename.endsWith(".bak") )	return true;
     if ( filename.equals(".") )		return true;
     if ( filename.equals("CVS") )	return true;
     if ( filename.equals("RCS") )	return true;
