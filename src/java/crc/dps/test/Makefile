@@ -33,11 +33,11 @@ RUN   =	$(BINDIR)/pia_wrapper
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 .xh.out:
-	$(RUN) $(CLASS) $(DEBUG) -t standard ./$< > $@ 2>$*.log
+	$(RUN) $(CLASS) $(DEBUG) -t xhtml ./$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 .xx.out:
-	$(RUN) $(CLASS) $(DEBUG) -t standalone ./$< > $@ 2>$*.log
+	$(RUN) $(CLASS) $(DEBUG) -t xxml ./$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 # make foo.run runs the tests with output on STDOUT.
@@ -55,11 +55,11 @@ RUN   =	$(BINDIR)/pia_wrapper
 	| tee $*.out
 
 .xh.run:
-	$(RUN) $(CLASS) $(DEBUG) -t standard ./$< 2>$*.log \
+	$(RUN) $(CLASS) $(DEBUG) -t xhtml ./$< 2>$*.log \
 	| tee $*.out
 
 .xx.run:
-	$(RUN) $(CLASS) $(DEBUG) -t standalone ./$< 2>$*.log \
+	$(RUN) $(CLASS) $(DEBUG) -t xxml ./$< 2>$*.log \
 	| tee $*.out
 
 
