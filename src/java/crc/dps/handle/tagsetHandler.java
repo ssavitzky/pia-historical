@@ -149,8 +149,8 @@ public class tagsetHandler extends GenericHandler {
       // === rather than including it.  This works, though, and I'm too
       // === lazy to fix it right now. (steve)
       Tagset parentTS =  crc.dps.tagset.Loader.require(parentTSname);
-System.err.println("Loading tagset=" + parentTSname + 
-		   ((parentTS == null)? " FAILED" : " OK"));
+      cxt.debug("Loading tagset=" + parentTSname + 
+		((parentTS == null)? " FAILED" : " OK"));
       if (parentTS == null) {
 	reportError(in, cxt, "Cannot load parent tagset " + parentTSname);
       } else {
@@ -164,7 +164,7 @@ System.err.println("Loading tagset=" + parentTSname +
       while (inames.hasMoreElements()) {
 	String incN  = inames.nextElement().toString();
 	Tagset incTS = crc.dps.tagset.Loader.require(incN);
-System.err.println("Loading tagset=" + incN + 
+	cxt.debug("Loading tagset=" + incN + 
 		   ((incTS == null)? " FAILED" : " OK"));
 	if (incTS == null) {
 	  reportError(in, cxt, "Cannot load included tagset " + incTS);
@@ -179,7 +179,7 @@ System.err.println("Loading tagset=" + incN +
       // load the specified parserTagset (TAGSET attribute)
       // Make it the current tagset in the parser.
       parserTagset = crc.dps.tagset.Loader.require(parserTSname);
-System.err.println("Loading tagset=" + parserTSname + 
+      cxt.debug("Loading tagset=" + parserTSname + 
 		   ((parserTagset == null)? " FAILED" : " OK"));
       if (parserTagset == null) {
 	reportError(in, cxt, "Cannot load parser tagset " + parserTSname);
