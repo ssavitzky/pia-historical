@@ -10,6 +10,7 @@ import crc.sgml.Text;
 
 import crc.ds.List;
 import crc.ds.Table;
+import java.util.Enumeration;
 
 /** The Util class contains no data, only static methods.  For the
  *	most part, these are operations that belong on classes like
@@ -241,6 +242,26 @@ public class Util {
     if (tag.equals("tr")) return "td";
     if (tag.equals("dl")) return "dt";
     return null;
+  }
+
+
+  /**
+   * walk an SGML element and return a text representation of the tree
+   * used mainly for debugging purposes
+   */
+
+  public static String  getSGMLTree(SGML element,String prefix){
+    String result = prefix +  element.getClass().getName() + "(tag="+element.tag()+") \n";
+    Tokens t = element.content();
+    if( t == null) return result;
+     Enumeration e =  t.elements();
+     if(e.hasMoreElements()){
+        result +=  prefix + "+--\n";
+     }
+     while(e.hasMoreElements()){
+        result+= getSGMLTree((SGML)e.nextElement(), prefix + "   ");
+     }
+     return result;
   }
 
   /************************************************************************
