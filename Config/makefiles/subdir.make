@@ -26,18 +26,18 @@
 #	setup	initialize Makefile and other essential files
 
 all::
-	for p in `ls -d $(SUBDIRS)`; do ( cd $$p; test -f Makefile \
-		&& $(MAKE) PIADIR=../$(PIADIR) VPATH=$(VPATH)/$$p ); \
+	for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
+		then $(MAKE) PIADIR=../$(PIADIR) VPATH=$(VPATH)/$$p; fi ); \
 	done
 
 doc::
-	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; test -f Makefile \
-		&& $(MAKE) PIADIR=../$(PIADIR) doc); \
+	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
+		then $(MAKE) PIADIR=../$(PIADIR) doc; fi); \
 	done
 
 clean::
-	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; test -f Makefile \
-		&& $(MAKE) PIADIR=../$(PIADIR) clean); \
+	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
+		then $(MAKE) PIADIR=../$(PIADIR) clean; fi); \
 	done
 
 setup::
@@ -47,7 +47,7 @@ setup::
 		test -f $$p/Makefile || (cd $$p; \
 		  make -f ../Makefile PIADIR=../$(PIADIR) \
 			MYPATH=$(MYPATH)/$$p MYNAME=$$p setupSub); \
-		(cd $$p; $(MAKE) PIADIR=../$(PIADIR) setup); \
+		(cd $$p; $(MAKE) PIADIR=../$(PIADIR) setup || true); \
 	done
 
 setupSub: 
