@@ -6,7 +6,8 @@ PACKAGE=crc.pia
 TOPDIR=../..
 
 PACKAGES = \
-	agent
+	agent \
+	handle
 
 FILES = \
 	Athread.java \

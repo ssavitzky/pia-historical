@@ -40,37 +40,47 @@ Note that we only need these inside the PIA.
 
 <h2>Legacy Tags</h2>
 
-<note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
-   following definitions.  This is expedient (i.e. a temporary hack), but all
-   such definitions will eventually be replaced.  The cannonical location for
-   agent-specific handlers is in the <code>crc.pia.agent</code> package.  The
-   best place for PIA-specific handlers is probably in
+<note author=steve> The use of <code>handler=legacy:xxx</code> was a
+   convenient temporary expedient but is no longer necessary. The cannonical
+   location for agent-specific handlers is in the <code>crc.pia.agent</code>
+   package.  More generic but PIA-specific handlers are in 
    <code>crc.pia.handle</code>. 
 </note>
 
-<define element=agent-list handler=legacy:agent-list empty>
+<define element=agent-list handler=crc.pia.handle.agentList empty>
   <doc> List agents, possibly those with a given type.
   </doc>
+   <define attribute=type optional>
+      <doc> specifies the type of the agents to be listed.
+      </doc>
+   </define>
+   <define attribute=subs boolean optional>
+      <doc> If present, specifies that only sub-agents of the given type will
+	    be listed. 
+      </doc>
+   </define>
 </define>
 
-<define element=agent-running empty handler=legacy:agent-running>
+<define element=agent-running empty handler=crc.pia.handle.agentRunning>
    <doc> Determine whether a given agent is currently running (installed in
 	 the PIA).
    </doc>
    <define attribute=name required>
       <doc> specifies the name of the agent being queried.
       </doc>
-      <note author=steve> Should almost certainly be changed to "agent".
+      <note author=steve> It was once thought that this should be renamed
+	``agent'', but <em>nothing</em> else uses that, so it would be a
+	mistake. 
       </note>
    </define>
 </define>
 
-<define element=user-message handler=legacy:user-message>
+<define element=user-message handler=crc.pia.handle.userMessage>
   <doc> Output a message to the user.
   </doc>
 </define>
 
-<define element=trans-control handler=legacy:trans-control>
+<define element=trans-control handler=crc.pia.handle.transControl>
   <doc> Make content into a transaction control.
   </doc>
 </define>
