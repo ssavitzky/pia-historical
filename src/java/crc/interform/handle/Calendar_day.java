@@ -29,9 +29,9 @@ import java.lang.Runtime;
 /** Handler class for &lt;os-command&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;calendar-day cal=&calendar day=[1-31]&gt;string;/calendar-day&gt;
+ *	&lt;calendar-day cal=&calendar day=[1-31]&gt;content;/calendar-day&gt;
  * <dt>Dscr:<dd>
- *	Insert string into table indicated by the day
+ *	Insert content into table indicated by the day
  *  </dl>
  */
 public class Calendar_day extends crc.interform.Handler {
@@ -54,14 +54,13 @@ public class Calendar_day extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<calendar cal=\"calendar-table\" day=\"day\">\n" +
-    "string\n" +
+    "content\n" +
     "</calendar-day>" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
-    "Execute CONTENT as an operating system command \n" +
-    "in the background with proxies set to PIA.  \n" +
-    "Optionally BYPASS proxies.\n" +
+    "Insert content into calendar table \n" +
+    "at the given day location\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
