@@ -3,6 +3,8 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
  * Interface for Input stack frames.
@@ -11,9 +13,20 @@ package crc.interform;
  *	of tokens (represented by functor objects).  The primary example
  *	of the latter is the HTML tokenizer.
  */
-public abstract class Input {
+public abstract class Input implements Enumeration {
+
+
+  /************************************************************************
+  ** Variables:
+  ************************************************************************/
+
   /** Link to the previous Input in the stack */
   public Input prev;
+
+
+  /************************************************************************
+  ** Variables:
+  ************************************************************************/
 
   /** Return the next item in this frame and advances to the next. 
    *	nextInput() should never return null.
@@ -51,4 +64,19 @@ public abstract class Input {
 
   /** Ignore entities (pass them as part of the text) if true. */
   boolean ignoreEntities;
+
+
+  /************************************************************************
+  ** Enumeration interface:
+  ************************************************************************/
+
+  public boolean hasMoreElements() {
+    return !endInput();
+  }
+
+  public Object nextElement() {
+    if (endInput()) throw new NoSuchElementException();
+    return nextInput();
+  }
+
 }
