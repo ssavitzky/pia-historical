@@ -21,8 +21,8 @@ sub initialize {
 sub  new_requests{
     my($self,$request)=@_;
 
-    print "redirecting request to" if  $main::debugging;
-    print $request->url() if  $main::debugging;
+    print "redirecting request to " if  $main::debugging;
+    print $request->url() . "\n" if  $main::debugging;
     my @responses;
     
     my $ua = new LWP::UserAgent;
