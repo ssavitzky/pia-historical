@@ -1,0 +1,45 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>InterForm Actors</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>List of Defined InterForm Actors</h1>
+
+
+<dl foreach list="&actorNames;">
+  <dt> &lt;<strong>&li;</strong><actor-attrs name="&li;">&gt;
+  <dd> <actor-dscr name="&li;">
+</dl>
+
+<h3>Note:  Action or Actor?</h3>
+
+<blockquote><em>
+  We call the things that ``act on'' syntactic elements inside InterForms
+  ``<dfn>actors</dfn>'' rather than ``agents'' (to avoid confusion with PIA
+  Agents, which act on HTTP transactions), or ``actions'' (in part because
+  they come in both ``active'' and ``passive'' forms, and the phrase ``passive
+  action'' sounds silly).<p>
+
+  Besides, having both ``actors'' and ``agents'' in the system has the
+  potential to give rise to a whole new set of puns.
+</em></blockquote>
+
+<hr>
+
+<a href="/agency">Agency home page</a>
+<b>URL:</b>
+&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<b>User:</b> &piaUSER;
+
+
+<hr>
+
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Wed Nov 20 13:27:05 1996
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>

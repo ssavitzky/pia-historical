@@ -1,0 +1,45 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agent installation InterForm</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>Agent installation InterForm</h1>
+
+<set entity name="name"><agent-install>&urlQuery;</agent-install></set>
+<!-- urlQuery fails because install is normally a POST -->
+
+<if><get entity name="name">
+<then>
+  &name; agent installed; <p>
+  url = "&url;", query string "&urlQuery;".
+  <ul>
+    <li> <a href="/&name;/">&name; index</a>
+    <li> <a href="/&name;/home.if">&name; home page</a>
+    <li> <a href="/&name;/options.if">&name; options</a>
+  </ul>
+</then>
+<else> Please specify an agent using the form below:
+</if>
+<p>
+<hr>
+<h2> Form for installing another agent</a>
+<form action="/agency/install_agent.if" method="POST">
+<input type="submit" value="Install">
+Name:<input name="agent" value="agent_name" size=30>
+Type:<input name="type" value="agent_type">
+</form>
+
+You can usually leave the <em>type</em> blank and it will default to the name.
+If a class-declaration module <code>PIA::Agent::<em>type</em></code> exists,
+it will be loaded if necessary.  The standard ones are in <code><a
+href="/PIA/src/lib/perl/PIA/Agent/"
+>/PIA/src/lib/perl/PIA/Agent/</a></code><p>
+
+
+  
+<hr><a href=/agency/home.if> Agency Home</a> 
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Fri Dec 20 16:29:47 1996
+<!-- hhmts end -->
+</body></html>

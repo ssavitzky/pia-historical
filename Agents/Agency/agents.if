@@ -1,0 +1,58 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agents</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>Index of Running Agents</h1>
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<hr>
+ 
+<if><agent-running name=logo>
+    <then><img src="/logo/pia120" align=right
+               height=120 width=222></then></if>
+
+<pre><i><pad align=right width=15>Index</pad>	Home</i>
+<repeat list="&agentNames;"
+       ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+       >	<agent-home link>&li;</agent-home>
+</repeat></pre>
+
+<hr>
+<a href="/">PIA/</a>
+<a href="/agency//home.if">Agency agent</a>
+<b>URL:</b>
+&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<b>User:</b> &piaUSER;
+<hr>
+
+<h3>Implementation Note:</h3>
+<blockquote><em>
+  If you look at the <a href="/PIA/src/Agents/agency/agents.if">InterForm code
+  for this page</a>, you'll see some ugliness involved in listing the
+  agents.  This is mainly because we're using a &lt;pre&gt; tag for a compact,
+  two-column display with a header line; otherwise it would be possible to use
+  a &lt;dl&gt; or &lt;table&gt; with an implicit loop.  &lt;dl compact&gt; is
+  tempting but most browsers don't allocate enough space for the &lt;dt&gt;
+  and put in a line break anyway if it's too long.
+<p>
+  As it is, both extra line breaks and excessively-long lines are avoided by
+  putting line breaks inside tags, which is disgusting but it works.  The
+  following is much more elegant, but it doesn't have headers and doesn't work
+  well in browsers without tables.
+</em></blockquote>
+
+<table foreach list="&agentNames;">
+  <tr> <th align=right> <a href="/&li;/">&li;/</a> 
+       <td> <agent-home link>&li;</agent-home><br>
+</table>
+<hr>
+
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Dec  5 09:36:00 1996
+<!-- hhmts end -->
+</body></html>

@@ -1,0 +1,155 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Agent Installers</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
+</head><body>
+<h1>Agent Installers</h1>
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<hr>
+ 
+This file, whch can also be used as a start-up file, contains ``canned''
+install forms for various agents.  You are encouraged to paste sections out of
+this file into your own start-up file.  When you design a new agent, please
+add a default start-up form to this file.  <p>
+
+
+<h2>Start up agents</h2>
+<dl> 
+  <dt> <a name="History">History agent</a>
+       <if><agent-running name=History><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="History">
+       </form></if>
+  <dt> <a name="CIA">CIA agent</a>
+       <if><agent-running name=CIA><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="CIA">
+       </form></if>
+  <dt> <a name="FBI">FBI agent</a>
+       <if><agent-running name=FBI><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" METHOD="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="FBI">
+       </form></if>
+  <dt> <a name="logo">Logo agent</a>
+       <if><agent-running name=Logo><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" METHOD="POST">
+       <input type="submit" value="Install">
+       name: <INPUT NAME="agent" value="Logo">
+       </form></if>
+  <dt> <a name="Thumbnail">Thumbnail agent</a> (creates thumbnail gifs of html
+       pages) 
+       <if><agent-running name=Thumbnail><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Thumbnail">
+       type:<input name="type" value="Graphics">
+       </form></if>
+  <dt> <a name="Cache">Cache agent</a> (keeps a copy of every external doc...)
+       <if><agent-running name=Cache><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Cache"><br>
+       (could add more options here, like update frequency: always, never,
+       once,...) 
+       </form> </if>
+
+  <dt> <a name="InterForm">InterForm Demonstration and Test agent</a>
+       <if><agent-running name="InterForm"><then><em>installed</em></then><else>
+  <dd> <FORM ACTION="/Agency/install_agent.if" METHOD="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="InterForm">
+       </form></if>
+  <dt> <a name="Printer">Printer agent</a>
+       <if><agent-running name=Printer><then><em>installed</em></if>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="Printer">
+       type: <input name="type" value="Printer">
+       </form>
+</dl>
+<h3>And Document-Oriented File Systems</h3>
+
+<dl>
+  <dt> <a name="dofs">the DOFS agent</a>
+  <dd> <if><agent-running name=DOFS>
+       <then><em>is already running, as it should be.</em></then>
+       <else> Really needs to be running, or lots of things won't work.
+       <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install NOW!">
+       name:<input name="agent" value="DOFS">
+       </form></if><p>
+
+  <dt> <a name="My">DOFS/My</a>
+       <if><agent-running name=My><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="My">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia">
+       <input type="submit" value="Install">
+       </form></if>
+  <dt> <a name="PIA">DOFS/PIA</a>
+       <if><agent-running name=PIA><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="PIA">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/pia">
+       <input type="submit" value="Install">
+       </form></if>
+  <dt> <a name="Root">DOFS/Root</a>
+       <if><agent-running name=Root><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Root">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="/">
+       <input type="submit" value="Install">
+       </form></if>
+  <dt> <a name="Home">DOFS/Home</a>
+       <if><agent-running name=Home><then><em>installed</em></then>
+       <else>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Home">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/">
+       <input type="submit" value="Install">
+       </form></if>
+  <dt> Generic DOFS form:
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Name">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="/complete/path/">
+       <input type="submit" value="Install">
+       </form></if>
+
+</dl>
+
+<h3>Probably Obsolete</h3>
+
+<dl>
+  <dt> Proxy agent (probably not needed anymore)
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Proxy"><br>
+       network:<input name="network" value="installed">
+       (use 'none' if no network available)<br> 
+       <input type="submit" value="Install"><br>
+       </form>
+</dl>
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Tue Mar 11 16:59:47 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>

@@ -1,0 +1,351 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>InterForm Actor Demo Page</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>InterForm Actor Demo Page</h1>
+
+<hr><!-- Standard header for if_demo files -->
+&lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+&lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
+<hr>
+ 
+<h3>About This Page:</h3>
+
+This page is intended eventually to have a <em>complete</em> set of examples
+illustrating every feature of every InterForm actor in the Standard Tagset,
+along with a brief description.  There is also a complete active document
+describing the <a href="tag_man.if">Standard Tagset</a>, and a more
+conventional <a href="/PIA/Doc/Manuals/InterForm/index.html">InterForm
+Manual</a>.<p>
+
+
+The order of presentation approximates that
+in the source file <code><a
+href="/PIA/src/lib/perl/IF/Actors.pm">IF::Actors</a></code>.  <p>
+
+<!-- Define some utility actors, used mainly for layout: -->
+
+<!-- The man page, and actor names linked to it -->
+<set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
+<actor name=man dscr="Link an actor name to the manual">
+  <set entity name=content><get name=content></set>
+  <a href="&IFman;#&content;">&content;</a>
+</actor>
+<actor name=atag dscr="``tag'' for actor named in CONTENT">
+  <set entity name=n><get name=content></set>
+  &lt;<strong><man>&n;</man></strong> <actor-attrs name="&n;"> &gt;
+</actor>
+
+<!-- Name anchors in THIS page, and links to them. -->
+<actor name=toc dscr="Link an actor name to this page">
+  <set entity name=content><get name=content></set>
+  <a href="#&content;">&content;</a>
+</actor>
+
+<actor name=name dscr="Make a name anchor">
+  <set entity name=content><get name=content></set>
+  <a name="&content;">&content;</a>
+</actor>
+<actor name=atoc dscr="``tag'' for actor named in CONTENT">
+  <set entity name=n><get name=content></set>
+  &lt;<strong><toc>&n;</toc></strong> <actor-attrs name="&n;"> &gt;
+</actor>
+
+<actor name=adscr dscr="Make an actor description
+cross-referenced to the manual.">
+  <set entity name=list><get name=content></set>
+  <dl foreach list="&list;">
+    <dt> <atag>&li;</atag>
+    <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+  </dl>
+</actor>
+<actor name=alist dscr="Make a list of actor tags">
+  <set entity name=list><get name=content></set>
+<ul foreach list="&list;">
+    <li> <atoc>&li;</atoc>
+</ul>
+</actor>
+
+<h3>Index</h3>
+
+<alist>&actorNames;</alist>
+  
+<hr>
+<h2>Actor Definition and Control</h2>
+<alist>actor actor-attrs actor-dscr</alist>
+
+<h3><name>actor</name></h3>
+<adscr>actor</adscr>
+  
+<pre><protect markup>
+<actor name=demo quoted=1 dscr="show both CONTENT and its value">
+  <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
+  <expand><get name=content></expand>
+</actor>
+</protect></pre>
+
+<actor name=demo quoted=1 dscr="show both CONTENT and its value">
+  <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
+  <expand> `<get name=content>' </expand>
+</actor>
+
+<adscr>demo</adscr>
+
+<demo><demo><get pia name="main::debugging"></demo></demo>
+<p>
+
+<h3><name>actor-attrs</name></h3>
+<adscr>actor-attrs</adscr>
+
+<h3><name>actor-dscr</name></h3>
+<adscr>actor-dscr</adscr>
+
+<hr>
+<h2>Name Bindings</h2>
+
+<alist>get set</alist>
+
+<h3><name>get</name></h3>
+<adscr>get</adscr>
+  
+<dl>
+  <dt> <set pia name="main::debugging" value=0>
+       <demo><get pia name="main::debugging"></demo>
+       <set pia name="main::debugging" value=0>
+  <dd> 
+  <dt> <demo><code attribute=value><get element name=attribute></code></demo>
+  <dd>
+</dl>
+
+<h3><name>set</name></h3>
+<adscr>set</adscr>
+
+<dl>
+  <dt> <demo><set entity name=foo><ul><li>1<li>2</ul></set></demo><br>
+  	<demo><get entity name=foo></demo>
+  <dd> Entities can include markup.
+  <dt> <demo>--&foo;--</demo>
+  <dd> This looks like a string to the tokenizer.  Note the leading and
+       trailing text.
+</dl>
+
+<hr>
+<h2>Control Structure</h2>
+
+<alist>if then else repeat -foreach-</alist>
+
+<h3><name>if</name></h3>
+<adscr>if</adscr>
+
+<dl>
+  <dt> <demo><if><then>true</then><else>false</else></if></demo>
+  <dd> 
+  <dt> <demo><if>xxx<then>true</then><else>false</else></if></demo>
+  <dd> 
+  <dt> <demo><if><test> </test><then>true</then><else>false</else></if></demo>
+  <dd>
+  <dt> <demo>
+        <if><test>xxx</test><then>true</then><else>false</else></if></demo>
+  <dd> 
+</dl>
+
+<h3><name>repeat</name></h3>
+<adscr>repeat</adscr>
+
+<dl>
+  <dt> <demo><repeat list="a b c">&li; &li; </repeat></demo>
+  <dd> 
+  <dt> <demo><repeat list="a b c" entity="foo">&foo;</repeat></demo>
+  <dd> 
+  <dt> <demo><repeat list="a b c">&li;<repeat list="d e f">&li;</> </></demo>
+  <dd> 
+  <dt> <demo><set entity name=foo><ul><li>1<li>2</ul></set></demo><br>
+       <demo><repeat list="&foo;">&li;--</repeat></demo>
+  <dd> 
+  <dt> <demo><set entity name=foo><li>1<li>2</set></demo><br>
+       <demo><repeat list="&foo;">&li;--</repeat></demo>
+  <dd> 
+</dl>
+
+<h3><name>-foreach-</name></h3>
+<adscr>-foreach-</adscr>
+
+<dl>
+  <dt> <demo><ol foreach list="a b c"><li> &li;</ol></demo>
+  <dd> 
+</dl>
+
+<hr>
+<h2>Tests</h2>
+
+<alist>test</alist>
+
+<h3><name>test</name></h3>
+<adscr>test</adscr>
+
+<dl>
+  <dt> <demo><test ></test></demo> (completely empty)
+  <dd>  
+  <dt> <demo><test > </test></demo> (space)
+  <dd>  (any whitespace sounts as false)
+  <dt> <demo><test> not blanks </test></demo>
+  <dd> 
+  <dt> <demo><test text > </test></demo>
+  <dd> 
+  <dt> <demo><test text > not blanks </test></demo>
+  <dd> 
+  <dt> <demo><test zero > 0 </test></demo>
+  <dd> 
+  <dt> <demo><test zero > xxx </test></demo>
+  <dd> 
+  <dt> <demo><test zero > 100 </test></demo>
+  <dd>
+  <dt> <demo><test zero > -100 </test></demo>
+  <dd>
+  <dt> <demo><test positive > 0 </test></demo>
+  <dd>
+  <dt> <demo><test positive> 100 </test></demo>
+  <dd>
+  <dt> <demo><test positive> -100 </test></demo>
+  <dd>
+  <dt> <demo><test negative > 0 </test></demo>
+  <dd>
+  <dt> <demo><test negative> 100 </test></demo>
+  <dd>
+  <dt> <demo><test negative> -100 </test></demo>
+  <dd>
+  <dt> <demo><test match="foo"> test match something  </test></demo>
+  <dd>
+  <dt> <demo><test match="foo"> test match foo something  </test></demo>
+  <dd>
+  <dt> <demo><test exact match="foo"> test match foo something  </test></demo>
+  <dd>
+  <dt> <demo><test exact match="foo">foo</test></demo>
+  <dd>
+</dl>
+
+<hr>
+<h2>Numeric Processing</h2>
+
+<alist>sum difference product quotient</alist>
+
+<h3><name>sum</name></h3>
+<adscr>sum</adscr>
+
+<dl>
+  <dt> <demo><sum> </sum></demo>
+  <dd> an empty list sums to zero
+  <dt> <demo><sum>1 2 3</sum></demo>
+  <dd> A list can contain plain text
+  <dt> <demo><sum><it>1</it> <a name=foo>2</a> 3</sum></demo>
+  <dd> markup
+  <dt> <demo><sum><ul><li>1<li> 2<li> 3</ul></sum></demo>
+  <dd> or a single list element
+</dl>
+
+<h3><name>difference</name></h3>
+<adscr>difference</adscr>
+
+<dl>
+  <dt> <demo><difference> </difference></demo>
+  <dd> an empty list still ends up as zero
+  <dt> <demo><difference>6 2</difference></demo>
+  <dd> 
+  <dt> <demo><difference>6 2 3</difference></demo>
+  <dd> additional terms are subtracted
+  <dt> <demo><difference>2 6</difference></demo>
+  <dd> Negative numbers are handled.
+</dl>
+
+<h3><name>product</name></h3>
+<adscr>product</adscr>
+
+<dl>
+  <dt> <demo><product>6 2 3</product></demo>
+  <dd> 
+</dl>
+
+<h3><name>quotient</name></h3>
+<adscr>quotient</adscr>
+
+<dl>
+  <dt> <demo><quotient>6 2</quotient></demo>
+  <dd> 
+  <dt> <demo><quotient>36 6 2</quotient></demo>
+  <dd> additional terms are handled
+  <dt> <demo><quotient>1 2</quotient></demo>
+  <dd> Fractions are handled.
+  <dt> <demo><quotient>1 0</quotient></demo>
+  <dd> Division by zero is handled, though perhaps not gracefully
+</dl>
+
+<hr>
+<h2>List Processing</h2>
+
+<alist>sort</alist>
+
+<h3><name>sort</name></h3>
+<adscr>sort</adscr>
+
+<dl>
+  <dt> <demo><sort>This is a test</sort></demo>
+  <dd> 
+  <dt> <demo><sort>7 5 35</sort></demo>
+  <dd> 
+  <dt> <demo><sort case>This is a test</sort></demo>
+  <dd> 
+  <dt> <demo><sort reverse>This is a test</sort></demo>
+  <dd> 
+  <dt> <demo><sort reverse>7 5 35</sort></demo>
+  <dd> 
+  <dt> <demo><sort numeric>7 5 35</sort></demo>
+  <dd>
+  <dt> <demo><sort numeric reverse>7 5 35</sort></demo>
+  <dd>
+</dl>
+
+<hr>
+<h2>String Processing</h2>
+<alist>pad</alist>
+
+<h3><name>pad</name></h3>
+<adscr>pad</adscr>
+
+
+<hr>
+<h2>PIA Agents</h2>
+
+<alist>agent-home agent-running agent-set-options</alist>
+
+<h3><name>agent-home</name></h3>
+
+<h3><name>agent-running</name></h3>
+
+<h3><name>agent-options</name></h3>
+
+<h3><name>agent-set-options</name></h3>
+
+
+<hr>
+<h2>OS Operations</h2>
+
+<h3><name>os-command</name></h3>
+
+<h3><name>os-command-results</name></h3>
+
+
+<hr>
+<h2>Primitive Actions</h2>
+
+<h3><name>-eval-perl-</name></h3>
+
+
+
+<hr>
+<b>$Id$</b>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>

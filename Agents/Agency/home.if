@@ -1,0 +1,108 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&piaUSER;'s &agentName;: Home Page</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+</head><body bgcolor="#ffffff">
+<h1>Agency Home for 
+<if><test match="^pia$">&piaUSER;</test>
+    <then> the </then>
+    <else> &piaUSER;'s</else></if>
+<if><agent-running name=Logo>
+    <then><img src="/logo/pia32" align=top 
+               height=32 width=60 alt=PIA></then>
+    <else> PIA
+           <img src="http://&piaHOST;:&piaPORT;/PIA/Doc/Graphics/sm_pent.gif"
+	        align=top>
+    </else></if>
+on &piaHOST;
+</h1>
+
+<h3>
+<if><test match="^pia$">&piaUSER;</test>
+    <then> a Peripheral Interface </then>
+    <else> &piaUSER;'s Personal Information </else></if> Agency</h3>
+
+<b>URL:</b> &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<b>User:</b> &piaUSER;<br>
+<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
+<b>Agents:</b>
+   <repeat list="&agentNames;" entity="foo">
+      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+   </repeat>
+<p>
+
+<hr>
+This is the home page for the ``<strong>&agentName;</strong>'' agent.  It is
+used for controlling the other agents running on this PIA.
+<hr>
+
+
+<h3>Useful Interforms:</h3>
+<ul>
+  <li> <a href=/Agency/agents.if>list running agents</a>
+  <li> <a href="/Agency/installers.if">install new agents</a>
+  <li> <a href=/Agency/options.if>view/change options</a>
+  <li> <a href=/Agency/debug.if>toggle debugging</a> (currently
+       <if><test zero><get pia name="main::debugging"></test>
+           <then>off</then><else>on</else></if>)
+  <li> <a href=/Agency/remove_agent.if> remove agent</a>
+  <li> <a href="/Agency/os-cmd.if">run OS commands</a>
+  <li> <a href="/Agency/shutdown.if">Shut down the PIA or the computer</a>
+</ul>
+
+<h3>Other Information:</h3>
+<ul>
+  <li> <a href="/PIA/Doc/"><b>Documentation</b> </a>
+       <if><agent-running name=PIA><then></then>
+       <else><a href="/Agency/installers.if#PIA"><em>install
+       needed!</em></a></else></if>
+  <li> <a href="/Agency/entities.if">list defined entities</a>
+  <li> <a href="/Agency/actors.if">list defined actors</a>
+  <li> <a href="/InterForm/home.if">InterForm demonstration agent</a>
+       <if><agent-running name="InterForm"><then></then>
+       <else><a href="/Agency/installers.if#InterForm"><em>install
+       needed!</em></a></else></if>
+</ul>
+
+<hr>
+<dl>
+  <dt> <b>Note:</b>
+  <dd> The information above is what you'll use almost all the time.
+       Everything below this is mainly of interest to hackers, and can safely
+       be skipped by the non-curious.
+</dl>
+<hr>
+
+<h3>Where Things Are:</h3>
+
+<ul>
+  <li> <code>PIA_DIR = &piaDIR; </code>
+       (parent of src, Doc, etc.) <br>
+       If things are set up correctly, this should also be reachable as
+       <a href="/PIA/">/PIA/</a>
+  <li> <code>PIA_LIB = <get pia name="main::PIA_LIB"></code>
+       (agency libraries)
+  <li> <code>PIA_ROOT= <get pia name="main::PIA_ROOT"></code>
+       (agent interforms)
+  <li> <code>USR_DIR = <get pia name="main::USR_DIR"></code>
+       (your customizations and agent output)  <br>
+       If things are set up correctly, this should also be reachable as
+       <a href="/My/">/My/</a>
+  <li> <code>USR_ROOT= <get pia name="main::USR_ROOT"></code>
+       (your customized interforms)
+</ul>
+
+<h3>Miscellaneous files...normally not accessed directly</h3>
+<ul>
+     <li> <a href=/Agency/install_agent.if> install agent</a> -- requires
+	  knowledge of several non-obvious parameters.
+     <li> <a href=/Agency/START-UP.html> start-up 
+	  (this file gets "executed" on start-up)</a>
+     <li> <a href=/Agency/initialize.if> initialize agency 
+	  (this file gets "executed" when a new agency agent is created)</a>
+</ul>
+<hr>
+<b>$Id$</b><br>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+</body></html>

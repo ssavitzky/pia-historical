@@ -1,0 +1,29 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Remove agent InterForm</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>Remove agent InterForm for <a href=/agency/home.if> Agency</a> </h1>
+
+<if><get form name=agent>
+<then>
+  Removed <agent-remove><get form name=agent></agent-remove>
+</then><else>
+  No agent specified.  Use the form below:
+</else></if>
+
+<hr>
+<h2> Agent removal form</h2>
+<form action="/agency/remove_agent.if" method="POST">
+Name:<select name="agent">
+        <repeat list="&agentNames;" ><option>&li;</option></repeat>
+     </select>
+<input type="submit" value="Remove Agent">
+</form>
+
+<hr>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Tue Feb  4 16:44:29 1997
+<!-- hhmts end -->
+</body></html>

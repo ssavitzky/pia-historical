@@ -1,0 +1,94 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>InterForm Actor Test Page</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>InterForm Actor Test Page</h1>
+
+<hr><!-- Standard header for if_demo files -->
+&lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+&lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
+<hr>
+ 
+
+<h3>Useful Information:</h3>
+<ul>
+  <li> <a href=/&agentName;/actors.if>list defined InterForm Actors</a>
+  <li> <a href=/agency/agents.if>list running PIA agents</a>
+  <li> <a href=/&agentName;/entities.if>list defined entities</a>
+  <li> <a href=/&agentName;/options.if>view/change options</a>
+  <li> <a href=/agency/debug.if>toggle debugging</a> (currently 
+       <code language="perl"> $main::debugging? "on" : "off"; </code> );
+  <li> <a href="/PIA/src/Agents/&agentName;/">Source directory (DOFS)</a>
+</ul>
+
+<h2>About This Agent:</h2>
+
+<!-- Note: the b and a tags below have nameless end tags in the .if file: -->
+The <b><a href="/&agentName;/">&agentName;</></b> agent is intended as a
+demonstration and testbed for the PIA's InterForm markup language and its
+formatter/interpretor.<p>
+
+<actor name=demo quoted=1 dscr="show both CONTENT and its value">
+  <protect-result markup><get name=content></protect-result> <b>=&gt;</b> 
+<expand><get name=content></expand>
+</actor>
+
+<dl>
+  <dt> <demo><set entity name=foo><ul><li>1<li>2</ul></set></demo><br>
+       <demo><repeat list="&foo;">&li;--</repeat></demo>
+  <dd> 
+  <dt> <demo><set entity name=foo><li>1<li>2</set></demo><br>
+       <demo><repeat list="&foo;">&li;--</repeat></demo>
+  <dd> 
+</dl>
+
+<pre><demo><read file="~/.signature"></demo></pre>
+<pre><demo><read links file="~/.pia"></demo></pre>
+<pre><demo><read file="~/.pia"></demo></pre>
+<pre><demo><read directory match="^[A-Z].*[^~]$" tag=ol file="~/.pia"></demo></pre>
+<pre><demo><read directory file="~/.pia/HEADER.html"></demo></pre>
+<demo><set entity name=dir><read directory file="~/.pia"></set>
+<ul foreach list="&dir;">
+   <li> <read info file="~/.pia/&li;"> <a href="/My/&li;">&li;</a>
+</ul></demo>
+
+<demo><write file="test">This is a test
+</write></demo><br>
+<demo><read file="test"></demo><br>
+<demo><write append copy file="test">This is another test
+</write></demo><br>
+<demo><read file="test"></demo><br>
+
+<p>
+urlQuery = '&urlQuery;'<p>
+
+<form method=POST action="&url;">
+<if><get form name=command>
+    <then>The command listed below is running in the background:
+          <os-command><get form name=command></os-command>
+    </then>
+    <else> Enter a command in the form below.  It will be run in the
+	   background with proxies set.
+    </else>
+</if>
+<br>
+<input type=submit value=Command:>
+<input size=50 name=command value="chimera">
+</form>
+
+<h3>Process status:</h3>
+<pre>
+<os-command-output>ps</os-command-output>
+</pre>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Fri Feb 21 11:21:24 1997
+<!-- hhmts end -->
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>

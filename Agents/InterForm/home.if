@@ -1,0 +1,43 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>InterForm Demo and Test Home Page</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>InterForm Demo and Test Home Page</h1>
+
+<hr><!-- Standard header for if_demo files -->
+&lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+&lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
+<hr>
+ 
+
+<h3>Useful Information:</h3>
+<ul>
+  <li> <a href=/&agentName;/actors.if>list defined InterForm Actors</a>
+  <li> <a href=/agency/agents.if>list running PIA agents</a>
+  <li> <a href=/&agentName;/entities.if>list defined entities</a>
+  <li> <a href=/&agentName;/options.if>view/change options</a>
+  <li> <a href=/&agentName;/demo.if>demo page</a>
+  <li> <a href=/&agentName;/test.if>test page</a>
+  <li> <a href=/agency/debug.if>toggle debugging</a> (currently 
+       <code language="perl"> $main::debugging? "on" : "off"; </code> );
+  <li> <a href="/PIA/src/Agents/&agentName;/">Source directory (DOFS)</a>
+</ul>
+
+<h2>About This Agent:</h2>
+
+The <b><a href="/&agentName;/">&agentName;</a></b> agent is intended as a
+demonstration and testbed for the PIA's InterForm markup language and its
+formatter/interpretor.<p>
+
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Wed Nov 27 10:30:01 1996
+<!-- hhmts end -->
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>
