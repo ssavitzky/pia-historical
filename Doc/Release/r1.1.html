@@ -8,7 +8,64 @@
 <h2>Release Announcements</h2>
 
 
-<h4> New Features</h4>
+<P ALIGN=Center>
+<A HREF="#announce">Announcements</A> | <A HREF="#newfeatures">New Features</A> | <A HREF="#missfeatures">Missing Features</A> | <A HREF="#information">Additional Information</A>
+
+
+<h2><A NAME="announce">Release Announcements</A></h2>
+<h3>Release 1.1 Alpha</h3>
+<p>
+
+The PIA group is pleased to announce the minor upgrade of the Information
+Agency.  The Information Agency is a proxy web server (implemented in Java)
+that provides an environment for document processing agents.  This release
+includes security authentication, Template agent for generating new agents, and
+an implementation of PUT request.
+
+<p>
+
+We recommend that interested users start by installing and running their own
+Personal Information Agency.  (See the <a href="../Manuals/Install">
+Installation manual</a> for instructions.)
+Once the agency is running, you can view further documentation and try
+customizing the demonstration agents.
+
+<h3><A NAME="newfeatures">New Features</A></h3>
+<h4>Security Authentication</h4>
+<dl>
+  <dt>  Security authorization
+  <dd>  If a password file as the value of the "authentication"
+	option of an agent,  the agent will request basic authentication
+	before returning InterForms to the user.  The user name will be
+	available as the AuthenticatedUser feature on a transaction.
+  <dt>    digital signatures
+  <dd>  the hash and sign tags can be used to create and verify digital
+	signatures and manage public/private key collections.   Because they
+	use JDK1.2 features, these handlers must be compiled by hand and
+	explicitly loaded (not a part of the standard tag set).
+</dl>
+<h4>Template Agent</h4>
+<h4>PUT request</A4>
+
+<h3><A NAME="missfeatures">Missing Features</A></h3>
+While the core agency is stable and unlikely to change substantially, several
+features have not yet been fully implemented.  Most important among these are
+the security model, the InterForm methods for accessing data structure, and
+the support for dynamic manipulation of "tagsets" by agents.  
+
+<h3><A NAME="information"> Additional Information</A></h3>
+<p>
+The latest information regarding PIA technology can be found on the PIA
+group's web site: 
+<a href="http://pia.crc.ricoh.com:8888/">http://pia.crc.ricoh.com:8888/</a>
+ or on RWAN
+<a href="http://pia.rsv.ussj.ricoh.com:8888/">http://pia.rsv.ussj.ricoh.com:8888/</a>
+All feedback is greatly appreciated.
+<p>
+
+Thanks for your support,<br>
+The PIA Group (Greg, Steve, Rithy)
+
 
 <dl>
   <dt>  Security authorization
@@ -22,21 +79,6 @@
 	use JDK1.2 features, these handlers must be compiled by hand and
 	explicitly loaded (not a part of the standard tag set).
 </dl>
-
-<h4> Additional Information</h4>
-<p>
-The latest information regarding PIA technology can be found on the PIA
-group's web site: 
-<a href="http://pia.crc.ricoh.com:8888/">http://pia.crc.ricoh.com:8888/</a>
- or on RWAN
-<a href="http://pia.rsv.ussj.ricoh.com:8888/">http://pia.rsv.ussj.ricoh.com:8888/</a>
-All feedback is greatly appreciated.
-
-<p>
-
-Thanks for your support,<br>
-The PIA Group (Greg, Steve, Rithy)
-
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
