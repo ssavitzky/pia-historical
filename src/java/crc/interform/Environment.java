@@ -195,10 +195,17 @@ public class Environment {
     }
   }
 
+
+  // ParsedContent objects keep track of the tagset, other objects may only
+  // specify the name.  Run methods should take either
   /** Run the interpretor on an InputStream, with output to a stream. */
   public void runStream(InputStream in, OutputStream out, String tsname) {
+    runStream(in,out,Tagset.tagset(tsname));
+  }
+
+  public void runStream(InputStream in, OutputStream out, Tagset ts) {
     Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    Interp ii = new Interp(ts, initEntities(), false);
     ii.from(p).toStream(out);
     use(ii);
     ii.run();
@@ -206,8 +213,11 @@ public class Environment {
 
   /** Run the interpretor on a Reader, with output to a stream. */
   public void runStream(Reader in, OutputStream out, String tsname) {
+    runStream(in,out,Tagset.tagset(tsname));
+  }
+  public void runStream(Reader in, OutputStream out, Tagset ts) {
     Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    Interp ii = new Interp(ts, initEntities(), false);
     ii.from(p).toStream(out);
     use(ii);
     ii.run();
@@ -245,8 +255,12 @@ public class Environment {
    *	that contains the results of evaluating the interform.
    */
   public InputStream filterStream(Reader in, String tsname) {
+    return filterStream(in, Tagset.tagset(tsname));
+  }
+
+  public InputStream filterStream(Reader in, Tagset ts) {
     Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    Interp ii = new Interp(ts, initEntities(), false);
     ii.from(p).toTokens();
     use(ii);
     
@@ -267,7 +281,11 @@ public class Environment {
 
   /** Run some already-parsed InterForm code and discard the output. */
   public void runCode(SGML code, String tsname) {
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    runCode(code, Tagset.tagset(tsname));
+  }
+
+  public void runCode(SGML code,  Tagset ts) {
+    Interp ii = new Interp(ts, initEntities(), false);
     ii.pushInto(code);
     ii.setSkipping();
     use(ii);
@@ -276,8 +294,12 @@ public class Environment {
 
   /** Parse an InputStream, producing a parse tree. */
   public Tokens parseStream(InputStream in, String tsname) {
+     return parseStream(in, Tagset.tagset(tsname));
+  }
+
+  public Tokens parseStream(InputStream in, Tagset ts) {
     Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(),true);
+    Interp ii = new Interp(ts, initEntities(),true);
     ii.from(p).toTokens();
     use(ii);
     return ii.run();
@@ -285,8 +307,12 @@ public class Environment {
 
   /** Parse a Reader, producing a parse tree. */
   public Tokens parse(Reader in, String tsname) {
+     return parse(in, Tagset.tagset(tsname));
+  }
+
+ public Tokens parse(Reader in, Tagset ts) {
     Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(),true);
+    Interp ii = new Interp(ts, initEntities(),true);
     ii.from(p).toTokens();
     use(ii);
     return ii.run();
