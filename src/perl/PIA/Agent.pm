@@ -574,12 +574,16 @@ sub find_interform {
 	$root = $main::USR_ROOT;
 	if ($root !~ m:/$:) { $root .= "/"; }
 
+	$old = $main::PIA_DIR;
+	if ($old !~ m:/$:) { $old .= "/"; }
+	$old .= "src/Agents/";
+
 	push @$if_path, ("$root$name/");
 	push @$if_path, ("$root$type/") if $name ne $type;
 	push @$if_path, ("$home$name/");
 	push @$if_path, ("$home$type/") if $name ne $type;
-	push @$if_path, ("$home" . lc $name . "/");
-	push @$if_path, ("$home" . lc $type . "/") if $name ne $type;
+	push @$if_path, ("$old$name/");
+	push @$if_path, ("$old$type/") if $name ne $type;
 	push @$if_path, ("$root","$home");
 
 	$self->dir_attribute(if_path,$if_path);
