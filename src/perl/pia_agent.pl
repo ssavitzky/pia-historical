@@ -518,6 +518,37 @@ sub run_hook {
 ### Utility functions for responding to requests:
 ###
 
+
+
+
+sub make_list{
+    my ($reference,@rest)=@_;
+    my $element;
+    my $particle;
+    my $key;
+    if(ref($reference)){
+	$element=HTML::Element->new( 'dl');
+	foreach $key (keys(%{$reference})){
+	   $particle= HTML::Element->new( 'dt');
+	   $particle->push_content($key);
+	   $element->push_content($particle);
+	   $particle= HTML::Element->new( 'dd');
+	   $particle->push_content($$reference{$key});
+	   $element->push_content($particle);
+       }
+    } else {
+	unshift(@rest,$reference);
+	
+	$element=HTML::Element->new( 'ul');
+	foreach $key (@rest){
+	   $particle= HTML::Element->new( 'li');
+	   $particle->push_content($key);
+	   $element->push_content($particle);
+       }
+    }
+    return $element;
+}
+
 #return html element
 sub make_form{
     my $element=IF::IT->new( 'form',method => "POST",action => shift);

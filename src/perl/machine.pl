@@ -52,11 +52,54 @@ sub send_response{
     eval {
 	## Use eval so we don't die if the browser closes the connnection.
 	print {$output} $string;
-#	print {$output} "Content-type: $ct\n\n" if defined $ct;
 	print {$output} $reply->headers_as_string();
 	print {$output} "\n";
 	print {$output} $reply->content;
 	$self->close_stream;
     }
 }
+
+# TBD accommodate multiple schemes in cached value
+sub proxy{
+    my($self,$scheme,$proxy)=@_;
+    #isaproxy necessary for talking to me?
+    $$self{_proxy}=$proxy if $proxy;
+    if(!$$self{_proxy}){
+	$proxy=$main::agency->proxy_for($$self{address},$scheme);	
+	$$self{_proxy}=$proxy if $proxy;
+    }
+    return $$self{_proxy};
+    
+}
+
+sub get_request{
+    my($self,$request)=@_;
+    
+    my $ua = new LWP::UserAgent;
+
+    $ua->use_eval();
+
+###Configuration --is proxy necessary?
+### Should Be careful not to proxy through ourselves
+    my $proxy=$self->proxy($request->url->scheme);
+    
+    
+#### if agency returns negative number, generate error
+###    network unavailable, or denied
+
+    if ($proxy < 0) {
+	return $request->error_response("negative proxy specified: network available?");
+    }
+    print "getting request" . $request->url . " through $proxy \n" . $request->headers_as_string() . "\n" if $main::debugging;
+    
+
+    $ua->proxy($request->url->scheme,$proxy) if $proxy;
+
+    # === should really use simple_request and handle redirect with agents.
+#    my $response=$ua->request($self); 
+    my $response=$ua->simple_request($request); 
+    return $response;
+    
+}
+
 1;

@@ -22,6 +22,7 @@ sub new {
     my($class, $self, $from, $to)=@_;
     my $old=ref($self);
     bless $self, $class;
+    $self->initialize_content;   #content now an object
     $self->is_request(1) if $old eq 'HTTP::Request';
     $self->is_response(1) if $old eq 'HTTP::Response';
 
@@ -40,12 +41,34 @@ sub new {
 	$self->compute_form_parameters() if $type eq 'POST';
     }
 
+###need to compute form parameters if encoded in url
+
     ## Initialize features and compute a few that we already know.
 
     new FEATURES $self;  # automatically points $self at it.
     return $self;
 }
 
+##temporary treatment of content objects
+# while transitioning to full objectivity...
+
+sub initialize_content{
+    my($self)=@_;
+    $$self{_content_object}=CONTENT->new;
+    $self->content_object->string($$self{_content});
+    
+}
+sub content_object{
+    my($self)=@_;
+    return $$self{_content_object};
+
+}
+
+#these for backwards compatibility
+sub content{
+    my($self,$string)=@_;
+    return $self->content_object->string($string);
+}
 ### Access to components
 
 sub from_machine{
@@ -57,6 +80,12 @@ sub from_machine{
 sub to_machine{
     my($self,$machine)=@_;
     $$self{_to_machine}=$machine if defined $machine;
+#if we are request, destination is given by url
+    if(! $$self{_to_machine} && $self->is_request){
+	my $host=$self->url->host;
+	$machine=MACHINE->new($host) if $host;
+	$$self{_to_machine}=$machine;
+    }
     return $$self{_to_machine};
 }
 
@@ -210,38 +239,12 @@ sub send_response {
 sub  get_request{
     my($self)=@_;
 
-    if ($self->is('local')) {
-	return $self->error_response;
-    }
-
-    my $ua = new LWP::UserAgent;
-
-    $ua->use_eval();
-
-###Configuration --is proxy necessary?
-### Should Be careful not to proxy through ourselves
-    my $proxy=$main::agency->proxy_for($self->url);
+    my $destination=$self->to_machine;
+    my $response=$destination->get_request($self);
     
-#### if agency returns negative number, generate error
-###    network unavailable, or denied
-
-    if ($proxy < 0) {
-	return $self->error_response("negative proxy specified: network available?");
-    }
-    print "getting request" . $self->url . " through $proxy \n" . $self->headers_as_string() . "\n" if $main::debugging;
-    
-
-    $ua->proxy($self->url->scheme,$proxy) if $proxy;
-
-    #$self->remove_header("Pragma");
-    #$self->remove_header("Accept");
-
-
-    # === should really use simple_request and handle redirect with agents.
-#    my $response=$ua->request($self); 
-    my $response=$ua->simple_request($self); 
-
     $response=TRANSACTION->new($response);
+    $response->from_machine($destination);
+    
     $response->to_machine($self->from_machine());
 
     return $response;	# push the response transaction

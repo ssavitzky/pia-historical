@@ -240,6 +240,7 @@ sub is_proxy_request{
     my $request=shift;    	return 0 unless $request->is_request;
     my $url=$request->url; 	return 0 unless $url;
     
+    return  1  if ($url->path =~ /^\/http:/i );
     my $host=$url->host;
 
     return 0 if ($host =~ /^agency/ || $host eq '');
@@ -255,6 +256,9 @@ sub  is_agent_request{
     my $url=$request->url; 	return 0 unless defined $url;
     my $host=$url->host;
 
+##Temporary hack until can change java code to properly use proxy agent
+##urls look like /http://... instead of http://...
+    return  0  if ($url->path =~ /^\/http:/i );
     if ($host=~/^agency/ || $host eq ''
 	|| $url->port == $main::PIA_PORT && $main::PIA_HOST =~ /^$host/) {
 	return 1;

@@ -86,10 +86,7 @@ sub act_on {
 ###    or re-writes of addresses, use an appropriate agent
 
 sub  proxy_for{
-    my($self,$url)=@_;
-    my  $destination= $url->host;
-    my $protocol=$url->scheme;
-    
+    my($self,$destination,$protocol)=@_;
 
     my $no;
     foreach $no (@{$self->no_proxy()}) {

@@ -33,14 +33,16 @@ if ($dev =~ /gif8/) {
 
 sub file_names{
     $self=shift;
-    my $image_file="preview";
+
 
     my $num=$self->option('preview_number');
-    my $string = "$printer_root_directory$image_file$num.gif";
+    my $image_file="preview$num";
+    my $string = "$printer_root_directory$image_file";
+
 ## also set ps_file
-    $ps_file="$printer_root_directory$image_file$num.ps";
-    $image_URL="$printer_base_url$image_file$num.gif";
-    $ps_URL="$printer_base_url$image_file$num.ps";
+    $ps_file="$printer_root_directory$image_file.ps";
+    $image_URL="$printer_base_url";
+    $ps_URL="$printer_base_url$image_file.ps";
     $num+=1;
     $self->option('preview_number',$num);
     return ($string,$ps_file,$image_URL,$ps_URL);
@@ -110,23 +112,31 @@ sub create_preview{
     
 #    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
 #    my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r$thumbsize -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
-    my $cmd="cat /dev/null | $GS -sOutputFile=- -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
+#broken if gs not support gif....
+
+
+    my $cmd="cat /dev/null | $GS -sOutputFile=$image_file.%d.gif -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
     $cmd.="$GS2GIF";
-    $cmd.=" > $image_file";
+#    $cmd.=" > $image_file";  Multipage files cause us some pain
     
-    
+
 #    print $cmd;
     print $cmd  if $main::debugging;
     
     my $status=system ($cmd);
     #shouldgetstatushere & check for multiple pages...put %d in output filename
     print "Status is $status\n" if $main::debugging;
+    local (@image_files)=glob "$image_file.*.gif";
+    print "made $#image_files from $image_file.*.gif" . @image_files . "..\n" if $main::debugging;
     my $image_url = $request->url->as_string;
     my $element=HTML::Element->new('a',href => $image_url);
-#    my $img_url="file:$image_file";
-    my $img_url=$image_URL;
-    my $particle=HTML::Element->new('img', src => $img_url );
-    $element->push_content($particle);
+#   x my $img_url="file:$image_file";
+    foreach $image_url (@image_files) {
+	$image_url=~/\/([^\/]*)$/;
+	my $img_url=$image_URL . $1;
+	my $particle=HTML::Element->new('img', src => $img_url );
+	$element->push_content($particle);
+    }
 
 #This returns the postscript    return $response;
     return $element;#an html element which is linked to preview image
