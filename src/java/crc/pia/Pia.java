@@ -20,6 +20,17 @@ import crc.pia.Logger;
 
 public class Pia{
   /**
+   * where to proxy
+   */
+  public static final String PIA_PROXIES = "crc.pia.proxy_";
+
+  /**
+   * a list of scheme not to proxy
+   */
+  public static final String PIA_NO_PROXIES = "crc.pia.no_proxy";
+
+
+  /**
    * Name of path of pia properties
    */
   public static final String PIA_PROP_PATH = "crc.pia.profile";
@@ -93,7 +104,8 @@ public class Pia{
   private boolean debugToFile= false;
   
 
-  private String proxies         = null;
+  private HashTable proxies           = new HashTable();
+  private String[]  noProxies=        = null;
   private PiaProperties properties    = null;
 
   private String piaAgentsStr    = null;
@@ -254,11 +266,19 @@ public class Pia{
   } 
 
   /**
-   * @return the proxies string
+   * @return the proxy string
    */
-  public String getProxies(){
+  public HashTable getProxies(){
     return proxies;
   } 
+
+  /**
+   * @return the no proxy schemes
+   */
+  public String[] getNoProxies(){
+    return noProxies;
+  } 
+
 
   /**
    * @return this agency's properties
@@ -266,6 +286,7 @@ public class Pia{
   public PiaProperties getProperties(){
     return properties;
   } 
+
 
   public Pia(){
   }
@@ -428,6 +449,44 @@ public class Pia{
 	}
     }
 
+  private void initializeProxies(){
+    // i. e. agency.crc.pia.proxy_http=foobar 
+    // get keys from properties
+    // enumerate thru keys looking for PIA_PROXIES
+    // if one found, get string pass underscore; this is the key
+    // get from properties its value
+    // push k,v to proxies
+
+    Enumeration e properties.propertyNames();
+    while( e.hasMoreElements() ){
+      try{
+	String keyEntry = (String) e.nextElement();
+	if( keyEntry.indexOf(PIA_PROXIES) != -1 ){
+	  String key = keyEntry.substring( keyEntry.indexOf('_') + 1 );
+	  proxies.put( key, properties.getProperty( keyEntry ) );
+	}
+      }catch( NoSuchElementException e ){
+      }
+    }
+    String noproxies = properties.getString(this, PIA_NO_PROXIES, null);
+    if( noproxies != null ){
+      StringTokenizer parser = new StringTokenizer(noproxies, ",");
+      try{
+	int i = 0;
+	int count = parser.countTokens();
+	noProxies = new String[count];
+	while(parser.hasMoreTokens()) {
+	  String v = parser.nextToken().trim();
+	  noProxies[i++]=v;
+	}
+      }catch(NoSuchElementException e) {
+      }
+    }
+      
+
+
+  }
+
 
   private void initializeProperties() throws PiaInitException{
     String thisHost = null;
@@ -436,14 +495,25 @@ public class Pia{
     }catch (UnknownHostException e) {
       thisHost = null;
     }
-    verbose    = properties.getString(this, PIA_VERBOSE, verbose);
-    debug      = properties.getString(this, PIA_DEBUG, debug);
-    rootStr       = properties.getString(this, PIA_ROOT, null);
-    piaLibStr     = properties.getString(this, PIA_LIB, null);
-    piaUsrRootStr = properties.getString(this, PIA_USR_ROOT, null);
-    host       = properties.getString(this, PIA_HOST, thisHost);
-    port       = properties.getString(this, PIA_PORT, port);
+
+
+    verbose         = properties.getString(this, PIA_VERBOSE, verbose);
+    debug           = properties.getString(this, PIA_DEBUG, debug);
+    rootStr         = properties.getString(this, PIA_ROOT, null);
+    piaLibStr       = properties.getString(this, PIA_LIB, null);
+    piaUsrRootStr   = properties.getString(this, PIA_USR_ROOT, null);
+    host            = properties.getString(this, PIA_HOST, thisHost);
+    port            = properties.getString(this, PIA_PORT, port);
     loggerClassName = properties.getString(this, PIA_LOGGER, null);
+
+    // i. e. agency.crc.pia.proxy_http=foobar 
+    // get keys from properties
+    // enumerate thru keys looking for PIA_PROXIES
+    // if one found, get string pass underscore; this is the key
+    // get from properties its value
+    // push k,v to proxies
+
+    initializeProxies()
 
     // file separator
     String filesep = System.getProperty("file.separator");
@@ -504,15 +574,23 @@ public class Pia{
 	
 
 	url = getURL();
-	proxies = "http_proxy="+url+" wais_proxy="+url+" gopher_proxy="+url+" no_proxy=noplace ";
+	
   }
 
-  private void initializePiaAgency(){
-    thisMachine  = new Machine( port, host );
-    resolver     = new Resolver();
-    agency       = new Agency("agency");
+  public void createAgency(){
+    machine = new Machine(InetAddress.getLocalHost()., port, null);
+    resolver = new Resolver();
+    agency = new Agency("agency", null);
     resolver.registerAgent( agency );
-    agency.resolverSet( resolver );
+    agency.setResolver( resolver );
+  }
+
+
+  private void initializePiaAgency(){
+    thisMachine  = new Machine( host, port, null );
+    resolver     = new Resolver();
+    agency       = new Agency("agency", null);
+    resolver.registerAgent( agency );
     accepter     = new Accepter( port );
 
     if( cmdverbose )
@@ -534,7 +612,7 @@ public class Pia{
 	String  cmdroot      = null ;
 	String  cmdusrdir    = null ;
 	String  cmdprop      = null ;
-	String  cmdid        = "pia-agency" ;
+	String  cmdid        = "agency" ;
 	Boolean cmddebugging = null ;
 	Boolean cmdverbose   = null ;
 
