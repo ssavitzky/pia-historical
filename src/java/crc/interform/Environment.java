@@ -264,14 +264,14 @@ public class Environment {
     ii.from(p).toTokens();
     use(ii);
     
-    /*
+    /* */
     InterFormStream out = new InterFormStream(ii);
     return out;
-    */
+    /*
     ii.toText();
     String interformOutput = ii.run().toString();
     return new java.io.StringBufferInputStream( interformOutput );
-    /* */
+    */
   }
 
   /** Filter a file, producing an InputStream. */

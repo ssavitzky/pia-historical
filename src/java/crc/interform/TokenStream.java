@@ -4,7 +4,6 @@
 
 package crc.interform;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
 import crc.sgml.SGML;
 import crc.sgml.Text;
@@ -22,13 +21,22 @@ public class TokenStream extends Tokens {
   ** Components:
   ************************************************************************/
 
-  PrintStream ostream;
+  OutputStream ostream;
   public boolean blocked = false;
 
 
   /************************************************************************
   ** Operations:
   ************************************************************************/
+
+  /** 
+   * basic routine to output a string.
+   */
+  protected final void write(String s) {
+    try {
+      ostream.write(s.getBytes());
+    } catch (java.io.IOException e) {}
+  }
 
   /** Append some tokens.  
    *	The tokens are simply shipped to the output stream unless we're
@@ -37,12 +45,12 @@ public class TokenStream extends Tokens {
   public SGML append(SGML sgml) {
     if (sgml == null) return this;
     if (nItems() == 0 && ostream != null && !blocked) {
-      ostream.print(sgml.toString());
+      write(sgml.toString());
     } else {
       super.append(sgml);
       if (ostream != null && !blocked) {
 	for (int i = 0; i < nItems(); ++i) {
-	  ostream.print(at(i).toString());
+	  write(at(i).toString());
 	}
 	items.removeAllElements();
       }
@@ -57,12 +65,12 @@ public class TokenStream extends Tokens {
   public crc.ds.Stuff push(Object v) {
     if (v == null) return this;
     if (nItems() == 0 && ostream != null && !blocked) {
-      ostream.print(v.toString());
+      write(v.toString());
     } else {
       super.push(v);
       if (ostream != null && !blocked) {
 	for (int i = 0; i < nItems(); ++i) {
-	  ostream.print(at(i).toString());
+	  write(at(i).toString());
 	}
 	items.removeAllElements();
       }
@@ -74,7 +82,7 @@ public class TokenStream extends Tokens {
   public SGML appendText(Text t) {
     if (t == null) return this;
     if (ostream != null && !blocked) {
- 	ostream.print(t.toString());
+ 	write(t.toString());
 	return this;
     } else {
       return append(t);
@@ -93,12 +101,16 @@ public class TokenStream extends Tokens {
 
   /** Flush the output stream. */
   public void flush() {
-    if (ostream != null) ostream.flush();
+    try {
+      if (ostream != null) ostream.flush();
+    } catch (java.io.IOException e) {}
   }
     
   /** Close the output stream.  Sets it to null. */
   public void close() {
-    if (ostream != null) ostream.close();
+    try {
+      if (ostream != null) ostream.close();
+    } catch (java.io.IOException e) {}
     ostream = null;
   }
     
@@ -112,11 +124,7 @@ public class TokenStream extends Tokens {
 
   public TokenStream(OutputStream s) {
     this();
-    try {
-      ostream = (PrintStream)s;
-    } catch (Exception e) {
-      ostream = new PrintStream(s);
-    }
+    ostream = s;
   }
 
 

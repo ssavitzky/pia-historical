@@ -736,12 +736,19 @@ public class Interp extends State {
   final void passToken(SGML it) {
     if (output == null) return;	// skipping.
     if (! streaming) {		// Not streaming: just pass the tree
-      output.push(it);		// === probably not necessary to append ===
+      if (it.incomplete() > 0) it = ((Element)it).startToken();
+      output.push(it);		// === There should be an appendTo
+      // === Otherwise we need to copy start tags. ===
     } else {
       /* The PERL version used to elaborately check "incomplete" and 
        *   do the right thing, including expand lists.  appendTextTo
        *   does the right thing directly.
        */
+      if ( output.nItems() == 0) {
+	/* Using a StringBuffer here is more efficient and avoids
+	 *	appending to a Text already in use somewhere else. */
+	output.push(new Text(new StringBuffer()));
+      } 
       it.appendTextTo(output);
     }
   }

@@ -71,6 +71,6 @@ public class InterFormReader extends Reader {
   public InterFormReader(Interp ii) {
     this();
     interp = ii;
-    ii.setStreaming();
+    //ii.setStreaming();
   }
 }
