@@ -6,34 +6,14 @@
 #	makeconfig
 
 HOST=$(uname -n)
-
-PORT=8888
-
-#user overide where PIA_DIR
-if [ -n "$(echo $1 | grep 'PIA_DIR=')" ] ; then
-    PIA_PATH=$1
-    PIA_DIR=${PIA_PATH#PIA_DIR=}
-    if [ "$PIA_DIR" = "" ] ; then
-	echo 'usage: pia [PIA_DIR=piadirectory] [USR_DIR=userdirectory]'
-	exit 1
-    else
-	shift
-    fi
+#determine if we have proxy environment variable
+if [ -n "$http_proxy" ] ; then
+    HPROXENV=$http_proxy
+elif [ -n "$HTTP_PROXY" ] ; then
+    HPROXENV=$HTTP_PROXY
+else
+    HPROXENV="http://int-gw.crc.ricoh.com:80/"
 fi
-
-#user override where USR_DIR
-if [ -n "$(echo $1 | grep 'USR_DIR=')" ] ; then
-    USRDIR_PATH=$1
-    USR_DIR=${USRDIR_PATH#USR_DIR=}
-    echo $USR_DIR
-    if [ "$USR_DIR" = "" ] ; then
-	echo 'usage: pia  [PIA_DIR=piadirectory] [USR_DIR=userdirectory]'
-	exit 1
-    else
-	shift
-    fi
-fi
-
 
 #if not override and environment variable does not exist
 if [ -z $PIA_DIR ] ; then
@@ -55,16 +35,6 @@ else
     USRPIA=$USR_DIR
 fi
 
-
-#determine if we have proxy environment variable
-if [ -n "$http_proxy" ] ; then
-    HPROXLINE=crc.pia.proxy_http=$http_proxy
-elif [ -n "$HTTP_PROXY" ] ; then
-    HPROXLINE=crc.pia.proxy_http=$HTTP_PROXY
-fi
-
-USRROOT=crc.pia.usrroot=$USRPIA
-
 if [ ! -e "$USRPIA/Config" ] ; then
     mkdir $USRPIA/Config
 fi
@@ -72,17 +42,133 @@ fi
 #property file name
 PIAPROPFILE=$USRPIA/Config/pia.props
 
+
+OPTIONS="Http_proxy Http_no_proxy Pia_root Port Debug Verbose Request_timeout User_dir Write Quit"
+PROXY="crc.pia.proxy_http=$HPROXENV"
+NOPROXY="crc.pia.no_proxy=$HOST"
+ROOT="crc.pia.root=$PIA_HOME"
+PORT="crc.pia.port=8888"
+DEBUG="crc.pia.debug=true"
+VERBOSE="crc.pia.verbose=false"
+REQTIMEOUT="crc.pia.reqtimeout=4000"
+USRDIR="crc.pia.usrroot="
+
+function spitData()
+{
+clear
+echo $PROXY
+echo $NOPROXY
+echo $ROOT
+echo $PORT
+echo $DEBUG
+echo $VERBOSE
+echo $REQTIMEOUT
+echo $USRDIR
+echo
+}
+
+function write()
+{
+spitData
+echo -n 'Write (yes) ?'
+read REPLY
+if [ $REPLY = "yes" ] ; then
 cat > $PIAPROPFILE << EOF
-$HPROXLINE
-crc.pia.no_proxy=$HOST
-crc.pia.root=$PIA_HOME
-crc.pia.port=$PORT
-crc.pia.debug=true
-crc.pia.verbose=false
-crc.pia.logger=crc.pia.Logger
-crc.pia.reqtimeout=40000
-$USRROOT
+$PROXY
+$NOPROXY
+$ROOT
+$PORT
+$DEBUG
+$VERBOSE
+$REQTIMEOUT
+$USRDIR
 EOF
+fi
+}
+
+function process()
+{
+    echo "process: $*"
+    case $1 in
+	1 ) echo -n "value ( ${PROXY##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		PROXY="${PROXY%%=*}=$REPLY"
+	    fi
+	    echo $PROXY;;
+	2 ) echo -n "value ( ${NOPROXY##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		NOPROXY="${NOPROXY%%=*}=$REPLY"
+	    fi
+	    echo $NOPROXY;;
+	3 ) echo -n "value ( ${ROOT##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		ROOT="${ROOT%%=*}=$REPLY"
+	    fi
+	    echo $ROOT;;
+	4 ) echo -n "value ( ${PORT##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		PORT="${PORT%%=*}=$REPLY"
+	    fi
+	    echo $PORT;;
+	5 ) echo -n "value ( ${DEBUG##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		DEBUG="${DEBUG%%=*}=$REPLY"
+	    fi
+	    echo $DEBUG;;
+	6 ) echo -n "value ( ${VERBOSE##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		VERBOSE="${VERBOSE%%=*}=$REPLY"
+	    fi
+	    echo $VERBOSE;;
+	7 ) echo -n "value ( ${REQTIMEOUT##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		REQTIMEOUT="${REQTIMEOUT%%=*}=$REPLY"
+	    fi
+	    echo $REQTIMEOUT;;
+	8 ) echo -n "value ( ${USRDIR##*=} ) :"
+	    read REPLY
+	    if [ -n "$REPLY" ] ; then
+		USRDIR="${USRDIR%%=*}=$REPLY"
+	    fi
+	    echo $USRDIR;;
+	9 ) echo "writing"
+	    write;;
+	10 )
+	    exit 0;;
+    esac
+}
+
+echo 'Select a number:'
+done=false
+
+while [ $done = false ]; do
+    do=true
+    num=1
+    spitData
+    for opt in $OPTIONS; do
+	echo $num $opt
+	num=$((num+1))
+    done
+echo -n 'Please select a number?'
+read REPLY
+
+    if [ $REPLY -lt $num ] && [ $REPLY -gt 0 ]; then
+	SELECTION=$REPLY
+	process $SELECTION 
+    else
+	echo 'invalid selection.'
+    fi
+done
+
+
+
 
 
 
