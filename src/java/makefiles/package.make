@@ -20,7 +20,8 @@
 # all:	   to build the class files from the java files.
 # clean:   to clean all sub packages
 # doc:     to build the appropriate documentation files from the source
-# alldoc:  to build all the documentation at once
+#	   (does NOT call javadoc, which is called at the top level)
+# rdoc:	   Call javadoc recursively, which is not usually a good idea.
 
 # <steve@rsv.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
@@ -28,14 +29,15 @@
 
 CLASSDIR= $(TOPDIR)
 PIADIR  = $(TOPDIR)/../..
-LIBDIR=$(PIADIR)/lib/java
-BINDIR=$(PIADIR)/bin
+LIBDIR  =$(PIADIR)/lib/java
+BINDIR  =$(PIADIR)/bin
 
 # all -- descend into PACKAGES and do a make there.
 all::
 	for p in `ls -d $(PACKAGES)`; do \
 		echo 'building ' $(PACKAGE).$$p; \
-		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
+		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
+		 VPATH=$(VPATH)/$$p); \
 	done
 
 
@@ -43,13 +45,14 @@ all::
 doc::
 	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'doc ' $(PACKAGE).$$p; \
-		(cd $$p; make TOPDIR=../$(TOPDIR)  doc); \
+		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) doc); \
 	done
 
 clean::
 	@@for p in `ls -d $(PACKAGES)`; do \
 		echo 'cleaning ' $(PACKAGE).$$p; \
-		(cd $$p ; make TOPDIR=../$(TOPDIR) clean) ; \
+		(cd $$p ; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
+		  clean) ; \
 	done
 
 

@@ -121,12 +121,12 @@ report::
 
 ### This finds and prints out every instance of the string "unimplemented" 
 report::
-	@grep -q 'unimplemented' $(BASIC_ACTORS) && \
-	  (echo 'BASIC:	' ; grep 'unimplemented' $(BASIC_ACTORS)) || true
-	@grep -q 'unimplemented' $(SA_ACTORS) && \
-	  (echo 'SA:	' ; grep 'unimplemented' $(SA_ACTORS)) || true
-	-@grep -q 'unimplemented' $(PIA_ACTORS) && \
-	  (echo 'PIA:	' ; grep 'unimplemented' $(PIA_ACTORS)) || true
+	@grep -q 'unimplemented(' $(BASIC_ACTORS) && \
+	  (echo 'BASIC:	' ; grep 'unimplemented(' $(BASIC_ACTORS)) || true
+	@grep -q 'unimplemented(' $(SA_ACTORS) && \
+	  (echo 'SA:	' ; grep 'unimplemented(' $(SA_ACTORS)) || true
+	-@grep -q 'unimplemented(' $(PIA_ACTORS) && \
+	  (echo 'PIA:	' ; grep 'unimplemented(' $(PIA_ACTORS)) || true
 
 ### Extract the documentation comments:
 
@@ -141,6 +141,8 @@ StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) StandAlone_ts.java
 Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
 	Standard_ts.java
 	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
+
+doc:: actor-doc
 
 actor-doc:	$(TAGSET_DOCS)
 	cp $(TAGSET_DOCS) $(TSDOCDIR)

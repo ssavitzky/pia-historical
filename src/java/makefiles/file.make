@@ -17,8 +17,9 @@
 # all:	 to build the class files from the java files.
 # clean: to clean all sub packages
 # doc:   to build the appropriate documentation files from the source
-#   	 This target operates recursively, and so should be avoided due
-#	 to bugs in javadoc.  Use "make alldocs" in TOPDIR instead.
+#   	 Normally does nothing, since javadoc is called non-recursively
+#	 at the top level.  May be used for auxiliary documentation.
+# jdoc:	 to invoke javadoc in this directory.
 
 # <steve@rsv.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
@@ -51,13 +52,10 @@ BUILDCLASSES=$(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH)
 
 all:: $(FILES:.java=.class)
 
-doc::	$(DOCDIR)
-	@echo $(DOCDIR) made
-
-$(DOCDIR):
-	mkdir $(DOCDIR)
-
 doc::
+	@echo Documenting.
+
+jdoc::
 	javadoc -d $(DOCDIR) -classpath $(BUILDCLASSES) $(PACKAGE)
 
 clean::
