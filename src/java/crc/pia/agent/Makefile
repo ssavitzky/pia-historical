@@ -20,4 +20,5 @@ AgentMachine.java:  ../Agent.java ../GenericAgent.java ../Resolver.java \
 	../Transaction.java ../Machine.java ../HTTPResponse.java
 
 Dofs.java: ../Agent.java ../GenericAgent.java ../Resolver.java ../Pia.java \
-	../Transaction.java ../Machine.java ../HTTPRequest.java
+	../Transaction.java ../Machine.java ../HTTPRequest.java \
+	../HTTPResponse.java
