@@ -20,6 +20,7 @@ public class LinkedNodeListEnumerator implements NodeEnumerator {
       throw new NullPointerException(err);
     }
     l = list;
+    //Report.debug(this, "the list length is-->"+Integer.toString((int)l.getLength()));
     cursor = 0;
   }
 

@@ -3,6 +3,7 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1998.
 package crc.dom;
 
+
 public interface NamedNodeList {
 
   // Core get and set public interface. Note that implementations may
