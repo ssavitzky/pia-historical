@@ -17,8 +17,8 @@ FILES = \
 
 include $(TOPDIR)/makefiles/file.make
 
-List.class: Stuff.class
+List.class: Stuff.java
 
-Table.class: Stuff.class
+Table.class: Stuff.java
 
-Thing.class: Stuff.class
+Thing.class: Stuff.java
