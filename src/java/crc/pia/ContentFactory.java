@@ -35,6 +35,7 @@ public class ContentFactory extends ContentHandler
   public static String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
   protected static String CONTPACKPREFIX = "crc.content";
+  protected static String PIAPREFIX      = "crc.pia";
   protected static String TEXTPACKPREFIX = CONTPACKPREFIX + ".text";
   protected static String IMGPACKPREFIX  = CONTPACKPREFIX + ".img";
   protected static String DEFAULT        = "Default";
@@ -51,7 +52,7 @@ public class ContentFactory extends ContentHandler
   static{
     contentTypeTable.at( APPLICATION_POSTSCRIPT, CONTPACKPREFIX + ".ByteStreamContent");
     contentTypeTable.at( APPLICATION_X_JAVA_AGENT, CONTPACKPREFIX + ".ByteStreamContent");
-    contentTypeTable.at( APPLICATION_X_WWW_FORM_URLENCODED, CONTPACKPREFIX + ".ByteStreamContent");
+    contentTypeTable.at( APPLICATION_X_WWW_FORM_URLENCODED, PIAPREFIX + ".FormContent");
     contentTypeTable.at( TEXT_HTML, TEXTPACKPREFIX + ".html");
     contentTypeTable.at( TEXT_PLAIN, TEXTPACKPREFIX + ".plain");
     contentTypeTable.at( IMAGE_GIF, IMGPACKPREFIX + ".gif");
