@@ -173,12 +173,14 @@ public class Root extends GenericAgent {
 
   /**
    * initialize 
+   * 2/19/99 pg "put" was not matching
+   * and agency would not start
    */
   public void initialize() {
     if (initialized) return;
-    put("criteria", "Request Agent_request");
-    //criteria().push(Criterion.toMatch("IsRequest", true));
-    //criteria().push(Criterion.toMatch("IsAgentRequest", true));
+    // put("criteria", "Request Agent_request");
+    criteria().push(Criterion.toMatch("IsRequest", true));
+    criteria().push(Criterion.toMatch("IsAgentRequest", true));
     super.initialize();
   }
 
