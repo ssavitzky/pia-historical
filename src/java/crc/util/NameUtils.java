@@ -9,7 +9,7 @@ package crc.util;
  * This class contains static functions that deal with names and name-like
  *	strings.
  */
-class NameUtils {
+public class NameUtils {
 
   /************************************************************************
   ** Generic name utilities:
