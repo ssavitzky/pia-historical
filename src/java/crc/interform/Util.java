@@ -22,12 +22,29 @@ import crc.ds.Table;
 public class Util {
 
   /************************************************************************
+  ** SGML utilities:
+  ************************************************************************/
+
+  /** Wrap an object in a Text if it isn't already SGML. */
+  public static final SGML toSGML(Object o) {
+    try {
+      return (SGML)o;
+    } catch (Exception e) {
+      return new Text(o);
+    }
+  }
+
+  /************************************************************************
   ** String utilities:
   ************************************************************************/
 
   /** Split a String on whitespace. */
   public static final List split(String s) {
     return new List(new java.util.StringTokenizer(s));    
+  }
+
+  public static final Tokens splitTokens(String s) {
+    return new Tokens(new java.util.StringTokenizer(s));    
   }
 
   /** Split a String on a given character. */
