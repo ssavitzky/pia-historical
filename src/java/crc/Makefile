@@ -9,6 +9,7 @@ PACKAGES = \
 	ds \
 	interform \
 	pia \
+	sgml \
 	tf \
 	util
 
