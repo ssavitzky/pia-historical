@@ -572,9 +572,10 @@ public abstract class Transaction
 
   /** Retrieve an object by name.  */
   public synchronized Object get(String name) {
-    Object o = getFeature(name);
+    if (name.equals("HEADERS")) return headers();
+    Object o = header(name);
     if (o != null) return o;
-    else return header(name);
+    else return getFeature(name);
   }
 
   /** Set an object by name. */
