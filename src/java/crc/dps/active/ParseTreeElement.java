@@ -170,7 +170,10 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
 
   /** Sets the internal flag corresponding to hasEmptyDelim. */
-  public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
+  public void setHasEmptyDelimiter(boolean value) {
+    hasEmptyDelim = value;
+    if (value) isEmptyElement = true;
+  }
 
   /** Returns true if the Token corresponds to an Element which has content
    *	but no end tag, because the end tag can be deduced from context.
