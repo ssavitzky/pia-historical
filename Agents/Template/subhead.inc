@@ -24,6 +24,8 @@
 </if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <tr><th><td><a href="usage.html">Using Templates</a>
+    <tr><th><td><a href="impl.html">Implementing templates</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>

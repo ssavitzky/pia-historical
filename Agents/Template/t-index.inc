@@ -2,8 +2,8 @@
 <!-- Copyright 1997 Ricoh Silicon Valley			   -->
 
 <actor tag=template-link empty>
-  <set name=t-path>&path;/&li;</set>
-  <a href="form.if?tName=&li;&amp;tDir=&t-path;">&li;</a>
+  <set name=base><get element name=type></set>
+  <a href="form.if?tName=&li;&amp;tBase=&base;">&li;</a>
 </actor>
 
 <h3>System Templates</h3>

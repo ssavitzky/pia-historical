@@ -34,6 +34,8 @@
 </if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <tr><th><td><a href="usage.html">Using Templates</a>
+    <tr><th><td><a href="impl.html">Implementing templates</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
@@ -64,7 +66,7 @@
 	  <a href="/&agentType;/&agentName;/options.if">options</a>
     <else><a href="/&agentName;/home.if">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/help.if">help</a>
 	  <a href="/&agentName;/options.if">options</a>
 </if>
 <hr>
