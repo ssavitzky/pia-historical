@@ -257,6 +257,13 @@ implements Handler {
     if (nl != null) Copy.copyNodes(nl, out);
   }
 
+  /** Convenience function: return an enumeration. */
+  protected void putEnum(Output out, java.util.Enumeration enum) {
+    while (enum.hasMoreElements()) {
+      out.putNode((Node)enum.nextElement());
+    }
+  }
+
   /** Convenience function: return a string. */
   protected void putText(Output out, Context cxt, String s) {
     out.putNode(newText(cxt, s));
