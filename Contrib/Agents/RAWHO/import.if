@@ -1,0 +1,45 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Import urls</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+<read file=heading.inc interform process>
+
+<form action="&url;" method=post id="import">
+
+Specify a url from to
+ interpret as a list of links to add.
+<br>
+URL:<input name="url" size=40><input type=submit value="AddURL">
+Category for imported links:<input name="cat" value="imported">
+<process copy>
+<!-- first  create category if not exist -->
+<if> <get agent index=cats key=&FORM.cat;>  <then></then>
+ <else>
+<set  name=catname><get form name=cat></set>
+ <set  name=catdesc>Import of links from &FORM.url; on &month;/&day;/&year;</set>
+<read file="add_cat.inc" interform process></else></if>
+ <set name=links> <read href=&FORM.url;  process findall=a></set>
+   <set name=formcats><get form name=cat></set>
+   <set name=formbase>&url;</set>
+  <repeat list=&links; entity=link>
+  <!-- form and &FORM should be same so we can mask for sub files -->
+  <set name=formurl><get index=link attr=href></set>
+  <set name=formtitle><get index=link.text></set>
+  <read interform process file="add_url.inc"> 
+  </repeat>
+Added links to  <a href="show_category.if?catname=&FORM.cat;">&FORM.cat;</a>
+</process>
+</form>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Tue Oct 21 12:30:49 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

@@ -1,0 +1,31 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> show link</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+
+ <if> <get  form  name="urlid"><then> <set name=url><read file="links/&FORM.urlid;/index.html" process></set>
+<get index="url.body">
+<hr>
+ <a href="http://&piaHOST;:&piaPORT;/&agentName;/edit_link.if?urlid=&FORM.urlid;"> edit &FORM.urlid;</a>
+
+</then>
+ <else>
+ Click on a link id:
+<ul foreach=&AGENT.links..dl-1.keys; entity=lid>
+<li> <get agent  index=links..dl-1 key=&lid;>
+     (<a href="show_link.if?urlid=&lid;">show</a> <a href="edit_link.if?urlid=&lid;">edit</a>)</li> 
+</ul>
+</else></if>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Mon Oct 20 19:22:46 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

@@ -1,0 +1,106 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<read file=heading.inc interform process>
+<if><get form name=category><then>
+<set name=catname><get form name=category></set>
+<set name=cat><get agent index="cats.&catname;"></set>
+<set name=catdl><get index=cat..dl></set>
+<form action="&url;"  method=post id="editcat" copy>
+ <process copy>
+   <!-- do the features -->
+   <set name=feats><get index=cat key="features"></set>
+   <set name=f><get name=feats keys></set>
+    <repeat list=&f;>
+    <if><get form name="f&li;"> <then> <set index="feats" key=&li;><get form name="f&li;"></set></then></if>
+    </repeat>
+     <if><get form name="newfeature"> <then>
+      <set index="feats" key=&FORM.newfeature;><get form name="newfeaturevalue"></set>
+      </then></if>
+   <!-- do the  other attributes -->
+   <set index="catdl" key=lastModified>&date;</set>
+   <if> <get form name="owner"> <then>
+         <set index="catdl" key=owner><get form name="owner"></set>
+        </then></if>
+   <if> <get form name="subcat"> <then>
+	 <set index="catdl" key=subCategory insert=-1><get form name="subcat"></set>
+        adding subcat <get form name="subcat">
+	 <repeat list=&FORM.subcat;>
+         <set agent index="cats.&li;" key=superCategory insert=-1><get name=catname></set></repeat>
+	</then></if>
+   <if> <get form name="supercat"> <then>
+	 <set index="catdl" key=superCategory insert=-1><get form name="supercat"></set>
+        adding supercat <get form name="supercat">
+	  <repeat list=&FORM.supercat;>
+         <set agent index="cats.&li;" key=subCategory insert=-1><get name="catname"></set></repeat>
+	</then></if>
+<!-- do the links -->
+  <if> <get form name="links"> <then>
+       <set name=lnks><get index=catdl key=links></set>
+	    <repeat list=&FORM.links;>
+	 <set index="lnks" insert=-1><li><get agent index=links..dl-1 key=&li;></li></set>
+	</repeat></then></if>
+   <read interform file=save_cat.inc process>
+ </process>
+
+	      <h2>Edit &FORM.category;</h2>
+<input name="category"  type=hidden value=&catname;>
+Owner:<input name="owner"  value=&catdl.owner;> <br>
+SuperCategories:<repeat list=&catdl.superCategory; entity=su> <get name=su> </repeat> Add SuperCategory:
+<select multiple name="supercat" size=2>
+<option> </option>
+ <set name=k><get agent  index=cats keys></set>	      
+ <repeat list=&k;> <option>&li;</option></repeat>	      
+ </select>
+	      <br>
+SubCategories:<repeat list=&catdl.subCategory; entity=sc> <get name=sc> </repeat>  Add SubCategory:
+<select multiple name="subcat" size=2>
+ <repeat list=&k;> <option>&li;</option></repeat>	      
+ </select>
+<br>
+Features: <br>
+<set name=feats><get index=cat key="features"></set>
+	      <set name=f><get name=feats keys></set>
+<repeat list=&f;><set name=val><get index=cat.features key=&li;></set>
+ <b>&li;</b> value: <input name="f&li;" value="&val;"> <br>
+</repeat>
+Add Feature:<input name="newfeature" size="20">	 Value:<input name="newfeaturevalue" size="20">
+	      <br>
+Links: <Br>
+	      <get index=cat key="links">
+AddLinks: <set name=l><get agent index=links..dl-1 keys></set>
+	      <table>
+	       <repeat list=&l;>
+	      <tr><td><get agent index=links..dl-1 key=&li;></td>
+	      <td><input type="RADIO" name="links" value="&li;" multiple></td></tr>
+	      </repeat>
+	      </table>
+<input type="SUBMIT" value="Change &FORM.category;">
+</form>
+
+
+</then>
+<else>
+<h2>Select a category</h2>
+ <form action="&url;">
+<input type="SUBMIT" value="EditCategory:">
+<select name="category">
+ <repeat list=&AGENT.cats.keys;>
+ <option>&li;</option>
+</repeat>
+</select>
+
+</form>
+
+	      </else></if>
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Wed Nov 12 12:30:27 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://seven.sages.com/~wolff/wolff.html"
+         > Greg </a> &lt;<a href="mailto:wolff@sages.com">wolff@sages.com</a>&gt;</address>
+</body></html>

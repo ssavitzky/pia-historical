@@ -1,0 +1,69 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Categorize links</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+
+
+<read file=heading.inc interform process>
+
+<h2>Categorize links (Current categories are not shown...)</h2>
+<form action="&url;" method=post id="categorize" copy>
+<input type="SUBMIT" value="CategorizeLinks">
+ <if> <get form name=cats> <then>
+   <set name=cats><get form name=cats></set></then>
+ <else><set name=cats><get agent index=cats keys></set></else></if>
+  <!-- need to create list... input name="cats"  type=hidden value="&cats;" -->
+  <!-- get the uncategorized links -->
+   <set name=lids><get agent index=links..dl-1 keys></set>
+   
+ <process copy>
+  <!-- iterate through  each link and category -->
+       <repeat list=&cats; entity=cat>
+       <set  name=clnks><get agent index=cats.&cat; key=links></set>
+       <repeat list=&lids; entity=lid>
+         <if> <get form name="&lid;.&cat;"> <then>
+      <set index="clnks" insert=-1><li><get agent index=links..dl-1 key=&lid;></li></set>
+ added &lid; to &cat; <br>
+      <set name=lobj><read process file="links/&lid;/index.html"></set>
+	   <set name=ldl><get index=lobj.body.dl></set>
+	   <set index="ldl" key=category insert=-1><get  name="cat"></set>
+
+      <write file="links/&lid;/index.html"><get name=lobj></write>
+          </then></if>
+       </repeat>
+       </repeat>
+ </process>
+
+	   <!-- create the table -->
+ <table>
+<TR><TH>Link ID<TH>Description</TH>
+	   <repeat list=&cats;><TH>&li;</TH></repeat>
+	   </TR>
+       <repeat list=&lids; entity=lid>
+<TR> <TD> <a href="edit_link.if?urlid=&lid;">&lid;</a>
+     <TD><get agent  index=links..dl-1 key=&lid;> </TD>
+       <repeat list=&cats; entity=cat>
+	<td>   <if> <get form name="&lid;.&cat;"> <then>
+	  <input type="checkbox" name="&lid;.&cat;" value="&cat;" checked>
+	    </then>
+	    <else><input type="checkbox" name="&lid;.&cat;" value="&cat;"></else></if>
+       </td>   
+       </repeat>
+	   </TR>
+       </repeat>
+	   
+	   </table>	   
+<input type="SUBMIT" value="CategorizeLinks">
+	   </form>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Tue Oct 21 19:36:48 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

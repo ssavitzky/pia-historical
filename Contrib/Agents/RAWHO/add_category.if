@@ -1,0 +1,25 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> add a category</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<read file=heading.inc interform process>
+
+<h1> add a new category</h1>
+ <read interform process file=new_cat.inc>
+
+<if> <get  name=catname> <then>
+  <h3> added category &FORM.catname;</h3>
+ <a href="edit_category.if?catname=&catname;"> &FORM.catname;</a>
+</then></if>
+
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Tue Oct 21 15:24:26 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>
