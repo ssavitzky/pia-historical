@@ -19,7 +19,6 @@ public class BasicElement extends AbstractNode implements Element {
     setNext( null );
     setTagName( "" );
     setAttributes( null );
-    children = null;
   }
 
   public BasicElement(Node myParent){
@@ -31,7 +30,6 @@ public class BasicElement extends AbstractNode implements Element {
     setNext( null );
     setTagName( "" );
     setAttributes( null );
-    children = null;
   }
 
   /**
@@ -39,7 +37,7 @@ public class BasicElement extends AbstractNode implements Element {
    */
   public int getNodeType() { return NodeType.ELEMENT; }
 
-  public void setTagName(String tagName){}
+  public void setTagName(String tagName){ this.tagName = tagName; }
   public String getTagName(){ return tagName; }
   
   public void setAttributes(AttributeList attributes){}
