@@ -47,13 +47,18 @@
 
 <h3>Graphics</h3>
 
+<define entity=A100>
+  <doc> Large pentagonal A, which serves as an identifying logo for the 
+	Agency agent.
+  </doc>
+  <value><img src="Logo/A100.gif" height=100 width=111 
+		alt="AGENCY"></value>
+</define>
+<!-- these two aren't being picked up from pia-xhtml; check namespace stuff
+     in TopProcessor. -->
 <define entity=blank-170x1>
   <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
 		alt=" "></value>
-</define>
-<define entity=A100>
-  <value><img src="Logo/A100.gif" height=100 width=111 
-		alt="AGENCY"></value>
 </define>
 <define entity=blue-dot>
   <value><img src="/Agency/Icons/dot-blue.gif"
@@ -103,39 +108,6 @@
 </define>
 
 <h3>Headers and Footers</h3>
-
-<define element=xa>
-  <doc> Either an anchor link or a bold name.
-  <doc>
-  <define attribute=page>
-    <doc> the base name of the current page, matched against the URL (href
-	  attribute).
-    </doc>
-  </define>
-  <action><if><test match="&attributes:page;">&attributes:href; </test>
-		<then><b>&content;</b></then>
-		<else><a href="&attributes:href;">&content;</a></else>
-	  </if>
-  </action>
-</define> 
-
-<define element=xopt>
-  <doc> Output the content if the page matches one of the listed pages.
-  <doc>
-  <define attribute=page>
-    <doc> the base name of the current page, matched against the
-	  <code>pages</code> attribute.
-    </doc>
-  </define>
-  <define attribute=pages>
-    <doc> space-separated names of the pages represented on this line.
-    </doc>
-  </define>
-  <action><if><test match="&attributes:page;">&attributes:pages; </test>
-		<then>&content;</then>
-	  </if>
-  </action>
-</define> 
 
 <define element=sub-head>
   <doc> A secondary table located immediately under the header.
