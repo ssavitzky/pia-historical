@@ -8,40 +8,47 @@
 <read interform file="heading.inc" process>
  
 <tagset-load name=Form-agent-actors>
- <set name=user><get trans name=AuthenticatedUser></set>
- <set name=printfile>printouts/&user;.&day;.&time;.&second;.html</set>
+<set name=user><get trans name=AuthenticatedUser></set>
+<set name=printfile>printouts/&user;.&day;.&time;.&second;.html</set>
 <set name=fullprintfile>&usrDIR;/&agentName;/printouts/&user;.&day;.&time;.&second;.html</set>
 <!-- create static html file to be printed -->
 
- <write file=&printfile;><read interform file="show_signatures_simple.if"
- process></write>
+<write file=&printfile;><read interform file="show_signatures_simple.if"
+process></write>
 
- <os-command-output> html2ps < &fullprintfile; > &fullprintfile;.ps
-		     </os-command-output>
+<os-command-output> html2ps < &fullprintfile; > &fullprintfile;.ps
+</os-command-output>
 
- <if> <get form name=otherprinter></test>
- <then> <set name="printer"><get form name=otherprinter></set></then>
- <else><if><test match=DownloadPostscript><get form name=printer></test> <then>
-  <set name="dload"><get form name=printer></set></then><else>
- <set name="printer"><get form name=printer></set></else>
+<if> <get form name=otherprinter></test>
+  <then> <set name="printer"><get form name=otherprinter></set></then>
+  <else><if><test match=DownloadPostscript><get form name=printer></test> <then>
+    <set name="dload"><get form name=printer></set></then><else>
+      <set name="printer"><get form name=printer></set></else>
+    </if>
 </if>
+
+<if><get name=printer>
+  <then>
+    Printing &myformurl; on &printer; for &user;<br>
+    executing ... lpr -P&printer; &fullprintfile;.ps 
+    <os-command> lpr -P&printer; &fullprintfile;.ps  </os-command>
+  </then>
+  <else>
+
+    <if><get name=dload>
+      <then><hr>
+	<h3>Click <a href=/~&agentName;/&printfile;.ps> here to download the postscript</a></h3>
+      </then>
+      <else> No printer specified, please go back and specify a
+	printer.
+      </else>
+    </if>
+  </else>
 </if>
-
-<if><get name=printer> <then>
- Printing &myformurl; on &printer; for &user;
-
-<!-- os-command lpr -P&printer; &printfile;.ps  /os-command -->
-</then><else>
-<if><get name=dload> <then><hr>
-<h3>Click <a href=/~&agentName;/&printfile;.ps> here to download the postscript</a></h3>
-</then> <else> No printer specified, please go back and specify a
-	printer.</else> </if>
+    
 <hr>
          <show-pending user=&user;>
          
-	</then>
-<hr>
-
 
 
 <expand><get agent name=navbar></expand>

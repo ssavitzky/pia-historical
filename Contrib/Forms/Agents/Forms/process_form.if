@@ -67,7 +67,21 @@
          <a href=&yourl;>&yourl;</a>
          </repeat>
         </set></then></if>
-        <set name=dataobject><get name=myform></set>
+
+        <!-- Remove useless text -->
+        <set name=conditionals><dummy><get name=myform findall="conditionaltext"></dummy></set>
+
+       
+	   <repeat list=&conditionals; entity=c> 
+	     <set name=cvar><get name=c attr=variable></set>
+	      <if><test zero><get name=&cvar;></test> <then>
+		<set insert=0 index=c replace>  </set>
+		<set insert=1 index=c replace> <get name=c attr=alt> </set>
+	      </then></if>
+	  </repeat>
+
+	
+	<set name=dataobject><get name=myform></set>
         </then>
         <else>
         <!-- default form processing -- create list of form data -->

@@ -431,7 +431,7 @@ name=AuthenticatedUser></set></else></if>
  function.
  <form action="/&agentName;/print_form.if" method=post>
   <input type="hidden" name="formurl" value="&myform;">
-  <input type="SUBMIT" value="Print using IMP">
+  <input type="SUBMIT" value="Print">
   on: <select name="printer">
   <option>ps3
   <option>ps4
@@ -440,7 +440,7 @@ name=AuthenticatedUser></set></else></if>
   <option>ps2
   <option>ps1
   <option>psfile
-  <option>other
+     <option>DownloadPostscript
  </select>
 (Other printer: <input name="otherprinter" size="20">)
 </form>  
@@ -547,8 +547,10 @@ name=AuthenticatedUser></set></else></if>
  <if> <get name=replacements key=&myli.routeuser.Text;>
  <then> <set index=myli.routeuser insert=0 replace><get name=replacements key=&myli.routeuser.Text;></set>
  </then> <else> <if><get name=users agent key=&myli.routeuser.Text;>
-	 <else><!-- something is wrong -- send to admin -->
-         <set index=myli.routeuser insert=0 replace><get name=administrator agent></set></else> </if> </else></if>
+	 <else> <if><test match=printer><get index=myli.routeuser.Text>
+	   <else><!-- something is wrong -- send to admin -->
+	     <set index=myli.routeuser insert=0 replace><get
+	     name=administrator agent></set></else> </if> </else></if> </else></if>
 
  <!--  add to robject if condition is met or always -->
 <if> <test match=onlyif><get index=myli.routewhen.Text></test>

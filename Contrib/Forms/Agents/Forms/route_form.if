@@ -27,11 +27,10 @@
   </form>
  </else> </if>
 
-<tagset-load name=Form-agent-actors>
 <expand><get agent name=navbar></expand>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Thu May 28 13:23:34 1998
+Last modified: Wed Aug 12 14:48:04 1998
 <!-- hhmts end -->
 </body></html>

@@ -3,131 +3,134 @@
 
 Name: <b><formvariable name=name options=users> </formvariable> </b>
 
-<table border=1 align=center>
- <caption>Personal Auto</caption>
+<conditionaltext variable=autototals alt="  "><table border=1 align=center>
+<caption>Personal Auto</caption>
 <TR><TH>Date<TH>Departure/Destination<TH>Miles<TH>Total</TR>
 <set name=autorate>0.28</set>
 <repeat list="1 2 3">
-<TR>
- <TD><formvariable name=autodate&li;> </formvariable>
+  <TR>
+  <TD><formvariable name=autodate&li;> </formvariable>
   <TD><formvariable name=dd&li;> </formvariable>
-   <TD><formvariable name=miles&li;> 0 </formvariable>
+  <TD><formvariable name=miles&li;> 0 </formvariable>
 
-<TD><formprotect livalue=&li;><protect> <set name=atotal><product digits=2>
- <get name=miles&li;><get name=autorate></product></set>
+  <TD><formprotect livalue=&li;><protect> <set name=atotal><product digits=2>
+  <get name=miles&li;><get name=autorate></product></set>
   <set name=autototals><sum digits=2><get name=atotal> <get name=autototals></sum></set> <get name=atotal></protect> </formprotect></TD>
-</TR>
+  </TR>
 </repeat>
 <TR>
 <TD colspan=3 align=right> Total:</TD>
 <TD> <formprotect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=autototals></sum></set> <get name=autototals></protect> </formprotect></TD>
 </TR>
 
-</table>
+</table></conditionaltext>
 
+<conditionaltext variable=hoteltotals alt="  ">
 <table border=1 align=center>
- <caption> Hotel</caption>
+<caption> Hotel</caption>
 <TR><TH> Hotel<TH> Nightly Rate (incl. tax)<TH> Nights <TH> Total</TR>
 
 <repeat list="1 2 3">
-<TR>
- <TD><formvariable name="hotel&li;"> </formvariable></TD>
- <TD><formvariable name="rate&li;"> </formvariable></TD>
- <TD><formvariable name="nights&li;"> </formvariable></TD>
- <TD><formprotect livalue=&li;><protect><set name=htotal><product digits=2>
- <get name=rate&li;> <get name=nights&li;></product></set>
+  <TR>
+  <TD><formvariable name="hotel&li;"> </formvariable></TD>
+  <TD><formvariable name="rate&li;"> </formvariable></TD>
+  <TD><formvariable name="nights&li;"> </formvariable></TD>
+  <TD><formprotect livalue=&li;><protect><set name=htotal><product digits=2>
+  <get name=rate&li;> <get name=nights&li;></product></set>
   <set name=hoteltotals><sum digits=2><get name=htotal> <get name=hoteltotals></sum></set> <get name=htotal></protect> </formprotect>
-</TD>
-</TR>
+  </TD>
+  </TR>
 </repeat>
 <TR> <TD colspan=3 align=right> Total:</TD>
  
 <TD><formprotect><protect> <set name=grandtotals><sum digits=2><get
  name=grandtotals> <get name=hoteltotals></sum></set> <get name=hoteltotals> </protect> </formprotect></TD>
 </TR>
-</table>
+</table></conditionaltext>
 
- <table border=1 align=center>
+<conditionaltext variable=perdiemtotals alt="  ">
+<table border=1 align=center>
 <caption>Per Diem</caption>
- <TR><TH>Number of Days<TH>Destination<TH>Total</TR>
+<TR><TH>Number of Days<TH>Destination<TH>Total</TR>
 
 <set name=perrate><dl>
-     <dt>US</dt><dd>34</dd>
-     <dt>Japan</dt><dd>60</dd>
-     <dt>Other</dt><dd>47</dd>
-     </dl></set>
-     
+  <dt>US</dt><dd>34</dd>
+  <dt>Japan</dt><dd>60</dd>
+  <dt>Other</dt><dd>47</dd>
+  </dl></set>
+  
 <repeat list="1 2 3">
-<TR>
- <TD><formvariable name="perdays&li;"> 0 </formvariable></TD>
- <TD><formvariable name="perdest&li;" options=&perrate.keys;> </formvariable></TD>
+  <TR>
+  <TD><formvariable name="perdays&li;"> 0 </formvariable></TD>
+  <TD><formvariable name="perdest&li;" options=&perrate.keys;> </formvariable></TD>
      
- <TD><formprotect livalue=&li;><protect><set name=pkey><get
- name=perdest&li;></set> <set name=ptotal><product digits=2>
- <get name=perdays&li;> <get name=perrate key=&pkey;></product></set>
+  <TD><formprotect livalue=&li;><protect><set name=pkey><get
+  name=perdest&li;></set> <set name=ptotal><product digits=2>
+  <get name=perdays&li;> <get name=perrate key=&pkey;></product></set>
   <set name=perdiemtotals><sum digits=2><get name=ptotal> <get name=perdiemtotals></sum></set><get name=ptotal></protect> </formprotect> </TD>
-
-</TR>
+  
+  </TR>
 </repeat>
 
 <TR><TD colspan=2 align=right> Total:</TD>
 <TD> <formprotect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=perdiemtotals></sum></set>
-  <get name=perdiemtotals></protect> </formprotect></TD>
-</table>
+<get name=perdiemtotals></protect> </formprotect></TD>
+</table></conditionaltext>
 
-
+<conditionaltext variable=mealstotals alt="  ">
 <table border=1 align=center>
- <caption>Business Meals </caption>
+<caption>Business Meals </caption>
 <TR><TH> Guests<TH> Purpose<TH> Cost</TR>
 
 <repeat list="1 2 3 4 5">
-<TR>
- <TD><formvariable name="guest&li;"> </formvariable>
- <TD><formvariable name="purpose&li;"> </formvariable>
- <TD><formvariable name="cost&li;"> </formvariable>
-<formprotect livalue=&li;><protect> 
+  <TR>
+  <TD><formvariable name="guest&li;"> </formvariable>
+  <TD><formvariable name="purpose&li;"> </formvariable>
+  <TD><formvariable name="cost&li;"> </formvariable>
+  <formprotect livalue=&li;><protect> 
   <set name=mealstotals><sum digits=2><get name=cost&li;> <get name=mealstotals></sum></set>
- </protect> </formprotect>
+  </protect> </formprotect>
 
-</TR>
+  </TR>
 </repeat>
 <TR> <TD colspan=2 align=right> Total:</TD>
 <TD> <formprotect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=mealstotals></sum></set>
-  <get name=mealstotals></protect> </formprotect></TD>
+<get name=mealstotals></protect> </formprotect></TD>
 </table>
-
+</conditionaltext>
 
 <set entity name=accountlist><read file="account_types.dat"></set>
 <set entity name=accountcodes><read file="acct_codes.dat" process></set>     
-     
-     <table border=1 align=center>
- <caption>Other Expenses </caption>
+
+<conditionaltext variable=othertotals alt="  ">     
+<table border=1 align=center>
+<caption>Other Expenses </caption>
 <TR><TH>  Description<TH> Type <TH> Acct # <TH> Amount</TR>
 
 <repeat start=1 stop=8>
-<TR>
- <TD><formvariable name="description&li;"> </formvariable>
- <TD><formvariable name="account&li;" options=&accountlist; default=&nbsp;> </formvariable>
- <TD><formvariable name="acctcode&li;" computed=true> </formvariable>
- <TD><formvariable name="amount&li;"> </formvariable>     
-<formprotect livalue=&li;><protect> 
+  <TR>
+  <TD><formvariable name="description&li;"> </formvariable>
+  <TD><formvariable name="account&li;" options=&accountlist; default=&nbsp;> </formvariable>
+  <TD><formvariable name="acctcode&li;" computed=true> </formvariable>
+  <TD><formvariable name="amount&li;"> </formvariable>     
+  <formprotect livalue=&li;><protect> 
   <set name=othertotals><sum digits=2><get name=amount&li;> <get
   name=othertotals></sum></set>
-<set name=accttype><get name=account&li;></set>
-<set name=acctcode&li;><get name=accountcodes key=&accttype;></set>
- </protect> </formprotect>
+  <set name=accttype><get name=account&li;></set>
+  <set name=acctcode&li;><get name=accountcodes key=&accttype;></set>
+  </protect> </formprotect>
 
-</TR>
+  </TR>
 </repeat>
 <TR> <TD colspan=2 align=right> Total: </TD>
 <TD> <formprotect><protect> <set name=grandtotals><sum digits=2><get name=grandtotals> <get name=othertotals></sum></set>
-  <get name=othertotals></protect> </formprotect></TD>
-</table>
+<get name=othertotals></protect> </formprotect></TD>
+</table></conditionaltext>
 
 <p>
 
- Total of expenses: <b><formprotect><protect> <get name=grandtotals>
- </protect> </formprotect><b>
+<h3>Total of expenses: <b><formprotect><protect> <get name=grandtotals>
+</protect> </formprotect><b></h3>
 
 <p>
 
