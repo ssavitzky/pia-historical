@@ -34,7 +34,7 @@ BINDIR  =$(PIADIR)/bin
 
 # all -- descend into PACKAGES and do a make there.
 all::
-	for p in $(PACKAGES); do if test -d $$p; then \
+	@@for p in $(PACKAGES); do if test -d $$p; then \
 		echo 'building ' $(PACKAGE).$$p; \
 		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
 		 VPATH=$(VPATH)/$$p); fi ;\
