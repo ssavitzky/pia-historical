@@ -225,6 +225,12 @@ public class Run  extends Environment {
     return new Run(agent, trans, res, filepath).filterFile("Standard");
   }
 
+  /** Run a standard InterForm file and discard the output. */
+  public static void interformSkipFile(Agent agent, String filepath, 
+				       Transaction trans, Resolver res) {
+    new Run(agent, trans, res, filepath).skipFile("Standard");
+  }
+
   /** Run an already-parsed InterForm element as an Agent's actOn hook. */
   public static void interformHook(Agent agent, SGML code,
 				   Transaction trans, Resolver res) {

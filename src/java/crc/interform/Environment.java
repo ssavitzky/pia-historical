@@ -28,7 +28,7 @@ import crc.sgml.Tokens;
 import crc.ds.List;
 import crc.ds.Table;
 
-/** Run-time environment for the InterForm.  This class contains
+/** Run-time environment for the InterForm Interpretor  This class contains
  *	everything needed for associating an interpretor and a set of
  *	entities with a document, either as an action or a handler. <p>
  *
@@ -56,6 +56,7 @@ public class Environment {
   public Environment() {
   }
 
+  /** Construct an environment with a filename. */
   public Environment(String fn) {
     filename = fn;
   }
@@ -164,6 +165,7 @@ public class Environment {
   ** Run the Interpretor:
   ************************************************************************/
 
+  /** Open an input file (usually <code>filename</code>). */
   public FileInputStream open(String infile) {
     try {
       if (infile != null) return new FileInputStream(infile);
@@ -174,6 +176,7 @@ public class Environment {
     }
   }
 
+  /** Run the interpretor on an InputStream, with output to a stream. */
   public void runStream(InputStream in, OutputStream out, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
@@ -182,10 +185,12 @@ public class Environment {
     ii.run();
   }
 
+  /** Run the interpretor on the input file, with output to a stream. */
   public void runFile(OutputStream out, String tsname) {
     runStream(open(filename), out, tsname);
   }
 
+  /** Run the interpretor on an InputStream to produce a String value. */
   public String evalStream(InputStream in, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
@@ -194,6 +199,7 @@ public class Environment {
     return ii.run().toString();
   }
 
+  /** Run the interpretor on a file to produce a String value. */
   public String evalFile(String tsname) {
     return evalStream(open(filename), tsname);
   }
@@ -213,10 +219,12 @@ public class Environment {
     return new StringBufferInputStream( interformOutput );
   }
 
+  /** Filter a file, producing an InputStream. */
   public InputStream filterFile(String tsname) {
     return filterStream(open(filename), tsname);
   }
 
+  /** Run some already-parsed InterForm code and discard the output. */
   public void runCode(SGML code, String tsname) {
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
     ii.pushInto(code);
@@ -225,6 +233,7 @@ public class Environment {
     ii.run();
   }
 
+  /** Parse an InputStream, producing a parse tree. */
   public Tokens parseStream(InputStream in, String tsname) {
     Parser p = new Parser(in, null);
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(),true);
@@ -233,12 +242,29 @@ public class Environment {
     return ii.run();
   }
 
+  /** Parse a file, producing a parse tree. */
   public SGML parseFile(String tsname) {
     return parseStream(open(filename), tsname);
   }
 
+  /** Parse a String, producing a parse tree. */
   public SGML parseString(String input, String tsname) {
     return parseStream(new java.io.StringBufferInputStream(input), tsname);
+  }
+
+  /** Run the interpretor on an InputStream, discarding the output. */
+  public void skipStream(InputStream in, String tsname) {
+    Parser p = new Parser(in, null);
+    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    ii.from(p).toNull();
+    ii.setSkipping();
+    use(ii);
+    ii.run();
+  }
+
+  /** Run the interpretor on a file, discarding the output. */
+  public void skipFile(String tsname) {
+    skipStream(open(filename), tsname);
   }
 
   /************************************************************************
