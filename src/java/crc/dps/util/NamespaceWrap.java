@@ -30,7 +30,7 @@ import crc.ds.Tabular;
  * @see crc.ds.Tabular
  */
 
-public class NamespaceWrap implements Namespace {
+public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
 
   /************************************************************************
   ** Data:
@@ -40,7 +40,6 @@ public class NamespaceWrap implements Namespace {
   protected boolean caseSensitive  = true;
   protected boolean lowerCase	   = true; // ignored if caseSensitive
   protected int     namespaceItems = 0;
-  protected String  name	   = null;
 
   /************************************************************************
   ** Lookup Operations:
