@@ -22,7 +22,7 @@
   <tr><td align=right width=170><br>
   <tr>
     <th>
-    <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
+    <td valign=top> &year; &monthName; &day;, &time;:&second;<br>
 
   <tr>
     <th valign=top align=right><b>&agentName;:</b>
@@ -53,9 +53,9 @@
 This is the home page for the ``<strong>&agentName;</strong>'' agent.  It is
 used for controlling the other agents running on this PIA.  An agent name
 without a final slash leads to the agent's <em>home page</em>.  With the slash
-you get a generic <em>index</em> page.
+you get a generic <em><a href="index.if">index</a></em> page.
 <hr>
-
+<table><tr><td width=340 valign=top>
 <h3>Useful Interforms:</h3>
 <ul>
   <li> <a href=/Agency/agents.if>list running agents</a>
@@ -71,16 +71,21 @@ you get a generic <em>index</em> page.
   <li> <a href="/Agency/shutdown.if">Shut down the PIA or the computer</a>
 </else></if>       
 </ul>
-
+<td valign=top>
 <h3>Other Information:</h3>
 <ul>
   <li> <a href="/PIA/Doc/"><b>Documentation</b> </a>
        <if><agent-running name=PIA><then></then>
        <else><a href="/Agency/installers.if#PIA"><em>install needed!</em></a>
        </else></if>
+       <ul>
+	 <li> <a href="/PIA/Doc/Tutorial">Tutorial</a>
+	 <li> <a href="/PIA/Doc/Release">Release Notes</a>
+	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
+       </ul>
   <li> <a href="/Agency/programming.if">Programming information</a>
 </ul>
-
+</table>
 <hr>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>

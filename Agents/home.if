@@ -7,21 +7,36 @@
 
 <set entity name=title>&agentName; agent <br>Home Page</set>
 <read interform file="heading.inc" process>
+
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
 <table cellspacing=0 cellpadding=0>
-<tr><th width=340><td><br>
-<tr><th><td> <a href="index.if">Index Page</a>
-<tr><th align=right><a href="home.if">&agentName;</a>: <td> Home Page
-<tr><th><td> <a href="/&agentName;/initialize.if">[re-initialize]</a>
-<tr><th><td> <a href="options.if">Options</a>
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-	     <a href="/My/Agents/&agentName;/">(Customized)</a>
-<tr><th align=right><td>  
-       <form action="/Agency/remove_agent.if" method="POST">
-	Remove agent:<br>
-       <input name="agent" value="&agentName;" type=hidden>
-       <input type="submit" value="Remove &agentName;">
-       </form>
+<tr><th width=170><td>
+    <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><td><br>
+    <tr><th><td><a href="index.if">Index Page</a>
+    <tr><th align=right><a href="home.if">&agentName;</a>:
+	<td> <strong>Home Page</strong>
+    <tr><th>
+	<td><a href="options.if">Options</a>
+	<if><read info interform file="initialize.if">
+	    <then><a href="initialize.if">[re-initialize]</a></then></if>
+    <tr><th><td><a href="/PIA/Agents/&agentName;/">InterForms</a>
+	        <a href="/My/Agents/&agentName;/">(Customized)</a>
+    <if>&subs;<then>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
+                <else>&agentType;/</else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat></then></if>
+    </table>
 </table>
+<hr>
+
+<!-- See whether there's an "about" file for this agent. -->
+<read interform file="about.inc" process>
+<p>
 
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||

@@ -6,19 +6,32 @@
 <set entity name=title>&agentName; agent <br>Index Page</set>
 <read interform file="heading.inc" process>
 
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+
 <table cellspacing=0 cellpadding=0>
-<tr><th width=340><td><br>
-<tr><th align=right><a href="home.if">&agentName;</a>: <td>Index Page
-<tr><th align=right><td> <a href="home.if">Home Page</a>
-<tr><th><td> <a href="options.if">Options</a>
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
-<tr><th align=right><td>  
-       <form action="/Agency/remove_agent.if" method="POST">
-	Remove agent:<br>
-       <input name="agent" value="&agentName;" type=hidden>
-       <input type="submit" value="Remove &agentName;">
-       </form>
+<tr><th width=170><td>
+  <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><td><br>
+    <tr><th align=right><a href="home.if">&agentName;</a>: <td>Index Page
+    <tr><th align=right><td> <a href="home.if">Home Page</a>
+    <tr><th><td> <a href="options.if">Options</a>
+    <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+    <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+    <if>&subs;<then>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
+                <else>&agentType;/</else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat></then></if>
+    <tr><th align=right>Remove:<td>  
+           <form action="/Agency/remove_agent.if" method="POST">
+	
+           <input name="agent" value="&agentName;" type=hidden>
+           <input type="submit" value="Remove &agentName;">
+           </form>
+  </table>
 </table>
 
 <hr>

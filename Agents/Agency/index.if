@@ -6,18 +6,21 @@
 
 <set entity name=title>&agentName; agent <br>Index Page</set>
 <read interform file="heading.inc" process>
-<table>
-<tr><th width=340><td><br>
-<tr><th align=right><a href="home.if">&agentName;</a>:<td>Index Page
-<tr><th align=right><td> <a href="home.if">Home Page</a>
-<tr><th><td> <a href="options.if">Options</a>
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
-  <tr>
-    <th valign=top align=right><b>Agents:</b>
-    <td valign=top> <repeat list="&agentNames;" entity="foo">
-      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
-   </repeat><br>
+<table cellspacing=0 cellpadding=0>
+<tr><th width=170><td>
+    <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><td><br>
+    <tr><th align=right><a href="home.if">&agentName;</a>:<td>Index Page
+    <tr><th align=right><td> <a href="home.if">Home Page</a>
+    <tr><th><td> <a href="options.if">Options</a>
+    <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+    <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+    <tr>
+        <th valign=top align=right><b>Agents:</b>
+        <td valign=top> <repeat list="&agentNames;" entity="foo">
+          <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+       </repeat><br>
+  </table>
 </table>
 <pre><i><pad align=right width=15>Index</pad>	Home</i>
 <repeat list="&agentNames;"
