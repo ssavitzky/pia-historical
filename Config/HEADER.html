@@ -3,8 +3,17 @@
 <a href="../">[..]</a>
 <a href="#files">[files]</a><p>
 
-Files under this directory contain configuration files for various kinds of
-web-enabled appliances.<p>
+This directory contains three kinds of configuration information:
+
+<ol>
+  <li> configuration files for various kinds of web-enabled appliances.  Each
+       appliance's configuration is in a directory with the name of the
+       appliance's top-level agent.
+  <li> configuration files for various operating systems
+  <li> makefiles and other configuration files for the standard ``Software
+       Development Kit''. 
+</ol>
+Files under this directory contain <p>
 
 In general, directories with capitalized or uppercase names belong to specific
 appliances, while directories with lowercase names are more generic.  In all
@@ -18,6 +27,7 @@ Subdirectories may also contain a <code>setup</code> script.<p>
 
 <h2>Annotated Contents</h2>
 
+<h3>Appliances</h3>
 <dl>
   <dt> <a href="CDRW/">CDRW/</a>
   <dd> Configuration files for a CD-RW or CD-R appliance.
@@ -27,11 +37,25 @@ Subdirectories may also contain a <code>setup</code> script.<p>
   <dd> Configuration files for a Web Printer.
   <dt> <a href="WebWort">WebWort/</a>
   <dd> Configuration files for a ``generic'' web appliance.
+</dl>
+
+<h3>Operating Systems</h3>
+<dl>
   <dt> <a href="unix/">unix/</a>
   <dd> Configuration files for Unix or Linux users.  (This may eventually
        include multiple setups for ordinary user and developer.)
   <dt> win95/, win31/, mac/ (eventually)
   <dd> 
+</dl>
+
+<h3>Software Development Kit</h3>
+<dl>
+  <dt> <a href="makefiles/">makefiles/</a>
+  <dd> Templates to be included in Makefile's.
+  <dt> <a href="pia.props">pia.props</a>
+  <dd> Default properties (profile) file.
+  <dt> <a href="filemap.props">filemap.props</a>
+  <dd> Default filemap (extension to MIME type) file.
 </dl>
 
 <hr>
