@@ -12,8 +12,9 @@ public class BasicNamedNodeList extends AbstractNamedList implements NamedNodeLi
   public BasicNamedNodeList(){
   }
 
-  public BasicNamedNodeList(BasicNamedNodeList l){
-    initialize( l );
+  public BasicNamedNodeList(AbstractNamedList l){
+    if( l != null )
+      initialize( l );
   }
 
 
