@@ -1,19 +1,18 @@
 <!doctype html system "html.dtd">
 <html><head>
 <title>Initialize the FBI</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body>
 <h1>Initialize the FBI</h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
-<agent-set-criteria>response agent-response html</>
-<set agent hook name="act-on"><protect><if><get agent name=hidden><else>
+<set name=AGENT:criteria>response agent-response html</set>
+<set name=AGENT:act-on><protect><if><get agent name=hidden><else>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-<a href="&pia;/" target="_top"><img src="&pia/fbi/Logo/pia24.gif"
+<a href="&pia;/" target="_top"><img src="&pia;/fbi/Logo/pia24.gif"
 			 height=24 width=43 border=0></a>
-<expand><get agent=Spy name=controls></expand>
-<expand><get agent=History name=controls></expand>
+<expand>&AGENT:Spy:controls;</expand>
+<expand><parse><get name=AGENT:History:controls></expand>
 ( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
           <a href="&pia;/&transAgentType;/"> / </a></then>
@@ -25,7 +24,12 @@
 </trans-control></if>
 </protect></set>
 
-<hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
-<b>$Id$</b>
+<dl>
+  <dt> Criteria:
+  <dd> &AGENT:criteria;
+  <dt> Act-on:
+  <dd> <pre><protect markup result>&AGENT:act-on;</protect></pre>
+</dl>
+
+<footer cvsid="$Id$">
 </body></html>

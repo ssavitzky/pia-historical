@@ -11,9 +11,8 @@
 <h2>Legacy operations</h2>
 
 <note author=steve> Note the use of <code>handler=legacy:xxx</code> in the
-   following definitions.  It is not necessary; most of these can be defined
-   directly, and if any remain they represent places where work needs to be
-   done.  It is, however, expedient (i.e. a temporary hack).
+   following definitions.  This is expedient (i.e. a temporary hack), but all
+   such definitions will eventually be replaced.
 </note>
 
 <define element=agent-home empty handler=legacy:agent-home>
@@ -43,6 +42,12 @@
    </define>
 </define>
 
+<define element=agent-restore handler=legacy:agent-restore>
+</define>
+
+<define element=agent-install handler=legacy:agent-install>
+</define>
+
 <h2>Page Components</h2>
 
 <h3>Graphics</h3>
@@ -66,13 +71,13 @@
 </define>
 
 
-<h3>Miscelaneous tables and lists:</h3>
+<h3>Miscellaneous tables and lists:</h3>
 
 <define element=agent-index empty>
   <doc> Put out an index of agents. </doc>
   <action>
     <table cellspacing=0 cellpadding=0 border=0>
-      <tr><th width=170 valign=center>
+      <tr><th width=170 valign=top><i>Agent Index:</i>
 	    </th>
 	  <td valign=center>
 	    <table cellspacing=0 cellpadding=0 align=center border=0>
@@ -160,7 +165,6 @@
    <get name=content>
   </table>
 </table>
-
   </action>
 </define>
 

@@ -16,7 +16,7 @@
 <table cellspacing=0 cellpadding=0>
 <tr>
   <th width=170>
-    <read quiet href="/Agency/insert.if" process>
+    <read quiet href="/Agency/insert" process>
   <td>
     <table cellspacing=0 cellpadding=0>
     <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
@@ -24,18 +24,18 @@
         <td><br>
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*">
-	    <td> <a href="home.if">Home</a>
-    		 <a href="index.if">Index</a>
-    		 <b href="help.if">Help</b>
-<if><read info interform file="initialize.if"><then>
-    <tr><th><td><a href="options.if">Options</a>
-	    	      <a href="initialize.if">[re-initialize]</a></then></if>
+	    <td> <a href="home">Home</a>
+    		 <a href="index">Index</a>
+    		 <b href="help">Help</b>
+<if><read info interform file="initialize"><then>
+    <tr><th><td><a href="options">Options</a>
+	    	      <a href="initialize">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
-	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
+	        <then><a href="/&agentType;/home">&agentType;/</a></then>
                 <else>&agentType;/</else></if>
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
@@ -46,17 +46,17 @@
 <!-- generic navigation bar -->
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
-    <then><a href="/&agentType;/home.if">&agentType;</a>
+    <then><a href="/&agentType;/home">&agentType;</a>
           <a href="/&agentType;/"> / </a>
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
-	  <a href="/&agentType;/&agentName;/options.if">options</a>
+	  <a href="/&agentType;/&agentName;/options">options</a>
           <a href="/&agentType;/&agentName;/">help</a> (
 	     <a href="#context-specific">specific</a>
 	     <a href="#general">general</a> )
-    <else><a href="/&agentName;/home.if">&agentName;</a>:
+    <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/options.if">options</a>
+	  <a href="/&agentName;/options">options</a>
 	  <a href="/&agentName;/">help</a> (
 	     <a href="#context-specific">specific</a>
 	     <a href="#general">general</a> )
@@ -70,10 +70,10 @@
   <dd>  &lt;URL:<a href="&url;">&url;</a>&gt; <br>
        This is the 
        <if><test not exact match="&agentType;">&agentName;</test>
-              <then><a href="/&agentType;/home.if">&agentType;</a>
+              <then><a href="/&agentType;/home">&agentType;</a>
 	            <a href="/&agentType;/"> / </a>
 	            <a href="/&agentType;/&agentName;">&agentName;</a>
-	      <else><a href="/&agentName;/home.if">&agentName;</a>
+	      <else><a href="/&agentName;/home">&agentName;</a>
        </if> agent of
        <if><test exact match='pia'>&piaUSER;</test>
 		<then>An Information Appliance</then>
@@ -104,17 +104,17 @@ found on the <a href="/Agency">Agency's home page</a>.
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
 <if><test not exact match="&agentType;">&agentName;</test>
-    <then><a href="/&agentType;/home.if">&agentType;</a>
+    <then><a href="/&agentType;/home">&agentType;</a>
           <a href="/&agentType;/"> / </a>
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
-	  <a href="/&agentType;/&agentName;/options.if">options</a>
+	  <a href="/&agentType;/&agentName;/options">options</a>
           <a href="/&agentType;/&agentName;/">help</a> (
 	     <a href="#context-specific">specific</a>
 	     <a href="#general">general</a> )
-    <else><a href="/&agentName;/home.if">&agentName;</a>:
+    <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/options.if">options</a>
+	  <a href="/&agentName;/options">options</a>
 	  <a href="/&agentName;/">help</a> (
 	     <a href="#context-specific">specific</a>
 	     <a href="#general">general</a> )

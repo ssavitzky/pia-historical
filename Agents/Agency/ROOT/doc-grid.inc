@@ -19,9 +19,9 @@
   <tr>
 	<th align=LEFT><b>Manuals:</b></th>
 	<td><a href="/PIA/Doc/Manuals/User/index.html">User</a></td>
-	<td><a href="/PIA/Doc/Manuals/InterForm/index.html">Interforms</a> </td>
-	<td><a href="/PIA/Doc/Manuals/Author/index.html">Agent authoring</a> </td>
-	<td><a href="/PIA/Doc/Manuals/Api/index.html">API</a>  </td>
+	<td><a href="/PIA/Doc/Manuals/InterForm/index.html">Active Docs</a></td>
+	<td><a href="/PIA/Doc/Manuals/Author/index.html">Writing Agents</a></td>
+	<td><a href="/PIA/Doc/Manuals/Api/index.html">Internals (API)</a> </td>
 	
 	</tr>
 
@@ -42,4 +42,4 @@
 	<td><a href=""></a>&nbsp;</td>
   </tr>
 </table>
-<!-- $Id$ -->
+<inc-footer cvsid="$Id$">

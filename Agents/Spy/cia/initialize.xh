@@ -1,0 +1,34 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the CIA</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<h1>Initialize the CIA</h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+<set name=AGENT:criteria>response agent-response- html</set>
+<user-message>&agentName; criteria: &AGENT:criteria;</user-message>
+
+<set name="AGENT:act-on"><!-- this is cia's act-on hook -->
+<protect><if>&AGENT:hidden;<else>
+<trans-control>
+<set entity name=pia>http://&piaHOST;:&piaPORT;</set>
+<a href="&pia;/" target="_top"><img src="&pia;/cia/Logo/pent24.gif"
+			 	    height=24 width=24 border=0></a>
+<expand>&AGENT:Spy:controls;</expand>
+<expand><parse><get name=AGENT:History:controls></expand>
+<!-- making this a link is actually useful: it gets you out of a frame. -->
+<a href="&url;" target="_top">&lt;URL:&url;&gt;</a>
+<hr>
+</trans-control></if>
+<user-message>&url;</user-message>
+</protect></set>
+
+<dl>
+  <dt> Criteria:
+  <dd> &AGENT:criteria;
+  <dt> Act-on:
+  <dd> <pre><protect markup result>&AGENT:act-on;</protect></pre>
+</dl>
+
+<footer cvsid="$Id$">
+</body></html>

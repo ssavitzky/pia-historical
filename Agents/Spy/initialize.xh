@@ -1,14 +1,13 @@
 <!doctype html system "html.dtd">
 <html><head>
 <title>Initialize the &agentName; agent</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body>
 <h1>Initialize the &agentName; agent</h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
 
-<set agent hook name="controls"><protect><!-- Generic Spy controls: -->
-<set entity name=pia>http://&piaHOST;:&piaPORT;</set>
+<set name="AGENT:controls"><protect><!-- Generic Spy controls: -->
+<set name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/My/" target="_top">[~]</a>
 <a href="&pia;&agentPath;/hide?hide=true" target="_top">[X]</a>
 <a href="&pia;&agentPath;/help?topic=toolbar" target="_top">[help]</a>

@@ -21,45 +21,45 @@ where <em>pia</em> is the directory where the PIA is installed.<p>
 
 You can get additional installation forms from:
 <pre>
-  <em>pia</em>/Agents/Agency/installers.if
+  <em>pia</em>/Agents/Agency/installers
 </pre>
 
 
 <h2>Start up agents</h2>
 <dl> 
   <dt> DOFS agent
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="DOFS">
        </form>
        
   <dt> <a name="History">History agent</a>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="History">
        </form>
        
   <dt> <a name="Spy">Spy agent</a>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="Spy">
        </form>
   <dt> <a name="cia">CIA agent</a>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="cia">
        type: <input name="type" value="Spy">
        </form>
   <dt> <a name="fbi">FBI agent</a>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="fbi">
        type: <input name="type" value="Spy">
        </form>
-  <dt> <a name="InterForm">InterForm Demo agent</a>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dt> <a name="demo">InterForm Demo agent</a>
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
-       name: <input name="agent" value="InterForm">
+       name: <input name="agent" value="demo">
        </form>
 </dl>
 
@@ -67,7 +67,7 @@ You can get additional installation forms from:
 
 <dl>
   <dt> dofs/My
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="My">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;"> -- note the use of an
@@ -75,7 +75,7 @@ You can get additional installation forms from:
        <input type="submit" value="install"><br>
        </form>
   <dt> dofs/PIA
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="PIA">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&piaDIR;"> -- note the use of an
@@ -83,7 +83,7 @@ You can get additional installation forms from:
        <input type="submit" value="install"><br>
        </form>
   <dt> dofs/Home
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Home">
        type:<input name="type" value="DOFS"><br>
@@ -93,7 +93,7 @@ You can get additional installation forms from:
 </dl>
 
 <h3>Optional Agents</h3>
- See <a href="installers.if"> the agent installers page</a> for a listing of
+ See <a href="installers"> the agent installers page</a> for a listing of
  other agents you might want to install.
 
 

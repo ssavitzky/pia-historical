@@ -1,10 +1,8 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>Initialize Agency</title>
-<link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
 <h1>The Agency Initialization InterForm</h1>
-
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
 <if><read.file interform file="checkpoint.dat" info>
@@ -12,7 +10,9 @@
 	<user-message>Restoring from checkpoint.dat</user-message>
 	<if><agent-restore interform file=checkpoint.dat>
 	    <then>restored from <code>checkpoint.dat</code>.</then>
-            <else><user-message>Restore failed.  Loading <read interform 
+            <else>
+ 		<set agent name=do-not-remove>true</set>
+		  <user-message>Restore failed.  Loading <read interform 
 		  info=path file="/Agency/START-UP.html"></user-message>
 		  <actor name=form tag=form handle="submit_forms"></actor>
 		  <read file="/Agency/START-UP.html" interform process skip>
