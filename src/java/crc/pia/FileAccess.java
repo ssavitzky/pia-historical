@@ -126,9 +126,10 @@ public class FileAccess {
       String mypath = myurl.getFile(); // mypath = path for heading and title
 
       if (noTrailingSlash) {
+	mypath += "/";
 	f = new File(myfile, "index.html");
 	if (f.exists()) {
-	  redirectTo(request, mypath+ "/" + "index.html");
+	  redirectTo(request, mypath + "index.html");
 	  return;
 	}
       }
@@ -150,9 +151,9 @@ public class FileAccess {
 	}
 
 	if (all || !ignoreFile(zfile, filepath)) {
-	  entry = "<LI> <a href=\"" + mybase+zfile + "\">" + zfile + "</a>" ;
+	  entry = "<LI> <a href=\"" + mypath + zfile + "\">" + zfile + "</a>" ;
 	  if ( f.isDirectory() )
-	    entry += " <a href=\"" + mybase+zfile + "/\">" + " / " + "</a>";
+	    entry += " <a href=\"" + mypath + zfile + "/\">" + " / " + "</a>";
 
 	  entries.insert(Association.associate(entry, zfile));
 	}
@@ -160,8 +161,8 @@ public class FileAccess {
 
       /* Java doesn't list "..", so include it here. */
 
-      entry = "<LI> <a href=\"" + mybase+".." + "\">" + ".." + "</a>";
-      entry += " <a href=\"" + mybase+ ".." + "/\">" + " / " + "</a>";
+      entry = "<LI> <a href=\"" + mypath + ".." + "\">" + ".." + "</a>";
+      entry += " <a href=\"" + mypath +  ".." + "/\">" + " / " + "</a>";
       entries.insert(Association.associate(entry, ".."));
 
       if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
@@ -171,7 +172,7 @@ public class FileAccess {
       String allurls = sortList.join("\n");
 
       String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + mypath + "</TITLE>"
-	+ "<BASE href=\"" + mybase + "\">"
+	//	+ "<BASE href=\"" + mybase + "\">"
 	+ "</HEAD>\n<BODY>" + head
 	+ "<h3><a href=\"/" + agent.type() + "/" + agent.name() + "\">/" 
 	  + agent.type() + "/" + agent.name() + ":</a> " + mypath + "</h3>"

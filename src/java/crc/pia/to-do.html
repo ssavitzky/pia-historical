@@ -27,6 +27,13 @@ See also:
 
 <h2>Main List</h2>
 <ol>
+  <li> <b>Bug</b> Directory uses redirect for index.html. <br>
+       Redirection breaks when the system name is not what
+       <code>hostname</code> returns (e.g., <code>localhost</code>).  There
+       are only two choices here: redirect and hope the full URL is in the
+       headers, or returning the file and fixing the links.  
+       (199-02-19) <br>
+
   <li> <b>Hole</b> Regexp and Jigsaw must go! (<b>critical</b>) <br>
        (1999-02-09) <br>
 
@@ -57,7 +64,8 @@ See also:
        default paths, but does not override them.  Similarly, many possible
        roots and paths are currently searched. 
        (1998-12-17) <br>
-
+       -- Note that as of 1999-02-09 this is mostly, if not completely, done
+       
   <li> <b>Bug</b> Header parsing exception handling <br>
        In a response, parseInitializationString should set defaults instead of
        throwing an exception, so that the browser at least gets the page.
