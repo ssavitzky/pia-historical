@@ -322,8 +322,7 @@ sub analyze {
     ## The result is a hash that associates each of the given tags with 
     ##	  that tag's content in the top level of array @$in.  Anything
     ##	  outside any of the tags is associated with '_', or the first
-    ##	  empty tag if $flag is true. Items consisting only of
-    ##	  whitespace are quietly dropped.  
+    ##	  empty tag if $flag is true. 
 
     ##	  If applied to a token instead of an array, attributes will be
     ##	  used if they exist, and the token will be returned instead of
@@ -347,14 +346,12 @@ sub analyze {
 	    my $tag = $x->tag;
 	    if (exists $tags{$tag}) {
 		print "pushing <$tag...> to attributes\n" if $main::debugging>1;
-		$out->{$tag} = remove_spaces($x->content);
+		$out->{$tag} = $x->content;
 	    } else {
 		print "pushing <$tag...> to tmp\n" if $main::debugging>1;
 		push(@tmp, $x);
 	    }
 	} else {
-	    $x =~ s/^[\n\t ]*//s;
-	    $x =~ s/[\n\t ]*$//s;
 	    print "pushing '$x' to tmp\n" if $main::debugging>2;
 	    push(@tmp, $x) unless $x eq '';
 	}
@@ -547,7 +544,7 @@ sub if_handle {
     ##	  and pick it apart later.
 
     analyze($it, ['test', 'then', 'else'], 1);
-    my $test = $it->attr('test');
+    my $test = remove_spaces($it->attr('test'));
     $test = @$test if ref($test);
 
     if ($test) {
