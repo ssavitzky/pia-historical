@@ -12,8 +12,7 @@
 package crc.pia.agent;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Hashtable;
-import java.util.NoSuchElementException;
+
 import java.util.Enumeration;
 
 import java.net.URL;
@@ -82,7 +81,7 @@ public class Agency extends GenericAgent {
     Agent newAgent = null;
     if( className != null && className.length() > 0){
       try{
-	newAgent = (Agent)Class.forName(className).newInstance() ;
+	newAgent = (Agent) (Class.forName(className).newInstance()) ;
 	newAgent.name( name );
 	newAgent.type( type );
       }catch(Exception ex){
@@ -108,15 +107,14 @@ public class Agency extends GenericAgent {
    */
   public String proxyFor(String destination, String protocol){
     String s = null;
-    try{
-      List list = noProxies();
+    List list = noProxies();
+    if (list != null) {
       Enumeration e = list.elements();
       while( e.hasMoreElements() ){
 	s = (String)e.nextElement();
 	if( s.indexOf(destination) != -1 )
 	  return null;
       }
-    }catch(NoSuchElementException e ){
     }
     return proxy(protocol);
   }
@@ -124,12 +122,8 @@ public class Agency extends GenericAgent {
   /**
    * @return no proxies list from PIA
    */
-  public List noProxies() throws NoSuchElementException{
-    List list = Pia.instance().noProxies();
-    if( list == null ) 
-      throw new NoSuchElementException("no-proxies list is empty");
-    else
-      return list;
+  public List noProxies() {
+    return Pia.instance().noProxies();
   }
 
   /**
@@ -190,6 +184,11 @@ public class Agency extends GenericAgent {
    */
   public Agency(String name, String type){
     super(name, type);
+  }
+
+  /** Default constructor. */
+  public Agency() {
+    super();
   }
 
   /**
