@@ -84,8 +84,9 @@ check::
 /*
  * Put all CVS files into a tar file for safekeeping.
  */
-SRCDIR=src/lib/java/classes/crc
-CLASSDIR=src/lib/java/classes
+SRCDIR=src/java/crc
+CLASSDIR=src/java
+LIBDIR=lib/java
 
 cvs.tar::
 	find $(SUBDIRS) -name CVS -print | tar -cT - -f cvs.tar
@@ -95,12 +96,15 @@ cvs.tar::
  */
 rm_bin_tar:: 
 	 rm -f pia_bin.tar.gz
+	 rm -f crc.zip
 rm_pia_tar::
 	rm -f pia.tar.gz
+	rm -f crc.zip
 
-prep_rel:: 
-	cd $(SRCDIR); make clean ; make ; make doc
-	cd $(CLASSDIR);make crc.zip
+prep_rel::
+
+	cd $(SRCDIR); make clean ; make
+	cd $(CLASSDIR);make crc.zip; make alldoc
 
 /*
  * Binary release
