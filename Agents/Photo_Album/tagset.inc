@@ -159,18 +159,19 @@ match="\.jpg$"></set>
  </difference> &mycols; </product> &c; </sum></set>
  
  <set name=myphoto local><get index=myphotos.photo-&myindex;></set>
- <td> <if> <get name=myphoto> <then><show-photo photo=&myphoto;
-       thumbnail=true></then> <else><!-- No photo: myphotos.photo-&myindex; --> </else> </if>
+ <td> <if> <get name=myphoto> <then>
+           <if> <get name=mycontrols> <then>
+           <set name=pindex><get index=myphoto.photoindex.Text></set>
+           <img src=r.gif alt=R width=16 height=16> <input type="checkbox" name=rotate&pindex; value=270>
+           <img src=rcc.gif alt=r width=16 height=16> <input type="checkbox" name=rotate&pindex; value=90>
+           <!-- img src=del.gif alt=X no proc yet--> <!-- input
+           type="checkbox" name=delete&pindex; value=delete --><br>
+           </then> </if>
+    <show-photo photo=&myphoto; thumbnail=true>
+       
+</then> <else><!-- No photo: myphotos.photo-&myindex; --> </else> </if>
 </td>
- <if> <get name=mycontrols> <then>
- <set name=pindex><get index=myphoto.photoindex.Text></set>
- <td>
-<img src=r.gif alt=R width=16 height=16> <input type="checkbox" name=rotate&pindex; value=270><br>
-<img src=rcc.gif alt=r width=16 height=16> <input type="checkbox" name=rotate&pindex; value=90><br>
-<!-- img src=del.gif alt=X no proc yet--> <!-- input type="checkbox" name=delete&pindex;
-value=delete --><br>
- </td>
- </then> <else>  </else> </if>
+ 
 </repeat>
 </tr>
 </repeat>
