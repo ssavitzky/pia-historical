@@ -21,12 +21,14 @@
 	<img src="/Agency/Icons/white170x1.gif"
 	                   width=170 height=1> <td><br>
     <tr><th align=right><td> <a href="home.if">Home Page</a>
+    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif" alt="*">
+	<td> <strong>Index Page</strong>
     <tr><th>
 	<td><a href="options.if">Options</a>
 	    <if><read info interform file="initialize.if">
 	        <then><a href="initialize.if">[re-initialize]</a></then></if>
-    <tr><th><td> <a href="/PIA/Agents/&agentPath;/">InterForms</a>
-    <tr><th><td> <a href="/My/Agents/&agentPath;/">Customized InterForms</a>
+    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
+	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>

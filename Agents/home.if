@@ -24,7 +24,8 @@
 	                   width=170 height=1></th>
         <td><br>
     <tr><th><td><a href="index.if">Index Page</a>
-    <tr><th align=right><a href="home.if">&agentName;</a>:
+    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*">
 	<td> <strong>Home Page</strong>
     <tr><th>
 	<td><a href="options.if">Options</a>
