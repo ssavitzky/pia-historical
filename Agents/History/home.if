@@ -13,7 +13,7 @@
 <tr><th><td> <a href="/My/History">/My/History</a> /
 		<a href="/My/History/&year;">&year;</a> /
 		<a href="/My/History/&year;/&month;">&month;</a> /
-		<a href="/My/History/&year/&month;/&day;.html">&day;</a>
+		<a href="/My/History/&year;/&month;/&day;.html">&day;</a>
 <tr><th><td> <a href="/&agentName;/initialize.if">[re-initialize]</a>
 <tr><th><td> <a href="options.if">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
