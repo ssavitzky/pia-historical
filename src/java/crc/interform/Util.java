@@ -23,6 +23,9 @@ import crc.ds.Index;
 
 import java.util.Date;
 import java.util.Enumeration;
+import java.io.File;
+import java.io.Reader;
+import java.io.FileReader;
 
 /** The Util class contains no data, only static methods.  For the
  *	most part, these are operations that belong on classes like
@@ -212,14 +215,22 @@ public class Util extends crc.sgml.Util {
   ************************************************************************/
 
   public static String getString(SGML it, String attr, String dflt) {
+    if (it == null) return dflt;
     SGML v = it.attr(attr);
     return (v == null || v == Token.empty || (v.isList() && v.isEmpty()))
       ? dflt : v.toString();
   }
 
   public static int getInt(SGML it, String attr, int dflt) {
+    if (it == null) return dflt;
     SGML v = it.attr(attr);
     return (v == null)? dflt : (int) v.numValue();
+  }
+
+  public static long getLong(SGML it, String attr, long dflt) {
+    if (it == null) return dflt;
+    SGML v = it.attr(attr);
+    return (v == null)? dflt : (long) v.numValue();
   }
 
   /** return the string representation with digits after the .*/
@@ -536,6 +547,93 @@ public class Util extends crc.sgml.Util {
       base += fileSep;
     }
     return base + file;
+  }
+
+  /** Load (process) a file if it has changed since the last time.
+   *	@param ii the interpretor to use for processing.
+   *	@param fn the file name.
+   *	@param timestamp the time the file was last loaded.  If zero, the 
+   *		file is loaded unconditionally.
+   *	@param tagset the name of the tagset to use for processing.  If null, 
+   *		<code>ii</code>'s current tagset is used. 
+   *	@param skip if true, the results of loading the file are discarded.
+   */
+  public static SGML loadFile(Interp ii, String fn, long timestamp, 
+			      String tagset, boolean skip) {
+    File f = new File(fn);
+    if (! f.exists()) {
+      return null;
+    }
+    long newtime = f.lastModified();
+    if (timestamp == 0 || newtime > timestamp) {
+      // file has been modified.  Re-load it.
+      FileReader in = null;
+      try { 
+	in = new FileReader(f);
+      } catch (Exception e) {
+	System.err.println("Cannot open input file " + fn);
+      }
+      System.err.println("Loading " + fn +
+			 ": timestamp=" + newtime + " > " + timestamp);
+      return (in == null)? null :  processStream(ii, in, tagset, skip);
+    } else {
+      return null;
+    }    
+  }
+
+  /** Load (process) a file if it has changed since the last time.
+   *	Discard the results (processing the file for side effects) and
+   *	return the new timestamp.
+   *
+   *	@param ii the interpretor to use for processing.
+   *	@param fn the file name.
+   *	@param timestamp the time the file was last loaded.  If zero, the 
+   *		file is loaded unconditionally.
+   *	@param tagset the name of the tagset to use for processing.  If null, 
+   *		<code>ii</code>'s current tagset is used. 
+   *	@return the new timestamp.  Return -1 if the file does not exist.
+   */
+  public static long loadFile(Interp ii, String fn, long timestamp, 
+			      String tagset) {
+    File f = new File(fn);
+    if (! f.exists()) {
+      ii.error(null, "Load file " + fn + " does not exist!");
+      return -1;
+    }
+    long newtime = f.lastModified();
+    if (timestamp == 0 || newtime > timestamp) {
+      // file has been modified.  Re-load it.
+      FileReader in = null;
+      try { 
+	in = new FileReader(f);
+      } catch (Exception e) {
+	ii.error(null, "Cannot open input file " + fn);
+	return -1;
+      }
+      ii.debug("Loading " + fn + ": t=" + newtime + " > " + timestamp);
+      if (in != null) processStream(ii, in, tagset, true);
+      return newtime;
+    } else {
+      ii.debug("File " + fn + ": t=" + newtime + " <= " + timestamp);
+      return timestamp;
+    }    
+  }
+
+  /** Process a Reader.
+   *	@param ii the interpretor to use for a processing environment.
+   *	@param in the input Reader
+   *	@param tagset the name of the tagset to use for processing.  If null, 
+   *		<code>ii</code>'s current tagset is used. 
+   *	@param skip if true, the results of the processing are discarded.
+   */
+  public static SGML processStream(Interp ii, Reader in, 
+				   String tagset, boolean skip) {
+    Parser p = new Parser(in, null);
+    Tagset ts = (tagset == null)? ii.tagset() : Tagset.require(tagset);
+    ii = new Interp(ts, ii.environment.initEntities(), false);
+    ii.from(p).toTokens();
+    if (skip) ii.setSkipping();
+    return ii.run();
   }
 
   /************************************************************************

@@ -163,15 +163,19 @@ public class Read_file extends Get {
       
     } else if (it.hasAttr("process") || it.hasAttr("parse")) {
       String tsname = it.attrString("tagset");
-      if (tsname != null) 
-	ii.useTagset(tsname);
-      if (it.hasAttr("skip")) ii.setSkipping();
-      if (it.hasAttr("parse")) ii.quoteIt(false);
+      java.io.FileReader in = null;
       try {
-	java.io.FileReader in = new java.io.FileReader(name);
-	ii.pushInput(new crc.interform.Parser(in, null));
+	in = new java.io.FileReader(name);
       } catch (Exception e) {
 	ii.error(ia, "Cannot open Reader on '"+name+"'");
+	return;
+      }
+      if (it.hasAttr("skip")) {
+	Util.processStream(ii, in, tsname, true);
+      } else {
+	if (tsname != null) ii.useTagset(tsname);
+	if (it.hasAttr("parse")) ii.quoteIt(false);
+	ii.pushInput(new crc.interform.Parser(in, null));
       }
 
     } else {
