@@ -543,6 +543,35 @@ See also:
   <li> <b>Impr</b> piaUSER, etc should become PIA:user, etc. <br>
        (1998-10-11) <br>
        -- done, but the old names are still around for a while.
+
+  <li> 1998-12-14 <b>Bug:</b> Need constructor for stripped tagsets. <br>
+       Best done with a predefined tagset (STRIP_ts). 
+       (1998-08-07)<br>
+
+  <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
+       Actually, finding files ought to be in a utility class, because you
+       need to get out: the file pathname, the URL path, and the part of the
+       URL after the file that was found (which gets passed to the
+       interform). 
+       (1998-10-13) <br>
+       
+  <li> 1998-12-16 <b>Bug</b> Problems finding HEADER.html file <br>
+       was finding Header.java instead!
+       (1998-12-16) <br>
+       
+  <li> 1998-12-16 <b>Bug</b> not finding agent data directory in DPS <br>
+       (1998-12-16) <br>
+       -- This will need more attention later.  
+       
+  <li> 1998-12-15 <b>Impr</b> need <code>tsstrip.ts</code> <br>
+       (1998-12-15) <br>
+       -- very good, it turns out, for identifying missing end tags in tagset
+	  files. 
+       
+  <li> 1998-12-16 <b>Impr</b> move agent-specific tag handlers.  <br>
+       moved to <code>crc.pia.agent</code> directory, with the agent classes. 
+       (1998-12-16) <br>
+       
 </ol>
 <a name="end">End of list.</a>
 <hr>

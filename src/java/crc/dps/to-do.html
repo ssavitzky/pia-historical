@@ -16,6 +16,21 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Hole</b> Constructing and editing elements. <br>
+       We want to be able to modify the attributes and content of an existing
+       element, or construct a new one out of pieces.
+       (1998-12-15) <br>
+
+  <li> <b>Impr</b> passthrough action for elements. <br>
+       Call the action first; let it set entities before-tag, before-content,
+       after-content, and after-tag.
+       (1998-10-12) <br>
+
+  <li> <b>Hole</b> Data structure elements <br>
+       &lt;headers&gt;, &lt;url&gt;, etc.  need to convert text content to XML
+       format, and need to output as text.
+       (1998-12-14) <br>
+
   <li> <b>Hole</b> lists as namespaces <br>
        Need to support two things: list tags (e.g. &lt;dl&gt;) as namespaces,
        and entities recognizing them when their value <em>contains</em> a
@@ -41,6 +56,8 @@ See also:
        TopProcessor when needed.  Note that external entities do want a
        tagset; it's basically the notation.
        (1998-11-19) <br>
+       -- The problem here is that the entity needs to know what TopProcessor
+	  to use in order to open files; this needs to be passed at run time.
 
   <li> <b>Note</b> Tagset should be able to create a Processor. <br>
        They can already create their parser.  There are times when you want a
@@ -126,13 +143,6 @@ Results: &lt;pre&gt;cat                                                         
         </pre>
 	(1998-10-19)<br>
 
-  <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
-       Actually, finding files ought to be in a utility class, because you
-       need to get out: the file pathname, the URL path, and the part of the
-       URL after the file that was found (which gets passed to the
-       interform). 
-       (1998-10-13) <br>
-       
   <li> <b>Bug</b> no way to get name of a node in &lt;select&gt;. <br>
        We can select nodes <em>by</em> name, but not <em>get</em> their
        names. 
@@ -143,11 +153,6 @@ Results: &lt;pre&gt;cat                                                         
        NamespaceWrap.  
        (1998-10-12) <br>
        
-  <li> <b>Impr</b> passthrough action for elements. <br>
-       Call the action first; let it set entities before-tag, before-content,
-       after-content, and after-tag.
-       (1998-10-12) <br>
-
   <li> <b>Impr</b> Simplify Namespace and Context ops. <br>
        getEntityValue, etc. should be removed from Context; the more general
        operations in Index should be used to give a single point of
@@ -224,10 +229,6 @@ Results: &lt;pre&gt;cat                                                         
        requires slashes; Class prepends module name.  Need the prepend, then
        change dots to slashes (probably in <code>crc.util.NameUtils</code>).
        (1998-08-12)<br>
-
-  <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>
-       Best done with a predefined tagset (STRIP_ts). 
-       (1998-08-07)<br>
 
   <li> <b>Bug:</b> Can't <em>use</em> a tagset. <br>
        The &lt;tagset&gt; tag only really works in a tagset definition file.
