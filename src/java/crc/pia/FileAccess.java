@@ -85,22 +85,32 @@ public class FileAccess {
       Vector url = new Vector();
       RegExp re = null;
       MatchInfo mi = null;
+      boolean noTrailingSlash = false;
 
       boolean all = agent.optionAsBoolean("all");
 
       // Ensure that the base URL is "/" terminated
       URL myurl = request.requestURL();
       String mybase = myurl.toExternalForm(); // mybase = base for href's
-      if( !mybase.endsWith("/") ) mybase += "/";
+      if( !mybase.endsWith("/") ) {
+	noTrailingSlash = true;
+	mybase += "/";
+      }
 
       String mypath = myurl.getFile(); // mypath = path for heading and title
+
+      if (noTrailingSlash) {
+	f = new File(myfile, "index.html");
+	if (f.exists()) {
+	  redirectTo(request, mypath+ "/" + "index.html");
+	  return;
+	}
+      }
 
       for (ls = myfile.list(), i = 0; ls != null && i < ls.length; i++){
 	String zfile = ls[i];
 
-	f = myfile;
-	f = new File(f, zfile);
-
+	f = new File(myfile, zfile);
 	filepath = f.getPath();
 
 	try{
@@ -281,6 +291,39 @@ public class FileAccess {
     return false;
   }
    
+
+  /**
+   * Send redirection to client
+   */
+  public static boolean redirectTo( Transaction req, String path ) {
+    URL oldUrl = req.requestURL();
+
+    URL redirUrl = null;
+    String redirUrlString = null;
+
+    try{
+      redirUrl = new URL(oldUrl, path);
+      redirUrlString = redirUrl.toExternalForm();
+    }catch(MalformedURLException e){
+      String msg = "Malformed URL redirecting to "+path;
+      throw new PiaRuntimeException(null, "redirectTo", msg);
+    }
+
+    String msg ="Redirecting " + oldUrl.toExternalForm()
+      + " to:" + redirUrlString; 
+
+    Pia.debug(msg);
+
+    Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine,
+					     req.fromMachine(), ct, false);
+    response.setHeader("Location", redirUrlString);
+    response.setStatus(HTTP.MOVED_PERMANENTLY);
+    response.setContentLength( msg.length() );
+    response.startThread();
+    return true;
+  }
+
   /**
    * Suck in the body part of an HTML file, as a string.
    */
