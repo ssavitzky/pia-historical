@@ -40,8 +40,7 @@ public final class IsAgentResponse implements UnaryFunctor{
       if( agent!= null && agent.toLowerCase().startsWith("pia") ){
 	if(!defineRequest)
 	  return new Boolean( true );
-	Boolean res = (Boolean)request.is("IsAgentRequest");
-	if( res.booleanValue()  == true )
+	if (request.test("IsAgentRequest"))
 	  return new Boolean( true );
       }
       return new Boolean( false );
