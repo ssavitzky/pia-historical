@@ -9,10 +9,10 @@
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a>
-<th width=170 nowrap>
-<th width=170 align=left nowrap nobr>
-    <if><agent-running name=Logo><then><img 
-	    src="/Logo/pia45.gif" alt=PIA></if><br></tr>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
 <tr><th align=left><a href="http://rsv.ricoh.com/"><img
@@ -27,7 +27,7 @@
     <TD align=right height=32><td>
         <a href="/&agentName;/latest.if">
         <img src="/Photos/&latest;/r0100001.small.gif"
-                   height=32 width=32 border=0></a>
+                   height=32 width=32 border=0 alt="Photo Album"></a>
     <a href="/&agentName;/latest.if">Newest Photos</a><br>
 </then></if>
 <TR><th rowspan=3>
