@@ -48,12 +48,6 @@ See also:
        Processor in a separate thread.
        (1998-08-13)<br>
 
-  <li> <b>Impr:</b> Should eliminate the ``7-argument'' action. <br>
-       At this point there is nothing using all of its arguments, so it's
-       wasteful.  Should have methods on BasicHandler to get attrs, content or
-       content string, etc.  Only substHandler and testHandler use cstring.
-       (1998-08-12)<br>
-
   <li> <b>Hole:</b> Need a Namespace interface <br>
        This will greatly simplify Index.  Also should have a method
        <code>Context.getNamespace</code>.  It would look at not only the
