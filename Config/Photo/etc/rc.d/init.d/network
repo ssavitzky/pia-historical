@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# network       Bring up/down networking
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+if [ ! -f /etc/sysconfig/network ]; then
+    exit 0
+fi
+
+. /etc/sysconfig/network
+
+if [ -f /etc/sysconfig/pcmcia ]; then
+    echo no . /etc/sysconfig/pcmcia
+fi
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+[ -f /sbin/ifconfig ] || exit 0
+
+cd /etc/sysconfig/network-scripts
+
+# See how we were called.
+case "$1" in
+  start)
+	for i in ifcfg-*[0-9o]; do
+		./ifup $i boot
+	done
+
+        touch /var/lock/subsys/network
+        ;;
+  stop)
+	for i in ifcfg-*[0-9o]; do
+		./ifdown $i boot
+	done
+        rm -f /var/lock/subsys/network
+        ;;
+  *)
+        echo "Usage: network {start|stop}"
+        exit 1
+esac
+
+exit 0
