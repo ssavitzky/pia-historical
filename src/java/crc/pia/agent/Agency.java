@@ -36,7 +36,7 @@ public class Agency extends GenAgent {
    *
    */
   public void unInstallAgent(String name){
-    Pia.getInstance().getResolver().unRegisterAgent( name );
+    Pia.instance().resolver().unRegisterAgent( name );
   }
 
   /**
@@ -44,7 +44,7 @@ public class Agency extends GenAgent {
    *
    */
   public void installAgent(Agent newAgent){
-    Pia.getInstance().getResolver().registerAgent( newAgent );
+    Pia.instance().resolver().registerAgent( newAgent );
   }
 
   /**
@@ -85,7 +85,7 @@ public class Agency extends GenAgent {
   public String proxyFor(String destination, String protocol){
     String s = null;
     try{
-      String[] list = getNoProxies();
+      String[] list = noProxies();
       for(int i = 0; i < list.length; i++){
 	s = list[i];
 	if( s.indexOf("destination") != -1 )
@@ -93,14 +93,14 @@ public class Agency extends GenAgent {
       }
     }catch(NoSuchElementException e ){
     }
-    return getProxy(protocol);
+    return proxy(protocol);
   }
 
   /**
    * @return no proxies list from PIA
    */
-  public String[] getNoProxies() throws NoSuchElementException{
-    String[] list = Pia.getInstance().getProxy();
+  public String[] noProxies() throws NoSuchElementException{
+    String[] list = Pia.instance().proxy();
     if( !list ) 
       throw new NoSuchElementException("no-proxies list is empty");
     else
@@ -110,8 +110,8 @@ public class Agency extends GenAgent {
   /**
    * @return proxy string given protocol
    */
-  public String getProxy(String protocol){
-    HashTable ht = Pia.getInstance().getProxy();
+  public String proxy(String protocol){
+    HashTable ht = Pia.instance().proxy();
     if( !ht.isEmpty() && ht.containsKey( protocol ) ){
       String v = (String)v.get( protocol );
       return v;
@@ -127,7 +127,7 @@ public class Agency extends GenAgent {
    */
   public void actOn(Transaction trans, Resolver res){
     if( !trans.is("agent_request") ) return;
-    URL url = trans.getRequestURL();
+    URL url = trans.requestURL();
     if(!url) return;
     
     String path = url.getFile();
@@ -151,7 +151,7 @@ public class Agency extends GenAgent {
 	}
     }// if
 
-    Agent agent = Pia.getInstance().getResolver().agent( name );
+    Agent agent = Pia.instance().resolver().agent( name );
     if( ! agent ){
       return;
     }else{
