@@ -95,12 +95,19 @@ doc.log::
 	@echo Times:  doc				>> summary.log
 	@tail -2 doc.log				>> summary.log
 
-report::
+report:: all_holes.log all_lines.log
 	@date 						| tee	   summary.log
-	$(PIADIR)/src/app/tools/hole-report 			 > holes.log
-	find ${*-.} -type f -name '*.java' -exec wc -l {} \; 	 > lines.log
-	@echo FILES: `wc -l lines.log` 			| tee -a   summary.log
-	@echo HOLES: `wc -l holes.log` 			| tee -a   summary.log
+	@echo FILES: `wc -l all_lines.log`		| tee -a   summary.log
+	@echo HOLES: `wc -l all_holes.log`		| tee -a   summary.log
+
+### Recursive hole report.
+all_holes.log::
+	$(PIADIR)/src/app/tools/hole-report > all_holes.log
+
+### Recursive line count.  
+###	Suitable for use with "xdu all_lines.log"
+all_lines.log::
+	find ${*-.} -type f -name '*.java' -exec wc -l {} \; > all_lines.log
 
 ### JavaDoc documentation -- non-recursive.
 ###	We do this because javadoc doesn't append to existing index files,
