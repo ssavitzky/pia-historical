@@ -62,8 +62,8 @@ public class T_agentRedir{
     Agency pentagon = new Agency("pentagon", "agency");
 
     System.out.println("\n\nDumping options -- name , type");
-    System.out.println("Option for name: "+ pentagon.optionAsString("name"));
-    System.out.println("Option for type: "+pentagon.optionAsString("type"));
+    //System.out.println("Option for name: "+ pentagon.optionAsString("name"));
+    //System.out.println("Option for type: "+pentagon.optionAsString("type"));
     System.out.println("Version " + pentagon.version());
 
     return pentagon;
