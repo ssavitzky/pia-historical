@@ -10,10 +10,11 @@ FILES = \
 	List.java \
 	Queue.java \
 	Table.java \
-	Thing.java \
 	UnaryFunctor.java \
 	TernFunc.java \
 	Stuff.java 
+
+#	Thing.java \
 
 include $(TOPDIR)/makefiles/file.make
 
