@@ -80,7 +80,7 @@ public interface Agent {
    * code is a functor object takes transaction as argument returns Boolean
    * @return criteria table
    */
-  public Vector match_criterion(String feature, int value, Object code);
+  public Vector matchCriterion(String feature, int value, Object code);
   
   /**
    * agents are associated with a virtual machine which is an
@@ -129,7 +129,7 @@ public interface Agent {
    * Set options with a hash table
    *
    */
-  public void parse_options(Hashtable hash);
+  public void parseOptions(Hashtable hash);
 
   /**
    * Find an interform, using a simple search path and a crude kind
@@ -144,7 +144,7 @@ public interface Agent {
    * need to modify the URL in the request.  It can pass either a full
    * URL or a path.
    */
-  public String respond_to_interform();
+  public String respondtoInterform();
 
   /**
    * Respond to a request directed at one of an agent's interforms.
@@ -152,8 +152,9 @@ public interface Agent {
    * need to modify the URL in the request.  It can pass either a full
    * URL or a path.
    */
-  public String respond_to_interform_put();
+  public String respondtoInterformPut();
 }
+
 
 
 
