@@ -166,12 +166,51 @@ value of entity at end: '&li;'
 'axby': '<repeat><foreach>a b</foreach><foreach entity=x>x y z</foreach>&li;&x;</repeat>'
 
 '2345678': '<repeat><for><start>2</start><stop>8</stop></for>&n;</repeat>'
-'2468': '<repeat><for start=2 stop=8 step=2></for>&n; </repeat>' === doesn't see XML /
+'2468': '<repeat><for start=2 stop=8 step=2 />&n; </repeat>'
+'234': '<repeat><foreach>2 3 4 x y
+                </foreach><while><test numeric>&li;</while>&li;</repeat>'
+'1 a 2 b ': '<repeat><foreach>a b</foreach><for><stop>9999</for>&n; &li; </repeat>'
 
 <h2>Test Select</h2>
 
 em: <select><from>xx <em>yy</em></from><name>em</name></select>
 em: <select><from><i>xx <em>yy</em></i></from><child>2</child></select>
+em: <select><from>xx <em>yy</em> zz</from>1</select>
+em: <select><from>xx <em>yy</em> zz</from>-2</select>
+
+<repeat stop=10> <numeric remainder>&n; 2</numeric></repeat>
+numbers: <select><from><repeat stop=10> &n; </repeat></from></select>
+Even numbers:
+<select><repeat stop=10> &n; </repeat><!-- this should be ignored -->
+	<repeat list="&selected;"> <numeric remainder>&li; 2</select>
+<select><repeat stop=10> &n; </repeat>
+	<repeat list="&selected;"> &li;:<test zero><numeric remainder>&li;
+	2</select>
+Even numbers:
+<select><repeat stop=10> &n; </repeat>
+	<repeat list="&selected;"><if><test zero><numeric remainder>&li;
+	2</numeric></test><then>&li;, </then></if></select>
+<select sep=" "><repeat stop=10> &n; </repeat>
+	<repeat list="&selected;"><logical and><test zero><numeric remainder>&li;
+	2</numeric></test>&li;</select>
+<repeat stop=10 entity=li><logical and><test zero><numeric remainder>&li;
+	2</numeric></test>&li;</repeat>
+<if><test zero>1</test><then>xx</then></if> <test zero>1</test>
+<if><test zero>0</test><then>xx</then></if>
+
+empty: <select><from><repeat stop=10>&n; </repeat></from><name>em</name></select>
+xxx: <select><from>xxx <em>xx yy zz</em> zzz</from>0</select>
+yy: <select><from>xxx <em>xx yy zz</em> zzz</from><child>1</child></select>
+yy: <select><from>xxx <em>xx yy zz</em> zzz</from>em 1</select>
+yy: <select><from>xxx <em>xx yy zz</em> zzz</from><child>-1</child></select>
+yy, zz, : <select sep=", "><from>xxx <em>xx yy zz</em> zzz</from><child>1 -1</child></select>
+xxx, zzz, : <select sep=", "><from>xxx <em>xx yy zz</em> zzz</from>
+			     #text</select>
+em: <select><from><i> xx <em>xx yy zz</em> zzz</i></from>
+	    <child>em</child></select>
+em: <select><from><i> xx <em>xx yy zz</em> zzz</i></from>
+	    <child></child></select>
+em: <select><from>xx <em>yy</em> zz</from><child>0</child><parent></select>
 
 
 <h2>Parsed entities</h2>
