@@ -254,8 +254,11 @@ sub get_handle {
 	$result = ($ii->entities->{$name});
     } elsif ($it->attr('element')) {
 	$result = ($ii->in_token->attr($name));
-    } else {
+    } elsif ($it->attr('local')) {
         $result = ($ii->getvar($name));
+    } else {
+	## default is to search local variables first, then global entities.
+        $result = ($ii->get_entity($name));
     }
     $ii->replace_it($result);
 }
@@ -364,19 +367,17 @@ sub repeat_handle {
     my ($self, $it, $ii) = @_;
 
     my $entity = $it->attr('entity') || 'li';
-    my $list = $it->attr('list');
-    my @list = split(/ /, $list);
-    print "repeating: $entity for (". join(' ', @list) . ")\n"
+    my $list = list_items($it->attr('list'));
+    print "repeating: $entity for (". join(' ', @$list) . ")\n"
 	if $main::debugging > 1;
     my $body = $it->content;
-    my $item = shift @list;
+    my $item = shift @$list;
     my $context = $ii->entities;
 
     return unless defined $item;
 
-    $ii->open_entity_context;
-    $ii->define_entity($entity, $item);
-    $ii->push_input([$self, 0, $body, $entity, \@list, $context]);
+    $ii->defvar($entity, $item);
+    $ii->push_input([$self, 0, $body, $entity, $list, $context]);
     $ii->delete_it;
 }
 
@@ -390,7 +391,8 @@ sub repeat_end_input {
     my $item = shift @$list;
 
     if (defined $item) {
-	$ii->define_entity($entity, $item);
+	#$ii->define_entity($entity, $item);
+	$ii->defvar($entity, $item);
 	$it->[1] = 0;		# reset the pc
 	$ii->push_input($it);
     } else {

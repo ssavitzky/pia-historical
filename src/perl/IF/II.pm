@@ -64,7 +64,8 @@ push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 ###	processed and so are ready to be sent to the user.  It is in
 ###	the form of an anonymous token for easy processing.
 
-%kludge = ('tagset'=>1);	# state vbls we need to set directly
+%kludge = ('tagset'  =>1,	# attributes we need to set directly
+	   'entities'=>1);
 
 sub new {
     my ($class, @attrs) = @_;
@@ -178,8 +179,8 @@ sub entities {
     ##	  A hash table that defines the current set of entities.
     ##	  Unlike variables and like actors, entities are rarely rebound.
 
-    $self->state->{'_entities'} = $v if defined($v);
-    $self->state->{'_entities'};
+    $self->{'_entities'} = $v if defined($v);
+    $self->{'_entities'};
 }
 
 sub passing {
@@ -241,8 +242,9 @@ sub quoting {
 sub has_local_tagset {
     my ($self, $v) = @_;
 
-    ## local_actor flag
-    ##	  if true, a local actor context exists..
+    ## local_tagset flag
+    ##	  if true, a local tagset exists.  Otherwise, we're using a
+    ##	  global one, which has to be copied if we want to change it.
 
     $self->state->{'_has_local_tagset'} = $v if defined($v);
     $self->state->{'_has_local_tagset'};
@@ -251,9 +253,9 @@ sub has_local_tagset {
 sub tagset {
     my ($self, $v) = @_;
 
-    ## syntax table:
-    ##	  A hash table that contains the various tables that control
-    ##	  the SGML parser.
+    ## Tagset:
+    ##	  A tagset object contains the actors and syntax information needed 
+    ##	  to control the interpretor and parser.
 
     if (defined $v) {
 	$v = IF::Tagset::tagset($v) unless ref $v;
@@ -281,7 +283,7 @@ sub getvar {
     my $context;
     while (defined $self->context($level)) {
 	$bindings = $self->context($level) -> {_variables};
-	if (defined $bindings && defined $bindings->{$v}) {
+	if (ref $bindings && defined $bindings->{$v}) {
 	    return $bindings->{$v};
 	}
 	$level += 1;
@@ -299,7 +301,7 @@ sub setvar {
     my $context;
     while (defined $self->context($level)) {
 	$bindings = $self->context($level) -> {_variables};
-	if (defined $bindings && defined $bindings->{$v}) {
+	if (ref $bindings && defined $bindings->{$v}) {
 	    return $bindings->{$v} = $value;
 	}
 	$level += 1;
@@ -313,13 +315,22 @@ sub defvar {
     ## Bind a variable to a value in the current context.
 
     my $vars = $self->variables;
-    if (! defined $vars) {
-	$vars = $self->variables(\ {});
+    if (! ref $vars) {
+	$vars = $self->variables({});
     }
 
     $vars->{$v} = $value;    
 }
 
+sub get_entity {
+    my ($ii, $name) = @_;
+
+    ## Get the value of a named entity, or a variable if one is
+    ##    defined locally.  Variables take precedence.
+
+    my $x = $ii->getvar($name);
+    return (defined($x)? $x : $ii->entities->{$name});
+}
 
 sub expand_entities {
     my ($ii, $string, $expand_hex) = @_;
@@ -341,7 +352,10 @@ sub expand_entities {
     while ($string =~ s/^([^&]*)\&//) {
 	$result->push($1) if (length($1));
 	if ($string =~ s/^(\w[-.\w]*)(;?)//) {
-	    $result->push((exists $ents->{$1})? $ents->{$1} : "&$1$2");
+	    ## Don't use get_entity -- it's faster to cache $ents.
+	    my $x = $ii->getvar($1);
+	    $result->push(defined($x)? $x :
+			  (exists $ents->{$1})? $ents->{$1} : "&$1$2");
 	} else {
 	    $result->push("&");
 	}
@@ -533,7 +547,7 @@ sub push_state {
     my $state = $self->state;
     my %newstate = %$state;	# copy the state
     push(@$cstack, \%newstate);	# push the copy
-    $self->variables({});	# clear the variable table.
+    %newstate->{_variables}=0;	# clear the variable table.
 }
 
 sub pop_state {
@@ -797,7 +811,7 @@ sub resolve {
 	    } else {
 		## Nothing serious happened--it stays pushed.
 		##	Clean up the new state.
-		$self->variables({});	# clear the variable table.
+		$self->variables(0);	# clear the variable table.
 		$self->handlers([]);
 		$self->pass_it($it, 1) if $self->passing;
 	    }
@@ -990,7 +1004,6 @@ sub delete_it {
     $self->token('');
 }
 
-### === The following should really be in a Tagset module.
 
 sub open_actor_context {
     my ($self, $tagset) = @_;
@@ -1008,22 +1021,9 @@ sub open_actor_context {
 }
 
 
-sub open_entity_context {
-    my ($self, $entities) = @_;
-
-    ## Start using a new set of entities
-    ##	  The old set are copied unless $entities is supplied
-
-    $entities = $self->entities unless defined $entities;
-
-    my %newents = %$entities;	# copy the current set
-    $self->state->{_entities} = \%newents;
-}
-
-
 sub define_entity {
     my ($self, $name, $value) = @_;
-    $self->state->{_entities}->{$name} = $value;
+    $self->{_entities}->{$name} = $value;
 }
 
 sub define_actor {
