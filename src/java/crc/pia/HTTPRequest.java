@@ -483,13 +483,15 @@ public class  HTTPRequest extends Transaction {
    */
   protected void errorResponse(int code, String msg){
     int mycode = code;
+    String reason = standardReason(mycode);
     Pia.instance().debug(this, "This is the err msg :"+msg);
-    StringBufferInputStream foo = null;
-    String masterMsg = "Agency could not retrieve " + requestURL() + ": ";
+    StringBufferInputStream inputStream = null;
+    String masterMsg = "<H2>Error " + mycode + " " + reason + "</H2>\n" +
+      "on request for <code>" + requestURL() + "</code><br>\n";
 
     if ( msg != null ){
       masterMsg += msg;
-      foo = new StringBufferInputStream( masterMsg  );
+      inputStream = new StringBufferInputStream( masterMsg  );
     }
     else{
       String standardMsg = standardReason( mycode );
@@ -497,14 +499,14 @@ public class  HTTPRequest extends Transaction {
 	masterMsg += ".\n";
       else
 	masterMsg = standardMsg;
-      foo = new StringBufferInputStream( masterMsg );
+      inputStream = new StringBufferInputStream( masterMsg );
     }
 
-    Content ct = new ByteStreamContent( foo );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine, fromMachine(), ct, false);
-    
+    Content ct = new ByteStreamContent( inputStream );
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine,
+					     fromMachine(), ct, false);    
     response.setStatus( mycode );
-    response.setContentType( "text/plain" );
+    response.setContentType( "text/html" );
     response.setContentLength( masterMsg.length() );
     Pia.instance().debug(this, "The header : \n" + response.headersAsString() );
     response.startThread();

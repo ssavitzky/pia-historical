@@ -36,8 +36,8 @@ import crc.pia.Content;
 import crc.pia.HTTPResponse;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
-import gnu.regexp.RegExp;
-import gnu.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
 import crc.util.Timer;
 
 import crc.ds.Table;
@@ -46,17 +46,20 @@ import crc.ds.List;
 import w3c.www.http.HTTP;
 
 import crc.ds.UnaryFunctor;
+
+/** Timeout callback. */
 class zTimeout implements UnaryFunctor{
   public Object execute( Object object ){
     Transaction req = (Transaction) object;
     Machine m = req.toMachine();
     m.closeConnection();
 
-    String msg = "Your request has used up alotted time.  Server is possibly down.";
+    String msg = "Request timed out.  Server may be down.";
     Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
-    Transaction abort = new HTTPResponse(Pia.instance().thisMachine, req.fromMachine(), ct, false);
+    Transaction abort = new HTTPResponse(Pia.instance().thisMachine,
+					 req.fromMachine(), ct, false);
     abort.setStatus(HTTP.REQUEST_TIMEOUT);
-    abort.setContentType( "text/plain" );
+    abort.setContentType( "text/html" );
     abort.setContentLength( msg.length() );
     abort.startThread();
 
@@ -129,10 +132,7 @@ public class Machine {
 	if( DEBUG )
 	  System.out.println("Exception while getting socket input stream." );
 	else
-	  if( DEBUG )
-	    System.out.println( "Exception while getting socket input stream." );
-	  else
-	    Pia.instance().errLog( this, "Exception while getting socket input stream." );
+	  Pia.instance().errLog( this, "Exception while getting socket input stream." );
 	throw new IOException( e.getMessage() );
       }
     else
@@ -219,7 +219,6 @@ public class Machine {
 	    }catch(Exception e){}
 	  }
 	}
-	
       }
       
       plainContent = content = reply.contentObj();
@@ -227,7 +226,7 @@ public class Machine {
       if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
 	if( reply.contentLength() != -1 )
 	  // changing length
-	  reply.setContentLength( reply.contentLength() + ctrlStrings.length() );
+	  reply.setContentLength(reply.contentLength() + ctrlStrings.length());
       }
       
       // dump header
@@ -265,39 +264,35 @@ public class Machine {
       }
       else if( contentString != null && isTextHtml ){
 	Pia.instance().debug(this, "Transmitting text/html content...");
-	Pia.instance().debug(this, contentString );
+	// Pia.instance().debug(this, contentString );
 	shipOutput( out, contentString, true );
       }else if( plainContent != null ){
 	Pia.instance().debug(this, "Transmitting images content...");
 	sendImageContent( out, plainContent );
       }
       
-      
       Pia.instance().debug(this, "Flushing...");
       out.flush();
       closeConnection();
       
-    }catch(PiaRuntimeException e){
-      Pia.instance().debug(this, "Client close connection...");
-      String msg = "Client close connection...\n";
+    } catch (PiaRuntimeException e){
+      Pia.instance().debug(this, "Client closed connection...");
+      String msg = "Client closed connection...\n";
       closeConnection();
-      throw new PiaRuntimeException (this
-				     , "sendResponse"
-				     , msg) ;
+      throw new PiaRuntimeException (this, "sendResponse", msg) ;
 
     }catch(IOException e2){
       Pia.instance().debug(this, "Client close connection...");
       String msg = "Client close connection...\n";
       closeConnection();
-      throw new PiaRuntimeException (this
-				     , "sendResponse"
-				     , msg) ;
+      throw new PiaRuntimeException (this, "sendResponse", msg) ;
     }
     
 
   }
 
-  private void shipOutput(OutputStream out, String s, boolean withnewline)throws PiaRuntimeException{
+  private void shipOutput(OutputStream out, String s, boolean withnewline)
+       throws PiaRuntimeException{
     byte[] bytestring = null;
 
       bytestring = getBytes( s );
@@ -310,9 +305,7 @@ public class Machine {
 
 	Pia.instance().debug(this, e.getClass().getName());
 	String msg = "Can not write...\n";
-	throw new PiaRuntimeException (this
-				       , "shipOutput"
-				       , msg) ;
+	throw new PiaRuntimeException (this, "shipOutput", msg) ;
       }
   }
 
@@ -326,7 +319,8 @@ public class Machine {
     return data;
   }
 
-  private void sendImageContent(OutputStream out, Content c)throws PiaRuntimeException{
+  private void sendImageContent(OutputStream out, Content c)
+       throws PiaRuntimeException{
      byte[]buffer = new byte[1024];
     int bytesRead;
     
