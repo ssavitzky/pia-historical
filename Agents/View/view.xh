@@ -2,7 +2,15 @@
     <then><hide><!-- must have some text before the first active tag??  -->
 <set name=URL><text decode=url>&FORM:url;</text></set></hide>
 <!-- Processed with /View/view.xh -->
-<include src="&URL;" tagset="&FORM:tagset;" />
+<!-- Processed with /View/slides.xh -->
+<set name=doc><include src="&URL;" tagset="&FORM:tagset;" /></set>
+<select><from>&doc;</from>
+        <name recursive>head</name>
+	<append children><base href="&URL;">
+</select>
+
+&doc;
+
 </then>
 <else>
 <html><head>
