@@ -10,7 +10,7 @@ FILES = \
 	t2.html \
 	t3.if
 
-.SUFFIXES: .txt .html .if .out .ok .diff
+.SUFFIXES: .txt .html .if .out .ok .diff .run
 
 DEBUG=-d
 CLASS=crc.interform.Filter
@@ -27,6 +27,18 @@ CLASS=crc.interform.Filter
 .if.out:
 	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone ./$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
+
+# make foo.run runs the tests with output on STDOUT.
+.txt.run:
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t Bootstrap $<  2>$*.log
+
+.html.run:
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t HTML -e $< 2>$*.log
+
+# ./$< is used to make fileName and filePath different.
+.if.run:
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t StandAlone ./$< 2>$*.log
+
 
 include $(TOPDIR)/makefiles/file.make
 
