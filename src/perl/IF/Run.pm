@@ -211,6 +211,7 @@ sub if_entities {
     ##	  === eventually this should be a set of separately-loaded packages
 
     my $ents = $trans->test('entities') if defined $trans;
+    print "bogus entities = $ents\n" if ($ents && ! ref $ents);
 
     if (! ref $ents) {
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=
@@ -222,11 +223,11 @@ sub if_entities {
 	my ($request, $response);
 	if (defined $trans && $trans->is_response) {
 	    $response = $trans;
-	    $request  = $response->request;
+	    $request  = $response->response_to;
 	} else {
 	    $request = $trans;
 	}
-	my $url = $request->url if defined $request;
+	my $url = $trans->url;
 	my $path = $url->path if defined $url;
 	my $query = $url->query if defined $url;
 	$file =~ m:([^/]*)$:;
@@ -236,6 +237,7 @@ sub if_entities {
 
 	my $agentNames = join(' ', sort($resolver->agent_names));
 
+	## === $trans->test('agent') returns 1; doesn't compute.
 	my $transAgentName = $trans->test('agent');
 	my $transAgentType;
 	if ($transAgentName) {
