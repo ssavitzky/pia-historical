@@ -1,0 +1,41 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Slide Show Setup</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>Slide Show Setup</set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+
+<if><test><get form name="directory"></test><then>
+ <set name=capfile>&FORM.directory;/photocaptions.xml</set>
+ <if> <read info file=&capfile;>  <else>
+<write file=&capfile;><create-photo-captions directory=&FORM.directory;></write>
+ </else> </if>
+ <if> <get form name=pause> <then> <set name=slidepause agent><get form name=pause></set></then> <else></else> </if>
+<form action="show_slide.if">
+<input name="capfile" value="&capfile;" type=hidden>
+<input name="slide" value="1" type=hidden>
+<input type="SUBMIT" value="Begin Slide Show"> of roll &FORM.directory;
+</form>
+
+<br><hr>OR
+</then></if>
+<h3>choose directory</h3>
+<set entity name=directories><read file=".catalog"></set>
+<form method=POST action="slide_show.if">
+<select name=directory foreach list="&directories;">
+<option>&li;</option></select>
+Pause between slides: <input type="INT" name="pause" value=&AGENT.slidepause;>
+<input type=submit value="ShowSlides">
+</form>
+
+
+
+<hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

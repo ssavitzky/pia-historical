@@ -1,0 +1,49 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the &agentName; agent</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<h1>Initialize the &agentName; agent</h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+ set defaults
+<set agent name="masterlist">master_list.html</set>
+<set agent name="rowsize">6</set>
+
+<dl>
+  <dt> <b>Note:</b>
+  <dd> photo album deals with directories of dc2 images, see
+       <a name="installation.html">installation notes</a>
+</dl>
+
+<if><tagset-exists name=Photo-agent-actors>
+    <then>Re-reading:
+    <else>Reading: 
+</if> <code><a href="tagset.inc">tagset.inc</a></code>...
+
+<read process quiet interform file=tagset.inc>
+
+<!-- setDefault pause time -->
+ <set agent  name=slidepause>10</set>
+<h2>Banner for bottom of each page:</h2>
+
+<set agent name="banner"><table align=center>
+<TR><TD> <a href="/">
+<img src="/Icon/pia20.gif" height=20 width=37 alt=PIA></a>
+<TD> <a href="/&agentName;/home">
+<img src="/&agentName;/camera.gif"  height=20 width=20 alt="&agentName;"></a>
+<TD> <a href="/&agentName;/latest">
+<img src="/Icon/new.gif"  height=20 width=20 alt="New"></a>
+<TD> <a href="/&agentName;/catalog">
+<img src="/&agentName;/album.gif"  height=20 width=20 alt=album></a>
+<TD> <a href="/&agentName;/help">
+<img src="/Icon/help.gif"  height=20 width=40 alt=help></a>
+</table><hr></set>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<b>$Id$</b><br>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>

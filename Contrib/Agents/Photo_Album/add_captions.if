@@ -1,0 +1,53 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> caption processing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> caption processing</set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+
+<if> <get name=capfile form> <then>
+<set name=capfile>&FORM.capfile;</set>
+<set name=caps><read file=&capfile; process></set>
+  <set name=pdate><get index=caps.photosdate.Text></set>
+  <set name=pdirectory><get index=caps.photosdirectory.Text></set>
+ <repeat list=&caps.photos.photo; entity=photo>
+ <set name=myindex><get index=photo.photoindex.Text></set>
+ <set name=mycap><get index=photo.photocaption></set>
+ 
+<if> <get name=caption&myindex; form><then>
+ <if> <get name=mycap> <else><set name=mycap><photocaption> </photocaption></set>
+ <set name=photo insert=-1><get name=mycap></set>
+ </else> </if>
+<set name=mycap insert=0><get name=caption&myindex; form></set>
+ <set name=writeflag>true</set>
+</then><else></else></if>
+</repeat>
+ <if> <get name=captitle form> <then> <set name=writeflag>true</set>
+ <set name=caps insert=-1><photostitle><get form
+ name=captitle></photostitle></set>
+ <write append file="&AGENT.masterlist;"><tr>
+<td><a href=show_captioned.if?capfile=&capfile;><img src=/~&agentName;/&pdirectory;/&caps.photos.photo-1.photothumbnail.Text;></a> </td><td>
+<a href=show_captioned.if?capfile=&capfile;><get form
+ name=captitle></a> <td><get name=pdate> </tr>
+</write>
+ </then> </if>
+ <if> <get name=writeflag> <then> <write file=&capfile;><get
+      name=caps></write></then> </if>
+<h2> captions have been added </h2>
+ The captioned images may be accessed through this URL:
+ <a href="http://&piaHOST;:&piaPORT;/&agentName;/show_captioned.if?capfile=&capfile;">http://&piaHOST;:&piaPORT;/&agentName;/show_captioned.if?capfile=&capfile;</a>
+</then> <else>
+<h2>Select a set of pictures to add captions </h2>
+ <set name=rolls><list-rolls></set>
+ <repeat list=&rolls>
+ <a href=show_roll.if?roll=&li;><get name=li></a>
+ </repeat>
+</else> </if>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

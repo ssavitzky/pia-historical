@@ -1,0 +1,45 @@
+<tagset-load name=Photo-agent-actors><set name=slide><if><test><get form name="slide"></test><then>&FORM.slide;</then><else>1</else></if></set>
+<set name=capfile><get form name="capfile"></set>
+<if><get name=capfile><then>
+<set name=caps><read file=&capfile; process></set>
+<set name=photos><get index=caps.photos.photo></set>
+<set entity name=next><sum digits=0>&slide; 1</sum></set>
+<if><test negative><difference><get name=photos size> &next;</test><else><meta HTTP-EQUIV="Refresh" CONTENT="&AGENT.slidepause;;
+URL=show_slide.if?slide=&next;&capfile=&capfile;"></meta></else></if></then></if>
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> Slideshow </title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> Slide &slide;</set>
+<read interform file="heading.inc" process>
+
+ <if><get name=photos> <then>
+ <set name=links><center> </center></set>
+ <repeat list=&photos; entity=photo>
+ <if><test zero><difference> &slide; &photo.photoindex.Text;</difference>
+ </test> <then>
+<set name=myshow>
+<br><center><get index=photo.photocaption.Text><br> <show-photo photo=&photo;></center><br></set>
+  <set name=links insert=-1> <b><get index=photo.photoindex.Text></b></set>
+</then><else>
+<set name=mylink>capfile=&capfile;&slide=&photo.photoindex.Text;</set>
+  <set name=links insert=-1> <a
+  href=show_slide.if?&mylink;><get index=photo.photoindex.Text> </a></set>
+</else></if>
+</repeat>
+
+<get name=links>
+ <if><get name=myshow> <then><get name=myshow><get name=links></then> <else>No
+ Slide to show</else> </if>
+
+</then> </if>
+
+
+<hr>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

@@ -1,0 +1,55 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title> photo album installation</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<h1></h1>
+ For proper operation with PC card these components should be installed / configured:
+<dl>
+  <dt> /etc/pcmcia/fixed.opts
+  <dd> uncomment  <code> DO_MOUNT</code> and <code> MOUNTPT</code> 
+        add
+<pre>
+RUN_COMMAND="y"
+USER="pia"
+COMMAND="~pia/pia/bin/copy_j6i $MOUNTPT ~pia/.pia/Photo_Album"
+</pre>       
+  <dt> /etc/pcmcia/fixed
+  <dd>  add
+<pre>
+if [ ! $FAIL -a "y$RUN_COMMAND" = "yy" ] ; then
+    if [ "x$USER" = x ] ; then
+        $COMMAND || FAIL=1
+    else
+        su $USER -c "$COMMAND" || FAIL=1
+<!-- doesn't seem to work with su; possibly perl is being careful -->
+    fi
+fi
+       </pre>
+
+  <dt> ~pia/pia/bin/copy_j6i
+  <dd>  should exist and be suid pia
+  <dt> pbm utilities installed
+  <dd> djpeg, cjpeg, pnmscale, pnmtogif are used
+</dl>
+
+<h2>installation form</h2>
+<dl>
+
+<dt>Photo album  <if><agent-running name="Photo_Album"><then><em>installed</em></then>
+       <else>
+<dd><form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photo_Album">
+    </form>
+<dt> Photos
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="Photos">
+       type:<input name="type" value="DOFS"><br>
+       root:<input name="root" value="~/.pia/Photo_Album/">
+       <input type="submit" value="Install">
+       </form></if>
+</dl>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

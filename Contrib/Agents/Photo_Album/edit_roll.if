@@ -1,0 +1,54 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+ <if> <get name=capfile form> <then> <set name=capfile><get name=capfile form></set></then> </if>
+<title>Editing <get index=capfile></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Editing <get index=capfile></set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+<!-- read process quiet interform file=tagset.inc -->
+
+
+ <set name=photos><read file=&capfile; process></set>
+ <if> <get name=photos> <then>
+You can view photos without controls <a href=show_roll.if?capfile=&capfile;>by
+the whole
+roll</a> or <a href=show_captioned.if?capfile=&capfile;>just photos with captions</a>
+
+<hr>
+<h3>Editing  roll dated &photos.photosdate; </h3>
+
+<form action="&url;" method=post process copy>
+<input name="capfile" type="hidden" value=&capfile; copy>
+<process copy>
+ 
+<generic-edit-form-process exceptions=" photos " object=&photos;>
+
+<repeat list=&photos.photos; entity=photo>
+<edit-photo-process photo=&photo;>
+</repeat>
+
+<file name=&capfile; dst=&capfile;.old rename></file>
+<write file=&capfile;><get name=photos></write>
+
+</process>
+
+<generic-edit-form exceptions=" photos ">&photos;</generic-edit-form>
+
+<create-photo-table cols=6 photos=&photos.photos; controls=true>
+<input type="SUBMIT" value="Edit Photos">
+</form>
+
+<hr>
+</then> <else>
+<h2>No photos found </h2>
+<a href=catalog.if> Click here to select a roll to edit.</a>
+</else> </if>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

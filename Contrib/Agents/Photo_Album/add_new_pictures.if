@@ -1,0 +1,42 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Add new pictures</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+This form should only be accessed when new pictures are copied  over from
+ the card.
+
+<if><get name=dir form><then>
+<user> </user>
+<set name="files"><read directory file="&FORM.dir;" match="\.jpg$"></set>
+<if><get name=files><then>
+<set name="description">
+<photoscaption>
+<photosauthor><get-current-user></photosauthor>
+<photosdirectory>&FORM.dir;</photosdirectory>
+<photosdate>&date;</photosdate>
+<photos>
+<repeat list=&files; entity=jpg><set name=count><sum>1 <get name=count></sum></set>
+<photo directory=&FORM.dir; file=&jpg;>
+<photothumbnail><subst match="\.jpg " result=".small.gif">&jpg; </subst></photothumbnail>
+<photoindex>&count;</photoindex>
+</photo>
+</repeat>
+</photos>
+</photoscaption>
+</set>
+<write file=&FORM.dir;/photocaptions.xml><get name=description></write>
+
+Should we check in the camera?
+</then></if>
+</then></if>
+<hr>
+<b>$Id$</b><br>
+<!-- hhmts start -->
+Last modified: Mon Aug 17 12:29:44 1998
+<!-- hhmts end -->
+<p>
+<address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

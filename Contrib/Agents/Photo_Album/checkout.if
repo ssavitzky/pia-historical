@@ -1,0 +1,56 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>DC check-out</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> DC-2 Check-out</set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+
+<p>
+Please select user name and specify return date to check out the camera.
+ <form action="&url;" copy>
+ <br>
+User: <users-dialogue><br>
+Returning on:
+<date-dialogue prefix=return>
+
+<process copy>
+<write file=checkout>
+<checkout>
+ <checkoutuser>&FORM.user;</checkoutuser>
+ <checkoutstartdate>&date;</checkoutstartdate>
+ <checkoutreturndate>&FORM.returnmonth; &FORM.returnday;</checkoutreturndate>
+</checkout>
+</write>
+<set-current-user user=&FORM.user;>
+<br>
+Thanks for registering.  When you return, remove the PC card from the camera
+and insert into the PhotoAlbum box.  Your photos will be automatically added
+to the web under your name.  (Before leaving, check to make sure card
+is currently in the camera.)
+ </process>
+</form>
+<hr>
+
+<set name=checked><read file="checkout"></set>
+<if><get name=checked><then>
+<form action="&url;" copy>
+ <input type="SUBMIT" value="Check-IN Camera">
+ <process copy>
+
+<write file=checkout></write>
+<br>
+Thanks for returning the camera.  To transfer images to the digital photo album, remove the PC card from the camera
+and insert into the PhotoAlbum box.  Your photos will be automatically added
+to the web.
+ </process>
+</form>
+</if>
+<hr>
+<hr><get agent name="banner">
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

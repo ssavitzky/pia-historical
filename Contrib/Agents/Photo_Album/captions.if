@@ -1,0 +1,69 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>caption processing</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=mydirectory>&FORM.directory;</set>
+<set entity name=files>&FORM.files;</set>
+<if><test><get agent name="rowsize"></test><else><set agent name=rowsize>6</set></else></if>
+<p>
+
+
+<h2>&FORM.captTitle;</h2>
+
+<table><set entity name="rowelements">0</set>
+<tr>
+<repeat list="&files;">
+<if><test><get form name="&li;"></test><then>
+<set entity name=titleimg><img src="&mydirectory;/&li;.small.gif"></set>
+<td><a href="/Photos/&mydirectory;/&li;.jpg"><img src="/Photos/&mydirectory;/&li;.small.gif"><br><get form name="&li;"></a>
+<set entity name="rowelements"><sum>&rowelements; 1</sum></set>
+</then>
+</if>
+<if><test><equal numeric>&rowelements; &AGENT.rowsize;</equal></test><then><TR></if>
+</repeat>
+</table>
+
+<write file="&mydirectory;/captions.html" append>
+<h1>&FORM.captTitle;</h1>
+<table><set entity name="rowelements">0</set>
+<tr>
+<repeat list="&files;">
+<if><test><get form name="&li;"></test><then>
+<td><a href="&li;.jpg"><img
+src="&li;.small.gif"><br><get form name="&li;"></a>
+<set entity name="rowelements"><sum>&rowelements; 1</sum></set>
+</then></if>
+<if><test><equal numeric>&rowelements; &AGENT.rowsize;</equal></test><then><TR></then></if>
+</repeat>
+</table>
+</write>
+
+ <if> <test><read info file="&AGENT.masterlist;"></test><then>
+</then><else><write file="&AGENT.masterlist;">
+<h3>Created &dayName; &monthName; &day; by &piaUSER;</h3>
+<!-- this file  will have a set of table entries of captions -->
+<!--  need to figure out how to edit rather than just append -->
+<!-- for now, requires table wrapper around -->
+</write>
+</else></if>
+<write append file="&AGENT.masterlist;">
+<TR><TD><a href="&mydirectory;/captions.html">&titleimg;</a><TD><a
+href="&mydirectory;/captions.html"> "&FORM.captTitle;"</a><TD>
+&dayName; &monthName; &day;
+</TR>
+</write>
+
+<repeat list="&files;">
+<if><test><get form name="&li;"></test><then>
+<write append file="&mydirectory;/&li;.cap"><get form name="&li;">
+
+</write>
+</then></if></repeat>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

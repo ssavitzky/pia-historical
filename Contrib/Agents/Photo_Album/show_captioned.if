@@ -1,0 +1,52 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+ <if> <get name=capfile form> <then> <set name=capfile><get name=capfile
+      form></set></then> <else><set name=capfile><read
+      file=".latest">/photocaptions.xml</set></else> </if>
+ <set name=caps><read file=&capfile; process></set>
+<title> <get index=caps.photostitle.Text></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title><get index=caps.photostitle></set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+<!-- read process quiet interform file=tagset.inc  -->
+<set name=i>1</set>
+ <set name=photos><get name=caps></set>
+ <if> <get name=photos> <then>
+ <set name=newphotocap><photoscaption>
+<get index=photos.photosauthor>
+<get index=photos.photostitle>
+<get index=photos.photosdirectory>
+<get index=photos.photosdate>
+<get index=photos.photossrc>
+</photoscaption>
+</set>
+ <set name=newphotos><photos> </photos></set>
+ <set name=newphotocap insert=-1><get name=newphotos></set>
+ <repeat list=&photos.photos.photo; entity=photo>
+ <if> <get index=photo.photocaption.Text> <then>
+ <set name=newphotos insert=-1><get name=photo></set>
+ <set index=photo.photoindex insert=0 replace><get name=i></set>
+<set name=i><sum digits=0> 1 &i; </sum></set>
+ </then> </if>
+ </repeat>
+
+<show-photos cols=6 caption=&newphotocap;>
+<write file=captioned/&capfile;><get name=newphotocap></write>
+<br><a href=show_slide.if?capfile=captioned/&capfile;> Show Slides</a> || <a
+href=edit_roll.if?capfile=captioned/&capfile;> Edit Photos</a>
+|| <a href=show_roll.if?capfile=&capfile;> Show all <get
+index=photos.photos.photo size> on roll</a> || <a
+href=ftp://&piaHOST;/&photos.photosdirectory.Text;.tar.gz> download via FTP</a>  <br>
+</then> <else>
+<h2>No photos/captions found </h2>
+
+</else> </if>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+
