@@ -6,15 +6,25 @@ PACKAGE=crc.pia.agent
 TOPDIR=../../..
 
 
-FILES = \
-	Agency.java \
+OTHER = \
 	AgentMachine.java \
+	AgentInstallException.java
+
+AGENTS = \
+	Agency.java \
 	Dofs.java \
 	Fallback.java \
 	Logo.java \
 	Cache.java \
-	Camera.java \
-	AgentInstallException.java
+	Camera.java
+
+HANDLERS = \
+	agentHome.java \
+	agentInstall.java \
+	agentRestore.java \
+	agentSave.java
+
+FILES= $(OTHER) $(AGENTS) $(HANDLERS)
 
 include $(TOPDIR)/makefiles/file.make
 
