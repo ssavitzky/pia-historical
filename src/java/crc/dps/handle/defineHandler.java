@@ -242,7 +242,10 @@ class define_entity extends defineHandler {
     if (sysName != null) {
       // External 
       ParseTreeExternal ext = new ParseTreeExternal(name, sysName, null);
-      ext.method = (method == null)? "GET" : method.toUpperCase();
+
+      ext.setMode(mode);
+      ext.setMethod(method);
+
       // === punt on the write stuff for now. ===
 
       // === use tagset to set the handler. 

@@ -10,6 +10,8 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
 
+import java.io.*;
+
 /**
  * Handler for &lt;connect&gt;....&lt;/&gt;  <p>
  *
@@ -28,10 +30,17 @@ public class connectHandler extends GenericHandler {
   /** Action for &lt;connect&gt; node. */
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
+    TopContext top  = cxt.getTopContext();
     String src   = atts.getAttributeString("src");
     String ename = atts.getAttributeString("entity");
+    String  tsname  = atts.getAttributeString("tagset");
 
-    ParseTreeExternal ent = new ParseTreeExternal(ename, src, null);
+    Tagset      ts  = top.loadTagset(tsname);	// correctly handles null
+    TopContext proc = null;
+    InputStream stm = null;
+
+    ParseTreeExternal ent = null;
+    if (ename != null) ent = new ParseTreeExternal(ename, src, null);
 
     // Actually do the work. 
     unimplemented(in, cxt);	// <connect> ===

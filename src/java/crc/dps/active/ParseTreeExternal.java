@@ -18,6 +18,7 @@ import crc.dps.*;
 import crc.dps.util.Copy;
 import crc.dps.input.FromParseNodes;
 import crc.dps.output.ToNodeList;
+import crc.dps.output.ToWriter;
 
 import crc.ds.Tabular;
 
@@ -60,9 +61,69 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public String  tsname 	= null;
   public boolean append 	= false;
   public boolean createIfAbsent = true;
-  public boolean doNotOverwrite = true;
-  public String  method 	= null;
+  public boolean doNotOverwrite = false;
+  public String  method 	= "GET";
   public String  tagsetName	= null;
+  public int	 readCount	= 0;
+  public int	 writeCount	= 0;
+
+  /** Date last modified.  Can be used to determine whether the resource needs
+   *	to be re-read.
+   */
+  public long	 lastModified	= 0;
+
+  public void setMode(String mode) {
+    if (mode != null) mode = mode.toLowerCase();
+    if (mode == null || mode.equals("read")) {
+      method = "GET";
+      readable = true;
+      writeable = false;
+    } else if (mode.equals("write")) {
+      method = "PUT";
+      writeable = true;
+      readable  = false;
+      append = false;
+      createIfAbsent = true;
+      doNotOverwrite = false;
+    } else if (mode.equals("update")) {
+      method = "PUT";
+      writeable = true;
+      readable  = true;
+      append = false;
+      createIfAbsent = false;
+      doNotOverwrite = false;
+    } else if (mode.equals("append")) {
+      method = "POST";
+      writeable = true;
+      readable = true;
+      append = true;
+      createIfAbsent = true;
+      doNotOverwrite = false;
+    } else if (mode.equals("create")) {
+      method = "PUT";
+      writeable = true;
+      readable  = true;
+      append = false;
+      createIfAbsent = true;
+      doNotOverwrite = true;
+    }
+  }
+
+  public void setMethod(String meth) {
+    if (meth == null) {
+      if (method == null) setMode("read");
+      return;
+    }
+    meth = meth.toUpperCase();
+    method = meth;
+    if (meth.equals("PUT")) {
+      writeable = true;
+    } else if (meth.equals("POST")) {
+      writeable = true;
+      readable = true;
+      append = true;
+    }
+  }
 
   // === Connection state.  These should be set up by the handler. 
 
@@ -72,6 +133,11 @@ public class ParseTreeExternal extends ParseTreeEntity {
   public volatile File    resourceFile	= null;
   public volatile URL     resourceURL	= null;
   public volatile URLConnection resourceConnection	= null;
+
+  protected volatile OutputStream outStream = null;
+  protected volatile InputStream inStream = null;
+  protected volatile Reader reader = null;
+  protected volatile Writer writer = null;
 
   /** The context in which to read it.  Set up by the handler. */
   public  volatile Context context 	= null;
@@ -95,12 +161,13 @@ public class ParseTreeExternal extends ParseTreeEntity {
     located = true;
   }
 
-  protected Input openResource(Context cxt) {
+  protected Input readResource(Context cxt) {
     // === getting status on input requires a URLConnection ===
+    // === readResource should locate the resource.
     TopContext top  = cxt.getTopContext();
-    InputStream stm = null;
+    inStream = null;
     try {
-      stm = top.readExternalResource(resourceName);
+      inStream = top.readExternalResource(resourceName);
     } catch (IOException e) {
       cxt.message(-2, e.getMessage(), 0, true);
       return null;
@@ -108,35 +175,36 @@ public class ParseTreeExternal extends ParseTreeEntity {
     Tagset      ts  = top.loadTagset(tsname);
     TopContext proc = null;
     Parser p  = ts.createParser();
-    p.setReader(new InputStreamReader(stm));
+    reader = new InputStreamReader(inStream);
+    p.setReader(reader);
     setWrappedInput(p);
     return p;
   }
 
-  protected void writeResource(Context cxt) {
-    // === requires a URLConnection ===
-				// === writeResource
+  protected ToWriter writeResource(Context cxt) {
+    // === getting status on output requires a URLConnection ===
+    TopContext top  = cxt.getTopContext();
+    outStream = null;
+    try {
+      outStream = top.writeExternalResource(resourceName, append,
+					    createIfAbsent, doNotOverwrite);
+    } catch (IOException e) {
+      cxt.message(-2, e.getMessage(), 0, true);
+      return null;
+    }
+    writer = new OutputStreamWriter(outStream);
+    return new ToWriter(writer);
   }
 
   protected void writeValueToResource(Context cxt) {
-    TopContext top  = cxt.getTopContext();
-    OutputStream stm = null;
+    Output out = writeResource(cxt);
+    Copy.copyNodes(getValue(), out);
     try {
-      stm = top.writeExternalResource(resourceName, append, createIfAbsent,
-				      doNotOverwrite);
-    } catch (IOException e) {
-      cxt.message(-2, e.getMessage(), 0, true);
-      return;
-    }
-    OutputStreamWriter w = new OutputStreamWriter(stm);
-    try {
-      w.write(value.toString());
-      w.close();
-      stm.close();
-    } catch (IOException e) {
-      cxt.message(-2, e.getMessage(), 0, true);
-      return;
-    }
+      writer.flush();
+      writer.close();
+      outStream.flush();
+      outStream.close();
+    } catch (IOException e) {}
   }
 
   /************************************************************************
@@ -149,7 +217,7 @@ public class ParseTreeExternal extends ParseTreeEntity {
     context = cxt;
     if (value != null) return new FromParseNodes(getValue());
     if (resourceName != null && wrappedInput == null) {
-      return openResource(cxt);
+      return readResource(cxt);
     }
     return getWrappedInput();
   }
@@ -168,7 +236,13 @@ public class ParseTreeExternal extends ParseTreeEntity {
     Input in = getValueInput(context);
     Copy.copyNodes(in, out);
     value = out.getList();
+    try {
+      reader.close();
+      inStream.close();
+    } catch (IOException e) {}
     wrappedInput = null;
+    reader = null;
+    inStream = null;
     return value;
   }
 
