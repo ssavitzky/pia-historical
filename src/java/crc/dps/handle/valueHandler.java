@@ -39,8 +39,8 @@ public class valueHandler extends GenericHandler {
   ************************************************************************/
 
   /** Action for &lt;value&gt; node. */
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     ActiveElement e = in.getActive().asElement();
     ActiveElement element = e.editedCopy(atts, null);
@@ -69,7 +69,6 @@ public class valueHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public valueHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 

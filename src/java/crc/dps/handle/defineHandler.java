@@ -39,8 +39,8 @@ public class defineHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work.  In this case a naked define is an error.
     reportError(in, aContext, "Nothing being defined");
   }
@@ -101,7 +101,6 @@ public class defineHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public defineHandler() {
     /* Expansion control: */
-    stringContent = false;	// true  	want content as string?
     expandContent = true;	// false 	Expand content?
     textContent = false;	// true 	extract text from content?
 
@@ -118,8 +117,8 @@ public class defineHandler extends GenericHandler {
 }
 
 class define_element extends defineHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Analyze the attributes: === could do this in one scan.
     String tagname = atts.getAttributeString(attrName);
     String handlerClass = getHandlerClassName(atts, tagname);
@@ -190,9 +189,10 @@ class define_element extends defineHandler {
 }
 
 class define_attribute extends defineHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
-    // not really unimplemented(in, cxt); -- more like not needed 
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
+    // not really unimplemented(in, cxt); -- more like not needed yet
+    // === eventually define_attribute sets up a dispatch table.
     
   }
   define_attribute(String aname) { super(aname); }
@@ -201,14 +201,13 @@ class define_attribute extends defineHandler {
 }
 
 class define_entity extends defineHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     String name = atts.getAttributeString(attrName);
     // Might have to handle both action and value
 
     // Have to worry about namespace. 
-
-    // === don't worry about handler at this point. ===
+    unimplemented(in, cxt);  // === define_entity
   }
   define_entity(String aname) { super(aname); }
   static define_entity handle = new define_entity("entity");
@@ -216,9 +215,9 @@ class define_entity extends defineHandler {
 }
 
 class define_word extends defineHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
-    unimplemented(in, cxt);	// define word -- maybe not needed.
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
+    unimplemented(in, cxt);	// define word -- maybe not needed yet.
   }
   define_word(String aname) { super(aname); }
   static define_word handle = new define_word("word");

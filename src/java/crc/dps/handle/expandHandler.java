@@ -28,8 +28,8 @@ public class expandHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Expand.processNodes(content, aContext, out);
   }
 
@@ -52,7 +52,6 @@ public class expandHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public expandHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 

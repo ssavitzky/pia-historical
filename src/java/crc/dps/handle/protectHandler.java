@@ -26,11 +26,9 @@ public class protectHandler extends GenericHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** Just return the content. 
-   *	=== would be more efficient to do this in action(,,).
-   */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  /** Just return the content. */
+  public void action(Input in, Context aContext, Output out) {
+    ParseNodeList content = Expand.getProcessedContent(in, aContext);
     putList(out, content);
   }
 
@@ -54,7 +52,6 @@ public class protectHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public protectHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
@@ -72,11 +69,11 @@ public class protectHandler extends GenericHandler {
 }
 
 class protect_markup extends protectHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    String cstring = Expand.getProcessedContentString(in, aContext);
     putText(out, aContext, TextUtil.protectMarkup(cstring));
   }
-  public protect_markup(ActiveElement e) { super(e); stringContent = true; }
+  public protect_markup(ActiveElement e) { super(e); }
   static Action handle(ActiveElement e) { return new protect_markup(e); }
 }
 

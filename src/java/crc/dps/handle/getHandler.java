@@ -35,8 +35,8 @@ public class getHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     String name = atts.getAttributeString("name");
     Copy.copyNodes(aContext.getEntityValue(name, false), out);
@@ -73,7 +73,6 @@ public class getHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public getHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 

@@ -29,8 +29,8 @@ public class selectHandler extends GenericHandler {
   ************************************************************************/
 
   /** Action for &lt;select&gt; node. */
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     unimplemented(in, cxt);	// select
   }
@@ -54,7 +54,6 @@ public class selectHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public selectHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
@@ -71,8 +70,8 @@ public class selectHandler extends GenericHandler {
 }
 
 class select_ extends selectHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // do the work
   }
   public select_(ActiveElement e) { super(e); }

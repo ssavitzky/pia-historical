@@ -189,10 +189,6 @@ implements Handler {
    */
   public boolean expandContent() { return true; }
 
-  /** If <code>true</code>, pass the content to the action routine as a string.
-   */
-  public boolean stringContent() { return false; }
-
   /** If <code>true</code>, Element tags are recognized in content.
    *	The default is to return <code>true</code>.
    */

@@ -45,14 +45,15 @@ public class LegacyHandler extends GenericHandler {
    *	the paradigms are so different, so instead we just re-implement
    *	the action as needed.
    */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
+    String tag = in.getTagName();
     if (wrapped.action(aContext, out, tag, atts, content,
 		       ((content == null)? null : content.toString()))) {
       return;
     }
     aContext.message(-1, "unimplemented action for <" + tag + ">", 0, true);
-    super.action(in, aContext, out, tag, atts, content, cstring);
+    super.action(in, aContext, out, atts, content);
   }
 
   /************************************************************************

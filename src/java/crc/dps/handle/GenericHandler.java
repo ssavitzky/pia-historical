@@ -66,15 +66,6 @@ public class GenericHandler extends BasicHandler {
   /** If <code>true</code>, only Text in the content is retained. */
   public void setTextContent(boolean value) { textContent = value; }
 
-  /** If <code>true</code>, the content is delivered as a string. */
-  protected boolean stringContent = false;
-
-  /** If <code>true</code>, the content is delivered as a string. */
-  public boolean stringContent() { return stringContent; }
-
-  /** If <code>true</code>, the content is delivered as a string. */
-  public void setStringContent(boolean value) { stringContent = value; }
-
  
   /************************************************************************
   ** State Used for Semantics:
@@ -99,7 +90,7 @@ public class GenericHandler extends BasicHandler {
     return Action.COMPLETED;
   }
 
-  /** This routine does the setup for the ``7-argument'' action routine. 
+  /** This routine does the setup for the ``5-argument'' action routine. 
    *
    *	It obtains the expanded attribute list and content, and will rarely
    *	have to be overridden.  At some point it may be copied into an
@@ -109,62 +100,39 @@ public class GenericHandler extends BasicHandler {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
     if (atts == null) atts = NO_ATTRS;
     ParseNodeList content = null;
-    String cstring = null;
     if (!in.hasChildren()) {
       // aContext.debug("   no children...\n");
-    } else if (stringContent) {
-      //aContext.debug("   getting content as " + (textContent? "text in " : "")
-      //	     + (expandContent? "" : "un") + "expanded string\n");
-      if (textContent) {
-	cstring = expandContent
-	  ? Expand.getProcessedTextString(in, aContext)
-	  : Expand.getTextString(in, aContext);
-      } else {
-	cstring = expandContent
-	  ? Expand.getProcessedContentString(in, aContext)
-	  : Expand.getContentString(in, aContext);
-      }
-      //aContext.debug("     -> '" + cstring + "'\n");
-    } else {
-      //aContext.debug("   getting content as " + (textContent? "text in " : "")
-      //	     + (expandContent? "" : "un") + "expanded parse tree\n");
-      if (textContent) {
+    } else if (textContent) {
 	content = expandContent
 	  ? Expand.getProcessedText(in, aContext)
 	  : Expand.getText(in, aContext);
-      } else {
+    } else {
 	content = expandContent
 	  ? Expand.getProcessedContent(in, aContext)
 	  : Expand.getContent(in, aContext);
-      }
-      //aContext.debug("     -> "+ content.getLength() + " nodes >"
-      //	     + content.toString() + "< \n");
     }
-    String tag = in.getTagName();
-    action(in, aContext, out, tag, atts, content, cstring);
+    action(in, aContext, out, atts, content);
   }
 
   /** This routine does the work; it should be overridden in specialized
-   *	subclasses.
+   *	subclasses.  The generic action is to expand the handler's children.
    *
-   *	Note that the element we construct (in order to bind &amp;ELEMENT;) is
-   *	empty, and the expanded content is kept in a separate NodeList.  This
-   *	means that unexpanded nodes don't have to be reparented in the usual
-   *	case. <p>
+   *	<p>Note that the element we construct (in order to bind &amp;ELEMENT;)
+   *	is empty, and the expanded content is kept in a separate NodeList.
+   *	This means that unexpanded nodes don't have to be reparented in the
+   *	usual case.
    *
-   *	If the handler has no children, we simply copy the newly-constructed
-   *	Element to the Output.  This should be equivalent to the default
-   *	action obtained by returning Action.EXPAND_NODE as an action code.
+   *	<p>If the handler has no children, we simply copy the new Element to
+   *	the Output.  This should be equivalent to the default action obtained
+   *	by returning Action.EXPAND_NODE as an action code.
    *
    * @param the Input, with the current node being the one to be processed.
    * @param aContext the context in which to look up entity bindings
    * @param out the Output to which to send results
-   * @param tag the element's tagname
    * @param atts the (processed) attribute list.
-   * @param content the (possibly-processed) content.
-   * @param cstring the (possibly-processed) content as a string.  */
-  protected void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+   * @param content the (possibly-processed) content.  */
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
     //aContext.debug("in action for " + in.getNode());
     ActiveElement e = in.getActive().asElement();
 
@@ -193,7 +161,7 @@ public class GenericHandler extends BasicHandler {
       // No content: just put the new element. 
       out.putNode(element);
     } else {
-      // Content. 
+      // Content: output an expanded copy of the original element.
       out.startElement(element);
       Copy.copyNodes(content, out);
       out.endElement(e.isEmptyElement() || e.implicitEnd());

@@ -29,8 +29,8 @@ public class formHandler extends GenericHandler {
   ************************************************************************/
 
   /** Action for &lt;form&gt; node. */
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     unimplemented(in, cxt);	// === form
   }
@@ -54,7 +54,6 @@ public class formHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public formHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
@@ -72,8 +71,8 @@ public class formHandler extends GenericHandler {
 
 /*
 class form_ extends formHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // do the work
   }
   public form_(ActiveElement e) { super(e); }

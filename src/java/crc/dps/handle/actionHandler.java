@@ -36,8 +36,8 @@ public class actionHandler extends GenericHandler {
     return Action.COPY_NODE;
   }
 
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out,
+  		     ActiveAttrList atts, NodeList content) {
     ActiveElement e = in.getActive().asElement();
     ActiveElement element = e.editedCopy(atts, null);
     // === should be able to skip expanding the attrs altogether for <action>
@@ -54,7 +54,6 @@ public class actionHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public actionHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = false;	// true		Expand content?
     textContent = false;	// true		extract text from content?
 

@@ -43,11 +43,10 @@ public class ifHandler extends GenericHandler {
   ** Semantic Operations:
   ************************************************************************/
 
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
     boolean trueCondition = false;
+    ParseNodeList content = Expand.getContent(in, aContext);
     NodeEnumerator enum = content.getEnumerator();
-    aContext.debug("   Initializing action for <" + tag + ">\n");
 
     for (Node child = enum.getFirst(); child != null; child = enum.getNext()) {
       /* 
@@ -58,25 +57,18 @@ public class ifHandler extends GenericHandler {
 	ActiveElement ct = (ActiveElement)child;
 	Class cl = ct.getSyntax().getClass();
 	if (cl == thenHandlerClass) {
-	  aContext.debug("     <then> with condition " + 
-	  	 (trueCondition? "true" : "false") + "\n");
 	  if (trueCondition) {
-	    aContext.debug("    expanding: " + ct + "\n");
 	    Expand.processChildren(ct, aContext, out);
 	    return;
 	  }
 	} else if (cl == elsfHandlerClass) {
-	  aContext.debug("     <else-if> with condition " + 
-	  	 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
 	    // else-if: just delegate to <else-if>'s (expanded) children.
 	    content = Expand.processNodes(ct.getChildren(), aContext);
-	    action(in, aContext, out, "else-if", null, content, null);
+	    action(in, aContext, out, null, content);
 	    return;
 	  }
 	} else if (cl == elseHandlerClass) {
-	  aContext.debug("     <else> with condition " + 
-	  	 (trueCondition? "true" : "false") + "\n");
 	  if (!trueCondition) {
 	    Expand.processChildren(ct, aContext, out);
 	    return;
@@ -84,7 +76,7 @@ public class ifHandler extends GenericHandler {
 	} else {
 	  trueCondition = true;
 	}
-      } else if (Test.trueValue(child)) {
+      } else if (Test.trueValue((ActiveNode)child, aContext)) {
 	trueCondition = true;
       }
     }
@@ -96,7 +88,6 @@ public class ifHandler extends GenericHandler {
 
   /** Constructor must set instance variables. */
   public ifHandler() {
-    stringContent = false;	// true 	want content as string?
     expandContent = true;
   }
 }

@@ -226,7 +226,6 @@ System.err.println("Loading tagset=" + parserTSname +
   /** Constructor must set instance variables. */
   public tagsetHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 

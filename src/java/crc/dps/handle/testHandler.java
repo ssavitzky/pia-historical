@@ -41,10 +41,10 @@ public class testHandler extends GenericHandler {
    *	in the presence of parse-time dispatching, because some of the
    *	attributes may have contained entities.
    */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Default is simply to test for "truth"
-    returnBoolean(Test.orValues(content), out, atts);
+    returnBoolean(Test.orValues(content, aContext), out, atts);
   }
 
   /** This does the parse-time dispatching. */
@@ -105,7 +105,6 @@ public class testHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public testHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
 
     /* Syntax: */
@@ -119,7 +118,6 @@ public class testHandler extends GenericHandler {
     inverted 	= invert;
 
     /* Expansion control: */
-    stringContent = string;	//  	want content as string?
     textContent = text;		//	want only text in content?
 
     expandContent = true;	// false	Expand content?
@@ -172,8 +170,10 @@ public class testHandler extends GenericHandler {
 
 /** Test for zero.  Whitespace is considered zero, but non-blanks are not. */
 class test_zero extends testHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    String cstring = textContent
+      ? Expand.getProcessedTextString(in, aContext)
+      : Expand.getProcessedContentString(in, aContext);
     Association a = Association.associateNumeric(null, cstring);
     returnBoolean(( (a.isNumeric() && a.doubleValue() == 0.0)
 		    || (!a.isNumeric() && Test.isWhitespace(cstring))),
@@ -184,8 +184,10 @@ class test_zero extends testHandler {
 }
 
 class test_positive extends testHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    String cstring = textContent
+      ? Expand.getProcessedTextString(in, aContext)
+      : Expand.getProcessedContentString(in, aContext);
     Association a = Association.associateNumeric(null, cstring);
     returnBoolean(a.doubleValue() > 0.0, aContext, out);
   }
@@ -194,8 +196,10 @@ class test_positive extends testHandler {
 }
 
 class test_negative extends testHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    String cstring = textContent
+      ? Expand.getProcessedTextString(in, aContext)
+      : Expand.getProcessedContentString(in, aContext);
     Association a = Association.associateNumeric(null, cstring);
     returnBoolean(a.doubleValue() < 0.0, aContext, out);
   }
@@ -206,8 +210,10 @@ class test_negative extends testHandler {
 /** Test for numeric.  Although whitespace is considered equal to zero,
  *	it is not considered numeric. */
 class test_numeric extends testHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    String cstring = textContent
+      ? Expand.getProcessedTextString(in, aContext)
+      : Expand.getProcessedContentString(in, aContext);
     Association a = Association.associateNumeric(null, cstring);
     returnBoolean(a.isNumeric(), aContext, out);
   }
@@ -218,8 +224,12 @@ class test_numeric extends testHandler {
 class test_match extends testHandler {
   boolean exactMatch = false;
   boolean caseSens   = false;
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
+    String cstring = textContent
+      ? Expand.getProcessedTextString(in, aContext)
+      : Expand.getProcessedContentString(in, aContext);
+
     String match = atts.getAttributeString("match");
     if (match == null) match = "";
     boolean result = false;
@@ -243,7 +253,6 @@ class test_match extends testHandler {
   }
   public test_match(ActiveElement e) {
     super(e);
-    stringContent = true;
     exactMatch = e.hasTrueAttribute("exact");
     caseSens   = e.hasTrueAttribute("case");
   }
@@ -252,8 +261,11 @@ class test_match extends testHandler {
 }
 
 class test_null extends testHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    ParseNodeList content = textContent
+      ? Expand.getProcessedText(in, aContext)
+      : Expand.getProcessedContent(in, aContext);
+
     returnBoolean(content == null || content.getLength() == 0, aContext, out);
   }
   public test_null(ActiveElement e) { super(e); }

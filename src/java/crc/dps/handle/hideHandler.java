@@ -64,7 +64,6 @@ public class hideHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public hideHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 

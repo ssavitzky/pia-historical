@@ -35,8 +35,8 @@ public class numericHandler extends GenericHandler {
   ************************************************************************/
 
   /** Action for &lt;numeric&gt; node. */
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
   }
 
@@ -64,7 +64,6 @@ public class numericHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public numericHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
@@ -89,8 +88,8 @@ public class numericHandler extends GenericHandler {
 }
 
 class numeric_sum extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 0;
     long   iresult = 0;
@@ -117,8 +116,8 @@ class numeric_sum extends numericHandler {
 }
 
 class numeric_difference extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 0;
     long   iresult = 0;
@@ -154,8 +153,8 @@ class numeric_difference extends numericHandler {
 }
 
 class numeric_product extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 1.0;
     long   iresult = 1;
@@ -182,8 +181,8 @@ class numeric_product extends numericHandler {
 }
 
 class numeric_quotient extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 1.0;
     long   iresult = 1;
@@ -220,8 +219,8 @@ class numeric_quotient extends numericHandler {
 
 
 class numeric_power extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 1.0;
     long   iresult = 1;
@@ -258,8 +257,8 @@ class numeric_power extends numericHandler {
 
 
 class numeric_remainder extends numericHandler {
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     double fresult = 0;
     long   iresult = 0;
@@ -299,8 +298,8 @@ class numeric_sort extends numericHandler {
   protected boolean caseSens = false;
   protected boolean pairs    = false;
 
-  public void action(Input in, Context cxt, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context cxt, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
     unimplemented(in, cxt);	// === numeric_sort
   }

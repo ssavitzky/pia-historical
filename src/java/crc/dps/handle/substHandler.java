@@ -12,6 +12,7 @@ import crc.dom.AttributeList;
 
 import crc.dps.*;
 import crc.dps.active.*;
+import crc.dps.aux.*;
 
 import crc.gnu.regexp.RegExp;
 
@@ -22,26 +23,16 @@ import crc.gnu.regexp.RegExp;
  */
 public class substHandler extends GenericHandler {
  
-  public substHandler() {
-    /* Expansion control: */
-    stringContent = true;	// false 	want content as string?
-    expandContent = true;	// false	Expand content?
-
-    /* Syntax: */
-    parseElementsInContent = true;	// false	recognize tags?
-    parseEntitiesInContent = true;	// false	recognize entities?
-    syntaxCode = NORMAL;		// 1 empty; 2: non-empty; 0: check
-  }
-
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out) {
+    ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
+    String text = Expand.getProcessedContentString(in, aContext);
+      
     String match = atts.getAttributeString("match");
     //if (ii.missing(ia, "match", match)) return;
 
     String repl = atts.getAttributeString("result");
     //System.err.println("*** match = " + match + ", result = " + repl
     //		         + " in " + atts.toString());
-    String text = cstring;
 
     try {
       RegExp re = new RegExp(match);
@@ -55,4 +46,27 @@ public class substHandler extends GenericHandler {
     out.putNode(new ParseTreeText(text));
   }
 
+
+  /************************************************************************
+  ** Constructor:
+  ************************************************************************/
+
+  /** Constructor must set instance variables. */
+  public substHandler() {
+    /* Expansion control: */
+    expandContent = true;	// false	Expand content?
+    textContent = false;	// true		extract text from content?
+
+    /* Syntax: */
+    parseElementsInContent = true;	// false	recognize tags?
+    parseEntitiesInContent = true;	// false	recognize entities?
+    syntaxCode = QUOTED;  		// EMPTY, QUOTED, 0 (check)
+  }
+
+  substHandler(ActiveElement e) {
+    this();
+    // customize for element.
+    if (e.hasTrueAttribute("result")) syntaxCode=NORMAL;
+  }
 }
+

@@ -43,8 +43,8 @@ public class elsfHandler extends GenericHandler {
     return Action.COPY_NODE;
   }
 
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     ActiveElement e = in.getActive().asElement();
     ActiveElement element = e.editedCopy(atts, null);
 
@@ -59,7 +59,6 @@ public class elsfHandler extends GenericHandler {
 
   /** Constructor must set instance variables. */
   public elsfHandler() {
-    stringContent = false;	// true 	want content as string?
     expandContent = false;	// true		expand content?
   }
 }

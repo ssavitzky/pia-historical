@@ -31,8 +31,8 @@ public class repeatHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     // Actually do the work.  
     // There were no attributes to dispatch on, so repeat the content until
     // something stops the processor.
@@ -92,7 +92,6 @@ public class repeatHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public repeatHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
@@ -108,8 +107,8 @@ public class repeatHandler extends GenericHandler {
  ************************************************************************/
 
 class repeat_numeric extends repeatHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     Association start = MathUtil.getNumeric(atts, "start", "0");
     Association stop  = MathUtil.getNumeric(atts, "stop", "0");
     Association step  = MathUtil.getNumeric(atts, "step", "1");
@@ -148,8 +147,8 @@ class repeat_numeric extends repeatHandler {
   static Action handle(ActiveElement e) { return handle; }
 }
 class repeat_list extends repeatHandler {
-  public void action(Input in, Context aContext, Output out, String tag, 
-  		     ActiveAttrList atts, NodeList content, String cstring) {
+  public void action(Input in, Context aContext, Output out, 
+  		     ActiveAttrList atts, NodeList content) {
     ActiveEntity ent   = iterationVar(atts, aContext);
     FromParseNodes src = iterationSrc(content);
     Processor process  = iterationCxt(src, aContext, out, ent);

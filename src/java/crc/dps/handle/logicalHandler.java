@@ -59,7 +59,6 @@ public class logicalHandler extends GenericHandler {
   /** Constructor must set instance variables. */
   public logicalHandler() {
     /* Expansion control: */
-    stringContent = false;	// true 	want content as string?
     expandContent = true;	// false	Expand content?
     textContent = false;	// true		extract text from content?
 
