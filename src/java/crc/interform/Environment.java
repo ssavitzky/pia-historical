@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.text.DateFormat;
 
 import crc.interform.Parser;
 import crc.interform.Input;
@@ -99,9 +100,11 @@ public class Environment {
 
     if (entities == null) {
       entities = new Table();
+      Date date = new Date();
+      DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL,
+							    DateFormat.LONG);
 
       /*
-      Date date = new Date();
       String yyyy = pad(date.getYear()+1900, 4);
       String mm	  = pad(date.getMonth()+1, 2);
       String dd   = pad(date.getDate(), 2);
@@ -111,15 +114,15 @@ public class Environment {
       int wday	  = Util.getWeekday(date); // date.getWeekday())
       */
 
-      Calendar date = new GregorianCalendar();
-      String yyyy = pad(date.get(Calendar.YEAR), 4);
-      int    m	  = date.get(Calendar.MONTH);
+      Calendar today = new GregorianCalendar();
+      String yyyy = pad(today.get(Calendar.YEAR), 4);
+      int    m	  = today.get(Calendar.MONTH);
       String mm	  = pad(m+1, 2);
-      String dd   = pad(date.get(Calendar.DAY_OF_MONTH), 2);
-      String hh	  = pad(date.get(Calendar.HOUR_OF_DAY), 2);
-      String min  = pad(date.get(Calendar.MINUTE), 2);
-      String sec  = pad(date.get(Calendar.SECOND), 2);
-      int wday	  = (date.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
+      String dd   = pad(today.get(Calendar.DAY_OF_MONTH), 2);
+      String hh	  = pad(today.get(Calendar.HOUR_OF_DAY), 2);
+      String min  = pad(today.get(Calendar.MINUTE), 2);
+      String sec  = pad(today.get(Calendar.SECOND), 2);
+      int wday	  = (today.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
       // We want Sunday = 0.  This handles any reasonable value of SUNDAY;
 
       ent("second",	sec);
@@ -131,11 +134,11 @@ public class Environment {
       ent("weekday",	pad(wday, 1));
       ent("dayName",	dayNames.at(wday));
       ent("monthName",	monthNames.at(m));
-      ent("yearday",	pad(date.get(Calendar.DAY_OF_YEAR), 3));
+      ent("yearday",	pad(today.get(Calendar.DAY_OF_YEAR), 3));
       ent("date",	yyyy+mm+dd);
       ent("time",	hh+":"+min);
 
-      ent("dateString",	date.toString());
+      ent("dateString",	formatter.format(date));
 
       if (filename != null) {
 	ent("filePath", filename);
@@ -247,13 +250,14 @@ public class Environment {
     ii.from(p).toTokens();
     use(ii);
     
+    /*
     InterFormStream out = new InterFormStream(ii);
     return out;
-    /*
+    */
     ii.toText();
     String interformOutput = ii.run().toString();
     return new java.io.StringBufferInputStream( interformOutput );
-    */
+    /* */
   }
 
   /** Filter a file, producing an InputStream. */
