@@ -620,7 +620,21 @@ public SGML attr(Index name)
   public void appendTextTo(SGML t) {
     if (incomplete >= 0 && tag != null && !tag.equals("") && !specialFormat)
       t.append(startTag());
-    if (content != null && incomplete == 0) content.appendTextTo(t);
+    if (content != null && incomplete == 0) {//content.appendTextTo(t);
+      for (int i = 0; i < nItems(); ++i) {
+	
+             SGML newIt=itemAt(i);
+             //prevent recursion looping
+             if(newIt == this) {
+	       crc.pia.Pia.debug("LOOP in parse tree detected: mytag" + tag() +" element number " + i);
+	     } else {
+	       newIt.appendTextTo(t);
+	     }
+      }
+      
+    }
+    
+	      
     if (incomplete <= 0 && hasEndTag() && 
 	tag != null && !tag.equals("") && !specialFormat)       
       t.append(endTag());

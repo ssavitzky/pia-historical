@@ -28,14 +28,14 @@ public class TableElement extends crc.sgml.Element {
       html never intended to treat table objects as data structures.
  */
 
-  private Table  rowHeaders=null;   
-  private Table columnHeaders=null;
-  private SGML[][] data=null;  // should be populated by <td> elements
-  private int nRows=0;
-  private int nCols=0;
+  protected Table  rowHeaders=null;   
+  protected Table columnHeaders=null;
+  protected SGML[][] data=null;  // should be populated by <td> elements
+  protected int nRows=0;
+  protected int nCols=0;
   /**  populate the data structures given the current content
   */
-  private void buildTable()
+  protected void buildTable()
   {
     Table tags=content.tagTable();
     List rowLocations = content.tagLocations("tr");
@@ -243,7 +243,7 @@ public class TableElement extends crc.sgml.Element {
 
 /**  retrieve items specified by expression in context of rows
  */
-private SGML attrExpression(int[] rows, Index expression)
+protected SGML attrExpression(int[] rows, Index expression)
   {
     return attrExpression(expression);
     
