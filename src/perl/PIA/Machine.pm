@@ -169,6 +169,11 @@ sub get_request {
 	$ua->proxy($trans->url->scheme,$proxy) if $proxy;
     }
 
+    ## Set request content if we're posting.
+
+    my $content = $trans->content;
+    $trans->request->content($content) if $content;
+
     ## Actually make the request.
     ##	  We _must_ use simple_request and pass the results, whatever they
     ##	  are, to the browser.  Otherwise it never finds out about redirects.
