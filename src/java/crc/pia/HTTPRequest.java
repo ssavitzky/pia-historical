@@ -407,15 +407,15 @@ public class  HTTPRequest extends Transaction {
     String mymethod = method();
     FormContent fc = null;
 
-    fc = (FormContent)contentObj();
+    fc = (contentObj() instanceof FormContent)? (FormContent)contentObj()
+                                              : new FormContent();
     if( queryString()!= null && mymethod.equalsIgnoreCase( "GET" ) ){
       fc.setParameters( queryString() );
     }else {
       if( mymethod.equalsIgnoreCase( "POST" )  )
-	// sucks actual parameters from body of content;this is why a null parameter
+	// sucks actual parameters from body of content
 	fc.setParameters(null);
     }
-
   }
 
 
