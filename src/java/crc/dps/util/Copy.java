@@ -197,6 +197,8 @@ public class Copy {
       }
       parentNode.insertBefore(aNode, null);
     } catch (crc.dom.NotMyChildException e) {
+      System.err.println("Cloning failed: ");
+      e.printStackTrace(System.err);
       // === not clear what to do here...  shouldn't happen. ===
     }
     return parentNode;
@@ -212,6 +214,21 @@ public class Copy {
     NodeEnumerator e = aNodeList.getEnumerator();
     for (Node node = e.getFirst(); node != null; node = e.getNext()) {
       appendNode(node, parentNode);
+    }
+    return parentNode;
+  }
+
+  /** Append the nodes in a NodeList to a given Active parent.
+   *
+   * @return parentNode.
+   * @see #appendNode
+   */
+  public static ActiveNode appendNodes(NodeList aNodeList,
+				       ActiveNode parentNode) {
+    if (aNodeList == null) return parentNode;
+    NodeEnumerator e = aNodeList.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      parentNode.addChild((ActiveNode)node);
     }
     return parentNode;
   }
