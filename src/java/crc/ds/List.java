@@ -175,7 +175,14 @@ public class List implements Stuff {
   public void clear() {
     items.removeAllElements();
   }
+   
+  public String join(String seperator) {
+    String result = "";
     
+    for (int i = 0; i < nItems(); ++i) result += at(i) + seperator;
+    return result;
+    
+  } 
   /************************************************************************
   ** Construction and copying:
   ************************************************************************/
