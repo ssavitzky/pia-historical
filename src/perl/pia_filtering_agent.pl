@@ -7,8 +7,8 @@ push(@ISA,PIA_AGENT);
 sub initialize {
     my $self = shift;
 #by default filter only responses
-    $self->match_criterion('response',1,\&FEATURES::is_response);
-    $self->match_criterion('agent_response',0,\&FEATURES::is_agent_response);
+    $self->match_criterion('response',1);
+    $self->match_criterion('agent_response',0);
 
 #need factory for translators
     my $translators={};
