@@ -5,13 +5,20 @@
 package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.Element;
 
+import crc.ds.SortTree;
+import crc.ds.List;
+import crc.ds.Association;
+
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
+
+import java.util.Enumeration;
 
 /**
  * Handler for &lt;text&gt;....&lt;/&gt;  <p>
@@ -32,7 +39,6 @@ public class textHandler extends GenericHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
-    unimplemented(in, cxt);	// === text
   }
 
   /** This does the parse-time dispatching. <p>
@@ -43,7 +49,9 @@ public class textHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    if (dispatch(e, "")) 	 return text_.handle(e);
+    if (dispatch(e, "sort")) 	 return text_sort.handle(e);
+    if (dispatch(e, "trim")) 	 return text_trim.handle(e);
+    if (dispatch(e, "pad"))      return text_pad.handle(e);
     return this;
   }
 
@@ -65,15 +73,124 @@ public class textHandler extends GenericHandler {
 
   textHandler(ActiveElement e) {
     this();
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
     // customize for element.
   }
 }
 
-class text_ extends textHandler {
+class text_sort extends textHandler {
+
+  protected boolean reverse   = false;
+  protected boolean caseSens  = false;
+  protected boolean pairs     = false;
+  
   public void action(Input in, Context aContext, Output out, 
   		     ActiveAttrList atts, NodeList content) {
-    // do the work
+
+    List args = TextUtil.getTextList(content, caseSens);
+    Enumeration argsEnum = args.elements();
+
+    SortTree sorter = new SortTree();
+    Association a;
+    
+    while(argsEnum.hasMoreElements()) {
+      a = (Association)argsEnum.nextElement();
+      sorter.insert(a, false);
+    }
+
+    List resultList = new List();
+    if(reverse) {
+      sorter.descendingValues(resultList);
+    }
+    else
+      sorter.ascendingValues(resultList);
+    
+    putEnum(out, resultList.elements());
+
   }
-  public text_(ActiveElement e) { super(e); }
-  static Action handle(ActiveElement e) { return new text_(e); }
+
+  public text_sort(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    reverse  = atts.hasTrueAttribute("reverse");
+    caseSens = atts.hasTrueAttribute("case");
+    pairs    = atts.hasTrueAttribute("pairs");
+  }
+
+  static Action handle(ActiveElement e) { return new text_sort(e); }
 }
+
+/** Eliminate leading and trailing (optionally ALL) whitespace
+    from CONTENT.  Whitespace inside markup is not affected.
+*/
+
+class text_trim extends textHandler {
+
+  protected boolean trim  = false;
+  protected boolean align = false;
+  protected boolean left  = false;
+  protected boolean right = false;
+  protected int width     = -1;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    NodeList nl = TextUtil.getText(content);
+
+    // Just retrieves text, no markup
+    // printNodeList(nl);
+    
+    List list = TextUtil.getTextList(content, false);
+    // printList(list);
+
+    Enumeration resultList = TextUtil.trimListItems(content);
+    
+    putEnum(out, resultList);
+  }
+
+  public text_trim(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+  }
+
+  static Action handle(ActiveElement e) { return new text_trim(e); }
+
+}
+
+
+/** Eliminate leading and trailing (optionally ALL) whitespace
+    from CONTENT.  Whitespace inside markup is not affected.
+*/
+class text_pad extends textHandler {
+
+  protected boolean pad  = false;
+  protected boolean align = false;
+  protected boolean left  = false;
+  protected boolean right = false;
+  protected int width     = -1;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    NodeList nl = TextUtil.getText(content);
+    Enumeration resultList = TextUtil.padListItems(content, align, left, right, width);
+    putEnum(out, resultList);
+  }
+
+  public text_pad(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    align  = atts.hasTrueAttribute("align");
+    left   = atts.hasTrueAttribute("left");
+    right  = atts.hasTrueAttribute("right");
+    width  = MathUtil.getInt(atts, "width", -1);
+  
+  }
+
+  static Action handle(ActiveElement e) { return new text_pad(e); }
+
+}
+
+
+
+
