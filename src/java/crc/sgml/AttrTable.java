@@ -144,7 +144,7 @@ public class AttrTable extends Table implements Attrs {
 
     while (e.hasMoreElements()) {
       String k = e.nextElement().toString();
-      put(k, t.attr(k));	// can use put because t is an AttrTable
+      at(k, t.attr(k));	
     }
   }
 
@@ -159,7 +159,7 @@ public class AttrTable extends Table implements Attrs {
 
     while (e.hasMoreElements()) {
       String k = e.nextElement().toString();
-      put(k, t.get(k));	// can use put because t is an AttrTable
+      at(k, t.get(k));	
     }
   }
 

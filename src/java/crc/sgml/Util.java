@@ -250,7 +250,7 @@ public class Util {
     j = 0;
     while (j < s.length() && (i = s.indexOf(c, j)) >= 0) {
       l.push(s.substring(j, i));
-      s = s.substring(j, i);
+
       j = i+1;
     }
     if (j < s.length()) 
