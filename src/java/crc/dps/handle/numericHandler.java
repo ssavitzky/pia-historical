@@ -9,6 +9,9 @@ import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.Element;
 
+import crc.ds.SortTree;
+import crc.ds.List;
+
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.aux.*;
@@ -91,6 +94,7 @@ class numeric_sum extends numericHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
+    System.err.println("numeric_sum action called");
     double fresult = 0;
     long   iresult = 0;
     boolean intOp  = true;
@@ -301,8 +305,22 @@ class numeric_sort extends numericHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
     Enumeration args = MathUtil.getNumbers(content);
-    unimplemented(in, cxt);	// === numeric_sort
+
+    SortTree sorter = new SortTree();
+    Association a;
+    while(args.hasMoreElements()) {
+      a = (Association)args.nextElement();
+      sorter.insert(a, true);
+    }
+    List resultList = new List();
+    if(reverse)
+      sorter.descendingValues(resultList);
+    else
+      sorter.ascendingValues(resultList);
+
+    putEnum(out, resultList.elements());
   }
+
   public numeric_sort(ActiveElement e) {
     super(e);
     ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
