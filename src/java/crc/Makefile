@@ -11,13 +11,12 @@ TOPDIR=..
 
 PACKAGES = \
 	ds \
-	interform \
-	pia \
 	sgml \
-	tf \
 	content \
-	util
-
+	util \
+	interform \
+	tf \
+	pia
 
 include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make

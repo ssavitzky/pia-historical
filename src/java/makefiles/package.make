@@ -34,18 +34,19 @@ BINDIR  =$(PIADIR)/bin
 
 # all -- descend into PACKAGES and do a make there.
 all::
-	for p in `ls -d $(PACKAGES)`; do \
+	for p in $(PACKAGES); do if test -d $$p; then \
 		echo 'building ' $(PACKAGE).$$p; \
 		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) \
-		 VPATH=$(VPATH)/$$p); \
+		 VPATH=$(VPATH)/$$p); fi\
 	done
 
 
-# Recursive doc -- generates all the class files but damages the indexes
+# Recursive doc -- does NOT run javadoc, which fails when run recursively.
 doc::
-	@@for p in `ls -d $(PACKAGES)`; do \
+	@@for p in `ls -d $(PACKAGES)`; do if test -d $$p; then \
 		echo 'doc ' $(PACKAGE).$$p; \
-		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) doc); \
+		(cd $$p; $(MAKE) TOPDIR=../$(TOPDIR) PIADIR=../$(PIADIR) 
+		 doc); fi \
 	done
 
 clean::

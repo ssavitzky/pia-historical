@@ -7,8 +7,8 @@ TOPDIR=.
 ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 PACKAGES= \
-	crc \
-	misc
+	misc \
+	crc
 
 ### These are the names of all the packages in the PIA.
 ###	We need these because javadoc does _not_ operate recursively.
