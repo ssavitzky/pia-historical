@@ -27,7 +27,7 @@
 <a href="/~History/">/~History</a>
 		<a href="/~History/&year;">&year;</a> /
 		<a href="/~History/&year;/&month;">&month;</a> /
-		<a href="/~History/&year/&month;/&day;.html">&day;</a>
+		<a href="/~History/&year;/&month;/&day;.html">&day;</a>
 <hr>
 
 The <code>&agentName;</code> agent puts information into the history database,
