@@ -18,7 +18,7 @@ This form should only be accessed when new pictures are copied  over from
 <photos>
 <repeat list=&files; entity=jpg><set name=count><sum>1 <get name=count></sum></set>
 <photo directory=&FORM.dir; file=&jpg;>
-<photothumbnail><subst match="\.jpg$" result="small.gif">&jpg;</subst></photothumbnail>
+<photothumbnail><subst match="\.jpg " result="small.gif">&jpg; </subst></photothumbnail>
 <photoindex>&count;</photoindex>
 </photo>
 </repeat>
@@ -33,7 +33,7 @@ Should we check in the camera?
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Feb 25 11:05:21 1998
+Last modified: Mon Aug 17 09:29:39 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
