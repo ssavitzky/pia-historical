@@ -17,7 +17,7 @@
 
 <set agent name="banner"><table align=center>
 <TR><TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
-<if><agent-running name="Logo"><then><img src="/Logo/camera1.gif"  height=16 width=16 alt=camera></then><else>&agentName;</else></if></a>
+<if><agent-running name="Logo"><then><img src="/Logo/camera.gif"  height=16 width=16 alt=camera></then><else>&agentName;</else></if></a>
 <TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/latest.if">
 <if><agent-running name="Logo"><then><img src="/Logo/new.gif"  height=16
 width=16 alt=Publish></then><else>NewPictures</else></if></a>
