@@ -387,6 +387,10 @@ public class Parser extends Input {
    *	Assume that <code>last</code> contains an ampersand.  If the next
    *	available character does not belong in an identifier, appends the
    *	ampersand to <code>buf</code>.  Eat a trailing semicolon if present.
+   * <p>
+   *	Correctly handles <code>&amp;<i>ident</i>=</code>, which is not
+   *	an entity reference but part of a query string.
+   *
    *	@return false if the next available character does not belong in
    *	an entity name.
    */
@@ -395,6 +399,10 @@ public class Parser extends Input {
     last = 0;
     if (!eatIdent()) {
       buf.append("&"); 
+      return false;
+    }
+    if (last == '=') {
+      buf.append("&" + ident + "=");
       return false;
     }
     next = new Entity(ident, last == ';');
