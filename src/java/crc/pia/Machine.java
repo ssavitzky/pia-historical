@@ -14,6 +14,7 @@ package crc.pia;
 
 import java.io.InputStream;
 import java.io.EOFException;
+import java.io.StringBufferInputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.DataInputStream;
@@ -35,6 +36,30 @@ import crc.pia.Transaction;
 import crc.pia.Resolver;
 import crc.util.regexp.RegExp;
 import crc.util.regexp.MatchInfo;
+import crc.util.Timer;
+import w3c.www.http.HTTP;
+
+import crc.ds.UnaryFunctor;
+class zTimeout implements UnaryFunctor{
+  public Object execute( Object object ){
+    Transaction req = (Transaction) object;
+    Machine m = req.toMachine();
+    m.closeProxyConnection();
+    m.closeURLConnection();
+
+    String msg = "Your request has used up alotted time.  Server is possibly down.";
+    Content ct = new ByteStreamContent( new StringBufferInputStream( msg ) );
+    Transaction abort = new HTTPResponse(Pia.instance().thisMachine, req.fromMachine(), ct, false);
+    abort.setStatus(HTTP.REQUEST_TIMEOUT);
+    abort.setContentType( "text/plain" );
+    abort.setContentLength( msg.length() );
+    abort.startThread();
+
+    return object;
+  }
+
+}
+
 
 public class Machine {
   public boolean DEBUG = false;
@@ -68,6 +93,22 @@ public class Machine {
    * Attribute index - output stream
    */
   protected OutputStream outputStream;
+
+
+  /**
+   * Attribute index - input stream from URL connection
+   * Need to save this cause incase of time out, need to close it
+   */
+  protected InputStream inputFromURL;
+
+  /**
+   * Attribute index - proxy socket
+   * Need to save this cause incase of time out, need to close it
+   */
+  protected Socket proxySocket;
+  protected InputStream proxyIStream;
+  protected OutputStream proxyOStream;
+
 
   /**
    * set inputStream -- use for debuggging
@@ -274,6 +315,36 @@ public class Machine {
 
     }
 
+
+  public void closeProxyConnection() {
+    try {
+      if( proxySocket != null ){
+	proxySocket.close();
+	proxyIStream.close();
+	proxyOStream.close();
+      }
+    }catch(IOException e) {
+      if( DEBUG )
+	System.out.println("Exception while closing proxy socket streams." );
+      else
+	Pia.instance().errLog( this, "Exception while closing proxy socket streams." );
+    }
+  }
+
+  public void closeURLConnection() {
+    if( inputFromURL != null ){
+      try{
+	inputFromURL.close();
+      }catch(IOException e){
+	if( DEBUG )
+	  System.out.println("Exception while closing url stream." );
+	else
+	  Pia.instance().errLog( this, "Exception while closing url stream." );
+      }
+    }
+  }
+
+
   /**
    * Get request through a proxy by opening the proxy socket
    */
@@ -286,15 +357,15 @@ public class Machine {
     zport        = (p == -1) ? 80 : p;
     zhost        = proxy.getHost();
     try{
-      Socket sock          = new Socket(zhost, zport);
-      OutputStream oStream = sock.getOutputStream();
-      InputStream iStream  = sock.getInputStream();
+      proxySocket          = new Socket(zhost, zport);
+      proxyOStream = proxySocket.getOutputStream();
+      proxyIStream = proxySocket.getInputStream();
       
-      request.printOn( oStream );
-      oStream.flush();
+      request.printOn( proxyOStream );
+      proxyOStream.flush();
 
       byte[] zdata = null;
-      zdata = suckData( iStream );
+      zdata = suckData( proxyIStream );
       if( DEBUG ){
 	Pia.instance().debug("The data got from server is :");
 	Pia.instance().debug(this, new String(zdata, 0, 0, zdata.length) );
@@ -302,9 +373,7 @@ public class Machine {
       
       InputStream bi = new ByteArrayInputStream( zdata ); 
 
-      sock.close();
-      iStream.close();
-      oStream.close();
+      closeProxyConnection();
       
       Machine m = new Machine();
       m.setInputStream( bi );
@@ -335,36 +404,34 @@ public class Machine {
 
     url = request.requestURL();
 
+    Timer ztimer = new Timer( new zTimeout(), request );
+    ztimer.setTimeout(Pia.instance().requestTimeout());
     proxy = proxy( request.protocol() );
-    if( proxy != null ){
-      try{
+    try{
+      if( proxy != null )
 	getReqThruProxy( proxy, request, resolver);
-      }catch(PiaRuntimeException ue){
-	throw ue;
-      }
-    }else{
-      if( url != null ){
-	try{
-	  InputStream in = url.openStream();
-
-	  Content c = new ByteStreamContent( in );
+      else{
+	if( url != null ){
+	  inputFromURL = url.openStream();
+	  
+	  Content c = new ByteStreamContent( inputFromURL );
 	  if ( DEBUG ){
 	    Pia.instance().debug("Dumping data buffer's address");
 	    byte[] data = c.toBytes();
 	    System.out.print( new String(data,0,0,data.length) );
 	    System.out.println("\n");
 	  }
-
+	  
 	  new HTTPResponse( request, c );
-
-	}catch(IOException e){
-	  String msg = e.toString();
-	  throw new PiaRuntimeException (this
-					 , "getRequest"
-					 , msg) ;
 	}
-      }
-
+      }  
+    }catch(IOException e){
+      String msg = e.toString();
+      throw new PiaRuntimeException (this
+				     , "getRequest"
+				     , msg) ;
+    }finally{
+      ztimer.stop();
     }
   }
 
