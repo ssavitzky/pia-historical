@@ -34,6 +34,8 @@ CASEFILES = \
 	cont_3.case \
 	cont_4.case \
 	cont_5.case \
+	cont_6.case \
+	cont_7.case \
 	httpreq_1.case \
 	httpreq_2.case \
 	httpreq_3.case \
