@@ -165,7 +165,7 @@ class text_trim extends textHandler {
 class text_pad extends textHandler {
 
   protected boolean pad  = false;
-  protected boolean align = false;
+  protected String align = null;
   protected boolean left  = false;
   protected boolean right = false;
   protected boolean center = false;
@@ -175,7 +175,7 @@ class text_pad extends textHandler {
 		     ActiveAttrList atts, NodeList content) {
 
     NodeList nl = TextUtil.getText(content);
-    Enumeration resultList = TextUtil.padListItems(content, align, left, right, 
+    Enumeration resultList = TextUtil.padListItems(content, true, left, right, 
 						   center, width);
     putEnum(out, resultList);
   }
@@ -183,10 +183,10 @@ class text_pad extends textHandler {
   public text_pad(ActiveElement e) {
     super(e);
     ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
-    align  = atts.hasTrueAttribute("align");
-    left   = atts.hasTrueAttribute("left");
-    right  = atts.hasTrueAttribute("right");
-    center  = atts.hasTrueAttribute("center");
+    align  = atts.getAttributeString("align");
+    left   = "left".equalsIgnoreCase(align);
+    right  = "right".equalsIgnoreCase(align);
+    center  = "center".equalsIgnoreCase(align);
     width  = MathUtil.getInt(atts, "width", -1);
   
   }
