@@ -45,16 +45,18 @@ sub initialize {
 
     $name = $self->attr('name') unless defined $name;
     $active = $self->attr('active') unless defined $active;
+    my $hook = $active? '_act_for' : '_act_on';
 
-    $self->hook(_act_on, \&act_on_quoted) if $self->attr('quoted');
+    $self->hook($hook, \&act_quoted) if $self->attr('quoted');
+    $self->hook($hook, \&act_parsed) if $self->attr('parsed');
+    $self->hook($hook, \&act_empty) if $self->attr('empty');
 
     if ($active) {
 	$name = lc $name;
 	$self->attr('tag', $name);
 	$self->attr('active', 'active');
-    } else {
-	$self->attr('name', $name);
     }
+    $self->attr('name', $name);
 
     $self;
 }
@@ -223,7 +225,7 @@ sub define_agent {
 ###	attributes of the new agent:
 ###
 
-sub act_on_parsed {
+sub act_parsed {
     my ($self, $it, $ii, $incomplete) = @_;
 
     ## parsed:
@@ -234,7 +236,7 @@ sub act_on_parsed {
     $ii->parse_it;
 }
 
-sub act_on_quoted {
+sub act_quoted {
     my ($self, $it, $ii, $incomplete) = @_;
 
     ## quoted:
@@ -242,7 +244,20 @@ sub act_on_quoted {
 
     return 0 if $incomplete <= 0;
     $ii->add_handler($self);
-    $ii->quote_it;
+    $ii->quote_it($self->attr('quoted'));
+}
+
+sub act_empty {
+    my ($self, $it, $ii, $incomplete) = @_;
+
+    ## empty:
+    ##	  Tell the interpretor not to expect an end tag
+
+    if ($incomplete > 0) { 
+	$ii->complete_it($it);
+    } else {
+	$ii->add_handler($self);
+    }
 }
 
 
@@ -250,8 +265,16 @@ sub act_on_quoted {
 ###
 ### Action routines for standard agents:
 ###
+### Agent Naming Convention:
+###
+###	-foo-	passive
+###	foo.	active, empty
+###	foo-	active, quoted
+###	foo..	active, parsed
 
-### Eval_PERL
+###### Passive
+
+### -eval_perl-
 
 sub eval_perl_handle {
     my ($self, $it, $ii) = @_;
@@ -268,37 +291,88 @@ sub eval_perl_match {
     return 0;
 }
 
-define_agent(IF::IA->new('Eval-PERL',
-			 'quoted' => 1,
+define_agent(IF::IA->new('-eval-perl-',
+			 'quoted' => -1,
 			 _match => \&eval_perl_match,
 			 _handle => \&eval_perl_handle));
 
 
+###### Active
+
 ### agent-:  active, quoted.
 ###	Defines a new agent.
 
+define_agent('agent-', 'active' => 1, 'quoted' => 1,
+	     _handle => \&agent_handle);
 sub agent_handle {
     my ($self, $it, $ii) = @_;
     $ii->define_agent($it);
 }
-define_agent('agent-', 'active' => 1, 'quoted' => 1,
-	     _handle => \&agent_handle);
 
-### get-:  active, empty.
-###	Gets the value of a variable.
+### get.:  active, empty.
+###	Gets the value of a variable named in the 'name' attribute.
+###	if the 'pia' attribute is set, uses the pia (PERL) context
 
-### === need syntax tables after all, or a syntax agent.
+define_agent('get.', 'active' => 1, 'empty' => 1,
+	     _handle => \&get_handle);
+
+### get..:  active, parsed.
+###	Gets the value of a variable named in the contents.
+###	if the 'pia' attribute is set, uses the pia (PERL) context
+
+define_agent('get..', 'active' => 1, 'parsed' => 1,
+	     _handle => \&get_handle);
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
-    $ii->define_agent($it);
+
+    my $name = $it->attr('name');
+    $name = $it->content_string unless defined $name;
+
+    if ($it->attr('pia')) {
+	local $agent = IF::Run::agent();
+	local $request = IF::Run::request();
+	my $status = $agent->run_code("$name", $request);
+	print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
+	print "code status is $status\n" if  $main::debugging;
+	$ii->replace_it($status);
+    } else {
+        $ii->replace_it($ii->getvar($name));
+    }
 }
-define_agent('get-', 'active' => 1, 'empty' => 1,
-	     _handle => \&get_handle);
+
+### set.:  active, empty.
+###	sets the value of a variable named in the 'name' attribute
+###	to the value in the 'value' attribute.
+###	if the 'local' attribute is set, uses the current context.
+###	if the 'pia' attribute is set, uses the pia (PERL) context
+
+define_agent('set.', 'active' => 1, 'empty' => 1,
+	     _handle => \&set_handle);
+
+### set..:  active, parsed.
+###	Sets the value of a variable named in the 'name' attribute
+###	to the value in the (parsed) contents.
+###	if the 'local' attribute is set, uses the current context.
+###	if the 'pia' attribute is set, uses the pia (PERL) context
+
+define_agent('set..', 'active' => 1, 'parsed' => 1,
+	     _handle => \&set_handle);
+
+sub set_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    my $value = $it->attr('value');
+    $value = $it->content_token unless defined $value;
+
+    if ($it->attr('local')) {
+	$ii->defvar($name, $value);
+    } else {
+	$ii->setvar($name, $value);
+    }
+    $ii->replace_it('');
+}
+
 
 1;
-
-
-
-
-

@@ -558,6 +558,8 @@ sub end_it {
 ###	   2.	apply any interested agents
 ###	   3.	put the token in the right place.
 ###
+### ===	Really needs a loop so you can do process_it iteratively.
+###	maybe [tokens] in $incomplete?
 
 sub resolve {
     my ($self, $it, $incomplete) = @_;
@@ -569,6 +571,8 @@ sub resolve {
 
     my $dstack = $self->dstack;
     $self->token($it);
+    $incomplete = 0 unless defined $incomplete;
+    $it->status($incomplete) if ref($it);
 
     print " (" . (ref($it)? $it->tag : "...") . " $incomplete) "
 	if $main::debugging > 1;
@@ -588,16 +592,32 @@ sub resolve {
 	$self->check_for_interest($it, 1) unless $self->quoting;
 	$it = $self->token;	# might have been changed.
 
-	$self->pass_it($it, 1) if $self->passing;
-	$self->handlers([]);
-
-    } else {
+	if (!defined($it) || (! ref($it) && $it eq '')) {
+	    ## Some agent has deleted the token.
+	    print " deleted " if $main::debugging > 1;
+	    $self->pop_state;
+	    pop(@$dstack);
+	    return;
+	} elsif (!ref($it) || !$it->status) {
+	    ## Some agent has marked the token as finished
+	    print " finished " if $main::debugging > 1;
+	    $incomplete = 0;
+	    $self->pop_state;
+	    pop(@$dstack);
+	    $self->token($it);
+	} else {
+	    $self->pass_it($it, 1) if $self->passing;
+	    $self->handlers([]);
+	}
+    } 
+    if ($incomplete <= 0) {
 	## check for interested agents and handler actions.
 
 	$self->check_for_interest($it) unless $self->quoting;
 	$self->check_for_handlers($it);
 
 	$it = $self->token;	# might have been changed.
+	return if (!defined($it) || $it eq ''); # might have been deleted.
 
 	$self->push_it($it) if $self->parsing;
 	$self->pass_it($it, $incomplete) if $self->passing;
@@ -710,7 +730,7 @@ sub check_for_handlers {
     my $a;
 
     while ($a = shift @$handlers) {
-	print "    agent ".$a->tag." handles it\n" if $main::debugging>1;
+	print "    agent ".$a->name." handles it\n" if $main::debugging>1;
 	$a->handle($it, $self);
     }
 }
@@ -726,6 +746,19 @@ sub add_handler {
     my ($self, $agent) = @_;
     my $handlers = $self->handlers;
     push(@$handlers, $agent);
+}
+
+sub complete_it {
+    my ($self, $it) = @_;
+
+    ## Mark the token as completed.
+    ##	  This tells the parser not to expect an end tag.
+    if (ref ($it)) {
+	$it->status(0);
+	$it->empty(1);
+	print "  Completed " . $it->tag . " status " . $it->status . "\n"
+	    if $main::debugging > 1;
+    }
 }
 
 sub open_agent_context {
@@ -777,24 +810,33 @@ sub parse_it {
 }
 
 sub quote_it {
-    my ($self) = @_;
+    my ($self, $v) = @_;
 
+    $v = 1 unless defined $v;
     $self->parsing(1);
-    $self->quoting(-1);
+    $self->quoting($v);
 }
 
+sub replace_it {
+    my ($self, $it) = @_;
+
+    $self->token($it);
+}
 
 sub eval_perl {
     my ($self, $it) = @_;
 
     ## This bit of legacy crud evaluates the contents of $it as PERL code.
     ##	  The local variables $agent and $request will already have been
-    ##	  set up by run_interform, below.
+    ##	  set up by run_interform.
 
     local $agent = IF::Run::agent();
     local $request = IF::Run::request();
 
     print "II Error: missing token\n" unless defined $it;
+    print "II Error: $it not a token\n" unless ref($it);
+    return unless ref($it);
+
     my $foo = $it->content;
     print "II Error: missing content\n" unless defined $foo;
     my @code_array=@$foo;
@@ -806,7 +848,7 @@ sub eval_perl {
 	    $status = $code;	# this is an html element
 	} else {
 	    #evaluate string and return last expression value
-	    $status= IF::Run::agent()->run_code($code, $request);
+	    $status= $agent->run_code($code, $request);
 	    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
 	    print "code status is $status\n" if  $main::debugging;
 	}

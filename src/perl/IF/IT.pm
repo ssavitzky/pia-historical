@@ -15,8 +15,7 @@ package IF::IT;
 ### Constructor:
 ###
 
-sub new
-{
+sub new {
     my ($class, $tag, @attrs) = @_;
 
     ## IF::IT->new($tag, $attr => $val, ...)
@@ -25,7 +24,15 @@ sub new
     ##	    "!"	  -- SGML declaration
     ##	    "!--" -- comment
     ##	    ":"   -- MIME header
-    ##	    undef -- text
+    ##	    ''    -- text
+    ##	    undef -- token list
+
+    ##	 Instance Variables:
+    ##	    _tag    -- the tag
+    ##	    _list   -- list of attributes in the order defined.
+    ##	    _status -- 0: complete, 1: start tag, -1: end tag
+    ##	    _empty  -- true if no end tag is required.
+
 
     my $self = bless {}, $class;
     $self->{_tag} = lc $tag if defined $tag;
@@ -49,11 +56,11 @@ sub new
 ### Access to Components:
 ###
 
-sub tag
-{
+sub tag {
+    my $self = shift;
+
     ## Return (optionally set) the tag.
 
-    my $self = shift;
     if (@_) {
 	$self->{'_tag'} = lc $_[0];
     } else {
@@ -93,7 +100,7 @@ sub attrs {
 sub attr_names {
     my ($self) = @_;
 
-    ## return all the attributes in a list of pairs
+    ## return all the attribute names in a list
 
     my $attrs = $self->{'_list'};
     if (!defined($attrs)) {
@@ -121,17 +128,35 @@ sub attr_list {
     return $attrs;
 }
 
-sub content
-{
+sub content {
     # Return the content.
 
     shift->{'_content'};
 }
 
-sub is_empty
-{
+sub is_empty {
     my $self = shift;
-    !exists($self->{'_content'}) || !@{$self->{'_content'}};
+
+    ## Returns true if the tag has no content.
+    ##	  This is different from empty, which really means no end tag
+    ##	  is required, but content may be present.
+
+    $self->{_empty} || !exists($self->{'_content'}) || !@{$self->{'_content'}};
+}
+
+sub empty {
+    my ($self, $v) = @_;
+
+    ## Returns true if the tag has been marked as not requiring an end tag.
+
+    $self->{_empty} = $v if defined $v;
+    $self->{_empty};
+}
+
+sub status {
+    my ($self, $v) = @_;
+    $self->{_status} = $v if defined $v;
+    $self->{_status};
 }
 
 sub is_active { 
@@ -237,6 +262,31 @@ sub as_string {
     return $string;
 }
 
+sub content_string {
+    my ($self) = @_;
+
+    ## Returns the content as a string
+
+    return $self->as_string(1);
+}
+
+sub content_token {
+    my ($self) = @_;
+
+    ## Returns the content as a single token.
+    ##	 This means making a tagless node if necessary.
+
+    my $content = $self->content;
+    return '' if undef $content || !@$content;
+    return $content->[0] if @$content == 1;
+    my $token = IF::IT->new();
+    for (@$content) {
+	$token->push($_); 
+    }
+    return $token;
+}
+
+
 sub as_HTML {
     my ($self) = @_;
     return $self->as_string;
@@ -297,8 +347,12 @@ sub endtag {
 
 @empty_tags = (	
 	       '!', '!--', '?', 
-	       'img', 'hr', 'br', 'p',
-	       'li', 'dt', 'dd', 'link',
+	       'img', 'hr', 'br', 'link',
+
+	       ## The following are dubious; there's no good way to
+	       ##    handle implicit end tags yet.
+	       'li', 'dt', 'dd', 'p',
+
 	       );
 
 
