@@ -213,7 +213,8 @@ public class Util extends crc.sgml.Util {
 
   public static String getString(SGML it, String attr, String dflt) {
     SGML v = it.attr(attr);
-    return (v == null || v == Token.empty)? dflt : v.toString();
+    return (v == null || v == Token.empty || (v.isList() && v.isEmpty()))
+      ? dflt : v.toString();
   }
 
   public static int getInt(SGML it, String attr, int dflt) {
