@@ -105,6 +105,7 @@ public class BasicProcessor extends ContextStack implements Processor {
    */
   public final void expandCurrentNode() {
     ActiveNode node = input.getActive();
+    if (node == null) return;
     // No need to check for an entity; active ones use EntityHandler.
     if (input.hasActiveAttributes()) {
       ActiveElement oe = node.asElement();
