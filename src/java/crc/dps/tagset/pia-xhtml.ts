@@ -105,22 +105,25 @@ Note that we only need these inside the PIA.
     <else><a href="/&agentName;/home">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
 	  <a href="/&agentName;/options">options</a>
-	  <a href="/&agentName;/">help</a> (
-	     <a href="#context-specific">specific</a>
-	     <a href="#general">general</a> )
+	  <a href="/&agentName;/help">help</a> (
+	     <a href="/&agentName;/help#context-specific">specific</a>
+	     <a href="/&agentName;/help#general">general</a> )
 </if>
   </action>
 </define>
 
 <define element=footer empty>
-  <doc> This expands into a standard footer.  Go to some lengths to extract
-	the year the file was modified from the cvs id. 
+  <doc> This expands into a standard footer, including a ``navigation bar''.
+	Go to some lengths to extract the year the file was modified from the
+	cvs id.
   </doc>
   <define attribute=cvsid>
     <doc> The CVS id string of the file.
     </doc>
   </define>
   <action>
+<hr>
+<nav-bar/>
 <hr>
 <set name=myear><subst match="/.* " result=", "><select>
     &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
@@ -140,8 +143,6 @@ Note that we only need these inside the PIA.
     </doc>
   </define>
   <action>
-<hr>
-<nav-bar/>
 <hr>
 <set name=myear><subst match="/.* " result=", "><select>
     &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
