@@ -9,13 +9,52 @@ HOST=$(uname -n)
 
 PORT=8888
 
-#find out where the pia_wrapper is
-BINDIR=$(pwd)
-PIA_HOME=${BINDIR%/*}
-echo $PIA_HOME
+#user overide where PIA_DIR
+if [ -n "$(echo $1 | grep 'PIA_DIR=')" ] ; then
+    PIA_PATH=$1
+    PIA_DIR=${PIA_PATH#PIA_DIR=}
+    if [ "$PIA_DIR" = "" ] ; then
+	echo 'usage: pia [PIA_DIR=piadirectory] [USR_DIR=userdirectory]'
+	exit 1
+    else
+	shift
+    fi
+fi
 
-#determine where the documentation is
-DOCURL=$PIA_HOME/Doc/Manuals/Api/JavaDoc
+#user override where USR_DIR
+if [ -n "$(echo $1 | grep 'USR_DIR=')" ] ; then
+    USRDIR_PATH=$1
+    USR_DIR=${USRDIR_PATH#USR_DIR=}
+    echo $USR_DIR
+    if [ "$USR_DIR" = "" ] ; then
+	echo 'usage: pia  [PIA_DIR=piadirectory] [USR_DIR=userdirectory]'
+	exit 1
+    else
+	shift
+    fi
+fi
+
+
+#if not override and environment variable does not exist
+if [ -z $PIA_DIR ] ; then
+    BINDIR=$(pwd)
+    PIA_HOME=${BINDIR%/*}
+    echo $PIA_HOME
+else
+    PIA_HOME=$PIA_DIR
+fi
+
+#if not override and environment variable does not exist
+if [ -z $USR_DIR ] ; then
+    USRPIA=$HOME/.pia
+    if [ ! -d "$USRPIA" ] ; then
+	mkdir $USRPIA
+    fi
+    echo $USRPIA
+else
+    USRPIA=$USR_DIR
+fi
+
 
 #determine if we have proxy environment variable
 if [ -n "$http_proxy" ] ; then
@@ -24,23 +63,18 @@ elif [ -n "$HTTP_PROXY" ] ; then
     HPROXLINE=crc.pia.proxy_http=$HTTP_PROXY
 fi
 
-USRPIA=.foobar
-if [ ! -d "$HOME/$USRPIA" ] ; then
-    mkdir $HOME/$USRPIA
-fi
-USRROOT=crc.pia.usrroot=$HOME/$USRPIA
+USRROOT=crc.pia.usrroot=$USRPIA
 
-if [ ! -e "$HOME/$USRPIA/Config" ] ; then
-    mkdir $HOME/$USRPIA/Config
+if [ ! -e "$USRPIA/Config" ] ; then
+    mkdir $USRPIA/Config
 fi
 
 #property file name
-PIAPROPFILE=$HOME/$USRPIA/Config/pia.props
+PIAPROPFILE=$USRPIA/Config/pia.props
 
 cat > $PIAPROPFILE << EOF
 $HPROXLINE
 crc.pia.no_proxy=$HOST
-crc.pia.docurl=$DOCURL
 crc.pia.root=$PIA_HOME
 crc.pia.port=$PORT
 crc.pia.debug=true
@@ -49,3 +83,6 @@ crc.pia.logger=crc.pia.Logger
 crc.pia.reqtimeout=40000
 $USRROOT
 EOF
+
+
+
