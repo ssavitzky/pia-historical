@@ -39,22 +39,21 @@ import crc.ds.List;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
 import crc.ds.Tabular;
+import crc.ds.Registered;
 
 import crc.dps.Tagset;
 import crc.dps.tagset.Loader;
 import crc.dps.process.ActiveDoc;
 
 import crc.sgml.SGML;
-import crc.sgml.Attrs;
-import crc.sgml.AttrBase;
-import crc.sgml.AttrTable;
-import crc.sgml.Text;
 import crc.util.NullOutputStream;
 
 import crc.util.Utilities;
 
 import java.util.Enumeration;
 import java.util.Properties;
+import java.io.Serializable;
+
 import crc.interform.Run;
 import w3c.www.http.HTTP;
 
@@ -65,7 +64,7 @@ import w3c.www.http.HTTP;
  *
  *	@see crc.pia.Agent
  */
-public class GenericAgent implements Agent {
+public class GenericAgent implements Agent, Registered, Serializable {
   
   /** Extensions of executable files.
    *	Everything with <code><em>index</em>&gt;=firstDPSType</code> is
@@ -346,8 +345,8 @@ public class GenericAgent implements Agent {
    *		that contain the timing information.
    */
   public void createTimedRequest(String method, String url,
-				 ByteArrayOutputStream queryStream, String contentType,
-				 SGML itt) {
+				 ByteArrayOutputStream queryStream,
+				 String contentType, SGML itt) {
     if (crontab == null) crontab = new Crontab();
     crontab.makeEntry(this, method, url, queryStream, contentType, itt);
   }
@@ -1217,6 +1216,7 @@ public class GenericAgent implements Agent {
     String tsn = tagsetName(file);
     ActiveDoc proc = new ActiveDoc(this, trans, response, res);
     Tagset ts  = proc.loadTagset(type()+"-" + tsn);
+    if (ts == null) ts = proc.loadTagset("pia-" + tsn);
     if (ts == null) ts = proc.loadTagset(tsn);
 
     if (ts == null) {
