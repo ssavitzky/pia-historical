@@ -16,7 +16,7 @@
 
 An InterForm is a HTML document that contains some tags that a PIA can
 ``interpret.''  You can think of an InterForm as an HTML form that doesn't
-need a corresponding CGI script to interpret it.  You can also think of it as
+need a corresponding CGI script to handle it.  You can also think of it as
 an ``active'' document that is run through a special-purpose formatter.<p>
 
 Because the extra tags follow strict SGML syntax conventions, InterForms can
@@ -29,7 +29,7 @@ word-processor macros or text-formatting style sheets.  Programmers will find
 that, in spite of their unfamiliar syntax, InterForms have all the power of
 any modern object-based language.<p>
 
-<h2>InterForm Data Structures</h2>
+<h3>InterForm Data Structures</h3>
 
 The key idea behind InterForms is <em>computing with documents</em>, so data
 in the InterForm system is simply a piece of a document.  Markup is explicitly
@@ -51,23 +51,39 @@ have some named <dfn>attributes</dfn>; attributes and their associated values
 appear in the element's start tag.<p>
 
 
+<h3>Entities</h3>
+
 Entities (those things like <code>&amp;copy;</code> that a browser displays as
-special characters) are used like variables--they can be defined (and
+special characters) are used as variables or macros--they can be defined (and
 redefined) and later ``expanded'' (replaced by their definition).  As you
 might expect, a definition list can be used for this.  Entities can also be
 used as ``iteration variables''--you can repeat a piece of text for every item
 in a list, with the <code>&amp;li;</code> entity replaced by each list item in
 turn.<p>
 
-Finally, new, active ``elements'' can be defined, complete with their own
-start tag, end tag, attributes, and content.  Whenever such an element appears
-in a document, a corresponding piece of InterForm data called an
+<h3>Actors</h3>
+
+Finally, new, <em>active</em> ``elements'' can be defined, complete with their
+own start tag, end tag, attributes, and content.  Whenever such an element
+appears in a document, a corresponding piece of InterForm data called an
 ``<dfn>actor</dfn>'' is expanded, with entities bound to the element's
 attributes and content.<p>
 
-It is also possible to define ``<dfn>passive</dfn>'' actors, which ``look
-for'' particular ``features'' in a document, usually special attributes or
+It is also possible to define ``<dfn>passive</dfn>'' actors, which match
+particular ``features'' in a document, usually special attributes or
 particular attribute values.<p>
+
+A collection of predefined actors designed to work together should really be
+called a ``cast,'' but in fact is called a ``<dfn>tagset</dfn>,'' in part
+because it's less likely to be misunderstood--``cast'' has a quite different
+meaning in programming languages like C++.  (MetaHTML also uses ``tagset'' in
+this sense.)<p>
+
+The PIA defines a <a href="#standard_tagset">standard tagset</a> for use in
+InterForms.  Some agents may define special tagsets to be loaded alongside the
+standard one.  Completely different tagsets can also be defined for different
+kinds of document processing:  parsing HTML, formatting, even translating SGML
+documents with other document types <em>into</em> HTML.<p>
 
 
 <h2>The InterForm Interpretor</h2>
@@ -128,7 +144,8 @@ Allowing an actor to perform processing on an element is called
 ``<dfn>applying</dfn>'' the actor to the element.<p>
 
 Associating an entity or attribute name with a value is called
-``<dfn>binding</dfn>'' the name to the value.<p>
+``<dfn>binding</dfn>'' the name to the value.  A value may be anything from a
+single character to an entire document with markup.<p>
 
 Processing a stream of incoming tokens (parsing, expanding, and applying
 actors) is called ``<dfn>evaluating</dfn>'' it.<p>
@@ -136,13 +153,26 @@ actors) is called ``<dfn>evaluating</dfn>'' it.<p>
 
 <h2>The InterForm Language</h2>
 
-<h2>The Standard Actors</h2>
+<h3>Syntax</h3>
+
+
+<h3>Entities</h3>
+
+
+<h3>Elements</h3>
+
+
+<h3>Lists</h3>
+
+
+
+<h2>The <a name="standard_tagset">Standard Tagset</a></h2>
 
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Nov 13 09:29:42 1996
+Last modified: Sun Dec  1 10:31:28 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
