@@ -89,19 +89,18 @@ public abstract class Transaction extends AttrBase
    *  Attribute index - factory to generate  content objects
    */
   // subclasses probably want to use different factories
-  static public ContentFactory cf = new ContentFactory();
+  public static ContentFactory cf = new ContentFactory();
 
   /**
   *  class variable-- factory to generate headers
   */
-  static public HeaderFactory hf = new HeaderFactory();
+  public static HeaderFactory hf = new HeaderFactory();
 
   /** Class variable-- resolver
    * transactions need to communicate with the resolver
    *  PIA main should set this
    */
-
-  static public Resolver  resolver;
+  public static Resolver  resolver;
   
   /** 
    *  Attribute index - has the resolver finished with this transaction?
@@ -357,10 +356,7 @@ public abstract class Transaction extends AttrBase
    * @return requested transaction
    */
   public Transaction requestTran(){
-    if( requestTran != null )
-      return requestTran;
-    else
-      return null;
+    return (isRequest())? this : requestTran;
   }
 
   /**
@@ -481,14 +477,6 @@ public abstract class Transaction extends AttrBase
   }
 
   /**
-   * set Features object
-   */
-  public void setFeatures(Features features){
-    if( features != null )
-      this.features = features;
-  }
-
-  /**
    * Get the value of the named feature.  If does not exist,
    * compute it and return the value
    */
@@ -504,7 +492,7 @@ public abstract class Transaction extends AttrBase
   public String getFeatureString( String name ) {
     name = Features.cannonicalName(name);
     Object f = features.feature( name, this );
-    return (f == null)? null : f.toString();
+    return (f == null)? null : (f == Features.Nil)? "" : f.toString();
   }
 
   /**
@@ -561,7 +549,10 @@ public abstract class Transaction extends AttrBase
    */
   public Object computeFeature( String featureName ) {
     TFComputer c = Registry.calculatorFor( featureName );
-    return (c == null)? null : c.computeFeature(this);
+    if (c == null) {
+      Pia.verbose("No feature calculator for "+featureName);
+    }
+    return (c == null)? Features.Nil : c.computeFeature(this);
   }
 
   /**
@@ -964,20 +955,13 @@ public abstract class Transaction extends AttrBase
     return executionThread.zthread;
   }
 
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  protected Transaction() {
+    features = new Features();
+    handlers = new Queue();
+  }
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

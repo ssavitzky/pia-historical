@@ -453,6 +453,10 @@ public class  HTTPRequest extends Transaction {
     handleRequest(  resolver);
   }
   
+  /************************************************************************
+  ** Responses:
+  ************************************************************************/
+
   /**
    * handleRequest -- Default handling for a request:
    * ask the destination machine to get it.
@@ -512,14 +516,18 @@ public class  HTTPRequest extends Transaction {
     response.startThread();
   }
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   /**
-   *  Client needs to set fromMachine, toMachine, and start the thread.
-   * 
+   *  Default constructor: client needs to set fromMachine, toMachine, 
+   *	and start the thread.
    */
   public HTTPRequest(){
+    super();
+
     Pia.debug(this, "Constructor-- [ default ] -- on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     // we probably only need one instance of these objects
     fromMachine( null );
@@ -528,22 +536,19 @@ public class  HTTPRequest extends Transaction {
   }
 
 
-
   /**
    *  Take a machine as source of input for header and content.
    *  @param from source of input for this transaction
    *  
    */
   public HTTPRequest( Machine from ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from ] -- on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     // we probably only need one instance of these objects
     
     fromMachine( from );
-    toMachine( null );// done by default anyway
-
     startThread();
   }
 
@@ -554,9 +559,9 @@ public class  HTTPRequest extends Transaction {
    * @param ct a define content.
    */
   public HTTPRequest( Machine from, Content ct ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from, content ct ] on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = new Headers(); // blank header  
@@ -579,9 +584,9 @@ public class  HTTPRequest extends Transaction {
    */
 
   public HTTPRequest( Machine from, Content ct, boolean start ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from, content ct ] on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = new Headers(); // blank header  
@@ -605,9 +610,9 @@ public class  HTTPRequest extends Transaction {
    * @param hd a define header.
    */
   public HTTPRequest( Machine from, Content ct, Headers hd ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from, content ct, headers hd ] -- on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = hd; 
@@ -620,6 +625,10 @@ public class  HTTPRequest extends Transaction {
 
     startThread();
   }
+
+  /************************************************************************
+  ** Debugging versions:
+  ************************************************************************/
 
   private static void sleep(int howlong){
    Thread t = Thread.currentThread();
@@ -733,11 +742,10 @@ public class  HTTPRequest extends Transaction {
    * automatically
    */
   public HTTPRequest( Machine from, boolean debugflag ){
-    DEBUG = debugflag;
+    super();
 
+    DEBUG = debugflag;
     Pia.debug(this, "Constructor-- [ machine from ] -- on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     // we probably only need one instance of these objects
     
@@ -754,11 +762,10 @@ public class  HTTPRequest extends Transaction {
    */
 
   public HTTPRequest( Machine from, Content ct, Boolean debugflag ){
-    DEBUG = debugflag.booleanValue();
+    super();
 
+    DEBUG = debugflag.booleanValue();
     Pia.debug(this, "Constructor-- [ machine from, content ct ] on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = new Headers(); // blank header  
@@ -779,11 +786,11 @@ public class  HTTPRequest extends Transaction {
    * automatically
    */ 
   public HTTPRequest( Machine from, Content ct, Headers hd, boolean debug ){
+    super();
+
     DEBUG = debug;
 
     Pia.debug(this, "Constructor-- [ machine from, content ct, headers hd ] -- on duty...");
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = hd; 

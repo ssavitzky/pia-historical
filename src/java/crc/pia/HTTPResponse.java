@@ -20,7 +20,6 @@ import java.util.Vector;
 import java.util.StringTokenizer;
 
 import crc.ds.Queue;
-import crc.ds.Features;
 import crc.ds.List;
 import crc.pia.Machine;
 import crc.pia.Content;
@@ -247,15 +246,19 @@ public class  HTTPResponse extends Transaction {
 
 
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
   /**
    * Header and content is created from the fromMachine.
    * @param from where request is originated
    * @param to where response is sent to
    */
   public HTTPResponse( Machine from, Machine to ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from, machine to ] on duty...");
-    handlers = new Queue();
-    new Features( this );
     
     fromMachine( from );
     toMachine(  to );
@@ -272,7 +275,6 @@ public class  HTTPResponse extends Transaction {
     Pia.debug(this, "Constructor-- [ transaction t, boolean startThread ] on duty...");
 
     handlers = new Queue();
-    new Features( this );
 
     contentObj = null;
     headersObj = new Headers(); //  blank header
@@ -291,9 +293,9 @@ public class  HTTPResponse extends Transaction {
    *  @param from source from which header and content are created
    */
   public HTTPResponse(Transaction t,  Machine from ){
+    super();
+
     Pia.debug(this, "Constructor-- [ Transaction t, machine from ] on duty...");
-    handlers = new Queue();
-    new Features( this );
     
     requestTran = t;
     fromMachine( from );
@@ -312,11 +314,10 @@ public class  HTTPResponse extends Transaction {
    * @param doStart if false thread does not start -- allows user to set header information.
    */
   public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart ){
+    super();
+
     Pia.debug(this, "Constructor-- [ machine from, machine to, content ct ] on duty...");
 
-    handlers = new Queue();
-    new Features( this );
-    
     contentObj = ct;
     headersObj = new Headers(); //  blank header
 
@@ -339,10 +340,9 @@ public class  HTTPResponse extends Transaction {
    * @param ct a define content
    */
   public HTTPResponse(  Transaction t, Content ct ){
-    Pia.debug(this, "Constructor-- [ transaction t, content ct ] on duty...");
+    super();
 
-    handlers = new Queue();
-    new Features( this );
+    Pia.debug(this, "Constructor-- [ transaction t, content ct ] on duty...");
 
     contentObj = ct;
     headersObj = new Headers(); //  blank header
@@ -363,10 +363,9 @@ public class  HTTPResponse extends Transaction {
    * @param hd a defined header
    */
   public HTTPResponse(  Transaction t, Content ct, Headers hd ){
-    Pia.debug(this, "Constructor-- [ transaction t, content ct, headers hd ] on duty...");
+    super();
 
-    handlers = new Queue();
-    new Features( this );
+    Pia.debug(this, "Constructor-- [ transaction t, content ct, headers hd ] on duty...");
 
     contentObj = ct;
     headersObj = hd; //  maybe generate?
@@ -443,6 +442,10 @@ public class  HTTPResponse extends Transaction {
   }
 
 
+  /************************************************************************
+  ** Debugging:
+  ************************************************************************/
+
   public void run(){
     if(!DEBUG)
       super.run();
@@ -470,7 +473,6 @@ public class  HTTPResponse extends Transaction {
 	}
       }
       Pia.debug(this, "Done running");
-
     }
   }
 
@@ -482,15 +484,13 @@ public class  HTTPResponse extends Transaction {
    * automatically
    */
   public HTTPResponse( Machine from, Machine to, boolean debug ){
-    DEBUG = debug;
+    super();
 
+    DEBUG = debug;
     Pia.debug(this, "Constructor-- [ machine from, machine to ] on duty...");
-    handlers = new Queue();
-    new Features( this );
     
     fromMachine( from );
     toMachine(  to );
-
   }
 
 
@@ -504,13 +504,11 @@ public class  HTTPResponse extends Transaction {
    * automatically
    */
   public HTTPResponse( Machine from, Machine to, Content ct, boolean doStart, boolean debug ){
-    DEBUG = debug;
+    super();
 
+    DEBUG = debug;
     Pia.debug(this, "Constructor-- [ machine from, machine to, content ct ] on duty...");
 
-    handlers = new Queue();
-    new Features( this );
-    
     contentObj = ct;
     headersObj = new Headers(); //  blank header
 
@@ -530,11 +528,10 @@ public class  HTTPResponse extends Transaction {
    * automatically
    */
   public HTTPResponse(  Transaction t, Content ct, boolean debug ){
+    super();
+
     DEBUG = debug;
     Pia.debug(this, "Constructor-- [ transaction t, content ct ] on duty...");
-
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = ct;
     headersObj = new Headers(); //  blank header
@@ -555,11 +552,10 @@ public class  HTTPResponse extends Transaction {
    * automatically
    */
   public HTTPResponse(  Transaction t, boolean doStart, boolean debug  ){
+    super();
+
     DEBUG = debug;
     Pia.debug(this, "Constructor-- [ transaction t, boolean startThread ] on duty...");
-
-    handlers = new Queue();
-    new Features( this );
 
     contentObj = null;
     headersObj = new Headers(); //  blank header
