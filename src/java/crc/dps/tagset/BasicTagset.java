@@ -20,8 +20,7 @@ import crc.dps.Context;
 import crc.dps.active.*;
 import crc.dps.aux.*;
 
-import crc.dps.handle.BasicHandler;
-import crc.dps.handle.GenericHandler;
+import crc.dps.handle.*;
 
 import crc.util.NameUtils;
 
@@ -36,7 +35,7 @@ import crc.ds.List;
  *	when initializing a Tagset.  These are usually called from the 
  *	constructor. <p>
  *
- *	BasicTagset extends BasicElement, and so can be treated as a
+ *	BasicTagset implements ActiveElement, and so can be treated as a
  *	Node.  This means that it is easily stored in and retrieved from
  *	XML documents. <p>
  *
@@ -48,7 +47,7 @@ import crc.ds.List;
  * @see crc.dps.Input 
  * @see crc.dom.Node */
 
-public class BasicTagset implements Tagset {
+public class BasicTagset extends ParseTreeElement implements Tagset {
 
   /************************************************************************
   ** Data:
@@ -528,19 +527,23 @@ public class BasicTagset implements Tagset {
 
   public BasicTagset() {
     factory = null;
+    setHandlerForType(NodeType.ENTITY, EntityHandler.DEFAULT);
+    setHandlerForType(NodeType.TEXT, TextHandler.DEFAULT);
   }
 
   public BasicTagset(String name) {
-    factory = null;
+    this();
     // set name attribute of element.
   }
 
   public BasicTagset(Tagset previousContext) {
+    this();
     factory = previousContext.getFactory();
     context = previousContext;
   }
 
   public BasicTagset(DOMFactory f) {
+    this();
     factory = f;
   }
 }
