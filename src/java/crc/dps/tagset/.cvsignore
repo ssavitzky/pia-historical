@@ -1,6 +1,8 @@
 *.class
 *.foo.*
-*.tss
+*.tss *.tso
 basic.html
+standalone.html
+standard.html
 tagset.html
 tsdoc.html
