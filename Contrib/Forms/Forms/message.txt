@@ -1,6 +1,16 @@
-Hello,
-This message is to inform you that your electronic signature has been requested by one or more forms. For links to the forms that require your signature, go to http://rhine:8888/Forms/users.if/ and click on your username.
+Subject:  Pending forms
 
-Questions and comments should be mailed to dgillen@crc.ricoh.com.
+Hello, 
+This message is to inform you that your electronic signature has been
+requested by one or more forms. For links to the forms that require your
+signature, go to http://forms:8888/Forms/users.if/ and click on your
+username.
+
+Questions and comments should be mailed to kevin@crc.ricoh.com or
+wolff@crc.ricoh.com.
 
 Thank you.
+
+(Users are notified twice a day when they have pending forms.  Eventually
+the frequency will be under individual user control.  Thank you for your
+patience during the upgrade to the new forms processing system.)
