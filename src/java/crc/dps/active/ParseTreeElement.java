@@ -325,7 +325,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
    */
   public ParseTreeElement(String tagname, AttributeList attrs) {
     setTagName(tagname);
-    if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
+    if (attrs != null) setAttributes( new ParseTreeAttrs( attrs ) );
   }
 
 
@@ -338,7 +338,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   {
     setTagName(tagname);
     implicitEnd = implicit;
-    if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
+    if (attrs != null) setAttributes( new ParseTreeAttrs( attrs ) );
   }
 
   /** Construct a ParseTreeElement with given tagname, syntax,
@@ -348,7 +348,7 @@ public class ParseTreeElement extends ParseTreeNode implements ActiveElement
   public ParseTreeElement(String tagname, AttributeList attrs, Handler handler)
   {
     setTagName(tagname);
-    if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
+    if (attrs != null) setAttributes( new ParseTreeAttrs( attrs ) );
     setHandler(handler);
   }
 
