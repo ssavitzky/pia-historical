@@ -207,7 +207,13 @@ public class BasicParser extends AbstractParser {
 	  a = ident.toLowerCase(); // shouldn't lowercase attr names! ===
 	  buf.append(ident);
 	  //debug(" "+a);
-	  attrs.setAttributeValue(a, getValue());
+	  ParseNodeList value = getValue();
+	  // By longstanding SGML tradition, a boolean attribute has its name
+	  // as a value. 
+	  if (value == null) {
+	    // === value = new ParseNodeList(createActiveText(a, false));
+	  }
+	  attrs.setAttributeValue(a, value);
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
 	  hasEmptyDelim = true;
