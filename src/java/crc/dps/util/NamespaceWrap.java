@@ -22,6 +22,9 @@ import crc.ds.Tabular;
 /**
  * Make a Tabular implementation look like a Namespace.
  *
+ *	This could be simplified considerably if we just permitted strings
+ *	Tabular, and nodelists as values, and faked everything else.
+ *
  * ===	The implementation is crude, and will probably want to be revisited. ===
  *
  * @version $Id$
@@ -46,14 +49,31 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
   ** Lookup Operations:
   ************************************************************************/
 
+  /** Wrap an object as a binding.  This would work better if we had
+   *	some kind of EntityWrap to go with NamespaceWrap.
+   */
+  public ActiveNode wrap(Object o) {
+    if (o == null) return null;
+    if (o instanceof ActiveNode) return (ActiveNode)o;
+    if (o instanceof NodeList) return new ParseTreeEntity(name, (NodeList)o);
+
+    // Have to make a wrapper.
+    ActiveNode n = new ParseTreeText(o.toString());
+    return new ParseTreeEntity(name, new ParseNodeList(n));
+  }
+
+  /** Unwrap a binding as an Object. */
+  public Object unwrap(ActiveNode binding) {
+    if (binding == null) return null;
+    if (binding instanceof ParseTreeEntity) 
+      return ((ParseTreeEntity)binding).getValue();
+    return binding;
+  }
+
   /** Look up a name and get a (local) binding. */
   public ActiveNode getBinding(String name) {
     if (!caseSensitive) name = cannonizeName(name);
-    Object o = itemsByName.get(name);
-    if (o == null) return null;
-    if (o instanceof ActiveNode) return (ActiveNode)o;
-    else if (o instanceof String) return new ParseTreeText(o.toString());
-    else return new ParseTreeText(o.toString()); // === might make a wrapper.
+    return wrap(itemsByName.get(name));
   }
 
   public NodeList getValue(String name) {
@@ -69,8 +89,9 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
     }
   }
 
-
-  /** Add a new local binding or replace an existing one. */
+  /** Add a new local binding or replace an existing one. 
+   *	=== In the absence of entity wrappers this is almost certainly wrong
+   */
   public ActiveNode setBinding(String name, ActiveNode binding) {
     if (!caseSensitive) name = cannonizeName(name);
     ActiveNode old = getBinding(name);
@@ -84,7 +105,8 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
     } else if (old == null) {	// We are adding a new binding.  Easy.
       addBinding(name, binding);
     } else try {		// We are replacing an old binding.
-      itemsByName.put(name, binding); // put it into the table.
+      itemsByName.put(name, unwrap(binding));
+
       // adjust namespaceItems if necessary:
       if (old instanceof Namespace) {
 	if (binding == null || !(binding instanceof Namespace))
@@ -103,10 +125,8 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
     ActiveNode binding = getBinding(name);
     if (binding == null) {
       addBinding(name, new ParseTreeEntity(name, value));
-    } else if (binding instanceof ParseTreeNamed) {
-      ((ParseTreeNamed)binding).setValue(value);
     } else {
-      // === we're out of luck.
+      // We never actually replace bindings here.
       setBinding(name, new ParseTreeEntity(name, value));
     }
   }
@@ -116,8 +136,8 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
    *	cannonized if necessary.   Can be useful for initialization.
    */
   protected final void addBinding(String name, ActiveNode binding) {
-    itemsByName.put(name, binding);
     if (binding instanceof Namespace) namespaceItems ++;
+    itemsByName.put(name, unwrap(binding));
   }
 
   /************************************************************************
