@@ -4,7 +4,7 @@
 <actor tag=template-link empty>
   <set name=base><get element name=type></set>
   <a href="form.if?tName=&li;&amp;tBase=&base;">&li;</a>
-  <a href="form.if?tName=&li;&amp;tBase=&base;&amp;debug=y">[debug]</a>
+  <a href="form.if?tName=&li;&amp;tBase=&base;&amp;details=y">[details]</a>
 </actor>
 
 <h3>System Templates</h3>

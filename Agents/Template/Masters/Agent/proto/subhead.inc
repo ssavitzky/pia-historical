@@ -40,9 +40,8 @@
 		<if><test match=form.if>&fileName;</test>
 		    <then><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*"></if>
-	    <td><a href="form.if">Template Form</a>
-    <tr><th><td><a href="usage.html">Using Templates</a>
-    <tr><th><td><a href="impl.html">Implementing templates</a>
+	    <td><a href="sample.if">Sample Form</a>
+    <tr><th><td><a href="doc.html">Documentation</a>
     <if>&subs;<then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>

@@ -271,22 +271,40 @@ The following field types are defined:
 <h2>To Do list:</h2>
 
 <dl>
+  <dt> Fix Agent template.
+  <dd> correct link to form in subhead; althead proto missing; customize link;
+       link to sample doc; install link...
   <dt> Make checkbox and select work right.
-  <dd> (<em>name</em>-value for src, <em>name</em>Value conditionally).  Use
-       &lt;t-value&gt; to set; optional label for select.
+  <dd> (<em>name</em>-<em>id</em> for src).  ID's <code>checked</code>
+       and <code>unchecked</code> for checkbox.  Use &lt;t-value&gt; to add
+       value, label, and ID to (<code><em>name</em>-values</code>.  Value
+       and label default to the ID.
+  <dt> Gensym names if necessary.
+  <dd> 
   <dt> Have PIA links as well as <code>file:</code> links in
-       expand.inc<code></code> 
-  <dd> 
+       <code>expand.inc</code> 
+  <dd> (still needed for the file list -- [src] and [dst] should default to
+       these if possible.)
+  <dt> Agent template: make selects from lists of images and icons.
+  <dd> Agency/Icons; Agency/Images.  (Many are presently in Logo).  Need
+       <code>type=link</code> widget with a directory.
   <dt> Include form to customize expanded template in <code>t-index.inc</code>
-  <dd> 
+  <dd> Requires deciding exactly which variables are needed in order to
+       correctly identify both the template and the target.
   <dt> Make tDataFile, etc. consistent
-  <dd> so we can have data files with arbitrary names.
+  <dd> so we can have data files with arbitrary names, and targets that are
+       files (forms or documents) rather than directories.
   <dt> Make an index of expanded instances of each template.
   <dd> This may involve keeping a log, but Agent, at least, can find its own.
   <dt> Allow files to be renamed
   <dd> (<em>name</em>-dst)
   <dt> Allow different x-<em>name</em>-beg and x-<em>name</em>-end tags.
   <dd> 
+  <dt> Note that data-file construction is not the same as directory
+       construction. 
+  <dd> It may need a different kind of form.
+  <dt> Think about sessions and locking
+  <dd> Required if we want to keep more state in the server.
 </dl>
 
 <hr>

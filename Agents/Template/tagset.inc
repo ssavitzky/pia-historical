@@ -23,6 +23,12 @@
   	<set name="&name;-path"><if><get name="&r;">
 				    <then><get name="&r;"></then>
 			            <else>&r;</else></if></set>
+	<!-- === The following is bogus and needs to be fixed === -->
+  	<set name="&name;-DOFS"><if>
+  	    <test match="usrDIR">&r;</test><then>/My</then>
+  	    <else><if><test match="piaDIR">&r;</test><then>/PIA</then>
+  	    <else><if><agent-running name=Root><then>/Root&r;</then>
+  	    <else></else></if></if></if></set>
   <else><if><test match=file>&type;</test>
       <then>
   	<set local name=fn><get name="&name;-label"></set>
@@ -36,13 +42,12 @@
 <set name=t-required-fields></set>
 
 <!-- Actors used in template data files. ========================= -->
-<actor tag=t-data quoted dscr="set value, FORMAT, and TYPE strings for NAME.
+<actor tag=t-data quoted dscr="set value and TYPE strings for NAME.
+    Optionally LABEL, REQUIRED.
     Value is set from form if present, else from CONTENT.">
   <set name=name><get element name=name></set>
   <set name=type><get element name=type></set>
   <set name="&name;-type">&type;</set>
-  <if><get element name=format>
-      <then><set name="&name;-format"><get element name=format></set></if>
   <if><get element name=required>
       <then><set name="&name;-required"><get element name=required></set>
 	    <set name=t-required-fields>&t-required-fields; &name;</set>
@@ -89,14 +94,12 @@
 <actor tag=t-input empty dscr="Input tag with default from template data">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input name="&name;" value="&value;" size=50>
 </actor>
 
 <actor tag=t-ident empty dscr="Input an identifier.">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input name="&name;" value="&value;" size=20>
   <i><a href="&agentPath;/help.if?topic=id">[id]</a></i>
 </actor>
@@ -108,7 +111,6 @@
 
 <actor tag=t-text empty dscr="Text area with default from template data">
   <set local name=name><get element name=name></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <set local name=value><protect-result><get name="&name;"
    			                ></protect-result></set>
   <textarea name="&name;" rows=5 cols=50>&value;</textarea>
@@ -117,7 +119,6 @@
 <actor tag=t-check empty dscr="Checkbox with default from template data">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <if>&value;
       <then><input type=checkbox name="&name;" checked>
       <else><input type=checkbox name="&name;"></if>
@@ -128,7 +129,6 @@
 <actor tag=t-file-select empty dscr="Checkbox to select a file.">
   <set local name=name><get element name=name></set>
   <set local name=value><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <if>&value;
       <then><input type=checkbox name="&name;" checked>
       <else><input type=checkbox name="&name;"></if>
@@ -140,14 +140,12 @@
 <actor tag=t-submit empty dscr="Submit button with default from template data">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input type=submit name="&name;-d" value=&value;>
 </actor>
 
 <actor tag=t-hidden empty dscr="Hidden input with default from template data">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input name="&name;" value="&value;" type=hidden>
 </actor>
 
@@ -166,7 +164,6 @@
 		      <else><get name="&name;"></else>
 		  </if></set>
   <set name="&name;">&value;</set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <set local name=values><get name="&name;-vlist"></set>
   <select name="&name;">
     <repeat list="&vlist;"><option>&li;</option>
@@ -183,7 +180,6 @@
 		      <else><get name="&name;"></else>
 		  </if></if></set>
   <set name="&name;">&value;</set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <select name="&name;">
     <repeat list="&vlist;"><option>&li;</option>
     </repeat></select> <br>
@@ -194,7 +190,6 @@
 <actor tag=t-extend empty dscr="Add a new item to template data">
   <set local name=name><get element name=name></set>
   <set name="&name;"></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <b>Name:</b> <input name="&name;-n" size=20>
   <i><a href="&agentPath/help.if?topic=id">[id]</a></i>
   <b>Type:</b> <select name="&name;-t">
@@ -226,9 +221,7 @@
 <!-- special format:  expanding the template. -->
 <actor tag=t-expand empty dscr="Extra stuff associated with an Expand button">
   <set local name=name><get element name=name></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input type=submit name="expand-c" value="Continue">
-  <if><get name=debug-label><then><t-check name=debug>
   <input type=hidden name=tDir  value="&tDir;">
 </actor>
 
@@ -240,7 +233,6 @@
 		 	    <else><get name="&name;"></else>
 			</if></set>
   <set name="&name;">&value;</set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
   <input name="&name;" size=30 value="&value;"> 
   <i><a href="&agentPath;/help.if?topic=path">[path]</a></i>
 </actor>
@@ -248,14 +240,7 @@
 <!-- special format:  Root directory.  Name should be dRoot -->
 <actor tag=t-root empty dscr="Standard root directory setup.">
   <set local name=name><get element name=name></set>
-  <set local name=r><if><get form name="&name;">
-			<then><get form name="&name;"></then>
-			<else><get name="&name;"></else>
-		    </if></set>
-  <set name="&name;">&r;</set>
-  <set name="&name;-path"><if><get name="&r;"><then><get name="&r;"></then>
-			      <else>&r;</else></if></set>
-  <set name=tFormFields><get name=tFormFields> &name;</set>
+  <set local name=r><get name="&name;"></set>
   <t-radio-btn type=radio name="&name;" value="usrDIR" test="&r;"> User
   <t-radio-btn type=radio name="&name;" value="piaDIR" test="&r;"> System
   <t-radio-btn type=radio name="&name;" value="/" test="&r;"> /

@@ -1,4 +1,15 @@
 <!-- data.inc for Agent template -->
+<t-data name=dExpand type=expand></t-data>
+<t-form label="Build Agent" nobreak=1 cluster=1>
+	Click ``&label;'' when you're ready to expand the template.  This will
+	create a new or modified Agent in the specified location.  Click
+	``Continue'' to verify entries or view details without actually doing
+	the expansion.  </t-form>
+<t-data name=details type=checkbox label="Details"></t-data>
+
+<!-- Required fields: -->
+<t-data name=dReq type=void label="Required:"><hr></t-data>
+
 <t-data name=dName type=ident required=1></t-data>
 <t-form label="Agent Name" nobreak=1 cluster=1>
 	The name and type of the new Agent.  Must be valid directory names.
@@ -15,17 +26,11 @@
 <t-data name=dPath type=path required=1>Agents</t-data>
 <t-form label="Path">
 	The path from the root to the parent directory of your new
-	Agent is currently <code>&dRoot-path;/&dPath;</code>.  You will almost
-	never need to change this.</t-form> 
-<t-data name=dExpand type=expand></t-data>
-<t-form label="Build Agent">
-	Click ``&label;'' when you're ready to expand the template.  This will
-	create a new or modified Agent in the specified location.  Click
-	``Continue'' to verify entries or view debugging information without
-	actually doing the expansion.  </t-form>
-
+	Agent is currently <code>&dPath;</code>.  If your agent has another
+	agent as its Type, you may need to add the type agent's name to the
+	path.</t-form> 
 <!-- Optional fields: -->
-<t-data name=dOpt type=void label="Options:"><hr></t-data>
+<t-data name=dOpt type=void label="Optional:"><hr></t-data>
 
 <t-data name=dTitle label="Title"></t-data>
 <t-form>The title of the new Agent.  This will appear as the heading on the
@@ -114,8 +119,6 @@
 <t-data name=docTitle>Documentation</t-data>
 
 <t-data name=docContent type=text>Sample content</t-data>
-
-<t-data name=debug type=checkbox format=special label="Debug"></t-data>
 
 <!-- Copyright &copy; 1997 Ricoh Silicon Valley -->
 <!-- $Id$ -->

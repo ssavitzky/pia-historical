@@ -23,6 +23,8 @@
 			 <b>created.</b>
 		   <else><b>does not exist</b>
 	 </if></if>
+<tr><th align=right> [dofs]:
+    <td> <a href="file:&dDOFS;/"><get name=dDOFS>/</a>
 <tr><th align=right>
     <td> <b>root:</b> <get name=dRoot> (<get name=dRoot-path>)
 	 <b>path:</b> <get name=dPath>
@@ -50,7 +52,7 @@
 <actor tag=t-write-backup empty dscr="Write backup for FILE">
   <if><get name=t-expanding><then>
       <if><read info=p file="&dstDir;/&file;">
-          <then><a href="file:&dstDir;/&file;.bak">[backup]</a>...
+          <then><a href="file:&dstDir;/&file;.bak">[backup]</a>
 		<if><read info=p file="&dstDir;/&file;.bak">
 		    <then><file remove file="&dstDir;/&file;.bak">
 			  <set local name=over>over</set>
