@@ -28,6 +28,9 @@ import crc.util.NullOutputStream;
 
 
 import java.net.URL;
+import java.io.OutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
 
@@ -39,7 +42,7 @@ public class Read_href extends Get {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<read.href href=\"url\" [method=get|head|put] [query=\"query-string\"]\n"+
-    "      [base=\"baseurl\"] [process [tagset=\"name\"]] [wait=\"time\"]>\n"+
+    "      [base=\"baseurl\"] [process [tagset=\"name\"] | into=filename] [wait=\"time\"]>\n"+
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -49,7 +52,7 @@ public class Read_href extends Get {
     "(URLs cannot be processed as part of this document).\n" +
     "Use GET or HEAD or POST method.  \n" +
     "WAIT time seconds for response and return SGML element with content of response \n" +
-"";
+" or places content into FILENAME.\n";
  
   public void handle(Actor ia, SGML it, Interp ii) {
     String href = Util.getString(it, "href", null);
@@ -64,11 +67,7 @@ public class Read_href extends Get {
       }
     }
 
-    // this will hold the resulting data as determine by the callback
-    // however by the time result is populated, it may be too late
-    // callback should notify us when it is ready in case we are waiting
-    SGML result = new Element();
-    result.attr("href",it.attr("href"));  //save some attributes
+
     String method;
     
     if(it.hasAttr("method")){
@@ -106,26 +105,89 @@ public class Read_href extends Get {
       waitTime = 30 * 1000;// wait 30 seconds by default
     }
 
-
     /**  get the agent
      */
     Run env = Run.environment(ii);
     Agent agent =env.agent;
     AgentMachine m = new AgentMachine(agent);
+    // set up the callback for the agent machine
+    ContentToSGMLConverter cb;
+    
+    // This will hold the resulting data.  For processed data, the interpreter
+    // must wait to be notified by the callback before proceeding.  If the 
+    // data is going INTO a file, then this result hold a IMG link to 
+    // that location.
+    SGML result = new Element();
+    result.attr("href",it.attr("href"));  // propagate attribute
+    String localUrl = "";
 
-    // set up pipes to get the resulting stream back to us
-    PipedOutputStream pipeOut = new PipedOutputStream();
-    PipedInputStream pipeIn = new PipedInputStream();
-    try{
-      pipeOut.connect(pipeIn);
-      // pipeIn.connect(pipeOut);
-    } catch (Exception e){
-      System.out.println(" piping problem ");
-      crc.pia.Pia.debug(this, " failed to connect pipes");
+
+    /** set up the file if into is specified */
+    OutputStream pipeOut = null;
+    PipedInputStream pipeIn = null;
+    
+
+    if(it.hasAttr("into")){
+      String file =  Util.getString(it, "into", "");
+      String fbase="";
+      String home     = System.getProperty("user.home");
+      String fileSep  = System.getProperty("file.separator");
+      
+      if (file.startsWith("~"+fileSep)) {
+        file = file.substring(2);
+        fbase = home;
+      } else if (file.startsWith(fileSep)) {
+        fbase = "";
+      } else if (fbase.equals("")) {
+        if (ii.environment != null) fbase = ii.environment.baseDir(it);
+	// directory local to agent -- create appropriate url
+	localUrl = "/" + agent.name() + "/~/" + file;
+      }
+      if (! fbase.equals("") && ! fbase.endsWith(fileSep)) {
+        fbase += fileSep;
+      }
+      if (file.equals("")) {
+        ii.error(ia, "into attribute must have name of file to place content into.");
+        ii.deleteIt();
+        return;
+      }
+      file = fbase + file;
+      if( localUrl == "") localUrl = "file:"+file;
+      File outfile = new File(file);
+      File parent = (outfile.getParent()!=null)? new File(outfile.getParent()) : null;
+
+      try {
+	if (parent != null && ! parent.exists()) {
+	  if (! parent.mkdirs()) ii.error(ia, "Cannot make parent directory");
+	}
+	pipeOut=new FileOutputStream(outfile);
+      } catch (Exception e) {
+        ii.error(ia, "Write failed on " + file);
+        ii.deleteIt();
+        return;
+      }
+
+      result.attr("localurl",  new crc.sgml.Text(localUrl));
     }
+    else {
+      // set up pipes to get the resulting stream back to us
+      PipedOutputStream pOut = new PipedOutputStream();
+      pipeOut=pOut;
+      pipeIn = new PipedInputStream();
+      try{
+	pOut.connect(pipeIn);
+      } catch (Exception e){
+	System.out.println(" piping problem ");
+	crc.pia.Pia.debug(this, " failed to connect pipes");
+      }
+      
+    }
+
     // callback which will notify us when result has been populated with content
-    ContentToSGMLConverter cb =  new ContentToSGMLConverter(result, ii, process, tsname, pipeOut);
+    cb =  new ContentToSGMLConverter(result, ii, process, tsname, pipeOut);
+    if(waitTime>0) cb.notifyCaller = true;
     m.setCallback(cb);
+
     
     // set query string if any -- null is OK
     String query = it.attrString("query");
@@ -139,8 +201,6 @@ public class Read_href extends Get {
     // if we are supposed to wait, do so now
     // since other interforms may need this handler
     // have the ii wait
-    
-    
     if(waitTime>0) synchronized(ii){
       try{
 	ii.wait( waitTime);
@@ -151,17 +211,15 @@ public class Read_href extends Get {
       // process our results
       if(process)
 	result = processInputStream(pipeIn, result,tsname);
-
     }
 
     SGML  results = result;
-    // if name exists, use as an index
-    //if(it.hasAttr("name")){
+
+    // process any "get" attrs, like name, attr, tag, key, ...
     results = getValue(result,it);
-      //}
     results=processResult(results,it);
+
     ii.replaceIt(results);
-      
 
   }
 
@@ -172,7 +230,7 @@ public class Read_href extends Get {
    */
 
   protected SGML processInputStream(PipedInputStream in, SGML result, String tsname){
-     if( result.hasAttr("completed")) return result;
+     if( result.hasAttr("completed") || in == null) return result;
      Environment env = new Environment();
      crc.sgml.Tokens tree = env.parseStream(in,tsname);
      result.append(tree);
@@ -194,10 +252,13 @@ class ContentToSGMLConverter  implements TernFunc
   
   Interp ii;  boolean process; String tsname;
   Tagset tags;
-  PipedOutputStream pipeOut; // the stream to write the contents onto
+  OutputStream pipeOut; // the stream to write the contents onto
+  public boolean notifyCaller=false;
+  
+
 
   // constructor
-  ContentToSGMLConverter(SGML result, Interp ii,  boolean process, String tsname,PipedOutputStream pipeOut)
+  ContentToSGMLConverter(SGML result, Interp ii,  boolean process, String tsname,OutputStream pipeOut)
   {
     this.result = result;
     this.ii =ii;
@@ -208,13 +269,13 @@ class ContentToSGMLConverter  implements TernFunc
   }
   
 
-// implement the callback
+  // implement the callback
 
-public Object execute  (Object content, Object transaction, Object agent)
+  public Object execute  (Object content, Object transaction, Object agent)
   {
-   SGML result = convert((Content)  content, (Transaction) transaction, (Agent) agent);
-   synchronized(ii){ii.notify();}
-   return result;
+    SGML result = convert((Content)  content, (Transaction) transaction, (Agent) agent);
+    if(notifyCaller) synchronized(ii){ii.notify();}
+    return result;
   }
   
 
@@ -230,44 +291,29 @@ public Object execute  (Object content, Object transaction, Object agent)
     int code = t.statusCode();
     result.attr("responsecode",Util.toSGML(String.valueOf(t.statusCode())));
 
+    //  return content as result if parsed ( currently not used )
+    // otherwise return an IMG tag for non text items saved locally
+
     if(process && (c  instanceof ParsedContent )){
       ParsedContent p = (ParsedContent) c;
       p.setTagset(tags);
       result.append(p.getParseTree());
       result.attr("completed"); // no more processing needs to be done
       return result;
-      
-    } else {
-       // convert to  string or just set a image tag
-      String type=t.contentType();
-      if(type == null || type.indexOf("text") < 0){
-	// insert as image tag
-	URL u = t.requestURL();
-	if(u != null){
-	  Element img = new Element("img");
-	  img.attr("href",u.toString());
-	  result.append(img);
-	} 
-	result.attr("completed"); // no more processing needs to be done
-      } else {
-	// wake up our listener
-	synchronized(ii){ii.notify();}
-	// sent to pipe for caller to process
-	  try{
-	    c.writeTo(pipeOut);
-	  } catch ( Exception e){
-	    // write to pipe failed for some reason
-	  }
-	  
-      }
-      
     }
-    try{
+    // wake up our listener before pumping data to avoid deadlock
+    if(notifyCaller) synchronized(ii){ii.notify();}
+    // send to pipe for caller to process
+    if(pipeOut != null) 
+      try{
+      c.writeTo(pipeOut);
+
       pipeOut.flush();
       pipeOut.close();
     } catch (Exception e){
-      crc.pia.Pia.debug(this," problem closing output pipe");
+      crc.pia.Pia.debug(this," problem writing or closing output pipe");
     }
+    result.attr("completed");
     return result;
   }
   

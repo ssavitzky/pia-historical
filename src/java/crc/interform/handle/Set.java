@@ -31,7 +31,7 @@ public class Set extends crc.interform.Handler {
   static String syntaxStr=
     "<set name=\"name\" | index=\"index\" [copy] [attr=attr | insert=where [replace] ]\n" +
     "[ pia | agent | trans [feature] | env \n" +
-    "| [element [tag=ident]] | entity [global | local]]>...</set>\n" +
+    "| [element [tag=ident]] | entity [global | local] | key=dt [delete]]>...</set>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -45,6 +45,8 @@ public class Set extends crc.interform.Handler {
   "If WHERE is \"-1\" then the CONTENT will get appended to the specified object.\n" +
     "ELEMENT may have a TAG.  TRANSaction item\n" +
     "may be FEATURE.  \n" +
+   "KEY specifies a DT element for description list (CONTENT will be set as.\n" +
+   " corresponding DD).  DELETE removes DT and corresponding DD.\n" +
     "Optionally COPY content as result.\n" +
 "";
  
@@ -312,6 +314,7 @@ public class Set extends crc.interform.Handler {
     }
 
      boolean insert = request.hasAttr("insert");
+     boolean delete = request.hasAttr("delete");
      if( request.hasAttr("key")){
        String key = Util.getString( request, "key", "");
        if( context instanceof AttrSGML){
@@ -323,7 +326,7 @@ public class Set extends crc.interform.Handler {
 	   // remove any current value of key
 	   dl.removeKey(key);
 	 }
-	 dl.at(key,value);
+	 if(!delete) dl.at(key,value);
        }
        // nothing else uses keys
        return;

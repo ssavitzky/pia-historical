@@ -21,7 +21,7 @@ public class Read extends crc.interform.Handler {
   static String syntaxStr=
     "<read [ file=\"name\" [interform [agent=\"agentName\"]] \n" +
     "[info|head|directory [links] [tag=tag] [all|match=\"regexp\"]] \n" +
-    "| href=\"url\" [resolve] ] \n" +
+    "| href=\"url\" [into=filename] ] \n" +
     "[base=\"path\"] [process [tagset=\"name\"]] >\n" +
 "";
   public String dscr() { return dscrStr; }
@@ -31,8 +31,8 @@ public class Read extends crc.interform.Handler {
     "Optionally read only INFO or HEAD.  For DIRECTORY, read names\n" +
     "or LINKS, and return TAG or ul.  DIRECTORY can read ALL names\n" +
     "or those that MATCH; default is all but backups.  Optionally\n" +
-    "PROCESS with optional TAGSET.  HREF can optionally RESOLVE in\n" +
-    "pia.\n" + 
+    "PROCESS with optional TAGSET. HREF content can be placed into FILENAME \n" +
+    " otherwise non text data will return an IMG tag.\n" + 
 "";
   public void handle(Actor ia, SGML it, Interp ii) {
     // === href + resolve should dispatch to read.href.resolve ===
