@@ -1,6 +1,10 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html>
-<read process quiet interform file="tagset.inc"><!-- initialize tagset -->
+<if><tagset-exists name=template-form>
+    <else><if><read process quiet interform file=tagset.inc></if>
+</if>
+<tagset-load name=template-form>
+
 <t-form-setup><!-- perform setup -->
 <!-- ============================================================= -->
 <head>

@@ -41,6 +41,8 @@ BASIC_ACTORS = \
 	Sum.java \
 	Table.java \
 	Tagset.java \
+	Tagset_exists.java \
+	Tagset_load.java \
 	Tagset_include.java \
 	Test.java \
 	Text.java \

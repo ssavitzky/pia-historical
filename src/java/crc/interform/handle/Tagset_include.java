@@ -31,7 +31,10 @@ public class Tagset_include extends crc.interform.Handler {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;
 
+    // === need to copy tagset if locked ===
     ii.tagset().include(crc.interform.Tagset.tagset(name));
-    ii.replaceIt("&lt;tagset-include name=" + name + "&gt;");
+    // -- doc only -- ii.replaceIt("&lt;tagset-include name=" + name + "&gt;");
+
+    ii.deleteIt();
   }
 }

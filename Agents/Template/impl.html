@@ -274,7 +274,8 @@ The following field types are defined:
   <li> tHeader and tFooter for front and end text, instead of using tName's
        doc string.  Keeps the docstring out of the template.
   <li> tURL should be defined so the template can refer to documentation and
-       auxiliary forms.
+       auxiliary forms.  
+  <li> Use interform lookup for system templates.
   <li> Fix Agent template:
        insert.if, ``customize'' button; bg color (requires t-select); header
        customization vbls, icons (requires t-select)
@@ -284,8 +285,8 @@ The following field types are defined:
        value, label, and ID to (<code><em>name</em>-values</code>.  Value
        and label default to the ID.
   <li> Gensym names if necessary.
-  <li> Speedup using agent-level tagset, <code>tagset.inc</code> is parsed
-       only once. 
+  <li> Speedup using agent-level tagset, so that <code>tagset.inc</code> is
+       parsed only once.
   <li> Agent template: make selects from lists of images and icons.
        Agency/Icons; Agency/Images.  (Many are presently in Logo).  Need
        <code>type=link</code> widget with a directory.
@@ -311,6 +312,8 @@ The following field types are defined:
        construction. It may need a different kind of form.
   <li> Think about sessions and locking
        Required if we want to keep more state in the server.
+  <li> When file templates are working, need them for /My/HEADER.html and
+       possibly /My/Agents/Agency/START-UP.html 
 </ul>
 
 <hr>

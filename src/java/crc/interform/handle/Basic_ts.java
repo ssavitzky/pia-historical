@@ -23,7 +23,8 @@ import java.util.Enumeration;
 public class Basic_ts extends HTML_ts {
 
   static String emptyActors = "actor-attrs actor-dscr actor-doc actor-syntax"
-  + " get tagset-include element actor-names calendar";
+  + " get tagset-exists tagset-load tagset-include element actor-names"
+  + " calendar";
   static String parsedActors = "add-markup difference equal expand if"
   + " pad product protect-result quotient set sort sorted subst sum"
   + " tagset test text trim user-message calendar-day form";

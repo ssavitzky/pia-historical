@@ -1,6 +1,8 @@
 <!-- Template actors:				 -*-html-helper-*- -->
 <!-- Copyright 1997 Ricoh Silicon Valley			   -->
 <!-- === This file should really be a tagset ===		   -->
+<tagset name=template-form base=Standard><!-- ignored: buggy --></tagset>
+<tagset-load name=template-form>
 
 <!-- definitions for empty tags must preceed their use.  -->
 <actor tag=t-early-processing empty dscr="perform any special processing
@@ -35,11 +37,6 @@
   	<set name="t-file-names"><get name="t-file-names"> &fn;</set>
   </if></if></if>
 </actor>
-
-<!-- *** Initializing entities: -->
-<set name=tFieldNames></set>
-<set name=t-file-names></set>
-<set name=t-required-fields></set>
 
 <!-- *** Actors used in template data files. -->
 <actor tag=t-data quoted dscr="set value and TYPE strings for NAME.
@@ -397,12 +394,82 @@
   </form>
 </actor>
 
+<!-- The following actors are used in expand.inc: -->
+<actor tag=t-report-file empty dscr="Report on FILE">
+  <set local name=file><get element name=file></set>
+  <code><b><if>
+	<test match=data.inc>&file;</test><then>data</then>
+	<else><if><get name="x-&file;"><then>xpnd</then>
+	<else><if><get name="c-&file;"><then>copy</then>
+	<else><if><get name="m-&file;"><then>make</then>
+	<else>skip</else>
+  </if></if></if></if>:</b></code>
+  <code><if><read info=p file="&srcDir;/&file;">
+      <then><a href="&srcDOFS;/&file;">[src]</a></then>
+      <else>[---]</else></if></code> <b>-&gt;</b>
+  <code><if>
+    <read info=p file="&dstDir;/&file;">
+    <then><a href="&dstDOFS;/&file;">[dst]</a></then>
+    <else><a href="&dstDOFS;/&file;">[new]</a></else>
+  </if></code>
+  <code>&file;</code>
+</actor>
+
+<actor tag=t-write-backup empty dscr="Write backup for FILE">
+  <if><get name=t-expanding><then>
+      <if><read info=p file="&dstDir;/&file;">
+          <then><a href="&dstDOFS;/&file;.bak">[backup]</a>
+		<if><read info=p file="&dstDir;/&file;.bak">
+		    <then><file remove file="&dstDir;/&file;.bak">
+			  <set local name=over>over</set>
+		    <else><set local name=over></set></if>
+		<file rename file="&dstDir;/&file;" dst="&dstDir;/&file;.bak">
+		&over;written. </if></if>
+</actor>
+
+<!-- === should really allow for name-stem != label.. slightly hairy. === -->
+<!-- === requires tracking the elements, not the filenames. === -->
+<actor tag=t-handle-file empty dscr="Handle FILE with given entity NAME">
+  <set local name=file><get element name=file></set>
+  <if> <test match=data.inc>&file;</test><then> template data
+	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
+	      <write file="&dstDir;/&file;"
+		><protect-result><t-data-file></protect-result></write>
+	  <else> ... to be </if> rebuilt
+	  </then>
+	<else><if><get name="x-&file;"><then>
+	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
+	      <file copy subst="&FORM;" file="&srcDir;/&file;"
+		    dst="&dstDir;/&file;" beg="|" end="|">
+	  <else> ... to be </if> expanded
+	  </then>
+	<else><if><get name="c-&file;"><then>
+	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
+	      <file copy file="&srcDir;/&file;" dst="&dstDir;/&file;">
+	  <else> ... to be </if> copied
+	  </then>
+	<else><if><get name="m-&file;"><then>
+	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
+	      <if><protect-result><get name="m-&file;-recipe"></protect-result>
+		  <then><expand><get name="m-&file;-recipe"></expand>
+		  <else><em>unimplemented, so can't be </em></if>
+	  <else> ... to be </if> made
+	  </then>
+	<else>
+	  <if><get name=t-expanding><then><br>
+	  <else> ... to be </if> skipped
+  </if></if></if></if> 
+</actor>
+    
 <!-- The following actors are used in the template's form file -->
 
 <actor tag=t-form-setup empty dscr="Set up local entities in form.">
 <set name=tName></set>         <!-- if we don't know the template's name... -->
 <set name=tForm>Selection</set><!-- ...we obviously will want to select one. -->
 <set entity name=title>&tName; &tForm;</set>
+<set name=tFieldNames></set><!-- lists... -->
+<set name=t-file-names></set>
+<set name=t-required-fields></set>
 <if><get form name=tName>
     <then>
     	<t-data name=tBase type=hidden></t-data>
@@ -513,5 +580,5 @@
 </repeat>
 &lt;!-- Made by &piaUSER; on &year;/&month;/&day; at &time; --&gt;
 </actor>
-
+</tagset>
 <!-- $Id$ -->
