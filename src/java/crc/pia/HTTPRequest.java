@@ -45,7 +45,7 @@ public class  HTTPRequest extends Transaction {
   /**  method
    * should be get, post, put, head, etc.
    */
-  protected String method;
+  protected String httpMethod;
 
   /**  
    * the url string of this request
@@ -85,7 +85,7 @@ public class  HTTPRequest extends Transaction {
    * @return request method
    */
   public String method(){
-    return method;
+    return httpMethod;
   }
 
   /**
@@ -127,7 +127,7 @@ public class  HTTPRequest extends Transaction {
    * set the method
    */
   public void setMethod(String method){
-    this.method = method;
+    this.httpMethod = method;
   }
 
   /**
@@ -338,7 +338,7 @@ public class  HTTPRequest extends Transaction {
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
     
     try{
-      method = tokens.nextToken();
+      httpMethod = tokens.nextToken();
     }catch( NoSuchElementException e ){
       throw new RuntimeException("Bad request, no method.");
     }
@@ -361,7 +361,7 @@ public class  HTTPRequest extends Transaction {
       throw e;
     }
     
-    if( method == "GET" ){
+    if( httpMethod == "GET" ){
       int pos;
       if( (pos = zurlandmore.indexOf("?")) == -1 )
 	url = zurlandmore;
