@@ -783,13 +783,17 @@ sub actor_attrs_handle {
 
 ###### I/O:
 
-### <read [file="name" | href="url"] [base="path"] [tagset="name"]
-###	   [protect [markup]]>
+### <read [file="name" | href="url"] [base="path"] [tagset="name"] [resolve]>
 
 define_actor('read', 'empty' => 1, _handle => \&read_handle,
 	     'dscr' => "Input from FILE or HREF, with optional BASE path.
-FILE may be looked up as an INTERFORM. 
+FILE may be looked up as an INTERFORM.   Optionally read only INFO or HEAD.
+For DIRECTORY, read names or LINKS, and return TAG or ul.  DIRECTORY can read 
+ALL names or those that MATCH; default is all but backups.
 Optionally PROCESS with optional TAGSET.  Optionally RESOLVE in pia.");
+
+### === not clear what to do with directories.  LINKS? FILES? ===
+### === HEAD? IF-LATER-THAN="date"? 
 
 sub read_handle {
     my ($self, $it, $ii) = @_;
@@ -797,6 +801,11 @@ sub read_handle {
     my $file = $it->attr('file');
     my $href = $it->attr('href');
     my $base = $it->attr('base');
+    my $info = $it->attr('info');
+    my $head = $it->attr('head');
+    my $dir  = $it->attr('directory');
+    my $tag  = $it->attr('tag');
+    my $f;
 
     my $content;
 
@@ -816,9 +825,73 @@ sub read_handle {
 	if ($base ne '' && $base !~ /\/$/) {
 	    $base .= '/';
 	}
-	### === test for existance; directories ===
-	$content = readFrom("$base$file");
+
+	## Check to see if the file exists.
+
+	my $fn = "$base$file";
+	$fn =~ s://:/:g;
+	my $exists = -e $fn;
+	my $isdir  = -d $fn;
+
+	if (! $exists) {
+	    ## Requested file doesn't exist.  Return null.
+	    $content = '';
+	} elsif ($dir && ! $isdir) {
+	    ## Requested a directory, but it isn't.  Return null.
+	    $content = '';
+	} elsif ($info) {
+	    my $w = -w $fn;
+	    my $x = -x $fn;
+	    my $r = -r $fn;
+	    $content = $isdir? 'd' : '-';
+	    $content .= $r? 'r' : '-';
+	    $content .= $w? 'w' : '-';
+	    $content .= $x? 'x' : '-';
+	    ## === use stat stuff if ALL ===
+	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+		$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
+	} elsif ($dir || $isdir) {
+	    my @names;
+	    if (opendir(DIR, $fn)) {
+		@names = readdir(DIR);
+		closedir(DIR);
+	    }
+	    my @names = sort @names;
+	    if (! $it->attr('all')) {
+		my @tmp = @names;
+		@names = ();
+		my $match = $it->attr('match');
+		$match = '[^~]$' unless defined $match; #'
+		for $f (@tmp) {
+		    if ($f ne '.' && $f =~ /$match/) {
+			push (@names, $f);
+		    }
+		}
+	    }
+	    my $itag = 'li';
+	    $itag = 'dt' if $tag eq 'dl';
+	    
+	    if ($it->attr('links')) {
+		$tag = 'ul' unless $tag;
+		$content = IF::IT->new($tag);
+		for $f (@names) {
+		    my $entry = IF::IT->new('a', href=>"file:$fn/$f", $f);
+		    $content->push(IF::IT->new($itag, $entry));
+		}
+	    } elsif ($tag) {
+		$content = IF::IT->new($tag);
+		for $f (@names) {
+		    $content->push(IF::IT->new($itag, $f));
+		}
+	    } else {
+		$content = join(' ', @names);
+	    } 
+	} else {
+	    $content = readFrom($fn);
+	}
     } elsif ($href && ! $file) { 	# Href
+
+	## === read href unimplemented ===
 
     } elsif ($href) {
 	print "InterForm error: both HREF and FILE specified\n";
@@ -837,8 +910,8 @@ sub read_handle {
 
 define_actor('write', 'content' => 'value', _handle => \&write_handle,
 	     'dscr' => "Output CONTENT to FILE or HREF, with optional BASE 
-path.  FILE may be looked up as an INTERFORM.  
-Optionally APPEND or POST.  Optionally COPY.");
+path.  FILE may be looked up as an INTERFORM.  BASE directory is created if 
+necessary.  Optionally APPEND or POST.  Optionally COPY.");
 
 sub write_handle {
     my ($self, $it, $ii) = @_;
@@ -852,6 +925,7 @@ sub write_handle {
 
     if ($file && ! $href) {	# File
 	my $append = $it->attr('append');
+	my $dir = $it->attr('directory');
 
 	if ($it->attr('interform')) {
 	    $base = IF::Run::agent()->agent_if_root();
@@ -864,23 +938,42 @@ sub write_handle {
 	} elsif ($base eq '') {
 	    $base = IF::Run::agent()->agent_directory;
 	}
-	if ($base ne '' && $base !~ /\/$/) {
-	    $base .= '/';
+	$base =~ s:/$:: if $base;
+	if ($base ne '' && ! -d $base) {
+	    if (! mkdir($base, 0777)) {
+		my $err = "InterForm error: can't create directory $base\n";
+		print $err;
+		$ii->replace_it($err);
+		return;
+	    }
 	}
 
-	### === test for existance, writability; directories ===
-	if ($append) {
-	    appendTo("$base$file", $content);
+	my $fn = $base? "$base/$file" : $file;
+	$fn =~ s://:/:g;
+	$fn =~ s:/$::;
+
+	if ($file eq '.') {
+	    # nothing to do; just make sure the base directory exists.
+	} elsif ($append) {
+	    appendTo($fn, $content);
 	} else {
-	    writeTo("$base$file", $content);
+	    writeTo($fn, $content);
 	}
-    } elsif ($href && ! $file) {	# Href
+    } elsif ($href && ! $file) {	# Href (PUT or POST)
 	my $post = $it->attr('post');
 
+	## === write href unimplemented ===
+
     } elsif ($href) {
-	print "InterForm error: both HREF and FILE specified\n";
+	my $err = "InterForm error: both HREF and FILE specified\n";
+	print $err;
+	$ii->replace_it($err);
+	return;
     } else {
-	print "InterForm error: neither HREF nor FILE specified\n";
+	my $err = "InterForm error: neither HREF nor FILE specified\n";
+	print $err;
+	$ii->replace_it($err);
+	return;
     }
 
     if ($it->attr('copy')) {
@@ -1175,7 +1268,21 @@ sub trans_control_handle {
 }
 
 
-### Operating System:
+###### Operating System:
+
+### <user-message>string</user-message>
+
+define_actor('user-message', _handle => \&user_message_handle,
+	     'dscr' => "Display a message to the user." );
+
+sub user_message_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $content = $it->content_string;
+    print "$content\n" unless $main::quiet;
+    $ii->delete_it;
+}
+
 
 ### <os-command>command</os-command>
 
