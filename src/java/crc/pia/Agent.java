@@ -140,20 +140,15 @@ public interface Agent {
    */
   public void parseOptions(Hashtable hash);
 
-  /**
-   * Find an interform, using a simple search path and a crude kind
-   * of inheritance.  Allow for the fact that the user may be trying
-   * to override the interform by putting it in $USR_ROOT/$name/.
-   */
-  public String findInterform(URL url, boolean noDefault);
 
   /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
-   * need to modify the URL in the request.  It can pass either a full
-   * URL or a path.
+   * need to modify the URL in the request.  It can pass a URL.
    */
-  public String respondToInterform(Transaction t, String url, Resolver res);
+  public String respondToInterform(Transaction t, URL path, Resolver res);
+
+
 
   /**
    * Respond to a request directed at one of an agent's interforms.
