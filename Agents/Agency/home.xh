@@ -3,57 +3,15 @@
 <title>&piaUSER;'s &agentName;: Home Page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>home page for
+<set entity name=title>Home page for
 <if><test exact  match='pia'>&piaUSER;</test>
     <then> this </then>
     <else> &piaUSER;'s</else></if><br>
 <if><test exact match='pia'>&piaUSER;</test>
     <then>Peripheral Interface </then>
     <else>Personal Information </else></if> Agency</set>
-<header>&title;</header>
-<p>
-
-<table cellspacing=0 cellpadding=0 border=0>
-<tr><th width=170 valign=center>
-    <img src="Logo/A100.gif" height=100 width=111></th>
-<td valign=center>
-  <table cellspacing=0 cellpadding=0 align=center border=0>
-  <tr> <!-- need an image to fix the size -->
-    <td width="170"><img src="Icons/blank170x1.gif" width=170 height=1></td>
-    <td valign=top> &year; &monthName; &day;, &time;:&second;<br>
-
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	    <td> <b href="home">Home</b>
-    		 <a href="index">Index</a>
-    		 <a href="help">Help</a>
-  <tr>
-    <th valign=top align=right>
-    <td valign=top> <a href="/Agency/agents">list</a> / 
-	<a href="/Agency/installers">install</a> / 
- 	<a href="/Agency/remove_agent">remove</a>
- 	agents<br>
-	<if><test exact match='pia'>&piaUSER;</test>
-	  <then><a href="/Agency/shutdown">shut down</a> appliance<br></if>
-  <tr>
-    <th valign=top align=right>
-    <td valign=top> <a href="/Agency/checkpoint">checkpoint</a> /
-	<a href="/Agency/restore">restore</a> state
-  <tr>
-    <th valign=top align=right><b>Files:</b>
-    <td valign=top> <a href="/PIA/">PIA files</a>
-	<a href="/My/">My files</a>
-	<a href="/PIA/src/">Sources</a>
-	<a href="/PIA/Doc/"><b>Docs</b></a><br>
-   
-  <tr>
-    <th valign=top align=right><b>Agents:</b>
-    <td valign=top> <repeat list="&agentNames;" entity="foo">
-      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
-   </repeat><br>
-  </table>
-</table>
-
+<header show-date=yes>&title;</header>
+<sub-head page=home />
 
 <hr>
 This is the home page for the ``<strong>&agentName;</strong>'' agent.  It is
