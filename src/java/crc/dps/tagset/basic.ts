@@ -1075,6 +1075,22 @@ example).
            </doc>
          </undefine>
        </define>
+  <li> <define element=append parent=select handler>
+         <doc> Appends the contents to the list of selected nodes.  The
+	       content nodes become the right siblings of the last selected
+	       node. 
+         </doc>
+         <define attribute=children optional>
+           <doc> appends to the children (content) of <em>each</em> selected
+		 node. 
+           </doc>
+         </define>
+         <note author=steve> This will not work for most cases in the current
+         	 system; it will become possible only after named nodes become
+         	 the children of their respective namespaces, and values
+         	 become the children of their containers.
+         </note>
+       </define>
   <li> <define element=remove parent=select empty handler>
          <doc> Removes each selected node from its parent.
          </doc>

@@ -801,3 +801,27 @@ class removeHandler extends select_subHandler {
   removeHandler() { super(true, false); syntaxCode = EMPTY; }
 }
 
+
+/** &lt;append&gt; Append nodes to selection or children of selection.
+ * <p> === unreliable until new DOM implementation in place.
+ */
+class appendHandler extends select_subHandler {
+  protected void action(Input in, Context aContext, Output out, 
+			ActiveAttrList atts, NodeList content) {
+    boolean children = atts.hasTrueAttribute("children");
+
+    NodeList selected = getSelected(aContext);
+    NodeEnumerator items = selected.getEnumerator();
+    Node item = null;
+    for (item = items.getFirst(); item != null; item = items.getNext()) {
+      if (children) Copy.appendNodes(content, item);	
+    }
+    if (!children) {
+	Node parent = item.getParentNode();
+	if (parent != null) Copy.appendNodes(content, parent);
+	putList(out, selected);
+	putList(out, content);
+    }
+  }
+  appendHandler() { super(true, true); }
+}
