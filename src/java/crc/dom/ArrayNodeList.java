@@ -17,7 +17,7 @@ import java.util.Vector;
 public class ArrayNodeList extends Vector implements EditableNodeList {
 
   public ArrayNodeList(){
-    nodeCollection = new Vector();
+    //    nodeCollection = new Vector();
   }
 
   public ArrayNodeList(NodeList list)throws NullPointerException{
@@ -25,7 +25,7 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
       String err = ("Illegal list.");
       throw new NullPointerException(err);
     }
-    nodeCollection = new Vector( (int)list.getLength() );
+    //nodeCollection = new Vector( (int)list.getLength() );
     initialize( list );
   }
 
@@ -38,12 +38,12 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
   public Node replace(long index,Node replacedNode) 
        throws NoSuchNodeException
   {
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
-    Node old = (Node)nodeCollection.elementAt( (int)index );
-    nodeCollection.setElementAt(replacedNode, (int)index);
+    Node old = (Node)elementAt( (int)index );
+    setElementAt(replacedNode, (int)index);
     return old;
   }
 
@@ -57,16 +57,16 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
        throws NoSuchNodeException
   {
     if( index == 0 ){
-      nodeCollection.insertElementAt( newNode, 0 );
+      insertElementAt( newNode, 0 );
       return;
     }
-    if( index == nodeCollection.size() ){
-      nodeCollection.addElement( newNode );
+    if( index == size() ){
+      addElement( newNode );
       return;
     }
 
-    if( index >= 0 && index <= nodeCollection.size() )
-      nodeCollection.insertElementAt( newNode, (int)index );
+    if( index >= 0 && index <= size() )
+      insertElementAt( newNode, (int)index );
     
   }
 
@@ -79,13 +79,13 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
   public Node remove(long index)
        throws NoSuchNodeException
   {
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
 
-    Node n = (Node)nodeCollection.elementAt( (int)index );
-    nodeCollection.removeElementAt( (int)index );
+    Node n = (Node)elementAt( (int)index );
+    removeElementAt( (int)index );
     return n;
   }
 
@@ -101,12 +101,12 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
   public Node item(long index)
        throws NoSuchNodeException
   {
-    if( index >= nodeCollection.size() || index < 0){
+    if( index >= size() || index < 0){
       String err = ("No such node exists.");
       throw new NoSuchNodeException(err);
     }
 
-    return  (Node)nodeCollection.elementAt( (int)index );
+    return  (Node)elementAt( (int)index );
   }
 
 
@@ -114,7 +114,7 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
    *Returns the number of nodes in the NodeList instance. The range of valid child
    *node indices is 0 to getLength()-1 inclusive. 
    */
-  public long getLength(){ return nodeCollection.size(); }
+  public long getLength(){ return size(); }
   
 
   private void initialize( NodeList list ){
@@ -122,9 +122,10 @@ public class ArrayNodeList extends Vector implements EditableNodeList {
 
     Node n = null;
     for(n=e.getFirst(); n != null; n=e.getNext())
-      nodeCollection.addElement( n );
+      addElement( n );
   }
 
-  protected Vector nodeCollection;
 }
+
+
 
