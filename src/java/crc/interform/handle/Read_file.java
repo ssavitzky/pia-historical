@@ -14,15 +14,16 @@ import crc.interform.Text;
 import crc.interform.Util;
 
 /* Syntax:
- *	<read.file file="name" [interform]
+ *	<read.file file="name" [interform [agent="agentName"]]
  *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
  *	      [base="path"] [process [tagset="name"]] >
  * Dscr:
- *	Input from FILE, with optional BASE path.  FILE may be
- *	looked up as an INTERFORM.  Optionally read only INFO or HEAD.
- *	For DIRECTORY, read names or LINKS, and return TAG or ul.
- *	DIRECTORY can read ALL names or those that MATCH; default is
- *	all but backups.  Optionally PROCESS with optional TAGSET.
+ *	Input from FILE, with optional BASE path.  FILE may be looked
+ *	up as an INTERFORM in current or other AGENT.  Optionally read
+ *	only INFO or HEAD.  For DIRECTORY, read names or LINKS, and
+ *	return TAG or ul.  DIRECTORY can read ALL names or those that
+ *	MATCH; default is all but backups.  Optionally PROCESS with
+ *	optional TAGSET.  
  */
 
 /** Handler class for &lt;read-file&gt tag */
@@ -156,6 +157,7 @@ sub read_handle {
 
     if ($it->attr('process')) {
 	$ii->push_into($content);
+	$ii->delete_it();
     } else {
 	$ii->replace_it($content);
     }

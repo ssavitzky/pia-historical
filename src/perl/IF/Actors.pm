@@ -991,7 +991,13 @@ sub file_lookup {
     my $base = $it->attr('base');
 
     if ($it->attr('interform')) {
-	$file = IF::Run::agent()->find_interform($file);
+	my $aname = $it->attr('agent');
+	if ($aname) {
+	    my $agent = IF::Run::resolver()->agent($aname);
+	    if (ref $agent) {$file = $agent->find_interform($file);}
+	} else {
+	    $file = IF::Run::agent()->find_interform($file);
+	}
 	$base = '';
 				# file should be properly quantified
 	return $file;
@@ -1134,6 +1140,7 @@ sub read_handle {
 
     if ($it->attr('process')) {
 	$ii->push_into($content);
+	$ii->delete_it();
     } else {
 	$ii->replace_it($content);
     }
