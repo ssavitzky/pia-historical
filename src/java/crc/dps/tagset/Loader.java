@@ -140,8 +140,20 @@ public class Loader {
   }
 
 
-  /** Load a Tagset implementation class and create an instance of it.  */
+  /** Table of names we have already tested for being tagsets. */
+  protected static Table checkedSubclass = new Table();
+
+  /** Load a Tagset implementation class and create an instance of it.
+   *	Note that we don't have to check a name twice.
+   */
   protected static Tagset loadTagsetSubclass(String name) {
+
+    // First see whether we've checked this name before. 
+    Object o = checkedSubclass.at(name);
+    if (o instanceof Tagset) return (Tagset)o;
+    else if (o != null) return null;
+
+    Tagset ts = null;
     try {
       String nn = crc.util.NameUtils.lowercase(name);
       Class c = crc.util.NameUtils.loadClass(nn, "crc.dps.tagset.");
@@ -149,11 +161,14 @@ public class Loader {
 	nn = crc.util.NameUtils.javaName(name) + "_ts";
 	c = crc.util.NameUtils.loadClass(nn, "crc.dps.tagset.");
       }
-      return (c != null)? (Tagset)c.newInstance() : null;
+      if (c != null) ts = (Tagset)c.newInstance();
     } catch (Exception e) { 
       e.printStackTrace(log);
       return null;
     }
+    checkedSubclass.at(name, ((ts == null)
+			      ? (Object)"not-a-class" : (Object)ts));
+    return ts;
   }
 
   /** Load a Tagset implementation from an InputStream. 
@@ -209,6 +224,9 @@ public class Loader {
     return 0;
   }
 
+  /** Table of resource names we have already tested for being tagsets. */
+  protected static Table checkedResource = new Table();
+
   /** Load a Tagset implementation from a Java ``resource''. 
    *
    *	Tries ".tso", ".tss", and ".ts" in that order (but will not load a
@@ -216,6 +234,13 @@ public class Loader {
    *	presumably the master copy.
    */
   protected static Tagset loadTagsetFromResource(String name) {
+
+    // First see whether we've checked this name before. 
+    // === Strictly speaking we also need to check times ===
+    Object o = checkedResource.at(name);
+    if (o instanceof Tagset) return (Tagset)o;
+    else if (o != null) return null;
+
     boolean boot = false;
     Tagset ts = null;
     InputStream s = null;
@@ -230,6 +255,9 @@ public class Loader {
 	ts = (Tagset)crc.util.Utilities.readObjectFrom(tsoUC.getInputStream());
       } catch (Exception ex) {
 	ex.printStackTrace(log);
+	if (verbosity > 0) {
+	  log.println("Tagset not found on resource " + name + ".tso");
+	}
 	ts = null;
       }
       if (ts != null) {
