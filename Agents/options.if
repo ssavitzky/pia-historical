@@ -7,21 +7,31 @@
 <read interform file="heading.inc" process>
 
 <table cellspacing=0 cellpadding=0>
-<tr><th width=340><td><br>
-<tr><th><td> <a href="index.if">Index Page</a>
-<tr><th><td> <a href="home.if">Home Page</a>
-<tr><th align=right><a href="home.if">&agentName;</a>: <td> Options
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-<tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
-<tr><th align=right><td>  
+<tr><th width=170><td>
+    <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><td><br>
+    <tr><th><td> <a href="index.if">Index Page</a>
+    <tr><th><td> <a href="home.if">Home Page</a>
+    <tr><th align=right><a href="home.if">&agentName;</a>: <td> Options
+    <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+    <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
+    <tr><th align=right><td>  
        <form action="/Agency/remove_agent.if" method="POST">
 	Remove agent:<br>
        <input name="agent" value="&agentName;" type=hidden>
        <input type="submit" value="Remove &agentName;">
        </form>
+    </table>
 </table>
 
-<agent-set-options></agent-set-options>
+<if>&urlQuery;
+    <then>
+	<if><agent-set-options>&urlQuery;</agent-set-options>
+	    <then>the &lt;agent-set-options&gt; actor is currently
+	    unimplemented, so this probably didn't work.</then>
+	</if>
+    </then>
+</if>
 
 <set entity name=opts><agent-options></set>
 <form method=POST action="&url;"><table>
@@ -29,7 +39,12 @@
   <repeat list="&opts;" entity=opt><tr>
     <th align=right>&opt;:</th>
     <td><set entity name=v><get agent name="&opt;"></set>
-        <input name="&opt;" value="&v;" size=50></td><p></tr>
+	<if><test exact match="act-on">&opt;</test>
+	    <test exact match="handle">&opt;</test>
+	<then><textarea name="&opt;" cols=50 rows=20
+	      ><protect-result markup>&v;</protect-result></textarea></then>
+	<else><input name="&opt;" value="&v;" size=50></else>
+	</if></td><p></tr>
   </repeat>
 </table></form>
 

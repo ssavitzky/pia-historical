@@ -9,7 +9,7 @@
 <agent-set-criterion name="response">
 <agent-set-criterion name="agent_response" value=0>
 
-<set agent hook name="_act_on"><protect>
+<set agent hook name="act-on"><protect>
    <set entity name=fn>&year;/&month;/&day;.html</set>
    <write directory file="&year;"></write>
    <write directory file="&year;/&month;"></write>

@@ -88,7 +88,7 @@ PERL program, <code><read interform info=path file="fixup.pl"></code>, is
 provided for fixing old History directories.<p>
 
 
-<h3>Agent Act_On Hook</h3>
+<h3>Agent Act-On Hook</h3>
 
 <blockquote><em>
   This is the source code for the hook that writes data into the history
@@ -101,7 +101,7 @@ provided for fixing old History directories.<p>
   InterForm directory as <code>~/.pia/Agents/&agentName;/initialize.if</code>
 </em></blockquote>
 
-<pre><protect-result markup><get agent name="_act_on"></protect-result>
+<pre><protect-result markup><get agent name="act-on"></protect-result>
 </pre>
 
 
