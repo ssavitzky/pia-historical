@@ -1,0 +1,10 @@
+#!/bin/sh
+#	Display lines that indicate a "hole"
+#	$Id$
+
+re="${1-[^=]===[^=]|unimplemented|eventually}"
+
+find . '(' -name '*.java' -o -name '*htm?' -o -name '*.if' -o -name '*.tex' \
+        -o -name '*.p[lm]' -o -name '*.inc' -o -name '*akefile' ')' -type f  \
+	\! -path '*JavaDoc*' \! -path '*/other/*' \
+    -exec egrep -i -n -s "$re" {} xxx \; 

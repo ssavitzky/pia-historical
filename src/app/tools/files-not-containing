@@ -1,0 +1,10 @@
+#!/bin/sh
+#	Display the names of files that do _not_ contain a string
+#	$Id$
+
+re=${1-copyright}
+
+find . '(' -name '*.java' -o -name '*.html' -o -name '*.if' -o -name '*.tex' \
+        -o -name '*.p[lm]' -o -name '*.inc' -o -name '*akefile' ')' -type f  \
+	\! -path '*JavaDoc*' \! -path '*/other/*' \
+    \! -exec grep -q -i "$re" {} \; -print 
