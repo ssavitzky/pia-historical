@@ -168,4 +168,18 @@ public class ChildNodeList implements NodeList {
   protected HeaderNode header;
 }
 
+class HeaderNode extends AbstractNode{
+  HeaderNode(){}
 
+  public int getNodeType(){ return NodeType.COMMENT; }
+  protected long incCount(){ return count++; }
+  protected long decCount(){ return count--; }
+  protected long getCount(){ return count; }
+
+  /**
+   * how many items
+   */
+  private long count = 0;
+
+  
+}
