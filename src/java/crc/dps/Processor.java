@@ -87,6 +87,9 @@ public interface Processor extends Context {
   /** Process the current Node */
   public void processNode();
 
+  /** Process the current Node */
+  public void expandCurrentNode();
+
   /** Process the children of the current Node */
   public void processChildren();
 
