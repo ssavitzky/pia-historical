@@ -278,6 +278,10 @@ AUTHLIST" empty>
   <set  name=myuser local><get element name=user></set>
   <set  name=myform local><get element name=form></set>
   <set  name=mysignas local><get element name=signedas></set>
+  <!-- quick hack to avoid Employee problems in matching -->
+  <if><test match="Employee" exact>&mysignas;</test><then>
+    <set name=mysignas local></set>
+    </if>
   <if><get name=mysignas> <then> <set local name=lastsigner><get name=mysignas></set></then> <else><set local name=lastsigner><get name=myuser></set></else> </if>
   <!-- load the route  -->
 

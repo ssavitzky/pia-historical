@@ -85,11 +85,15 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
     <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
     </select>
          <!-- signing as anybody?? -->
-	<if><get form name=signas><then><set name=signas><get form
-	name=signas></set>
+        <set name=myboxes><get name=inboxes key=&user; agent></set>
 	<input name="signas" type=hidden value=&signas;>
-	(signing as <get name=signas>)
-	</then></if>
+	(signing as <select name=signas>
+	  <if><get form name=signas><then><option selected><get form
+		name=signas></option>
+ 	  </then></if>
+	  <option>Employee</option>
+	  <repeat entity=mli list=&myboxes;><option>&mli;</option></repeat>
+	  </select>)
 	 PassPhrase:<input type="password" name="password" size="25"> 
 	<input type="SUBMIT" value="SIGN"><br>
 	Notes:<textarea name="comments" rows=2 cols=60></textarea>
