@@ -4,95 +4,44 @@
 #	
 #
 # Usage: 
-#	pia [-port portnumber] [-root piadirectory] [-u userdirectory] [-p propertyfile] [-d] [-v] 
+#	pia [PIA_DIR piadirectory]
 #
-# 	portnumber    -- is the port number which the PIA use to communicate
 #	piadirectory  -- is the directory which the PIA is installed
-#       userdirectory -- is the directory where the PIA will write its data
-#       propertyfile  -- complete path of the location of the PIA's default start up properties
-#	d             -- debugging is on
-#	v             -- verbose     
-
-port ()
-{
-echo 'process port'
-PORT=1
-PORTVAL=$1
-}
-
-root ()
-{
-echo 'process root'
-ROOT=1
-ROOTVAL=$1
-}
-
-userdir ()
-{
-echo 'process userdir'
-USRDIR=1
-USRDIRVAL=$1
-}
-
-propfile ()
-{
-echo 'process propertyfile'
-PROP=1
-PROPVAL=$1
-}
 
 
-while [ -n "$(echo $1 | grep '-')" ]; do
-	case $1 in
-		-port ) port $2
-			shift ;;
-		-root ) root $2
-			shift ;;
-		-u ) 	userdir $2
-			shift ;;
-		-p )	propfile $2
-			shift ;;
-		-d )	echo 'debug on'
-			DEBUGON=1 ;;
-		-v )	echo 'verbose on'
-			VERBOSE=1 ;;
-		* ) 	exit 'usage: pia [-port portnumber] [-root piadirectory] [-u userdirectory] [-p propertyfile] [-d] [-v] '
-			exit 1
-	esac
-	shift 
-done
-
-PIAHOME=$(pwd)/..
-COMMAND='pia_wrapper crc.pia.Pia'
-
-if [ -n "$PORT" ] ; then
-COMMAND="$COMMAND -port $PORTVAL"
+if [ -n "$(echo $1 | grep 'PIA_DIR=')" ] ; then
+    PIA_PATH=$1
+    PIA_DIR=${PIA_PATH#PIA_DIR=}
+    if [ "$PIA_DIR" = "" ] ; then
+	echo 'usage: pia PIA_DIR=piadirectory args...'
+	exit 1
+    else
+	shift
+    fi
 fi
 
-if [ -n "$ROOT" ] ; then
-    COMMAND="$COMMAND -root $ROOTVAL"
-else
-    COMMAND="$COMMAND -root $PIAHOME"
+if [ "$PIA_DIR" != "" ] ; then 
+    ROOT="-root '$PIA_DIR'"
 fi
 
-if [ -n "$USRDIR" ] ; then
-COMMAND="$COMMAND -u $USRDIRVAL"
+if [ "$USR_DIR" != "" ] ; then
+    USR="-u '$USR_DIR'"
 fi
+# ... other pia environment variables go here
 
-if [ -n "$PROP" ] ; then
-COMMAND="$COMMAND -p $PROPVAL"
-fi
+exec pia_wrapper crc.pia.Pia $ROOT $USR $*
 
-if [ -n "$DEBUGON" ] ; then
-COMMAND="$COMMAND -d"
-fi
 
-if [ -n "$VERBOSE" ] ; then
-COMMAND="$COMMAND -v"
-fi
 
-echo $COMMAND
-exec $COMMAND
+
+
+
+
+
+
+
+
+
 
 
 
