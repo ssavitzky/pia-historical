@@ -33,18 +33,18 @@ public interface Syntax {
   ************************************************************************/
 
   /** Syntax for an empty element. */
-  public final static int EMPTY   = -1;
+  public final static int EMPTY   =  1;
   /** Syntax for a normal element.  The contents are expanded. */
-  public final static int NORMAL  =  1;
+  public final static int NORMAL  =  2;
   /** Syntax for a quoted element:  contents are parsed but not expanded. */
-  public final static int QUOTED  =  2;
+  public final static int QUOTED  =  6;
 
   /** Syntax flag (to be or'ed in) to suppress expansion. */
-  public final static int NO_EXPAND	= 2;
+  public final static int NO_EXPAND	=  4;
   /** Syntax flag (to be or'ed in) to suppress parsing of entities. */
-  public final static int NO_ENTITIES	= 4;
+  public final static int NO_ENTITIES	=  8;
   /** Syntax flag (to be or'ed in) to suppress parsing of elements. */
-  public final static int NO_ELEMENTS	= 8;
+  public final static int NO_ELEMENTS	= 16;
 
   /** Syntax for a literal: elements and entities are not recognized. */
   public final static int LITERAL =  NO_ENTITIES | NO_ELEMENTS | NO_EXPAND;
