@@ -187,7 +187,7 @@ public class Expand {
   public static void expandEntity(Context c, Entity n, Output dst) {
     String name = n.getName();
     NodeList value = (name.indexOf('.') >= 0)
-      ? c.getIndexValue(name)
+      ? Index.getIndexValue(c, name)
       : c.getEntityValue(name, false);
     if (value == null) {
       dst.putNode(n);

@@ -14,6 +14,8 @@ import crc.dom.DOMFactory;
 import crc.dom.Entity;
 
 import crc.dps.NodeType;
+import crc.dps.Context;
+import crc.dps.EntityTable;
 import crc.dps.active.*;
 import crc.dps.output.*;
 
@@ -32,13 +34,22 @@ import java.util.Enumeration;
 public class Index {
 
   /************************************************************************
-  ** Value extraction:
+  ** Front End:
   ************************************************************************/
 
-  
+  /** Get a value using an index. */
+  public static NodeList getIndexValue(Context c, String index) {
+    EntityTable ents = c.getEntities();
+    return ents.getEntityValue(index, false);
+  }
+
+  public static void setIndexValue(Context c, String index, NodeList value) {
+    EntityTable ents = c.getEntities();
+    ents.setEntityValue(index, value, false);
+  }
 
   /************************************************************************
-  ** 
+  ** Auxiliary Methods:
   ************************************************************************/
 
 
