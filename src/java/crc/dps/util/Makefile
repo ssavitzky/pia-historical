@@ -5,11 +5,18 @@
 PACKAGE=crc.dps.aux
 TOPDIR=../../..
 
-FILES = \
+FILES = $(CLASSES) $(UTILITIES)
+
+CLASSES = \
 	ContextStack.java \
 	CurrentActive.java \
 	CurrentNode.java \
-	CursorStack.java 
+	CursorStack.java
+
+UTILITIES = \
+	Copy.java \
+	Expand.java \
+	Test.java
 
 include $(TOPDIR)/makefiles/file.make
 
