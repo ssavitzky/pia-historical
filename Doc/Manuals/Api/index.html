@@ -55,9 +55,9 @@ normally accessed only through access functions.  These include, for example,
 These operations are shared by <code>DS::List</code>.
 
 <dl>
-  <dt> $<em>thing</em>-&gt;at($<em>index</em>)
+  <dt> $<em>thing</em>-&gt;item($<em>index</em>)
   <dd> Access the value of an item
-  <dt> $<em>thing</em>-&gt;at($<em>item</em>, $<em>value</em>)
+  <dt> $<em>thing</em>-&gt;item($<em>item</em>, $<em>value</em>)
   <dd> Set the value of an item
   <dt> $<em>thing</em>-&gt;shift()
   <dd> Returns and removes the first item in the content.
@@ -79,14 +79,19 @@ These operations are shared by <code>DS::List</code>.
 
 <h3>DS::List</h3>
 
+<dl>
+  <dt> <b>Note:</b>
+  <dd> DS::List is new, and isn't in use yet.
+</dl>
+
 <h4>Access Functions:</h4>
 
 <h5>Items</h5>
 
 <dl>
-  <dt> $<em>list</em>-&gt;at($<em>index</em>)
+  <dt> $<em>list</em>-&gt;item($<em>index</em>)
   <dd> Access the value of an item
-  <dt> $<em>list</em>-&gt;at($<em>item</em>, $<em>value</em>)
+  <dt> $<em>list</em>-&gt;item($<em>item</em>, $<em>value</em>)
   <dd> Set the value of an item
   <dt> $<em>list</em>-&gt;shift()
   <dd> Returns and removes the first item in the list.
@@ -171,7 +176,7 @@ Given a resolver R:
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Dec 17 23:19:19 1996
+Last modified: Wed Dec 18 10:12:03 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
