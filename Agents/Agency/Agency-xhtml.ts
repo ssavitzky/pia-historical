@@ -19,13 +19,14 @@
   </define>
   <action>
 <hr>
-&agentName; agent on <if><test exact  match='pia'>&piaUSER;</test>
+<a href="/&agentName;">&agentName;</a> agent on
+<if><test exact  match='pia'>&piaUSER;</test>
     <then> the </then>
     <else> &piaUSER;'s</else></if>
 <if><test exact match='pia'>&piaUSER;</test>
     <then> information appliance </then>
-    <else>Personal Information Agency</else></if>
-at  &lt;<a href="&url;">&url;</a>&gt;
+    <else>Personal Information Agency</else></if><br>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;
 <hr>
 <set name=myear><subst match="/.* " result=", "><select>
     &attributes;<name>cvsid<eval/><text split>&selected;</text> 3

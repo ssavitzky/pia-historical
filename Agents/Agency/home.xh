@@ -93,10 +93,6 @@ you get a generic <em><a href="index.if">index</a></em> page.
   <li> <a href="/Agency/help.if">Online Help</a>
 </ul>
 </table>
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
-<hr>
+
 <footer cvsid='$Id$'>
 </body></html>
