@@ -13,6 +13,7 @@ import crc.sgml.SGML;
 import crc.sgml.Text;
 
 import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
 
 /** Handler class for &lt;test&gt tag 
  * <dl>
@@ -73,7 +74,8 @@ public class Test extends crc.interform.Handler {
 	}
 	try {
 	  RegExp re = new RegExp(match);
-	  result = (re.match(str) != null);
+          MatchInfo mi = re.match(str);
+	  result = (mi != null && mi.end() >= 0);
 	} catch (Exception e) {
 	  ii.error(ia, "Exception in regexp: "+e.toString());
 	}

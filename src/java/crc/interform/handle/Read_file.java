@@ -137,7 +137,8 @@ public class Read_file extends Get {
       MatchInfo mi = null;
 
       if (match != null && ! match.equals("")) {
-	try {re = new RegExp(match);} catch (Exception e) {};
+	try {re = new RegExp(match);} catch (Exception e) {
+       e.printStackTrace();};
       }
 
       for (int i = 0; i < list.length; ++i) {
@@ -145,7 +146,7 @@ public class Read_file extends Get {
 	if (!all && crc.pia.FileAccess.ignoreFile(fn, name)) continue;
 	if (re != null) {
 	  mi = re.match(fn);
-	  if (mi != null) continue;
+	  if (mi == null || mi.end() < 0) continue;
 	}
 	names.push(new Text(fn));
       }
@@ -169,6 +170,7 @@ public class Read_file extends Get {
 	  t.addItem(new Element(itag).addItem(names.itemAt(i)));
       } else {
 	result = Text.join(" ", names);
+	
       }
       
     } else if (it.hasAttr("process")) {
