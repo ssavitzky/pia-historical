@@ -27,17 +27,17 @@
 
 all::
 	for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
-		then $(MAKE) PIADIR=../$(PIADIR) VPATH=$(VPATH)/$$p; fi ); \
+		then $(MAKE) PIADIR=$(SUBPIADIR) VPATH=$(VPATH)/$$p; fi ); \
 	done
 
 doc::
 	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
-		then $(MAKE) PIADIR=../$(PIADIR) doc; fi); \
+		then $(MAKE) PIADIR=$(SUBPIADIR) doc; fi); \
 	done
 
 clean::
 	@@for p in `ls -d $(SUBDIRS)`; do ( cd $$p; if test -f Makefile; \
-		then $(MAKE) PIADIR=../$(PIADIR) clean; fi); \
+		then $(MAKE) PIADIR=$(SUBPIADIR) clean; fi); \
 	done
 
 setup::
@@ -45,9 +45,9 @@ setup::
 		echo 'setting up ' $$p; \
 		test -d $$p || mkdir $$p; \
 		test -f $$p/Makefile || (cd $$p; \
-		  make -f ../Makefile PIADIR=../$(PIADIR) \
+		  make -f ../Makefile PIADIR=$(SUBPIADIR) \
 			MYPATH=$(MYPATH)/$$p MYNAME=$$p setupSub); \
-		(cd $$p; $(MAKE) PIADIR=../$(PIADIR) setup || true); \
+		(cd $$p; $(MAKE) PIADIR=$(SUBPIADIR) setup || true); \
 	done
 
 setupSub: 
@@ -55,6 +55,7 @@ setupSub:
 	echo   '#	$$Id$$	'				>> Makefile
 	echo   '# 	COPYRIGHT 1998, Ricoh Silicon Valley' 	>> Makefile
 	echo    						>> Makefile
+	[ -z $(ABSPIA) ] || echo 'ABSPIA=$(ABSPIA)'		>> Makefile
 	echo   'PIADIR=$(PIADIR)'				>> Makefile
 	echo   'MF_DIR=$$(PIADIR)/Config/makefiles'		>> Makefile
 	echo   'MYNAME=$(MYNAME)'				>> Makefile
@@ -63,3 +64,11 @@ setupSub:
 	-grep '^include ' ../Makefile \
 		| grep -v file.make | grep -v subdir.make 	>> Makefile
 	echo    						>> Makefile
+
+### Define ABSPIA if the path to PIADIR is absolute.
+
+ifndef ABSPIA
+SUBPIADIR = ../$(PIADIR)
+else
+SUBPIADIR = $(PIADIR)
+endif
