@@ -19,6 +19,7 @@ import crc.sgml.AttrWrap;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -234,70 +235,54 @@ public class Interp extends State {
    *	binding.  Returns null if no local binding is found.
    */
   public final SGML getvar (String name) {
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
+    Index names =  new  Index(name);
+    name = names.string();
     Table bindings = getLocalBindings(name);
     if(bindings == null){
-      return null;
+     return null;
     }
-    return getEntityInternal(names,(SGML)bindings.at(name));
+    
+    return  names.lookup(bindings);
   }
 
   /** Get the value of a named variable (entity) with path lookup.
    *	Dynamic scoping is used, with an optional variable (entity) table
    *	in each State stack frame.  If no local variable is found, the 
    *	document's global entity table is used.  If the name is a dotted
-   *	path, picks it apart and does a series of lookups.
+   *	path, picks it apart, uses the first part to find the appropriate
+   *    table entry, then creates an Index object to handle the recursion.
    */
   public final SGML getEntity(String name) {
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
+    Index names =  new  Index(name);
+    name = names.string();
     Table bindings = getLocalBindings(name);
     if(bindings == null){
       bindings = entities;
     }
-    return getEntityInternal(names,(SGML)bindings.at(name));
+    return  names.lookup(bindings);
   }
 
 
   /** Get the value of a named global variable (entity).
     */
   public final SGML getGlobal(String name) {
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
-
-    //lookup rest of path
-    return  getEntityInternal(names, (SGML)entities.at(name));
-    
+    return  Index.get(name,entities);
   }
   
-  /** Implement recursion to get entity for a.b.c notation.
-       Semantics of get depend on type of SGML element.
-       Currently no provision made to avoid masking names.
-      */
-  private final SGML getEntityInternal(List names, SGML context)
-  {
-    if(names.isEmpty()){ //end of path
-      return context;
-    }
-    String n = (String) names.shift();
-    SGML newContext = context.attr(n);
-    return getEntityInternal(names,newContext);
-  }
-
 
 /** Set the value of a named variable (entity).
-   *	If no local binding is found, a new one is created in the current 
+   *	If no local binding is found, a new one is created in the global 
    *	stack frame.
    */
   public final void setvar(String name, SGML value) {
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
-    Table bindings = getLocalBindings(name);
+    Index names= new Index(name);
+    
+    Table bindings = getLocalBindings(names.string());
     if(bindings == null){
       bindings=entities;
     }
-    setEntityInternal(name,names,value,bindings);
+    names.lookupSet(bindings,value);
+    
    }
 
   /** Define a new local variable (entity) with a given name and value.
@@ -305,64 +290,15 @@ public class Interp extends State {
   public final void defvar(String name, SGML value) {
     if (variables == null) variables = new Table();
     if (value == null) value = Token.empty;
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
-    setEntityInternal(name,names,value,variables);
+    Index.set(variables,name,value);
+    
   }
 
   /** Set the value of a named global variable (entity).
    */
   public final void setGlobal(String name, SGML value) {
-    List names = Util.split(name,'.');
-    name = (String) names.shift();
-    setEntityInternal(name,names,value,entities);
-  }
-
-  /** Sets the value of a.b.c in given table (This should be top level, eg. 
-   *      entities or variables.)  New SGMLattr created as needed
-   */  
-  private final void setEntityInternal(String name, List names,
-				       SGML value, Table context) {
-    if(names.isEmpty()){
-      context.at(name,value);
-      return;
-    }
-    SGML newContext;
+    Index.set(entities,name,value);
     
-    if(context.has(name)){
-      newContext = (SGML)context.at(name);
-    } else{
-      //create SGML AttrTable to hold data structures
-      newContext = new AttrWrap();   
-      context.at(name,newContext);
-    }
-    String newName = (String) names.shift();
-    setEntityInternal(newName,names,value,newContext);
-    
-  }
-  
-
-  /**  recursive function for setting path to value for SGML subjects
-        semantics of set, attr(name,value), depend on object
-	*/
-  private final void setEntityInternal(String name, List names, SGML value, SGML context)
-  {
-    if(names.isEmpty()){
-      //set value and done
-      context.attr(name,value);
-      return;
-    }
-    SGML newContext;
-    
-    if(context.hasAttr(name)){
-      newContext = context.attr(name);
-    } else{
-      //create SGML AttrTable to hold data structures
-      newContext = new AttrWrap();   
-      context.attr(name,newContext);
-    }
-    String newName = (String) names.shift();
-    setEntityInternal(newName,names,value,newContext);
   }
   
 
