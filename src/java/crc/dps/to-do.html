@@ -16,6 +16,13 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Hole</b> lists as namespaces <br>
+       Need to support two things: list tags (e.g. &lt;dl&gt;) as namespaces,
+       and entities recognizing them when their value <em>contains</em> a
+       namespace or name.  Would be easier if there was a simple way for the
+       parser to construct arbitrary classes for elements.
+       (1998-12-04) <br>
+
   <li> <b>Impr</b> Persistent namespaces <br>
        There are actually two ways to make a namespace persistent:  make it
        the value of an external entity, and make its bindings be external
@@ -23,7 +30,7 @@ See also:
        names with a prefix.
        (1998-11-24) <br>
 
-  <li> <b>Note</b> Tagset in external entity. <br>
+  <li> <b>Note</b> Tagset for external entity. <br>
        Note that an external entity can go up its parent chain to find its
        tagset.  If not given a context explicitly, it can make its own
        TopProcessor when needed.  Note that external entities do want a
