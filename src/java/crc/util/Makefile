@@ -8,6 +8,7 @@ TOPDIR=../..
 
 FILES = \
 	Utilities.java \
+	NullOutputStream.java \
 	Timer.java
 
 include $(TOPDIR)/makefiles/file.make
