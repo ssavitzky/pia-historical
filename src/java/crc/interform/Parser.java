@@ -144,7 +144,7 @@ public class Parser extends Input {
       if (last == 0) last = in.read();
       if (last < 0) return null;
 
-      debug("'" + (char)last + "'");
+      //debug("'" + (char)last + "'");
 
       if (endString != null) {
 	it = getLiteral();
@@ -469,8 +469,8 @@ public class Parser extends Input {
       //eatUntil(quote, false);
       //next = new Text(buf);	// === need to check for entities
       last = 0;
-      debug("=" + (char)quote + (list.isText()? ".." : ".&.") + (char)quote);
-      debug("=" + (char)quote + next.toString() + (char)quote);
+      //debug("=" + (char)quote + (list.isText()? ".." : ".&.") + (char)quote);
+      //debug("=" + (char)quote + next.toString() + (char)quote);
       buf = tmp;
       return true;
     } else if (last <= ' ' || last == '>') {
@@ -493,7 +493,7 @@ public class Parser extends Input {
       }
       // === using next=list.simplify() here drops pieces.
       next = list.nItems() == 1? list.itemAt(0) : list;
-      debug("=" + (list.isText()? ".." : ".&."));
+      //debug("=" + (list.isText()? ".." : ".&."));
       buf = tmp;
       return true;
     }
@@ -522,7 +522,7 @@ public class Parser extends Input {
 
     if (eatIdent()) {		// <tag...	start tag
       buf.append(ident);
-      debug(ident);
+      //debug(ident);
 
       Element it = new Element(ident.toLowerCase());
       String a; StringBuffer v;
@@ -536,7 +536,7 @@ public class Parser extends Input {
 	if (eatIdent()) {
 	  a = ident.toLowerCase();
 	  buf.append(ident);
-	  debug(" "+a);
+	  //debug(" "+a);
 	  if (getValue()) it.addAttr(a, next);
 	  else		  it.addAttr(a, Token.empty);
 	} else if (last == '/') {
@@ -553,10 +553,10 @@ public class Parser extends Input {
       next = it;
       if (last >= 0) last = 0;
     } else if (last == '/') {	// </...	end tag
-      debug("'/'");
+      //debug("'/'");
       buf.append("/"); last = 0;
       eatIdent(); buf.append(ident);
-      debug(ident);
+      //debug(ident);
 
       eatSpaces();
       if (last != '>') return false;

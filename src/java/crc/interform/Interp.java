@@ -380,7 +380,7 @@ public class Interp extends State {
       }
       return tl;
     } else if (it instanceof Entity) {
-      debug("looking up &"+((Entity)it).entityName() + "; ");
+      //debug("looking up &"+((Entity)it).entityName() + "; ");
       SGML v = getEntity(((Entity)it).entityName());
       return (v == null)? it : v.isText()? new Text(v) : v;
     } else if (it.isText()) {
@@ -487,24 +487,24 @@ public class Interp extends State {
 
   public void pushInto(SGML t) {
     if (t == null) {
-      debug("Expanding null");
+      //debug("Expanding null");
     } else if (t.isText()) {
-      debug("Expanding \""+t.toString().length()+"\"");
+      //debug("Expanding \""+t.toString().length()+"\"");
       input = new InputToken(t.toText(), input);
     } else if (t.isElement()) {
-      debug("Expanding <"+t.tag()+"> ");
+      //debug("Expanding <"+t.tag()+"> ");
       input = new InputExpand(t, input);
     } else {
-      debug("Expanding ["+t.content().nItems()+"]");
+      //debug("Expanding ["+t.content().nItems()+"]");
       input = new InputList(t.content(), input);
     }
   }
 
   public void pushInto(Tokens t) {
     if (t == null) {
-      debug("Expanding null");
+      //debug("Expanding null");
     } else {
-      debug("Expanding ["+t.nItems()+"]");
+      //debug("Expanding ["+t.nItems()+"]");
       input = new InputList(t, input);
     }
   }
@@ -512,7 +512,7 @@ public class Interp extends State {
   /** Repeatedly expand content, with the given entity bound to each
    *	element of list. */
   public void pushForeach(Tokens content, String entity, Tokens list) {
-    debug("Iterating ["+content.nItems()+"]*["+list.nItems()+"]");
+    //debug("Iterating ["+content.nItems()+"]*["+list.nItems()+"]");
     input = new InputForeach(content, entity, list, input);
     input.interp(this);
   }
@@ -570,7 +570,7 @@ public class Interp extends State {
       byte incomplete = it.incomplete();
       String tag = it.tag();
 
-      debug(" ["+(incomplete<0? "/": incomplete==0? "|": "\\")+it.tag()+"] ");
+      //debug(" ["+(incomplete<0? "/": incomplete==0? "|": "\\")+it.tag()+"] ");
       
       /* At this point, it is the new incoming token, and stack.token
        * is whatever it is nested inside of (the current element under
@@ -598,18 +598,18 @@ public class Interp extends State {
 	if (tag == null) {
 	  /* End of file -- end whatever's open */
 	  // === not clear what to do here.
-	  debug("eof ");
+	  //debug("eof ");
 	  if (depth > 0) pushInput(it);
 	} else if (tag.equals("") || tag.equals(elementTag())) {
 	  /* just end the current element */
-	  debug("current ");
+	  //debug("current ");
 	} else if (insideElement(tag)) {
 	  /* End the current element, but keep the tag */
-	  debug("inside "+elementTag()+" (faked) ");
+	  //debug("inside "+elementTag()+" (faked) ");
 	  pushInput(it);
 	} else {
 	  /* Unmatched end tag.  Discard it. */
-	  debug("unmatched in "+elementTag()+" (discarded) ");
+	  //debug("unmatched in "+elementTag()+" (discarded) ");
 	  it = null;
 	}
 	if (it != null) {
@@ -623,7 +623,7 @@ public class Interp extends State {
 	    tag = it.tag();
 	    syntax = tagset().forTag(tag);
 	  } else {
-	    debug("popped null\n");
+	    //debug("popped null\n");
 	  }
 	}
       } else if (quoting == 0) {
@@ -633,7 +633,7 @@ public class Interp extends State {
 	// === worry about that.  Add checkForSyntax? ===
 	if (incomplete > 0 || ! it.isElement()) {
 	  it = expandAttrs(it);
-	  debug("expanded ");
+	  //debug("expanded ");
 	} else if (incomplete == 0) {
 	  if (it.isList()) input = new InputList(it.content(), input);
 	  else 		   input = new InputExpand(it, input);
@@ -642,16 +642,16 @@ public class Interp extends State {
       }
 
       if (it == null) {
-	debug("deleted\n");
+	//debug("deleted\n");
       } else if (it.isList()) {
 	if (! it.isEmpty()) input = new InputList(it.content(), input);
-	debug("expand list");
+	//debug("expand list");
 	continue;
       } else if (incomplete > 0) {
 	/* Start tag.  Check for interested actors.
 	 *	keep track of any that register as handlers.
 	 */
-	debug("start depth="+depth+" ");
+	//debug("start depth="+depth+" ");
 	handlers = null;
 
 	/* Push the stack.  
@@ -668,24 +668,27 @@ public class Interp extends State {
 	} else if (it.incomplete() == 0) { // It's been marked as complete.
 	  stack.handlers = handlers;
 	  popState();
-	  debug("completed in "+elementTag()+"\n");
+	  //debug("completed in "+elementTag()+"\n");
 	  // === the following fails for  nested actors.
 	  //	 something may be getting out of sync.
 	  if (!isQuoting()) checkForHandlers(it);
 	  //continue;
 	} else {		// Nothing happened; push it.
-	  debug("pushed in "+elementTag()+"\n");
+	  //debug("pushed in "+elementTag()+"\n");
 	  //pushState();
 	  // === some trouble if actor has passTags = false
 	  stack.handlers = handlers;
 	  handlers = null;
-	  if (passing) { passToken(it); debug("passed\n"); }
+	  if (passing) {
+	    passToken(it);
+	    //debug("passed\n");
+	  }
 	  it = null;		// Skip the handlers and pushToken
 	}
       } else {
 	/* End tag or complete token. */
-	debug("depth="+depth+" ");
-	debug(it.incomplete()<0?"end " : "comp ");
+	//debug("depth="+depth+" ");
+	//debug(it.incomplete()<0?"end " : "comp ");
 
 	checkForInterest(it, incomplete, syntax);
 	if (!isQuoting()) checkForHandlers(it);
@@ -693,15 +696,15 @@ public class Interp extends State {
 
       if (it != null) {
 	if (parsing) { 
-	  debug("appended to "+elementTag()+"\n");
+	  //debug("appended to "+elementTag()+"\n");
 	  pushToken(it);
 	}
 	if (passing) {
-	  passToken(it); debug("passed\n");
+	  passToken(it); //debug("passed\n");
 	  if (once) return;
 	}
       } else {
-	debug("deleted\n");
+	//debug("deleted\n");
       }
     }
 
@@ -725,7 +728,7 @@ public class Interp extends State {
 
     /* Find the actor interested in this tag, if any */
     if (a != null) {
-      debug(" " + a.name() + "?");
+      //debug(" " + a.name() + "?");
       a.actOn(it, this, incomplete, quoting);
     } 
 
@@ -751,7 +754,7 @@ public class Interp extends State {
     boolean deleted = (this.it == null);
     Actor a;
     while ((a = (Actor)handlers.pop()) != null) {
-      debug(" " + a.name() + "!");
+      //debug(" " + a.name() + "!");
       a.handle(it, this);
       if (this.it == null) deleted = true;
       else if (this.it != it) it = this.it;
@@ -835,7 +838,7 @@ public class Interp extends State {
   public final void addHandler(Actor a) {
     if (handlers == null) handlers = new List();
     handlers.push(a);
-    debug(a.name()+":");
+    //debug(a.name()+":");
   }
 
   /** Mark the current token as completed. */
