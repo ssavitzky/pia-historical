@@ -170,7 +170,8 @@ public class BasicParser extends AbstractParser {
       buf.append(ident);
       //debug(ident);
 
-      ActiveElement it = createActiveElement(ident, null);
+      ActiveElement it = createActiveElement(ident);
+      boolean hasEmptyDelim = false;
       String a; StringBuffer v;
 
       // Now go after the attributes.
@@ -186,19 +187,17 @@ public class BasicParser extends AbstractParser {
 	  it.addAttribute(a, getValue());
 	} else if (last == '/') {
 	  // XML-style empty-tag indicator.
-	  it.setHasEmptyDelimiter(true);
-	  it.setIsEmptyElement(true);
+	  hasEmptyDelim = true;
 	  last = 0;
 	} else break;
       }
       if (last != '>') return false;
 
-      it.setAction(it.getSyntax().getActionForNode(it));
       // === Check for content entity and element handling ===
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
-      next = it;
+      next = correctActiveElement(it, hasEmptyDelim);
       if (last >= 0) last = 0;
     } else if (last == '/') {	// </...	end tag
       // debug("'/'");
@@ -245,7 +244,8 @@ public class BasicParser extends AbstractParser {
       buf = tmp;
       buf.setLength(buf.length()-1); // remove the extraneous '<'
     } else if (last == '>') {	// <>		empty start tag
-      next = createActiveElement(ident, null);
+      // === <> needs to get tag from enclosing element, which it ends.
+      next = createActiveElement(ident, null, false);
     } else {			// not a tag.
       return false;
     }

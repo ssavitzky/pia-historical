@@ -415,10 +415,33 @@ public abstract class AbstractParser extends CursorStack implements Parser
   /** Creates an ActiveElement; otherwise identical to CreateElement. 
    */
   protected ActiveElement createActiveElement(String tagname,
-					      AttributeList attributes) {
-    return (tagset == null)
+					      AttributeList attributes,
+					      boolean hasEmptyDelim) {
+    ActiveElement e = (tagset == null)
       ? new ParseTreeElement(tagname, attributes)
       : tagset.createActiveElement(tagname, attributes);
+    if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
+    e.setAction(e.getSyntax().getActionForNode(e));
+    e.setIsEmptyElement(e.getSyntax().isEmptyElement(e));
+    return e;
+  }
+
+  /** Creates an active element with no attributes. */
+  protected ActiveElement createActiveElement(String tagname) {
+    ActiveElement e = (tagset == null)
+      ? new ParseTreeElement(tagname, null)
+      : tagset.createActiveElement(tagname, null);
+    return e;
+  }
+
+  /** Fixes up an active element that was created before its attributes
+   *	were completely parsed. */
+  protected ActiveElement correctActiveElement(ActiveElement e,
+					       boolean hasEmptyDelim) {
+    if (hasEmptyDelim) e.setHasEmptyDelimiter(hasEmptyDelim);
+    e.setAction(e.getSyntax().getActionForNode(e));
+    e.setIsEmptyElement(hasEmptyDelim || e.getSyntax().isEmptyElement(e));
+    return e;
   }
 
   /** Creates an ActiveNode of arbitrary type with (optional) data.
@@ -431,17 +454,21 @@ public abstract class AbstractParser extends CursorStack implements Parser
    */
   protected ActiveNode createActiveNode(int nodeType,
 					String name, String data) {
-    return (tagset == null)
+    ActiveNode n = (tagset == null)
       ? Create.createActiveNode(nodeType, name, data)
       : tagset.createActiveNode(nodeType, name, data);
+    n.setAction(n.getSyntax().getActionForNode(n));
+    return n;
   }
 
   /** Creates an ActiveText node.  Otherwise identical to createText.
    */
   protected ActiveText createActiveText(String text, boolean isIgnorable) {
-    return (tagset == null)
+    ActiveText n = (tagset == null)
       ? new ParseTreeText(text, isIgnorable)
       : tagset.createActiveText(text, isIgnorable);
+    n.setAction(n.getSyntax().getActionForNode(n));
+    return n;
   }
 
   /** Creates an ActiveText node.  Includes the <code>isWhitespace</code>
@@ -450,9 +477,11 @@ public abstract class AbstractParser extends CursorStack implements Parser
   protected ActiveText createActiveText(String text,
 					boolean isIgnorable,
 					boolean isWhitespace) {
-    return (tagset == null)
+    ActiveText n = (tagset == null)
       ? new ParseTreeText(text, isIgnorable, isWhitespace)
       : tagset.createActiveText(text, isIgnorable, isWhitespace);
+    n.setAction(n.getSyntax().getActionForNode(n));
+    return n;
   }
 
   /************************************************************************
