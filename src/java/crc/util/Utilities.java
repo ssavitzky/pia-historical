@@ -214,10 +214,12 @@ public class Utilities {
   }
 
 
+    /* Apparently obsolete.  Delete when this is clear */
   /** Copy a file, replacing keys in the <code>subst</code> table with their
    *	values.  Look for keys only after an instance of <code>beg</code>
    *	and end them with <code>end</code>. 
    */
+    /*
   public static synchronized void substFile( File src, File dst,
 					     crc.sgml.Attrs subst, char beg, char end)
        throws IOException
@@ -263,7 +265,7 @@ public class Utilities {
       if (destination != null) destination.close();
     }
   }
-
+    */
 
   /**
    * Convert a String to a ByteArrayOutputStream
