@@ -18,7 +18,8 @@ PACKAGES = \
 	util \
 	interform \
 	tf \
-	pia
+	pia \
+	dom
 
 include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make

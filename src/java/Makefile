@@ -24,6 +24,7 @@ PIAPACKAGENAMES= \
 	crc.sgml \
 	crc.tf \
 	crc.util \
+	crc.dom \
 	misc
 
 ### These are the names of the classes in the JDK that the PIA uses.  
