@@ -118,8 +118,11 @@ public class Handler implements java.io.Serializable {
 
   public boolean noticeGiven = false;
 
+  /** getActionForNode: override to perform parse-time dispatching */
   public crc.dps.Action getActionForNode(crc.dps.active.ActiveNode n,
 					 crc.dps.handle.LegacyHandler h) {
+    crc.dps.active.ActiveElement e = n.asElement();
+    //if (h.dispatch(e, "")) return h.wrap(new _());
     return h;
   }
 
