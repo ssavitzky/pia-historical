@@ -50,7 +50,7 @@ sub initialize {
     my $tag = $self->attr('tag');
     my $active = $self->attr('active');
     $active = ($tag || $name !~ /^-/ ) unless defined $active;
-    my $hook = $active? '_act_for' : '_act_on';
+    my $hook = '_action';
 
     if ($self->attr('content')) {
 	$self->hook($hook, \&act_generic);
@@ -122,34 +122,9 @@ sub matches {
 ###	can simply do its thing, or there might be content coming.
 ###
 ###	An actor that needs to wait for content can register itself as
-###	a handler.  An actor that *operates on* content can register
-###	itself as a passive actor.  An actor that operates on *itself*
-###	must return true from is_active and supply an act routine.  A 
-###	passive actor can activate an element by re-blessing it as an
-###	actor. 
+###	a handler.  The act_on routine for a start tag can eitherperform 
+###	the whole action, or register a handler (preferred).
 ###
-###	When an action routine is called, the actor can call
-###	$ii->token with an argument to replace the parser's current
-###	token.   
-
-sub is_active {
-    my ($self) = @_;
-
-    ## Return true if the actor is active.
-
-    return defined $self->{_act};
-}
-
-sub act {
-    my ($self, $ii, $inc, $quoting) = @_;
-
-    ## Perform the action routine associated associated with this token.
-    ##	  Called if some passive actor marks the token ``active'' by
-    ##	  re-blessing it as an actor.
-
-    my $code = $self->{_act};
-    return &$code($self, $ii, $inc, $quoting) if (ref($code) eq 'CODE');
-}
 
 sub act_on {
     my ($self, $it, $ii, $inc, $quoting) = @_;
@@ -159,19 +134,7 @@ sub act_on {
     ##	  element for which content is expected.  In that case, the 
     ##	  parse stack will already have been pushed.
 
-    my $code = $self->{_act_on};
-    return unless defined $code;
-    return &$code($self, $it, $ii, $inc, $quoting) if (ref($code) eq 'CODE');
-}
-
-sub act_for {
-    my ($self, $it, $ii, $inc, $quoting) = @_;
-
-    ## Act ``for'' a token.  
-    ##	  This is called for ``active'' actors that match the tag of the
-    ##	  token being evaluated.
-
-    my $code = $self->{_act_for};
+    my $code = $self->{_action};
     return unless defined $code;
     return &$code($self, $it, $ii, $inc, $quoting) if (ref($code) eq 'CODE');
 }

@@ -142,10 +142,10 @@ sub content_thing {
     return $token;
 }
 
-
-sub as_HTML {
+sub as_ARRAY {
     my ($self) = @_;
-    return $self->as_string;
+
+    return unbless($self->content);
 }
 
 

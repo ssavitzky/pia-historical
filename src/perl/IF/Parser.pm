@@ -1,6 +1,9 @@
-package IF::Parser;
-
-#### $Id$
+package IF::Parser; ###### InterForm Parser
+###	$Id$
+###
+###	This is really an SGML _scanner_ specialized for HTML
+###	(basically the SGML reference syntax).
+###
 
 ### Copied from HTML::Parser by Gisle Aas <aas@sn.no>
 ### Modified to fit into the PIA code hierarchy by 
@@ -8,18 +11,26 @@ package IF::Parser;
 
 use strict;
 
-#use HTML::Entities ();
 use vars qw($VERSION);
 $VERSION = sprintf("%d.%02d", q$Revision$ =~ /(\d+)\.(\d+)/);
 
 
-sub new
-{
-    my $class = shift;
+sub new {
+    my ($class, $ii) = @_;
+
     my $self = bless { '_buf' => '' }, $class;
+    $self->interp($ii) if defined $ii;
     $self;
 }
 
+sub interp {
+    my ($self, $v) = @_;
+    $self->{'_interp'} = $v if defined $v;
+    $self->{'_interp'};
+}
+
+
+### Original notes by Gisle Aas <aas@sn.no>
 # How does Netscape do it: It parse <xmp> in the depreceated 'literal'
 # mode, i.e. no tags are recognized until a </xmp> is found.
 # 
@@ -38,13 +49,19 @@ sub new
 # as a trick to make non-script-aware browsers ignore the scripts.
 
 
-sub parse
-{
+sub parse {
     my $self = shift;
+
+    ## parse ($text)
+    ##	  Append $text to the buffer (which contains whatever couldn't 
+    ##	  be parsed from the previous chunk) and scan off as many tokens
+    ##	  as possible.
+
+    my $interp = exists $self->{'_interp'}? $self->interp : $self;
     my $buf = \ $self->{'_buf'};
     unless (defined $_[0]) {
 	# signals EOF (assume rest is plain text)
-	$self->text($$buf) if length $$buf;
+	$interp->resolve($$buf) if length $$buf;
 	$$buf = '';
 	return $self;
     }
@@ -66,10 +83,10 @@ sub parse
 		} elsif ($text =~ s/(&(?:(?:\#\d*)?|[-.\w]*))$//) {
 		    $$buf = $1;
 		};
-		$self->text($text);
+		$interp->resolve($text);
 		return $self;
 	    } else {
-		$self->text($1);
+		$interp->resolve($1);
 	    }
 	# Then, markup declarations (usually either <!DOCTYPE...> or a comment)
 	} elsif ($$buf =~ s|^(<!)||) {
@@ -106,13 +123,15 @@ sub parse
 	} elsif ($$buf =~ s|^</||) {
 	    # end tag
 	    if ($$buf =~ s|^\s*([a-z][a-z0-9\.\-]*)\s*>||i) {
-		$self->end(lc($1));
+		$interp->end_it(lc($1));
+	    } elsif ($$buf =~ s|^\s*>||i) {
+		$interp->end_it('', 1);	# Empty end tag
 	    } elsif ($$buf =~ m|^\s*[a-z]*[a-z0-9\.\-]*\s*$|i) {
 		$$buf = "</" . $$buf;  # need more data to be sure
 		return $self;
 	    } else {
 		# it is plain text after all
-		$self->text($$buf);
+		$interp->resolve($$buf);
 		$$buf = "";
 	    }
 	# Then, finally we look for a start tag
@@ -142,12 +161,10 @@ sub parse
 		    if ($$buf =~ s|(^=\s*([^\"\'>\s][^>\s]*)\s*)||) { #"
 			$eaten .= $1;
 			$val = $2;
-			$self->expand_entities($val) unless $self->quoting;
 		    # or quoted by " "or ' '
 		    } elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) { #"
 			$eaten .= $1;
 			$val = $3;
-			$self->expand_entities($val) unless $self->quoting;
                     # truncated just after the '=' or inside the attribute
 		    } elsif ($$buf =~ m|^(=\s*)$| or
 			     $$buf =~ m|^(=\s*[\"\'].*)|s) { #"
@@ -163,17 +180,17 @@ sub parse
 
 		# At the end there should be a closing ">"
 		if ($$buf =~ s|^>||) {
-		    $self->start($tag, \@attr);
+		    $interp->start_tag($tag, \@attr);
 		} elsif (length $$buf) {
 		    # Not a conforming start tag, regard it as normal text
-		    $self->text($eaten);
+		    $interp->resolve($eaten);
 		} else {
 		    $$buf = $eaten;  # need more data to know
 		    return $self;
 		}
 
 	    } elsif (length $$buf) {
-		$self->text($eaten);
+		$interp->resolve($eaten);
 	    } else {
 		$$buf = $eaten . $$buf;  # need more data to parse
 		return $self;
@@ -207,29 +224,67 @@ sub parse_file
     $self->parse(undef); #EOF
 }
 
-sub text
-{
-    # my($self, $text) = @_;
+#############################################################################
+###
+### Token Input:
+###
+###	These routines are the ones that HTML::Parser calls on itself
+###	when it recognizes an input token:
+###
+###		declaration($text)
+###		comment($text)
+###		start($tag, $attrs)
+###		end($tag)
+###		text($text)
+###
+
+sub declaration {
+    my ($self, $text) = @_;
+
+    ## HTML declaration, e.g. doctype.
+    ##	initial "<!" and ending ">" stripped off.
+
+    $self->resolve(IF::IT->new('!')->push($text))
 }
 
-sub declaration
-{
-    # my($self, $decl) = @_;
+sub comment {
+    my ($self, $text) = @_;
+
+    ## Comment.
+    ##	The leading and trailing "<!--" and "-->" have been stripped off.
+
+    $self->resolve(IF::IT->new('!--')->push($text))
 }
 
-sub comment
-{
-    # my($self, $comment) = @_;
+
+### The following are included for reference only; 
+###	they are actually inlined for speed.
+
+sub end {
+    my ($self, $tag) = @_;
+
+    ## End tag.
+
+    $self->end_it($tag, !$tag);
 }
 
-sub start
-{
-    my($self, $tag, $attr) = @_;  # $attr is reference to a HASH
+sub start {
+    my ($self, $tag, $attrs) = @_;
+
+    ## Start tag.
+    ##	The tag and attribute names have been lowercased.
+
+    $self->start_tag($tag, $attrs);
 }
 
-sub end
-{
-    my($self, $tag) = @_;
+sub text {
+    my ($self, $text) = @_;
+
+    ## Text.
+    ##	  Entities will be expanded by the resolver if necessary.
+
+    $self->resolve($text);
 }
+
 
 1;

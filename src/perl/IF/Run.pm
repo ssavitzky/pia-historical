@@ -26,7 +26,6 @@ use IF::Actors;
 	     'parsing' => 1,	# push completed tags onto their parent.
 	     'passing' => 0,
 	     'syntax' => $IF::IT::syntax,
-	     'active_actors' => {},
 	     'passive_actors' => [],
 	     'actors' => {},
 	     );
@@ -93,7 +92,7 @@ sub run_tree {
 	shift;
 	$interp = IF::II->new(@_);
     }
-    $interp->process_it($input);
+    $interp->push_input($input);
     return $interp->run;
 }
 
@@ -169,20 +168,19 @@ sub parse_html_string {
 local $agent, $request, $resolver;
 
 sub interform_file {
-    local ($agent,$file,$request, $resolver)=@_;
+    local ($agent, $file, $request, $resolver)=@_;
 
     ## Run a standard PIA InterForm file.
-    ##	  The resolver is 
+
     $resolver = $main::resolver unless defined($resolver);
-
     local $entities = if_entities($agent, $file, $request);
-    my $string = run_file($file);
 
-    if (!string || ref($string)) {
-	print "\nIF::II::run_file returned '$string'\n" if $main::debugging;
+    my $result = run_file($file);
+    if (!result || ref($result)) {
+	print "\nIF::II::run_file returned '$result'\n" if $main::debugging;
 	$main::debugging=0;	# look at the first post-mortem.
     }
-    return $string;
+    return $result;
 }
 
 @dayNames=(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday);

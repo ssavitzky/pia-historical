@@ -49,6 +49,20 @@ sub tag {
     return;
 }
 
+#############################################################################
+###
+### Content:
+###	These are isomorphic to the equivalent operations on DS::Thing.
+###
+
+sub is_list {
+    my $self = shift;
+
+    ## Lists are lists.
+
+    return 1;
+}
+
 sub content {
     my $self = shift;
 
@@ -60,12 +74,11 @@ sub content {
     $self;
 }
 
-#############################################################################
-###
-### Content:
-###	We use the simplified syntax of push, pop, unshift, and shift
-###	rather than the clumsier push_content, and provide a complete
-###	set of operations.
+sub as_thing {
+    my ($self) = @_;
+
+    return $self->content_thing;
+}
 
 sub is_empty {
     my $self = shift;
@@ -96,28 +109,13 @@ sub push {
     my $self = shift;
 
     ## Push something into the content.  
-    ##	  Strings are merged.  Arrays are appended.
-    ##	  Tagless tokens have their content treated as arrays.
-    ## === We should leave the merging, etc. to subclasses that need it
+    ##	  Arrays are appended.
 
     for (@_) {
 	if (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
-	} elsif (ref $_) {
-	    my $t = $_->tag;
-	    if ($t) {
-		push(@$self, $_);
-	    } else {
-		$self->push($_->content);
-	    }
 	} else {
-	    # The current element is a text segment
-	    if (@$self && !ref $self->[-1]) {
-		# last content element is also text segment
-		$self->[-1] .= $_;
-	    } else {
-		push(@$self, $_);
-	    }
+	    push(@$self, $_);
 	}
     }
     $self;
@@ -142,19 +140,7 @@ sub unshift {
 
     ## unshift something into the content, i.e. attach it to the front.
 
-    for (@_) {
-	if (ref $_) {
-	    unshift(@$self, $_);
-	} else {
-	    # The current element is a text segment
-	    if (@$self && !ref $self->[0]) {
-		# first content element is also text segment
-		$self->[0] =$_ . $self->[0];
-	    } else {
-		unshift(@$self, $_);
-	    }
-	}
-    }
+    unshift(@$self, $_);
     $self;
 }
 

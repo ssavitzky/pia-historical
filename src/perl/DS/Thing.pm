@@ -152,6 +152,14 @@ sub attr_list {
 ###	rather than the clumsier push_content, and provide a complete
 ###	set of operations.
 
+sub is_list {
+    my $self = shift;
+
+    ## Things are not lists.
+
+    return 0;
+}
+
 sub content {
     my $self = shift;
 
@@ -163,6 +171,12 @@ sub content {
     } else {
 	$self->{'_content'};
     }
+}
+
+sub as_thing {
+    my ($self) = @_;
+
+    return $self;
 }
 
 sub empty_element {

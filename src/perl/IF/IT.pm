@@ -167,7 +167,7 @@ sub push {
 	if (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
 	} elsif (ref $_) {
-	    my $t = $_->{'_tag'};
+	    my $t = $_->tag;
 	    if ($t) {
 		push(@$content, $_);
 	    } else {

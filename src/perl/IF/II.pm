@@ -1,4 +1,4 @@
-###### Interform Interpretor
+package IF::II; ###### Interform Interpretor
 ###	$Id$
 ###
 ###	The Interform Interpretor parses a string or file, evaluating any 
@@ -8,12 +8,13 @@
 ###	possible to execute a saved parse tree.  This is a good thing,
 ###	because actors are *stored* as parse trees.
 
-package IF::II;
+
 
 require IF::Parser;
 use HTML::Entities ();
 use IF::IT;
 use IF::IA;
+use DS::Tokens;
 
 push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 				#     the problem is that HTML::Parser
@@ -68,6 +69,7 @@ sub new {
     $self->{_dstack} =  [];	# The stack of items under construction.
     $self->{_cstack} =  [];	# The control stack.
     $self->{_out_queue} = IF::IT->new(); # a queue of tokens to be output.
+    $self->{_out_queue} = DS::Tokens->new(); # a queue of tokens to be output.
     $self->{_in_stack} =  [];	# a stack of tokens to be input.
     $self->{_state} = {};	# A ``stack frame''
 
@@ -155,31 +157,22 @@ sub actors {
     my ($self, $v) = @_;
 
     ## actors
-    ##	  Should be a reference to a hash table of Interform Actor, 
-    ##	  keyed by name.  Basically a symbol table.  This is not  
-    ##	  defined until we start defining local actors. 
+    ##	  Should be a reference to a hash table of Interform Actors, 
+    ##	  keyed by name.  Basically a symbol table.  Actors whose names
+    ##	  match tags are invoked directly.
 
     $self->state->{'_actors'} = $v if defined($v);
     $self->state->{'_actors'};
-}
-
-sub active_actors {
-    my ($self, $v) = @_;
-
-    ## active_actors:
-    ##	Should be a reference to a hash table of actors registered as 
-    ##  associated with particular tags.
-
-    $self->state->{'_active_actors'} = $v if defined($v);
-    $self->state->{'_active_actors'};
 }
 
 sub passive_actors {
     my ($self, $v) = @_;
 
     ## passive_actors:
-    ##	Should be a reference to an array of actors that might be interested
-    ##	in objects going by.
+    ##	Should be a reference to an array of actors that have to be matched
+    ##	against attributes or other features of incoming tokens.  Must have 
+    ##  names that cannot match tags; for most tagsets this means names 
+    ##  starting with '-'.
 
     $self->state->{'_passive_actors'} = $v if defined($v);
     $self->state->{'_passive_actors'};
@@ -342,83 +335,6 @@ sub defvar {
 }
 
 
-#############################################################################
-###
-### Token Input:
-###
-###	These routines are the ones that HTML::Parser calls on itself
-###	when it recognizes an input token:
-###
-###		declaration($text)
-###		start($tag, $attrs)
-###		end($tag)
-###		comment($text)
-###		text($text)
-###
-
-sub declaration {
-    my ($self, $text) = @_;
-
-    ## HTML declaration, e.g. doctype.
-    ##	initial "<!" and ending ">" stripped off.
-
-    $self->resolve(IF::IT->new('!')->push($text))
-}
-
-sub start {
-    my ($self, $tag, $attrs) = @_;
-
-    ## Start tag.
-    ##	The tag and attribute names have been lowercased.
-    ##	Entities in the attribute values have already been expanded.
-
-    my $it = IF::IT->new($tag);
-    if (ref($attrs) eq 'HASH') {
-	for (sort keys %$attrs) {
-	    next if /^_/;
-	    $it->attr($_, $attrs->{$_});
-	    print " $_=" . $attrs->{$_} if $main::debugging>1;
-	}
-    } elsif (ref($attrs) eq 'ARRAY') {
-	my $attr, $val;
-	while (($attr, $val) = splice(@$attrs, 0, 2)) {
-	    $it->attr($attr, $val);
-	    print " $attr=$val " if $main::debugging>1;
-	}
-    }
-    $self->start_it($it);
-}
-
-sub end {
-    my ($self, $tag) = @_;
-
-    ## End tag.
-
-    $self->end_it($tag, !$tag);
-}
-
-sub comment {
-    my ($self, $text) = @_;
-
-    ## Comment.
-    ##	The leading and trailing "<!--" and "-->" have been stripped off.
-
-    $self->resolve(IF::IT->new('!--')->push($text))
-}
-
-sub text {
-    my ($self, $text, $expanded) = @_;
-
-    ## Text.
-    ##	if $expanded is false, entities have NOT been expanded, so
-    ##  HTML::Entities::decode($text) may need to be called.
-
-    if (! $expanded && ! $self->quoting) {
-	$self->expand_entities($text);
-    }
-    $self->resolve($text);
-}
-
 sub expand_entities {
     my $ii = shift;
 
@@ -441,60 +357,6 @@ sub expand_entities {
 
 #############################################################################
 ###
-### Extended Input:
-###
-###	In addition to the parser's parse_file and parse_string operations, 
-###	we add the following to permit reprocessing of parse trees. 
-###
-
-sub process_element {
-    my ($self, $elt) = @_;
-
-    ## Process an HTML::Element, including its contents if any.
-
-    my $content = $elt->content;
-
-    my $attrs = {};
-    for (sort keys %$elt) {
-	next if /^_/;
-	$attrs{$_} = $elt->{$_};
-    }
-    $self->start($elt->tag, $attrs);
-
-    if (defined $content) {
-	for (@$content) {
-	    if (ref($_)) { $self->process_element($_); }
-	    else         { $self->text($_, 1); }
-	}
-    }
-    $self->end($elt->tag);
-}
-
-sub process_it {
-    my ($self, $it, $contentOnly) = @_;
-
-    ## Process an Interform Token parse tree.  
-    ##	  This is not the same as simply pushing it on the output.
-    ##	  The idea is that this is the body of an actor, so we have to
-    ##	  run it through the interpretor again in the current context.
-    ##	  If nothing is active, this has the effect of making a deep
-    ##	  copy of the original tree.
-
-    $self->start($it->tag, $it->attrs) unless $contentOnly;
-
-    my $content = $it->content;
-    if (defined $content) {
-	for (@$content) {
-	    if (ref($_)) { $self->process_it($_); }
-	    else         { $self->text($_, 1); }
-	}
-    }
-    $self->end($elt->tag) unless $contentOnly;
-}
-
-
-#############################################################################
-###
 ### Input from the input stack:
 ###
 ###	The input stack contains either strings, tokens, or lists.
@@ -502,8 +364,9 @@ sub process_it {
 ###	stepping through the content of a token without excessive copying.
 ###	When the end of the token list is reached, the entire list is returned.
 ###
-###	"tag" might actually be a reference to an actor, and additional state
-###	can be provided.  The actor's end_input method is called.
+###	If "tag" is a reference, its start_input method is called by 
+###	push_input, and its end_input method is called after the last token
+###	has been used.  Additional state can be kept after the token list.
 
 sub next_input {
     my ($self) = @_;
@@ -621,7 +484,8 @@ sub run {
     ##	   going to a file or input stream as needed.
 
     $self->flush;
-    return $self->streaming? $self->out_queue->as_string : $self->out_queue;
+    return $self->streaming? $self->out_queue->as_string 
+	                   : $self->out_queue->as_token;
 }
 
 sub flush {
@@ -684,6 +548,22 @@ sub start_it {
     } else {
 	$self->resolve($it, 0);
     }
+}
+
+sub start_tag {
+    my ($self, $tag, $attrs) = @_;
+
+    ## Start tag.
+    ##	The tag and attribute names have been lowercased.
+
+    my $it = IF::IT->new($tag);
+    my ($attr, $val);
+    while (($attr, $val) = splice(@$attrs, 0, 2)) {
+	$self->expand_entities($val) unless $self->quoting;
+	$it->attr($attr, $val);
+	print " $attr=$val " if $main::debugging>1;
+    }
+    $self->start_it($it);
 }
 
 sub end_it {
@@ -832,6 +712,9 @@ sub resolve {
     my $dstack = $self->dstack;
     my $cstack = $self->cstack;
     $incomplete = 0 unless defined $incomplete;
+
+    ## === the ref($it) shouldn't be needed ===
+    $it = $self->expand_attrs($it) unless (ref($it) || $self->quoting);
 
     while ($it) {
 	## Loop as long as there are tokens to be processed.
@@ -1005,18 +888,13 @@ sub check_for_interest {
     foreach $a (@$passive_actors) {
 	if ($a->matches($it, $self, $incomplete, $quoting)) {
 	    $a->act_on($it, $self, $incomplete, $quoting);
-	    print "    actor ".$a->name." is interested\n" if $main::debugging>1;
+	    print "    actor ".$a->name." matched it\n" if $main::debugging>1;
 	}
     }
     my $t = ref($it)? $it->tag : '';
-    if (defined($a = $self->active_actors->{$t})) {
-	$a->act_for($it, $self, $incomplete, $quoting);
-	print "    actor ".$a->name." acted for it\n" if $main::debugging>1;
-    }
-    return unless ref($it);
-    if ($it->is_active) {
-	$it->act($self, $incomplete, $quoting);
-	print "    token ".$it->tag." is active\n" if $main::debugging>1;
+    if (defined($a = $self->actors->{$t})) {
+	$a->act_on($it, $self, $incomplete, $quoting);
+	print "    actor ".$a->name." matched tag\n" if $main::debugging>1;
     }
 }
 
@@ -1087,18 +965,14 @@ sub delete_it {
 ### === The following should really be in a Tagset module.
 
 sub open_actor_context {
-    my ($self, $active, $passive) = @_;
+    my ($self, $actors, $passive) = @_;
 
     ## Start using a new set of actors.
-    ##	  The old set are copied unless $active and $passive are
+    ##	  The old set are copied unless $actors and $passive are
     ##	  supplied.
 
-    $active = $self->active_actors unless defined $active;
+    $actors = $self->actors unless defined $actors;
     $passive = $self->passive_actors unless defined $passive;
-    $actors = $self->actors;
-
-    my %newactive = %$active;	# copy the active actor table
-    $self->state->{_active_actors} = (\%newactive);
 
     my @newpassive = @$passive;	# copy the passive actor list
     $self->state->{_passive_actors} = (\@newpassive);
@@ -1142,11 +1016,7 @@ sub define_actor {
     my $name = $actor->attr('name');
     my $tag = $actor->attr('tag');
 
-    if ($tag) {
-	$self->active_actors->{$tag} = $actor;
-    } else {
-	push(@{$self->passive_actors}, $actor);
-    }
+    push(@{$self->passive_actors}, $actor) unless $tag;
     $self->actors->{$name} = $actor;
 }
 

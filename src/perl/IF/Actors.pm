@@ -29,14 +29,12 @@ $syntax = {
 };
 
 $actors = {};
-$active_actors = {};
 $passive_actors = [];
 
 @if_defaults = (
 	     'streaming' => 1,	# output is a string
 	     'passing' => 1,	# pass completed tags to the output.
 	     'syntax' => $syntax,
-	     'active_actors' => $active_actors,
 	     'passive_actors' => $passive_actors,
 	     'actors' => $actors,
 	     );
@@ -58,11 +56,7 @@ sub define_actor {
     my $name = $actor->attr('name');
     my $tag = $actor->attr('tag');
 
-    if ($tag) {
-	$active_actors->{$tag} = $actor;
-    } else {
-	push(@$passive_actors, $actor);
-    }
+    push(@$passive_actors, $actor) unless $tag;
     $actors->{$name} = $actor;
     print "Defined IF actor " . $actor->starttag . "\n" if $main::debugging; 
 }
@@ -70,7 +64,12 @@ sub define_actor {
 
 #############################################################################
 ###
-### shared handles:
+### Matching routines:
+###
+
+#############################################################################
+###
+### Shared handles:
 ###
 
 sub null_handle {
@@ -174,8 +173,7 @@ sub foreach_handle {
 ### actor:  active, quoted.
 ###	Defines a new actor.
 
-define_actor('actor', 'quoted' => 'quoted',
-	     _handle => \&actor_handle,
+define_actor('actor', 'quoted' => 'quoted', _handle => \&actor_handle,
 	     'dscr' => "define an InterForm actor");
 
 sub actor_handle {
@@ -203,8 +201,7 @@ sub actor_handle {
 ### === <get file [path="p1:p2..."]
 ###	<file read|write|append [path=] [name=] >content</file>
 
-define_actor('get', 'content' => 'name',
-	     _handle => \&get_handle,
+define_actor('get', 'content' => 'name', _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
 optionally in PIA, ENV, AGENT, FORM, ELEMENT, or ENTITY context.");
 
@@ -244,12 +241,14 @@ sub get_handle {
 ### <set name="name" value="value">
 ### <set name="name">value</set>
 
-define_actor('set', 'content' => 'value',
-	     _handle => \&set_handle,
+define_actor('set', 'content' => 'value', _handle => \&set_handle,
 	     'dscr' => "set NAME to VALUE, 
-optionally in PIA, AGENT, ELEMENT, or ENTITY context.");
+optionally in PIA, AGENT, ACTOR, ELEMENT, or ENTITY context.   
+ELEMENT and ENTITY may define a LOCAL binding.  ELEMENT may have a TAG.  
+Optionally COPY new or PREVIOUS value.");
 
 ### === COPY / COPY PREVIOUS ===
+### === TAG= / ACTOR ===
 
 sub set_handle {
     my ($self, $it, $ii) = @_;
@@ -362,15 +361,14 @@ sub repeat_end_input {
 ### Expansion control: 
 ###	protect, protect-result
 
-define_actor('protect', 'quoted' => 'quoted', 
-	     _handle => \&protect_handle,
-	     'dscr' => "protect CONTENT from expansion.  Optionally protect
+define_actor('protect', 'quoted' => 'quoted', _handle => \&protect_handle,
+	     'dscr' => "Protect CONTENT from expansion.  Optionally protect
 MARKUP by converting special characters to entities.");
 
-define_actor('protect-result', 
-	     _handle => \&protect_handle,
-	     'dscr' => "protect results of expanding CONTENT from expansion.  
-Optionally protect MARKUP by converting special characters to entities.");
+define_actor('protect-result', _handle => \&protect_handle,
+	     'dscr' => "Protect results of expanding CONTENT from further 
+expansion.  Optionally protect MARKUP by converting special characters 
+to entities.");
 
 %protected_chars = ('&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
 
@@ -389,24 +387,24 @@ sub protect_handle {
     }
 }
 
-define_actor('expand', 
-	     _handle => \&expand_handle,
-	     'dscr' => "(re-)expand CONTENT after parsing it.");
+define_actor('expand', _handle => \&expand_handle,
+	     'dscr' => "Expand CONTENT, then either re-expand or PROTECT it.
+Optionally protect MARKUP as well.");
 
 sub expand_handle {
     my ($self, $it, $ii) = @_;
 
-    $ii->push_into($it->content);
-    $ii->delete_it;
+    if ($it->attr('protect')) {
+	protect_handle($self, $it, $ii);
+    } else {
+	$ii->push_into($it->content);
+	$ii->delete_it;
+    }
 }
 
 ### <parse [tagset="..."]>text to reparse</parse>
 ###	basically backtic.  The content gets parsed TWICE: it's expanded, 
 ###	(maybe the text extracted) then reparsed.
-
-### <noparse>text to not parse</noparse>
-###	basically quote.  Or could have <parse never> 
-###	or <block quoted|parsed|...>
 
 ###### Tests:
 
@@ -418,10 +416,10 @@ sub expand_handle {
 ###	negative
 ###	match="pattern"
 ###	null	(stronger than the normal test in which false is nonblank)
-###	numeric
-###	length="n"
-###	defined [pia|env|entity|agent|actor] name="..."
-###	file [exists|writable|readable|directory] name="pathname"
+### ===	numeric
+### ===	length="n"
+### ===	defined [pia|env|entity|agent|actor] name="..."
+### ===	file [exists|writable|readable|directory|link] name="pathname"
 ###
 ###  Modifiers:
 ###	not
@@ -432,8 +430,7 @@ sub expand_handle {
 ###	iftrue="..."	string to return if result is true->content
 ###	iffalse="..."	string to return if result is false
 ###
-define_actor('test', 'content' => 'value',
-	     _handle => \&test_handle,
+define_actor('test', 'content' => 'value', _handle => \&test_handle,
 	     'dscr' => "test VALUE (content); 
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Tests: ZERO, POSITIVE, NEGATIVE, MATCH='pattern'.  
@@ -478,8 +475,7 @@ sub test_handle {
 
 ### <equal [options]>strings</equal>
 
-define_actor('equal', 'content' => 'list',
-	     _handle => \&equal_handle,
+define_actor('equal', 'content' => 'list', _handle => \&equal_handle,
 	     'dscr' => "test tokens in LIST (content) for equality; 
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.");
@@ -510,8 +506,7 @@ sub equal_handle {
 
 ### <sorted [options]>strings</sorted>
 
-define_actor('sorted', 'content' => 'list', 
-	     _handle => \&sorted_handle,
+define_actor('sorted', 'content' => 'list', _handle => \&sorted_handle,
 	     'dscr' => "test tokens in  LIST (content) for sortedness;
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC, REVERSE.");
@@ -545,7 +540,9 @@ sub sorted_handle {
 
 ###### Number Processing:
 
-### <eval>expression</eval>
+### <eval>expression</eval> ???
+### <sum>list</sum> <diff>list</diff> 
+### <product>list</product> <quotient>list</quotient>
 ###
 
 
@@ -563,8 +560,7 @@ sub sorted_handle {
 ###	text
 ###	numeric
 ###
-define_actor('sort', 'content' => 'value', 
-	     _handle => \&sort_handle,
+define_actor('sort', 'content' => 'value', _handle => \&sort_handle,
 	     'dscr' => "sort tokens in  LIST (content).
 Modifiers: CASE (sensitive), TEXT, NUMERIC, REVERSE.");
 
@@ -600,8 +596,7 @@ sub sort_handle {
 
 ### <text>content</text>
 
-define_actor('text', 
-	     _handle => \&text_handle,
+define_actor('text', _handle => \&text_handle,
 	     'dscr' => "eliminate markup from CONTENT.");
 
 sub text_handle {
@@ -614,8 +609,7 @@ sub text_handle {
 
 ### <trim>content</trim>
 
-define_actor('trim', 
-	     _handle => \&trim_handle,
+define_actor('trim', _handle => \&trim_handle,
 	     'dscr' => "eliminate leading and trailing whitespace
 from CONTENT.");
 
@@ -632,8 +626,7 @@ sub trim_handle {
 ###	example) without having to put the padding inside the link
 ###	where it will get underlined and look ugly.
 
-define_actor('pad', 
-	     _handle => \&pad_handle,
+define_actor('pad', _handle => \&pad_handle,
 	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment
 (left/center/right).  Optionally just generate the SPACES.  Ignores markup.");
 
@@ -667,8 +660,7 @@ sub pad_handle {
 
 ### <add-markup>text</add-markup>
 
-define_actor('add-markup', 
-	     _handle => \&add_markup_handle,
+define_actor('add-markup', _handle => \&add_markup_handle,
 	     'dscr' => "convert common text conventions to markup");
 
 sub add_markup_handle {
@@ -713,8 +705,8 @@ sub add_markup_handle {
 
 ### === very kludgy -- should just use attributes ===
 ### <actor-dscr name="name">
-define_actor('actor-dscr', 
-	     'content' => 'name', _handle => \&actor_dscr_handle,
+define_actor('actor-dscr', 'content' => 'name', 
+	     _handle => \&actor_dscr_handle,
 	     'dscr' => "get an actor's DSCR attribute");
 
 sub actor_dscr_handle {
@@ -740,8 +732,8 @@ sub actor_dscr_handle {
 ###	Get an actor's attributes in form suitable for documentation.
 ###	The "name", "tag",  and "dscr" attributes are not included.
 
-define_actor('actor-attrs', 
-	     'content' => 'name', _handle => \&actor_attrs_handle,
+define_actor('actor-attrs', 'content' => 'name', 
+	     _handle => \&actor_attrs_handle,
 	     'dscr' => "get an actor's attributes in documentation format");
 
 %no_show = ('dscr'=>1, 'tag'=>1, 'name'=>1);
@@ -780,8 +772,8 @@ sub actor_attrs_handle {
 
 ###	This is incredibly kludgy, but it works!
 
-define_actor('agent-home', 
-	     'content' => 'name', _handle => \&agent_home_handle,
+define_actor('agent-home', 'content' => 'name', 
+	     _handle => \&agent_home_handle,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
 
@@ -807,8 +799,8 @@ sub agent_home_handle {
 ### <agent-running>name</agent-running>
 ###	Tests whether an agent is running
 
-define_actor('agent-running', 
-	     'content' => 'name', _handle => \&agent_running_handle,
+define_actor('agent-running', 'content' => 'name', 
+	     _handle => \&agent_running_handle,
 	     'dscr' => "Tests whether an agent is running (installed)" );
 
 sub agent_running_handle {
@@ -920,8 +912,8 @@ sub agent_remove_handle {
     $ii->replace_it($name);
 }
 
-define_actor('agent-list', 
-	     'content' => 'type', _handle => \&agent_list_handle,
+define_actor('agent-list', 'content' => 'type', 
+	     _handle => \&agent_list_handle,
 	     'dscr' => "List the agents with given TYPE. Possibly SUBS only." );
 
 sub agent_list_handle {
@@ -949,7 +941,7 @@ sub agent_list_handle {
 
 define_actor('os-command', 'unsafe' => 1,
 	     'content' => 'command', _handle => \&os_command_handle,
-	     'dscr' => "Execute an operating system command 
+	     'dscr' => "Execute CONTENT as an operating system command 
 in the background with proxies set." );
 
 sub os_command_handle {
@@ -975,7 +967,7 @@ sub os_command_handle {
 
 define_actor('os-command-output', 'unsafe' => 1,
 	     'content' => 'command', _handle => \&os_command_output_handle,
-	     'dscr' => "Execute an operating system command 
+	     'dscr' => "Execute CONTENT as an operating system command 
 and capture its output." );
 
 sub os_command_output_handle {
