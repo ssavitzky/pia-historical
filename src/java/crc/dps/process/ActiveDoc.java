@@ -10,6 +10,8 @@ import java.util.GregorianCalendar;
 import java.text.DateFormat;
 
 import java.io.PrintStream;
+import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.File;
 
 import java.net.URL;
@@ -99,9 +101,12 @@ public class ActiveDoc extends TopProcessor {
 
   public void initializeLegacyEntities() {
     Transaction transaction = getTransaction();
+
     if (transaction != null) {
       define("TRANS", transaction);
       //define("HEADERS",transaction.getHeaders());
+
+      Transaction req = transaction.requestTran();
 
       URL url = transaction.requestURL();
       if (url != null) {
@@ -109,9 +114,9 @@ public class ActiveDoc extends TopProcessor {
 	define("urlPath", transaction.requestURL().getFile());
       }
       // form parameters might be either query string or POST data
-      if(transaction.hasQueryString()){
-        define("urlQuery",  transaction.queryString());
-	define("FORM", transaction.getParameters());
+      if (req.hasQueryString()){
+        define("urlQuery",  req.queryString());
+	define("FORM", req.getParameters());
       } else {
 	define("urlQuery",  "");
 	define("FORM", new Table());
@@ -153,6 +158,7 @@ public class ActiveDoc extends TopProcessor {
     // Set these even if we retrieved an entity table from the 
     // transaction -- the agent is (necessarily) different      
 
+    define("AGENT", agent);
     define("agentName", agent.name());
     define("agentType", agent.type());
     if (agent.name().equals(agent.type())) {
@@ -198,6 +204,29 @@ public class ActiveDoc extends TopProcessor {
     }
   }
 
+  /** Determine whether a resource name is special. 
+   *	In our case, paths starting with <code>pia:</code> require
+   *	special handling.
+   */
+  protected boolean isSpecialPath(String path) {
+    return (path.startsWith("pia:"));    
+  }
+
+  /** Hook on which to hang any specialized paths supported by a subclass. */
+  protected InputStream readSpecialResource(String path) {
+    // === reading from the pia is hard, because machines go the wrong way.
+    return null;
+  }
+
+  /** Hook on which to hang any specialized paths supported by a subclass. */
+  public OutputStream writeSpecialResource(String path, boolean append,
+					    boolean createIfAbsent,
+					   boolean doNotOverwrite) {
+    return null;
+  }
+
+
+
   /************************************************************************
   ** Sub-processing:
   ************************************************************************/
@@ -223,8 +252,7 @@ public class ActiveDoc extends TopProcessor {
     initializeEntities();
   }
 
-  public ActiveDoc(Agent a, Transaction req, Transaction resp,
-			    Resolver res) {
+  public ActiveDoc(Agent a, Transaction req, Transaction resp, Resolver res) {
     super(false);
     agent = a;
     request = req;

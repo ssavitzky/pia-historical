@@ -160,6 +160,18 @@ public class TopProcessor extends BasicProcessor implements TopContext
   public String getDocumentName() { return documentName; }
   public void   setDocumentName(String s) { documentName = s; }
 
+  /** Determine whether a resource name is local or remote. */
+  protected boolean isRemotePath(String path) {
+    if (path.startsWith("file:")) return false;
+    return (path.indexOf(":") > 0 && path.indexOf("/") > 0 
+	    && path.indexOf(":") < path.indexOf("/") );      
+  }
+
+  /** Determine whether a resource name is special. */
+  protected boolean isSpecialPath(String path) {
+    return false;    
+  }
+
   /** Read from a resource. 
    *	The given path always uses ordinary (forward) slashes as file
    *	separators, because it is really a URI.  If a protocol and host
@@ -169,7 +181,8 @@ public class TopProcessor extends BasicProcessor implements TopContext
    */
   public InputStream readExternalResource(String path)
     throws IOException {
-    if (documentLocation == null) {
+    if (isSpecialPath(path)) return readSpecialResource(path);
+    if (documentLocation == null && !isRemotePath(path)) {
       File f = locateSystemResource(path, false);
       if (f != null) {
 	return new java.io.FileInputStream(f);
@@ -193,7 +206,9 @@ public class TopProcessor extends BasicProcessor implements TopContext
 					    boolean createIfAbsent,
 					    boolean doNotOverwrite)
     throws IOException {
-    if (documentLocation == null) {
+    if (isSpecialPath(path))
+      return writeSpecialResource(path, append, createIfAbsent, doNotOverwrite);
+    if (documentLocation == null && !isRemotePath(path)) {
       File f = locateSystemResource(path, true);
       if (f != null) {
 	// === worry about the booleans here!
@@ -247,6 +262,17 @@ public class TopProcessor extends BasicProcessor implements TopContext
 	return null;
       }
     }
+    return null;
+  }
+
+  /** Hook on which to hang any specialized paths supported by a subclass. */
+  protected InputStream readSpecialResource(String path) {
+    return null;
+  }
+  /** Hook on which to hang any specialized paths supported by a subclass. */
+  public OutputStream writeSpecialResource(String path, boolean append,
+					    boolean createIfAbsent,
+					   boolean doNotOverwrite) {
     return null;
   }
 
@@ -359,16 +385,11 @@ public class TopProcessor extends BasicProcessor implements TopContext
     // Form counter.  Increment as each <form> is passed to the output.
     define("forms", 		"0");
 
-    /*
-      if (filename != null) {
-	define("filePath", 	filename);
-	define("fileName", 	filenamePart(filename));
-      }
-
-      if (putfn != null) {
-	define("pathTran", 	putfn);
-      }
-      */
+    /* The following must be defined by the caller:
+     *	fileName -- the name of the file.
+     *  filePath -- the full (from root) path to the file
+     *  pathExt  -- the path extension (i.e. path after the filename)
+     */
 
     define("piaUSER",		System.getProperty("user.name"));
     define("piaHOME",		System.getProperty("user.home"));
