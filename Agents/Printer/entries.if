@@ -1,16 +1,26 @@
 <html> <head>
-<title>PIA Printed Documents</title>
+<title>&agentName; Printed Documents</title>
 </head>
 
-<body>
-<h1><h1><a href="/agency/home.if"><img src="/logo/pia24"></a>Documents printed
-by`<a href="home.if">&agentName;</a>'</h1>
- <set name=files><read directory file=&AGENT.printer_root_directory; match="preview\d+\.1\.gif"></set>
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
+<set entity name=title>&agentName;  printed pages</set>
+<read interform file="heading.inc" process>
+ <set entity name=files><read directory file=&AGENT.printer_root_directory;  match="preview\d+\.1\.gif"></set>
+
+<if><test><get name=files></test><then>
 <ul foreach list=&files;>
   <li> <set name=file><subst match="\.1\." result=".*.">&li;</subst></set><set name=pictures><read directory file=&AGENT.printer_root_directory; match=&file;></set>
        <repeat list=&pictures; entity=page> <a href="/spool/&page;"><img src="/spool/&page;" height=80></a></repeat>
+       <set name=psfile><subst match="\.1\.gif" result=".ps">&li;</subst></set>
+        <a href="/&agentName;/print.if?spoolfile=&psfile;"><img src="/&agentName;/printer.gif" width=27 height=27 alt="PrintIt"></a>
 </ul>
+</then></if>
 
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
 
 </body>
+</html>
+

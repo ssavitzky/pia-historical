@@ -18,7 +18,7 @@ $agent->option('max_pages',"2000");
 $agent->option('device',"lp");
 
 my $name= $agent->name;
-my $printer_root_directory=$agent->agent_directory . "spool/";
+my $printer_root_directory=$agent->agent_directory . "/spool/";
 $agent->option('printer_root_directory',$printer_root_directory);
 
 mkdir($printer_root_directory, 0777) unless -d $printer_root_directory;
@@ -30,11 +30,25 @@ $agent->option('printer_base_url',"/spool/");
 </code>
 
 
+<h2>Banner for bottom of each page:</h2>
+
+<set agent name="banner"><table align=center>
+<TR><TD> <a href="/Agency/home.if">
+<img src="/Agency/Icons/pia20.gif" height=20 width=37 alt=PIA></a>
+<TD> <a href="/&agentName;/home.if">
+<img src="/&agentName;/printer.gif"  height=20 width=20 alt="&agentName;"></a>
+<TD> <a href="/&agentName;/preview.if">
+<img src="/&agentName;/preview.gif"  height=20 width=20 alt="Preview"></a>
+<TD> <a href="/&agentName;/entries.if">
+<img src="/&agentName;/previews.gif"  height=20 width=20 alt="Previous"></a>
+<TD> <a href="/&agentName;/help.if">
+<img src="/Agency/Icons/help.gif"  height=20 width=40 alt="Help"></a>
+</table><hr></set>
 
 
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jun  4 08:58:54 1997
+Last modified: Thu Jun  5 13:37:51 1997
 <!-- hhmts end -->
 </body></html>

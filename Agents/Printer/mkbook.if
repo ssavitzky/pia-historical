@@ -1,7 +1,9 @@
 <html> <head>
-<title> Printer agent book maker</title>
-</head><body>
-<h1>`&agentName;' Book maker; </h1>
+<title>&agentName; book maker</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName; BookMaker</set>
+<read interform file="heading.inc" process>
+
 <if><test><get form name="URL"></test>
 <then>
 Making book starting at &FORM.URL;
@@ -29,8 +31,11 @@ return $result;
 <hr>
 <a href="show_book_ps.if"> show postscript version of book </a> 
 <hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
 <address><a href="http://sages.com/~wolff/wolff.html">Greg Wolff </a> <a href=mailto:wolff@sages.com>wolff@sages.com</a></address>
 <!-- hhmts start -->
-Last modified: Tue Jun  3 16:44:21 1997
+Last modified: Thu Jun  5 13:22:16 1997
 <!-- hhmts end -->
 </body> </html>

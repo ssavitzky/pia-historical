@@ -2,7 +2,7 @@
 <html><head>
 <title> WebPrinter </title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
@@ -18,7 +18,7 @@
 	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
     <th>
-    <th align=left><font face=helvetica size=14pt>WebPrinter</font>
+    <th align=left><font face=helvetica size=12pt>WebPrinter</font>
 <tr><th width=170>
     <td><br>
 <if><agent-running name="&agentName;"><then>
@@ -29,8 +29,8 @@
                    height=32 width=32 border=0 alt=""></a>
     <a href="/&agentName;/preview.if">Print Preview</a><br>
 </then></if>
-<TR><th rowspan=3>
-        <img src="/&agentName;/printer.gif" width=144 height=99 border=0>
+<TR><th rowspan=3 valign=center>
+      <a href="http://www.ricohcorp.com/ddshow.html">  <img src="/&agentName;/rprinter.jpg" width=144 border=0></a> 
     <TD align=right><td><!-- move td to after the icon to get the -->
                         <!-- icons lined up to the left of the PIA -->
         <a href="/&agentName;/mkbook.if">
@@ -40,16 +40,18 @@
 <TR><TD align=right><td>
         <a href="/&agentName;/status.if">
         <img src="/&agentName;/printer.gif"  height=32 width=32 border=0 alt="WebPrinter"></a>
-    <a href="/&agentName;/status.if">Status</a><a href="/&agentName;/options.if"> options</a><br>
+    <a href="/&agentName;/status.if">Status</a>/<a href="/&agentName;/options.if"> Options</a><br>
 
 <TR>
     <TD align=right><td>
-        <a href="/&agentName;/entries.if"><img src="/&agentName;/pages.gif"
+        <a href="/&agentName;/entries.if"><img src="/&agentName;/previews.gif"
         height=32 width=32 border=0 ></a>
         <a href="/&agentName;/entries.if">Previous Prints </a>
        
 <tr><th>
-    <TD align=right><td>PageControls:
+    <TD align=right><td><img src="/Agency/Icons/dot-blue.gif" border=0 height=20
+    width=20>
+    PageControls:
         <a href="/&agentName;/add_preview_button.if">
         Add</a>
     <a href="/&agentName;/remove_preview_button.if">Remove</a><br>
@@ -63,6 +65,6 @@
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jun  4 14:42:22 1997
+Last modified: Thu Jun  5 13:19:38 1997
 <!-- hhmts end -->
 </body></html>

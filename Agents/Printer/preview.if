@@ -1,10 +1,12 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title> WebPrinter preview</title>
+<title>  &agentName; preview</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
-<h1><a href="/agency/home.if"></a>`<a href="home.if">&agentName;</a>' on &piaHOST
-</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title> &agentName;  PreviewPage</set>
+<read interform file="heading.inc" process>
+
+
 <if><test><get form name="URL"></test>
 <then>
 Previewing &FORM.URL;
@@ -27,23 +29,26 @@ print "preview created \n";
 return $element;
 
 </code>
- <form action="/&agentName;/print.if" method=post>
+<table><tr>
+<td>
+<form action="/&agentName;/print.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
 <input name="spoolfile" value="&AGENT.ps_file_name;" type=hidden>
 <input type="SUBMIT" value="Print">
 </form>
-
+<td>
 <form action="/&agentName;/preview.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
 <input name="thumbsize" value="30" type=hidden>
 <input type="SUBMIT" value="SmallThumbnails">
 </form>
+<td>
 <form action="/&agentName;/preview.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
 <input name="render_method" value="normal" type=hidden>
 <input type="SUBMIT" value="NoImages">
 </form>
-
+</table>
 
 </then>
 <else>
@@ -66,8 +71,11 @@ return $element;
 
 
 <hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jun  4 14:28:29 1997
+Last modified: Thu Jun  5 13:12:50 1997
 <!-- hhmts end -->
 </body></html>

@@ -2,14 +2,20 @@
 <html><head>
 <title>Page Controls</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body>
-<h1> &agentName;</h1>
-WebPrinter controls will not be added to proxied pages.
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>&agentName;  Remove page controls</set>
+<read interform file="heading.inc" process>
+
+
+WebPrinter controls will no longer be added to proxied pages.
 
 <set agent hook name="_act_on"></set>
 <hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Tue Jun  3 20:48:10 1997
+Last modified: Thu Jun  5 12:47:28 1997
 <!-- hhmts end -->
 </body></html>
