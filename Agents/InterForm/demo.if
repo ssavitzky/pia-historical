@@ -35,6 +35,15 @@ conventional <a href="/PIA/Doc/Manuals/InterForm/index.html">InterForm
 Manual</a>.<p>
 
 
+<h3>Actor Index</h3>
+<!-- note that we must define actorNames in front of the local actor defs. -->
+
+<set name=actorNames><actor-names></set>
+<menu foreach list="&actorNames;">
+  <if><actor-dscr name="&li;"><then>
+  <li> <a href="#&li;">&li;</a>
+</menu>
+
 <!-- Define some utility actors, used mainly for layout: -->
 
 <!-- The man page, and actor names linked to it -->
@@ -67,16 +76,17 @@ Manual</a>.<p>
 
 <actor tag=adscr dscr="Make an actor description
 cross-referenced to the manual.">
-  <set entity name=list><get name=content></set>
-  <dl foreach list="&list;">
-    <dt> <strong>&li;</strong> -- &lt;actor <actor-attrs name="&li;">&gt;
-    <dd>
-	 <dl>
-	   <dt> <b>Syntax:</b>
-	   <dd> <add-markup><actor-syntax name="&li;"></add-markup>
-	   <dt> <b>Description:</b>
-	   <dd> <add-markup><actor-dscr name="&li;"></add-markup>
-	 </dl>
+  <set entity name=name><get name=content></set>
+  <h3><a name="&name;">&name;</a></h3>
+  <dl>
+    <dt> <b>Syntax:</b>
+    <dd> <add-markup><actor-syntax name="&name;"></add-markup>
+    <dt> <b>Description:</b>
+    <dd> <add-markup><actor-dscr name="&name;"></add-markup>
+    <dt> <b>Definition:</b>
+    <dd> &lt;actor <actor-attrs name="&name;">&gt;
+    <dt> <b>See Also:</b>
+    <dd> <a href="tag_man.if#&name;">Manual entry</a>
   </dl>
 </actor>
 <actor tag=alist dscr="Make a list of actor tags">
@@ -86,19 +96,11 @@ cross-referenced to the manual.">
 </ul>
 </actor>
 
-<h3>Index</h3>
-
-<set name=actorNames><actor-names></set>
-<menu foreach list="&actorNames;">
-  <if><actor-dscr name="&li;"><then>
-  <li> <toc>&li;</toc>
-</menu>
-  
-<hr>
+ 
+<hr> <!-- ========================================================== -->
 <h2>Actor Definition and Control</h2>
-<alist>actor actor-attrs actor-dscr</alist>
+<alist>actor  actor-names actor-attrs actor-doc actor-dscr actor-syntax</alist>
 
-<h3><name>actor</name></h3>
 <adscr>actor</adscr>
   
 <pre><protect markup>
@@ -120,30 +122,33 @@ cross-referenced to the manual.">
 <demo><demo><get pia name="pia.debug"></demo></demo>
 <p>
 
-<h3><name>actor-attrs</name></h3>
+<adscr>actor-names</adscr>
+
 <adscr>actor-attrs</adscr>
 
-<h3><name>actor-dscr</name></h3>
+<adscr>actor-doc</adscr>
+
 <adscr>actor-dscr</adscr>
 
-<hr>
+<adscr>actor-syntax</adscr>
+
+
+<hr> <!-- ========================================================== -->
 <h2>Name Bindings</h2>
 
 <alist>get set</alist>
 
-<h3><name>get</name></h3>
 <adscr>get</adscr>
   
 <dl>
-  <dt> <set pia name="main::debugging" value=0>
-       <demo><get pia name="main::debugging"></demo>
-       <set pia name="main::debugging" value=0>
+  <dt> <demo><get pia name="crc.pia.verbose"></demo>
   <dd> 
   <dt> <demo><code attribute=value><get element name=attribute></code></demo>
   <dd>
+  <dt> <demo><get entity name=filePath></demo>
+  <dd> 
 </dl>
 
-<h3><name>set</name></h3>
 <adscr>set</adscr>
 
 <dl>
@@ -155,12 +160,11 @@ cross-referenced to the manual.">
        trailing text.
 </dl>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>Control Structure</h2>
 
 <alist>if then else repeat -foreach-</alist>
 
-<h3><name>if</name></h3>
 <adscr>if</adscr>
 
 <dl>
@@ -175,7 +179,6 @@ cross-referenced to the manual.">
   <dd> 
 </dl>
 
-<h3><name>repeat</name></h3>
 <adscr>repeat</adscr>
 
 <dl>
@@ -193,7 +196,6 @@ cross-referenced to the manual.">
   <dd> 
 </dl>
 
-<h3><name>-foreach-</name></h3>
 <adscr>-foreach-</adscr>
 
 <dl>
@@ -201,12 +203,11 @@ cross-referenced to the manual.">
   <dd> 
 </dl>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>Tests</h2>
 
-<alist>test</alist>
+<alist>test equal sorted</alist>
 
-<h3><name>test</name></h3>
 <adscr>test</adscr>
 
 <dl>
@@ -250,12 +251,15 @@ cross-referenced to the manual.">
   <dd>
 </dl>
 
-<hr>
+<adscr>equal</adscr>
+
+<adscr>sorted</adscr>
+
+<hr> <!-- ========================================================== -->
 <h2>Numeric Processing</h2>
 
 <alist>sum difference product quotient</alist>
 
-<h3><name>sum</name></h3>
 <adscr>sum</adscr>
 
 <dl>
@@ -269,7 +273,6 @@ cross-referenced to the manual.">
   <dd> or a single list element
 </dl>
 
-<h3><name>difference</name></h3>
 <adscr>difference</adscr>
 
 <dl>
@@ -283,7 +286,6 @@ cross-referenced to the manual.">
   <dd> Negative numbers are handled.
 </dl>
 
-<h3><name>product</name></h3>
 <adscr>product</adscr>
 
 <dl>
@@ -291,7 +293,6 @@ cross-referenced to the manual.">
   <dd> 
 </dl>
 
-<h3><name>quotient</name></h3>
 <adscr>quotient</adscr>
 
 <dl>
@@ -305,12 +306,11 @@ cross-referenced to the manual.">
   <dd> Division by zero is handled, though perhaps not gracefully
 </dl>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>List Processing</h2>
 
 <alist>sort</alist>
 
-<h3><name>sort</name></h3>
 <adscr>sort</adscr>
 
 <dl>
@@ -330,15 +330,14 @@ cross-referenced to the manual.">
   <dd>
 </dl>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>String Processing</h2>
 <alist>pad</alist>
 
-<h3><name>pad</name></h3>
 <adscr>pad</adscr>
 
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>PIA Agents</h2>
 
 <alist>agent-home agent-running agent-set-options</alist>
@@ -352,18 +351,12 @@ cross-referenced to the manual.">
 <h3><name>agent-set-options</name></h3>
 
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>OS Operations</h2>
 
 <h3><name>os-command</name></h3>
 
 <h3><name>os-command-results</name></h3>
-
-
-<hr>
-<h2>Primitive Actions</h2>
-
-<h3><name>-eval-perl-</name></h3>
 
 
 

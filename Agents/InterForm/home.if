@@ -16,14 +16,15 @@
   <tr>
     <th valign=top align=right><b>&agentName;:</b>
     <td valign=top> Demonstration and Test agent
-  <tr><th><td> <a href=actors.if>Defined InterForm Actors</a>
+  <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
+  <tr><th><td> <a href=tag_man.if>Standard Tagset Manual</a>
+  <tr><th><td> <a href=actors.if>Defined Actors</a>
   <tr><th><td> <a href=entities.if>Defined Entities</a>
   <tr><th><td> <a href=/Agency/agents.if>Running PIA Agents</a>
   <tr><th><td> <a href=demo.if>Demo page</a>
   <tr><th><td> <a href=test.if>Test page</a>
   <tr><th><td> <a href=/Agency/debug.if>toggle debugging</a>
   <tr><th><td> <a href=/&agentName;/options.if>view/change options</a>
-  <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
   </table>
 </table>
 
@@ -33,7 +34,11 @@
 
 The <b><a href="/&agentName;/">&agentName;</a></b> agent is intended as a
 demonstration and testbed for the PIA's InterForm markup language and its
-formatter/interpretor.<p>
+formatter/interpretor. The <a href="&IFman;">PIA InterForm Manual</a>
+is a conventional programming manual for InterForms (in plain HTML); this
+agent contains active documents built largely from the actors' built-in online
+documentation.  Both are useful.
+<p>
 
 
 <hr>

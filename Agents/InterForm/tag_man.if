@@ -35,6 +35,15 @@ Manual</a>.  In most cases, that will be faster.<p>
 
 <p>
 
+<h3>Actor Index</h3>
+<!-- note that we must define actorNames in front of the local actor defs. -->
+
+<set name=actorNames><actor-names></set>
+<menu foreach list="&actorNames;">
+  <if><actor-dscr name="&li;"><then>
+  <li> <a href="#&li;">&li;</a>
+</menu>
+  
 <!-- Define some utility actors, used mainly for layout: -->
 
 <!-- The manual, and actor names linked to it -->
@@ -62,7 +71,9 @@ Manual</a>.  In most cases, that will be faster.<p>
 </actor>
 <actor tag=atag dscr="``tag'' for actor named in CONTENT">
   <set entity name=n><get name=content></set>
-  &lt;<strong><demo>&n;</demo></strong> <actor-attrs name="&n;"> &gt;
+  <set entity name=tag><if><actor-dscr name="&n;">
+	<then>actor</then><else>element</else></if></set>
+  &lt;&tag; <actor-attrs name="&n;"> &gt;
 </actor>
 
 <actor tag=name dscr="Make a name anchor">
@@ -71,16 +82,22 @@ Manual</a>.  In most cases, that will be faster.<p>
 </actor>
 <actor tag=atoc dscr="``tag'' for actor named in CONTENT">
   <set entity name=n><get name=content></set>
-  &lt;<strong><toc>&n;</toc></strong> <actor-attrs name="&n;"> &gt;
+  <strong><toc>&n;</toc></strong> -- <atag>&n;</atag>
 </actor>
 
-<!-- === eventually put syntax inside the tag; attrs outside === -->
 <actor tag=adscr dscr="Make an actor description
 cross-referenced to the manual.">
-  <set entity name=list><get name=content></set>
-  <dl foreach list="&list;">
-    <dt> <atag>&li;</atag>
-    <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+  <set entity name=name><get name=content></set>
+  <h3><a name="&name;">&name;</a></h3>
+  <dl>
+    <dt> <b>Syntax:</b>
+    <dd> <add-markup><actor-syntax name="&name;"></add-markup>
+    <dt> <b>Description:</b>
+    <dd> <add-markup><actor-dscr name="&name;"></add-markup>
+    <dt> <b>Definition:</b>
+    <dd> &lt;actor <actor-attrs name="&name;">&gt;
+    <dt> <b>See Also:</b>
+    <dd> <a href="/InterForm/demo.if#&name;">Examples</a>
   </dl>
 </actor>
 <actor tag=alist dscr="Make a list of actor tags">
@@ -90,11 +107,7 @@ cross-referenced to the manual.">
 </ul>
 </actor>
 
-<h3>Actor Index</h3>
 
-<set name=actorNames><actor-names></set>
-<alist>&actorNames;</alist>
-  
 <h3>Format</h3>
 
 Each major section of this manual is set off by a horizontal rule, followed by
@@ -131,98 +144,247 @@ complicated match criteria.<p>
   up-to-date description available.
 </blockquote>
 
-<hr>
-<h2>Actor Definition and Control</h2>
-<alist>actor actor-attrs actor-dscr</alist>
+<h3>Lists</h3>
 
-<h3><name>actor</name></h3>
+Many operations take a <em>list</em> of items, either in their <b>content</b>
+or as the value of an attribute.  The list may consist of either:
+
+<ul>
+  <li> A sequence of non-blank text items or tagged elements separated by
+       whitespace (including newlines).
+  <li> The list item (&lt;li&gt;) elements of an ordered (&lt;ol&gt;) or
+       un-ordered (&lt;ul&gt;) list element.
+  <li> The row (&lt;tr&gt;) elements of a &lt;table&gt;
+  <li> The table data (&lt;td&gt;) and heading (&lt;th&gt;) elements of a
+       table row (&lt;tr&gt;) element.
+  <li> The paired &lt;dt&gt; and &lt;dd&gt; elements of a definition list
+       (&lt;dl&gt;) element.
+</ul>
+
+In addition, some operations permit different item separators to be
+defined.<p>
+
+<h3>Associations</h3>
+
+Some operations take a list of <em>associations</em>, or <em>pairs</em> of
+items.  This may consist of either:
+
+<ul>
+  <li> An HTML query string consisting of
+       <code><em>key</em>=<em>value</em></code> pairs separated by
+       ampersand (<code>&amp;</code>) characters.  
+  <li> The paired &lt;dt&gt; and &lt;dd&gt; elements of a definition list
+       (&lt;dl&gt;) element.
+  <li> A &lt;table&gt; element in which each row (&lt;tr&gt;) element is an
+       asociation between its first data (&lt;td&gt;) or (more usually)
+       heading (&lt;th&gt;) element and the rest of the row.
+</ul>
+
+In addition, some operations permit different pair and key-value separators to
+be defined.<p>
+
+
+
+<hr> <!-- ========================================================== -->
+<h2>Actor Definition and Control</h2>
+<alist>actor  actor-names actor-attrs actor-doc actor-dscr actor-syntax</alist>
+
 <adscr>actor</adscr>
   
+<adscr>actor-names</adscr>
 
-<h3><name>actor-attrs</name></h3>
 <adscr>actor-attrs</adscr>
 
-<h3><name>actor-dscr</name></h3>
+<adscr>actor-doc</adscr>
+
 <adscr>actor-dscr</adscr>
 
+<adscr>actor-syntax</adscr>
+
+
+
+<hr> <!-- ========================================================== -->
 <h2>Expansion Control</h2>
 <alist>expand protect protect-result</alist>
 
-<h3><name>expand</name></h3>
 <adscr>expand</adscr>
 
-<h3><name>protect</name></h3>
+Cause the <b>content</b> to be ``expanded'' (processed by the InterForm
+interpretor) a <em>second time</em> -- it will already have been processed
+``in place'' once.<p>
+
 <adscr>protect</adscr>
 
-<h3><name>protect-result</name></h3>
+Cause the <b>content</b> not to be ``expanded'' (processed by the InterForm
+interpretor) at all.<p>
+
 <adscr>protect-result</adscr>
 
 This protects, not <add-markup>CONTENT</add-markup>, but the result of
 <em>expanding</em> <add-markup>CONTENT</add-markup>.  It can be used, for
 example, to prevent further processing of a file or computed text that
-contains markup. <p>
+contains markup.  It is worth noting that &lt;protect&gt; and
+&lt;protect-result&gt; perform the same operation (namely, replace the actor
+element with its <b>content</b>); the only difference is whether the
+<b>content</b> is expanded while it is being parsed.<p>
 
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>Name Bindings</h2>
 
 <alist>get set</alist>
 
-<h3><name>get</name></h3>
 <adscr>get</adscr>
   
 
-<h3><name>set</name></h3>
 <adscr>set</adscr>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>Control Structure</h2>
 
 <alist>if then else repeat -foreach-</alist>
 
-<h3><name>if</name></h3>
 <adscr>if</adscr>
 
-<h3><name>then</name></h3>
 <adscr>then</adscr>
 
-<h3><name>else</name></h3>
 <adscr>else</adscr>
 
 
-<h3><name>repeat</name></h3>
 <adscr>repeat</adscr>
 
 
-<h3><name>-foreach-</name></h3>
 <adscr>-foreach-</adscr>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>Tests</h2>
 
 <alist>test equal sorted</alist>
 
-<h3><name>test</name></h3>
 <adscr>test</adscr>
 
-<h3><name>equal</name></h3>
+Performs a test specified by the attributes, on the <b>content</b> of the
+&lt;test&gt; element.  With no attributes, a <b>content</b> consisting only of
+whitespace, HTML comments, and SGML declarations is considered <em>false</em>;
+anything else is <em>true</em>.<p>
+
+The following attributes modify the <em>result</em> of the test, which is
+normally null for a <em>false</em> result and ``<code>1</code>'' for
+<em>true</em>:
+
+<dl>
+  <dt> <b>not</b>
+  <dd> reverses the <em>true</em> and <em>false</em> results.
+  <dt> <b>iffalse</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>false</em>.
+  <dt> <b>iftrue</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>true</em>.
+</dl>
+
 <adscr>equal</adscr>
 
-<h3><name>sorted</name></h3>
+Tests the list items in the <code>content</code> for equality.  Normally the
+test is for string equality ignoring case.  The following attributes modify
+the test:
+
+<dl>
+  <dt> <b>case</b> (sensitive)
+  <dd> treat upper- and lower-case letters as different.
+  <dt> <b>text</b>
+  <dd> Only compare the text portion of the <b>content</b> and ignore the
+       markup. 
+  <dt> <b>numeric</b>
+  <dd> Compare the text of the items numerically.  Items that do not begin
+       with something that can be parsed as a number are compared as zero.
+</dl>
+
+The following attributes modify the <em>result</em> of the test, which is
+normally null for a <em>false</em> result and ``<code>1</code>'' for
+<em>true</em>:
+
+<dl>
+  <dt> <b>not</b>
+  <dd> reverses the <em>true</em> and <em>false</em> results.
+  <dt> <b>iffalse</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>false</em>.
+  <dt> <b>iftrue</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>true</em>.
+</dl>
+
 <adscr>sorted</adscr>
 
-<hr>
-<h2>Numeric Processing</h2>
+Tests the list items in the <code>content</code> for sortedness.  Normally the
+test is for string (lexical) comparison in ascending order, ignoring case.
+The following attributes modify the test:
 
-<hr>
+<dl>
+  <dt> <b>case</b> (sensitive)
+  <dd> treat upper- and lower-case letters as different.
+  <dt> <b>text</b>
+  <dd> Only compare the text portion of the <b>content</b> and ignore the
+       markup. 
+  <dt> <b>numeric</b>
+  <dd> Compare the text of the items numerically.  Items that do not begin
+       with something that can be parsed as a number are compared as zero.
+  <dt> <b>reverse</b>
+  <dd> Test for the items being in <em>descending</em> order.
+</dl>
+
+The following attributes modify the <em>result</em> of the test, which is
+normally null for a <em>false</em> result and ``<code>1</code>'' for
+<em>true</em>:
+
+<dl>
+  <dt> <b>not</b>
+  <dd> reverses the <em>true</em> and <em>false</em> results.
+  <dt> <b>iffalse</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>false</em>.
+  <dt> <b>iftrue</b>="<em>string</em>"
+  <dd> return <em>string</em> if the result of the test is <em>true</em>.
+</dl>
+
+
+
+<hr> <!-- ========================================================== -->
+<h2>Numeric Processing</h2>
+<alist>sum difference product quotient</alist>
+
+
+<adscr>sum</adscr>
+
+Takes a list of numeric values in <b>content</b> and replaces them with their
+sum.  Markup is quietly ignored, as is any list item that cannot be
+interpreted as a number.<p>
+
+<adscr>difference</adscr>
+
+Takes a list (<em>n1</em>, <em>n2</em>, ...) of numeric values in
+<b>content</b> and replaces them with their (left-associated) difference
+(<em>n1</em> - <em>n2</em> - ...).  Markup is quietly ignored, as is any list
+item that cannot be interpreted as a number.<p>
+
+<adscr>product</adscr>
+
+Takes a list of numeric values in <b>content</b> and replaces them with their
+product.  Markup is quietly ignored, as is any list item that cannot be
+interpreted as a number.<p>
+
+<adscr>quotient</adscr>
+
+Takes a list (<em>n1</em>, <em>n2</em>, ...) of numeric values in
+<b>content</b> and replaces them with their (left-associated) quotient
+(<em>n1</em> / <em>n2</em> / ...).  Markup is quietly ignored, as is any list
+item that cannot be interpreted as a number.<p>
+
+
+<hr> <!-- ========================================================== -->
 <h2>List Processing</h2>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>String Processing</h2>
 
 <alist>add-markup pad trim</alist>
 
-<h3><name>add-markup</name></h3>
 <adscr>add-markup</adscr>
 
 Add markup to a text string (content type <code>text/plain</code>), using
@@ -235,14 +397,16 @@ browsers and HTML parsers choke on markup inside attributes.<p>
   <add-markup>DSCR</add-markup> attributes of actors.
 </blockquote>
 
-<h3><name>pad</name></h3>
 <adscr>pad</adscr>
 
-<h3><name>trim</name></h3>
+Add spaces to <b>content</b> to fill it out to a specified number of spaces.
+&lt;pad&gt; can be useful in 
+
+
 <adscr>trim</adscr>
 
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>PIA Agents</h2>
 
 <alist>agent-home agent-install agent-list agent-options agent-remove
@@ -255,39 +419,28 @@ browsers and HTML parsers choke on markup inside attributes.<p>
        shorter and faster than the general method.
 </dl>
 
-<h3><name>agent-home</name></h3>
 <adscr>agent-home</adscr>
 
-<h3><name>agent-install</name></h3>
 <adscr>agent-install</adscr>
 
-<h3><name>agent-list</name></h3>
 <adscr>agent-list</adscr>
 
-<h3><name>agent-options</name></h3>
 <adscr>agent-options</adscr>
 
-<h3><name>agent-remove</name></h3>
 <adscr>agent-remove</adscr>
 
-<h3><name>agent-running</name></h3>
 <adscr>agent-running</adscr>
 
-<h3><name>agent-set-options</name></h3>
 <adscr>agent-set-options</adscr>
 
-<hr>
+<hr> <!-- ========================================================== -->
 <h2>OS Operations</h2>
 
 <h3><name>os-command</name></h3>
+<adscr>os-command</os-command>
 
-<h3><name>os-command-results</name></h3>
+<adscr>os-command-results</adscr>
 
-
-<hr>
-<h2>Primitive Actions</h2>
-
-<h3><name>-eval-perl-</name></h3>
 
 
 

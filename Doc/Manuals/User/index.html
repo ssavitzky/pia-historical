@@ -234,6 +234,22 @@ Note that the Agency will not execute InterForm files in a DOFS.  This means
 that you can use the <code><a href="/PIA/">/PIA/</a></code> DOFS to look at
 the source code for an InterForm.<p>
 
+<h4>Note:</h4>
+One might well ask why a simple file-server is called by the grandiose title
+of ``Document-Oriented Filing System''.  Several extensions are planned,
+including:
+<ul>
+  <li> treating entire directory trees as compound documents, 
+  <li> splitting a single file into multiple sub-documents
+  <li> mapping URL's to filenames  in ways not supported by the underlying OS
+  <li> keeping track of versions
+  <li> ``mounting'' a CGI program or remote server as a directory.
+</ul>
+
+The result will be something that resembles an operating-system-independent
+file system rather than a simple server.
+
+
 <h3>Spies</h3>
 
 There are two major ``spy'' agents: the <code><a href="/cia">cia</a></code>
@@ -468,7 +484,7 @@ be a <code><a href="/Proxy">Proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Aug  1 14:46:50 1997
+Last modified: Fri Aug  1 14:49:18 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
