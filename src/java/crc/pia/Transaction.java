@@ -27,6 +27,7 @@ import java.util.Vector;
 import crc.ds.Features;
 import crc.ds.Queue;
 import crc.ds.UnaryFunctor;
+import crc.ds.Criteria;
 
 import crc.sgml.SGML;
 import crc.sgml.AttrBase;
@@ -544,10 +545,10 @@ public abstract class Transaction extends AttrBase implements Runnable {
    */
   public Object computeFeature( String featureName ) throws UnknownNameException{
     UnaryFunctor c;
-    try{
+    try {
      c = (UnaryFunctor)Registry.calculatorFor( featureName );
      return c.execute( this );
-    }catch(UnknownNameException e){
+    } catch(UnknownNameException e){
       // log here
       throw e;
     }
@@ -555,11 +556,12 @@ public abstract class Transaction extends AttrBase implements Runnable {
 
   /**
    * Test whether a criteria matches one of those of the features
-   * @param criteria a vector of criterias
+   * @param criteria a Criteria list.
    * @return true if there is a match
    */
-  protected boolean matches(Vector criteria){
-    return features().matches( criteria, this );
+  protected boolean matches(Criteria criteria){
+    if (criteria == null) return false;
+    return criteria.match(features, this);
   } 
 
   /************************************************************************
