@@ -35,10 +35,10 @@ BINDIR=$(PIADIR)/bin
 DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
-LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
+LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip:$(LIBDIR)/regexp.jar
 
 ##javac wrapper should find these  .. specify explicitly if problem
-JAVACLASSES= /usr/local/java/lib/classes.zip:/pia1/ext/java
+JAVACLASSES= /usr/local/java/lib/classes.zip
 #JAVACLASSES=
 JAVASOURCE=  /usr/local/java/src
 
