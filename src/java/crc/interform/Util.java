@@ -398,6 +398,11 @@ public class Util extends crc.sgml.Util {
   /** sets the value of a token */
  static public void setSGML(SGML token, SGML value)
   {
+    if(token == null) {
+      crc.pia.Pia.debug("Tried to set null token");
+      System.out.println( "Tried to set null token");
+      return;
+    }
     if (token instanceof Tokens){
       Tokens t=(Tokens) token;
       
@@ -407,7 +412,8 @@ public class Util extends crc.sgml.Util {
     }   else{
          // remove any items
          Tokens t= (Tokens)token.content();
-          t.clear();
+	 if(t != null)
+	   t.clear();
 	 token.append(value);
 	 
     }
