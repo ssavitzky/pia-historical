@@ -10,14 +10,16 @@
  <if><read file="users/&FORM.username;.html" info>
  <then>
  <h2>Pending forms for &FORM.username;</h2>
+ <ul>
  <read file="users/&FORM.username;.html">
+ </ul>
  </then>
  <else><h2>No Pending forms for &FORM.username;</h2></else></if>
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Sep 10 19:17:05 1997
+Last modified: Wed Sep 10 19:35:32 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
