@@ -110,7 +110,8 @@ sub create_postscript{
 
 #    my $ua = $self->user_agent;
     my $ua = $main::resolver;
-    my $response=$ua->simple_request(PIA::Transaction->new($request)); 
+#    my $response=$ua->simple_request(PIA::Transaction->new($request)); 
+    my $response=$ua->simple_request($request); ##request should be transaction 
 
     my $render=$self->option("render_method");
     $docId = "010" unless $docId;
@@ -120,7 +121,7 @@ sub create_postscript{
     }else{
 	html_ps($self,$response,$request,$docId);
     }
-    return $request->respond_with($response);    
+  #No longer need to do this  return $request->respond_with($response);    return;
 }
 
 sub create_preview{
