@@ -8,58 +8,59 @@
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48></a>
+	border=0 width=170 height=48 alt="R I C O H"></a>
 <th width=170 nowrap>
 <th width=170 align=left nowrap nobr>
-    <if><agent-running name=Logo><then><img src="/Logo/pia45.gif"></then>
-    </if></tr>
+    <if><agent-running name=Logo><then><img 
+	    src="/Logo/pia45.gif" alt=PIA></if><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=510></tr>
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
 <tr><th align=left><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/silicon-valley.gif"
+	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
     <th>
     <th align=left><font face=helvetica>Photo Album</font>
 <tr><th width=170>
-    <td>&nbsp;
+    <td><br>
+<if><agent-running name="Photos"><then>
 <TR><th>
     <TD align=right height=32><td>
         <a href="/&agentName;/latest.if">
-        <if><agent-running name="Photos">
-        <then><img src="/Photos/&latest;/r0100001.small.gif"
-                   height=32 width=32 border=0></then></if></a>
-    <a href="/&agentName;/latest.if">Newest Photos</a>
+        <img src="/Photos/&latest;/r0100001.small.gif"
+                   height=32 width=32 border=0></a>
+    <a href="/&agentName;/latest.if">Newest Photos</a><br>
+</then></if>
 <TR><th rowspan=3>
         <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99 border=0>
     <TD align=right><td><!-- move td to after the icon to get the -->
                         <!-- icons lined up to the left of the PIA -->
         <a href="/&agentName;/catalog.if">
         <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/catalog.if">Captioned Photos</a>
+    <a href="/&agentName;/catalog.if">Captioned Photos</a><br>
 
 <TR><TD align=right><td>
         <a href="/&agentName;/catalog.if">
         <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <a href="/Photos/">All Photos</a>
+    <a href="/Photos/">All Photos</a><br>
 
 <TR>
     <TD align=right><td>
         <a href="/&agentName;/slide_show.if">
         <img src="/Photo_Album/slides.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/slide_show.if">Slideshows</a>
+    <a href="/&agentName;/slide_show.if">Slideshows</a><br>
 
 <tr><th>
     <TD align=right><td>
         <a href="/&agentName;/help.if">
         <img src="/Photo_Album/help.gif"  height=32 width=32 border=0></a>
-    <a href="/&agentName;/help.if">Help</a>
+    <a href="/&agentName;/help.if">Help</a><br>
 
 <tr><th>
     <td align=right><td>
         <a href="http://cdrw/CDRW/publish_photos.if">
         <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
     <!-- should test for CD-R/RW -->
-    <a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
+    <a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a><br>
 </table>  
 <p>
 <hr>

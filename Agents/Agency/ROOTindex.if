@@ -7,15 +7,15 @@
 <table align=center cellspacing=0 cellpadding=0 border=0>
 <tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
-	border=0 width=170 height=48></a>
+	border=0 width=170 height=48 alt="R I C O H"></a>
     <th width=170 nowrap>
     <th align=left nowrap nobr>
-        <if><agent-running name=Logo><then><img src="/Logo/pia45.gif"></then>
-        </if></tr>
+        <if><agent-running name=Logo><then><img
+	    src="/Logo/pia45.gif" alt=PIA></then></if><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
-    ><img src="/Agency/Icons/blackline.gif" height=2 width=510></tr>
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
 <tr><th align=left><a href="http://rsv.ricoh.com/"><img
-	src="/Agency/Icons/silicon-valley.gif"
+	src="/Agency/Icons/silicon-valley.gif" alt="Silicon Valley"
 	border=0 width=170 height=21></a>
     <th>
     <th align=left><font face=helvetica>Root Index</font>
@@ -29,25 +29,24 @@ for
     <else>Personal Information </else></if> Agency
 <td>
 <tr><th width=170>
-    <td>&nbsp;
+    <td><br>
 <tr><th width=170>
-    <th valign=top  align=right><a href="/Agency/home.if">Agency:</a>
+    <th valign=top  align=right><a href="/Agency/home.if"><b>Agency:</b></a>
     <td><a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>
  	<a href="/Agency/agents.if">agents</a><br>
 <tr><th width=170>
-    <th valign=top align=right><a href="/PIA/">Files:</a>
+    <th valign=top align=right><a href="/PIA/"><b>Files:</b></a>
     <td><a href="/PIA/Agents/">Agents</a>
 	<a href="/PIA/Doc/">Documents</a>
-	<a href="/PIA/src/">sources</a>
+	<a href="/PIA/src/">sources</a><br>
 <if><agent-running name=History><then>
 <tr><th width=170>
-    <th valign=top align=right><a href="/History">History:</a>
+    <th valign=top align=right><a href="/History"><b>History:</b></a>
     <td><a href="/My/History">All</a>
-        <a href="/My/History/&date;.html">[&date;]</a></then>
+        <a href="/My/History/&date;.html">[&date;]</a><br></then>
 </if>
-<tr><th align=left>&nbsp;
-<tr><th align=left>&nbsp;
+<tr><th align=left><br>
 
 <tr><th align=left colspan=2>
 <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
