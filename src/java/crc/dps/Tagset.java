@@ -134,7 +134,8 @@ public interface Tagset  {
    * @see crc.dps.active.ParseTreeElement
    */
   public ActiveElement createActiveElement(String tagname,
-					   AttributeList attributes);
+					   AttributeList attributes,
+					   boolean hasEmptyDelim);
 
   /** Creates an ActiveNode of arbitrary type with (optional) data.
    */
