@@ -480,7 +480,6 @@ public class  HTTPRequest extends Transaction {
 	errorResponse( 400 , null );
       }
     }
-    
   }
   
   /**
@@ -509,8 +508,8 @@ public class  HTTPRequest extends Transaction {
     }
 
     Content ct = new ByteStreamContent( inputStream );
-    Transaction response = new HTTPResponse( Pia.instance().thisMachine,
-					     fromMachine(), ct, false);    
+    Transaction response = new HTTPResponse( this, Pia.instance().thisMachine,
+					     ct, false);    
     response.setStatus( mycode );
     response.setContentType( "text/html" );
     response.setContentLength( masterMsg.length() );

@@ -332,12 +332,40 @@ public class  HTTPResponse extends Transaction {
      
   }
  
+  /**
+   * Use to create error response to a transaction
+   * @param t the transaction to which this is a response.
+   * @param from where request is originated
+   * @param to where to send response
+   * @param ct a content
+   * @param doStart if false thread does not start -- allows user to set header information.
+   */
+  public HTTPResponse( Transaction t, Machine from, Content ct,
+		       boolean doStart ){
+    super();
+
+    Pia.debug(this, "Constructor-- [ transaction t, machine from, content ct ] on duty...");
+
+    contentObj = ct;
+    headersObj = new Headers(); //  blank header
+
+    if( contentObj != null )
+      contentObj.setHeaders( headersObj );
+
+    requestTran = t;
+    fromMachine( from );
+    toMachine(  t.fromMachine() );
+    
+    if( doStart )
+      startThread();
+  }
+ 
 
 
   /**
    * Content is known and a blank header is created.
    * @param t request transaction
-   * @param ct a define content
+   * @param ct a content
    */
   public HTTPResponse(  Transaction t, Content ct ){
     super();
