@@ -16,7 +16,7 @@
        <a name="installation.html">installation notes</a>
 </dl>
 
-<if><tagset-exists name=Form-agent-actors>
+<if><tagset-exists name=Photo-agent-actors>
     <then>Re-reading:
     <else>Reading: 
 </if> <code><a href="tagset.inc">tagset.inc</a></code>...

@@ -23,7 +23,7 @@
     <td><a href="/&agentName;/latest.if">
           <img src="/~&agentName;/&latest;/r0100001.small.gif"
                height=32 width=32 border=0 alt="Photo Album"></a>
-	<a href="/&agentName;/latest.if">Newest Photos</a><br>
+	<a href="/&agentName;/show_roll.if">Newest Photos</a><br>
   </then></if>
     <TR><TD align=right width=170>
 	<td><!-- put this td after the icon to get the -->
