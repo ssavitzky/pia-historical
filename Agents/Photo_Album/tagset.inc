@@ -98,7 +98,7 @@ match="\.jpg$"></set>
   <set name=caps local><read file=&mydirectory;/captions.html process></set>
 <set local name=mytitle><get index=caps.h1.Text></set>
  <set name=mycaps><get name=caps findall=a></set>
- <set name=capdl local><dl>
+ <set name=capdl><dl>
  <repeat list=&mycaps; entity=aref>
  <dt><get name=aref attr=href></dt>
  <dd><get index=aref.Text></dd>
@@ -108,6 +108,7 @@ match="\.jpg$"></set>
 <if><get name=files><then>
 <photoscaption>
 <photosauthor>unknown</photosauthor>
+<photostitle><get name=mytitle></photostitle>
 <photosdirectory>&mydirectory;</photosdirectory>
 <photosdate>&mydirectory;</photosdate>
 <photos>
