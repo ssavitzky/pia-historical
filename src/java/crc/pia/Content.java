@@ -26,38 +26,16 @@ import java.io.OutputStream;
 
 public interface Content
 {
-  //public ContentHeader header;
 
-  /**  maybe we should have a separate header object that content users
-   * instead of the following methods
+ /**
+  * @return Headers object
+  */
+  public Headers headers();
+
+  /**
+   * set Headers object
    */
-
- /** 
-  * Return as a string all existing header information for this
-  * object.
-  * @return String with HTTP style header <tt> name: value </tt><br>
-  */
- public String header();
-  
- /** 
-  * Return the  value of the given header or void if none.
-  * @param  field name of header field
-  * @return String value of a header attribute.
-  */
-  public String header(String field);
-  
- /** 
-  * Set a header field to value
-  * throws exception if not allowed to set.
-  */
-  public void header(String field, String value) throws NoSuchFieldException;
-
- /** 
-  * Sets all the headers to values given in hash table
-  * hash keys are field names
-  * throws exception if not allowed to set.
-  */
-  public void header(Hashtable table) throws NoSuchFieldException;
+  public void setHeaders( Headers headers );
 
  /** 
   * Access functions 
