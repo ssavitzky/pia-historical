@@ -48,13 +48,15 @@ sub send_response{
     $string.=$reply->message;
     $string.="\n";
     print $string  if $main::debugging;
-    
-    print {$output} $string;
-#    print {$output} "Content-type: $ct\n\n" if defined $ct;
-    print {$output} $reply->headers_as_string();
-    print {$output} "\n";
-    print {$output} $reply->content;
-    $self->close_stream;
-    
+
+    eval {
+	## Use eval so we don't die if the browser closes the connnection.
+	print {$output} $string;
+#	print {$output} "Content-type: $ct\n\n" if defined $ct;
+	print {$output} $reply->headers_as_string();
+	print {$output} "\n";
+	print {$output} $reply->content;
+	$self->close_stream;
+    }
 }
 1;
