@@ -5,38 +5,51 @@
 package crc.pia;
 import java.util.Properties;
 import java.io.IOException;
+import java.util.Utilities;
 
 public class FormContent extends Properties implements Content{
+  // conditions to notify agents
+
+  // public static final Condition foo = new Condition-A(...);
+  // public static final Condition bar = new Condition-B(...);
  
-  //public ContentHeader header;
+  /**
+   * headers
+   */
+  private Header headers;
+
+  /**
+   * body
+   */
+  private InputStream body;
+
+  /**
+   * filter for body
+   */
+  private DataInputStream in;
 
  /** 
   * Return as a string all existing header information for this
   * object.
   * @return String with HTTP style header <tt> name: value </tt><br>
   */
-  public String header(){}
+  public Headers headers(){
+    if( headers )
+      return headers;
+    else
+      return null;
+  }
   
  /** 
   * Return the  value of the given header or void if none.
   * @param  field name of header field
   * @return String value of a header attribute.
   */
-  public String header(String field){}
+  public void setHeaders( Headers headers ){
+    if( headers )
+      this.headers = headers;
+  }
   
- /** 
-  * Set a header field to value
-  * throws exception if not allowed to set.
-  */
-  public void header(String field, String value) throws NoSuchFieldException{}
-
- /** 
-  * Sets all the headers to values given in hash table
-  * hash keys are field names
-  * throws exception if not allowed to set.
-  */
-  public void header(Hashtable table) throws NoSuchFieldException{}
-
  /** 
   * Access functions 
   * machine objects read content as a stream
@@ -50,12 +63,22 @@ public class FormContent extends Properties implements Content{
   * usually this will come from a machine
   */
   public void source(InputStream stream){
+    if( stream ){
+      body = stream;
+      in = new DataInputStream( body );
+    }
   }
 
  /**  get the next chunk of data as bytes
   *  @return number of bytes read -1 means EOF
   */
-  public int read(byte buffer[]) throws IOException{}
+  public int read(byte buffer[]) throws IOException{
+    try {
+      return in.read( buffer );
+    }catch(Exception e){
+      throw e;
+    }
+  }
  
  /**
   * get the next chunk of data as bytes
@@ -63,7 +86,13 @@ public class FormContent extends Properties implements Content{
   * @param length number of bytes to read
   * @return number of bytes read
   */
-  public int read(byte buffer[], int offset, int length) throws IOException{}
+  public int read(byte buffer[], int offset, int length) throws IOException{
+    try {
+      return in.read( buffer, offset, length );
+    }catch(Exception e){
+      throw e;
+    }
+  }
 
   /** 
    * add an output stream to "tap" the data before it is written
@@ -76,44 +105,32 @@ public class FormContent extends Properties implements Content{
    * specify an agent to be notified when a condition is satisfy  
    * for example the object is complete
    */
-  public void notifyWhen(Agent interested, Object condition){}
+  public void notifyWhen(Agent interested, Object condition){
+    // Need a hash of (condition, vector of agents)
+    // Given a condition, get the corresponding vector
+    // if no the interested agent is not previously registered
+    // register it
+  }
+
+  public FormContent(){
+  }
 
   /**
-   * Unescape a HTTP escaped string
-   * @param s The string to be unescaped
-   * @return the unescaped string.
+   * reading parameters of a POST
    */
-
-  public static String unescape (String s) {
-	StringBuffer sbuf = new StringBuffer () ;
-	int l  = s.length() ;
-	int ch = -1 ;
-	for (int i = 0 ; i < l ; i++) {
-	    switch (ch = s.charAt(i)) {
-	      case '%':
-		ch = s.charAt (++i) ;
-		int hb = (Character.isDigit ((char) ch) 
-			  ? ch - '0'
-			  : Character.toLowerCase ((char) ch) - 'a') & 0xF ;
-		ch = s.charAt (++i) ;
-		int lb = (Character.isDigit ((char) ch)
-			  ? ch - '0'
-			  : Character.toLowerCase ((char) ch) - 'a') & 0xF ;
-		sbuf.append ((char) ((hb << 4) | lb)) ;
-		break ;
-	      case '+':
-		sbuf.append (' ') ;
-		break ;
-	      default:
-		sbuf.append ((char) ch) ;
-	    }
-	}
-	return sbuf.toString() ;
+  private String pullContent() throws IOException{
+    String line = null;
+    byte[] buf = new byte[ headers.contentLength() ];
+    try {
+      in.readFully( buf );
+      return new String( buf, 0 );
+    }catch(IOException e){
+      throw e;
     }
+  }
 
-
-  public FormContent(String toSplit){
-    StringTokenizer tokens;
+  public void setParameter(String toSplit){
+    StringTokenizer tokens = null;
     String token;
     String[] pairs;
     int count;
@@ -122,6 +139,15 @@ public class FormContent extends Properties implements Content{
 
     if( toSplit != null )
       tokens = new StringTokenizer(toSplit,"&");
+    else{
+      try{
+	String zcontent = pullContent();
+	tokens = new StringTokenizer(zcontent,"&");
+      }catch(IOException e){
+      }
+    }
+    if(! tokens) return;
+
     count = tokens.countTokens();
     if( count > 0 )
       pairs = new String[ count ];
@@ -135,7 +161,7 @@ public class FormContent extends Properties implements Content{
       String s = pairs[i];
       pos = s.indexOf('=');
       String p = s.substring(0, pos);
-      String param = unescape( p );
+      String param = Utilities.unescape( p );
       String v = s.substring( pos+1 );
       String value = unescape( v );
       put(param, value);
@@ -144,3 +170,11 @@ public class FormContent extends Properties implements Content{
 
 
 }
+
+
+
+
+
+
+
+
