@@ -15,12 +15,13 @@ HANDLERS = \
 	TextHandler.java \
 	TypicalHandler.java
 
-### The effect of these actors is entirely confined to the current file
+### The effect of these actors is entirely confined to the current document
 BASIC_ACTORS = \
 	elseHandler.java \
 	elsfHandler.java \
 	getHandler.java \
 	ifHandler.java \
+	repeatHandler.java \
 	setHandler.java \
 	substHandler.java \
 	testHandler.java \
