@@ -69,9 +69,9 @@ public class TypicalHandler extends GenericHandler {
 }
 
 class Typical_ extends TypicalHandler {
-  public void action(Input in, Context aContext, Output out,
+  public void action(Input in, Context cxt, Output out,
   		     ActiveAttrList atts, NodeList content) {
-    // do the work
+    unimplemented (in, cxt); // do the work
   }
   public Typical_(ActiveElement e) { super(e); }
   static Action handle(ActiveElement e) { return new Typical_(e); }
