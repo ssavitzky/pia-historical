@@ -188,27 +188,38 @@ sub tagset_include_handle {
 ###	The following InterForm code makes <form> active:
 ###		<actor name=form handle="submit_forms"></actor>
 
+# does not handle post submissions
+# variable binding is done at time of submission
+#  element added to cron list of agent which is reviewed by resolve during idle time
+#  agent will run this element again, so only this handler is responsible for actual submissions
+
 define_actor('submit-forms', 
 	     'dscr' => "Submit a form or link ELEMENT
  or every form (not links) in CONTENT.  
  Optionally submit at HOUR, MINUTE, DAY, MONTH, WEEKDAY. 
- Optionally REPEAT (missing hour, day, month, weekday are wildcards).  
- Optionally CANCEL a previous submission, matched by url and form data. ");
+ Optionally REPEAT=N times (missing hour, day, month, weekday are wildcards).  
+ Optionally UNTIL=MM-DD-HH time when submissions are halted
+  use options interform of agent to delete repeating entries");
 
 sub submit_forms_handle {
     my ($self, $it, $ii) = @_;
+    my $agent = IF::Run::agent();
+
+ #if this form is not ready to run at this time then return
+# takes care of time comparisons, notify agent, etc.
+    return if timed_submission($it,$agent);
 
     if ($it->tag eq 'form') {
 	my $url = $it->attr('action');
 	my $method = $it->attr('method');
-	my $agent = IF::Run::agent();
+
 	my $request = $agent->create_request($method,$url,$it);
-	timed_submission($it, $request) ||
+	
 	    $IF::Run::resolver->unshift($request);
     } elsif ($it->attr('href')) {
 	my $url = $it->attr('href');
 	my $request = $agent->create_request('GET', $url);
-	timed_submission($it, $request) ||
+	
 	    $IF::Run::resolver->unshift($request);
     } else {
 	$it->traverse(sub {
@@ -221,13 +232,13 @@ sub submit_forms_handle {
     }
 }
 
-@time_attrs = qw( repeat hour minute day month weekday cancel );
+@time_attrs = qw( repeat until hour minute day month weekday );
 
 sub timed_submission {
-    my ($it, $request) = @_;
+    my ($it, $agent) = @_;
 
-    ## Submit $request if $it has any timing attributes,
-    ##	otherwise return false
+    ##  return true if $it has timing attributes and now is not the time,
+    ##	otherwise return false (means that form will be run now)
 
     my $timed = 0;
     my %attrs;
@@ -241,8 +252,21 @@ sub timed_submission {
     }
     return 0 unless $timed;
 
-    print "timed submit \n";
-    $IF::Run::resolver->timed_submission($request, \%attrs);
+    if(! $it->attr('-agent-cron-job')){
+	$it->attr('-agent-cron-job',1);
+	$agent->cron_add($it);
+    }
+				# should check for invalid submissions
+    return 1;
+    
+#now see if it is time to submit
+
+# don't submit if no repeat specified and we already submitted
+#should remove or at least add cancel attribute
+    my $last_submission=$it->attr('-last-submission');
+    return 1 if $last_submission && !$it->attr('repeat');
+   
+
    
 }
 

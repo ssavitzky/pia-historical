@@ -453,7 +453,9 @@ sub convert_array_to_token{
 #only one item, then return it
 return shift(@copy) unless $#copy > 0;
     #make token for array
-    return IF::IT->new('ol', @copy);
+    my $token=IF::IT->new('ol');
+##Should tokenize components...
+ $token->push(@copy);
 }
 
 #create a description list

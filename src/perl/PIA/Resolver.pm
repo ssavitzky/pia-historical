@@ -63,40 +63,25 @@ sub pop {
 ###
 ### Timed requests:
 ###
+### each agent maintains its own list of submissions (cron jobs)
+###  here we just give each an opportunity to run every so often
+### 
 
-@events = ();			# entries [ m h d m w repeat transaction ]
+#@events = ();			# entries [ m h d m w repeat transaction ]
 $last_run = 0;			# Time lf last run
 
-sub timed_submission {
-    my ($self, $trans, $attrs) = @_;
 
-    ## Submit a request at a given time, optionally repeating.
-    ##	 it is not at all clear what to do if the PIA dies 
-    ##   or if the time is in the past. 
-
-    my $repeat = $$attrs{'repeat'};
-    my $cancel = $$attrs{'cancel'};
-
-    my $minute = $$attrs{'minute'};
-    my $hour = $$attrs{'hour'};
-    my $day = $$attrs{'day'};
-    my $month = $$attrs{'month'};
-    my $weekday = $$attrs{'weekday'};
-
-    $minute = 0 unless defined $minute;	# Minute cannot be wildcard.
-    my $entry = [ $minute, $hour, $day, $month, $weekday, $repeat, $trans ];
-
-    
-}
 
 sub do_timed_submits {
-    my ($self) = @_;
+    my ($self,$bogus_request) = @_;
 
     ## Go through the events and do anything that needs doing.
     ##	  This should be called every few minutes.
-
-    my $ev;
-    foreach $ev (@events) {
+	##bogus_request is create by the caller and is use as an argument to IF::Run::interform_hook, currently nothing happens to it, but in future might be useful for logging purposes or other feedback
+    print "running cron jobs\n"	 if $main::debugging; 
+    my @agents = $self->agents;
+    foreach (@agents) {
+	$_->cron_run($bogus_request,$self);
 	
     }
 }

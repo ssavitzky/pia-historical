@@ -426,6 +426,162 @@ sub set_hook {
 }
 
 
+### timed  submissions are stored as a table
+### each row is one job, td items are attributes like timing and action
+@cron_attr=qw(job month weekday day hour minute repeat until repetitions action token); 
+sub cron_add{
+    my($self,$it)=@_;
+    ##add a request (interform element) to be repeated at the appropriate times
+
+    my $cron =$self->{'_cron'};
+    if(! exists  $self->{'_cron'}){
+	$self->{'_cronjobs'};  #counter
+	$cron=IF::IT->new('table');
+				# create new table
+				# currently timing implicit in order oftags
+				# should modified and add attribute markerst to td elements
+	
+	my $header=IF::IT->new('tr');
+	$cron->push($header);
+	foreach (@cron_attr){
+	    $header->push(IF::IT->new('th',$_));
+	}
+	$self->{'_cron'}=$cron;
+	
+    }
+    my $job=IF::IT->new('tr','-job-number' => $self->{'_cronjobs'}++);
+    foreach (@cron_attr){
+	if($it->attr($_)){
+	    $job->push(IF::IT->new('td',$it->attr($_)));
+	}else{
+	    $job->push(IF::IT->new('td',$job->attr('-job-number'))) if /job/ ;
+	    $job->push(IF::IT->new('td','*')) if /month|day|hour|weekday/ ;
+	    $job->push(IF::IT->new('td','0')) if /minute|repetitions/ ;
+	    $job->push(IF::IT->new('td',' ')) if /until|repeat/ ;
+	    if(/action/){
+		if($it->attr('href')){
+		    $job->push(IF::IT->new('td',$it->attr('href'))) ;
+		}else{
+		    $job->push(IF::IT->new('td','form')) ;
+		}
+	    }
+	    if(/token/){
+				# create form submission without timing
+				# ad hoc inclusions of attributes
+		my $new_it=IF::IT->new($it->tag,@{$it->content});
+		$new_it->attr('href',$it->attr('href')) if $it->attr('href') ;
+		$new_it->attr('method',$it->attr('method')) if $it->attr('method') ;
+		$new_it->attr('action',$it->attr('action')) if $it->attr('action') ;
+		$job->push(IF::IT->new('td',$new_it));
+	    }
+	}
+    }
+    $cron->push($job);
+    
+
+    print "added cron" . $it->as_string . "\n";
+}
+
+sub cron_remove{
+    my($self,$number)=@_;
+				# remove job $number
+    # $number is -job-number attribute of tr for that job
+
+    my $jobs =$self->{'_cron'};
+    return  unless $jobs;
+
+    my $job,@rows;
+    my $flag=0;
+    while($job=$jobs->shift){
+	$flag=1 if $job->attr('-job-number') == $number;
+	last if $flag;
+	
+	unshift(@rows,$job);
+    }
+    foreach (@rows){
+	$jobs->unshift($_);
+    }
+    print "deleted cronjob $number\n" if $main::debugging && $flag;
+    print "no cronjob $number\n" if $main::debugging && ! $flag;
+    
+}
+
+sub cron_run{
+    my($self,$request,$resolver)=@_;
+## run any cron jobs that we have
+## requires table decoding
+    my $jobs =$self->{'_cron'};
+    return  unless $jobs;
+
+    my @rows=@{$jobs->content};
+    my $headers=shift(@rows);
+    
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=
+	localtime(time());
+    $mon++;  #jan == 1, not 0
+    my $job_submitted=0;
+    while(@rows){
+	my $job=shift(@rows);
+	my $last_submission=$job->attr('-last-submission');
+	my $this_submission;
+	
+	my @timings=@{$job->content};
+				# these timing attributes should be
+				# in same order as $cron_attr
+	my ($jobnum, $umon, $uweekday, $uday, $uhour, $uminute, $urepeat, $uuntil, $urepetitions, $uaction, $utoken) = map {${$_->content}[0]} @timings; 
+	my $cancel=0;
+
+	##cancel if  'until' date has passed
+	if($uuntil){
+	    my($unmon,$unday,$unhour)=split('-',$uuntil);
+	    $cancel= 1 if $unmon>$mon;
+	    $cancel= 1 if $unmon==$mon && $unday>$day;
+	    $cancel= 1 if $unmon==$mon && $unday==$day	&& $unhour>$hour;
+	}
+	
+	$cancel=1 if ! $urepeat && $last_submission; # no repeat specified
+	
+	$self->cron_remove($job->attr('-job-number')) if $cancel;
+	next if $cancel;
+	
+## now check each time element
+    
+	next unless $umon=='*' || $mon==$umon;
+	$this_submission.="$mon";
+	
+	next unless $uweekday=='*' || $wday==$uweekday;
+	$this_submission.="-$wday";
+	
+	next unless $uday=='*' || $mday==$uday;
+	$this_submission.="-$mday";
+	
+	next unless $uhour=='*' || $hour==$uhour;
+	$this_submission.="-$hour";
+	
+	
+##problemsif not run every minute, should handle , separated list
+	next unless $min>=$uminute;
+	## if we missed it, use prev time... $this_submission.="-$min";
+    $this_submission.="-$uminute";
+	    
+##don't submit if this submission and last are identical
+	    next if $this_submission==$last_submission;
+    
+##OK to submit
+	print "timed submit \n";
+	$job->attr('-last-submission',$this_submission);
+#would  subtract from repeat count here if numeric
+	
+# just run token as interforms
+	if($utoken){
+	  IF::Run::interform_hook($self, $utoken, $request, $resolve);
+	    $job_submitted++;
+	}
+    }
+print $self->name . "submitted $job_submitted jobs\n";
+}
+
 ############################################################################
 ###
 ### Utility functions for responding to requests:

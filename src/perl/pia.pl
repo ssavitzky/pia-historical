@@ -26,6 +26,7 @@ $command = '';
 $exit = '0';
 $ftp = 0;
 $logfile = "";
+$enable_cron=1;			# run cron jobs when idle?
 
 ### Parse the command line.
 
