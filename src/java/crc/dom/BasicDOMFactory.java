@@ -25,6 +25,11 @@ public class BasicDOMFactory extends AbstractDOMFactory {
 
   public DocumentContext   createDocumentContext(){ return null; }
 
+  /**
+   *Create an element based on the tagName. Note that the instance returned may
+   *implement an interface derived from Element. The attributes parameter can be
+   *null if no attributes are specified for the new Element. 
+   */
   public Element           createElement(String tagName, AttributeList attributes){
     if( tagName == null ) return null;
     Element e = new BasicElement();
@@ -33,11 +38,31 @@ public class BasicDOMFactory extends AbstractDOMFactory {
       e.setAttributes( attributes );
   }
 
-  public Text              createTextNode(String data){ return null; }
-  public Comment           createComment(String data){ return null; }
-  public PI                createPI(String name, String data){ return null; }
+  /**
+   *  Create a Text node given the specified string. 
+   */
+  public Text              createTextNode(String data){
+    return new AppText( data ); 
+  }
 
-  /** create a basic attribute */
+  /**
+   *  Create a Comment node given the specified string. 
+   */
+  public Comment           createComment(String data){
+    return new AppComment( data );
+  }
+
+  /**
+   *  Create a PI node with the specified name and data string.
+   */
+  public PI                createPI(String name, String data){
+    return new AppPI( name, data );
+  }
+
+  /**
+   *Create an Attribute of the given name and specified value. Note that the
+   *Attribute instance can then be set on an Element using the setAttribute method.
+   */
   public Attribute         createAttribute(String name, NodeList value){
     if( name == null ) return null;
     return new BasicAttr( name, value );
