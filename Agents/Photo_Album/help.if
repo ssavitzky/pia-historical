@@ -4,7 +4,7 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Help for &agentName;</set>
-<read interform agent=Agency file="heading.inc" process>
+<read interform file="heading.inc" process>
 
 <h3>Functions</h3>
 <ul>
