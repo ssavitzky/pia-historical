@@ -1,0 +1,8 @@
+<!-- This gets inserted in the Agency's home page -->
+<if><agent-running name="CDRW">
+    <then><a href="/CDRW/home.if">
+	  <b>CD-R/W</b><br>
+          <img src="/CDRW/Icons/cdrwsmall.gif"
+	       width=144 height=84></a></then>
+    <else>
+</if>
