@@ -189,5 +189,51 @@ public class Read_file extends Get {
     result=processResult(result, it);
     ii.replaceIt(result);
   }
+
+  /** Legacy action: default is to flag as unimplemented. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+
+    boolean info = atts.hasTrueAttribute("info");
+    boolean quiet= atts.hasTrueAttribute("quiet");
+    String  name = atts.getAttributeString("file");
+
+    if (info) return legacyError(aContext, tag, "info attribute not supported");
+    if (atts.hasTrueAttribute("links")) 
+      return legacyError(aContext, tag, "links attribute not supported");
+
+    // === if we're running inside a PIA this will lose. 
+    
+    if (atts.hasTrueAttribute("process") || atts.hasTrueAttribute("parse")) {
+      if (atts.hasTrueAttribute("tagset"))
+	legacyError(aContext, tag,
+		    "Tagset attribute not supported -- using legacy");
+      java.io.FileReader in = null;
+      try {
+	in = new java.io.FileReader(name);
+      } catch (Exception e) {
+	return legacyError(aContext, tag, "Cannot open Reader on '"+name+"'");
+      }
+      crc.dps.Tagset ts = aContext.getTopContext().getTagset();
+      crc.dps.Parser p = ts.createParser();
+      p.setReader(in);
+      if (atts.hasTrueAttribute("parse")) {
+	aContext.subProcess(p, out).copy();
+      } else {
+	aContext.subProcess(p, out).run();
+      }
+    } else {
+      try {
+	byte [] bytes = crc.util.Utilities.readFrom(name);
+	putText(out, new String(bytes));
+      } catch (Exception e) {
+	legacyError(aContext, tag, "Cannot write: " + e);
+      }    
+    }
+
+    return true;
+  }
+
 }
 
