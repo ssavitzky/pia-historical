@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -929,16 +930,74 @@ public class GenericAgent extends AttrBase implements Agent {
       InputStream in =  Run.interformFile(this, file, request, res);
       sendStreamResponse(request, in);
     } else if( file.endsWith(".cgi") ){
-      // === CGI should be executed with the right stuff in the environment.
-      String msg = "cgi invocation unimplemented.";
-      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+      try{
+	execCgi( request, file );
+      }catch(PiaRuntimeException ee ){
+	throw ee;
+      }
     } else {
       crc.pia.FileAccess.retrieveFile(file, request, this);
     }
     return true;
+    }
+
+  protected void execCgi( Transaction request, String file ) throws PiaRuntimeException
+  {
+    Runtime rt = Runtime.getRuntime();
+    Process process = null;
+    InputStream in;
+    PrintStream out;
+
+    try{
+      String[] envp = setupEnvironment( request );
+
+      process = rt.exec( file, envp );
+
+      if( request.method() == "POST" ){
+	out = new PrintStream( process.getOutputStream() );
+	out.print( request.queryString() );
+	out.flush();
+      }
+
+      in = process.getInputStream();
+
+      Content ct = new ByteStreamContent( in );
+      Transaction response = new HTTPResponse( request, ct);
+      
+    }catch(IOException ee){
+      String msg = "can not exec :"+file;
+      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+    }
+  }
+
+  /**
+   * Prepare environment variables for CGI
+   */
+  protected String[] setupEnvironment(Transaction req){
+    String[] envp = new String[8];
+    envp[0]="CONTENT_TYPE=";
+    envp[1]="CONTENT_LENGTH=";
+    
+    if( req.method() == "POST" ){
+      envp[0] += req.contentType();
+      envp[1] += req.contentLength();
+    }
+    envp[2]="GATEWAY_INTERFACE=" + "CGI/1.0";
+    envp[3]="SERVER_PORT="       + Pia.instance().port();
+    envp[4]="SERVER_PROTO="      + req.version();
+    envp[5]="REQUEST_METHOD="    + req.method();
+    envp[6]="REMOTE_ADDR=";
+    envp[7]="QUERY_STRING=";
+    
+    if( req.method() == "GET" )
+      envp[7] += req.queryString();
+    
+    for(int i = 0; i < envp.length; i++){
+      Pia.debug(this, "The environment var -->" + envp[i]);
+    }
+    return envp;
   }
   
-
   /************************************************************************
   ** Construction:
   ************************************************************************/
