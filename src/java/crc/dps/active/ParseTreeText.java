@@ -91,6 +91,11 @@ public class ParseTreeText extends ParseTreeNode implements ActiveText {
     setIsWhitespace(Test.isWhitespace(data));
   }
 
+  /** Construct a node with a single character as data. */
+  public ParseTreeText(char data) {
+    this(String.valueOf(data));
+  }
+
   /** Construct a node with given data and handler. */
   public ParseTreeText(String data, Handler handler) {
     this(data);
