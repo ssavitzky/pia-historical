@@ -109,8 +109,6 @@ public class FileAccess {
       String entry;
       SortTree entries = new SortTree();
 
-      RegExp re = null;
-      MatchInfo mi = null;
       boolean noTrailingSlash = false;
 
       boolean all = false;

@@ -219,15 +219,7 @@ public class MultipartFormContent extends Properties implements InputContent
       throw new ContentOperationUnavailable("");
     }
   
-  
-  
-  public void replace(Object target, Object replacement)
-    throws ContentOperationUnavailable
-    {
-      throw new ContentOperationUnavailable("");
-    }
-
-
+ 
   /************************************************************
   ** Constructors:
   ************************************************************/

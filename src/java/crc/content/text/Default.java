@@ -536,11 +536,19 @@ public class Default extends StreamingContent {
 
 
   /**
-   * replace target with replacement
-   * eventually these should be regular expressions
+    * Replace target with replacement.
+    * 	The exact meaning is subject to interpretation.
+    *
+    * <p> This was originally in Content, but is actually never used.
+    *
+    *	@param target	the object to be replaced
+    *	@param replacement if null, the target is simply removed.
+    * 	@exception crc.pia.ContentOperationUnavailable if the operation
+    *	cannot be performed by this type of Content.
    */
 
-  public void replace(String target, String replacement) throws ContentOperationUnavailable
+  public void replace(String target, String replacement)
+    throws ContentOperationUnavailable
   {
     
    if( isVisitedState(READING)){

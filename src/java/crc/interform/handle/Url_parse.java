@@ -15,7 +15,6 @@ import crc.sgml.AttrWrap;
 import crc.sgml.AttrTable;
 import crc.sgml.Text;
 
-import crc.gnu.regexp.RegExp;
 import java.net.URL;
 
 

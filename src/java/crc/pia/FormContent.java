@@ -709,25 +709,6 @@ public class FormContent extends Properties implements InputContent {
   
 
 
-
-  /**
-   * Replace target with replacement.
-   *   @exception crc.pia.ContentOperationUnavailable is <em>always</em>
-   *	thrown, because a FormContent can't be edited in the usual way.
-   */
-   public void replace(Object target, Object replacement)
-       throws ContentOperationUnavailable
-  {
-     throw(new ContentOperationUnavailable("replacing " +
-					   target.getClass().getName() +
-					   " not supported by " +
-					   this.getClass().getName()));
-  }
-  
-
-
-
-
 }
 
 

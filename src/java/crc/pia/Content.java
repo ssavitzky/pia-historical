@@ -191,17 +191,6 @@ public interface Content {
   public void add(Object moreContent, int where)
        throws ContentOperationUnavailable;
 
-   /**
-    * Replace target with replacement.
-    * 	The exact meaning is subject to interpretation.
-    *	@param target	the object to be replaced
-    *	@param replacement if null, the target is simply removed.
-    * 	@exception crc.pia.ContentOperationUnavailable if the operation
-   *	cannot be performed by this type of Content.
-    */
-  public void replace(Object target, Object replacement)
-       throws ContentOperationUnavailable;
-
 }	
 
 

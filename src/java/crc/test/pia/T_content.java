@@ -70,7 +70,7 @@ public class T_content{
 
     try{
       c = new StringContent( os );
-      c.replace( ts, rs );
+      //      c.replace( ts, rs );
       c.writeTo(System.out);
     }catch(Exception e ){
       e.printStackTrace();

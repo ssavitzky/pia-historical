@@ -37,8 +37,6 @@ import crc.pia.Content;
 import crc.pia.HTTPResponse;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
 import crc.util.Timer;
 
 import crc.ds.Table;
@@ -189,8 +187,6 @@ public class Machine implements java.io.Serializable {
     StringBuffer ctrlStrings = null;
     Content content = null;
     Content plainContent = null;
-    RegExp re = null;
-    MatchInfo mi = null;
     boolean isTextHtml = false;
     String contentString = null;
 
@@ -277,147 +273,6 @@ public class Machine implements java.io.Serializable {
     
 
   }
-
-  /** 
-   * Send a response through the output stream.  The data to be sent
-   * 	come from the Transaction's Content object.  If there are
-   * 	controls associated with this response they are added.  <p>
-   *
-   *	Note that controls are added by the Machine because it is in 
-   *	a position to know what client the response is destined for, 
-   *	and hence in what form to send the controls.  (Of course,
-   *	at the moment we are not taking advantage of this ability.)
-   */
-  public void sendResponseDeprecated (Transaction reply, Resolver resolver)
-       throws PiaRuntimeException {
-    OutputStream out = null;
-    StringBuffer ctrlStrings = null;
-    Content content = null;
-    Content plainContent = null;
-    RegExp re = null;
-    MatchInfo mi = null;
-    boolean isTextHtml = false;
-    String contentString = null;
-
-    try{
-      out = outputStream();
-
-      String outputString =
-	"HTTP/1.0 " + reply.statusCode() + " " + reply.reason() + "\r";
-
-      String type = reply.contentType();
-
-      /* If the type is "text/html", see if there are controls that we
-       * can append.  From here on we use the presence of ctrlStrings
-       * to decide whether we need to do anything with the controls. */
-
-      if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
-      
-	isTextHtml = true;
-
-	Pia.debug(this, "Sucking controls...");
-	List c = reply.controls();
-	if( c != null ){
-	  ctrlStrings = new StringBuffer();
-	  Enumeration els = c.elements();
-	  while( els.hasMoreElements() ){
-	    try{
-	      Object o = els.nextElement();
-	      if( o instanceof String )
-		ctrlStrings.append( (String)o + " " );
-	    }catch(Exception e){}
-	  }
-	}
-      }
-      
-      plainContent = content = reply.contentObj();
-
-      // Increase content length by the size of the control string.
-
-      if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
-	if( reply.contentLength() != -1 )
-	  // changing length
-	  reply.setContentLength(reply.contentLength() + ctrlStrings.length());
-      }
-      
-      // dump header
-      Pia.debug(this, "Transmitting firstline and header...");
-     
-      shipOutput( out, outputString, false );
-
-      Pia.debug(this, outputString);
-      String headers = reply.headersAsString(); 
-      Pia.debug(this, headers);
-
-      shipOutput( out, headers, false );
-      
-      /* If the content is HTML, suck in the whole thing to see whether
-       * we can append the controls to it. */
-
-      // === very inefficient.  Should do it on the fly. ===
-
-      if( content != null && isTextHtml  ){
-	contentString = content.toString();
-	try{
-	  re = new RegExp("<body[^>]*>");
-	  mi = re.match( contentString.toLowerCase() );
-	}catch(Exception e){
-	}
-      }
-      
-      /* The control string is inserted after the &lt;body&gt; tag.
-       * This simpleminded test will be confused by the occasional 
-       * page that has its first body tag enclosed in a comment. */
-
-      if( ctrlStrings != null && mi != null ){
-	// We cannot use substitution here because some characters in
-	// ctrlStrings are interpreted specially by re.substitute.
-	int where = mi.end();
-	contentString = contentString.substring(0, where)
-	  + ctrlStrings + contentString.substring(where);
-      } else if (ctrlStrings!= null){
-
-	/* === No body.  The right thing to do is put out the controls
-	 * === before the &lt;/html&gt; tag.  Putting them at the front
-	 * === will screw up pages with frames. */
-
-	//shipOutput( out, ctrlStrings, true );
-	contentString += ctrlStrings;
-      }
-      
-      if( ctrlStrings != null ){
-	Pia.debug(this, "Transmitting control strings...");
-	shipOutput( out, contentString, true );
-      }
-      else if( contentString != null && isTextHtml ){
-	Pia.debug(this, "Transmitting text/html content...");
-	// Pia.debug(this, contentString );
-	shipOutput( out, contentString, true );
-      }else if( plainContent != null ){
-	Pia.debug(this, "Transmitting images content...");
-	sendImageContent( out, plainContent );
-      }
-      
-      Pia.debug(this, "Flushing...");
-      out.flush();
-      closeConnection();
-      
-    } catch (PiaRuntimeException e){
-      Pia.debug(this, "Client closed connection...");
-      String msg = "Client closed connection...\n";
-      closeConnection();
-      throw new PiaRuntimeException (this, "sendResponse", msg) ;
-
-    }catch(IOException e2){
-      Pia.debug(this, "Client close connection...");
-      String msg = "Client close connection...\n";
-      closeConnection();
-      throw new PiaRuntimeException (this, "sendResponse", msg) ;
-    }
-    
-
-  }
-
   /**
    * Ship a string to the OutputStream.
    */

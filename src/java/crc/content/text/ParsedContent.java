@@ -227,16 +227,6 @@ public class ParsedContent extends  GenericContent{
      //     tagset.define(actor);
   }
 
-  /**
-   * override  replace method for actors. where is meaningless...
-   * actor added to tagset
-   */
-  public  void replace(Actor src_actor, Actor dst_actor) throws ContentOperationUnavailable {
-     if(tagset == null)initializeTagset();
-     // any way to remove actors?
-     tagset.define(dst_actor);
-  }
-
 
 }
 

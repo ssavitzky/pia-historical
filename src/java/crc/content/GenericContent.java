@@ -333,18 +333,4 @@ public abstract  class  GenericContent implements crc.pia.Content {
     throw(new ContentOperationUnavailable("adding " + moreContent.getClass().getName() + " not supported by " + this.getClass().getName()));
   }
   
-  
-  /**
-   * replace target with replacement
-   * subject to interpretation.
-   * null  replacement implies removal of target
-   * subclass should override
-   */
-  public  void replace(Object target, Object replacement) throws ContentOperationUnavailable{
-    // Check and see if java does the right thing for more specific argument classes
-    Pia.debug(this,"replacing " +  target.getClass().getName() + " not supported by " + this.getClass().getName());
-    throw(new ContentOperationUnavailable("replacing " +  target.getClass().getName() + " not supported by " + this.getClass().getName()));
-  }
-  
-
 }

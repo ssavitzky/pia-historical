@@ -32,8 +32,6 @@ import java.lang.ClassNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-import crc.gnu.regexp.RegExp;
-
 import crc.ds.List;
 import crc.ds.Registered;
 import crc.ds.Table;
@@ -571,21 +569,16 @@ public class Utilities {
    * convert str to HTML by properly escaping &, <, and >.
    */
   public static synchronized String protect_markup(String str){
-    if( str!= null ){
-      try{
-	RegExp re = new RegExp("&");
-	String amp = re.substitute(str,"&amp;", true);
-
-	re = new RegExp("<");
-	String ampLeft = re.substitute(amp, "&lt;", true);
-
-	re = new RegExp(">");
-	String ampLeftRight = re.substitute(ampLeft, "&gt;", true);
-
-	return ampLeftRight;
-      }catch(Exception e){ return null;}
-    }else return null;
-    
+    if (str == null) return null;
+    String res = "";
+    for (int i = 0; i < str.length(); ++i) {
+      char c = str.charAt(i);
+      if      (c == '&') res += "&amp;";
+      else if (c == '<') res += "&lt;";
+      else if (c == '>') res += "&gt;";
+      else               res += c;
+    }
+    return res;
   }
 
    /**

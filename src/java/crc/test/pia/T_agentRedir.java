@@ -37,8 +37,6 @@ import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
 
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import crc.pia.agent.Dofs;
