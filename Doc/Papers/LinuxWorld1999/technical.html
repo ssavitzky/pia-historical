@@ -7,6 +7,34 @@
 <include src=config.inc>
 
 
+<slide><h2>The Problem</h2>
+<ul>
+  <li> Applications and languages change
+  <li> 
+</ul>
+</slide>
+
+<slide><h2>The Goal</h2>
+<table>
+  <tr><th colspan=2 align=left> Bring document processing to
+  <tr><th>&nbsp; <th align=left> Small offices and workgroups
+  <tr><th>&nbsp; <th align=left> Individual infoware developers
+  <tr><th colspan=2><hr>
+  <tr><th colspan=2 align=left> Free infoware developers
+  <tr><th>&nbsp; <th align=left> from the drudgery of cut-and-paste development
+  <tr><th>&nbsp; <th align=left> from the chains of browsers and scripting languages
+  <tr><th>&nbsp; <th align=left> from the tyranny of servers and their programmers
+</table>
+</slide>
+
+<slide><h2>The Platform</h2>
+<table>
+  <tr><th> PIA <th align=left> Platform for Information Applications
+  <tr><th>&nbsp; <th align=left> A document-processing engine for the web
+  <tr><th>&nbsp; <th align=left> Specifies computing with active documents
+  <tr><th>&nbsp; <th align=left> Structured as a web site
+</table>
+</slide>
 
 <slide><h2>What do you want to do?</h2>
 <ul>
@@ -16,11 +44,9 @@
   <li> <b>E-Commerce</b>
   <li> <b>Intranet Portal</b>
   <li> <b>Development project management</b>
+  <li> <b>Document Re-formatting</b>
 </ul>
 </slide>
-
-
-
 
 <slide><h2>Example: form processing</h2>
 <div align=center> <b>Check Approval Form</b>
@@ -37,9 +63,9 @@
 the LinuxWorld presentation.
 Please?
    </textarea>
-   <tr><th>Name: <td> <input name=name value="Greg Wolff">
-       <td> Sign: <td> <input name=pass>
-   <tr><th>Next:  <td> <input name=next value="Peter Hart">
+   <tr><th align=right>Name: <td> <input name=name value="Greg Wolff">
+       <th align=right>Sign: <td> <input name=pass>
+   <tr><th align=right>Next: <td> <input name=next value="Peter Hart">
        <td><input type=submit value="Route Form">
 </form>
 
@@ -61,9 +87,6 @@ Please?
        </ol>
 </ul>
 </slide>
-
-
-
 
 <slide><h2>Processing</h2>
 <ul>
@@ -87,9 +110,6 @@ Please?
 </ul>
 </slide>
 
-
-
-
 <slide><h2>How we do it</h2>
 <ul>
   <li> <b>Everything is a document</b>
@@ -104,7 +124,6 @@ Please?
   <li> <b>Data comes out of documents</b>
 </ul>
 </slide>
-
 
 <slide><h2>How does that work?</h2>
 <ul>
@@ -124,7 +143,6 @@ Please?
 	      pass=&amp;pass;&gt; <br>
 	      &nbsp; &lt;then&gt; &lt;h2&gt;approved&lt;/h2&gt; <br>
 	      &nbsp; &nbsp; Routed to &amp;FORM:next;. <br>
-	      &hbsp; &nbsp;  <br>
 	      &nbsp; &lt;/then&gt; <br>
 	      &nbsp; &lt;else&gt; &lt;h2&gt;approved&lt;/h2&gt; <br>
 	      &nbsp; &nbsp; Routed to &amp;FORM:next;. <br>
@@ -143,19 +161,20 @@ Please?
   <li> <b>Extract title, first paragraph</b>
   <li> <b>Get category, keywords from user</b>
   <li> <b>Construct an index entry</b><br>
-       <dl>
-	 <dt> <a href="http://www.risource.org">pia.rsv.ricoh.com</a>
-	      PIA -- Platform for Information Applications
-	 <dd> PIA is a software framework for flexible and dynamic information
-              applications. It was created by researchers at Ricoh Silicon
-              Valley and makes it possible to create and maintain a new
-              generation of customized information processing applications.
-	      <ul>
-		<li> Entry created 1999-02-25
-		<li> <b>Note: </b> Maybe we could use this...
-	      </ul>
-       </dl>
 </ul>
+<p>
+<dl>
+  <dt> <a href="http://www.risource.org">pia.rsv.ricoh.com</a>
+       PIA -- Platform for Information Applications
+  <dd> PIA is a software framework for flexible and dynamic information
+       applications. It was created by researchers at Ricoh Silicon
+       Valley and makes it possible to create and maintain a new
+       generation of customized information processing applications.
+       <ul>
+	 <li> Entry created 1999-02-25
+	 <li> <b>Note: </b> Maybe we could use this...
+       </ul>
+</dl>
 </slide>
 
 <slide><h2>More processing:</h2>
@@ -170,18 +189,94 @@ Please?
 
 
 
+<slide><h2>Overall Architecture</h2>
+<ul>
+  <li> <b>InfoWare Layer</b>
+       <ul>
+	 <li> Active documents
+	 <li> For information designers
+       </ul>
+  <li> <b>Software Layer</b>
+       <ul>
+	 <li> Web server
+	 <li> Document processor
+	 <li> Tag action handlers
+       </ul>
+</ul>
+</slide>
+
+
+<slide><h2>Document Processing System</h2>
+<ul>
+  <li> <b>Simple</b>
+       <ul>
+	 <li> main loop is one page of code
+	 <li> based on standards: XML, DOM, HTTP ...
+       </ul>
+  <li> <b>Highly portable</b>
+       <ul>
+	 <li> written in Java
+	 <li> Linux on Intel, Sun (SPARC), Corel (ARM)
+	 <li> Windows, Solaris, ...
+       </ul>
+  <li> <b>Efficient</b>
+       <ul>
+	 <li> can save memory in pass-through mode
+	 <li> or cache document parse trees for speed
+       </ul>
+</ul>
+</slide>
+
 
 <slide><h2></h2>
 <ul>
+  <li> <b></b>
+  <li> <b></b>
   <li> <b></b>
 </ul>
 </slide>
 
 
 
-
-<slide><h2></h2>
+<slide><h2>Some of what we've done</h2>
 <ul>
+  <li> <b>Form processing</b> <br>
+       for all of Ricoh Silicon Valley
+  <li> <b>Web browsing history</b><br>
+       saves <em>every</em> URL with time and date.<br>
+       permanent; browser-independent
+  <li> <b>Slide formatter</b> (this one)
+  <li> <b>Code documentation</b><br>
+       pretty-printing, indexing, etc.
+  <li> <b>Web-site management</b><br>
+       enforcing look and feel
+  <li> <b>Web-enabled appliances</b><br>
+       special-purpose servers: photo album, web printer, ...
+       
+</ul>
+</slide>
+
+
+<slide><h2>What we're doing next</h2>
+<ul>
+  <li> <b>Re-implement in C</b><br>
+       speed, portability, embedded applications
+  <li> <b>Integrate with Apache</b> (mod_pia)
+  <li> <b>More agents</b><br>
+       webmaster's assistant, smart web cache
+  <li> <b></b>
+  <li> <b></b>
+</ul>
+</slide>
+
+
+<slide><h2>Cool things to do</h2>
+<ul>
+  <li> <b>Re-write the PIA in &lt;your favorite language&gt;</b><br>
+       Squeak / Perl / Guile / Python / ...<br>
+  <li> <b>Integrate with standard XML/SGML parsers</b>
+  <li> <b></b>
+  <li> <b></b>
   <li> <b></b>
 </ul>
 </slide>
@@ -189,7 +284,7 @@ Please?
 
 
 <hr>
-<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 <address><a href="http://rsv.ricoh.com/~steve/"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
