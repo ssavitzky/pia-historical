@@ -16,12 +16,15 @@ require "book.pl";
 ##hack to find device
 $GS = "gs";
 my $dev=`$GS -h`;
+$GIFEXT="gif";
 if ($dev =~ /gif8/) {
     $GSDEVICE="gif8";
-    $GS2GIF="";
+#    $GS2GIF="";
+    $GSEXT=$GIFEXT;
 } else {
     $GSDEVICE="ppm";
     $GS2GIF=" | ppmquant 256 | ppmtogif ";
+    $GSEXT="ppm";
 }
 
 #where the temporary files live
@@ -87,7 +90,7 @@ sub create_postscript{
     my $request=shift;
     my $docId=shift;
 
-    my $ua = new LWP::UserAgent;
+    my $ua = $self->user_agent;
     my $response=$ua->simple_request($request); 
 
     my $render=$self->option("render_method");
@@ -117,8 +120,8 @@ sub create_preview{
 #broken if gs not support gif....
 
 
-    my $cmd="cat /dev/null | $GS -sOutputFile=$image_file.%d.gif -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
-    $cmd.="$GS2GIF";
+    my $cmd="rm -f $image_file.*.$GSEXT $image_file.*.$GIFEXT; cat /dev/null | $GS -sOutputFile=$image_file.%d.$GSEXT -sDEVICE=$GSDEVICE -r$thumbsize -dNOPAUSE -q $ps_file ";
+#    $cmd.="$GS2GIF";
 #    $cmd.=" > $image_file";  Multipage files cause us some pain
     
 
@@ -128,7 +131,16 @@ sub create_preview{
     my $status=system ($cmd);
     #shouldgetstatushere & check for multiple pages...put %d in output filename
     print "Status is $status\n" if $main::debugging;
-    local (@image_files)=glob "$image_file.*.gif";
+    local (@image_files)=glob "$image_file.*.$GSEXT";
+    if($GS2GIF) {
+#need step to convert to gif
+	foreach $image_url (@image_files) {
+	    my $file = $image_url;
+	    $image_url =~ s/$GSEXT$/$GIFEXT/;
+	    $status=system("cat $file $GS2GIF > $image_url");
+	}
+    }
+
     print "made $#image_files from $image_file.*.gif" . @image_files . "..\n" if $main::debugging;
     my $image_url = $request->url->as_string;
     my $element=HTML::Element->new('a',href => $image_url);

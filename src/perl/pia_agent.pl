@@ -652,9 +652,19 @@ sub retrieve {
 
 ##should be using proxy...
 ## user agent should remain in existence
-    my $ua = new LWP::UserAgent;
+    my $ua = $self->user_agent;
     $response=$ua->simple_request($request,$file); 
     return $response;
+}
+
+## get or set the user agent... legacy from when agents actually retrieved
+# documents directly...
+sub user_agent{
+    my($self,$ua)=@_;
+    $$self{_ua}=$ua if $ua;
+    $$self{_ua}=new LWP::UserAgent unless $$self{_ua};
+    #should set parameters (proxy, etc.) here
+    return $$self{_ua};
 }
 
 ############################################################################

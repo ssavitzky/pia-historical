@@ -38,7 +38,9 @@ sub create_directories{
 sub handle_response{
     my($self,$response)=@_;
     return unless $response->code eq '200';
-    my $url=$response->request->url;
+    my $request=$response->request;
+    return unless $request;
+    my $url=$request->url;
     return unless $url;
     my $directory=$self->url_to_filename($url);
     return unless $directory;
@@ -52,8 +54,15 @@ sub handle_response{
     print "saved $url to $directory \n"  if $main::debugging;
     $self->entry($url,$directory);
     open(HEADER,">$directory/.request-header");
-    print HEADER $response->request->headers_as_string;
+    print HEADER $request->method . $url->as_string;
+    print HEADER $request->headers_as_string;
     close HEADER;
+    if($request->test('has_parameters')){
+	my $form=$response->parameters;
+	open(HEADER,">$directory/.request-parameters");
+	for (keys(%{$form})) {print HEADER $_ . "=" . $$form{$_} . "\n";}
+	close HEADER;
+    }
     return;  #we don't satisfy responses
 }
 
@@ -61,6 +70,9 @@ sub handle_request{
     my($self,$request,$resolver)=@_;
     my $directory=$self->url_to_filename($request->url);
     return unless -e "$directory/.content";
+    
+    return if $request->test('has_parameters');
+    ##shouldcheck if same as before
     my $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
     open(HEADER,"<$directory/.header");
     while (<HEADER>){

@@ -36,6 +36,12 @@ sub new {
     my $code = $self->code;
     print "  type is $type\n"  if defined($type) && $main::debugging;    
     print "  code is $code\n"  if defined($code) && $main::debugging;    
+
+    ## Initialize features and compute a few that we already know.
+
+    new FEATURES $self;  # automatically points $self at it.
+
+##get any parameters from url or post
     if($self->is_request()){
 	$self->compute_form_parameters() if $type eq 'POST';
 	$self->compute_form_parameters($self->url->query) if $type eq 'GET';
@@ -43,9 +49,6 @@ sub new {
 
 ###need to compute form parameters if encoded in url
 
-    ## Initialize features and compute a few that we already know.
-
-    new FEATURES $self;  # automatically points $self at it.
     return $self;
 }
 
@@ -373,7 +376,7 @@ sub unescape {
 sub compute_form_parameters{
     my($self,$tosplit)=@_;
     $tosplit=$self->content() unless $tosplit;
-
+    $self->deny('has_parameters');
     my(@pairs) = split('&',$tosplit);
     my($param,$value);
     my %hash;
@@ -383,6 +386,7 @@ sub compute_form_parameters{
 	$value = &unescape($value);
 	$hash{$param}=$value; #careful losing multiple values
 	print "  $param=$value.\n"  if $main::debugging;
+	$self->assert('has_parameters');#if any times through
     }
     $$self{parameters}=\%hash;
     
