@@ -6,7 +6,16 @@
 <body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <header>Edit Page</header>
 
-<!-- Process form variables -->
+<!-- =================================================================== -->
+<!-- Process form variables
+<!-- The if/then/else control structure elements are part of the basic tagset.
+<!-- The processing logic here If the page is being displayed as a result 
+<!-- of a submit from the home page then set the two variables AGENT:fname 
+<!-- and AGENT:links to the values already entered by the user. Next, 
+<!-- display the page with Title name field showing its current value.
+<!-- Note that appendlink and connectto are elements that have been defined
+<!-- for this agent.  Refer to Swifty-xhmtl.ts.
+<!-- =================================================================== -->
 <if><get name="FORM:submission"> <then>
 
 	<if>&FORM:fullname;<then>
