@@ -47,6 +47,7 @@ public class Environment implements java.lang.Cloneable {
   ************************************************************************/
 
   public String 	filename = null;
+  public String 	putfn = null;
   public Table		entities = null;
   public Interp		interpretor = null;
 
@@ -69,6 +70,13 @@ public class Environment implements java.lang.Cloneable {
     filename = fn;
     debug = dbg;
   }
+
+  /** Construct an environment with a filename and a putfileName */
+  public Environment(String fn,String putFn) {
+    filename = fn;
+    putfn = putFn;
+  }
+
 
   public Object clone() {
     return new Environment(filename, debug);
@@ -156,6 +164,10 @@ public class Environment implements java.lang.Cloneable {
       if (filename != null) {
 	ent("filePath", filename);
 	ent("fileName", filenamePart(filename));
+      }
+
+      if (putfn != null) {
+	ent("pathTran", putfn);
       }
 
       ent("piaUSER",	System.getProperty("user.name"));
