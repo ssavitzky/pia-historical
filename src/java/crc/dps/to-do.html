@@ -18,12 +18,14 @@ See also:
 <ol>
   <li> <b>Hole</b> Constructing and editing elements. <br>
        We want to be able to modify the attributes and content of an existing
-       element, or construct a new one out of pieces.
+       element, or construct a new one out of pieces.  Probably by adding back
+       &lt;replace&gt; in &lt;select&gt;, and adding some new ones for value,
+       insertion, etc.
        (1998-12-15) <br>
 
   <li> <b>Impr</b> passthrough action for elements. <br>
-       Call the action first; let it set entities before-tag, before-content,
-       after-content, and after-tag.
+       Not at all clear how best to do this.  One possibility is lazy
+       evaluation of &amp;element;.
        (1998-10-12) <br>
 
   <li> <b>Hole</b> Data structure elements <br>
@@ -191,9 +193,9 @@ Results: &lt;pre&gt;cat                                                         
        (1998-09-09) <br>
 
   <li> <b>Hole:</b> Some &lt;select&gt; subs unimplemented. <br>
-       id, xptr, replace; some attributes (e.g. <code>recursive</code>)
+       xptr is the only one left.
        (1998-09-08)<br>
-       -- all but xptr and replace now done
+       -- this can easily be deferred
 
   <li> <b>Bug:</b> Passive Entities needed. <br>
        Passive entities (character entities) and some normal entities have to
@@ -250,10 +252,6 @@ Results: &lt;pre&gt;cat                                                         
        <code>Node</code> interface (etc.) to the official location in
        <code>org.w3c.dom</code>.
        (1998-08-05)<br>
-
-  <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <br>
-       Not clear at this point exactly what use to make of this.
-       (1998-07-16)<br>
 
   <li> <b>Hole:</b> PI comments <br>
        Comments of the form <code>&lt;?-- text ?&gt;</code> should be discarded
