@@ -9,6 +9,7 @@ PACKAGES = \
 	agent
 
 FILES = \
+	Athread.java \
 	Accepter.java \
 	Transaction.java \
 	Machine.java \
