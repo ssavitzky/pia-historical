@@ -19,6 +19,12 @@
        href="/PIA/Doc/Manuals/Author/index.html"
        >/PIA/Doc/Manuals/Author/index.html</a>.  Using the PIA, you will be
        able to  follow links to actual examples as they come up in the text.
+  <dt> <b>Use the Source!</b>
+  <dd> ``Source code'' for agents is in the <a
+       href="../../../Agents">Agents</a> directory at the top-level of the
+       PIA's installation tree.  Please feel free to use it as a source of
+       ideas and good examples, and to make new agents by copying files from
+       existing ones.
 </dl>
 
 <h2>Anatomy of an Agent</h2>
@@ -30,10 +36,6 @@ contained in a directory.  The standard ones, listed below, are ``inherited''
 from the root directory if the agent's home directory doesn't contain them.
 
 <dl>
-  <dt> <code>initialize.if</code>
-  <dd> This InterForm is invoked automatically when the agent is first
-       installed.  It normally defines default values for any options the
-       agent might have.
   <dt> <code>home.if</code>
   <dd> The agent's ``home page'' -- this is the page a user will normally see
        first.  It should include an index of the agent's other pages.  It is
@@ -42,15 +44,27 @@ from the root directory if the agent's home directory doesn't contain them.
   <dd> This is the page returned from a request for <code>/AgentName/</code>
        (note the trailing slash).  It gives a standardized listing of the
        agent's top-level InterForms, and will not usually need to be
-       customized. 
+       customized.  
   <dt> <code>options.if</code>
   <dd> Lists the agent's options.  As with <code>index.if</code>, the default
        is almost always good enough.
+  <dt> <code>initialize.if</code>
+  <dd> This InterForm is invoked automatically when the agent is first
+       installed.  It  defines default values for any options the
+       agent might have, and sets the ``match criteria'' for transactions that
+       the agent acts on.  It does <em>not</em> have a default, and can be
+       omitted if not needed.
 </dl>
 
 The default search path for InterForm files consists of:
 
 <ol>
+  <li> <code>USR_DIR/Agents/AgentType/AgentName/</code> The user's customized
+       InterForms for this agent.
+  <li> <code>PIA_DIR/Agents/AgentType/AgentName/</code> The Agent's home
+       directory 
+  <li> <code>PIA_DIR/src/Agents/AgentType/AgentName/</code> The home directory
+       for experimental agents and development tools.
   <li> <code>USR_DIR/Agents/AgentName/</code> The user's customized
        InterForms for this agent.
   <li> <code>PIA_DIR/Agents/AgentName/</code> The Agent's home directory
@@ -73,16 +87,31 @@ agent <code>/PIA</code>.<p>
 
 <h3>Agent Names and Types</h3>
 
-Every agent has both a name and a type.  In most cases these are the same; a
-type can be used to create a family of agents with similar behavior but
-different options.  One example of this is the DOFS agents.<p>
+Every agent has both a name and a type.  A type is used to create a family of
+agents with similar behavior but different options.  One example of this is
+the <a href="/DOFS">DOFS</a> agents, another is the <a href="/Spy">Spy</a>
+agents <a href="/Spy/cia">cia</a> and <a href="/Spy/fbi">fbi</a>.  The type is
+usually an agent in its own right, but need not be.<p>
 
-Agent names are normally capitalized, but this is not required; name lookup is
+If an agent is not a ``sub-agent'' of some type, its name
+(<code>&amp;agentName;</code>) and type (<code>&amp;agentType;</code>) will be
+identical.  You can test for this with:
+
+<blockquote>
+  <code>&lt;test exact match="&amp;agentName;"&gt;&amp;agentType;&lt;/test&gt;</code>
+</blockquote>
+
+The names of agents meant to be seen at the top level of the listing are
+usually  capitalized, but this is not required; name lookup is
 case-sensitive, and there may be good reasons to prefer uppercase or lowercase
 names in some cases.  For example, DOFS is uppercase, and most agents with
 DOFS as their type have lowercase names except for the ``standard'' ones
-<code>/My</code> and <code>/PIA</code>.<p>
+<code>/My</code> and <code>/PIA</code>.  For another example, <code>fbi</code>
+and <code>cia</code> are sub-agents of <code>Spy</code>, and so have lowercase
+names. <p>
 
+At some point it will be possible to make sub-agents invisible at the top
+level. <p>
 
 
 <h3>Agent Data Structures and Code</h3>
@@ -94,13 +123,19 @@ registered interest.<p>
 
 This object is normally an instance of the class <code>GenericAgent</code>.
 If a subclass of this class is defined in the package
-<code>crc.pia.agent</code>, and its name matches that of the agent or its
-type, it is loaded automatically when the agent is installed.<p>
+<code>crc.pia.agent</code>, and its name matches the agent's type (with the
+first character capitalized, the rest lowercased, and all ``<code>.</code>''
+and ``<code>-</code>'' characters converted to underscore ``<code>_</code>''
+characters), it is loaded automatically when the agent is installed.<p>
 
 It will sometimes be necessary to use a different programming language for
 part of an agent (for example, PERL is good for text manipulation).  One
 choice is to put the external code into a CGI script (with a <code>.cgi</code>
-extension); another is to use the &lt;os-command&gt; actor.<p>
+extension); another is to use the &lt;os-command&gt; actor.  PERL is a good
+choice for a scripting language because it is nearly as ubiquitous as Java.
+Be warned, though, that not all of its libraries or extensions will be
+available on all systems.
+<p>
 
 
 <h2>Agents with Style</h2>
@@ -108,8 +143,8 @@ extension); another is to use the &lt;os-command&gt; actor.<p>
 Well, there was Sean Connery as James Bond... Sorry, wrong context.<p>
 
 Actually, PIA agents, and active documents in general, are so new that few
-conventions have become established, and there is considerable room for
-experimentation.  A few rules of thumb have become clear, however.<p>
+conventions have become established for them, and there is considerable room
+for experimentation.  A few rules of thumb have become clear, however.<p>
 
 <h3>Uniform Look and Feel</h3>
 
@@ -124,6 +159,26 @@ agent InterForm page includes the code:
 
 which expands into a standardized heading.<p>
 
+The standard include files at the moment are:
+
+<dl>
+  <dt> <code>heading.inc</code>
+  <dd> The standard header
+  <dt> <code>about.inc</code>
+  <dd> Information  ``about'' an agent, similar to what you might get from the
+       ``about'' menu item on a Windows or Mac application.  This is displayed
+       by the default <code>home.if</code> file just underneath the quick
+       reference.
+  <dt> <code>insert.if</code><!-- === should change to .inc -->
+  <dd> An image or set of links ``inserted'' in the normally-empty space to
+       the left of the quick reference.  On an appliance, this is often a link
+       to the agent that serves as a control panel.
+</dl>
+
+You can also copy and extend the default <code>home.if</code> file to get a
+slight extension or modification of one of the standard quick reference.<p>
+
+
 
 <h3>Quick Reference Up Front</h3>
 
@@ -131,6 +186,36 @@ An agent's home page is the easiest part to get to, naturally, and many users
 will have browsers with small  screens.  So it makes sense to put the
 most-commonly-used functions, and links to the most-commonly-used pages, as
 close to the top of an agent's home page as possible.<p>
+
+There are two common formats for this.  The first (and most common) uses a
+single column of links near the right-hand side of the screen.  The column
+just to the left contains a small number of labels.  This format is designed
+to look like <a href="http://rsv.ricoh.com/">rsv.ricoh.com</a>'s home page,
+letterhead, and business cards.  <p>
+
+The second format is used on the home pages of appliances, which typically
+have many functions.  It consists of <em>three</em> columns of icons or of
+mixed icons and text.<p>
+
+
+<h3>No Nasty Surprises</h3>
+
+It is perfectly possible to put a query string into a link, and so have an
+ordinary-looking link or icon that is equivalent to submitting a form.  In a
+PIA this can have drastic effects (there is, for example, an InterForm you can
+use to <a href="/Agency/shutdown.if">shut down the PIA</a>).<p>
+
+Many users will experiment, clicking links at random; it's also possible that
+you will want to use a robot to build an index of your PIA, or to identify
+broken links.  It's a good idea to make any irreversible actions the result of
+submitting a form, rather than just following a link.  This also gives you a
+chance to ask the user for confirmation.<p>
+
+<blockquote>
+  Eventually it will be possible to use standard HTTP authentication to keep
+  unauthorized users away from agents or forms you don't want them to use.
+</blockquote>
+
 
 <h3>Active Documentation</h3>
 
@@ -144,35 +229,39 @@ provide the thing itself and invite the reader to try it out on the spot.<p>
 Wherever possible, an agent should be essentially self-documenting, including
 links to whatever other documents a user may need.  This includes tips on
 customization as well as advice on how to set the options.  A
-<code>HEADER.html</code> file in the agent's home directory is particularly
-useful, since it can provide documentation that the user will see while
-browsing the agent's source code directory <em>before</em> installing it.<p>
+<code>HEADER.html</code> or <code>index.html</code> file in the agent's home
+directory may be useful, since it can provide documentation that the user will
+see while browsing the agent's source code directory <em>before</em>
+installing it.  It should include an installation form, especially if an agent
+has many options.<p>
+
 
 <h3>Readable Source</h3>
 
 Of course the output, the user's view, of an InterForm should be easily read,
 understood, and used.  But so should the input--the <em>author's</em> view.
-After all, this is the file as <em>you</em> will be working with it.  Indent
+After all, this is the file that <em>you</em> will be working with.  Indent
 the content of elements such as lists and control structures.  Leave yourself
-short notes in the form of comments, and longer ones in a separate file.  Keep
-a <a href="../../Notes/Steve/to-do.html">to-do list</a>.  Document your design
-decisions, including things you tried that turned out to be mistakes.<p>
+short notes in the form of comments, and longer ones in a separate file. 
+<p>
 
 <!-- Good for you!  This is what an HTML comment looks like. -->
 
-Remember, an agent's InterForms will be read not only by their author, but by
-any users who want to customize or extend it.  If the agent is complicated,
-consider writing an ``implementation details'' document, or even an ``<a
-href="../Internals/">internals manual.</a>'' <p>
+Keep a <a href="../../../InternalDoc/Notes/Steve/to-do.html">to-do list</a>.
+Document your design decisions, including things you tried that turned out to
+be mistakes.  Use source control (the PIA group uses CVS, which is free,
+well-supported, and well-suited for projects with multiple developers).
+<p>
 
+Remember, an agent's InterForms will be read not only by their author, but by
+any users who want to customize or extend them.  If the agent is complicated,
+consider writing an ``implementation details'' document, or even an ``<a
+href="../Api">internals manual.</a>'' <p>
 
 
 <hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<!-- hhmts start -->
-Last modified: Wed Jul 23 14:20:55 1997
-<!-- hhmts end -->
-<p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
          >steve@crc.ricoh.com</a>&gt;</address>
