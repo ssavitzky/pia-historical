@@ -73,7 +73,8 @@ public interface Tagset extends DOMFactory {
   ************************************************************************/
 
   /** Called during parsing to return a suitable Handler for a given
-   *	tagname.
+   *	tagname.  Returns <code>getHandlerForType(NodeType.ELEMENT)</code> 
+   *	as a default.
    */
   public Handler getHandlerForTag(String tagname);
 
@@ -97,7 +98,18 @@ public interface Tagset extends DOMFactory {
 
   public void setHandlerForType(int nodeType, Handler newHandler);
 
-  /** Test whether the Tagset is ``locked.''
+  /** Called during parsing to determine whether a Handler exists for a
+   *	given attribute name.  Returns <code>null</code> as a default.
+   */
+  public Handler getHandlerForAttr(String attrName);
+
+  public void setHandlerForAttr(String attrName, Handler newHandler);
+
+  /************************************************************************
+  ** Locking status:
+  ************************************************************************/
+
+   /** Test whether the Tagset is ``locked.''
    *
    *	A locked Tagset must be extended by creating a new Tagset with
    *	the locked Tagset as its context.
@@ -218,5 +230,12 @@ public interface Tagset extends DOMFactory {
    *	its context, in order of definition (most recent last). */
   public Enumeration allHandlerNames();
 
+  /************************************************************************
+  ** Convenience Functions:
+  ************************************************************************/
+
+  /** Convenience function to define a tag with a given syntax. */
+  public Handler defTag(String tag, String notIn, int syntax,
+			String cname, NodeList content);
 
 }

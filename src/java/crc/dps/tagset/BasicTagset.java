@@ -71,13 +71,14 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   protected Handler defaultEntityHandler;
 
-  protected Table handlersByTag = new Table();
-  protected List  handlerNames = new List();
-  protected List  contextHandlerNames = null;
+  protected Table handlersByTag 	= new Table();
+  protected Table handlersByAttr 	= new Table();
+  protected List  handlerNames 		= new List();
+  protected List  contextHandlerNames 	= null;
 
-  protected int  MAX_TYPE = 10;
-  protected int  MIN_TYPE = -3;
-  protected Handler handlersByType[] = new Handler[MAX_TYPE - MIN_TYPE];
+  protected int  MAX_TYPE = NodeType.MAX_TYPE;
+  protected int  MIN_TYPE = NodeType.MIN_TYPE;
+  protected Handler handlersByType[] = new Handler[MAX_TYPE - MIN_TYPE + 1];
 
   protected boolean locked = false;
 
@@ -88,7 +89,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   ************************************************************************/
 
   /** The DOMFactory to which all construction requests are delegated. */
-  protected DOMFactory factory= null;
+  protected DOMFactory factory = null;
 
   public DOMFactory getFactory() { return factory == null? this : factory; }
 
@@ -188,6 +189,17 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     addHandler(tagName, NodeType.ELEMENT, newHandler);
   }
 
+  public Handler getHandlerForAttr(String name) {
+    return (Handler) handlersByAttr.at(name);
+  }
+
+  public void setHandlerForAttr(String name, Handler newHandler) {
+    handlersByAttr.at(name, newHandler);
+    String xname = "~attr~" + name;
+    handlerNames.push(xname);
+    addHandler(xname, NodeType.ELEMENT, newHandler);
+  }
+
   /** Add the handler to the content of the tagset Node. */
   protected void addHandler(String name, int type, Handler newHandler) {
     ActiveNode h = (ActiveNode)newHandler;
@@ -230,7 +242,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       // === At this point we need to resize handlersByType
     }
     handlersByType[nodeType - MIN_TYPE] = newHandler;
-    addHandler(null, nodeType, newHandler);
+    addHandler("~type~" + NodeType.getName(nodeType), nodeType, newHandler);
   }
 
   public boolean isLocked() { return locked; }
@@ -384,13 +396,30 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   /** Returns an Enumeration of the element names defined in this table and
    *	its context, in order of definition (most recent last). */
   public Enumeration allHandlerNames() {
+    if (context == null) return handlerNames();
     if (contextHandlerNames == null) {
       contextHandlerNames = new List(context.allHandlerNames());
     }
-    List allNames = new List(contextHandlerNames());
+    List allNames = new List(contextHandlerNames);
     allNames.append(handlerNames());
     return allNames.elements();
   }
+
+  /************************************************************************
+  ** Convenience Functions:
+  ************************************************************************/
+
+  /** Convenience function to define a tag with a given syntax. */
+  public Handler defTag(String tag, String notIn, int syntax,
+			String cname, NodeList content) {
+    if (cname == null && content == null) 
+      return defTag(tag, notIn, syntax);
+
+    GenericHandler h = defTag(tag, notIn, syntax, cname);
+    Copy.appendNodes(content, h);
+    return h;
+  }
+
 
   /************************************************************************
   ** Initialization:
@@ -406,14 +435,13 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @param notIn a String of blank-separated tag names representing the
    *	elements that will be ended if the tag being defined is found
    *	inside them.
-   * @param syntax 1 for ordinary elements, -1 for empty elements.
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    * @return the Handler in case more setup needs to be done.
    */
   protected BasicHandler defTag(String tag, String notIn, int syntax) {
     BasicHandler h = (BasicHandler) handlersByTag.at(tag);
-    boolean parseEnts = syntax > 0 && (syntax & Syntax.NO_ENTITIES) == 0;
-    boolean parseElts = syntax > 0 && (syntax & Syntax.NO_ELEMENTS) == 0;
-    if (h == null) h = new BasicHandler(syntax, parseElts, parseEnts);
+    if (h == null) h = new BasicHandler(syntax);
+    else if (syntax != 0) h.setSyntaxCode(syntax);
     if (notIn != null) {
       Enumeration nt = new java.util.StringTokenizer(notIn);
       while (nt.hasMoreElements()) {
@@ -434,7 +462,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @param notIn a String of blank-separated tag names representing the
    *	elements that will be ended if the tag being defined is found
    *	inside them.
-   * @param syntax 1 for ordinary elements, -1 for empty elements.
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    * @param cname the name of the handler's class.  If <code>null</code>,
    *	the tag is used.  GenericHandler is used if the specified class 
    *	does not exist.
@@ -442,21 +470,9 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    */
   protected GenericHandler defTag(String tag, String notIn, int syntax,
 				  String cname) {
-    GenericHandler h = null;
-    boolean parseEnts = syntax > 0 && (syntax & Syntax.NO_ENTITIES) == 0;
-    boolean parseElts = syntax > 0 && (syntax & Syntax.NO_ELEMENTS) == 0;
-    boolean expand    = syntax > 0 && (syntax & Syntax.NO_EXPAND)   == 0;
-    h = loadHandler(tag, cname);
-    if (h != null) {
-      h.setElementSyntax(syntax);
-      h.setParseEntitiesInContent(parseEnts);
-      h.setParseElementsInContent(parseElts);
-      h.setExpandContent(expand);
-    } else {
-      // the following is redundant if loadHandler defaults properly:
-      h = new GenericHandler(syntax, parseElts, parseEnts);
-      h.setExpandContent(expand);
-    }
+    GenericHandler h = loadHandler(tag, cname);
+    if (h == null) h = new GenericHandler(syntax);
+    else if (syntax != 0) h.setSyntaxCode(syntax);
     if (notIn != null) {
       Enumeration nt = new java.util.StringTokenizer(notIn);
       while (nt.hasMoreElements()) {
@@ -464,6 +480,27 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       }
     }
     setHandlerForTag(tag, h);
+    return h;
+  }
+
+  /** Define a node by type, with a named handler class.
+   *
+   * @param type the nodeType being defined.
+   * @param name an optional item name.
+   * @param cname the name of the handler's class.  If <code>null</code>,
+   *	BasicHandler is used.
+   * @return the Handler in case more setup needs to be done.
+   */
+  protected BasicHandler defType(int type, String name, int syntax,
+				 String cname) {
+    BasicHandler h = loadHandler(cname);
+    if (h == null) {
+      // the following is redundant if loadHandler defaults properly:
+      h = new BasicHandler(syntax);
+    } else if (syntax != 0) {
+      h.setSyntaxCode(syntax);
+    }
+    setHandlerForType(type, h);
     return h;
   }
 
@@ -486,6 +523,22 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     return h;
   }
 
+  /** Load an appropriate handler class and instantiate it. 
+   *	Subclasses (e.g. legacy) may need to override this.
+   */
+  protected BasicHandler loadHandler(String cname) {
+    BasicHandler h = null;
+    Class c = NameUtils.loadClass(cname, "crc.dps.handle.");
+    if (c == null) {
+      c = NameUtils.loadClass(cname+"Handler", "crc.dps.handle.");
+    }
+    try {
+      if (c != null) h = (BasicHandler)c.newInstance();
+    } catch (Exception e) {}
+    if (h == null) h = new BasicHandler();
+    return h;
+  }
+
   /** Define a set of syntax tags with a specified implicitlyEnds table.
    *	If the tags are already defined (e.g. they are actors or empty),
    *	simply append to the implicitlyEnds table. <p>
@@ -498,7 +551,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @param notIn a String of blank-separated tag names representing the
    *	elements that will be ended if the tag being defined is found
    *	inside them.
-   * @param syntax 1 for ordinary elements, -1 for empty elements.
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    */
   protected void defTags(String tags, String notIn, int syntax) {
     Enumeration e  = new java.util.StringTokenizer(tags);
@@ -515,7 +568,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @param notIn a String of blank-separated tag names representing the
    *	elements that will be ended if the tag being defined is found
    *	inside them.
-   * @param syntax 11 for ordinary elements, -1 for empty elements.
+   * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
    */
   protected void defActive(String tags, String notIn, int syntax) {
     Enumeration e  = new java.util.StringTokenizer(tags);
