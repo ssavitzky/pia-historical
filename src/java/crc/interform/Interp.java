@@ -486,7 +486,9 @@ public class Interp extends State {
   }
 
   public void pushInto(SGML t) {
-    if (t.isText()) {
+    if (t == null) {
+      debug("Expanding null");
+    } else if (t.isText()) {
       debug("Expanding \""+t.toString().length()+"\"");
       input = new InputToken(t.toText(), input);
     } else if (t.isElement()) {
@@ -494,13 +496,17 @@ public class Interp extends State {
       input = new InputExpand(t, input);
     } else {
       debug("Expanding ["+t.content().nItems()+"]");
-      if (! t.isEmpty()) input = new InputList(t.content(), input);
+      input = new InputList(t.content(), input);
     }
   }
 
   public void pushInto(Tokens t) {
-    debug("Expanding ["+t.nItems()+"]");
-    if (! t.isEmpty()) input = new InputList(t, input);
+    if (t == null) {
+      debug("Expanding null");
+    } else {
+      debug("Expanding ["+t.nItems()+"]");
+      input = new InputList(t, input);
+    }
   }
 
   /** Repeatedly expand content, with the given entity bound to each
