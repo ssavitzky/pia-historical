@@ -6,24 +6,26 @@
 <h1>Initialize the &agentName; agent</h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
-<agent-set-criterion name="response">
-<agent-set-criterion name="agent_response" value=0>
+<agent-set-criteria>response agent-response-</agent-set-criteria>
+<user-message>&agentName; criteria: <agent-criteria></user-message>
 
-<set agent hook name="act-on"><protect>
+<set agent hook name="act-on"><protect><it>
+   <set entity name=ct><get trans headers name=Content-Type></set>
    <set entity name=fn>&year;/&month;/&day;.html</set>
    <write directory file="&year;"></write>
    <write directory file="&year;/&month;"></write>
-   <if><test not zero><get trans feature name="html"></test>
-       <then><write append trim line file="&fn;">
-	         &time; <a href="&url;">&url; : <get trans feature name=title></a><br>
+   <if><get trans feature name="html">
+       <then><set entity name=title><get trans feature name=title></set>
+	     <write append trim line file="&fn;">
+	 	&time; <a href="&url;">&url; : &title;</a><br>
 	     </write>
-             <write trim line file=".last.link">
-		 <a href="&url;">&url; : <get trans feature name=title></a>
+             <write trim line file="last.link">
+		 <a href="&url;">&url; : &title;</a>
 	     </write>
-             <write file=".last.html">&date; &time; <a href="&url;">&url; : <get trans feature name=title></a>
+             <write file="last.html">&date; &time; <a href="&url;">&url; : &title;</a>
 <dl>
   <dt> <b>Link:</b>
-  <dd> <protect-result markup><a href="&url;">&url; : <get trans feature name=title></a></protect-result>
+  <dd> <protect-result markup><a href="&url;">&url; : &title;</a></protect-result>
   <dt> <b>Reply Header</b>
   <dd> <pre><get trans headers></pre>
   <dt> <b>Request Header</b>
@@ -32,10 +34,10 @@
 </write>
        </then>
        <else><write trim line append file="&fn;">
-&time; --<get trans feature name=content-type>- <a href="&url;">&url;</a><br>
+		&time; --&ct;- <a href="&url;">&url;</a><br>
 	     </write></else>
     </if>
-</protect></set>
+</it></protect></set>
 
 <dl>
   <dt> <b>Note:</b>

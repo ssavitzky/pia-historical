@@ -4,7 +4,7 @@
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>&agentName; agent <br>Home Page</set>
+<set entity name=title>Home Page</set>
 <read interform file="heading.inc" process>
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
@@ -48,8 +48,8 @@ bar at the top of each page that refers to the history database.<p>
 <ul>
   <li>History Agent: <a href="/History">/History</a>
   <li>History directory: <a href="/My/History">/My/History</a>
-  <li>Page info: <a href="/My/History/.last.html">/My/History/.last.html</a>
-  <li>Last link: <a  href="/My/History/.last.link">/My/History/.last.link</a>
+  <li>Page info: <a href="/My/History/last.html">/My/History/last.html</a>
+  <li>Last link: <a  href="/My/History/last.link">/My/History/last.link</a>
 </ul>
 
 The ``last link'' file is particularly useful; the following Emacs code lets
@@ -60,7 +60,7 @@ you define a key that inserts a link to the last page you visited:
 (defun generic-insert-last-link ()
   "Insert a link to the last page visited into the buffer"
   (interactive)
-  (insert-file-contents "~/.pia/History/.last.link") )
+  (insert-file-contents "~/.pia/History/last.link") )
 </pre></blockquote>
 
 <h3>Directory Format</h3>
