@@ -69,6 +69,8 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   ** Data:
   ************************************************************************/
 
+  protected long timestamp = 0;
+
   protected Handler defaultElementHandler;
 
   protected Handler defaultTextHandler;
@@ -428,6 +430,23 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     List allNames = new List(contextHandlerNames);
     allNames.append(handlerNames());
     return allNames.elements();
+  }
+
+  /** Get the value of the timestamp.  This is an arbitrary value which
+   *	is guaranteed to be consistent only over tagsets obtained from
+   *	the same sort of resource. 
+   */
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+  /** Set the timestamp. 
+   *	Only accessible within the  <code>crc.dps.tagset</code> package.
+   *	Used by the loader.
+   * @see crc.dps.tagset.Loader
+   */
+  void setTimestamp(long value) {
+    timestamp = value;
   }
 
   /************************************************************************
