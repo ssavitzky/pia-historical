@@ -11,18 +11,20 @@ You are Previewing <code language=perl> ${$current_request->parameters()}{URL}; 
 <code language=perl>
 my %form_parameters=%{$current_request->parameters()};
 my $name=$current_self->name;
-my $form=make_form("/$name/preview.if",({name => 'URL',type => 'hidden',value =>
-$form_parameters{URL}},{name => 'thumbsize',type => 'hidden',value => 30},{type => 'submit',value => 'SmallThumbnails'}));
-return $form;
-</code>
-<code language=perl>
-my %form_parameters=%{$current_request->parameters()};
-my $name=$current_self->name;
-my $form=make_form("/$name/preview.if",({name => 'URL',type => 'hidden',value =>
-$form_parameters{URL}},{name => 'render_method',type => 'hidden',value => 'normal'},{type => 'submit',value => 'NoLinks/Images'}));
-return $form;
-</code>
+my @zform;
 
+push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
+push(@zform, {name => 'thumbsize',type => 'hidden',value => 30});
+push(@zform, {type => 'submit',value => 'SmallThumbnails'});
+
+push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
+push(@zform, {name => 'render_method',type => 'hidden',value => 'normal'});
+push(@zform, {type => 'submit',value => 'NoLinks/Images'});
+
+my $form=make_form("/$name/preview.if",@zform);
+
+return $form;
+</code>
 
 <hr>
 <!parse any form params>
