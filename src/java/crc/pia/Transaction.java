@@ -7,15 +7,16 @@
  * Transactions generalize the HTTP classes Request and Response.
  * They are used in the rule-based resolver, which associates 
  * transactions with the interested agents.
+ * The actual contents are stored in a content instance variable which contains
+ * objects which implement the content interface.
  *
  * A Transaction has a queue of ``handlers'', which are called
  * (from the $transaction->satisfy() method) after all agents
  * have acted on it.  At least one must return true, otherwise
  * the transaction will ``satisfy'' itself.
  *
- * In a proper implementation, Transaction would be a subclass of 
- * DS::Thing, and Response and Request would be subclasses of it.
- * It's done backwards here in order to re-use existing libraries.
+ * Each transaction runs in its own thread, so that blocking io operation
+ * don't affect the core system.
  *
  */
 
@@ -23,6 +24,8 @@ package crc.pia;
 import java.util.Enumeration;
 import java.net.URL;
 import java.io.IOException;
+import java.lang.Runnable;
+
 
 import crc.ds.Thing;
 import crc.ds.Queue;
@@ -30,7 +33,8 @@ import crc.pia.Machine;
 import crc.pia.Content;
 import crc.tf.Registry;
 
-public class Transaction extends Thing{
+public class Transaction extends Thing implements Runnable{
+
   /**
    * Attribute index - if true transaction is a response.
    *
@@ -734,9 +738,12 @@ public class Transaction extends Thing{
    */
   public Transaction( Machine from ){
     handlers = new Queue();
+
+// we probably only need one instance of these objects
     HeaderFactory hf  = new HeaderFactory();
     ContentFactory cf = new ContentFactory();
     
+
     initialize( hf, cf );
     isRequest = true ;
     fromMachine( from );
@@ -749,6 +756,7 @@ public class Transaction extends Thing{
   public Transaction( Machine from, Content ct ){
     handlers = new Queue();
 
+// should we initialize an existing content object?
     initializeContent( ct );
     isRequest =  true;
     fromMachine( from );
@@ -768,6 +776,48 @@ public class Transaction extends Thing{
     fromMachine( t.toMachine() );
     toMachine( t.fromMachine() );
   }
+
+
+
+/**  run - process the transaction
+ * This should be called  just after a transaction has been created,
+ * but before resolution begins.(Resolution should wait until feature values are available).
+ * This thread should live until the transaction has been satisfied.
+ * each transaction goes through two logical steps.
+ * first the content cones in from the FROM machine 
+ * then content goes out to the TO machine.
+ * for reasons of efficiency,  and interactions with the resolver,
+ * the actual processing is not so clean.
+ */
+public void run()
+  {
+
+// make sure we have the header information
+    if(headerObj ==  null) initializeHeader();
+    
+// and the content
+  if(contentObj ==  null) initializeContent();
+
+// assert precomputed features
+  assertFeatures();
+  
+// loop until we get resolution, filling content object
+// (up to some memory limit)
+  while(!resolved){
+    //contentobject returns false when object is complete
+    if(!contentObj.processInput(fromMachine)) wait(); 
+  }
+  
+// resolved, so now satisfy self
+  satisfy();
+
+// cleanup?
+  
+}
+
+  
+
+
 } 
 
 
