@@ -6,25 +6,31 @@ package crc.dom;
 
 import java.io.*;
 
-import w3c.dom.Attribute;
-import w3c.dom.AttributeList;
-import w3c.dom.Attribute;
-import w3c.dom.NodeEnumerator;
-import w3c.dom.Node;
-import w3c.dom.NodeList;
-
 public class BasicAttr extends AbstractNode implements Attribute {
 
+  public BasicAttr(String n, NodeList v){
+    setParent( null );
+    setPrevious( null );
+    setNext( null );
+    setName( n );
+    setValue( v );
+    /* true if attribute is given a value in the original doc */
+    setSpecified( true );
+  }
+
   public BasicAttr(Node myParent){
-    setParent( myParent );
-    setLeftSibling( null );
-    setRightSibling( null );
+    if( myParent != null )
+      setParent( (AbstractNode)myParent );
+    else
+      setParent( null );
+    setPrevious( null );
+    setNext( null );
     setName( "" );
     setValue( null );
     setSpecified( false );
   }
 
-  public int getNodeType() { return AbstractNode.NodeType.ATTRIBUTE; }
+  public int getNodeType() { return NodeType.ATTRIBUTE; }
 
   public void setName(String name){ this.name = name; }
   public String getName(){ return name; }
@@ -38,7 +44,10 @@ public class BasicAttr extends AbstractNode implements Attribute {
   // provides a connection to the DTD 
   // attribute Node definition;
 
-  public String toString(){ return ""; }
+  public String toString(){
+    // not implemented yet
+    return "";
+  }
 
   /* attribute name */
   protected String name;
