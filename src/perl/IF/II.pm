@@ -313,15 +313,31 @@ sub  get_value_internal{
     my @result;
 				#  hash might be an object that is blessed
 				# as something else... treat special cases first
-
+    if(! ref($hash)){
+	print "$hash not ref for $key\n" if $main::debugging;			# interpret strings as array
+	if($key =~ /\d/){
+	    my @words=split(' ',$hash);
+	    $hash=\@words if @words;
+	    print "convertingstring $hash to array for $key\n" if $main::debugging;
+	    
+	}
+    }
+	
     return unless ref($hash);
     
     if(ref($hash) eq 'ARRAY'){
 	#checkfor numbers
-	$key=~ s/-/../;
+	
 	if($key eq '*'){
 	    push(@result,@$hash);
-	}else{
+	}else{			# start with 1 so must subtract toget 0 
+	    if($key=~ /-/){ #range..
+		my @keys=split(/-/,$key);
+		@keys=map {$_--} @keys;
+		$key=join('..',@keys) if @keys;
+	    }else{
+		$key--;
+	    }
 	    push(@result,$$hash[$key]);
 	}
     } elsif(ref($hash) eq 'IF::IT' || ref($hash) eq 'DS::Tokens'){

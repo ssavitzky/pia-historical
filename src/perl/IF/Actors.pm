@@ -646,7 +646,7 @@ sub sorted_handle {
 
 ###### Number Processing:
 
-### <sum>list</sum> <diff>list</diff> 
+### <sum>list</sum> <difference>list</difference> 
 ### <product>list</product> <quotient>list</quotient>
 
 define_actor('sum', 'dscr' => "Return sum of numbers in CONTENT");
