@@ -774,8 +774,60 @@ public class  HTTPRequest extends Transaction {
    * Here for debugging purpose -- if DEBUG flag is false call Transaction's run method()
    */
   public void run(){
-    if(!DEBUG)
-      super.run();
+    if(!DEBUG){
+
+      // make sure we have the header information
+      if(headersObj ==  null) initializeHeader();
+    
+      Pia.instance().debug(this, "Got a head...");
+
+      // and the content
+      if( method().equalsIgnoreCase( "POST" ) ){
+	if(contentObj ==  null) initializeContent();
+	Pia.instance().debug(this, "Got a body...");
+	// incase body needs to update header about content length
+	if( headersObj!= null && contentObj != null )
+	  contentObj.setHeaders( headersObj );
+      }
+
+      // now we are ready to be resolved
+      resolver.push(this);
+      
+      
+      // loop until we get resolution, filling content object
+      // (up to some memory limit)
+      while(!resolved){
+	//contentobject returns false when object is complete
+	//if(!contentObj.processInput(fromMachine)) 
+	
+	Pia.instance().debug(this, "Waiting to be resolved");
+	
+	long delay = 1000;
+
+	if( method().equalsIgnoreCase( "POST" ) ){
+	  if(!contentObj.processInput()) {
+	    try{
+	      Thread.currentThread().sleep(delay);
+	    }catch(InterruptedException ex){;}
+	  }
+	}else{
+	  try{
+	    Thread.currentThread().sleep(delay);
+	  }catch(InterruptedException ex){;}
+	}
+	
+      }
+    
+      // resolved, so now satisfy self
+      satisfy( resolver);
+      
+      
+      // cleanup?
+      ThreadPool tp = Pia.instance().threadPool();
+      tp.notifyDone( executionThread );
+      
+
+    }
     else{
       // make sure we have the header information
       Pia.instance().debug(this, "Running HTTPRequest's run method");
