@@ -133,7 +133,7 @@
  <set name=id local><get name=event attr=id></set>
  <if> <read file=&file; info> <then>
   <set name=events><read file=&file; process></set>
-  <set name=events><get name=events findall=event></set>
+  <set name=events><dummy><get name=events findall=event></dummy></set>
   <!-- remove existing entries -->
   <write file=&file;> </write>
   <repeat list=&events; entity=e>

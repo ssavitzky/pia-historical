@@ -2,12 +2,6 @@
 <!--  Load the tagset -->
 <tagset-load name=MB3-actors>
 
-<set entity name="subs"><agent-list subs type="&agentType;"></set>
-<if><test exact match="&agentType">&agentName;</test>
-    <then><set name=agentPath>&agentName;</set></then>
-    <else><set name=agentPath>&agentType;/&agentName;</set></else>
-</if>
-<set entity name="subs"><agent-list subs type="&agentType;"></set>
 <table cellspacing=0 cellpadding=0 border=0>
 
 <tr>
@@ -42,11 +36,9 @@
 			     height=20 width=20 alt="*"></if>
 	    <td><a href="view_day.if">View Day</a>
     <tr><th><td><a href="doc.html">Documentation</a>
-    <if>&subs;<then>
+    <if><get name=subs><then>
     <tr><th align=right>
-           <if><test not exact match="&agentType;">&agentName;</test>
-	        <then><a href="/&agentType;/home.if">&agentType;/</a></then>
-                <else>&agentType;/</else></if>
+           
         <td><repeat list="&subs;">
                <get name=li> <b> / </b>
            </repeat></then></if>

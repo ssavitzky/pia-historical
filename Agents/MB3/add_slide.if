@@ -1,22 +1,65 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>MB3: Event</title>
+<title>MB3:  Add Slide</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <tagset-load name=MB3-actors>
  <if> <get form name=eid> <then>
       <set name=event><retrieve-event id=&FORM.eid; file=&FORM.file;> </set>
       </then>
       <else><b> Error, no event specified</b></else></if>
-<set entity name=title><get index=event.eventtitle></set>
+<set entity name=title>Add Slide to <get index=event.eventtitle></set>
 <read interform file="heading.inc" process>
-<!-- read interform file="subhead.inc" process -->
-<!-- set query separator -->
 <set name=sep>&</set>
+<set name=subs><dummy> <a
+href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;> View slides </a></dummy></set>
+<read interform file="subhead.inc" process>
+
 
 
 <if> <get index=event.slides>  <then>
- <if> <get name=slide form> <then> <set name=slidenum>&FORM.slide;</set></then> <else><set name=slidenum>0</set></else> </if>
+ <set name=slides><get index=event.slides></set>
+</then>
+<else> <set name=slides><slides></slides></set>
+ <set name=event insert=-1><get name=slides></set>
+</else>
+</if>
 
+ <if> <get name=slide form> <then> <set
+      name=slidenum>&FORM.slide;</set></then>
+ <else><set name=slidenum><sum digits=0> 1 <get
+      name=slides size></sum></set></else> </if>
+  
+
+<form action="&url;" method=post process copy>
+ <process copy>
+ <set name=slides insert=-1><slide number=&slidenum;>
+ <if> <get name=title form> <then><h3><get name=title form></h3></then>  </if>
+ <ul><repeat start=1 stop=5>
+ <if> <get name=bullet&li; form><then><li><strong> <get name=bullet&li;
+      form></strong></li></then>
+      </if></repeat></ul>
+ <if> <get name=text form> <then><get name=text form></then>  </if>
+ </slide></set>
+ <save-event event=&event;>
+ </process>
+ <input name="file" type=hidden  value="&FORM.file;">
+ <input name="eid" type=hidden  value="&FORM.eid;">
+ <table> <caption>Enter values to create a new slide </caption>
+  <tr><th align=right>Slide Title: </th><td align=left><input name="title"
+size="30"> </td> </tr>
+  <repeat start=1 stop=5>
+      <tr><th align=right>Bullet: </th><td align=left><input name="bullet&li;"
+size="60"> </td> </tr>
+      </repeat>
+      <tr><th align=right>Text: </th>
+          <td align=left><textarea name="text" rows=5 cols=60>
+          </textarea>
+          </td> </tr>
+      <tr><th align=right><input type="SUBMIT" value="CreateSlide"> </th> </tr>
+ </table>
+
+</form>
+<hr>
  <center>
   Slides:
   <repeat list=&event.slides; entity=slide>
@@ -27,29 +70,9 @@
   </repeat>
  <a href=add_slide.if?file=&FORM.file;&sep;eid=&FORM.eid;> Add slide </a>
  </center>
- 
- </then></if>
-<hr>
-<if> <get name=myslide> <then>
- 
+ <hr>
 
  <get name=myslide>
-
- </then> <else>
- <center>
- <h2><get index=event.eventtitle></h2> <br>
- Presented by: <strong><get index=event.eventauthor></strong><br>
- on:  <get index=event.date.month> <get index=event.date.day> <get index=event.date.year><br>
- <strong><get index=event.eventdescription></strong>
- </center>
-
- </else></if>
- <hr>
- <p>
- 
-
-  <a href=add_slide.if?file=&FORM.file;&sep;eid=&FORM.eid;> Add slide </a>
-
 
 
 <!-- update URL if any -->
@@ -113,15 +136,12 @@
       Description: <input name=desc  size=30>
       </form> </td>
 
-     
       </tr>
  </table>
       
-
-
 <hr>
-      <a href="bundle_presentation.if?event=&event.eventid;">Print presentation
-      </a>||<if>on<then><expand><get agent name=navbar></expand></if>
+
+<if>on<then><expand><get agent name=navbar></expand></if>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 </body></html>
