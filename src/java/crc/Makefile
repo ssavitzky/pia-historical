@@ -5,6 +5,10 @@
 PACKAGE="crc"
 TOPDIR=../..
 
+### These are the packages to be built.  
+###	Only the top-level directories are needed; 
+###	make descends into each one recursively.
+
 PACKAGES = \
 	ds \
 	interform \
@@ -13,13 +17,32 @@ PACKAGES = \
 	tf \
 	util
 
-PACKAGENAMES= \
+### These are the names of all the packages in the PIA.
+###	We need these because javadoc does _not_ operate recursively.
+
+PIAPACKAGENAMES= \
 	crc.ds \
 	crc.interform crc.interform.handle \
 	crc.pia crc.pia.agent \
 	crc.sgml \
 	crc.tf \
-	crc.util
+	crc.util 
+
+### These are the names of the classes in the JDK.  
+###	Assuming javadoc can find the source code, we should be able to
+###	include them in the API documentation.
+
+SUNPACKAGENAMES= \
+	java.lang \
+	java.io \
+	java.util \
+	java.net \
+	java.awt \
+	java.awt.image \
+	java.awt.peer \
+	java.applet
+
+PACKAGENAMES= $(PIAPACKAGENAMES) $(SUNPACKAGENAMES)
 
 # mail, mime
 
