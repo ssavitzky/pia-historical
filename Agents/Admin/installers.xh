@@ -75,12 +75,6 @@
 	      type: <input name="type" value="Toolbar">
 	      </form></if>
        </dl>
-  <dt> <a name="logo">Logo agent</a>
-       <if><agent-running name=Logo><then><em>installed</em></then><else>
-  <dd> <form action="/&AGENT:name;/install-agent" METHOD="POST">
-       <input type="submit" value="Install">
-       name: <INPUT NAME="agent" value="Logo">
-       </form></if>
   <dt> <a name="Cache">Cache agent</a> (keeps a copy of every external doc...)
        <if><agent-running name=Cache><then><em>installed</em></then><else>
   <dd> <form action="/&AGENT:name;/install-agent" method="POST">
@@ -168,50 +162,7 @@ Provides basic file browsing capabilities.
 </dl>
 
 <hr>
-<h3><a name="app">Appliances</a></h3>
 
-<dl>
-  
-  <dt> <a name="Photo_Album">Photo Album</a>
-       <if><agent-running name="Photo_Album"><then><em>installed</em></then>
-       <else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       name:<input name="agent" value="Photo_Album"><br>
-       <br>
-       <input type="submit" value="Install"><br>
-       </form></if>
-  <dt> <a name="PhotoNet">Photo Net</a>
-       <if><agent-running name="PhotoNet"><then><em>installed</em></then>
-       <else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       name:<input name="agent" value="PhotoNet"><br>
-       <br>
-       <input type="submit" value="Install"><br>
-       </form></if>
-  <dt> Photos
-       <if><agent-running name="Photos"><then><em>installed</em></then>
-       <else>
-       (No longer useful...)
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       name:<input name="agent" value="Photos">
-       type:<input name="type" value="DOFS"><br>
-       root:<input name="root" value="&usrDIR;/Photo_Album/">
-       <input type="submit" value="Install">
-       </form></if>
-
-       <p>
-
-  <dt> <a name="Printer">Printer agent</a>
-       <if><agent-running name=WebPrinter><then><em>installed</em></then>
-       <else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       name: <input name="agent" value="WebPrinter"><br>
-       type: <input name="type" value="Printer"><br>
-       <input type="submit" value="Install">
-       </form></else></if>
-</dl>
-
-<hr>
 <h3><a name="generic">Generic Form for installing an agent</a></h3>
 
 <dl>
@@ -225,35 +176,6 @@ Provides basic file browsing capabilities.
        You can leave the <b>Type</b> blank and it will default to the name.
        If your agent needs non-default options, you'll have to create your own
        form.
-</dl>
-
-<hr>
-<h3><a name="exp">Experimental</a></h3>
-
-<dl>
-  <dt> <a name="RAWHO">RAWHO</a> (creates/manages a list of links and annotations) 
-       <if><agent-running name=RAWHO><then><em>installed</em></then><else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       <input type="submit" value="Install">
-       name:<input name="agent" value="RAWHO">
-       type:<input name="type" value="Discussion">
-       </form></if>
- <dt> <a name="MB3">TalksBoard</a> (creates/manages a calendar of talks) 
-       <if><agent-running name=TalksBoard><then><em>installed</em></then><else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       <input type="submit" value="Install">
-       name:<input name="agent" value="TalksBoard">
-       type:<input name="type" value="MB3">
-       </form></if>
- <dt> <a name="Workflow">Forms</a> (creates/manages a list of links and annotations) 
-       <if><agent-running name=Forms><then><em>installed</em></then><else>
-  <dd> <form action="/&AGENT:name;/install-agent" method="POST">
-       <input type="submit" value="Install">
-       name:<input name="agent" value="Forms">
-       type:<input name="type" value="Workflow">
-       </form></if>
-
-
 </dl>
 
 <footer cvsid="$Id$">
