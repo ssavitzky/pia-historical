@@ -40,6 +40,8 @@ import crc.sgml.Attrs;
 import crc.sgml.AttrBase;
 import crc.sgml.AttrTable;
 import crc.sgml.Text;
+import crc.util.NullOutputStream;
+
 
 import java.util.Enumeration;
 import crc.interform.Run;
@@ -214,26 +216,26 @@ public class GenericAgent extends AttrBase implements Agent {
     Pia.debug(this, "makeRequest -->"+method+" "+url 
 	      + ((queryString == null)? "" : "?"+queryString));
 
-    Transaction request = null;
+    Transaction request;
 
-    if( queryString == null ){
-      request =  new HTTPRequest();
-      request.fromMachine( m );
-    } else if ("GET".equalsIgnoreCase(method)) {
-      request =  new HTTPRequest();
-      request.fromMachine( m );
-      url += "?" + queryString;
-    } else {
-      FormContent c = new FormContent( queryString );
-      request = new HTTPRequest( m, c, false );
+    Content c = new FormContent( queryString );
 
-      request.setHeader("Version", version());
-      request.setContentType( "application/x-www-form-urlencoded" );
-      request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
-      request.setContentLength( queryString.length() );
-    }
 
-    request.toMachine( Pia.instance().thisMachine() );
+    // create things normally gotten from header
+    String initString = "HTTP/1.0 "+ method +" "+url;
+
+
+    // create the request but don't start processing
+    request = new HTTPRequest( m, c, false );
+
+    request.setHeader("Version", version());
+    request.setContentType( "application/x-www-form-urlencoded" );
+    request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
+    //    request.setHeader("Agent", name);
+    //    request.setContentLength( queryString.length() );
+
+    // to machine should be gotten from url
+    //   request.toMachine( Pia.instance().thisMachine() );
     request.setMethod( method );
     request.setRequestURL( url );
     return request;
@@ -1111,18 +1113,6 @@ public class GenericAgent extends AttrBase implements Agent {
       this.type( name );
   }
 
-}
-
-class NullOutputStream extends OutputStream{
-  public void write(byte[] b){
-    // do nothing -- bits onto floor
-  }
-  public void write(int b){
-    // do nothing -- bits onto floor
-  }
-  public void write(byte[] b, int i, int j){
-    // do nothing -- bits onto floor
-  }
 }
 
 
