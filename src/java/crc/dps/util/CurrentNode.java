@@ -78,7 +78,7 @@ public class CurrentNode implements Cursor {
 
   /** Set the current node.  Set <code>active</code> and <code>element</code>
    *	if applicable. */
-  protected final void  setNode(Node aNode) {
+  protected void  setNode(Node aNode) {
     node   = aNode;
     active = (node instanceof ActiveNode)? (ActiveNode)node : null;
     action = (active == null)? null : active.getAction();
@@ -93,7 +93,7 @@ public class CurrentNode implements Cursor {
   }
 
   /** Set the current node to an element */
-  protected final void setNode(Element anElement, String aTagName) {
+  protected void setNode(Element anElement, String aTagName) {
     node   = anElement;
     element= anElement;
     active = (node instanceof ActiveNode)? (ActiveNode)node : null;
@@ -101,7 +101,7 @@ public class CurrentNode implements Cursor {
     tagName = (aTagName == null)? element.getTagName() : aTagName;
   }
 
-  protected final void setNode(ActiveNode aNode) {
+  protected void setNode(ActiveNode aNode) {
     node   = aNode;
     active = aNode;
     action = active.getAction();
@@ -115,11 +115,11 @@ public class CurrentNode implements Cursor {
     }
   }
 
-  protected final void setNode(ActiveNode aNode, String aTagName) {
+  protected void setNode(ActiveElement aNode, String aTagName) {
     node   = aNode;
     active = aNode;
     action = active.getAction();
-    element = active.asElement();
+    element = aNode;
     tagName = aTagName;
   }
 
@@ -141,6 +141,34 @@ public class CurrentNode implements Cursor {
     if (element == null) return false;
     crc.dom.AttributeList atts = element.getAttributes();
     return (atts != null) && (atts.getLength() > 0);
+  }
+
+  public String getTagName(int level) {
+    Node n = getNode(level);
+    return (n == null || !(n instanceof Element))
+      ? null : ((Element)n).getTagName();
+  }
+
+  public Node getNode(int level) {
+    if (level > depth || level < 0) return null;
+    Node n = node;
+    int d = depth;
+    for ( ; n != null ; n = n.getParentNode(), d--) if (d == level) return n;
+    return null;
+  }
+
+  public boolean insideElement(String tag, boolean ignoreCase) {
+    Node n = node;
+    int d = depth;
+    String tn = null;
+    for ( ; n != null && d >= 0 ; n = n.getParentNode(), d--) {
+      if (n instanceof Element) {
+	tn = ((Element)n).getTagName();
+	if (ignoreCase && tag.equalsIgnoreCase(tn)) return true;
+	else if (!ignoreCase && tag.equals(tn)) return true;
+      }
+    }
+    return false;
   }
 
   /************************************************************************
@@ -191,13 +219,28 @@ public class CurrentNode implements Cursor {
   }
 
   /** Returns the next node from this source and makes it current.  
+   *	May descend or ascend levels.  This can be detected by tracking
+   *	the depth with <code>getDepth()</code>. <p>
+   *
+   * @return  <code>null</code> if and only if no more nodes are
+   *	available from this source. 
+   */
+  public Node toNextNode() {
+    Node n = node.getNextSibling(); // toNextNode bogus at this point ===
+    if (n == null) return null;
+    setNode(n);
+    atFirst = false;
+    return node;
+  }
+
+  /** Returns the next node at this level and makes it current.  
    *	May require traversing all of the (old) current node if its
    *	children have not yet been seen. <p>
    *
    * @return  <code>null</code> if and only if no more nodes are
    *	available at this level. 
    */
-  protected Node toNextNode() {
+  protected Node toNextSibling() {
     Node n = node.getNextSibling();
     if (n == null) return null;
     setNode(n);

@@ -11,22 +11,28 @@ import crc.dom.DOMFactory;
 
 import java.util.Enumeration;
 
+import crc.dps.active.*;
+
 /**
- * The interface for a Tagset -- a lookup table for syntax. 
+ * The interface for a Tagset -- a lookup table for syntax. <p>
  *
- *	A Node's Handler provides all of the necessary syntactic and
- *	semantic information required for parsing, processing, and
- *	presenting a Node and its start tag and end tag Token.  A
- *	Tagset can be regarded as either a lookup table for syntactic
- *	information, or as a Handler factory. <p>
+ *	A Node's Handler provides all of the necessary syntactic and semantic
+ *	information required for parsing, processing, and presenting the Node.
+ *	A Tagset can be regarded as either a lookup table for syntactic
+ *	information, or as a DOMFactory for the documents so described.  <p>
+ *
+ *	Note that a Tagset can be used to construct either generic DOM Node's,
+ *	or DPS ActiveNode's.  A Parser is free to use either.  In the current
+ *	implementation, however, <em>all</em> documents produced in the DPS
+ *	are Active parse trees, so the default is for the ``generic'' nodes
+ *	produced by the standard tagsets are identical to the active ones.
+ *	The only difference is the return type.  The specialized Output
+ *	ToDocument should be used for conversion.  <p>
  *
  *	Note that this interface says little about the implementation.
  *	It is expected, however, that any practical implementation of
  *	Tagset will also be a Node, so that tagsets can be read and
  *	stored as documents or (better) DTD's.  <p>
- *
- *	(We may eventually make Tagset an extension of Node in order
- *	to enforce this.) <p>
  *
  * === 	need encoders/decoders for character entities, URLs, etc.
  *
@@ -34,8 +40,11 @@ import java.util.Enumeration;
  * @author steve@rsv.ricoh.com
  *
  * @see crc.dps.Processor
- * @see crc.dps.Token
- * @see crc.dps.Input 
+ * @see crc.dps.Active
+ * @see crc.dps.active.ActiveNode
+ * @see crc.dps.Input
+ * @see crc.dps.Output
+ * @see crc.dps.output.ToDocument
  * @see crc.dom.Node */
 
 public interface Tagset extends DOMFactory {
@@ -109,53 +118,50 @@ public interface Tagset extends DOMFactory {
    */
   public Parser createParser();
 
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before an end tag.
-   *
-   * @param t the Token for which the nesting is being checked.  It is safe 
-   *	for the Tagset to assume that the Token's handler came from the
-   *	Tagset being called.
-   * @param c the Context (parse stack) to check.
-   * @return a lower bound on the number of elements that need to be ended
-   * 	 before <code>t</code> can be ended.  
+  /** Creates an ActiveElement; otherwise identical to CreateElement. 
    */
-  public int checkEndNesting(Token t, Context c);
+  public ActiveElement createActiveElement(String tagname,
+					   AttributeList attributes);
 
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before a start tag or complete element.
-   *
-   * @param t the Token for which this is the handler, and for which the
-   *	nesting is being checked.
-   * @param c the Context (parse stack) to check.
-   * @return a lower bound on the number of elements that need to be ended
-   * 	 before <code>t</code> can be started.
+  /** Creates an ActiveNode of arbitrary type with (optional) data.
    */
-  public int checkElementNesting(Token t, Context c);
+  public ActiveNode createActiveNode(int nodeType, String data);
 
-
-  /** Called during parsing to return a suitable start tag Token for the
-   *	given tagname and attribute list. 
+  /** Creates an ActiveNode of arbitrary type with name and (optional) data.
    */
-  public Token createStartToken(String tagname,
-				AttributeList attributes, Parser p);
+  public ActiveNode createActiveNode(int nodeType, String name, String data);
 
-  /** Called during parsing to return an end tag Token. 
+  /** Creates an ActivePI node with name and data.
    */
-  public Token createEndToken(String tagname, Parser p);
+  public ActivePI createActivePI(String name, String data);
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with String data. 
+  /** Creates an ActiveAttribute node with name and value.
    */
-  public Token createToken(int nodeType, String data, Parser p);
+  public ActiveAttribute createActiveAttribute(String name, NodeList value);
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with String content. 
+  /** Creates an ActiveEntity node with name and value.
    */
-  public Token createToken(int nodeType, String name, String data, Parser p);
+  public ActiveEntity createActiveEntity(String name, NodeList value);
 
-  /** Called during parsing to return a suitable Token for a new Text.
+  /** Creates an ActivePI node.
    */
-  public Token createTextToken(String text, Parser p);
+  public ActiveComment createActiveComment(String data);
+
+  /** Creates an ActiveText node.  Otherwise identical to createText.
+   */
+  public ActiveText createActiveText(String text);
+
+  /** Creates an ActiveText node.  Otherwise identical to createText.
+   */
+  public ActiveText createActiveText(String text,
+				     boolean isIgnorableWhitespace);
+
+  /** Creates an ActiveText node.  Includes the <code>isWhitespace</code>
+   *	flag, which would otherwise have to be tested for.
+   */
+  public ActiveText createActiveText(String text,
+				     boolean isIgnorableWhitespace,
+				     boolean isWhitespace);
 
 
   /************************************************************************

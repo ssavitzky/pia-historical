@@ -13,6 +13,7 @@ package crc.dps;
  */
 
 public class NodeType extends crc.dom.NodeType {
-  public static final int TOKENLIST = -1;
+  public static final int ENDTAG = -1;
   public static final int NODELIST = -2;
+  public static final int DECLARATION = -3;
 }

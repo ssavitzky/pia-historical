@@ -6,6 +6,7 @@ PACKAGE=crc.dps.aux
 TOPDIR=../../..
 
 FILES = \
+	ContextStack.java \
 	CurrentActive.java \
 	CurrentNode.java \
 	CursorStack.java 

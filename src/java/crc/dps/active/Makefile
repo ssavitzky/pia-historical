@@ -7,6 +7,7 @@ TOPDIR=../../..
 
 INTERFACES = \
 	ActiveNode.java \
+	ActiveNodeList.java \
 	ActiveAttribute.java \
 	ActiveComment.java \
 	ActiveDocument.java \
@@ -17,6 +18,7 @@ INTERFACES = \
 
 CLASSES = \
 	NotActiveNodeException.java \
+	ParseNodeList.java \
 	ParseTreeAttribute.java \
 	ParseTreeComment.java \
 	ParseTreeElement.java \

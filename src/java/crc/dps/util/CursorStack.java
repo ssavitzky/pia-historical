@@ -50,6 +50,7 @@ public class CursorStack implements Cursor {
 
   protected boolean retainTree = false;
   protected boolean atFirst = false;
+  protected boolean atLast = false;
 
   protected CursorStack stack = null;
 
@@ -66,6 +67,7 @@ public class CursorStack implements Cursor {
     active 	= old.active;
     retainTree 	= old.retainTree;
     atFirst 	= old.atFirst;
+    atLast 	= old.atLast;
     stack 	= old.stack;
   }
 
@@ -84,7 +86,7 @@ public class CursorStack implements Cursor {
 
   public CursorStack(int d, Node n, Action act, Element elt, String tag,
 		     ActiveNode an, boolean retain, boolean first, 
-		     CursorStack old) {
+		     boolean last, CursorStack old) {
     depth 	= d;
     node 	= n;
     action 	= act;
@@ -93,6 +95,7 @@ public class CursorStack implements Cursor {
     active 	= an;
     retainTree 	= retain;
     atFirst 	= first;
+    atLast	= last;
     stack 	= old;
   }
 
@@ -124,7 +127,7 @@ public class CursorStack implements Cursor {
    */
   protected void pushInPlace() { 
     stack = new CursorStack(depth, node, action, element, tagName, active, 
-			    retainTree, atFirst, stack);
+			    retainTree, atFirst, atLast, stack);
     depth++;
   }
 
@@ -150,7 +153,7 @@ public class CursorStack implements Cursor {
 
   /** Set the current node.  Set <code>active</code> and <code>element</code>
    *	if applicable. */
-  protected final void  setNode(Node aNode) {
+  protected void  setNode(Node aNode) {
     node   = aNode;
     active = (node instanceof ActiveNode)? (ActiveNode)node : null;
     action = (active == null)? null : active.getAction();
@@ -165,7 +168,7 @@ public class CursorStack implements Cursor {
   }
 
   /** Set the current node to an element */
-  protected final void setNode(Element anElement, String aTagName) {
+  protected void setNode(Element anElement, String aTagName) {
     node   = anElement;
     element= anElement;
     active = (node instanceof ActiveNode)? (ActiveNode)node : null;
@@ -173,7 +176,7 @@ public class CursorStack implements Cursor {
     tagName = (aTagName == null)? element.getTagName() : aTagName;
   }
 
-  protected final void setNode(ActiveNode aNode) {
+  protected void setNode(ActiveNode aNode) {
     node   = aNode;
     active = aNode;
     action = active.getAction();
@@ -187,7 +190,7 @@ public class CursorStack implements Cursor {
     }
   }
 
-  protected final void setNode(ActiveNode aNode, String aTagName) {
+  protected void setNode(ActiveElement aNode, String aTagName) {
     node   = aNode;
     active = aNode;
     action = active.getAction();
@@ -217,6 +220,30 @@ public class CursorStack implements Cursor {
     return (atts != null) && (atts.getLength() > 0);
   }
 
+  public String getTagName(int level) {
+    if (level > depth) return null;
+    else if (level == depth) return tagName;
+    else if (stack == null) return null;
+    else return stack.getTagName(level);
+  }
+
+  public Node getNode(int level) {
+    if (level > depth) return null;
+    else if (level == depth) return node;
+    else if (stack == null) return null;
+    else return stack.getNode(level);
+  }
+
+  public boolean insideElement(String tag, boolean ignoreCase) {
+    for (CursorStack frame = this; frame != null; frame = frame.stack) {
+      if (tagName == null) continue;
+      if (ignoreCase && tag.equalsIgnoreCase(frame.tagName)) return true;
+      else if (!ignoreCase && tag.equals(frame.tagName)) return true;
+    }
+    return false;
+  }
+
+
   /************************************************************************
   ** Navigation Operations:
   ************************************************************************/
@@ -227,21 +254,17 @@ public class CursorStack implements Cursor {
    */
   public Node toParent() {
     if (atTop()) return null;
-    Node p = node.getParentNode();
-    if (p == null) return null;
-    setNode(p);
-    depth--;
+    popInPlace();
     atFirst = false;
+    atLast = false;
     return node;
   }
 
   public Element toParentElement() {
     if (atTop()) return null;
-    Node p = node.getParentNode();
-    if (p == null) return null;
-    setNode(p);
-    depth--;
+    popInPlace();
     atFirst = false;
+    atLast = false;
     return element;
   }
 

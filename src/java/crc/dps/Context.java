@@ -56,14 +56,8 @@ import crc.dom.Element;
 public interface Context {
 
   /************************************************************************
-  ** Bindings:
-  ************************************************************************/
-
-  /** Obtain the current Handler bindings. */
-  public Tagset getHandlers();
-
-  /** Set the current Handler bindings. */
-  public void setHandlers(Tagset bindings);
+  ** State accessors:
+  ***********************************************************************/
 
   /** Obtain the current Entity bindings. */
   public EntityTable getEntities();
@@ -71,189 +65,37 @@ public interface Context {
   /** Set the current Entity bindings. */
   public void setEntities(EntityTable bindings);
 
+  /** Obtain the current input. */
+  public Input getInput();
+
+  /** Set the current input. */
+  public void setInput(Input in);
+
+  /** Obtain the current output. */
+  public Output getOutput();
+
+  /** Set the current output. */
+  public void setOutput(Output out);
 
   /************************************************************************
-  ** Parse State:
+  ** Context Stack:
   ************************************************************************/
 
-  /** Test whether a parse tree is under construction. */
-  public boolean isParsing();
-
-  /** Test whether the output is receiving separate tokens for start tags,
-   *	content, and end tags. 
-   */
-  public boolean isPassing();
-
-  /** Test whether handler actions associated with tokens are being called.
-   */
-  public boolean isExpanding();
-
-  /** Set the flag that determines whether a parse tree is being constructed. 
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setParsing(boolean value);
-
-  /** Set the flag that determines whether a parse tree is being constructed. 
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setPassing(boolean value);
-
-  /** Set the flag that determines whether handlers are being called.
-   *	Applies to this Node in the parse tree, and its children.
-   */
-  public void setExpanding(boolean value);
-
-  /************************************************************************
-  ** Information Needed for Parsing:
-  ************************************************************************/
-
-  /** Return true if we are currently nested inside an element with
-   *	the given tag.
-   *
-   *	Note that this may give incorrect results if different regions
-   *	of the Document have different case sensitivities for tagnames!
-   *
-   * @param tag the tag to check for
-   * @param ignoreCase <code>true</code> if tag comparison ignores case
-   * @param stopDepth do not compare nodes below this depth.
-   */
-  public boolean insideElement(String tag, boolean ignoreCase, int stopDepth);
-
-  /** Return the tag of the immediately-surrounding Element, that is, the Node
-   *	being appended to or traversed.  
-   */
-  public String elementTag();
-
-  /** Return the current depth of nesting in the parse stack.  It is usual
-   *	for the Node at depth 0 to be a Document.
-   *
-   * @see crc.dom.Document
-   */
+  /** Return the depth of the process stack. */
   public int getDepth();
-
-  /************************************************************************
-  ** Current State:
-  ************************************************************************/
-
-  /** Get current Token. */
-  public Token getToken();
-
-  /** Set current Token. */
-  public void setToken(Token aToken);
-
-  /** Get the current <em>parent</em> Node.  This is the node which will 
-   *	normally become the parent of the current Token or a Node derived
-   *	from it.  <p>
-   *
-   * @see #getToken
-   * @see #appendNode
-   */
-  public Node getNode();
-
-  /** Get the current <em>parent</em> Node as an Element.   <p>
-   *
-   * @return <code>(Element)getNode()</code>, or <code>null</code> if the 
-   *	current node is not an element.
-   * @see #getNode
-   * @see crc.dom.Element
-   */
-  public Element getElement();
-
-  /** Set the current <em>parent</em> Node.  This is the node which will 
-   *	normally become the parent of the current Token or a Node derived
-   *	from it.  <p>
-   *
-   * @see #getToken
-   * @see #appendNode
-   */
-  public void setNode(Node aNode);
-
-  /** Set the current <em>parent</em> Node (presumably an Element) and
-   *	its corresponding <code>tagName</code>.  This is the node which will 
-   *	normally become the parent of the current Token or a Node derived
-   *	from it.  If the Node is known to be an Element, this is more
-   *	efficient than casting it in order to get the tagname. <p>
-   *
-   * @param aNode the new current Node.  It may be null if no Node is
-   *	actually being constructed; this allows the current element nesting
-   *	to be well-defined even in the absence of an actual node.
-   * @param aTagName should be <code>null</code> if <code>aNode</code> is
-   *	not an Element; otherwise it should be equal to 
-   *	<code>((Element)aNode).getTagName()</code>.
-   * @see crc.dom.Element
-   * @see #setNode
-   */
-  public void setNode(Node aNode, String aTagName);
-
-  /************************************************************************
-  ** Parse Tree Construction:
-  ************************************************************************/
-
-  /** Append a Node to the current parent.
-   *	If the new Node's parent is the current Node, nothing happens.
-   *	If its parent is non-<code>null</code> and <em>different</em>
-   *	from the current Node, it will be re-parented.  <p>
-   *
-   * @see #getNode
-   * @see #setNode
-   * @see crc.dps.NodeType
-   */
-  public void appendNode(Node aNode);
-
-  /** Append the nodes in a NodeList to the current parent.
-   *	It is usual for a Handler to return a NodeList rather than a Node
-   *	when computing a value.  <p>
-   *
-   * @see #getNode
-   * @see #setNode
-   * @see crc.dps.Handler
-   */
-  public void appendNodes(NodeList aNodeList);
-
-  /************************************************************************
-  ** Context Stack construction:
-  ************************************************************************/
 
   /** Construct a new Context linked to this one.  <p>
    *
    *	Recursive operations like <code>expand</code> use this to create a new
    *	evaluation stack frame when descending into an Element.
    */
-  public Context newContext(Node aNode, String aTagName);
+  public Context newContext();
 
-  /************************************************************************
-  ** Expansion:
-  ************************************************************************/
-
-  /** Expand a node. 
-   *	Ordinary nodes are deep-copied.  Entities are replaced by their
-   *	values, if they have any.  Tokens know how to expand themselves.
-   *	Entities and tokens in the values of Attributes are also expanded.
-   */
-  public Token expand(Node aNode);
-
-  /** Expand all the nodes in a NodeList. */
-  public Token expand(NodeList aNodeList);
-
-  /** Called by an expansion Handler in order to return <code>aNode</code>
-   *	as its result.  The return value is <code>null</code>, allowing
-   *	the Handler to end with <br>
-   *	<code>return putResult(<em>aNode</em>);</code><p>
+  /** Construct a new Context linked to this one.  <p>
    *
-   * @param aNode a Node to be appended to the parse tree under construction,
-   *	and/or passed to the Output.
-   * @return <code>null</code>.
+   *	Recursive operations like <code>expand</code> use this to create a new
+   *	evaluation stack frame when descending into an Element.
    */
-  public Token putResult(Node aNode);
+  public Context newContext(Input in, Output out);
 
-  /** Called by an expansion Handler in order to return <code>aNodeList</code>
-   *	as its result.  The return value is <code>null</code>, allowing
-   *	the Handler to end with <br>
-   *	<code>return results(<em>aNodeList</em>);</code><p>
-   *
-   * @param aNodeList a NodeList, the contents of which are to be appended to
-   *	the parse tree under construction, and/or passed to the Output.
-   * @return <code>null</code>.
-   */
-  public Token putResults(NodeList aNodeList);
 }

@@ -139,6 +139,34 @@ public class CurrentActive implements Cursor {
     return (atts != null) && (atts.getLength() > 0);
   }
 
+  public String getTagName(int level) {
+    Node n = getNode(level);
+    return (n == null || !(n instanceof Element))
+      ? null : ((Element)n).getTagName();
+  }
+
+  public Node getNode(int level) {
+    if (level > depth || level < 0) return null;
+    Node n = active;
+    int d = depth;
+    for ( ; n != null ; n = n.getParentNode(), d--) if (d == level) return n;
+    return null;
+  }
+
+  public boolean insideElement(String tag, boolean ignoreCase) {
+    Node n = active;
+    int d = depth;
+    String tn = null;
+    for ( ; n != null && d >= 0 ; n = n.getParentNode(), d--) {
+      if (n instanceof Element) {
+	tn = ((Element)n).getTagName();
+	if (ignoreCase && tag.equalsIgnoreCase(tn)) return true;
+	else if (!ignoreCase && tag.equals(tn)) return true;
+      }
+    }
+    return false;
+  }
+
   /************************************************************************
   ** Navigation Operations:
   ************************************************************************/
@@ -187,13 +215,28 @@ public class CurrentActive implements Cursor {
   }
 
   /** Returns the next node from this source and makes it current.  
+   *	May descend or ascend levels.  This can be detected by tracking
+   *	the depth with <code>getDepth()</code>. <p>
+   *
+   * @return  <code>null</code> if and only if no more nodes are
+   *	available from this source. 
+   */
+  public Node toNextNode() {
+    Node n = active.getNextSibling(); // toNextNode bogus at this point ===
+    if (n == null) return null;
+    setNode(n);
+    atFirst = false;
+    return active;
+  }
+
+  /** Returns the next node at this level and makes it current.  
    *	May require traversing all of the (old) current node if its
    *	children have not yet been seen. <p>
    *
    * @return  <code>null</code> if and only if no more nodes are
    *	available at this level. 
    */
-  protected Node toNextNode() {
+  protected Node toNextSibling() {
     Node n = active.getNextSibling();
     if (n == null) return null;
     setNode(n);

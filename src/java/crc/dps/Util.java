@@ -12,7 +12,12 @@ import crc.dom.ArrayNodeList;
 import crc.dom.Attribute;
 import crc.dom.DOMFactory;
 
+import crc.dps.NodeType;
+import crc.dps.active.*;
+
 import crc.ds.Table;
+
+import java.util.Enumeration;
 
 /**
  * Utilities (static methods) for a Document Processor. 
@@ -72,6 +77,123 @@ public class Util {
   public static NodeList createNodeList(Node aNode) {
     return new ArrayNodeList(aNode);
   }
+
+  /** Create an arbitrary ActiveNode with optional name and data */
+  public static ActiveNode createActiveNode(int nodeType,
+					    String name, String data) {
+    switch (nodeType) {
+    case NodeType.COMMENT:
+      return new ParseTreeComment(data);
+    case NodeType.PI:
+      return new ParseTreePI(name, data);
+    case NodeType.ATTRIBUTE:
+      return new ParseTreeAttribute(name, (NodeList)null);
+    case NodeType.ENTITY:
+      return new ParseTreeEntity(name, (NodeList)null);
+    case NodeType.ELEMENT:
+      return new ParseTreeElement(name, null);
+    default:
+      return null;
+    }
+  }
+
+  /************************************************************************
+  ** Node Copying and Processing:
+  ************************************************************************/
+
+  /** Copy the next Node from the given Input to the given Output 
+   *
+   * === It should be possible to do this non-recursively by keeping track
+   * === of depth.  Note that we're using the Input's stack for state.
+   */
+  public static void copyNode(Node n, Input in, Output out) {
+    if (n == null) n = in.toNextNode();
+    if (in.hasChildren()) {
+      out.startNode(n);
+      copyChildren(in, out);
+      out.endNode();
+    } else {
+      out.putNode(n);
+    }
+  }
+
+
+  /** Copy the children of the input's current Node
+   *
+   * === It should be possible to do this non-recursively by keeping track
+   * === of depth.  Note that we're using the Input's stack for state.
+   */
+  public static void copyChildren(Input in, Output out) {
+    for (Node n = in.toFirstChild(); n != null; n = in.toNextNode()) {
+      copyNode(n, in, out);
+    }
+    in.toParent();
+  }
+
+
+  /** Copy the next Node from the given Input to the given Output, 
+   *	expanding entities in the process.
+   */
+  public static void expandEntities(Node n, Input in, Output out,
+				    EntityTable ents) {
+    if (n == null) n = in.toNextNode();
+    if (in.hasChildren() || in.hasAttributes()) {
+      out.startNode(n);		// ===
+      for (Node c = in.toFirstChild(); c != null; c = in.toNextNode()) {
+	expandEntities(c, in, out, ents);
+      }
+      out.endNode();
+    } else {
+      out.putNode(n);
+    }
+  }
+
+  /** Expand entities in the attribute list of the current Node.
+   */
+  public static void expandAttributes(Input in, Output out, EntityTable ents) {
+    Node n = in.toNextNode();
+    if (in.hasChildren()) {
+      out.startNode(n);
+      copyChildren(in, out);
+      out.endNode();
+    } else {
+      out.putNode(n);
+    }
+  }
+
+
+ 
+  // === The following don't expand entities in attributes correctly yet. ===
+
+  /** Process a Node.  */
+  public static void processNode(Node n, Context c, Input in, Output out) {
+    if (n == null) return;
+    Action h = in.getAction();
+    if (h != null) {
+      h.action(n, c, in, out);
+    } else if (in.hasChildren()) {
+      out.startNode(n);
+      // context for children? ===
+      processChildren(c, in, out);
+      out.endNode();
+    } else {
+      out.putNode(n);
+    }
+  }
+
+  /** Process the next Node. */
+  public static void processNextNode(Context c, Input in, Output out) {
+    processNode(in.toNextNode(), c, in, out);
+  }
+
+  /** Process the children of the current Node */
+  public static void processChildren(Context c, Input in, Output out) {
+    for (Node n = in.toFirstChild() ; n != null; n = in.toNextNode()) {
+      processNode(n, c, in, out);
+    }
+    in.toParent();
+  }
+
 
   /** Create a shallow copy of a given Node using a given DOMFactory. 
    */
@@ -147,176 +269,12 @@ public class Util {
   ** Copying Parse Trees:
   ************************************************************************/
 
-  /** Create a deep copy of a given Node using Tokens.
-   */
-  public static Node copyAsTokens(Node node) {
-    Node newNode = BasicToken.createToken(node, true);
-    if (node.hasChildren()) {
-      copyAsTokens(node.getChildren(), newNode);
-    }
-    return newNode;
-  }
-
-  /** Append Tokens that copy the nodes in a NodeList to a given parent.
-   *
-   * @see #copyAsTokens
-   */
-  public static void copyAsTokens(NodeList aNodeList, Node parent) {
-    if (aNodeList == null) return;
-    NodeEnumerator e = aNodeList.getEnumerator();
-    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      appendNode(copyAsTokens(node), parent);
-    }
-  }
 
 
   /************************************************************************
   ** Expansion:
   ************************************************************************/
 
-  /** Make a deep copy of a Node, expanding defined entities. 
-   *	The results are appended to a Node, which is returned.
-   *
-   * @param aNode the node to be expanded, then appended.
-   * @param parentNode the node to be appended to.
-   * @return <code>parentNode</code>.
-   */
-  public static Node expandEntities(Node aNode, Node parentNode, 
-				    DOMFactory fac, EntityTable ents) {
-    switch (aNode.getNodeType()) {
-    case NodeType.ELEMENT:
-      Element elt = (Element)aNode;
-      Element ne = expandAttrs(elt, fac, ents);
-      appendNode(expandEntities(elt.getChildren(), ne, fac, ents), ne);
-      return appendNode(ne, parentNode);
-
-    case NodeType.NODELIST:
-      if (aNode.hasChildren())
-	return expandEntities(aNode.getChildren(), parentNode, fac, ents);
-      return parentNode;
-
-    case NodeType.ENTITY:
-      crc.dom.Entity ent = (crc.dom.Entity)aNode;
-      NodeList v = (ents == null)? null 
-	: ents.getValueForEntity(ent.getName(), false);
-      if (v != null) return expandEntities(v, parentNode, fac, ents);
-      // if unbound, fall through to copy...
-
-    default:
-      Node nn = copyNode(aNode, fac);
-      if (nn.hasChildren()) expandEntities(aNode.getChildren(), nn, fac, ents);
-      return appendNode(nn, parentNode);
-    }
-  }
-
-  /** Make a deep copy of a Node, expanding defined entities. 
-   *	The results are appended to an ArrayNodeList.
-   *
-   * @param aNode the node to be expanded, then appended.
-   * @param aList the list to be appended to.
-   */
-  public static void expandEntities(Node aNode, ArrayNodeList aList, 
-				    DOMFactory fac, EntityTable ents) {
-    switch (aNode.getNodeType()) {
-    case NodeType.ELEMENT:
-      Element elt = (Element)aNode;
-      Element ne = expandAttrs(elt, fac, ents);
-      appendNode(expandEntities(elt.getChildren(), ne, fac, ents), ne);
-      aList.append(ne);
-      return;
-
-    case NodeType.NODELIST:
-      if (aNode.hasChildren())
-	expandEntities(aNode.getChildren(), aList, fac, ents);
-      return;
-
-    case NodeType.ENTITY:
-      crc.dom.Entity ent = (crc.dom.Entity)aNode;
-      NodeList v = (ents == null)? null 
-	: ents.getValueForEntity(ent.getName(), false);
-      if (v != null) expandEntities(v, aList, fac, ents);
-      // if unbound, fall through to copy...
-
-    default:
-      Node nn = copyNode(aNode, fac);
-      if (nn.hasChildren()) expandEntities(aNode.getChildren(), nn, fac, ents);
-      aList.append(nn);
-    }
-  }
-
-  /** Copy a NodeList, expanding entities wherever they occur, and
-   *	appending the resulting expansions to the children of a Node. */
-  public static Node expandEntities(NodeList aNodeList, Node parent,
-					DOMFactory fac, EntityTable ents) {
-    if (aNodeList == null) return parent;
-    NodeEnumerator e = aNodeList.getEnumerator();
-    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      expandEntities(node, parent, fac, ents);
-    }
-    return parent;
-  }
-
-  /** Expand entities in a NodeList and append them to an ArrayNodeList. */
-  public static NodeList expandEntities(NodeList aNodeList, ArrayNodeList nl,
-					DOMFactory fac, EntityTable ents) {
-    if (nl == null) nl = new ArrayNodeList();
-    if (aNodeList == null) return nl;
-    NodeEnumerator e = aNodeList.getEnumerator();
-    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      expandEntities(node, nl, fac, ents);
-    }
-    return nl;
-  }
-
-  /** Copy a NodeList, expanding entities wherever they occur. */
-  public static NodeList expandEntities(NodeList aNodeList, 
-					DOMFactory fac, EntityTable ents) {
-    return expandEntities(aNodeList, new ArrayNodeList(), fac, ents);
-  }
-
-  /** Make a shallow copy of an element, expanding attributes if it has any. */
-  public static Element expandAttrs(Element e, 
-				    DOMFactory fac, EntityTable ents) {
-    String tag = e.getTagName();
-    Element ne = fac.createElement(tag, null);
-    crc.dom.AttributeList attrs = e.getAttributes();
-    for (long i = 0; i < attrs.getLength(); ++i) try {
-      Attribute attr = (Attribute)attrs.item( i );
-      ne.setAttribute(fac.createAttribute(attr.getName(),
-					  expandEntities(attr.getValue(),
-							 fac, ents)));
-    } catch (crc.dom.NoSuchNodeException ex){}
-    return ne;
-  }
-
-
-  /** Make a deep copy of an element, expanding attributes if it has any. */
-  public static Element expandEntities(Element e, 
-				       DOMFactory fac, EntityTable ents) {
-    return (Element) expandEntities(e.getChildren(),
-				    expandAttrs(e, fac, ents),
-				    fac, ents);
-  }
-
-  /** Expand the children of one Node, appending them to another. */
-  public static Node expandChildren(Node aNode, Node child,
-				String tagName, Context c) {
-    // create a new context in which to expand the children.
-    Context cc = c.newContext(aNode, tagName);
-    for ( ; child != null; child = child.getNextSibling()) {
-      if (child instanceof Token) cc.expand((Token)child);
-      else			  cc.putResult(child);
-    }
-    return aNode;
-  }
-
-  /** 
-  /** Make a deep copy of an element, expanding attributes and content. */
-  public static Element expandElement(Element e, Context c) {
-    Element expanded = expandAttrs(e, c.getHandlers(), c.getEntities());
-    expandChildren(expanded, e.getFirstChild(), e.getTagName(), c);
-    return expanded;
-  }
 
   /************************************************************************
   ** Tests:

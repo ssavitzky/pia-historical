@@ -101,17 +101,13 @@ public class Filter {
 
     /* Finally, create a Processor and set it up. */
     BasicProcessor ii = new BasicProcessor();
-    ii.setHandlers(ts);
-    ii.pushProcessorInput(p);
-    ii.setOutput(new crc.dps.output.ToWriter(new OutputStreamWriter(out)));
-    ii.setExpanding(true);
+    ii.setTagset(ts);
+    ii.setInput(p);
 
     if (parsing) {
-      ii.setParsing(true);
-      ii.setPassing(false);
-      ii.setNode(new BasicToken("ParseTree", 0));
+      ii.setOutput(new crc.dps.output.ToParseTree());
     } else {
-      ii.setPassing(true);
+      ii.setOutput(new crc.dps.output.ToWriter(new OutputStreamWriter(out)));
     }
     //if (entities) new Environment(infile).use(ii);
     if (debug) ii.setDebug();

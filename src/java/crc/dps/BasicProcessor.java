@@ -5,8 +5,9 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
+import crc.dom.Element;
+
+import crc.dps.aux.*;
 
 /**
  * A minimal implementation for a document Processor. <p>
@@ -33,195 +34,73 @@ import java.util.NoSuchElementException;
  * @see crc.dps.Token
  * @see crc.dps.Input */
 
-public class BasicProcessor extends ParseStack implements Processor {
+public class BasicProcessor extends ContextStack implements Processor {
 
-  /************************************************************************
-  ** Main Loop:
-  ************************************************************************/
-
-  /** The Processor's main loop.  <p>
-   *
-   *	Token's are obtained from the input and the appropriate
-   *	handler called.  The Parse stack is adjusted as needed.  Processing
-   *	continues until one or more output Tokens are generated. <p>
-   *
-   *	If the Processor <code>isRunning</code>, the output is sent to
-   *	the current Output.  Otherwise it just waits in the
-   *	<code>outputQueue</code> until the <code>nextToken</code> is
-   *	requested.
-   */
-  protected void process() {
-    Handler handler;
-    // Loop as long as there's input.
-    if (token == null) token = nextInput();
-    anyResults = false;
-    while (token != null) {
-      if (token.isStartTag()) {			// Start tag
-	Token t = token;
-	processStart();
-	// Empty element: pop the frame and treat as an end tag.
-	if (t.isEmptyElement()) {
-	  token = t; 
-	  debug("empty");
-	  processEnd();
-	}
-      } else if (token.isEndTag()) {		// End tag
-	processEnd();
-      } else /* token.isNode() */ {		// Complete node
-	processNode();
-      }
-
-      if (anyResults && !running) return;
-      if (token == null) token = nextInput();
-    }
-  }
-
-  /************************************************************************
-  ** Result Processing:
-  ************************************************************************/
-
-  protected boolean anyResults;
-
-  public Token putResult(Node aNode) {
-    debug((parsing && node == null)? " dropped parse " : "put");
-    if (aNode == null) return null;
-    if (parsing) appendNode(aNode);
-    if (passing) passOutput(new BasicToken(aNode));
-
-    anyResults = true;
-    return null;
-  }
-
-  /** Internal hack to simplify processEnd */
-  protected final Token putResult(Node aNode, Token aToken) {
-    debug((parsing && node == null)? " dropped parse " : "put");
-    if (aNode == null) return null;
-    if (parsing) appendNode(aNode);
-    if (passing) passOutput(aToken);
-
-    anyResults = true;
-    return null;
-  }
-
-  public Token putResults(NodeList aNodeList) {
-    if (aNodeList == null) return null;
-    crc.dom.NodeEnumerator e = aNodeList.getEnumerator();
-    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
-      putResult(node);
-    }
-    return null;
-  }
 
   /************************************************************************
   ** Processing:
   ************************************************************************/
 
-  /** The processing associated with a start tag. */
-  protected final void processStart() {
-    Handler handler;
-    debug("<" + token.getTagName()
-	  + (token.isEmptyElement()? "/" : "") + ">", depth);
+  // === we're assuming that a Processor is a Context and has node and handler
+  // === Should the input and output also be part of the context?  Unclear.
 
-    /* Here's where it gets tricky.
-     *	We want to end up with parseStack.token being the current
-     *	token (which we will pop when we see the end tag).  But
-     *	we have to save all the other variables before calling the
-     *	handler.
-     */
-    debug(passing? " pas" : " ^pas");
-    debug(parsing? " par" : " ^par");
-    debug(expanding? " exp" : " ^exp");
-    pushToken(token, token.getTagName());
-    if (expanding) {
-      handler = token.getHandler();
-      if (handler != null) {
-	node = handler.startAction(token, this);
-	debug(" handled " + ((node == null)? "null " : "node "));
-      } else {
-	node = token.createNode(this.getHandlers());
-	debug(" default ");
-      } 
-      debug(passing? " pas" : " ^pas");
-      debug(parsing? " par" : " ^par");
-      debug(expanding? " exp" : " ^exp");
-    } else if (parsing) { 
-      node = token; 
+  /** Process the current Node */
+  public void processNode(Input in, Output out) {
+    action = in.getAction();
+    if (action != null) {
+      action.action(node, this, in, out);
     } else {
-      node = null;
+      defaultNodeProcessing(in, out);
     }
-    if (passing && !token.isEmptyElement()) {
-      debug("passed ");
-      if (node == null || node == token) {
-	passOutput(token);
-      } else {
-	passOutput(new BasicToken(node, -1));
-      }
-    }
-    token.setNode();
-    debug("\n");
-    token = null;
   }
 
-  /** The processing associated with an end tag or empty element */
-  protected final void processEnd() {
-    // remember whether we were passing the contents ,
-    // and the new Node we constructed.
-    boolean werePassing = passing;
-    Token oldToken = token;
-    Node newNode = node;
-    if (getElement() != null) {
-      oldToken.setTagName(getElement().getTagName());
-    }
+  // === we're going to want to split action to permit an iterative Processor:
+  // === startAction, endAction.
 
-    // then pop the parse stack, call the handler, and append the node.
-    popParseStack();
-
-    token.setImplicitEnd(oldToken.implicitEnd());
-
-    debug("<"
-	  + (token.isEmptyElement()? "" : "/") + token.getTagName()
-	  + (token.implicitEnd()? " i" : "") +">", depth-1);
-
-    // the handler we want is the one from the start tag on the stack.
-    // It should still be there in <code>token</code>.
-    if (!token.isEmptyElement()) {
-      oldToken.setEndTag();
-    }
-    if (parsing && newNode == null) { debug(" null result "); }
-    if (expanding) {
-      Handler handler = token.getHandler();
-      if (handler != null) {
-	token = handler.endAction(token, this, newNode);
-	debug(" handled ");
+  public void defaultNodeProcessing(Input in, Output out) {
+    if (node.getNodeType() == NodeType.ENTITY) {
+      // === expand entity maybe.  Very simple:  push value onto input.
+    } else if (in.hasChildren() || in.hasAttributes()) {
+      if (in.hasAttributes()) {
+	out.startElement(getElement());
+	processAttributes(in, out);
       } else {
-	token = token.isEmptyElement()? putResult(newNode)
-	  			      : putResult(newNode, oldToken);
-	debug(newNode == null? " vanished " : parsing? " parsed " : " passed ");
+	out.startNode(node);
       }
+      // === push, or create a new Context?
+      if (in.hasChildren()) processChildren(in, out);
+      out.endNode();
     } else {
-      token = token.isEmptyElement()? putResult(newNode)
-	  			    : putResult(newNode, oldToken);
+      out.putNode(node);
     }
-    debug("\n");
   }
 
-  /** The processing associated with a complete Node. */
-  protected final void processNode() {
-    Handler handler;
-    debug(token.isElement() ? "<" + token.getTagName() + "/>\n"
-	  : "[" + token.getNodeType() + "]\n", depth-1);
-    // === We would like nodeAction on a parsed subtree to do an eval.
-    // === We require eval to be equivalent to the blind expansion...
-    if (expanding) {
-      handler = token.getHandler();
-      if (handler != null) token = handler.nodeAction(token, this);
-      else token = putResult(token.createNode(getHandlers()));
-    } else if (parsing) {
-      if (node != null) token.copyTokenUnder(node);
-      token = null;
-    } else {
-      token = putResult(token);
+  /** Process the next Node. */
+  public void processNextNode(Input in, Output out) {
+    node = in.toNextNode();
+    if (node == null) return;
+    processNode(in, out);
+  }
+
+  /** Process the children of the current Node */
+  public void processChildren(Input in, Output out) {
+    for (node = in.toFirstChild() ; node != null; node = in.toNextNode()) {
+      processNode(in, out);
     }
+    in.toParent();
+  }
+
+  /** Process the attributes  of the current Node */
+  public void processAttributes(Input in, Output out) {
+    for (node = in.toFirstAttribute() ; node != null;
+	 node = in.toNextAttribute()) { 
+      processNode(in, out);
+    }
+    in.toParentElement();
+  }
+
+  public void process() {
+    
   }
 
   /************************************************************************
@@ -232,23 +111,22 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   public boolean isRunning() { return running; }
 
-  /** The output queue. Used as a buffer in case we generate more than
-   *	one token in one step.
-   */
-  protected BasicTokenList outputQueue = new BasicTokenList();
-
   /************************************************************************
-  ** Pushing Output from the Processor:
+  ** Input and Output:
   ************************************************************************/
 
-  protected Output output = null;
+  protected Input input = null;
+  public Input getInput() { return input; }
+  public void setInput(Input anInput) { input = anInput; }
 
-  /** Registers an Output object for the Processor.  The Processor 
-   *	will call the Output's <code>nextToken</code> method with
-   *	each Token as it becomes available, and finally call the 
-   *	Output's <code>endOutput</code> function.
-   */
+  protected Output output = null;
+  public Output getOutput() { return output; }
   public void setOutput(Output anOutput) { output = anOutput; }
+
+
+  /************************************************************************
+  ** Processing:
+  ************************************************************************/
 
   /** Run the Processor, pushing a stream of Token objects at its
    *	registered Output, until the Output's <code>nextToken</code>
@@ -257,171 +135,8 @@ public class BasicProcessor extends ParseStack implements Processor {
   public void run() {
     running = true;
     process();
-    if (running && output != null) { output.endOutput(); }
+    //    if (running && output != null) { output.endOutput(); }
   }
-
-  /** Pass a Token to the output. 
-   *	If anything is in the <code>outputQueue</code>, it is put out first.
-   */
-  protected void passOutput(Token aToken) {
-    if (! running || output == null) {
-      outputQueue.append(aToken);
-    } else if (outputQueue.getLength() > 0) {
-      outputQueue.append(aToken);
-      passOutputQueue();
-    } else {
-      running = output.nextToken(aToken);
-    }
-  }
-
-  /** Pass several Tokens to the output. */
-  protected void passOutput(TokenList someTokens) {
-    long length = someTokens.getLength();
-    for (long i = 0; i < length; ++i) {
-      passOutput(someTokens.tokenAt(i));
-    }
-  }
-
-  /** Pass the output queue to the output. */
-  protected void passOutputQueue() {
-    // Correctly, though inefficiently, handles the case where the
-    // Output returns <code>false</code> in the middle of the queue.
-    TokenList queue = outputQueue;
-    outputQueue = new BasicTokenList();
-    passOutput(queue);
-  }
-
-  /************************************************************************
-  ** Input Stack Operations:
-  ************************************************************************/
-
-  protected InputStack inputStack = new crc.dps.input.Guard(this, 0);
-
-  /** Return the input stack */
-  public InputStack getInputStack() { return inputStack; }
-
-  /** Get a Token from the InputStack.
-   *	If the top Input on the stack returns null, pop it.
-   *<p>
-   *	We don't worry about keeping start and end tags balanced, since
-   *	most Input's don't need it.  When pushing a Parser which may need
-   *	its own environment, we make an empty parse stack frame and push
-   *	an anonymous end tag before pushing the Parser.
-   */
-  public Token nextInput() {
-    if (inputStack == null) return null;
-    Token t;
-    for (t = inputStack.nextToken();
-	 t == null;
-	 t = inputStack.nextToken()) {
-      inputStack = inputStack.popInput();
-      if (inputStack == null) return null;
-    }
-    return t;
-  }
-
-  /** Push an Input onto the input stack. */
-  public void pushInput(Input anInput) { 
-    inputStack = anInput.pushOnto(inputStack);
-  }
-
-  /** Push a ProcessorInput (specialized Input) onto the stack. */
-  public void pushProcessorInput(ProcessorInput anInput) {
-    inputStack = anInput.pushOnto(inputStack);
-    anInput.setProcessor(this);
-  }
-
-  /** Push a Token onto the input stack.
-   *	This is a convenience function, included in the Processor interface 
-   *	mainly for increased efficiency.
-   */
-  public void pushInput(Token aToken) {
-    inputStack = new crc.dps.input.SingleToken(aToken, inputStack);
-  }
-
-  /** Push a Token onto the input stack to be expanded as a start tag,
-   *	content, and end tag. 
-   */
-  public void pushInto(Token aToken){
-    inputStack = new crc.dps.input.ExpandToken(aToken, inputStack);
-  }
-
-  /** Push a Node onto the input stack.
-   *	This is a convenience function, included in the Processor
-   *	interface mainly for increased efficiency.  The Node is
-   *	converted to a Token using the Processor's current Tagset. <p>
-   *
-   *	Converting Node's to Token's requires a Tagset, so the Input
-   *	we use will actually be an implementation of Parser.  They will
-   *	probably still be in <code>crc.dps.input</code>, though, for
-   *	consistancy.
-   */
-  public void pushInput(Node aNode){
-				// ===
-  }
-
-  /** Push a Node onto the input stack to be expanded as a start tag,
-   *	content, and end tag.  Token conversion is done using the 
-   *	Processor's current Tagset.
-   */
-  public void pushInto(Node aNode){
-				// ===
-  }
-
-  /** Push a NodeList onto the input stack.
-   *	This is a convenience function, included in the Processor
-   *	interface mainly for increased efficiency.  The Nodes are
-   *	converted to Tokens using the Processor's current Tagset.
-   */
-  public void pushInput(NodeList aNodeList){
-				// ===
-  }
-
-
-  /************************************************************************
-  ** Input Operations:
-  ************************************************************************/
-
-  /** Returns the next Token from this source and advances to the
-   *	next.
-   *
-   * @return next Token, 
-   *	or <code>null</code> if and only if no more tokens are available.
-   */
-  public Token nextToken() {
-    return null;		// ===
-  }
-
-  /** Returns true if it is known that no more Tokens are available.
-   *
-   */
-  public boolean atEnd() {
-    return false;		// ===
-  }
-
-  /** set the next-frame pointer and return <code>this</code> */
-  public InputStack pushOnto(InputStack anInputStack) {
-    return anInputStack.pushInput(this);
-  }
-
-
-  /************************************************************************
-  ** Enumeration Operations:
-  ************************************************************************/
-
-  public Object nextElement() throws NoSuchElementException {
-    Object o = nextToken();
-    if (o == null) throw new NoSuchElementException();
-    else return o;
-  }
-
-  /** Are there more elements waiting to be returned?  
-   *	Note that some subclasses of AbstractInput may have to ``look
-   *	ahead'' to ensure that <code>hasMoreElements</code> can return
-   *	an accurate result.  This implementation assumes that
-   *	<code>atEnd</code> is accurate.
-   */
-  public boolean hasMoreElements() { return ! atEnd(); }
 
 
   /************************************************************************

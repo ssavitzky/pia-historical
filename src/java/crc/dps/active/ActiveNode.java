@@ -39,6 +39,9 @@ public interface ActiveNode extends Active, Node {
    */
   public Syntax getSyntax();
 
+  /** Allows syntactic and semantic handlers to be set simultaneously. */
+  public void setHandler(Handler newHandler);
+
   /************************************************************************
   ** Conversion convenience functions:
   ************************************************************************/

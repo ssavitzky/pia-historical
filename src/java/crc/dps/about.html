@@ -54,7 +54,7 @@ nodes simply expand into more nodes (specifically,
 Active nodes in the DPS all have the characteristic that they implement
 <em>local</em> functions:  at most they will be replaced by a NodeList.<p>
 
-If it can be determined at parse time that an node contains no children
+If it can be determined at parse time that a node contains no children
 with side effects, all the children of that node can be expanded in
 parallel. <p> 
 
@@ -64,9 +64,77 @@ in a single depth-first, left-to-right traversal.
 
 <h2>Implementation: New</h2>
 
+<h3>To Be Done</h3>
+
+<ul>
+  <li> Order:  Cursor implementations (add insideElement, etc.),
+       ParseTreeIterator (mixed input/output for parse trees),
+       BasicParser, Tagset/BasicTagset, Handler/BasicHandler/...,
+       Context/Processor,  ContextStack/BasicProcessor.<br>
+       The idea would be to get as quickly as possible to something that
+       can operate in copy mode, so we can test it.
+
+  <li> We will want a ParseTreeIterator that implements both Input and
+       Output (and of course TreeIterator).  The main use would be
+       constructing an node and then processing it.
+
+  <li> The processor context stack is a linked list of contexts, built as
+       needed by recursion.  It is isomorphic to the actor invocation stack,
+       i.e. it only contains <em>relevant</em> nodes.  It should <em>not</em>
+       implement Cursor -- it should have input, output, and entities
+       <em>only</em>.  At any given time it can get the current node from
+       the <code>input</code>, in the most useful form!  Therefore, Context
+       should not extend Cursor. 
+
+  <li> The parser might be simplified by adding an auxiliary node type for end
+       tags (for use in <code>next</code>).  Alternatively could simply have
+       an additional flag (atLast) and state: <code>currentEndTag</code>.  The
+       latter requires more hacking in the parser, but is clearly the
+       <em>Right Thing<sup>TM</sup></em>.
+
+  <li> Tagset needs to be (effectively) a DOMFactory for <em>parse trees</em>. 
+
+  <li> Rename ParseTree* -&gt; Tree*  (A*??) and move to a separate subdir (?)
+
+  <li> Eventually there should be a ParseTreeGenericNode, basically Token, so
+       that we can build trees with arbitrary node types.  
+
+  <li> The various stack and other auxiliary types should get moved into aux
+       or eliminated altogether.  (later)
+
+  <li> Want an interface for peering back up the nested elements to
+       see what we're in.  Possibly just add to Cursor, since any
+       implementation has a stack or a tree available.  A little lighter than
+       Context, since it doesn't have bindings.
+
+  <li> We probably need a Continuation interface as well as a Context.
+       It is probably possible for an ActiveNode to function as a
+       Continuation as well as, perhaps, a Handler.  Action may do.
+
+  <li> It seems reasonable that the Context stack should <em>not</em> be
+       identical to <em>either</em> the Input parse stack nor the Output
+       construction stack: it should instead be the <em>actor invocation
+       stack</em>.  
+
+  <li> ... This makes it fairly  clear what needs to be added to make a
+       Context.  Entities, at least.  Bindings could be passed down the eval
+       stack along with in and out, so a full-bore context might not be needed
+       at all.  (All three need to be in the processing stack, though, if we
+       want an iterative processor.)
+
+  <li> It's not impossible that a Processor might be functional as both an
+       Input and an Output, so it might be able to do process-in-place.
+
+  <li> Alternatively, some way of attaching processing information to either
+       the Input or Output might work.
+</ul>
+
+<h3>Description</h3>
+
 The fundamental implementation is to <em>traverse</em> an active document
-(ParseTree) using a <code>ParseTreeIterator</code> (<code>Input</code>).  This
-is similar to the DOM's <code>TreeIterator</code> <em>except:</em>
+(ParseTree) using a <code>ParseTreeIterator</code> or <code>Input</code> (An
+<code>Input</code> is basically a specialized version of the DOM's
+<code>TreeIterator</code> <em>except:</em>
 
 <ul>
   <li> It may be unidirectional, implementing only the navigation operations
@@ -89,25 +157,27 @@ is similar to the DOM's <code>TreeIterator</code> <em>except:</em>
 	 <li> <code>getTree</code> -- a reference to the same object as
 	      getNode, except that it is guaranteed that all of its children
 	      are present. 
-	 <li> <code>getNewNode</code> -- a reference to a Node equivalent to
-	      the one returned by getNode except that it is guaranteed to be a
-	      clean copy, with no children.  A parser, as opposed to a
-	      traverser, is free to return getNode().
        </ul>
 </ul>
 
-Similarly, the output is constructed by means of a
-<code>DocumentBuilder</code> (<code>Output</code>).  This combines traversal
-with construction, so that it is possible to add a node to the document under
-construction, then go on to add its children. <p>
+Similarly, the output is constructed by means of an <code>Output</code>.  This
+combines traversal with construction, so that it is possible to add a node to
+the document under construction, then go on to add its children. <p>
 
 This means that Output needs <code>startNode</code> and <code>endNode</code>
-as well as <code>nextNode</code> (which should be renamed
-<code>putNode</code>). <p>
+as well as <code>putNode</code> (which adds a complete subtree).  <p>
 
 Note that a Parser requires its own stack in order to handle
 <code>toNextSibling</code> and <code>toParent</code> when unprocessed children
 remain.  This stack, though, can just be a simple List of pending tags.<p>
+
+An action routine will normally obtain its ``arguments'' (i.e. the attributes
+and children of the node that invoked it) by way of a suitable Output.  This
+could then be returned to the action routine's calling context as a
+continuation.  In any case, the Output is strongly typed, so the action
+routine can obtain the relevant objects (e.g. ActiveElement, NodeList, etc.)
+knowing their exact types.  This lets the <code>endAction</code> routine also
+be strongly typed.<p>
 
 
 

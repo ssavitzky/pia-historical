@@ -7,6 +7,10 @@ TOPDIR=../../..
 
 FILES = \
 	AbstractInput.java \
+	ActiveInput.java \
+	FromParseTree.java 
+
+OLDFILES = \
 	AbstractInputFrame.java \
 	ExpandToken.java \
 	Guard.java \
@@ -17,9 +21,5 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-AbstractInput.class: ../Input.java ../Token.java
-AbstractInputFrame.class: AbstractInput.java ../Input.java ../Token.java \
-	../InputStack.java ../InputStackFrame.java Wrapper.java
-ExpandToken.class: AbstractInputFrame.java  ../Input.java ../Token.java
-SingleToken.class: AbstractInputFrame.java  ../Input.java
-Wrapper.class: AbstractInputFrame.java  ../Input.java
+AbstractInput.class: ../Input.java ../aux/CurrentNode.java
+ActiveInput.class: ../Input.java ../aux/CurrentNode.java

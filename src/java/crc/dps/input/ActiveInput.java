@@ -3,8 +3,6 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps.input;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 import crc.dom.Node;
 import crc.dom.Element;
@@ -17,12 +15,10 @@ import crc.dps.active.*;
 
 /**
  * An abstract base class for implementations of the Input interface
- *	that operate on generic Node objects.<p>
+ *	that operate on ActiveNode objects.<p>
  *
- *	An Input is essentially a tree iterator, with the additional
- *	ability to provide handlers for the nodes it produces.  In 
- *	most cases these handlers will stored in the (active) nodes
- *	themselves. <p>
+ *	The assumption that an ActiveInput is restricted to parse trees
+ *	makes for a considerable gain in efficiency. <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -30,7 +26,7 @@ import crc.dps.active.*;
  * @see crc.dps.Processor
  */
 
-public abstract class AbstractInput extends CurrentNode implements Input {
+public abstract class ActiveInput extends CurrentActive implements Input {
   public Node toNextNode() 		{ return super.toNextNode(); }
   public Node toNextSibling() 		{ return super.toNextSibling(); }
   public Node toFirstChild() 		{ return super.toFirstChild(); }

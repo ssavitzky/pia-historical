@@ -8,12 +8,8 @@ import crc.dom.NodeList;
 import crc.dom.Element;
 import crc.dom.DOMFactory;
 
-import crc.dps.Token;
-import crc.dps.Handler;
-import crc.dps.Processor;
-import crc.dps.Context;
-import crc.dps.NodeType;
-import crc.dps.Util;
+import crc.dps.*;
+import crc.dps.active.*;
 
 /**
  * Handler for <>....</>  <p>
@@ -42,8 +38,8 @@ public class TypicalHandler extends GenericHandler {
   ************************************************************************/
 
   /** This will normally be the only thing to customize. */
-  public Token computeResult(Token t, Context c, Element elt) {
-    return c.putResult(elt);
+  public void action(Input in, Context c, Output out) {
+
   }
 
   /************************************************************************

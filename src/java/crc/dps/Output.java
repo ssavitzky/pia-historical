@@ -1,26 +1,25 @@
-////// Output.java: Token Stream interface
+////// Output.java: Document Builder
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
+
+import crc.dom.Node;
+import crc.dom.NodeList;
+import crc.dom.Attribute;
+import crc.dom.Element;
 
 /**
- * The interface for a consumer of Token objects.<p>
+ * The interface for a consumer of Nodes. <p>
  *
- *	There are two ways in which an object can interface to a 
- *	Processor:
+ *	An Output receives the Nodes that comprise a Document in depth-first
+ *	order.  Output subclasses exist to:
  *
- *	<ol>
- *	    <li> ``Pull mode'' -- the object requests each individual
- *		 Token.  This treats the Processor as an Input.  Nothing
- *		 special has to be done in this case.
- *
- *	    <li> ``Push mode'' -- the Output registers itself with the
- *		 Processor, which then feeds (pushes) Token objects
- *		 to the Output as they become available.
- *	</ol>
+ *	<ul>
+ *	    <li> Copy parse trees.
+ *	    <li> Construct arbitrary Document trees
+ *	    <li> Convert a subtree into a String.
+ *	</ul>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -31,18 +30,50 @@ import java.util.NoSuchElementException;
 
 public interface Output {
 
-  /************************************************************************
-  ** Pull Mode Operations:
-  ************************************************************************/
-
-  /** Accepts the next token from the associated Processor. 
-   *	@return <code>true</code> if the Output is willing to accept more
-   *		output, <code>false</code> to pause the Processor.
+  /** Adds <code>aNode</code> and its children to the document under 
+   *	construction as a new child of the current node.  The new node
+   *	is copied unless it has no parent and has a type compatible with
+   *	the document under construction.  <p>
+   *
+   *	If the current node is an Element and <code>aNode</code> is an
+   *	Attribute, it is added to the attribute list of the curren node.
    */
-  public boolean nextToken(Token theToken);
+  public void putNode(Node aNode);
 
-  /** Informs the Output that no more Tokens are available.
+  /** Adds <code>aNode</code> to the document under construction, and
+   *	makes it the current node.
    */
-  public void endOutput();
+  public void startNode(Node aNode);
+
+  /** Ends the current Node and makes its parent current.
+   * @return <code>false</code> if the current Node has no parent.
+   */
+  public boolean endNode();
+
+  /** Adds <code>anElement</code> to the document under construction,
+   *	and makes it the current node.  The attribute list is not
+   *	copied; instead, putAttribute, etc. are used.  An element
+   *	may be ended with either <code>endElement</code> or
+   *	<code>endNode</code>. 
+   */
+  public void startElement(Element anElement);
+
+  /** Ends the current Element.  The end tag may be optional.  
+   *	<code>endElement(true)</code> may be used to end an empty element. 
+   */
+  public boolean endElement(boolean optional);
+
+  /** Adds the attribute and its value to the element under construction.
+   *	If the value is <code>null</code> the attribute will be marked as
+   *	unspecified.
+   */
+  public void putAttribute(String name, NodeList value);
+
+  /** Adds a named attribute to the element under construction,
+   *	and makes it the current node.  Subsequent calls on
+   *	<code>putNode</code> add nodes to the attribute's value.
+   *	The attribute is ended with <code>endNode</code>
+   */
+  public void startAttribute(String name);
 
 }

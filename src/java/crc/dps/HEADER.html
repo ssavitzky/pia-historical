@@ -12,14 +12,25 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
 
 <h3>Packages</h3>
 
-<dl>
+<dl>	
+  <dt> <a href="active/">active/</a>
+  <dd> Parse trees made out of ``active nodes''.
+  <dt> <a href="aux/">aux/</a>
+  <dd> Auxiliary classes, not meant for use by the casual programmer.
   <dt> <a href="handle/">handle/</a>
   <dd> The Handle subclasses that implement actions (operations) attached to
        actors.  It turns out that <code>tags</code> is a bad name for a
        subdirectory, since it's the name used for the ``tag file'' created by
        the <code>ctags</code> utility.  CVS ignores it, and various cleanup
        and maintenance operations are likely to flag it as deletable.
-       
+  <dt> <a href="input/">input/</a>
+  <dd> Sources of nodes.
+  <dt> <a href="output/">output/</a>
+  <dd> Destinations for nodes.
+  <dt> <a href="parse/">parse/</a>
+  <dd> Parsers (i.e. Readers for nodes).
+  <dt> <a href="tagset/">tagset/</a>
+  <dd> Tagsets (lookup tables for syntax and semantic Handlers).
   <dt> <a href="test/">test/</a>
   <dd> test cases
        <p>
@@ -31,9 +42,6 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="Processor.java">Processor</a>
   <dd> A document processor.  Both a consumer and producer of Token objects.
        <p>
-  <dt> <a href="Token.java">Token</a>
-  <dd> A generalization of Node: either a complete Node, a start tag, or an
-       end tag.
   <dt> <a href="Handler.java">Handler</a>
   <dd> The object that tells the Processor what to do with a Token, and also
        tells a Parser how to parse it.
@@ -43,17 +51,20 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="Tagset.java">Tagset</a>
   <dd> A lookup table for Handlers.  Supports context chaining.
        <p>
+  <dt> <a href="Cursor.java">Cursor</a>
+  <dd> An interface that allows anything with a ``current node'' to be handled
+       efficiently.  The parent for Input and Output.
   <dt> <a href="Input.java">Input</a>
   <dd> A Token source or stream.
+  <dt> <a href="Parser.java">Parser</a>
+  <dd> An Input that parses Token's from a character stream.
+  <dt> <a href="Output.java">Output</a>
+  <dd> 
+       <p>
   <dt> <a href="InputStack.java">InputStack</a>
   <dd> A stack of Input objects.
   <dt> <a href="InputStackFrame.java">InputStackFrame</a>
   <dd> An Input that can be linked onto a linked-list InputStack.
-  <dt> <a href="Parser.java">Parser</a>
-  <dd> An Input that parses Token's from a character stream.
-       <p>
-  <dt> <a href="Output.java">Output</a>
-  <dd> 
 </dl>
 
 <h3>Classes</h3>

@@ -51,18 +51,31 @@ import crc.dom.NodeList;
  * @see crc.dps.Token
  * @see crc.dps.Input */
 
-public interface Processor extends Input, Context {
+public interface Processor extends Context {
 
   /************************************************************************
-  ** Pushing Output from the Processor:
+  ** Input and Output
   ************************************************************************/
 
-  /** Registers an Output object for the Processor.  The Processor 
-   *	will call the Output's <code>nextToken</code> method with
-   *	each Token as it becomes available, and finally call the 
-   *	Output's <code>endOutput</code> function.
+  /** Get the Processor's Input object.
+   */
+  public Input getInput();
+
+  /** Registers an Input object for the Processor.  
+   */
+  public void setInput(Input anInput);
+
+  /** Get the Processor's Output object.
+   */
+  public Output getOutput();
+
+  /** Registers an Output object for the Processor.  
    */
   public void setOutput(Output anOutput);
+
+  /************************************************************************
+  ** Processing:
+  ************************************************************************/
 
   /** Run the Processor, pushing a stream of Token objects at its
    *	registered Output, until the Output's <code>nextToken</code>
@@ -73,63 +86,6 @@ public interface Processor extends Input, Context {
   /** Test whether the Processor is ``running'' (in ``push mode'').
    */
   public boolean isRunning();
-
-  /************************************************************************
-  ** Input Stack Operations:
-  ************************************************************************/
-
-  /** Return the input stack */
-  public InputStack getInputStack();
-
-  /** Push an Input onto the input stack. */
-  public void pushInput(Input anInput);
-
-  /** Push a ProcessorInput (specialized Input) onto the stack. */
-  public void pushProcessorInput(ProcessorInput anInput);
-
-  /** Push a Token onto the input stack.
-   *	This is a convenience function, included in the Processor interface 
-   *	mainly for increased efficiency.
-   */
-  public void pushInput(Token aToken);
-
-  /** Push a Token onto the input stack to be expanded as a start tag,
-   *	content, and end tag.
-   */
-  public void pushInto(Token aToken);
-
-  /** Push a Node onto the input stack.
-   *	This is a convenience function, included in the Processor
-   *	interface mainly for increased efficiency.  The Node is
-   *	converted to a Token using the Processor's current Tagset.
-   */
-  public void pushInput(Node aNode);
-
-  /** Push a Node onto the input stack to be expanded as a start tag,
-   *	content, and end tag.  Token conversion is done using the 
-   *	Processor's current Tagset.
-   */
-  public void pushInto(Node aNode);
-
-  /** Push a NodeList onto the input stack.
-   *	This is a convenience function, included in the Processor
-   *	interface mainly for increased efficiency.  The Nodes are
-   *	converted to Tokens using the Processor's current Tagset.
-   */
-  public void pushInput(NodeList aNodeList);
-
-
-  /************************************************************************
-  ** Parse Stack Operations:
-  ************************************************************************/
-
-  /** Push a Token onto the parse stack. */
-  public void pushToken(Token aToken);
-
-
-  /************************************************************************
-  ** Operations Used by Handlers:
-  ************************************************************************/
 
 
 }

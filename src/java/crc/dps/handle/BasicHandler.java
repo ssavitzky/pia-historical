@@ -9,14 +9,8 @@ import crc.dom.NodeList;
 import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
-import crc.dps.Token;
-import crc.dps.Handler;
-import crc.dps.Context;
-import crc.dps.Processor;
-
-import crc.dps.BasicTokenList;
-import crc.dps.ParseStack;
-import crc.dps.Util;
+import crc.dps.*;
+import crc.dps.active.*;
 
 import crc.ds.Table;
 
@@ -37,8 +31,8 @@ import crc.ds.Table;
  * @see crc.dps.Processor
  * @see crc.dps.Tagset
  * @see crc.dps.BasicTagset
- * @see crc.dps.Token
  * @see crc.dps.Input 
+ * @see crc.dps.Output
  * @see crc.dom.Node
  */
 
@@ -47,6 +41,10 @@ public class BasicHandler extends AbstractHandler {
   /************************************************************************
   ** Semantic Operations:
   ************************************************************************/
+
+  public void action(Input in, Context aContext, Output out) {
+
+  }
 
   // All inherited.
 
@@ -98,16 +96,15 @@ public class BasicHandler extends AbstractHandler {
    * @return <code>true</code> if the Token is an empty Element.
    * @see crc.dps.Tagset
    */
-  public boolean isEmptyElement(Token t) {
+  public boolean isEmptyElement(Node n) {
     if (elementSyntax != 0) return elementSyntax < 0;
-    else return t.hasEmptyDelimiter();
+    else return false;
   }
 
   /** Called to determine the correct Handler for a given Token.
    *	The default action is to return <code>this</code>.
    */
-  public Handler getHandlerForToken(Token t) {
-    if (isEmptyElement(t)) { t.setIsEmptyElement(true); }
+  public Action getActionForNode(Node n) {
     return this;
   }
 
@@ -162,8 +159,10 @@ public class BasicHandler extends AbstractHandler {
 
   /** Converts the Token to a String according to the given syntax. 
    */
-  public String convertToString(Token t, int syntax) {
-    return t.basicToString(syntax);
+  public String convertToString(ActiveNode n, int syntax) {
+    if (syntax < 0) return n.startString();
+    else if (syntax == 0) return n.contentString();
+    else return n.endString();
   }
 
   /** Converts the Token to a String. 
@@ -172,13 +171,9 @@ public class BasicHandler extends AbstractHandler {
    *	we can give the same Document different physical representations
    *	if necessary.
    */
-  public String convertToString(Token t) {
-    if (t.getSyntax() == 0) {
-      return convertToString(t, -1) +
-	convertToString(t, 0) + convertToString(t, 1); 
-    } else {
-      return convertToString(t, t.getSyntax());
-    }
+  public String convertToString(ActiveNode n) {
+    return convertToString(n, -1) +
+	convertToString(n, 0) + convertToString(n, 1); 
   }
 
   /************************************************************************

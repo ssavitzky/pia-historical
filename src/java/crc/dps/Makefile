@@ -6,6 +6,8 @@ PACKAGE=crc.dps
 TOPDIR=../..
 
 PACKAGES = \
+	active \
+	aux \
 	handle \
 	input \
 	output \
@@ -14,26 +16,22 @@ PACKAGES = \
 	test
 
 FILES = \
+	Action.java \
+	Active.java \
 	BasicEntityTable.java \
 	BasicProcessor.java \
-	BasicToken.java \
-	BasicTokenList.java \
 	Context.java \
 	EntityTable.java \
 	Filter.java \
 	Handler.java \
 	Input.java \
-	InputStack.java \
 	NodeType.java \
 	Output.java \
-	ParseStack.java \
 	Parser.java \
 	Processor.java \
 	ProcessorInput.java \
-	StackFrame.java \
+	Syntax.java \
 	Tagset.java \
-	Token.java \
-	TokenList.java \
 	Util.java
 
 # === Potential renames:
@@ -49,6 +47,3 @@ include $(TOPDIR)/makefiles/package.make
 ###	depends on.  This happens quietly (unfortunately), but make
 ###	seems to cope with it and not build anything twice.
 
-InputStack.class: StackFrame.java
-ParseStack.class: StackFrame.java
-BasicTokenList.class: TokenList.java ../dom/ArrayNodeList.java
