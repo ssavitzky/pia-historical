@@ -7,6 +7,7 @@ TOPDIR=../../..
 
 FILES = \
 	ExpandToken.java \
+	Guard.java \
 	SingleToken.java \
 	Wrapper.java
 
