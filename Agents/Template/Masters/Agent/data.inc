@@ -39,7 +39,7 @@
 	new Agent's home page. </t-form>
 
 <t-data name=dCopyright label="Copyright"
-	>Copyright &copy; 1997 Ricoh Silicon Valley</t-data>
+	>Copyright &copy; 1998 Ricoh Silicon Valley</t-data>
 <t-form>A suitable copyright notice.  This will appear in all of your new
 	agent's files. </t-form>
 

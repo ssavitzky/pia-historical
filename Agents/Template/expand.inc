@@ -41,7 +41,7 @@
 
 
 <ol>
-  <repeat list="data.inc &t-file-names; ">
+  <repeat list="&tDataFile; &t-file-names; ">
   <li> <t-report-file file="&li;">
        <t-handle-file file="&li;">
   </repeat>

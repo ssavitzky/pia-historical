@@ -324,7 +324,7 @@
 <!-- Actors that format template forms.  Suitable for value of "tFormat"  -->
 
 <actor tag=t-tabular-form empty dscr="construct a tabular form">
-  <form method=POST target="&tFormURL;">
+  <form method=POST action="&url;">
     <t-hidden-form-elements>
     <table>
       <tr><th valign=top><em>field index:</em>
@@ -369,7 +369,7 @@
 </actor>
 
 <actor tag=t-list-form empty dscr="construct a description-list form">
-  <form method=POST target="&tFormURL;">
+  <form method=POST action="&url;">
     <t-hidden-form-elements>
     <dl>
       <dt>field index:
@@ -398,7 +398,7 @@
 <actor tag=t-report-file empty dscr="Report on FILE">
   <set local name=file><get element name=file></set>
   <code><b><if>
-	<test match=data.inc>&file;</test><then>data</then>
+	<test match="&tDataFile;">&file;</test><then>data</then>
 	<else><if><get name="x-&file;"><then>xpnd</then>
 	<else><if><get name="c-&file;"><then>copy</then>
 	<else><if><get name="m-&file;"><then>make</then>
@@ -431,7 +431,7 @@
 <!-- === requires tracking the elements, not the filenames. === -->
 <actor tag=t-handle-file empty dscr="Handle FILE with given entity NAME">
   <set local name=file><get element name=file></set>
-  <if> <test match=data.inc>&file;</test><then> template data
+  <if> <test match="&tDataFile;">&file;</test><then> template data
 	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
 	      <write file="&dstDir;/&file;"
 		><protect-result><t-data-file></protect-result></write>
@@ -500,6 +500,8 @@
 	<set name=t-template-path>&tDir;/template.inc</set>
 	<set name=foo><read process quiet file="&t-template-path;"> </set>
 
+    	<t-data name=tDataFile type=hidden>data.inc</t-data>
+	<set name=tDataFile><get form name=tDataFile></set>
 	<if><get name=tDataFile><else><set name=tDataFile>data.inc</if>
 	<set name=t-data-path>&tDir;/&tDataFile;</set>
     
@@ -531,6 +533,10 @@
 		  <!-- also clear field list, since they're all in the data -->
 		  <set name=tFieldNames></set>
 	    <else><set name=data-file>&t-data-path;</set>
+	</if>
+	<set name=tFormURL>&url;?tName=&tName;&amp;tBase=&tBase;</set>
+	<if><test exact match=data.inc>&tDataFile;</test>
+	    <else><set name=tFormURL>&tFormURL;&amp;tDataFile=&tDataFile;</set>
 	</if>
     <else>
 	<set name=tFormFile></set>

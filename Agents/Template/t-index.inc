@@ -9,6 +9,12 @@
 	<read process file="&path;/&li;/subforms.inc"></if>
 </actor>
 
+<actor tag=subform-link>
+  <set name=file><get element name=file></set>
+  <set name=t-url>form.if?tName=&li;&amp;tBase=&base;&amp;tDataFile=&file;</set>
+  <a href="&t-url;">&content;</a>
+</actor>
+
 <!-- If a subdirectory has an subforms.inc, include it on the next line. -->
 
 <h3>System Templates</h3>
