@@ -6,13 +6,19 @@ PACKAGE=crc.dps
 TOPDIR=../..
 
 PACKAGES = \
-	handle
+	handle \
+	input \
+	output
 
 FILES = \
+	AbstractHandler.java \
 	AbstractInput.java \
 	AbstractInputFrame.java \
-	BasicInputFrame.java \
+	AbstractOutput.java \
+	AbstractParser.java \
+	BasicEntityTable.java \
 	BasicProcessor.java \
+	BasicTagset.java \
 	BasicToken.java \
 	EntityTable.java \
 	Handler.java \

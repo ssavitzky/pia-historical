@@ -2,6 +2,8 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+
 /**
  * The base class for stacks implemented as linked lists.
  *
@@ -19,8 +21,6 @@
  * @author steve@rsv.ricoh.com
  * 
  */
-
-package crc.dps;
 
 public abstract class StackFrame  {
 

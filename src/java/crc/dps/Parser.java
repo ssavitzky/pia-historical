@@ -2,6 +2,10 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * The interface for an Input that converts a character stream (Reader) into 
  *	a Token stream.  
@@ -14,10 +18,6 @@
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com */
-
-package crc.dps;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 public interface Parser extends Input {
 

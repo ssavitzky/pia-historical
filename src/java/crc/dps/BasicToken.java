@@ -2,6 +2,20 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeType;
+import crc.dom.Element;
+import crc.dom.ElementDefinition;
+import crc.dom.Text;
+import crc.dom.Comment;
+import crc.dom.PI;
+
+import crc.dom.BasicElement;
+
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * Basic implementation of the Token interface. <p>
  *
@@ -16,20 +30,6 @@
  * @see crc.dom.AbstractNode
  * @see crc.dom.BasicElement
  */
-
-package crc.dps;
-import crc.dom.Node;
-import crc.dom.NodeType;
-import crc.dom.Element;
-import crc.dom.ElementDefinition;
-import crc.dom.Text;
-import crc.dom.Comment;
-import crc.dom.PI;
-
-import crc.dom.BasicElement;
-
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 public class BasicToken extends BasicElement implements Token {
 
@@ -190,10 +190,26 @@ public class BasicToken extends BasicElement implements Token {
     this.nodeType = nodeType;
   }
 
+  public BasicToken(int nodeType, String data) {
+    this.nodeType = nodeType;
+    setData(data);
+  }
+
+  public BasicToken(String data) {
+    this.nodeType = NodeType.TEXT;
+    setData(data);
+  }
+
+  public BasicToken(String tagname, int syntax) {
+    setTagName(tagname);
+    this.syntax = syntax;
+  }
+
   /** Construct a BasicToken from an original Node. */
   public BasicToken(Node original) {
     originalNode = original;
     setNode();				// say it's a node.
     nodeType = original.getNodeType();
   }
+
 }

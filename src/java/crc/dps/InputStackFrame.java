@@ -2,6 +2,8 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+
 /**
  * The interface for a stack frame on a linked-list InputStack. <p>
  *
@@ -14,8 +16,6 @@
  * @see crc.dps.InputStack
  * @see crc.dps.Input
  */
-
-package crc.dps;
 
 public interface InputStackFrame extends InputStack {
 

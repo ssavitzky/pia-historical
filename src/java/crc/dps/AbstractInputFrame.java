@@ -2,6 +2,8 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+
 /**
  * The base class for Input implementations that also implement the
  *	InputStackFrame interface, and so can be used to efficiently
@@ -13,8 +15,6 @@
  * @see crc.dps.InputStack
  * @see crc.dps.Input
  */
-
-package crc.dps;
 
 public abstract class AbstractInputFrame 
 	extends 	AbstractInput

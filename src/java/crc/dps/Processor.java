@@ -2,6 +2,10 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeList;
+
 /**
  * The interface for a document Processor. 
  *	A Processor maintains two stacks: 
@@ -38,10 +42,6 @@
  * @see crc.dps.Token
  * @see crc.dps.Input */
 
-package crc.dps;
-import crc.dom.Node;
-import crc.dom.NodeList;
-
 public interface Processor extends Input {
 
   /************************************************************************
@@ -61,6 +61,9 @@ public interface Processor extends Input {
    */
   public void run();
 
+  /** Test whether the Processor is ``running'' (in ``push mode'').
+   */
+  public boolean isRunning();
 
   /************************************************************************
   ** Context Operations:

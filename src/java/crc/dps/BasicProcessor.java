@@ -2,6 +2,12 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeList;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * A minimal implementation for a document Processor. <p>
  *
@@ -21,21 +27,30 @@
  * @see crc.dps.Token
  * @see crc.dps.Input */
 
-package crc.dps;
-import crc.dom.Node;
-import crc.dom.NodeList;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
-
 public class BasicProcessor extends ParseStack implements Processor {
 
   /************************************************************************
   ** Generating Output:
   ************************************************************************/
 
-  protected void process() {
+  protected boolean running;
 
+  public boolean isRunning() { return running; }
+
+  /** The Processor's main loop.  <p>
+   *
+   *	Token's are obtained from the input and the appropriate
+   *	handler called.  The Parse stack is adjusted as needed.  Processing
+   *	continues until one or more output Tokens are generated. <p>
+   *
+   *	If the Processor <code>isRunning</code>, the output is sent to
+   *	the current Output.  Otherwise it just waits until the
+   *	<code>nextToken</code> is requested.
+   */
+  protected void process() {
+				// ===
   }
+
   /************************************************************************
   ** Pushing Output from the Processor:
   ************************************************************************/
@@ -54,7 +69,7 @@ public class BasicProcessor extends ParseStack implements Processor {
    *	method returns <code>false</code>.
    */
   public void run() {
-
+				// ===
   }
 
 

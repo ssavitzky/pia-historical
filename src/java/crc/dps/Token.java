@@ -2,6 +2,17 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import crc.dom.Node;
+import crc.dom.Element;
+import crc.dom.ElementDefinition;
+import crc.dom.Text;
+import crc.dom.Comment;
+import crc.dom.PI;
+
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * A wrapper or surrogate for a DOM Node <em>or</em> for an element's start tag
  * 	or end tag, providing 
@@ -31,17 +42,6 @@
  * @see crc.dps.TokenFactory
  * @see crc.dom.Node
  */
-
-package crc.dps;
-import crc.dom.Node;
-import crc.dom.Element;
-import crc.dom.ElementDefinition;
-import crc.dom.Text;
-import crc.dom.Comment;
-import crc.dom.PI;
-
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 public interface Token extends Element, Text, Comment, PI {
 

@@ -2,6 +2,10 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import crc.dom.Node;
+import crc.dom.NodeList;
+
 /**
  * The implementation of a Processor's parse stack, using a linked list.
  *
@@ -18,10 +22,6 @@
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException
  */
-
-package crc.dps;
-import crc.dom.Node;
-import crc.dom.NodeList;
 
 public class ParseStack extends StackFrame {
 

@@ -2,6 +2,10 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * The interface for a source or stream of Token objects.
  *
@@ -35,10 +39,6 @@
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException
  */
-
-package crc.dps;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 public interface Input extends Enumeration {
 

@@ -10,6 +10,8 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
 
 <h2>Annotated Contents</h2>
 
+<h3>Packages</h3>
+
 <dl>
   <dt> <a href="handle/">handle/</a>
   <dd> The Handle subclasses that implement actions (operations) attached to
@@ -21,25 +23,62 @@ Also see <a href="../interform/">the old InterForm Interpretor</a>.<p>
   <dt> <a href="test/">test/</a>
   <dd> test cases
        <p>
+</dl>
 
-  <dt> <a href="Actor.java">Actor.java</a>
-       (from <a href="../../../../perl/IF/IA.pm">IA.pm</a>)
-  <dd> InterForm Actors, which are similar to Agents except that they
-       operate on SGML syntactic elements instead of on HTTP transactions.
-  <dt> <a href="Input.java">Input.java</a>
-       (from <a href="../../../../perl/IF/II.pm">II.pm</a>)
-  <dd> the InterForm Interpretor's input stack frame.
-  <dt> <a href="Interp.java">Interp.java</a>
-       (from <a href="../../../../perl/IF/II.pm">II.pm</a>)
-  <dd> the InterForm Interpretor.  It combines an HTML parser with a
-       simplified resolver for applying ``Interform Agents'' to elements. 
-  <dt> <a href="Parser.java">Parser.java</a>
-       (from <a href="../../../../perl/IF/Parser.pm">Parser.pm</a>)
-  <dd> Actually just a scanner--it takes a file or string and produces a
-       stream of Tokens.
-  <dt> <a href="Tagset.java">Tagset.java</a>
-       (from <a href="../../../../perl/IF/Tagset.pm">Tagset.pm</a>)
-  <dd> A (usually named) collection of Actors.
+<h3>Interfaces</h3>
+
+<dl>
+  <dt> <a href="Processor.java">Processor</a>
+  <dd> A document processor.  Both a consumer and producer of Token objects.
+       <p>
+  <dt> <a href="Token.java">Token</a>
+  <dd> A generalization of Node: either a complete Node, a start tag, or an
+       end tag.
+  <dt> <a href="Handler.java">Handler</a>
+  <dd> The object that tells the Processor what to do with a Token, and also
+       tells a Parser how to parse it.
+       <p>
+  <dt> <a href="EntityTable.java">EntityTable</a>
+  <dd> A lookup table for Entity values.  Supports context chaining.
+  <dt> <a href="Tagset.java">Tagset</a>
+  <dd> A lookup table for Handlers.  Supports context chaining.
+       <p>
+  <dt> <a href="Input.java">Input</a>
+  <dd> A Token source or stream.
+  <dt> <a href="InputStack.java">InputStack</a>
+  <dd> A stack of Input objects.
+  <dt> <a href="InputStackFrame.java">InputStackFrame</a>
+  <dd> An Input that can be linked onto a linked-list InputStack.
+  <dt> <a href="Parser.java">Parser</a>
+  <dd> An Input that parses Token's from a character stream.
+       <p>
+  <dt> <a href="Output.java">Output</a>
+  <dd> 
+</dl>
+
+<h3>Classes</h3>
+``Abstract'' in a name marks an abstract base class; ``Basic'' marks a class
+with full but perhaps limited functionality.
+<p>
+
+<dl>
+  <dt> <a href="AbstractInput.java">AbstractInput</a>
+  <dd> 
+  <dt> <a href="AbstractInputFrame.java">AbstractInputFrame</a>
+  <dd> 
+  <dt> <a href="BasicInputFrame.java">BasicInputFrame</a>
+  <dd> Wraps an arbitrary Input as an InputStackFrame.  Most other Input
+       implementations are <em>not</em> derived from BasicInputFrame.
+  <dt> <a href="BasicProcessor.java">BasicProcessor</a>
+  <dd> 
+  <dt> <a href="BasicToken.java">BasicToken</a>
+  <dd> 
+  <dt> <a href="ParseStack.java">ParseStack</a>
+  <dd> A Processor's parse stack frame implemented using a linked list.
+  <dt> <a href="StackFrame.java">StackFrame</a>
+  <dd> 
+  <dt> <a href="Util.java">Util</a>
+  <dd> 
 </dl>
 
 <hr>

@@ -2,6 +2,10 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
 /**
  * The abstract base class for a source or stream of Token objects.
  *
@@ -17,10 +21,6 @@
  * @see crc.dps.Processor
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException */
-
-package crc.dps;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 public abstract class AbstractInput implements Input {
 

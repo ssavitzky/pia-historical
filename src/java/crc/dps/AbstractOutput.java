@@ -1,4 +1,4 @@
-////// Output.java: Token Stream interface
+////// AbstractOutput.java: Token output Stream abstract base class
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -7,20 +7,8 @@ import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
- * The interface for a consumer of Token objects.<p>
+ * The abstract base class for the Output interface.<p>
  *
- *	There are two ways in which an object can interface to a 
- *	Processor:
- *
- *	<ol>
- *	    <li> ``Pull mode'' -- the object requests each individual
- *		 Token.  This treats the Processor as an Input.  Nothing
- *		 special has to be done in this case.
- *
- *	    <li> ``Push mode'' -- the Output registers itself with the
- *		 Processor, which then feeds (pushes) Token objects
- *		 to the Output as they become available.
- *	</ol>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -29,20 +17,29 @@ import java.util.NoSuchElementException;
  * @see crc.dps.Processor
  */
 
-public interface Output {
+public abstract class AbstractOutput implements Output {
 
   /************************************************************************
   ** Pull Mode Operations:
   ************************************************************************/
 
   /** Accepts the next token from the associated Processor. 
+   *	The ``basic'' action is to throw it on the floor and walk away.
+   *
    *	@return <code>true</code> if the Output is willing to accept more
    *		output, <code>false</code> to pause the Processor.
    */
-  public boolean nextToken(Token theToken);
+  public abstract boolean nextToken(Token theToken);
 
   /** Informs the Output that no more Tokens are available.
+   *	In some implementations this will have to do some kind of cleanup. 
    */
-  public void endOutput();
+  public void endOutput() {
+
+  }
+
+  /************************************************************************
+  ** Utilities:
+  ************************************************************************/
 
 }

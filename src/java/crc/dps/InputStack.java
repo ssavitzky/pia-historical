@@ -2,6 +2,8 @@
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
+package crc.dps;
+
 /**
  * The interface for a Processor's input stack.
  * <p>
@@ -23,8 +25,6 @@
  * @see java.util.Enumeration
  * @see java.util.NoSuchElementException
  */
-
-package crc.dps;
 
 public interface InputStack extends Input {
 
