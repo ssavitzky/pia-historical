@@ -154,7 +154,9 @@ Found <get name=forms size> &form; forms filled out between &FORM.startmonth;,
  <if><get name=include> <then>
 <TR><TD> <a href="show_signatures.if?formurl=&file;">&form;</a>
 <repeat list=&vars; entity=var> <TD><get name=var></TD></repeat>
- <set name=sigs> <read file=&file;.sig process></set>
+ <if>  <read file=&file;.sig info><then>
+ <set name=sigs> <read file=&file;.sig process></set></then>
+       <else> <set name=sigs> (none) </set></else></if>
  <TD><get name=sigs findall=signer></TD>
 </TR>
  </then></if>
@@ -243,6 +245,6 @@ For access please contact someone in the admin group:
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Thu Feb 26 19:01:53 1998
+Last modified: Tue Jun 23 10:40:04 1998
 <!-- hhmts end -->
 </body></html>
