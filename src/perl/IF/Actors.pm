@@ -1547,7 +1547,7 @@ sub os_command_handle {
     my $pid;
     unless ($pid = fork) {
 	unless (fork) {
-	    system("sh -c '$main::proxies $command</dev/null &>/dev/null&'");
+	    system("sh -c '$main::proxies cat /dev/null | $command &>/dev/null&'");
 	    exit 0;
 	}
 	exit 0;
@@ -1572,7 +1572,7 @@ sub os_command_output_handle {
     my $result;
     eval {
 	$result = `$command`;
-	$result = `sh -c '$main::proxies $command </dev/null'`;
+	$result = `sh -c '$main::proxies cat /dev/null | $command '`;
     };
     $ii->replace_it($result);
 }
