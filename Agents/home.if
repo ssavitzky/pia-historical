@@ -14,19 +14,17 @@
     <else><set name=agentPath>&agentType;/&agentName;</set></else>
 </if>
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
-<table cellspacing=0 cellpadding=0>
+<table cellspacing=0 cellpadding=0 border=0>
 <tr>
   <th width=170>
     <read quiet interform file="insert.if" process>
   <td>
-    <table cellspacing=0 cellpadding=0>
+    <table cellspacing=0 cellpadding=0 border=0>
     <tr><th width=170><img src="/Agency/Icons/blank170x1.gif"
 	                   width=170 height=1></th>
         <td><br>
     <tr><th><td><a href="index.if">Index Page</a>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	<td> <strong>Home Page</strong>
+    <tr><th><td><a href="help.if">Help Page</a>
     <tr><th>
 	<td><a href="options.if">Options</a>
 	    <if><read info interform file="initialize.if">
@@ -51,9 +49,18 @@
 
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
-<a href="/&agentName;/home.if">&agentName;</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

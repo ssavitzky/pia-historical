@@ -23,6 +23,7 @@
     <tr><th align=right><td> <a href="home.if">Home Page</a>
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif" alt="*">
 	<td> <strong>Index Page</strong>
+    <tr><th><td><a href="help.if">Help Page</a>
     <tr><th>
 	<td><a href="options.if">Options</a>
 	    <if><read info interform file="initialize.if">
@@ -52,9 +53,11 @@
           <a href="/&agentType;/"> / </a>
           <a href="/&agentType;/&agentName;">&agentName;</a>:
           <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
 	  <a href="/&agentType;/&agentName;/options.if">options</a>
     <else><a href="/&agentName;/home.if">&agentName;</a>:
 	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
 	  <a href="/&agentName;/options.if">options</a>
 </if>
 <hr>

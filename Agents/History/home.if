@@ -6,12 +6,13 @@
 
 <set entity name=title>Home Page</set>
 <read interform file="heading.inc" process>
-<table cellspacing=0 cellpadding=0>
+<table cellspacing=0 cellpadding=0 border=0>
 <tr><th width=340><td><br>
 <tr><th><td> <a href="index.if">Index Page</a>
 <tr><th align=right><img src="/Agency/Icons/dot-blue.gif" 
 		         height=20 width=20 alt="*">
     <td> <strong>Home Page</strong>
+<tr><th><td><a href="help.if">Help Page</a>
 <tr><th><td> <a href="options.if">Options</a>
 	     <a href="/&agentName;/initialize.if">[re-initialize]</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>

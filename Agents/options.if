@@ -10,12 +10,13 @@
     <then><set name=agentPath>&agentName;</set></then>
     <else><set name=agentPath>&agentType;/&agentName;</set></else>
 </if>
-<table cellspacing=0 cellpadding=0>
+<table cellspacing=0 cellpadding=0 border=0>
 <tr><th width=170><td>
-    <table cellspacing=0 cellpadding=0>
+    <table cellspacing=0 cellpadding=0 border=0>
     <tr><th width=170><td><br>
     <tr><th><td> <a href="home.if">Home Page</a>
     <tr><th><td> <a href="index.if">Index Page</a>
+    <tr><th><td><a href="help.if">Help Page</a>
     <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"  
 		             height=20 width=20 alt="*">
         <td> <strong>Options</strong>
@@ -44,11 +45,12 @@
 <form method=POST action="&url;"><table>
   <tr> <th><input type=submit value="Change Options"></th></tr>
   <repeat list="&opts;" entity=opt><tr>
-    <th align=right>&opt;:</th>
+    <th align=right valign=top>&opt;:</th>
     <td><set entity name=v><get agent name="&opt;"></set>
 	<if><test exact match="act-on">&opt;</test>
 	    <test exact match="handle">&opt;</test>
-	<then><textarea name="&opt;" cols=50 rows=20
+	    <test markup>&v;</test>
+	<then><textarea name="&opt;" cols=50 rows=10
 	      ><protect-result markup>&v;</protect-result></textarea></then>
 	<else><input name="&opt;" value="&v;" size=50></else>
 	</if></td><p></tr>
@@ -57,9 +59,18 @@
 
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
-<a href="/&agentName;/home.if">&agentName;</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<if><test not exact match="&agentType;">&agentName;</test>
+    <then><a href="/&agentType;/home.if">&agentType;</a>
+          <a href="/&agentType;/"> / </a>
+          <a href="/&agentType;/&agentName;">&agentName;</a>:
+          <a href="/&agentType;/&agentName;/">index</a>
+          <a href="/&agentType;/&agentName;/">help</a>
+	  <a href="/&agentType;/&agentName;/options.if">options</a>
+    <else><a href="/&agentName;/home.if">&agentName;</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/">help</a>
+	  <a href="/&agentName;/options.if">options</a>
+</if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

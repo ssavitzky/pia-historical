@@ -11,12 +11,12 @@
 
 <set agent hook name="controls"><protect><!-- from History agent: -->
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-[<a href="&pia;/History">Hist</a>
- <a href="&pia;/~History/">*</a>/<a
-    href="&pia;/~History/&year;/">&year;</a>/<a
-    href="&pia;/~History/&year;/&month;/">&month;</a>/<a
-    href="&pia;/~History/&year;/&month;/&day;.html">&day;</a>
- <a href="&pia;/~History/last.html">&time;</a>]</protect></set>
+[<a href="&pia;/History" target="_top">Hist</a>
+ <a href="&pia;/~History/" target="_top">*</a>/<a
+    href="&pia;/~History/&year;/" target="_top">&year;</a>/<a
+    href="&pia;/~History/&year;/&month;/" target="_top">&month;</a>/<a
+    href="&pia;/~History/&year;/&month;/&day;.html" target="_top">&day;</a>
+ <a href="&pia;/~History/last.html" target="_top">&time;</a>]</protect></set>
 
 <set agent hook name="act-on"><protect><it>
    <set entity name=ct><get trans headers name=Content-Type></set>
