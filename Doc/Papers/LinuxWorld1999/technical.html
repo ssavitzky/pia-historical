@@ -137,8 +137,12 @@ Also,
 </slide>
 
 <slide><h2>How <em>we</em> do it</h2>
-<p><em>(OK -- this is the good stuff!)</em>
+<p>&nbsp;
 
+<table width='90%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left>&nbsp;
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
 <ul><!-- === needs a lot of work:  central -->
   <li> <b>Documents have embedded processing instructions</b>
        <ul>
@@ -146,21 +150,25 @@ Also,
        </ul>
   <li> <b>But only <em>one language</em> (XML)</b>
        <ul>
-	 <li> In other words, we simply define <em>actions</em> for some of
-	      the tags.
+	 <li> In other words, we simply define <em>actions</em> <br>
+	      for some of the tags in a document.
        </ul>
   <li> <b>The meanings of tags can change</b>
        <ul>
 	 <li> So a document can be used in several ways
-	 <li> One document (a <em>tagset</em>) can define tags for
-	      <em>another</em> document. 
+	 <li> One document (a <em>tagset</em>) can define tags <br>
+	      <em>for another document</em>. 
        </ul>
 </ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware
+</table>
 </slide>
 
 <slide><h2>Here's how we build a form:</h2>
 <ul>
-  <li> <font color=green>HTML</font> and processing instructions
+  <li> <font color=green>HTML</font> and processing
+       <em>in the same language.</em>
        <pre>
 <font color=green>&lt;form action='&amp;url;&gt;</font>    
   &lt;set name=vendor>&lt;get name=PR:vendor&gt;&lt;/set&gt;
@@ -180,9 +188,10 @@ Also,
 <font color=green>&lt;/form&gt;</font>
        </pre>
 </ul>
+
 </slide>
 
-<slide><h2>An Application is a Web Site</h2>
+<slide><h2>A New Design for Information Applications</h2>
 <!-- === needs a lot of work, along with "how we do it" === central === -->
 
 <table width='80%' cellspacing=0 border=0 align=center>
@@ -199,7 +208,7 @@ Also,
        </ul>
 </ul>
        <th bgcolor=lightgreen>&nbsp;
-  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware
+  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware &nbsp;
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
@@ -212,42 +221,26 @@ Also,
        </ul>
 </ul>
        <th bgcolor=lightblue>&nbsp;
-  <tr> <td bgcolor=lightblue colspan=3 align=right>Software
+  <tr> <td bgcolor=lightblue colspan=3 align=right>Software &nbsp;
 
 </table>
 
 
-<p>You access a form through its URL:
+<p>An application is a web site.
 <table cellspacing=0 cellpadding=2 border=0 align=center>
   <tr>	<th>&lt;</th>
-	<th bgcolor=lightblue>http://forms.crc.ricoh.com</th>
-	<th bgcolor=lightgreen>/Purchasing</th>
-	<th bgcolor=lightgreen>/check-approval</th>
+	<td bgcolor=lightblue>http://forms.crc.ricoh.com</td>
+	<td bgcolor=lightgreen>/Purchasing</td>
+	<td bgcolor=lightgreen>/approve-check</td>
 	<th>&gt;</th>
-  <tr> <tr>
-  <tr>  <td>&nbsp;
-	<td bgcolor=lightblue> web server
-	<td bgcolor=lightgreen>directory
-	<td bgcolor=lightgreen>file
-	<td>&nbsp;
-  <tr>  <td>&nbsp;
-	<td bgcolor=lightblue> <em>agency</em>
-	<td bgcolor=lightgreen><em>agent</em>
-	<td bgcolor=lightgreen><em>active document</em>
-	<td>&nbsp;
-  <tr>  <td>&nbsp;
-	<th bgcolor=lightblue align=right> Software
-	<th bgcolor=lightgreen colspan=2 align=right> Infoware
-	<td>&nbsp;
 </table>
 
 </slide>
 
 
 <slide><h2>The Infoware Layer</h2>
-<p><em>This layer is mainly for information designers.</em>
+<p>
 <table width='80%' cellspacing=0 border=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
   <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
   <tr> <th bgcolor=lightgreen>&nbsp;
        <td bgcolor=white>
@@ -265,23 +258,26 @@ Also,
 	 <li> a few are ``<a href="appendices.slides.html#primitives"
 	      >primitive</a>,'' defined by software. 
        </ul>
+  <li>  <em>like a ``spreadsheet for documents.''</em>
 </ul>
-       <th bgcolor=lightgreen>&nbsp;
-  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+       <th bgcolor=lightgreen> &nbsp;
+  <tr> <td bgcolor=lightgreen colspan=3>
+       <em>Mainly for information designers.</em>
+  <tr> <th bgcolor=lightgreen colspan=3 align=right> Infoware &nbsp;
   <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <td bgcolor=lightblue colspan=3 align=right> Software &nbsp;
 </table>
 
-<p> <em>It's very much like a ``spreadsheet for documents.''</em>
+<p>
 </slide>
 
 
 <slide><h2>The Software Layer</h2>
-<p><em>This layer is mainly for software developers.</em>
+<p>&nbsp;
 <table width='80%' border=0 cellspacing=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware &nbsp;
   <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=3 align=right> Software &nbsp;
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
        <td bgcolor=white>
@@ -354,15 +350,59 @@ Also,
 </ul>
 
 <table width='80%' cellspacing=0 border=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
-  <tr> <th bgcolor=lightgreen>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> Building applications is <em>really easy</em>
-  <li> ...because active documents are easy to write
-</ul>
-       <th bgcolor=lightgreen>&nbsp;
-  <tr> <th bgcolor=lightgreen colspan=3 align=right> Infoware&nbsp;
+  <tr> <th bgcolor=white colspan=3 valign=top align=left>
+	<table width='100%' cellspacing=0 border=0 >
+	  <tr>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th> 
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp;  </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+	  <tr>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> App 1 </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> App 2 </th> 
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> App 3  </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> App 4 </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+	  <tr>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th> 
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<td bgcolor=white>&nbsp;</td>
+		<td bgcolor=lightgreen>&nbsp;</td>
+		<th bgcolor=lightgreen> &nbsp; </th>
+		<td bgcolor=lightgreen>&nbsp;</td>
+	  </tr>
+	</table> </th></tr>
+  <tr> 
   <tr>
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
   <tr> <th bgcolor=lightblue>&nbsp;
@@ -386,8 +426,8 @@ Also,
        </ul>
   <li> <em>Lots</em> of documentation
        <ul>
-	 <li> User's manual, tutorials, etc.
-	 <li> Internals, maintenance documents, etc.
+	 <li> User's manual, tutorial, reference manual, ...
+	 <li> Internals, maintenance documents, ...
        </ul>
   <li> <strong><em>Working</em> sample applications</strong> (agents)
        <ul>
@@ -397,24 +437,6 @@ Also,
 </ol>
 </slide>
 
-<slide><h2>The Open-Source Community</h2>
-
-<ul>
-  <li> The typical infoware application is mostly information
-       <ul>
-	 <li> perhaps 80% documents, 20% processing
-       </ul>
-  <li> In the PIA, most of that processing can be done <em>in the
-       documents</em> using tags.
-  <li> An application may need one or two task-specific tags
-       <ul>
-	 <li> e.g. digital signatures in the form agent
-       </ul>
-  <li> But with an open-source community, <em>someone</em> probably had
-       the same need, and filled it.
-</ul>
-
-</slide>
 
 <em>So now let's look at the applications...</em>
 <hr>
