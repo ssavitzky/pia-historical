@@ -17,6 +17,7 @@ PACKAGENAMES = \
 	crc.ds \
 	crc.interform crc.interform.handle \
 	crc.pia crc.pia.actor \
+	crc.sgml \
 	crc.tf \
 	crc.util
 
