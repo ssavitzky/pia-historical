@@ -300,7 +300,11 @@ sub set_handle {
     } else {
 	$ii->setvar($name, $value);
     }
-    $ii->replace_it('');
+    if ($it->attr('copy')) {
+    	$ii->replace_it($it->content);
+    } else {
+	$ii->delete_it;
+    }
 }
 
 ###### Control Structure:
@@ -790,6 +794,32 @@ sub actor_attrs_handle {
 
 ###### I/O:
 
+sub file_lookup {
+    my ($self, $it, $ii, $write) = @_;
+
+    ## Look up a file.
+
+    if ($it->attr('interform')) {
+	$file = IF::Run::agent()->find_interform($file);
+	$base = '';
+    }
+    if ($file =~ /^~/) {
+	$file =~ s/^~//;
+	$base = $ENV{'HOME'};
+    } elsif ($file =~ /^\//) {
+	$base = '';
+    } elsif ($base eq '') {
+	$base = IF::Run::agent()->agent_directory;
+    }
+    if ($base ne '' && $base !~ /\/$/) {
+	$base .= '/';
+    }
+    my $fn = "$base$file";
+    $fn =~ s://:/:g;
+
+    return $fn;
+}
+
 ### <read [file="name" | href="url"] [base="path"] [tagset="name"] [resolve]>
 
 define_actor('read', 'empty' => 1, _handle => \&read_handle,
@@ -817,26 +847,10 @@ sub read_handle {
     my $content;
 
     if ($file && ! $href) {		# File
-	if ($it->attr('interform')) {
-	    $file = IF::Run::agent()->find_interform($file);
-	    $base = '';
-	}
-	if ($file =~ /^~/) {
-	    $file =~ s/^~//;
-	    $base = $ENV{'HOME'};
-	} elsif ($file =~ /^\//) {
-	    $base = '';
-	} elsif ($base eq '') {
-	    $base = IF::Run::agent()->agent_directory;
-	}
-	if ($base ne '' && $base !~ /\/$/) {
-	    $base .= '/';
-	}
+	my $fn = $self->lookup_file($it, $ii);
 
 	## Check to see if the file exists.
 
-	my $fn = "$base$file";
-	$fn =~ s://:/:g;
 	my $exists = -e $fn;
 	my $isdir  = -d $fn;
 
@@ -850,10 +864,17 @@ sub read_handle {
 	    my $w = -w $fn;
 	    my $x = -x $fn;
 	    my $r = -r $fn;
-	    $content = $isdir? 'd' : '-';
-	    $content .= $r? 'r' : '-';
-	    $content .= $w? 'w' : '-';
-	    $content .= $x? 'x' : '-';
+
+	    if ($info =~ /^d/i)    { $content = $isdir? 'd' : '' }
+	    elsif ($info =~ /^r/i) { $content = $r? 'r' : '' }
+	    elsif ($info =~ /^w/i) { $content = $w? 'w' : '' }
+	    elsif ($info =~ /^x/i) { $content = $x? 'x' : '' }
+	    else {
+		$content = $isdir? 'd' : '-';
+		$content .= $r? 'r' : '-';
+		$content .= $w? 'w' : '-';
+		$content .= $x? 'x' : '-';
+	    }
 	    ## === use stat stuff if ALL ===
 	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
 		$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
@@ -918,7 +939,8 @@ sub read_handle {
 define_actor('write', 'content' => 'value', _handle => \&write_handle,
 	     'dscr' => "Output CONTENT to FILE or HREF, with optional BASE 
 path.  FILE may be looked up as an INTERFORM.  BASE directory is created if 
-necessary.  Optionally APPEND or POST.  Optionally COPY.");
+necessary.  Optionally APPEND or POST.  Optionally TRIM leading and trailing 
+whitespace. Optionally end LINE.  Optionally COPY content to InterForm.");
 
 sub write_handle {
     my ($self, $it, $ii) = @_;
@@ -930,6 +952,13 @@ sub write_handle {
     my $text = $it->attr('text');
     my $content = $text? $it->content_text : $it->content_string;
 
+    if ($it->attr('trim')) {
+	$content =~ s/^[\n\s]*//s;
+	$content =~ s/[\n\s]*$//s; 
+    }
+    if ($it->attr('line')) {
+	$content .= "\n" unless $content =~ /\n$/s;
+    }
     if ($file && ! $href) {	# File
 	my $append = $it->attr('append');
 	my $dir = $it->attr('directory');

@@ -242,7 +242,7 @@ sub if_entities {
 	my $transAgentType;
 	if ($transAgentName) {
 	    my $ta = $resolver->agent($transAgentName);
-	    $transAgentType = $ta->type if $ta;
+	    $transAgentType = $ta->type if ref $ta;
 	}
 
 	$ents = {
@@ -254,7 +254,7 @@ sub if_entities {
 	    'fileName' 		=> $fn,
 	    'filePath' 		=> $file,
 
-	    'url'		=> $url->as_string,
+	    'url'		=> ((ref $url)? $url->as_string : ''),
 	    'urlQuery'		=> $query,
 	    'urlPath'		=> $path,
 
