@@ -53,7 +53,7 @@ crc.zip: pia_class.toc
 #	it smashes them.  This makes it useless when run recursively.
 #
 
-JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR)$(CLASSPATH):$(JAVASOURCE)
+JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR):$(CLASSPATH):$(JAVASOURCE)
 
 # non-recursive doc.
 alldoc::
