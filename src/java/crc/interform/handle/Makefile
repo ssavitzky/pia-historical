@@ -150,7 +150,7 @@ Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
 	Standard_ts.java
 	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
 
-doc:: actor-doc
+doc:: actor-doc report
 
 clean::
 	rm -f $(TAGSET_DOCS)
