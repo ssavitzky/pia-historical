@@ -48,7 +48,6 @@ import crc.util.Utilities;
 
 import w3c.www.http.HTTP;
 public class Dofs extends GenericAgent {
-  public boolean DEBUG = false;  
   /**
    * Respond to a DOFS request. 
    * Figure out whether it's for a file or an in erform, and whether it's
@@ -57,10 +56,10 @@ public class Dofs extends GenericAgent {
   public void respond(Transaction request, Resolver res) throws PiaRuntimeException{
     Transaction reply = null;
     String replyString = null;
-    crc.pia.Pia.instance().debug(this, "Inside Dofs respond...");
+    Pia.debug(this, "Inside Dofs respond...");
 
     if( !request.isRequest() ) return;
-    crc.pia.Pia.instance().debug(this, "After tesing is request...");
+    Pia.debug(this, "After tesing is request...");
 
     URL url = request.requestURL();
     if( url == null )
@@ -69,9 +68,9 @@ public class Dofs extends GenericAgent {
     String path   = url.getFile();
     String myname = name();
     String mytype = type();
-    crc.pia.Pia.instance().debug(this, "path-->"+path);
-    crc.pia.Pia.instance().debug(this, "myname-->"+myname);
-    crc.pia.Pia.instance().debug(this, "mytype-->"+mytype);
+    Pia.debug(this, "path-->"+path);
+    Pia.debug(this, "myname-->"+myname);
+    Pia.debug(this, "mytype-->"+mytype);
 
     /*
      * Examine the path to see what we have:
@@ -84,7 +83,7 @@ public class Dofs extends GenericAgent {
     Agent agnt = this;
 
     if (!myname.equals(mytype) && path.startsWith("/"+myname+"/")){
-      crc.pia.Pia.instance().debug(this, ".../"+myname+"/... -- file.");
+      Pia.debug(this, ".../"+myname+"/... -- file.");
       try{
 	retrieveFile( url, request );
       }catch(PiaRuntimeException e){
@@ -93,7 +92,7 @@ public class Dofs extends GenericAgent {
     } else {
       if (!myname.equals(mytype) && path.startsWith("/"+myname)
 	  && path.endsWith("/"+myname)) {
-	crc.pia.Pia.instance().debug(this, ".../"+myname+" -- home.");
+	Pia.debug(this, ".../"+myname+" -- home.");
 	path = "/"+myname+"/home.if";
       } else {
 	// http://napa:7777/dofs/doc/foobar.if
@@ -124,12 +123,12 @@ public class Dofs extends GenericAgent {
 	  if( zAgnt != null ){
 	    agnt = zAgnt;
 	    path = path.substring( ("/"+mytype).length() );
-	    crc.pia.Pia.instance().debug(this, "The path for type-->"+path);
+	    Pia.debug(this, "The path for type-->"+path);
 	  }
 	}
       }
       if( agnt != null ){
-	crc.pia.Pia.instance().debug(this, "Running interform...");
+	Pia.debug(this, "Running interform...");
 	URL myurl = null;
 
 	try{
@@ -149,8 +148,7 @@ public class Dofs extends GenericAgent {
    * name and type needs to be set after this
    */
   public Dofs(){
-    if( DEBUG )
-      System.out.println("From Dofs generic constructor.");
+    Pia.debug(this, "From Dofs generic constructor.");
   }
 
   public Dofs(String name, String type){
@@ -185,11 +183,11 @@ public class Dofs extends GenericAgent {
     List f = fileAttribute("root");
     if( f != null && f.nItems() > 0 ){
       String zroot = (String)f.at(0);
-      Pia.instance().debug(this, "the root is--->" + zroot);
+      Pia.debug(this, "the root is--->" + zroot);
       return zroot;
     }
     else{
-      Pia.instance().debug(this, "can not find root path");
+      Pia.debug(this, "can not find root path");
       return null;
     }
   }
@@ -383,7 +381,8 @@ public class Dofs extends GenericAgent {
       reply.setHeader("Version", agent.version());
 
       try{
-	Pia.instance().debug(agent, "Retrieving file :"+ filename );
+	if( filename != null )
+	  Pia.debug(agent, "Retrieving file :"+ filename );
 	String data = null;
 	byte[] fromFile = null;
 
@@ -435,7 +434,7 @@ public class Dofs extends GenericAgent {
 	    tmp.append( myurl.toExternalForm()+ "\">" );
 	    tmp.append( data.substring( afterindex ) );
 	  }
-	  Pia.instance().debug(agent, "before creating reply" );
+	  Pia.debug(agent, "before creating reply" );
 	  InputStream newdata  = new StringBufferInputStream( new String(tmp) );
 	  Content finalContent = new ByteStreamContent( newdata );
 	  
@@ -448,6 +447,7 @@ public class Dofs extends GenericAgent {
 
       }catch(NullPointerException e1){
 	String msg = "Bad file name.\n";
+	e1.printStackTrace();
 	throw new PiaRuntimeException (agent, "retrieveFile", msg) ;
       }catch(FileNotFoundException e2){
 	String msg = "File not found.\n";
@@ -539,167 +539,6 @@ public class Dofs extends GenericAgent {
     File zfile = new File( filename );
     return ! zfile.exists();
   }
-
-  /**
-   * for debugging only
-   */
-  private static void sleep(int howlong){
-    Thread t = Thread.currentThread();
-    
-    try{
-      t.sleep( howlong );
-    }catch(InterruptedException e){;}
-    
-  }
-
-
-  public static Agency setupAgency(){
-    Agency pentagon = new Agency("pentagon", "agency");
-
-    System.out.println("\n\nDumping options -- name , type");
-    System.out.println("Option for name: "+ pentagon.optionAsString("name"));
-    System.out.println("Option for type: "+pentagon.optionAsString("type"));
-    System.out.println("Version " + pentagon.version());
-    String path = null;
-    System.out.println("Agent url: " + pentagon.agentUrl( path ));
-    pentagon.option("agent_directory", "~/pia/pentagon");
-    System.out.println("Agent directory: " + pentagon.agentDirectory());
-    pentagon.option("agent_file", "~/pia/pentagon/foobar.txt");
-    List files = pentagon.fileAttribute("agent_file");
-    System.out.println("Agent file: " + (String)files.at(0));
-
-
-    System.out.println("\n\nTesting proxyFor -- http");
-    String proxyString = pentagon.proxyFor("napa", "http");
-    if( proxyString != null )
-      System.out.println( proxyString );
-    return pentagon;
-  }
-
- private static void printusage(){
-    System.out.println("Needs to know what kind of test");
-    System.out.println("For test 1, here is the command --> java crc.pia.agent.Dofs -1 dofsagent.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.agent.Dofs -2 dofsgetdir.txt");
-    System.out.println("For test 3, here is the command --> java crc.pia.agent.Dofs -3 dofsgetfile.txt");
-    System.out.println("For test 4, here is the command --> java crc.pia.agent.Dofs -4 dofsheader.txt");
-    System.out.println("For test 5, here is the command --> java crc.pia.agent.Dofs -5 url_string");
-    System.out.println("For test 6, here is the command --> java crc.pia.agent.Dofs -6 url querystring");
-  }
-
-  /**
-   * For testing.
-   * 
-   */ 
- public static void main(String[] args){
-
-    if( args.length < 2 ){
-      printusage();
-      System.exit( 1 );
-    }
-
-    if( args[0].equals ("-1") && args[1] != null )
-      test1( args[1] );
-    else if( args[0].equals ("-2") && args[1] != null )
-      test2( args[1] );
-    else if( args[0].equals ("-3") && args[1] != null )
-      test2( args[1] );
-    else if( args[0].equals ("-4") && args[1] != null )
-      test2( args[1] );
-    else if( args[0].equals ("-5") && args[1] != null )
-      testCreateRequest( args[1], null );
-    else if( args[0].equals ("-6") && args[1] != null && args[2] != null )
-      testCreateRequest( args[1], args[2] );
-    else{
-      printusage();
-      System.exit( 1 );
-    }
-
-  }
-
-  public static void testCreateRequest(String url, String queryString){
-    Agency pentagon = setupAgency();
-    if( queryString == null )
-      pentagon.createRequest("GET", url, null);
-    else{
-      pentagon.createRequest("POST", url, queryString);
-    }
-  }
-
-  public static void test2(String filename){
-    Agency pentagon = setupAgency();
-    try{
-      InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
-      machine1.setInputStream( in );
-
-      Transaction trans1 = new HTTPRequest( machine1 );
-      Thread thread1 = new Thread( trans1 );
-      thread1.start();
-
-      for(;;){
-	if( !thread1.isAlive() )
-	  break;
-      }
-      trans1.assert("IsAgentRequest", new Boolean( true ) );
-
-      System.out.println("\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-      Table ht = new Table();
-      ht.put("agent", "popart");
-      ht.put("type", "dofs");
-      ht.put("root", "~/");
-      ht.put("all", "false");
-      pentagon.install( ht );
-      
-      Resolver res = Pia.instance().resolver();
-
-      // put dofs' machine as toMachine of transaction
-      pentagon.actOn( trans1, res );
-
-      // will eventually call getRequest of dofs' machine
-
-      /*
-      Transaction reply = trans1.handleRequest( res );
-      if( reply != null ){
-	String zheader = null;
-	if (reply.headers()!=null)
-	  zheader = reply.headersAsString();
-	System.out.println("\n\nHere is the response's header from request's handleRequest "); 
-	System.out.print( zheader );
-
-	Content c = reply.contentObj();
-	if( c!= null ){
-	  System.out.println("\n\nHere is the response from request's handleRequest "); 
-	  System.out.print( c.toString() );
-	}
-      }
-      */
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-
-    System.out.println("done");
-  }
-
-
-  public static void test1(String filename){
-    try{
-      InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
-      machine1.setInputStream( in );
-
-
-      new HTTPRequest( machine1 );
-   
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-
-    System.out.println("done");
-  }
-
-
-
-
 
 }
 
