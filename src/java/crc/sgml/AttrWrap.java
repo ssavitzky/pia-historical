@@ -65,7 +65,7 @@ public class AttrWrap extends AttrSGML {
     attributes = t;
   }
 
-  public AttrWrap(crc.ds.List l) {
+  public AttrWrap(List l) {
     this(l.nItems());
     append(l);
   }
