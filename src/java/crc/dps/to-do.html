@@ -17,6 +17,45 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug</b> If/elsf/else handlers do not work correctly.  
+	elsf clause always returns true.  See demo_if.xh. (1998-10-19)<br>
+
+  <li> <b>Bug</b> Logical handler.  A space can change the result.  For example:
+	<pre>
+This version returns 1
+&lt;logical and&gt;&lt;test match="abc"&gt;&name1;&lt;/test&gt;&lt;test match="bbc"&gt;&name2;&lt;/test&gt;&lt;/logical&gt;
+
+This version returns 0
+&lt;logical and&gt;&lt;test match="abc"&gt;&name1;&lt;/test&gt; &lt;test match="bbc"&gt;&name2;&lt;/test&gt;&lt;/logical&gt;
+        </pre> 
+	(1998-10-19)<br>
+
+  <li> <b>Bug</b> Logical and.  Does not return correct (or consistent) values. With two 
+	nodes, returns false; with 3 it returns the last item.  With 4 nodes (and 4th empty)
+	returns nothing. If a fourth node is given, returns it.  Some examples:
+	<pre>
+Returns three
+&lt;logical and&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;&lt;/b&gt;&lt;b&gt;three&lt;/b&gt;&lt;/logical&gt;
+
+Returns nothing
+&lt;logical and&gt;&lt;em&gt;one&lt;/em&gt;&lt;b&gt;&lt;/b&gt;&lt;b&gt;three&lt;/b&gt;&lt;em&gt;&lt;/em&gt;&lt;/logical&gt;
+
+If 4th node is there, returns "four".
+        </pre>
+	(1998-10-19)<br>
+
+  <li> <b>Bug</b> Test sorted.  Returns true on an unsorted list.  For example:
+	<pre>
+Input: &lt;test sorted&gt;bats ants toads&lt;/test&gt; 
+Result: 1 
+        </pre>
+	(1998-10-19)<br>
+  <li> <b>Impr</b> Prevent infinite loops.  Here's one way to create one:
+	<pre>
+&lt;repeat foreach entity=x&gt;a b c d e f g&gt;&lt;repeat&gt;&lt;for&gt;&lt;start&gt;2&lt;/start&gt;&lt;stop&gt;5&lt;/stop&gt;&x;&lt;/for&gt;&lt;/repeat&gt;&lt;/repeat&gt;
+        </pre>
+	(1998-10-19)<br>
+
   <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
        Actually, finding files ought to be in a utility class, because you
        need to get out: the file pathname, the URL path, and the part of the
