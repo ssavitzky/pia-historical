@@ -2,17 +2,21 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
-package crc.pia;
-import java.io.StreamTokenizer;
+package crc.util;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
+import java.io.DataOutputStream;
 import crc.util.regexp.RegExp;
 
 public class Utilities{
 
-public StringBuffer readFrom( String fileName, StringBuffer str ){
+public static synchronized StringBuffer readFrom( String fileName, StringBuffer str ){
     File f;
-    FileInputStream source;
-    StringBuffer s = "";
+    FileInputStream source = null;
+    StringBuffer s = new StringBuffer("");
     byte[]buffer = new byte[1024];
     int bytesRead;
     String readString;
@@ -25,12 +29,12 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
 	readString = new String( buffer, 0, 0, bytesRead );
 
 	if(bytesRead == -1) break;
-        if(str)
+        if(str!=null)
 	  str.append( readString );
 	else
 	  s.append( readString );
       }
-      return (str) ? str : s;
+      return (str!=null) ? str : s;
       
     }catch(NullPointerException e){
       System.out.println("Invalid file name\n");
@@ -41,7 +45,7 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
 	}catch(IOException e){
 	  System.out.println("Exception from readFrom" + e + "\n");
 	}
-      return (str) ? str : s; 
+      return (str!=null) ? str : s; 
     }
   }
   
@@ -50,19 +54,19 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
    * Given a string, write to file.
    *
    */
-  public void writeTo( String fileName, String str ){
+  public static synchronized void writeTo( String fileName, String str ){
     File f;
     FileOutputStream fileStream;
-    DataOutputStream destination;
+    DataOutputStream destination = null;
 
-    if(!str) return;
+    if(str == null) return;
 
     try{
       f = new File(fileName);
       fileStream = new FileOutputStream( f );
       destination = new DataOutputStream( fileStream );
       destination.writeChars( str );
-    }catch(NullPointerException e){
+    }catch(Exception e){
       System.out.println("Invalid file name\n");
     }finally{
       if(destination!=null)
@@ -78,10 +82,10 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
    * Given a string, append to file.
    *
    */
-  public void appendTo( String fileName, String str ){
-    RandomAccessFile f;
+  public static synchronized  void appendTo( String fileName, String str ){
+    RandomAccessFile f = null;
 
-    if(!str) return;
+    if(str==null) return;
 
     try{
       f = new RandomAccessFile(fileName, "w");
@@ -104,28 +108,68 @@ public StringBuffer readFrom( String fileName, StringBuffer str ){
 
   }
 
- /**
-  * make a form
-  *
-  */
-  public void makeForm(){
-    //help
-  }
 
   /**
    * Conversion Utilities:
    * convert str to HTML by properly escaping &, <, and >.
    */
-  public StringBuffer protect_markup(String str){
-    if( str ){
-      RegExp re = new RegExp();
-      String amp = re.substitute("&","&amp", true);
-      String ampLeft = re.substiture("<", "&lt", true);
-      String ampLeftRight = re.substiture(">", "&gt", true);
-      return ampLeftRight;
-    }else return new StringBuffer("");
+  public static synchronized String protect_markup(String str){
+    if( str!= null ){
+      try{
+	RegExp re = new RegExp("&");
+	String amp = re.substitute(str,"&amp", true);
+
+	re = new RegExp("<");
+	String ampLeft = re.substitute(amp, "&lt", true);
+
+	re = new RegExp(">");
+	String ampLeftRight = re.substitute(ampLeft, "&gt", true);
+
+	return ampLeftRight;
+      }catch(Exception e){ return null;}
+    }else return null;
     
   }
+
+   /**
+   * Unescape a HTTP escaped string
+   * @param s The string to be unescaped
+   * @return the unescaped string.
+   */
+
+  public static synchronized String unescape (String s) {
+	StringBuffer digitBuf = null;
+	int hb = -1;
+	int lb = -1;
+	StringBuffer sbuf = new StringBuffer () ;
+	int l  = s.length() ;
+	int ch = -1 ;
+
+	for (int i = 0 ; i < l ; i++) {
+	  digitBuf = new StringBuffer();
+	    switch (ch = s.charAt(i)) {
+	      case '%':
+		ch = s.charAt (++i) ;
+		digitBuf.append( (char)ch );
+
+		ch = s.charAt (++i) ;
+		digitBuf.append( (char)ch );
+		
+		if( digitBuf.length() > 0 ){
+		  int foo = Integer.parseInt( new String( digitBuf ), 16 );
+		  sbuf.append( (char)foo );
+		}
+		break ;
+	      case '+':
+		sbuf.append (' ') ;
+		break ;
+	      default:
+		sbuf.append ((char) ch) ;
+	    }
+	}
+	return sbuf.toString() ;
+    }
+
 
 }
 
