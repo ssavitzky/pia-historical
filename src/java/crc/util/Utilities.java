@@ -380,7 +380,7 @@ public class Utilities {
    */
   public static String reportString(Exception e) {
     java.io.StringWriter s = new java.io.StringWriter();
-    s.write(e.toString() + " " + e.getMessage());
+    //s.write(e.toString() + " " + e.getMessage());
     e.printStackTrace(new java.io.PrintWriter(s));
     return s.toString();
   }
