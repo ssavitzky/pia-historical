@@ -9,8 +9,19 @@ package crc.dom;
 public class BasicText extends AbstractNode implements Text {
 
   public BasicText(){
-    data = "";
     ignoreWhiteSpc = false;
+  }
+
+  public BasicText(String d){
+    data = d;
+    ignoreWhiteSpc = false;
+  }
+
+
+  public BasicText(String d, boolean iws)
+  {
+    data = d;
+    ignoreWhiteSpc = iws; 
   }
 
   public BasicText(BasicText bt)
@@ -42,6 +53,6 @@ public class BasicText extends AbstractNode implements Text {
 
   public int getNodeType(){ return NodeType.TEXT; }
 
-  protected String data;
+  protected String data = "";
   protected boolean ignoreWhiteSpc;
 };
