@@ -157,8 +157,7 @@ public class Dofs extends GenericAgent {
     if( DEBUG )
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode.  No interform request is put onto the resolver.");
     else{
-      Transaction request = createRequest("GET", myurl );
-      Pia.instance().resolver().unshift( request );
+      request = createRequest("GET", myurl );
     }
     */
   }
