@@ -55,3 +55,59 @@ public class Write_href extends crc.interform.Handler {
     }
   }
 }
+
+/* ====================================================================
+    if ($file && ! $href) {	# File
+	my $append = $it->attr('append');
+	my $dir = $it->attr('directory');
+
+	if ($it->attr('interform')) {
+	    $base = IF::Run::agent()->agent_if_root();
+	}
+	if ($file =~ /^~/) {
+	    $file =~ s/^~//;
+	    $base = $ENV{'HOME'};
+	} elsif ($file =~ /^\//) {
+	    $base = '';
+	} elsif ($base eq '') {
+	    $base = IF::Run::agent()->agent_directory;
+	}
+	$base =~ s:/$:: if $base;
+	if ($base ne '' && ! -d $base) {
+	    if (! mkdir($base, 0777)) {
+		my $err = "InterForm error: can't create directory $base\n";
+		print $err;
+		$ii->replace_it($err);
+		return;
+	    }
+	}
+
+	my $fn = $base? "$base/$file" : $file;
+	$fn =~ s://:/:g;
+	$fn =~ s:/$::;
+
+	if ($file eq '.') {
+	    # nothing to do; just make sure the base directory exists.
+	} elsif ($append) {
+	    appendTo($fn, $content);
+	} else {
+	    writeTo($fn, $content);
+	}
+    } elsif ($href && ! $file) {	# Href (PUT or POST)
+	my $post = $it->attr('post');
+
+    } elsif ($href) {
+	my $err = "InterForm error: both HREF and FILE specified\n";
+	print $err;
+	$ii->replace_it($err);
+	return;
+    } else {
+	my $err = "InterForm error: neither HREF nor FILE specified\n";
+	print $err;
+	$ii->replace_it($err);
+	return;
+    }
+
+}
+
+*/
