@@ -58,7 +58,7 @@ $table = "$to/index.html";
 
 # check for non j6i disc and abort
 @files = <$from/*.j6*>;
-die " not j6i disc " unless $#files > -1;
+if ($#files < 0) { print " not j6i disc \n"; exit 0; }
 
 # copy all files over
 $copystatus = system("cp -p $from/*  $to ");
@@ -142,10 +142,10 @@ print $formheader if $captionsize;
 print $header;
 print $rowheader;
 
-for(@_){
+for(@jpegs){
     chop;
   
-    ($file, $ext ) = split('\.');
+    ($file, $ext ) = ($_, 'jpg'); #split('\.');
     $text[$count] = "$file.$ext";
 
     print $td;
