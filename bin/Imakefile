@@ -18,7 +18,7 @@ pia: Imakefile
 	echo '#!/bin/sh' > pia
 	echo test '"x$$PIA_DIR" != "x" ||' PIA_DIR=`(cd ..; pwd)` >> pia
 	echo export PIA_DIR >> pia
-	echo perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> pia
+	echo exec perl '$$'PIA_DIR/lib/perl/pia.pl '$$*' >> pia
 	chmod +x pia
 
 
