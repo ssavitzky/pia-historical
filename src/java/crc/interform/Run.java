@@ -78,6 +78,16 @@ public class Run  extends Environment {
     debug = fn != null && Pia.debug() && Pia.verbose();
   }
 
+  protected Run(Agent ia, Transaction tr, Resolver res, String fn, String destFile) {
+    super(fn, destFile);
+    agent = ia;
+    transaction = tr;
+    resolver = res;
+    filename = fn;
+    debug = fn != null && Pia.debug() && Pia.verbose();
+  }
+
+
   public Object clone() {
     return new Run(agent, transaction, resolver, filename);
   }
@@ -264,6 +274,13 @@ public class Run  extends Environment {
 					  Transaction trans, Resolver res) {
     return new Run(agent, trans, res, filepath).filterFile("Standard");
   }
+
+  /** Run a standard InterForm file and return an InputStream.  destFile is the name of PUT file */
+  public static InputStream interformFile(Agent agent, String filepath, String destFile,
+					  Transaction trans, Resolver res) {
+    return new Run(agent, trans, res, filepath, destFile).filterFile("Standard");
+  }
+
 
   /** Run a string and return an InputStream. */
   public static InputStream interformString(Agent agent, String filename, 
