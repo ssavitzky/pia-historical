@@ -1,0 +1,25 @@
+#!/bin/csh
+
+# USAGE: ChangePackage old.package.name new.package.name
+
+# Does a search for the old string and changes it with
+# the new string in all .java and Makefile files,
+# recursing from the current directory
+
+# Marko Balabanovic 9 Oct 1998
+
+echo Listing files containing $1
+rm -f /tmp/FilesToChange
+grep -l $1 `find . -name \*.java -print` > /tmp/FilesToChange
+grep -l $1 `find . -name Makefile -print` >> /tmp/FilesToChange
+cat -n /tmp/FilesToChange
+
+echo Starting replacement of $2 for $1
+foreach f (`cat /tmp/FilesToChange`)
+	mv $f $f.BeforeChange
+	sed -e s/$1/$2/ $f.BeforeChange > $f
+	rm -f $f.BeforeChange
+	echo Done $f
+end
+
+echo Completed changes
