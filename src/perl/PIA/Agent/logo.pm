@@ -494,15 +494,15 @@ sub make_LOGO {
 }
 
 
-sub respond_to_interform {
-    my($self, $request, $url)=@_;
+sub respond {
+    my($self, $request, $resolver)=@_;
     my %hash=%{$request->parameters};
 
     ## See if we have a filename of the form <type><height>[.ext]
     ##	 Height may be 0, in which case the default is used.
     ##	 The extension defaults to "gif"
 
-    $url = $request->url unless defined $url;
+    my $url = $request->url;
     my $path = $url->path;
     $path =~ m:/([a-zA-Z]+)([0-9]+)(.[a-zA-Z]*)?$:;
     if (defined $1 && defined $2) {
@@ -515,7 +515,7 @@ sub respond_to_interform {
 	if $main::debugging;
 
     if (! exists $hash{'height'}) {
-	return &PIA::Agent::respond_to_interform($self,$request,$url);
+	return $self->respond_to_interform($request,$url, $resolver);
     }
 
     ## Get parameters out of query string:

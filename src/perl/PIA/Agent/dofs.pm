@@ -173,8 +173,8 @@ sub retrieve_directory {
 }
 
 
-sub  respond_to_interform{
-    my($self, $request)=@_;
+sub  respond {
+    my($self, $request, $resolver)=@_;
 
     ## Respond to a DOFS request. 
     ##	 Figure out whether it's for a file or an interform, and whether it's 
@@ -201,14 +201,12 @@ sub  respond_to_interform{
     } elsif ($path =~ m:^/$type/([^/]+)/:) {
 	$name = $1;
 
-####  Resolver no longer gets passed in
-####  this is not a perfect way to get the type, but will work for now
-	my $agent = $main::resolver->agent($name);
+	my $agent = $resolver->agent($name);
 	$path =~ s:^/$type:: if defined $agent;
 	$self = $agent if defined $agent;
     }
 
-    $response = &PIA::Agent::respond_to_interform( $self,$request,$path);
+    $response = $self->respond_to_interform($request, $path, $resolver);
 ##    return 0 unless defined $response;
 ##    $resolver->push($response);
     return  $response;

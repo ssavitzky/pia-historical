@@ -47,15 +47,15 @@ sub send_response {
 
 }
 
-#somebody asking for something
-# agency should treat as interform request
 sub get_request {
     my($self, $request, $resolver)=@_;
 
     ## Handle a direct request to an agent.
+    ##	 Normally done by running an InterForm, but the agent can 
+    ##	 perform special processing first.
 
     my $agent=$self->agent;
-    my $response=$agent->respond_to_interform($request) if $agent;
+    my $response=$agent->respond($request, $resolver) if $agent;
     return $response;
     
 }

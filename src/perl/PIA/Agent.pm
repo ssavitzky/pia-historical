@@ -258,6 +258,16 @@ sub handle {
     return $self->run_hook('handle', $transaction, $resolver);
 }
 
+sub respond {
+    my($self, $request, $resolver)=@_;
+
+    ## Respond to a direct request.  
+    ##	This is called from the agent's Agent::Machine
+
+    my $url = $request->url;
+    local $current_resolver = $resolver;
+    respond_to_interform($self, $request, $url, $resolver);
+}
 
 ############################################################################
 ###
@@ -607,12 +617,10 @@ sub find_interform {
 	$form = $1 || "index.if";	# default to index.if
     } elsif ($path =~ m:$name$:) {
 	$form = "home.if";		# default to home.if
-    } elsif ($path =~ m:^/$:) {
+    } elsif ($path =~ m:^/$: || $path eq '') {
 	$form = 'ROOTindex.if';		# root's index.
-    } elsif ($path eq '') {
-	$form = 'ROOThome.if';		# root's home page.
-	## === for some reason this is never accessed:        ===
-	## === Probably, the browser forces a trailing slash. ===
+	## In practice $path is never null; either the browser
+	## or the acceptor forces a trailing slash.
     }
 
     my $if_path = $self->dir_attribute(if_path);
@@ -666,9 +674,9 @@ sub find_interform {
 ###	We need this for the DOFS, in particular.
 
 sub respond_to_interform {
-    my($self, $request, $url)=@_;
+    my($self, $request, $url, $res)=@_;
 
-    ## Respond to a request directed at an agent, by running an interform. 
+    ## Respond to a request directed at one of an agent's interforms. 
     ##	  The InterForm's url may be passed separately, since the agent may
     ##	  need to modify the URL in the request.  It can pass either a full
     ##	  URL or a path.
@@ -680,6 +688,8 @@ sub respond_to_interform {
     my $file=$self->find_interform($url);
 
     local $response;		# available for interforms.
+    local $resolver = defined($res)? $res : $current_resolver;
+
     my $string;
     if(! defined $file){
 	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
@@ -696,8 +706,7 @@ sub respond_to_interform {
 	}
 
 	if($request->is('interform')) {
-	    $string=IF::Run::interform_file($self, $file, $request,
-					    $current_resolver);
+	    $string=IF::Run::interform_file($self, $file, $request, $resolver);
 	} elsif ($file =~ /\.cgi$/i && -x $file) {
 	    print $self->name . " Executing $file \n" if $main::debugging;
 	    ## === not entirely clear what to do for CGI's ===

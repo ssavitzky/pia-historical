@@ -176,10 +176,14 @@ sub machine_callback{
     
 }
 
-sub respond_to_interform{
-    my($self, $request, $url)=@_;
+sub respond {
+    my($self, $request, $resolver)=@_;
     my %hash=%{$request->parameters};
-    return &PIA::Agent::respond_to_interform($self,$request,$url) unless exists $hash{'url_to_iconify'};
+    my $url = $request->url;
+
+    return $self->respond_to_interform($request, $url, $resolver) 
+	unless exists $hash{'url_to_iconify'};
+
     my $newrequest=$self->create_request('GET',$hash{'url_to_iconify'});
     my $machine=$self->machine;
     $machine->callback(\&machine_callback);
@@ -187,7 +191,6 @@ sub respond_to_interform{
     $$newrequest{_thumbnail_request}=$request;
     $newrequest=PIA::Transaction->new($newrequest,$machine);
     return $newrequest;
-    
 }
 
 1;
