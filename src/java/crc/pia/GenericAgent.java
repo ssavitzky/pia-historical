@@ -358,8 +358,11 @@ public class GenericAgent implements Agent {
    * @return virtual machine
    */
   public Machine machine(){
-    if( virtualMachine==null )
+    Pia.instance().debug(this, "Getting agent machine" );
+    if( virtualMachine==null ){
       virtualMachine = new AgentMachine( (Agent)this );
+      Pia.instance().debug(this, "Creating virtual agent machine" );
+    }
     return virtualMachine;
   }
 
@@ -400,10 +403,9 @@ public class GenericAgent implements Agent {
    * Respond to a direct request.
    * This is called from the agent's Agent::Machine
    */
-  public Transaction respond(Transaction trans, Resolver res){
+  public void respond(Transaction trans, Resolver res) throws PiaRuntimeException{
     URL zurl = trans.requestURL();
     String url = zurl.getFile();
-    Transaction response = null;
 
     String reply = respondToInterform( trans, url, res );
     InputStream in = null;
@@ -411,8 +413,7 @@ public class GenericAgent implements Agent {
       in = new StringBufferInputStream( reply );
     ByteStreamContent c = new ByteStreamContent( in );
 
-    response = new HTTPResponse( trans, c );
-    return response;
+    new HTTPResponse( trans, c );
   }
 
   /**
