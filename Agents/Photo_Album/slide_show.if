@@ -24,9 +24,12 @@ name="slide_pause">10</set></else></if>
 
 
 <hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Apr 17 17:54:51 1997
+Last modified: Fri Apr 18 14:28:01 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

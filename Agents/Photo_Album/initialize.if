@@ -15,6 +15,21 @@
   <dd> photo album deals with directories of dc2 images, see<a name="installation.html">installation notes</a>
 </dl>
 
+<set agent name="banner"><table align=center>
+<TR><TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+<if><agent-running name="Logo"><then><img src="/Logo/camera.gif"  height=16 width=16 alt=camera></then><else>&agentName;</else></if></a>
+<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/latest.if">
+<if><agent-running name="Logo"><then><img src="/Logo/new.gif"  height=16
+width=16 alt=Publish></then><else>NewPictures</else></if></a>
+<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/catalog.if">
+<if><agent-running name="Logo"><then><img src="/Logo/album.gif"  height=16 width=16 alt=album></then><else>Album</else></if></a>
+<TD> <a href="http://&piaHOST;:&piaPORT;/&agentName;/help.if">
+<if><agent-running name="Logo"><then><img src="/Logo/help.gif"  height=16
+width=16 alt=help></then><else>Help</else></if></a>
+<TD> <a href="http://&piaHOST;:&piaPORT;/Agency/home.if"><if><agent-running
+     name="Logo"><then><img src="/Logo/pia16" height=16 width=30 alt=PIA> </then><else>Agency</else></if></a>
+</table></set>
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>

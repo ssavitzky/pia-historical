@@ -16,9 +16,13 @@
 </ul>
 
 <hr>
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
+
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 08:06:03 1997
+Last modified: Fri Apr 18 14:24:44 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

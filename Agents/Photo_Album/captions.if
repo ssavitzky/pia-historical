@@ -63,10 +63,14 @@ href="&mydirectory;/captions.html"> "&FORM.captTitle;"</a><TD>
 </then></if></repeat>
 
 <hr>
-<read interform file="banner.if">
+<if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
+<p>
+</then></if>
+
+
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Fri Apr 18 07:55:46 1997
+Last modified: Fri Apr 18 14:24:20 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
