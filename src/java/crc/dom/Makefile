@@ -70,12 +70,12 @@ FILES = \
 	ExternalEntity.java \
 	ExternalTextEntity.java \
 	ExternalNDATAEntity.java \
-	AbstractEntity \
-	NdataEntity \
-	TextEntity \
-	AgentEntity \
-	LocalEntity \
-	SystemEntity
+	AbstractEntity.java \
+	NdataEntity.java \
+	TextEntity.java \
+	AgentEntity.java \
+	LocalEntity.java \
+	SystemEntity.java
 
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
