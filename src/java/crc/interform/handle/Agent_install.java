@@ -69,5 +69,39 @@ public class Agent_install extends crc.interform.Handler {
     ii.message("Agent "+name+" installed.");
     ii.replaceIt(name);
   }
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    crc.dps.InterFormProcessor env = getInterFormContext(aContext);
+    if (env == null) return legacyError(aContext, tag, "PIA not running.");
+
+    // === buggy -- should get form from content === 
+    if (content != null) 
+      notify(aContext, tag, atts,
+	     "Bug: agent options in content not implemented.");
+
+    crc.ds.Table form = env.getTransaction().getParameters();
+
+    String name = form.has("agent")? form.at("agent").toString() : null;
+    if (name == null) 
+      name = form.has("name")? form.at("name").toString() : null;
+
+    crc.pia.agent.Agency agency = null;
+    try {
+      agency = (crc.pia.agent.Agency) env.getAgent();
+    } catch (Exception e) {
+      reportError(aContext, tag, atts, "only works in the Agency agent");
+      return true;
+    }
+    try {
+      agency.install(form); 
+    } catch (crc.pia.agent.AgentInstallException e) {
+      reportError(aContext, tag, atts, "Install exception: " + e.getMessage());
+      return true;
+    } 
+    aContext.message(0, "Agent "+name+" installed.", 0, true);    
+    return putText(out, name);
+  }
 }
 
