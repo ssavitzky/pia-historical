@@ -7,20 +7,18 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.AttributeList;
 import crc.dom.DocumentType;
-import crc.dom.BasicElement;
 import crc.dom.DOMFactory;
-import crc.dom.BasicDOMFactory;
 
 import java.util.Enumeration;
 
 import crc.dps.NodeType;
 import crc.dps.Tagset;
-import crc.dps.Token;
 import crc.dps.Handler;
 import crc.dps.Parser;
 import crc.dps.Context;
-import crc.dps.BasicToken;
 import crc.dps.Util;
+
+import crc.dps.active.*;
 
 import crc.dps.handle.BasicHandler;
 import crc.dps.handle.GenericHandler;
@@ -50,7 +48,7 @@ import crc.ds.List;
  * @see crc.dps.Input 
  * @see crc.dom.Node */
 
-public class BasicTagset extends BasicElement implements Tagset {
+public class BasicTagset implements Tagset {
 
   /************************************************************************
   ** Data:
@@ -96,38 +94,52 @@ public class BasicTagset extends BasicElement implements Tagset {
   /** The DOMFactory to which all construction requests are delegated. */
   protected DOMFactory factory= null;
 
-  public DOMFactory getFactory() { return factory; }
+  public DOMFactory getFactory() { return factory == null? this : factory; }
 
   protected void setFactory(DOMFactory f) { factory = f; }
 
 
   public crc.dom.Document createDocument() {
-    return factory.createDocument();
+    return (factory == null)
+      ? null
+      : factory.createDocument();
   }
 
   public crc.dom.DocumentContext createDocumentContext() { 
-    return factory.createDocumentContext();
+    return (factory == null)
+      ? null
+      : factory.createDocumentContext();
   }
 
   public crc.dom.Element createElement(String tagName,
 				       crc.dom.AttributeList attrs) {
-    return factory.createElement(tagName, attrs);
+    return (factory == null)
+      ? createActiveElement(tagName, attrs)
+      : factory.createElement(tagName, attrs);
   }
 
   public crc.dom.Text createTextNode(String data) {
-    return factory.createTextNode(data);
+    return (factory == null)
+      ? createActiveText(data)
+      : factory.createTextNode(data);
   }
 
   public crc.dom.Comment createComment(String data) {
-    return factory.createComment( data );
+    return (factory == null)
+      ? createActiveComment(data)
+      : factory.createComment( data );
   }
 
   public crc.dom.PI createPI(String name, String data) {
-    return factory.createPI( name, data );
+    return (factory == null)
+      ? createActivePI(name, data)
+      : factory.createPI( name, data );
   }
 
   public crc.dom.Attribute createAttribute(String name, NodeList value){
-    return factory.createAttribute( name, value );
+    return (factory == null)
+      ? createActiveAttribute(name, value)
+      : factory.createAttribute( name, value );
   }
 
   /************************************************************************
@@ -237,58 +249,74 @@ public class BasicTagset extends BasicElement implements Tagset {
     return p;
   }
 
-  /** === does not appear to be needed === */
-  public int checkEndNesting(Token t, Context c) {
-    return 0;			// ===
-  }
-
-  /** === does not appear to be needed === */
-  public int checkElementNesting(Token t, Context c) {
-    // === checkElementNesting needs to use t's handler.  It's a start
-    //	   tag from this tagset, so it should have one.
-
-    return 0;			// ===
-  }
-
-  /** Called during parsing to return a suitable start tag Token.
-   */
-  public Token createStartToken(String tagname,
-				AttributeList attributes,
-				Parser p){
+  /**Creates an ActiveElement; otherwise identical to CreateElement. */
+  public ActiveElement createActiveElement(String tagname,
+				   AttributeList attributes){
     Handler h = getHandlerForTag(tagname);
-    return new BasicToken(tagname, -1, attributes, h);
+    return new ParseTreeElement(tagname, attributes, h);
   }
 
-  /** Called during parsing to return an end tag Token.  The Token will not
-   *	have a handler.
-   */
-  public Token createEndToken(String tagname, Parser p) {
-    return new BasicToken(tagname, 1);
+  /** Creates an ActiveNode of arbitrary type with (optional) data. */
+  public ActiveNode createActiveNode(int nodeType, String data) {
+    return createActiveNode(nodeType, null, data);
   }
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with String content. 
-   */
-  public Token createToken(int nodeType, String data, Parser p){
+  /** Creates an ActiveNode of arbitrary type with name and (optional) data. */
+  public ActiveNode createActiveNode(int nodeType, String name, String data) {
     Handler h = getHandlerForType(nodeType);
-    return new BasicToken(nodeType, data, h);
+    ActiveNode n = Util.createActiveNode(nodeType, name, data);
+    n.setHandler(h);
+    return n;
   }
 
-  /** Called during parsing to return a suitable Token for a generic
-   *	Node with a name, and String content.
+  /** Creates an ActivePI node with name and data.
    */
-  public Token createToken(int nodeType, String name, String data, Parser p){
-    Handler h = getHandlerForType(nodeType);
-    return new BasicToken(nodeType, name, data, h);
+  public ActivePI createActivePI(String name, String data) {
+    Handler h = getHandlerForType(NodeType.PI);
+    return new ParseTreePI(name, data, h);
   }
 
-  /** Called during parsing to return a suitable Token for a new Text.
+  /** Creates an ActiveAttribute node with name and value.
    */
-  public Token createTextToken(String text, Parser p){
-    boolean w = Util.isWhiteSpace(text);
-    Handler h = getHandlerForText(w);
-    Token t = new BasicToken(text, h);
-    t.setIsWhitespace(w);
+  public ActiveAttribute createActiveAttribute(String name, NodeList value) {
+    Handler h = getHandlerForType(NodeType.ATTRIBUTE);
+    return new ParseTreeAttribute(name, value, h);
+  }
+
+  /** Creates an ActiveEntity node with name and value.
+   */
+  public ActiveEntity createActiveEntity(String name, NodeList value) {
+    Handler h = getHandlerForType(NodeType.ENTITY);
+    return new ParseTreeEntity(name, value, h);
+  }
+
+  /** Creates an ActivePI node.
+   */
+  public ActiveComment createActiveComment(String data) {
+    Handler h = getHandlerForType(NodeType.COMMENT);
+    return new ParseTreeComment(data, h);
+  }
+
+  /** Creates an ActiveText node.  Otherwise identical to createText.
+   */
+  public ActiveText createActiveText(String text) {
+    return createActiveText(text, false);
+  }
+
+  /** Creates an ActiveText node.  Otherwise identical to createText. */
+  public ActiveText createActiveText(String text, boolean isIgnorable) {
+    return createActiveText(text, isIgnorable, Util.isWhiteSpace(text));
+  }
+
+  /** Creates an ActiveText node.  Includes the <code>isWhitespace</code>
+   *	flag, which would otherwise have to be tested for.
+   */
+  public ActiveText createActiveText(String text, boolean isIgnorable,
+				     boolean isWhitespace) {
+    Handler h = getHandlerForText(isWhitespace);
+    ActiveText t = new ParseTreeText(text, h);
+    t.setIsWhitespace(isWhitespace);
+    t.setIsIgnorableWhitespace(isIgnorable);
     return t;
   }
 
@@ -478,11 +506,11 @@ public class BasicTagset extends BasicElement implements Tagset {
   ************************************************************************/
 
   public BasicTagset() {
-    factory = new BasicDOMFactory();
+    factory = null;
   }
 
   public BasicTagset(String name) {
-    factory = new BasicDOMFactory();
+    factory = null;
     // set name attribute of element.
   }
 
