@@ -5,6 +5,6 @@ XCOMM $Id$
 
 #include "pia.tmpl"
 
-SUBDIRS 	= Slides
+SUBDIRS 	= Graphics Slides
 
 MakeSubdirs($(SUBDIRS))

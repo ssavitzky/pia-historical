@@ -1,0 +1,22 @@
+XCOMM $Id$
+
+#include "pia.tmpl"
+
+/* Files whose originals are xfig *.fig files */
+FIGS = on_web.fig pentagon.fig sm_pent.fig to_life.fig web.fig
+
+
+/* Derived files */
+
+FIG_GIF = $(patsubst %.fig,%.gif,$(FIGS))
+FIG_PS  = $(patsubst %.fig,%.ps,$(FIGS))
+FIG_EPS = $(patsubst %.fig,%.eps,$(FIGS))
+FIG_XBM = $(patsubst %.fig,%.xbm,$(FIGS))
+
+/* All GIF files; original postscripts */
+
+GIF = $(FIG_GIF) 
+EPS = $(FIG_EPS)
+
+all:: $(GIF) $(EPS)
+
