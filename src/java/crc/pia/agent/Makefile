@@ -21,6 +21,7 @@ AGENTS = \
 HANDLERS = \
 	agentHome.java \
 	agentInstall.java \
+	agentRemove.java \
 	agentRestore.java \
 	agentSave.java
 
