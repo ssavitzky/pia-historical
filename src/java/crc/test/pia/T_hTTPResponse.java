@@ -46,7 +46,8 @@ public class  T_hTTPResponse {
   private static void test1( String filename ){
     try{
       System.out.println("Testing response w/ from and to machines as arguments.");
-      System.out.println("From machine gets its data from response.txt file.");
+      System.out.println("Input is From machine getting its data from input/response.txt file.");
+      System.out.println("Output is a dump of response's methods.");
 
       InputStream in = new FileInputStream (filename);
       Machine machine1 = new Machine();
@@ -76,7 +77,7 @@ public class  T_hTTPResponse {
     //testing second constructor
     // with from, to machines and content
     System.out.println("Testing response w/ from, to, and content as arguments.");
-    System.out.println("This response has a blank header and a content which is read from responsebody.txt.");
+    System.out.println("This response has a blank header and a content which is read from input/responsebody.txt.");
     System.out.println("In the run(), processInput() gets called.");
 
     try{
@@ -111,7 +112,7 @@ public class  T_hTTPResponse {
     System.out.println("Testing response w/ request transaction and content as arguments.");
     System.out.println("This response has a blank header and content.");
     System.out.println("In the run(), processInput() gets called.");
-    System.out.println("The request transaction is read from get.txt.");
+    System.out.println("The request transaction is read from input/get.txt.");
 
     crc.pia.GenericAgent.DEBUG=true;
     try{
@@ -205,7 +206,7 @@ public class  T_hTTPResponse {
  private static void test5( String requestfile, String responsefile ){
     try{
       System.out.println("Testing response w/ from and to machines as arguments.");
-      System.out.println("From machine gets its data from response.txt file.");
+      System.out.println("From machine gets its data from input/response.txt file.");
       System.out.println("Also, test transaction's features.");
 
       crc.pia.GenericAgent.DEBUG=true;
