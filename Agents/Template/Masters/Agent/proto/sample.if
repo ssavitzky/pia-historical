@@ -1,0 +1,36 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Sample Form</title>
+</head><body>
+<set entity name=title>Sample Form</set>
+<read interform file="heading.inc" process>
+<read interform file="subhead.inc" process>
+<hr>
+
+<form method=POST target="&url;" process copy>
+
+<!-- You will need to edit this, possibly with another template... -->
+
+<input type=submit>
+
+<process copy>
+
+<!-- You will need to edit this, too. -->
+<h4><a name="form">Form submitted:</a></h4>
+<dl>
+  <dt> Fields: 
+  <dd> &tFieldNames;
+
+  <repeat list="&FORM.KEYS;">
+  <dt> &li;
+  <dd> <protect-result markup><get form name="&li;"></protect-result>
+  </repeat>
+</dl>
+
+</process>
+</form>
+
+<hr>
+<b>|dCopyright|</b><br>
+<b>$Id$</b><br>
+</body></html>

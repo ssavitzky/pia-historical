@@ -1,27 +1,27 @@
 <!-- data.inc for Agent template -->
-<t-data name=dType type=ident></t-data>
-<t-form label="Type" cluster=1>
-	The type of the new Agent, if non-blank, must be the name of some
-	other Agent.  </t-form>
 <t-data name=dName type=ident required=1></t-data>
-<t-form label="Agent Name" nobreak=1>
+<t-form label="Agent Name" nobreak=1 cluster=1>
 	The name and type of the new Agent.  Must be valid directory names.
 	By convention, the names of agents are capitalized unless they
 	are sub-agents of some other agent, called their ``type''. </t-form>
+<t-data name=dType type=ident></t-data>
+<t-form label="Type">
+	The type of the new Agent, if non-blank, must be the name of some
+	other Agent.  </t-form>
 <t-data name=dRoot type=root required=1>usrDIR</t-data>
-<t-form label="Agent Root">
+<t-form label="Agent Root" nobreak=1 cluster=1>
 	Set the root directory for the new agent.  This is normally
 	your PIA user-data directory. </t-form>
 <t-data name=dPath type=path required=1>Agents</t-data>
-<t-form label="Agent Base">
-	Set the path from the root to the parent directory of your new
-	Agent.   Currently <code>&dRoot-path;/&dPath;</code>.  You will almost
+<t-form label="Path">
+	The path from the root to the parent directory of your new
+	Agent is currently <code>&dRoot-path;/&dPath;</code>.  You will almost
 	never need to change this.</t-form> 
 <t-data name=dExpand type=expand></t-data>
 <t-form label="Build Agent">
 	Click ``&label;'' when you're ready to expand the template.  This will
 	create a new or modified Agent in the specified location.  Click
-	``continue'' to verify entries or view debugging information without
+	``Continue'' to verify entries or view debugging information without
 	actually doing the expansion.  </t-form>
 
 <!-- Optional fields: -->
@@ -81,6 +81,19 @@
 
 <t-data name=x-help.inc type=file label=help.inc>y</t-data>
 <t-form>-- the agent's help file.</t-form>
+
+<t-data name=m-about.inc type=file label=about.inc>y</t-data>
+<t-form>-- the agent's ``about'' file.</t-form>
+
+<t-data name=m-about.inc-recipe type=data>
+<set local name=lt><</set><set local name=gt>></set>
+<write file="&dstDir/&file;"
+>&lt;!-- Read by &dName; home.if  -*-html-helper-*- --&gt;
+&dAbout;
+&lt;!-- &dCopyright; --&gt;
+<if>&dUseCVS;<then><!-- $Id$ --></if>
+</write>
+</t-data>
 
 <t-data name=x-subhead.inc type=file label=subhead.inc>y</t-data>
 <t-form>-- the sub-heading under the heading on each page.</t-form>

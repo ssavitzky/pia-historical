@@ -1,10 +1,8 @@
 <!-- template.inc for Templates/template -->
 
 <t-data name=tName type=hidden>Template</t-data>
-<t-doc name=tName>This template's name.</t-doc>
-
-<t-data name=tFormat type=data><t-tabular-form></t-data>
-<t-doc name=tFormat>format for the template's form.</t-doc>
+<t-form name=tName label="Template for new templates">
+This form lets you create a new template.</t-form>
 
 
 <!-- Copyright &copy; 1997 Ricoh Silicon Valley -->
