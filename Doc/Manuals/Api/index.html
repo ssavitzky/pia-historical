@@ -72,8 +72,17 @@ The PIA is implemented using the following packages:
   <dt> <a href="JavaDoc/Package-crc.gnu.regexp.html">crc.gnu.regexp</a>
   <dd> A <em>regular-expression</em> package.  Copyright (C) 1997 Shugo Maeda
        under the GNU General Public License.
-  <dt> <a href="JavaDoc/Package-crc.interform.html">crc.interform</a>
-  <dd> The <em>InterForm</em> Interpretor.
+  <dt> <a href="JavaDoc/Package-crc.dom.html">crc.dom</a>
+  <dd> The Document Object Model.  This is an implementation of the
+       <a href="http://www.w3c.org/">W3C</a>'s DOM draft specification.  The
+       DOM, still being a draft, is a moving target, so the CRC version will
+       normally be a version or two behind. 
+  <dt> <a href="JavaDoc/Package-crc.dps.html">crc.dps</a>
+  <dd> The Document Processing System, which is used for processing executable
+       markup.  It uses interfaces in <a
+       href="JavaDoc/Package-crc.dom.html">crc.dom</a>  for representing
+       active parse trees; these are extended to include syntax and semantic
+       handlers. 
   <dt> <a href="JavaDoc/Package-crc.interform.handle.html">crc.interform.handle</a>
   <dd> Classes that <em>handle</em> particular InterForm <a
        href="JavaDoc/crc.interform.Actor">Actor</a>s or <a
@@ -209,47 +218,44 @@ implemented by dispatching to a <code>PERL</code> program.<p>
 
 
 <h3>The InterForm Interpretor Algorithm</h3>
+...has been totally rewritten, and greatly simplified.  It used to be a
+variant of the PIA's Resolver algorithm, and operated on parse trees that had
+been flattened into a stream of ``tokens'', with each element represented as
+``start tag'' and ``end tag'' tokens. <p>
 
-Given an interpretor II:
+The current version is much more efficient, and is based on a subset of the
+DOM's TreeIterator interface:  the Input is used for a unidirectional,
+depth-first traversal of a parse tree.  An Output is used for
+<em>constructing</em> a parse tree, generic DOM Document, or stream.  A
+Processor sits between them; its state consists of the current Input, Output,
+and entity binding table.  (This is considerably simpler than the old
+Processor state, which also included action bindings and traversal state.)<p>
 
-<ol>
-  <li> Input:<br>
-       Check for an incoming token and push it onto II's input stack S.
-  <li> Next Token:<br>
-       Pop the next token T from the input stack S.  It may be either a start
-       tag, an end tag, or a complete token (a string, an empty tag, or a parse
-       tree returned as the result of a computation).
-       <ol>
-	 <li> If T is a start tag, push it along with the current state onto
-	      the parse stack PS and set ``parsing'' in the state.
-	 <li> If T is an end tag, pop PS.
-       </ol>
-  <li> Resolution:<br>
-       For each actor A:
-       <ol>
-	 <li> match A's <code>criteria</code> against T's
-	      <code>features</code>. 
-	 <li> If A and T match, call A's <code>actOn</code> method with T and
-	      II. 
-       </ol>
-  <li> Satisfaction:<br>
-       For each object S on T's <code>satisfiers</code> queue:
-       <ol>
-	 <li> call S's <code>handle</code> method with T and II.
-       </ol>
-  <li> Finishing:<br>
-       If T is non-null,
-       <ol>
-	 <li> if II is ``parsing'', push T into the content of the top token
-	      in PS. 
-	 <li> if II is ``streaming'', push T into the output queue.
-       </ol>
-  <li> repeat from step 2.
-</ol>
+The Input and Output interfaces are designed so that one can copy a document
+by traversing it with an Input and passing the resulting nodes to an Output.
+Parse trees extend the DOM by decorating each Node with an Action object
+(strategy pattern).  Operations implemented by this technique are
+<em>local</em> -- an active node in the input document is replaced by one or
+more nodes in the output document.  The resulting ``interpretor'' is simple
+enough to fit on a single page. <p>
 
-It can easily be seen that this is a variation on the Resolver algorithm,
-above.  The major difference is the separation between the input and parse
-stacks. <p>
+Actions are associated with nodes at parse time; if it can be determined that
+a node and its children are all passive, they can be copied without invoking
+an action.  Operations with no non-local side-effects (also determinable at
+parse time) can be parallelized.<p>
+
+Note that an Output, for example to a character stream, need not
+actually construct new nodes, so the new traversal-based interpretor is
+significantly more efficient than the old Token-based one.  Copying could be
+done iteratively, i.e. without recursion, by keeping track of the current
+depth in the input tree.  An Input does this, so this will be a trivial
+extension. <p>
+
+At the moment processing is done recursively; calling an action is expected to
+fully handle the corresponding node and its children.  It would be simple to
+extend handlers to include start and end actions, and allow them to perform
+push and  pop operations on the Processor that calls them.  The result would
+actually be rather similar to the old Token-based interpretor.  Later. <p>
 
 
 <hr>
