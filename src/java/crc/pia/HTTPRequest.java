@@ -413,7 +413,7 @@ public class  HTTPRequest extends Transaction {
     }
     
 
-    if( httpMethod.equalsIgnoreCase("GET") ){
+    if( httpMethod.equalsIgnoreCase("GET") || httpMethod.equalsIgnoreCase("PUT") ){
       int pos;
 
       if( (pos = zurlandmore.indexOf('?')) == -1 )
@@ -691,7 +691,7 @@ public class  HTTPRequest extends Transaction {
 	Pia.debug(this, "Got a head...");
 
 	// and the content
-	if( method().equalsIgnoreCase( "POST" ) || method().equalsIgnoreCase( "GET" )){
+	if( method().equalsIgnoreCase( "POST" ) || method().equalsIgnoreCase( "GET" ) ||  method().equalsIgnoreCase( "PUT" )){
 	  if(contentObj ==  null) initializeContent();
 	  Pia.debug(this, "Got a body...");
 	  // incase body needs to update header about content length
