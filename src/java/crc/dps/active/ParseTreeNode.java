@@ -315,9 +315,21 @@ public abstract class ParseTreeNode implements ActiveNode, Serializable {
    */
   protected void doInsert(ParseTreeNode newChild, ParseTreeNode refChild)
   {
-    if (refChild == null) 		doInsertAtEnd(newChild); 
+    if      (refChild == null) 		doInsertAtEnd(newChild); 
     else if (refChild == getHead())	doInsertAtStart(newChild);
-    else				doInsertBefore( newChild, refChild );
+    else				doInsertBefore(newChild, refChild);
+  }
+
+  /** Simple implementation of insertBefore assuming all synchronization
+   *	and error-checking have been done, which cannot be overridden. Used
+   *	when the caller can guarantee that all other setup has been done.
+   */
+  protected final void justInsert(ParseTreeNode newChild,
+				  ParseTreeNode refChild)
+  {
+    if      (refChild == null) 		doInsertAtEnd(newChild); 
+    else if (refChild == getHead())	doInsertAtStart(newChild);
+    else				doInsertBefore(newChild, refChild);
   }
 
   /** Insert at the end of the list.  Handles empty list.
