@@ -28,7 +28,7 @@ public class legacy extends HTML_ts {
   + " pia-exit get.agent get.form get.pia get.trans";
   static String parsedActors = "add-markup difference equal expand if"
   + " pad product protect-result quotient set sort sorted subst sum"
-  + " tagset test text trim user-message calendar-day form"
+  + " test text trim user-message calendar-day form"
   /* from standalone */
   + " os-command os-command-output set.env write write.file write.href"
   + " password-file-entry"
@@ -44,7 +44,8 @@ public class legacy extends HTML_ts {
 
   legacy(String name, boolean emptyParagraphTags) {
     super(name, emptyParagraphTags);
-    
+
+    defTag("tagset", null, NORMAL); // the legacy operator is broken.
     defActive(emptyActors, null, EMPTY);
     defActive(parsedActors, null, NORMAL);
     defActive(quotedActors, null, QUOTED);
@@ -144,7 +145,7 @@ public class legacy extends HTML_ts {
 
   /** Instantiate an appropriate handler.  Uses a static cache for speed.
    */
-  protected BasicHandler loadHandler(String cname) {
+  protected BasicHandler loadHandler(String cname, boolean defaultOK) {
     BasicHandler h = (BasicHandler) handlerCache.at(cname);
     if (h == null) h = new BasicHandler();
     return h;
@@ -152,34 +153,10 @@ public class legacy extends HTML_ts {
 
   /** Instantiate an appropriate handler.  Uses a static cache for speed.
    */
-  protected GenericHandler loadHandler(String tag, String cname) {
-    if (cname == null) cname = tag;
+  protected GenericHandler loadHandler(String tag, String cname,
+				       boolean defaultOK) {
+    if ("".equals(cname)) cname = tag;
     GenericHandler h = (GenericHandler) handlerCache.at(cname);
-    if (h == null) h = new GenericHandler();
-    return h;
-  }
-
-  /** Load an appropriate handler class and instantiate it. 
-   *	Subclasses (e.g. legacyTagset) may need to override this.
-   */
-  protected GenericHandler old_loadHandler(String tag, String cname) {
-    GenericHandler h = null;
-    String name = (cname == null)? tag : cname;
-    // First shoot for a non-legacy handler that does the same thing.
-    Class c = NameUtils.loadClass(name, "crc.dps.handle.");
-    if (c == null) {
-      c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
-    }
-    try {
-      if (c == null) {
-	c = NameUtils.loadClass(NameUtils.javaName(name),
-				"crc.interform.handle.");
-	if (c != null) {
-	  h = new LegacyHandler((crc.interform.Handler)c.newInstance());
-	}
-      }
-      if (c != null) h = (GenericHandler)c.newInstance();
-    } catch (Exception e) {}
     if (h == null) h = new GenericHandler();
     return h;
   }

@@ -7,11 +7,24 @@ package crc.dps.tagset;
 import crc.dps.Tagset;
 import crc.ds.Table;
 
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileReader;
+
 public class Loader {
 
-  /** Table of all globally-defined tagsets, by name. */
+  /** Table of all globally-defined tagsets, by name.
+   *
+   *	=== we will have multiple tagset namespaces at some point.
+   */
   static Table tagsets = new Table();
 
+  /** Initialize the static table with the HTML, BOOT, and tagset tagsets. */
+  static {
+    tagsets.at("HTML", new HTML_ts());
+    tagsets.at("BOOT", new BOOT_ts());
+    tagsets.at("tagset", new tagset());
+  }
 
   /** Return a Tagset with a given name.
    *	If it doesn't exist or the name is null, null is returned.
@@ -53,6 +66,16 @@ public class Loader {
     return tagsets.at(name) != null;
   }
 
+  /** Load a named Tagset.  First tries to load a file with a ".ts"
+   *	extension.  If that fails, tries to load a class, which had
+   *	better be a subclass of Tagset, and create an instance of it
+   *	(which had better have the right name). */
+  public static Tagset loadTagset(String name) {
+    Tagset ts = loadTagsetFile(name);
+    return ts != null? ts : loadTagsetSubclass(name);
+  }
+
+
   /** Load a Tagset implementation class and create an instance of it.  */
   protected static Tagset loadTagsetSubclass(String name) {
     try {
@@ -69,19 +92,29 @@ public class Loader {
     }
   }
 
-  /** Load a Tagset from a file. */
+  /** Load a Tagset implementation from an InputStream. */
+  protected static Tagset loadTagsetFromStream(InputStream src) {
+    return null; // ===
+  }
+
+  /** Load a Tagset implementation from a Java ``resource''. 
+   *
+   *	Tries ".obj", ".tss", and ".ts" in that order (but will not load a
+   *	".obj" or ".tss" file older than the ".ts" file, since that is
+   *	presumably the master copy.
+   */
+  protected static Tagset loadTagsetFromResource(String name) {
+    return null; // ===
+  }
+
+  /** Load a Tagset from a file.  
+   *
+   *	Tries ".obj", ".tss", and ".ts" in that order (but will not load a
+   *	".obj" or ".tss" file older than the ".ts" file, since that is
+   *	presumably the master copy.
+   */
   protected static Tagset loadTagsetFile(String name) {
     return null;		// ===
   }
-
-  /** Load a named Tagset.  First tries to load a file with a ".ts"
-   *	extension.  If that fails, tries to load a class, which had
-   *	better be a subclass of Tagset, and create an instance of it
-   *	(which had better have the right name). */
-  protected static Tagset loadTagset(String name) {
-    Tagset ts = loadTagsetFile(name + ".ts");
-    return ts != null? ts : loadTagsetSubclass(name);
-  }
-
 
 }

@@ -51,16 +51,6 @@ public class basic extends HTML_ts {
   ** Handler cache:
   ************************************************************************/
 
-  /** Override this to return <code>true</code> in order to make the set of
-   *	handler classes open-ended (i.e. loadable by name at run-time).
-   */
-  protected boolean openEnded() { return false; }
-
-  protected static Table handlerCache = new Table();
-  protected static void defHandle(String cname, BasicHandler handler) {
-    handlerCache.at(cname, handler);
-  }
-
   static {
     defHandle("else", new elseHandler());
     defHandle("elsf", new elsfHandler());
@@ -71,27 +61,6 @@ public class basic extends HTML_ts {
     defHandle("subst", new substHandler());
     defHandle("test", new testHandler());
     defHandle("then", new thenHandler());
-  }
-
-  /** Instantiate an appropriate handler.  Uses a static cache for speed.
-   */
-  protected BasicHandler loadHandler(String cname) {
-    BasicHandler h = (BasicHandler) handlerCache.at(cname);
-    if (h == null) h = openEnded()
-		     ? super.loadHandler(cname)
-		     : new BasicHandler();
-    return h;
-  }
-
-  /** Instantiate an appropriate handler.  Uses a static cache for speed.
-   */
-  protected GenericHandler loadHandler(String tag, String cname) {
-    if (cname == null) cname = tag;
-    GenericHandler h = (GenericHandler) handlerCache.at(cname);
-    if (h == null) h = openEnded()
-		     ? super.loadHandler(tag, cname)
-		     : new GenericHandler();
-    return h;
   }
 
 }

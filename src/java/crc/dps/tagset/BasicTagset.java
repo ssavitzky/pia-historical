@@ -407,14 +407,13 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    *	elements that will be ended if the tag being defined is found
    *	inside them.
    * @param syntax see codes in <a href="crc.dps.Syntax.html">Syntax</a>
-   * @param cname the name of the handler's class.  If <code>null</code>,
-   *	the tag is used.  GenericHandler is used if the specified class 
-   *	does not exist.
+   * @param cname the name of the handler's class.  If <code>""</code>,
+   *	the tag is used.  If null, GenericHandler is used.
    * @return the Handler in case more setup needs to be done.
    */
   protected GenericHandler defTag(String tag, String notIn, int syntax,
 				  String cname) {
-    GenericHandler h = loadHandler(tag, cname);
+    GenericHandler h = loadHandler(tag, cname, true);
     if (h == null) h = new GenericHandler(syntax);
     else if (syntax != 0) h.setSyntaxCode(syntax);
     if (notIn != null) {
@@ -437,7 +436,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    */
   protected BasicHandler defType(int type, String name, int syntax,
 				 String cname) {
-    BasicHandler h = loadHandler(cname);
+    BasicHandler h = loadHandler(cname, true);
     if (h == null) {
       // the following is redundant if loadHandler defaults properly:
       h = new BasicHandler(syntax);
@@ -445,41 +444,6 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
       h.setSyntaxCode(syntax);
     }
     setHandlerForType(type, h);
-    return h;
-  }
-
-  /** Load an appropriate handler class and instantiate it. 
-   *	Subclasses (e.g. legacy) may need to override this.
-   */
-  protected GenericHandler loadHandler(String tag, String cname) {
-    GenericHandler h = null;
-    String name = (cname == null)
-      ? NameUtils.javaName(tag, -1, -1, true, false)
-      : cname;
-    Class c = NameUtils.loadClass(name, "crc.dps.handle.");
-    if (c == null) {
-      c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
-    }
-    try {
-      if (c != null) h = (GenericHandler)c.newInstance();
-    } catch (Exception e) {}
-    if (h == null) h = new GenericHandler();
-    return h;
-  }
-
-  /** Load an appropriate handler class and instantiate it. 
-   *	Subclasses (e.g. legacy) may need to override this.
-   */
-  protected BasicHandler loadHandler(String cname) {
-    BasicHandler h = null;
-    Class c = NameUtils.loadClass(cname, "crc.dps.handle.");
-    if (c == null) {
-      c = NameUtils.loadClass(cname+"Handler", "crc.dps.handle.");
-    }
-    try {
-      if (c != null) h = (BasicHandler)c.newInstance();
-    } catch (Exception e) {}
-    if (h == null) h = new BasicHandler();
     return h;
   }
 
@@ -518,7 +482,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     Enumeration e  = new java.util.StringTokenizer(tags);
     while (e.hasMoreElements()) {
       String tag = e.nextElement().toString();
-      defTag(tag, notIn, syntax, (String)null);
+      defTag(tag, notIn, syntax, "");
     }
   }
 
@@ -533,12 +497,79 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
 
   public BasicTagset(String name) {
     this();
-    // set name attribute of element.
+    this.name = name;
+    // === set name attribute of element.
   }
 
   public BasicTagset(Tagset previousContext) {
     this();
     context = previousContext;
+  }
+
+  /************************************************************************
+  ** Handler cache:
+  ************************************************************************/
+
+  protected static Table handlerCache = new Table();
+  protected static void defHandle(String cname, BasicHandler handler) {
+    handlerCache.at(cname, handler);
+  }
+
+  static {
+    defHandle("else", new elseHandler());
+    defHandle("elsf", new elsfHandler());
+    defHandle("get", new getHandler());
+    defHandle("if", new ifHandler());
+    defHandle("repeat", new repeatHandler());
+    defHandle("set", new setHandler());
+    defHandle("subst", new substHandler());
+    defHandle("test", new testHandler());
+    defHandle("then", new thenHandler());
+    defHandle("tagset", new tagsetHandler());
+    defHandle("define", new defineHandler());
+  }
+
+  /** Load an appropriate handler class and instantiate it. 
+   *	Subclasses (e.g. legacy) may need to override this.
+   */
+  protected GenericHandler loadHandler(String tag, String cname,
+				       boolean defaultOK) {
+    if (cname == null) return new GenericHandler();
+
+    String name = ("".equals(cname))
+      ? NameUtils.javaName(tag, -1, -1, true, false)
+      : cname;
+
+    GenericHandler h = (GenericHandler) handlerCache.at(name);
+    if (h != null) return h;
+
+    h = (GenericHandler) loadHandler(name, false);
+    if (h == null && defaultOK) {
+      h = new GenericHandler();
+    }
+    if (h != null) handlerCache.at(name, h);
+    return h;
+  }
+
+  /** Load an appropriate handler class and instantiate it. 
+   *	Subclasses (e.g. legacy) may need to override this.
+   */
+  protected BasicHandler loadHandler(String cname, boolean defaultOK) {
+    if (cname == null) return new BasicHandler();
+
+    BasicHandler h = (BasicHandler) handlerCache.at(cname);
+    if (h != null) return h;
+
+    Class c = NameUtils.loadClass(cname, "crc.dps.handle.");
+    if (c == null) {
+      c = NameUtils.loadClass(cname+"Handler", "crc.dps.handle.");
+    }
+    try {
+      if (c != null) h = (BasicHandler)c.newInstance();
+    } catch (Exception e) {}
+    if (h == null && defaultOK) h = new BasicHandler();
+    if (h != null) handlerCache.at(cname, h);
+    return h;
   }
 
 }

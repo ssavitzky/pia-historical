@@ -23,22 +23,23 @@ SA_ACTORS = \
 PIA_ACTORS= \
 
 
-TAGSETS = \
+JAVA_TAGSETS = \
+	BOOT_ts.java \
 	HTML_ts.java \
+	tagset.java \
 	basic.java \
 	standalone.java \
 	standard.java \
 	legacy.java
 
-ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
+FILES = $(BASE_CLASSES) $(JAVA_TAGSETS)
 
-FILES = $(BASE_CLASSES) $(TAGSETS)
+TAGSETS = \
+	basic.ts \
+	tagset.ts \
+	tsdoc.ts
 
-TAGSET_DOCS =  \
-	Basic-tagset.html  \
-	StandAlone-tagset.html  \
-	Standard-tagset.html \
-	Legacy-tagset.html
+TAGSET_DOCS = $(TAGSETS:.ts=.html)
 
 include $(TOPDIR)/makefiles/file.make
 
@@ -47,24 +48,27 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 
 ### Extract the documentation comments:
 
+DOC_TS = legacyTSdoc.if
+#DOC_TS = tsdoc.ts
+
+.SUFFIXES: .ts .html
+.ts.html:
+	 cat $(DOC_TS) $< | process -t legacy > $@
+
+#legacyTSdoc is a temporary kludge. 
+
 DOC_CMD= $(BINDIR)/pia_wrapper crc.dps.Filter
 
-Basic-tagset.html::	 $(BASIC_ACTORS) basic.java
-	$(DOC_CMD) -t Basic actor-doc.if > Basic-tagset.html
+doc:: ts-doc
 
-StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) standalone.java
-	$(DOC_CMD) -t StandAlone actor-doc.if > StandAlone-tagset.html
+ts-doc:: $(TAGSET_DOCS)
 
-Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
-	standard.java
-	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
-
-Legacy-tagset.html::	 $(LEGACY_ACTORS) legacy.java
-	$(DOC_CMD) -t Legacy actor-doc.if > Legacy-tagset.html
-
-#doc:: actor-doc report
+#doc:: actor-doc
 
 clean::
+	rm -f $(TAGSET_DOCS)
+
+doc-clean:: 
 	rm -f $(TAGSET_DOCS)
 
 actor-doc:	$(TAGSET_DOCS)
@@ -75,3 +79,6 @@ HTML_ts.class: BasicTagset.java
 basic.class: BasicTagset.java HTML_ts.java
 standalone.class: BasicTagset.java HTML_ts.java
 standard.class: BasicTagset.java HTML_ts.java
+
+basic.html: Makefile $(DOC_TS)
+tsdoc.html: Makefile $(DOC_TS)
