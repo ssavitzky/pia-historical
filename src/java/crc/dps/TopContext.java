@@ -35,6 +35,14 @@ public interface TopContext extends Processor {
   /** Set the current Tagset. */
   public void setTagset(Tagset bindings);
 
+  /** Obtain the current ProcessorInput.  
+   *
+   *	When processing a stream, this will be a Parser, and it is possible
+   *	(though slightly risky) to change the tagset being used to parse the
+   *	document.  When processing a parse tree this may return null.
+   */
+  public ProcessorInput getProcessorInput();
+
   /************************************************************************
   ** Input and Output
   ************************************************************************/
