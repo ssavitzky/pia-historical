@@ -28,11 +28,14 @@ public class html extends Default
 	// insert after body tag
 	// this is a hack -- eventually use html parser
 	 String s =  new String(buf,0,nextIn);
-	 int bstart = s.indexOf("<body>");
-	 if(bstart == -1) bstart = s.indexOf("<Body>");
-	 if(bstart == -1) bstart = s.indexOf("<BODY>");
+	 int bstart = s.indexOf("<body");
+	 if(bstart == -1) bstart = s.indexOf("<Body");
+	 if(bstart == -1) bstart = s.indexOf("<BODY");
 	 if(bstart > -1) {
-	   bstart += 6;
+	   bstart = -1; //s.indexOf(">", bstart);
+	 }
+	 if(bstart > -1) {
+	   ++bstart;
     crc.pia.Pia.debug(" putting at"+  bstart);
 	   insert(add,bstart);
 	   return;
@@ -42,5 +45,17 @@ public class html extends Default
     crc.pia.Pia.debug(" super insert");
       super.insertAddition(position);
     }
+
+  public html() {
+    super();
+  }
+
+  public html(java.io.InputStream in){
+    super(in);
+  }
+
+  public html(java.io.Reader in){
+    super(in);
+  }
 
 }
