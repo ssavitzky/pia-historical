@@ -318,6 +318,7 @@ public class Environment {
     Interp ii = new Interp(ts, initEntities(),true);
     ii.from(p).toTokens();
     use(ii);
+    ii.setQuoting(1);
     return ii.run();
   }
 
