@@ -22,7 +22,9 @@
        </form>
 </table>
 
-<agent-set-options></agent-set-options>
+<if>&urlQuery;
+    <then><agent-set-options>&urlQuery;</agent-set-options></then>
+</if>
 
 <set entity name=opts><agent-options></set>
 <form method=POST action="&url;"><table>
