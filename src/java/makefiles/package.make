@@ -22,22 +22,23 @@
 # doc:     to build the appropriate documentation files from the source
 # alldoc:  to build all the documentation at once
 
-# <steve@crc.ricoh.com>
+# <steve@rsv.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
 #	This has serious problems when you're trying to use source control.
 
-CLASSDIR= $(TOPDIR)/classes
-PIADIR  = $(TOPDIR)/../../..
+CLASSDIR= $(TOPDIR)
+PIADIR  = $(TOPDIR)/../..
+LIBDIR=$(PIADIR)/lib/java
+BINDIR=$(PIADIR)/bin
 DOCDIR  = $(TOPDIR)/Doc
 ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
-LIBDIR  = $(TOPDIR)/../../../lib/java
-BINDIR  = $(TOPDIR)/../../../bin
 
 #LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/jgl2.0.2.zip:$(LIBDIR)/regexp.zip
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
+
 ##javac wrapper should find these  .. specify explicitly if problem
  #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
-#sun 1.0.2 location
+## === the following will need to be changed
 JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
 JAVASOURCE=  /usr/local/src/www/java-SDK/jdk1.1.1/src
 

@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.io.DataOutputStream;
-import crc.util.regexp.RegExp;
+import crc.gnu.regexp.RegExp;
 
 public class Utilities{
 
@@ -143,13 +143,13 @@ public static synchronized byte[] readFrom( String fileName ) throws NullPointer
     if( str!= null ){
       try{
 	RegExp re = new RegExp("&");
-	String amp = re.substitute(str,"&amp", true);
+	String amp = re.substitute(str,"&amp;", true);
 
 	re = new RegExp("<");
-	String ampLeft = re.substitute(amp, "&lt", true);
+	String ampLeft = re.substitute(amp, "&lt;", true);
 
 	re = new RegExp(">");
-	String ampLeftRight = re.substitute(ampLeft, "&gt", true);
+	String ampLeftRight = re.substitute(ampLeft, "&gt;", true);
 
 	return ampLeftRight;
       }catch(Exception e){ return null;}

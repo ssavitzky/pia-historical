@@ -25,8 +25,8 @@ import crc.ds.List;
 
 import crc.sgml.Tokens;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import java.util.Properties;

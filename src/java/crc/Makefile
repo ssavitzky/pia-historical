@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE="crc"
-TOPDIR=../..
+TOPDIR=..
 
 ### These are the packages to be built.  
 ###	Only the top-level directories are needed; 
@@ -28,7 +28,7 @@ PIAPACKAGENAMES= \
 	crc.tf \
 	crc.util 
 
-### These are the names of the classes in the JDK.  
+### These are the names of the classes in the JDK that the PIA uses.  
 ###	Assuming javadoc can find the source code, we should be able to
 ###	include them in the API documentation.
 
@@ -36,15 +36,10 @@ SUNPACKAGENAMES= \
 	java.lang \
 	java.io \
 	java.util \
-	java.net \
-	java.awt \
-	java.awt.image \
-	java.awt.peer \
-	java.applet
+	java.net
 
 PACKAGENAMES= $(PIAPACKAGENAMES) $(SUNPACKAGENAMES)
 
-# mail, mime
 
 include $(TOPDIR)/makefiles/package.make
 include $(TOPDIR)/makefiles/file.make

@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE=crc.tf
-TOPDIR=../../..
+TOPDIR=../..
 
 FILES = \
 	 Title.java \

@@ -2,13 +2,13 @@
 #	$Id$
 #	Copyright 1997, Ricoh California Research Center
 
-TOPDIR=..
-LIBDIR=$(TOPDIR)/../../../lib/java
-BINDIR=$(TOPDIR)/../../../bin
+TOPDIR=.
 
-# mail, mime
+PACKAGES= \
+	crc
 
-include $(TOPDIR)/makefiles/file.make
+# makefiles/package.make defines PIADIR, LIBDIR, BINDIR, DOCDIR
+include $(TOPDIR)/makefiles/package.make
 
 #
 # Stuff for jarring class files.

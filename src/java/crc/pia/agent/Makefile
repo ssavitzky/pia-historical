@@ -1,5 +1,5 @@
 PACKAGE=crc.pia.agent
-TOPDIR=../../../..
+TOPDIR=../../..
 
 
 FILES = \

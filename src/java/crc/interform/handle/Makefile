@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE=crc.interform.handle
-TOPDIR=../../../..
+TOPDIR=../../..
 
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
@@ -96,10 +96,12 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Reporting.
 
+all:: report
+
 ### Count unimplemented and total actor handles.  
 ###	This finds only actors that call "Interp.unimplemented", not
 ###	individual features that call "Interp.error" directly.
-all::
+report::
 	@echo 'BASIC:	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
 		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
 	@echo 'SA:	' `ls -l $(SA_ACTORS) | wc -l`, \
@@ -110,7 +112,7 @@ all::
 		`grep 'unimplemented(' $(ACTORS) | wc -l` unimp.
 
 ### This finds and prints out every instance of the string "unimplemented" 
-all::
+report::
 	@grep -q 'unimplemented' $(BASIC_ACTORS) && \
 	  (echo 'BASIC:	' ; grep 'unimplemented' $(BASIC_ACTORS)) || true
 	@grep -q 'unimplemented' $(SA_ACTORS) && \

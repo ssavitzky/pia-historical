@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE=crc.interform.test
-TOPDIR=../../../..
+TOPDIR=../../..
 
 FILES = \
 	t1.txt \

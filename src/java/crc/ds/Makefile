@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE=crc.ds
-TOPDIR=../../..
+TOPDIR=../..
 
 FILES = \
 	Association.java \

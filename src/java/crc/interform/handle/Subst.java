@@ -12,7 +12,7 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 import crc.sgml.Text;
 
-import crc.util.regexp.RegExp;
+import crc.gnu.regexp.RegExp;
 
 
 /** Handler class for &lt;subst&gt tag 

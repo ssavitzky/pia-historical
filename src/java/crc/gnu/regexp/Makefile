@@ -1,5 +1,5 @@
 PACKAGE=crc.gnu.regexp
-TOPDIR=../../../..
+TOPDIR=../../..
 
 FILES = \
 	Chars.java \

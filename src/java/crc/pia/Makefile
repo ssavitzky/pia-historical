@@ -3,7 +3,7 @@
 #	Copyright 1997, Ricoh California Research Center
 
 PACKAGE=crc.pia
-TOPDIR=../../..
+TOPDIR=../..
 
 PACKAGES = \
 	agent
@@ -50,7 +50,6 @@ GenericAgent.class: Agent.java agent/AgentMachine.java Transaction.java \
 	../sgml/AttrBase.java ../sgml/AttrTable.java
 
 Machine.class: Content.java HTTPResponse.java Transaction.java Resolver.java \
-	../util/regexp/RegExp.java ../util/regexp/MatchInfo.java \
 	../util/Timer.java
 
 Pia.class: PiaInitException.java Machine.java agent/Agency.java \

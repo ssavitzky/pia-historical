@@ -37,8 +37,8 @@ import crc.pia.Content;
 import crc.pia.HTTPResponse;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import crc.gnu.regexp.RegExp;
+import crc.gnu.regexp.MatchInfo;
 import crc.util.Timer;
 
 import crc.ds.Table;

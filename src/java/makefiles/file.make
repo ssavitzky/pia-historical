@@ -20,18 +20,17 @@
 # The 'doc' target uses DESTDIR variable that should point to the absolute 
 # path of the target directory (in which doc files will be created).
 
-# <steve@crc.ricoh.com>
+# <steve@rsv.ricoh.com>
 #	The Sun originals require MAKEDIR and DESTDIR to be absolute.
 #	This has serious problems when you're trying to use source control.
 
-CLASSDIR= $(TOPDIR)/classes
-
+CLASSDIR= $(TOPDIR)
 
 #piahome/lib/java/*.zip   
 #zip files added in file.make...could determine automatically...
-PIADIR=$(TOPDIR)/../../..
-LIBDIR= $(TOPDIR)/../../../lib/java
-BINDIR=$(TOPDIR)/../../../bin
+PIADIR=$(TOPDIR)/../..
+LIBDIR=$(PIADIR)/lib/java
+BINDIR=$(PIADIR)/bin
 DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 
 

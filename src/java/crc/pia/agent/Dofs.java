@@ -40,8 +40,6 @@ import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import w3c.www.http.HTTP;
