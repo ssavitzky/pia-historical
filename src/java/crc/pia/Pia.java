@@ -835,6 +835,8 @@ public class Pia {
       if (zFileMapping.size() == 0){
 	zFileMapping.put("html", "text/html");
 	zFileMapping.put("gif", "image/gif");
+	zFileMapping.put("jpg", "image/jpeg");
+	zFileMapping.put("jpeg", "image/jpeg");
       }
     }
 
