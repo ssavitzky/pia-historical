@@ -6,151 +6,28 @@
 <h1>PIA Internals Manual</h1>
 
 <blockquote>
-  This will eventually be a real internals manual.  For now, though, it's
-  mostly a collection of whatever aspect of the PIA had to be documented in
-  order to coordinate parts of the project.
+  This manual describes the internal workings of the PIA.
 </blockquote>
 
+<h3>Contents</h3>
+<ul>
+  <li> <a href="#implementation">Implementation</a>
+  <li> <a href="#resolver">The PIA Resolver</a>
+  <li> <a href="#interpretor">The InterForm Interpretor</a>
+  <li> <a href="JavaDoc/">Java Documentation</a><br>
+       <a href="JavaDoc/packages.html">Packages</a>,
+       <a href="JavaDoc/tree.html">Class Hierarchy</a>,
+       <a href="JavaDoc/AllNames.html">Index</a>
+</ul>
 
-<h2>Classes</h2>
-
-Most objects in the PIA are subclasses of either <code>DS::Thing</code> (a
-generalization of an SGML element) or <code>DS::List</code>.  A List is used
-for the content of a Thing.<p>
-
-A Thing has both named <em>attributes</em> and indexed <em>items</em>; a List
-has only items.  In most cases a List is equivalent to a Thing with no
-attributes. <p>
-
-
-<h3>DS::Thing</h3>
-
-A Thing has both named <em>attributes</em> and indexed <em>items</em>
-(content).   <p>
-
-Attribute names are normally lowercased.  Attribute names starting with
-``<code>_</code>'' (underscore) are used for ``instance variables'' and are
-normally accessed only through access functions.  These include, for example,
-<code>_tag</code> and <code>_content</code>, which are accessed via the
-<code>tag</code> and <code>content</code> methods respectively.<p>
-
-<h4>Access Functions:</h4>
-
-<h5>Attributes</h5>
-<dl>
-  <dt> $<em>thing</em>-&gt;attr($<em>name</em>)
-  <dd> Access the value of an attribute
-  <dt> $<em>thing</em>-&gt;attr($<em>name</em>, $<em>value</em>)
-  <dd> Set the value of an attribute
-</dl>
-<dl>
-  <dt> $<em>thing</em>-&gt;attr_names()
-  <dd> Returns a reference to an array of attribute names, in the order
-       defined.  Special attributes (starting with underscore) are omitted.
-  <dt> $<em>thing</em>-&gt;attr_list()
-  <dd> Returns a reference to an array of [<em>name</em>, <em>value</em>...].
-</dl>
-
-<h5>Items</h5>
-
-These operations are shared by <code>DS::List</code>.
-
-<dl>
-  <dt> $<em>thing</em>-&gt;item($<em>index</em>)
-  <dd> Access the value of an item
-  <dt> $<em>thing</em>-&gt;item($<em>item</em>, $<em>value</em>)
-  <dd> Set the value of an item
-  <dt> $<em>thing</em>-&gt;shift()
-  <dd> Returns and removes the first item in the content.
-  <dt> $<em>thing</em>-&gt;pop()
-  <dd> Returns and removes the last item in the content.
-  <dt> $<em>thing</em>-&gt;unshift($<em>value</em>...)
-  <dd> Inserts item(s) at the front of the content.
-  <dt> $<em>thing</em>-&gt;push($<em>value</em>...)
-  <dd> Appends item(s) to the end of the content.
-</dl>
-<dl>
-  <dt> $<em>thing</em>-&gt;content()
-  <dd> Returns a reference to the List of items.
-  <dt> $<em>thing</em>-&gt;content_size()
-  <dd> Returns the number of items in the content.
-  <dt> $<em>thing</em>-&gt;size()
-  <dd> Returns the number of items in the content
-</dl>
-
-<h3>DS::List</h3>
-
-<dl>
-  <dt> <b>Note:</b>
-  <dd> DS::List is new, and isn't in use yet.
-</dl>
-
-<h4>Access Functions:</h4>
-
-<h5>Items</h5>
-
-<dl>
-  <dt> $<em>list</em>-&gt;item($<em>index</em>)
-  <dd> Access the value of an item
-  <dt> $<em>list</em>-&gt;item($<em>item</em>, $<em>value</em>)
-  <dd> Set the value of an item
-  <dt> $<em>list</em>-&gt;shift()
-  <dd> Returns and removes the first item in the list.
-  <dt> $<em>list</em>-&gt;pop()
-  <dd> Returns and removes the last item in the list.
-  <dt> $<em>list</em>-&gt;unshift($<em>value</em>...)
-  <dd> Inserts item(s) at the front of the list.
-  <dt> $<em>list</em>-&gt;push($<em>value</em>...)
-  <dd> Appends item(s) to the end of the list.
-</dl>
-<dl>
-  <dt> $<em>list</em>-&gt;content()
-  <dd> Returns a reference to self
-  <dt> $<em>list</em>-&gt;content_size()
-  <dd> Returns the number of items in the list
-  <dt> $<em>list</em>-&gt;size()
-  <dd> Returns the number of items in the list
-</dl>
-
-<h3>DS::Features</h3>
-
-A Features object is used as a cache for ``lazy evaluation'' of information
-associated with a Thing.<p>
+<hr>
+<h2><a name="implementation">Implementation</a></h2>
 
 
-<h2>Subclasses of Thing</h2>
+<hr>
+<h2><a name="resolver">The Resolver</a></h2>
 
-<dl>
-  <dt> <code>PIA::Agent</code>
-  <dd> a PIA ``agent''.  Subclass code is automatically loaded, if it exists,
-       when an agent is installed; the class name is the value of the agent's
-       <code>type</code> attribute.
-  <dt> <code>IF::IT</code>
-  <dd> ``InterForm Token'' -- a parsed SGML element
-       <dl>
-	 <dt> <code>IF::IA</code>
-	 <dd> ``InterForm Agent'' -- an <em>active</em> element.
-       </dl>
-  <dt> <code>PIA::Transaction</code>
-  <dd> an HTML request or response
-</dl>
-
-Plain instances of <code>DS::Thing</code> can be used as hash tables or
-associative arrays.<p>
-
-
-<h2>Subclasses of List</h2>
-
-<dl>
-  <dt> <code>DS::Tokens</code>
-  <dd> A list of SGML tokens (class <code>IF::IT</code>) mixed with strings.
-       Unlike a <code>DS::List</code>, strings added to a
-       <code>DS::Tokens</code> are merged together.  Used as the content of
-       <code>IF::IT</code>.
-</dl>
-
-
-<h2>The Resolver Algorithm</h2>
+<h3>The Resolver Algorithm</h3>
 
 Given a resolver R:
 
@@ -185,7 +62,11 @@ Given a resolver R:
 </ol>
 
 
-<h2>The InterForm Interpretor Algorithm</h2>
+<hr>
+<h2>The InterForm Interpretor</h2>
+
+
+<h3>The InterForm Interpretor Algorithm</h3>
 
 Given an interpretor II:
 
@@ -230,12 +111,6 @@ stacks. <p>
 
 
 <hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<!-- hhmts start -->
-Last modified: Sat Feb  1 20:39:19 1997
-<!-- hhmts end -->
-<p>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>
