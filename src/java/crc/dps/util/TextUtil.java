@@ -60,8 +60,12 @@ public class TextUtil {
   /** Convert a node to a string, ignoring markup.
    */
   public static String getTextString(ActiveNode n) {
+    if (n.getNodeType() == NodeType.TEXT
+	|| n.getNodeType() == NodeType.ENTITY)
+      return n.toString();
+
     ToString out = new ToString();
-    Copy.copyNodes(new FromParseTree(n), new FilterText(out));
+    Copy.copyNode(n, FromParseTree(n), new FilterText(out));
     return out.getString();
   }
 
