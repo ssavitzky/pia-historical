@@ -6,7 +6,7 @@
 	border=0 width=170 height=48 alt="R I C O H"></a></th>
     <th width=170 nowrap></th>
     <th align=left nowrap nobr valign=center>
-        <a href="http://www.ricoh.com/newaf.html"><img width=85 height=45 border=0
+        <a href="http://www.ricoh.com/newaf.htm"><img width=85 height=45 border=0
 	    	         src="/&agentName/Icons/aficio.gif" alt=AFICIO></a></th></tr>
 <tr height=2><td colspan=3  nowrap nobr
     ><img src="/Agency/Icons/blackline425.gif" height=2 width=425></td></tr>
@@ -14,7 +14,7 @@
 	src="/&agentName/Icons/fma.gif" alt="FMA"
 	border=0 height=45></a>
     <th></th>
-    <th align=left><font face=helvetica><if><get entity name=title>
+    <th align=left><font size=5 face=helvetica><if><get entity name=title>
 	<then><get entity name=title></then>
 	<else>&agentName;/&fileName;</else></if></font><br></th></tr>
 </table>
