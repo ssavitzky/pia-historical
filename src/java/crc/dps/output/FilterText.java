@@ -27,6 +27,12 @@ public class FilterText extends Proxy {
     if (target != null && (aNode.getNodeType() == NodeType.TEXT
 			   || aNode.getNodeType() == NodeType.ENTITY))
       target.putNode(aNode);
+    else if (aNode.hasChildren()) {
+      startNode(aNode);
+      for (Node n = aNode.getFirstChild(); n != null; n = n.getNextSibling())
+	putNode(n);
+      endNode();
+    }
   }
   public void startNode(Node aNode) { 
     depth++;
