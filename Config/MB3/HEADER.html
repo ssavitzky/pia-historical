@@ -5,12 +5,17 @@
 </head><body>
 <h1>MB3 Configuration steps (on Windows machine)</h1>
 <ol>
-  <li> Download and install a java runtime (click <a href=jdk1.2beta2.exe>here
+  <li> Download and install a java runtime (click <a href=jdk1.2-beta2-win32.exe>here
        for jdk1.2</a> -- For convenience use default installation directory -- c:\jdk1.2beta2)
-  <li> Install the PIA (download and unpack <a href=../../pia_bin.tgz>pia_bin.tgz</a>)
+  <li> Install the PIA (download and unpack <a
+       href=../../pia_bin.tgz>pia_bin.tgz</a> -- this file has been tarred and
+       gzipped...we will eventually put a winzip file that uses the install
+       shield to make installation easier on Windows machines.  
    <li> Copy the contents of the  <a href=my>my </a> subdirectory to the USRDIR
        directory
-       (USRDIR by default is ~/.pia on Unix system, c:\PIAUSERS\nobody on windows.)  
+       (USRDIR by default is ~/.pia on Unix system, c:\PIAUSERS\nobody on
+       windows.  It can be changed in the PIADIR/Config/pia.props file.
+       PIADIR is where the pia_bin.tar files are unpacked.)  
   <li> Copy the contents of the  <a href=piajdk.bat>piajdk.bat </a> to
        PIADIR/bin/piajdk.bat -- overwriting the existing file which has path
        names set up for the CD-ROM.  Check the properties of this batch file
@@ -28,7 +33,7 @@
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Mar 30 21:19:34 1998
+Last modified: Tue Mar 31 11:42:20 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
