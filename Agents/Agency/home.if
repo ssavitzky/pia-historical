@@ -24,6 +24,10 @@
   <table cellspacing=0 BORDER=0>
   <tr><td align=right width=170><br>
   <tr>
+    <th>
+    <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
+
+  <tr>
     <th valign=top align=right><b>&agentName;:</b>
     <td valign=top> <a href="/Agency/agents.if">list</a> / 
 	<a href="/Agency/installers.if">install</a> / 
@@ -37,19 +41,13 @@
 	<a href="/My/">My files</a>
 	<a href="/PIA/src/">Sources</a>
 	<a href="/PIA/Doc/"><b>Docs</b></a><br>
-       
+   
   <tr>
     <th valign=top align=right><b>Agents:</b>
     <td valign=top> <repeat list="&agentNames;" entity="foo">
       <a href="/&foo;/home.if">&foo;</a> <a href="/&foo;/"><b> / </b></a>
    </repeat><br>
-   
-  <tr>
-    <th valign=top align=right><b>URL:</b>
-    <td valign=top> &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-  <tr>
-    <th valign=top align=right><b>Date:</b>
-    <td valign=top> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
+
   </table>
 </table>
 
@@ -87,7 +85,6 @@ you get a generic index page.
 </ul>
 
 <hr>
-<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
     <b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
@@ -95,5 +92,4 @@ you get a generic index page.
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>
-<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 </body></html>

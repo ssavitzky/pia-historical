@@ -1,7 +1,7 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>&piaUSER;'s Agency on &piaHOST;</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
+<link rev="made" href="mailto:steve@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <table cellspacing=0 cellpadding=0 border=0>
@@ -26,13 +26,15 @@
 	<if><test exact match='pia'><get env name="USER"></test>
 	    <then>An Information Appliance</then>
 	    <else>Personal Information Agency</else>
-	</if></font></th>
+	</if><br>
+	 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+        </font></th>
 <tr><th><br>
 </table>
 
 <table cellspacing=0 cellpadding=0 border=0>
 <tr>
-  <th width=170 valign=center>
+  <th width=170>
     <table cellspacing=0 cellpadding=0 border=0>
       <tr><th>
 	<if><read info interform file="/Agency/insert.if">
@@ -41,7 +43,11 @@
     </table>
   <td valign=top>
     <table cellspacing=0 cellpadding=0 border=0 valign=top>
-
+    <tr>
+      <th valign=top align=right>
+    <tr>
+      <th valign=top align=right>
+      <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
     <tr><th valign=top align=right width=170>
 	    <a href="/Agency/home.if"><b>Agency:</b></a>
 	<td valign=top>
@@ -68,7 +74,7 @@
 	    <a href="/My/Agents/">(custom)</a>
 	    <a href="/PIA/Doc/">Doc</a>
 	    <a href="/PIA/src/">src</a>
-      </if><br>
+      </if><br></tr>
     <if><agent-running name=History><then>
     <tr>
 	<th valign=top align=right><b>History:</b>
@@ -83,6 +89,7 @@
   </table>
 </table>
 <p>
+<hr>
 <table>
   <tr><td align=left width=340>
     <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
@@ -95,12 +102,8 @@
     <if><agent-running name=Logo>
 	<then><img src="/Logo/pia120.gif"
 		   height=120 width=222></then></if>
-    <pre>
-    </pre>
-
 </table>
 <hr>
-<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
 <br>
