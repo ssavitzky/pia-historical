@@ -1,0 +1,24 @@
+# $Id$
+# Importing from w3c's sources was done as follows:
+#
+
+# get http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/java-binding.zip 
+unzip java-binding.zip
+cd java			# the file unpacked here.
+make clean		# get rid of the .class files
+cd org
+cvs import -m "Import from w3c" pia/src/java/org W3C REC-DOM-Level-1-19981001
+
+# NOTE: 
+#   The original Makefile in the top-level (java) directory is not imported
+#   in this process.  It contains nothing of great interest, and would have
+#   conflicted with the existing Makefile in pia/src/java.
+#
+#   The precompiled .class files and generated html documentation were also
+#   discarded, since they can easily be rebuilt. 
+#
+#   New HEADER.html and Makefile files were added that conform to local
+#   conventions. 
+
+
+
