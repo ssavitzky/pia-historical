@@ -36,6 +36,9 @@ public class Entity extends Token {
     return semicolon;
   }
 
+  public boolean isEmpty() {
+    return false;
+  }
 
   /************************************************************************
   ** Construction:
