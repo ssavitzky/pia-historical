@@ -32,7 +32,9 @@ sub new {
     $request->from_machine($from);
     $request->to_machine($to);
     my $type=$request->method;
-    print "  type is $type\n"  if $main::debugging;    
+    my $code = $request->code;
+    print "  type is $type\n"  if defined($type) && $main::debugging;    
+    print "  code is $code\n"  if defined($code) && $main::debugging;    
     if(($type eq "POST" || $type eq "PUT") && $request->is_request()){
 	$request->read_content($type);
 	$request->compute_form_parameters() if $type eq 'POST';
@@ -40,7 +42,7 @@ sub new {
     return $request;
 }
 
-
+### Access to components
 
 sub from_machine{
     my($self,$machine)=@_;
@@ -129,7 +131,6 @@ sub satisfy {
 	if ($self->is_response()) {
 	    $self->send_response();
 	} elsif ($self->is_request()) {
-	    print "pushing error_response\n" if $main::debugging;
 	    $resolver->push($self->error_response());
 	}
     }
@@ -162,11 +163,13 @@ sub error_response{
     $response->content_type("text/plain");    
     my $url=$self->url()->as_string();
     
+    print "Sending error respose for $url\n" if $main::debugging;
+
     $response->content("Agency could not find $url\n");
 
     $response=TRANSACTION->new($response,
 			       $main::this_machine,
-			       $argument->from_machine());
+			       $self->from_machine());
     return $response;
 }
 

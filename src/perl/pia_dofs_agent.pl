@@ -1,3 +1,6 @@
+###### Class PIA_AGENT::DOFS -- Document-Oriented File System agent 
+###	$Id$
+###
 package PIA_AGENT::DOFS;
 
 push(@ISA,PIA_AGENT);
@@ -6,6 +9,18 @@ push(@ISA,PIA_AGENT);
 # 4 example instantiations of DOFS answer request for local files
 # but they also do much more, for example caching, local annotations, etc.
 
+sub initialize{
+    my $self=shift;
+    #sub classes override
+#should emit a request for /$name/initialize.if
+    my $name=$self->name;
+    $self->type('dofs');
+    my $url="/$name/initialize.if";
+    my $request=$self->create_request('GET',$url);
+    $self->request($request);
+}
+
+### === need a feature for name != type ===
 
 ############################################################################
 
@@ -20,10 +35,15 @@ push(@ISA,PIA_AGENT);
 sub  act_on {
     my($self, $request, $resolver)=@_;
     my  $url=$request->url();
+    return unless $url;
     my $name=$self->name;
-    print "DOFS generating  new requests for $url" if $main::debugging;
+    my $path=$url->path;
+    print "DOFS generating new requests for $url\n" if $main::debugging;
     
-    return if $self->ignore($request);
+#    return if $self->ignore($request);
+
+    return unless $path =~ m:^/$name/:;
+
 #     my $wreck=$self->create_request('POST',"/$name/retrieve.if");
 #     $response=TRANSACTION->new($response);
 #     $response->to_machine($request->from_machine());
@@ -34,7 +54,7 @@ sub  act_on {
     
     my $new_url= newlocal URI::URL $filename;
     my $new_request=$request->clone;
-    print "DOFS lookingup $new_url\n" if $main::debugging;
+    print "DOFS looking up $new_url\n" if $main::debugging;
     $new_request->url($new_url);
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($new_request); 
@@ -46,13 +66,40 @@ sub  act_on {
     unless ($base->epath =~ m|/$|) {
 	$base->epath($base->epath . "/");
     }
-	#Specifying a base just screws us up....
-    $response->{'_content'} =~ s/<BASE HREF=\"[\S]*\">//;
+    ## If the content is a directory, the UserAgent will have 
+    ##	  given it a base.  Fix it.
+    if ($responst->{'_content'} =~ m:<BASE HREF:) {
+	$response->{'_content'} =~ s/(<BASE HREF=\")([\S]*)(\">)/$1$url$3/; #";
+    }
 #    $response->{'_content'} =~ s/<BASE/<a/;
-    print "baseis <BASE HREF=$base> \n"  if $main::debugging;
+    print "base is <BASE HREF=$base> \n"  if $main::debugging;
 
-    $transaction->push($response);	# push the response transaction
+    $request->push($response);	# push the response transaction
 }
+
+###### DOFS -> handle($transaction, $resolver)
+###
+###	Handle a DOFS request.  
+###	Start by making sure the URL matches the agent's type;
+###	   if it doesn't we can assume that act_on handled it.
+###
+sub handle{
+    my($self, $request, $resolver)=@_;
+    return 0 unless $request -> is_request();
+
+    my $url = $request->url;
+    my $path = ref($url) ? $url->path() : $url;
+    my $type = $self->type();
+    my $name = $self->name();
+
+    return 0 if $path =~ m:^/$name/:;
+    
+    my $response = $self->respond_to_interform($request,"/$name/home.if");
+    return 0 unless defined $response;
+    $resolver->push($response);
+    return 1;
+}
+
 
 sub url_to_filename{
 #returns the file name corresponding to this url
@@ -63,7 +110,7 @@ sub url_to_filename{
     my $path=$url->path;
     my $prefix = $self->option('path_prefix');
     return unless $path=~ /^$prefix(.*)$/;
-    my $filename="$document_root$prefix$1";
+    my $filename="$document_root$1"; # bogus $prefix removed from path.
     return $filename;
     
 }

@@ -32,14 +32,12 @@ sub install_agent{
     my($self,$agent)=@_;
     $self->resolver()->register_agent($agent);
     return $agent;
-    
 }
 
 sub un_install_agent{
     my($self,$agent)=@_;
     $self->resolver()->un_register_agent($agent);
     return $agent;
-    
 }
 
 
@@ -61,14 +59,14 @@ sub act_on {
 	print "  Acting on agency request for $url\n" if $main::debugging;
 
 	my $path=$url->path;
-	$path =~ m:^/(\w+)/*:i;
-	my $name=$1;
+	my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : $self->name();
+
 	my $agent=$resolver->agent($name);
 	print "  no agent in $path\n" if ! defined $agent && $main::debugging;
 	next if not defined $agent;
 
-	my $type = ref($agent);
-	print "  found agent $name type $type in $path\n" if $main::debugging;
+	my $class = ref($agent);
+	print "  found agent $name class $class in $path\n" if $main::debugging;
 	
 	$transaction->push($agent);
     }

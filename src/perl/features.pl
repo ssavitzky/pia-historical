@@ -81,7 +81,8 @@ sub is_proxy_request{
 }
 
 sub is_agent_request{
-    return !is_proxy_request(@_);
+    my $request=shift;
+    return is_request($request) && !is_proxy_request($request);
 }
 
 sub is_file_request{

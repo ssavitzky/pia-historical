@@ -219,7 +219,7 @@ sub match {
     print "matching:" if $main::debugging;
     foreach $agent ($self->agents()){
 	if ($agent->matches($features)) {
-	    print "About to call handler for $agent\n" if $main::debugging;
+	    print "About to call $agent -> act_on\n" if $main::debugging;
 	    $agent->act_on($transaction, $self);
 	    ++ $matches;
 	}

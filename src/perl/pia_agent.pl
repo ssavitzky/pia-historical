@@ -1,12 +1,17 @@
 ###### Class PIA_AGENT -- superclass for PIA agents
 ###	$Id$
 ###
+###	Agents have both a name and a type.  
+###	   An agent responds to requests for //agency/$name
+###	   ...but looks for interforms in  .../Agents/$type
+###	This imposes a primitive class system on agents.
 
 package PIA_AGENT;
 use HTML::Parse;
 use HTML::FormatPS;
 use HTML::Element;
 use HTML::AsSubs;		# defines element constructor functions.
+				# very useful for interforms.
 
 
 sub new {
@@ -18,6 +23,7 @@ sub new {
         
     bless $self,$class;
     $self->name($name) if defined $name;
+    $self->type($name) if defined $name;
     $$self{options}=$options;
     $$self{criterion}=$criterion;
     $$self{computation}=$computation;
@@ -34,14 +40,18 @@ sub initialize{
     my $url="/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->request($request);
-    
 }
 
-sub name{
+sub name {
     my($self,$name)=@_;
     $$self{name}=$name if defined $name;
     return $$self{name} ;
-    
+}
+
+sub type {
+    my($self,$type)=@_;
+    $$self{'type'}=$type if defined $type;
+    return $$self{'type'} ;
 }
 
 sub version{
@@ -116,8 +126,9 @@ sub act_on {
     my($self, $transaction, $resolver)=@_;
 
     ## Act on a transaction that we have matched.
-
-    print "Agent $self, name= " . $self->name() . " -> act_on\n";
+    ## SUBCLASSES MUST OVERRIDE 
+    print "Agent " . $self->name() . " $self::act_on NOT OVERRIDDEN\n"
+	if ! $main::quiet;
 
     return 0;
 }
@@ -131,32 +142,16 @@ sub act_on {
 sub handle{
     my($self, $request, $resolver)=@_;
 
-    my $response;
-    my $file=$self->find_interform($request->url);
-    print "$name parsing $file\n" if  $main::debugging;
-    if(! defined $file){
-	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
-				      "nointerform");
-	$response->content("no InterForm file found");
-	## === should really just return 0 ===
-    } else {
-#TBD check for path parameters    
-	my $string=$self->parse_interform_file($file,$request);
-
-	$response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
-	$response->content_type("text/html");    
-	$response->header('Version',$self->version());
-	$response->content($string);
-    }
-    $response->request($request);
-    
-    $response=TRANSACTION->new($response,
-			       $main::this_machine,
-			       $request->from_machine());
-
+    my $response = $self->respond_to_interform($request);
+    return 0 unless defined $response;
     $resolver->push($response);
     return 1;
 }
+
+############################################################################
+###
+### Find Interforms for agent:
+###
 
 sub find_interform {
     my($self,$url) = @_;
@@ -174,8 +169,22 @@ sub find_interform {
     return unless $url;
     my $path = ref($url) ? $url->path() : $url;
     my $name = $self->name;
-    $path =~ m:$name/(.*)$:;	# Find interform name in URL
-    my $form = $1 || "home.if";	# ... default to home.if
+    my $type = $self->type;
+    my $form;
+
+    ## Find interform name in URL.
+
+    if ($path =~ m:$name/(.*)$:) {
+	$form = $1 || "index.if";	# ... default to index.if
+    } elsif ($path =~ m:$name$:) {
+	$form = $1 || "home.if";	# ... default to home.if
+    } elsif ($path =~ m:^/$:) {
+	$form = 'ROOTindex.if';		# root's index.
+    } elsif ($path eq '') {
+	$form = 'ROOThome.if';		# root's home page.
+	## === for some reason this is never accessed:        ===
+	## === Probably, the browser forces a trailing slash. ===
+    }
 
     my $home = $main::PIA_ROOT;
     if ($home !~ m:/$:) { $home .= "/"; }
@@ -185,8 +194,10 @@ sub find_interform {
     ## Ensure that the root directory ends in a slash, and does *not*
     ## contain the agent's name (i.e. it's really the root and not the
     ## agent's home directory).
+    ## === this is kludgy; the agent should have a path ===
     if ($root !~ m:/$:) { $root .= "/"; }
     if ($root =~ m:/$name/$:) { $root =~ s:/$name/$:/:; } 
+    if ($root =~ m:/$type/$:) { $root =~ s:/$type/$:/:; } 
     my $file = "$root$name/$form";
 
     print "find_interform: home = $home; root = $root\n" if $main::debugging;
@@ -211,6 +222,12 @@ sub find_interform {
     return $file if -e $file;
 
     ## ... and if that doesn't work, try inheritance.
+
+    $file = "$root/$type/$form";
+    return $file if -e $file;
+
+    $file = "$home/$type/$form";
+    return $file if -e $file;
 
     $file = "$root/$form";
     return $file if -e $file;
@@ -499,6 +516,37 @@ sub parse_interform_file{
     return $string;
 }
 
+sub respond_to_interform {
+    my($self, $request, $url)=@_;
+
+    $url = $request->url unless defined $url;
+    my $file=$self->find_interform($url);
+    my $name = $self->name();
+    print "$name parsing $file\n" if  $main::debugging;
+
+    my $response;
+    if(! defined $file){
+	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
+				      "nointerform");
+	$response->content("no InterForm file found for $url");
+	## === should really just return 0 ===
+    } else {
+#TBD check for path parameters    
+	my $string=$self->parse_interform_file($file,$request);
+
+	$response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
+	$response->content_type("text/html");    
+	$response->header('Version',$self->version());
+	$response->content($string);
+    }
+    $response->request($request);
+    
+    $response=TRANSACTION->new($response,
+			       $main::this_machine,
+			       $request->from_machine());
+
+    return $response;
+}
 
 sub run_init_file {
     my($self,$fn,$find)=@_;
