@@ -1,0 +1,55 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the &agentName; agent</title>
+</head><body>
+<h1>Initialize the &agentName; agent</h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+<set name=AGENT:criteria>response agent-response-</set>
+<user-message>&agentName; criteria: &AGENT:criteria;</user-message>
+
+<set name="AGENT:controls"><protect><!-- from History agent: -->
+<set name=pia>http://&piaHOST;:&piaPORT;</set>
+[<a href="&pia;/History" target="_top">Hist</a>
+ <a href="&pia;/~History/" target="_top">*</a>/<a
+    href="&pia;/~History/&year;/" target="_top">&year;</a>/<a
+    href="&pia;/~History/&year;/&month;/" target="_top">&month;</a>/<a
+    href="&pia;/~History/&year;/&month;/&day;.html" target="_top">&day;</a>
+ <a href="&pia;/~History/last.html" target="_top">&time;</a>]</protect></set>
+
+<set name="AGENT:act-on"><protect>
+   <set name=ct><get name=TRANS:Content-type></set>
+   <set name=fn>&year;/&month;/&day;.html</set>
+   <output directory dst="&year;/&month;/" /><!-- create dir. if necessary -->
+   <if><test match=html>&ct;</test>
+       <then><set entity name=title><get name=TRANS:title></set>
+	     <output append dst="&fn;"><if><!-- dummy to suppress line brk -->
+	 	</if>&time; <a href="&url;">&url; : &title;</a><br>
+</output>
+             <output dst="last.link"><a href="&url;">&url; : &title;</a>
+</output>
+             <output dst="last.html">&date; &time; <a href="&url;">&url; : &title;</a>
+<dl>
+  <dt> <b>Link:</b>
+  <dd> <protect result markup><a href="&url;">&url; : &title;</a></protect>
+  <dt> <b>Reply Header</b>
+  <dd> <pre><get name=TRANS:HEADERS></pre>
+  <dt> <b>Request Header</b>
+  <dd> <pre><get name=REQ:HEADERS></pre>
+</dl>
+</output>
+       </then>
+       <else><output append dst="&fn;">&time; --&ct;- <a href="&url;">&url;</a><br>
+</output></else>
+    </if>
+</protect></set>
+
+<dl>
+  <dt> <b>Note:</b>
+  <dd> The history agent adds items to the history database (makes sense,
+       doesn't it).  It does <em>not</em> put anything on pages returned to
+       the user's browser; that's up to the <a href="/cia">cia</a> agent.
+</dl>
+
+<footer cvsid="$Id$">
+</body></html>

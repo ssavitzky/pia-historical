@@ -12,7 +12,7 @@
 <a href="&pia;/" target="_top"><img src="&pia;/fbi/Logo/pia24.gif"
 			 height=24 width=43 border=0></a>
 <expand>&AGENT:Spy:controls;</expand>
-<expand><parse><get name=AGENT:History:controls></expand>
+<expand><get name=AGENT:History:controls></expand>
 ( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
           <a href="&pia;/&transAgentType;/"> / </a></then>

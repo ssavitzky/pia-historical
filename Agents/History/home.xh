@@ -117,7 +117,7 @@ provided for fixing old History directories.<p>
   InterForm directory as <code>~/.pia/Agents/&agentName;/initialize</code>
 </em></blockquote>
 
-<pre><protect result markup><parse tagset=HTML>&AGENT:act-on;</protect>
+<pre><protect result markup>&AGENT:act-on;</protect>
 </pre>
 
 <footer cvsid="$Id$">

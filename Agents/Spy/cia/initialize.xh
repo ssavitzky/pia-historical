@@ -15,7 +15,7 @@
 <a href="&pia;/" target="_top"><img src="&pia;/cia/Logo/pent24.gif"
 			 	    height=24 width=24 border=0></a>
 <expand>&AGENT:Spy:controls;</expand>
-<expand><parse><get name=AGENT:History:controls></expand>
+<expand><get name=AGENT:History:controls></expand>
 <!-- making this a link is actually useful: it gets you out of a frame. -->
 <a href="&url;" target="_top">&lt;URL:&url;&gt;</a>
 <hr>
