@@ -500,6 +500,13 @@ public class Machine {
     socket = null;
   }
 
+  /** Create a Machine from an InputStream.
+   * @param in an InputStream
+   */ 
+  public Machine( InputStream in ){
+    this.inputStream = in;
+  }
+
   // call from agent machine
   public Machine(){
   }
