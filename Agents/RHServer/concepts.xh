@@ -14,35 +14,26 @@
 <FORM METHOD="POST" ACTION="/RHServer/concept_edit">
 
 <p>
-<TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="100%" HEIGHT="33%" NOSAVE >
+<CENTER>
+<TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=1 WIDTH="100%" HEIGHT="33%" NOSAVE >
 <TR>
 <!-- Add column headers -->
-<TD><b><u><font size=+2>ConceptList</font></u></b></TD>
-<TD><b><u><font size=+2>Concepts</font></u></b></TD>
+<TD ALIGN=CENTER><b><u><font size=+2>ConceptList</font></u></b></TD>
 </TR>
-
 <TR>
-<TD>
+<TD ALIGN=CENTER>
 <!-- Add list of concepts -->
 <SELECT NAME="cmenu" SIZE=10>
-	<concepts path="/RHServer/simple.xml"></concepts>
+	<get-all-concepts />
 </SELECT>
-</TD>
-<TD>
-<!-- Add individual concept text -->
-
 </TD>
 </TR>
 <TR>
-<TD>
+<TD ALIGN=CENTER>
 <!-- Add concept command buttons -->
 <input type="submit" name="AddConcept" value="Add"> 
 <input type="submit" name="EditConcept" value="Edit"> 
 <input type="submit" name="DeleteConcept" value="Delete"> 
-</TD>
-
-<TD>
-<!-- What goes here? -->
 </TD>
 </TR>
 </TABLE>

@@ -10,30 +10,36 @@
 
 <h1>Readers' Helper Groups</h1>
 
-<p>
+<if>&FORM:DeleteGroup;<then>
+	<FORM METHOD="POST" ACTION="/RHServer/groups">
+	<remove-group group=&FORM:deletegroup;></remove-group>
+	</FORM>
+</if>
+
+<if>&FORM:addgroupname;<then>
+	<FORM METHOD="POST" ACTION="/RHServer/groups">
+		<add-concept-group concept=&FORM:alladdconcepts; group=&FORM:addgroupname></add-concept-group>
+	</FORM>
+</if>
+
 <FORM METHOD="POST" ACTION="/RHServer/group_edit">
 <CENTER>
 <TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=1 WIDTH="40%" HEIGHT="33%" NOSAVE >
-
 <TR>
 <!-- Add column headers -->
 <TD><b><u><font size=+2>Groups</font></u></b></TD>
 </TR>
-
 <TR>
 <TD>
 <!-- Add list of groups -->
-<SELECT NAME="gmenu" SIZE=10>
-<extract><from><group-list /> </from>
-	 <get-all-groups></get-all-groups>
-</extract>
-</SELECT>
-
+<SELECT NAME="gmenu" SIZE=10 WIDTH=160>
+	<select><from><group-list /> </from>
+	<get-all-groups></get-all-groups>
+</select>
 </TD>
 </TR>
 <TR>
 <TD>
-
 <!-- Add group command buttons -->
 <input type="submit" name="AddGroup" value="Add"> 
 <input type="submit" name="EditGroup" value="Edit"> 
@@ -43,7 +49,9 @@
 </TR>
 </TABLE>
 </CENTER>
-</form>
+
+</FORM>
+
 <footer />
 </BODY>
 </HTML>
