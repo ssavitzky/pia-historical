@@ -224,17 +224,22 @@ public class Resolver extends Thread {
     // URL-decode path first to catch %7e
     path = Utilities.urlDecode(path);
 
-    // Check for path starting with / (ignored) or ~
-
-    if (path.startsWith("/")) path = path.substring(1);
-    if (path.startsWith("~")) path = path.substring(1);
- 
     /* Empty path is handled by ROOT. */
 
     if (path == null || path.equals("/") || path.equals("")) {
       return agent(Pia.instance().rootAgentName());
     }
 
+    // Check for ~/ (ROOT)
+
+    if (path.startsWith("/")) path = path.substring(1);
+    if (path.equals("~") || path.startsWith("~/"))
+      return agent(Pia.instance().rootAgentName());
+
+    // Ignore leading ~ in ~Agent
+
+    if (path.startsWith("~")) path = path.substring(1);
+ 
     /* Now check for either /name/ or /type/name */
 
     List pathList = new List(new java.util.StringTokenizer(path, "/"));

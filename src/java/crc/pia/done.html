@@ -51,6 +51,13 @@ See also:
        -- findInterform was removing the agent name while mistaking it for the
 	  type. 
 
+  <li> 1999-02-10 <b>Bug</b> /~/dir doesn't work. <br>
+       ~/HEADER.html works, but ~/Admin doesn't.  ROOT/~/Admin does. ~/Config
+       does. 
+       (1999-02-09) <br>
+       -- Due to the fact that Admin is an agent and Config isn't.  The
+	  problem is in Resolver.agentFromPath().
+
 </ol>
 <a name="end">End of list.</a>
 <hr>

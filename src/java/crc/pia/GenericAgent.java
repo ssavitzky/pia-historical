@@ -587,11 +587,13 @@ public class GenericAgent implements Agent, Registered, Serializable {
     String v = null;
     List res = null;
 
-    if( dirTable.containsKey( key ) )
+    if (dirTable.containsKey(key))
       res = (List)dirTable.get(key);
-    if( res== null ){
-      v = getObjectString( key );
-      if ( v!=null && v.startsWith("~"+filesep) ) {
+    if (res == null) {
+      v = getObjectString(key);
+      if (v == null) return null;
+      if (!v.endsWith(filesep)) { v = v + filesep; }
+      if (v.startsWith("~"+filesep)) {
 	  StringBuffer value = null;
 	  String home = System.getProperty("user.home");
 	  value = new StringBuffer( v.substring(1) );
@@ -601,7 +603,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 	  res = new List();
 	  res.push( v );
 	  dirTable.put( key, res );
-      }else if( v!=null){
+      } else {
 	res = new List();
 	res.push( v );
 	dirTable.put( key, res );
