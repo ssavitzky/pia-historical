@@ -49,9 +49,7 @@ public class ifHandler extends GenericHandler {
     NodeEnumerator enum = content.getEnumerator();
     aContext.debug("   Initializing action for <" + tag + ">\n");
 
-    for (Node child = enum.getNext() ;
-	 child != null;
-	 child = enum.getNext()) {
+    for (Node child = enum.getFirst(); child != null; child = enum.getNext()) {
       /* 
        * Use a fast, efficient test for determining the syntactic class of
        * the children:  simply compare the classes of their handlers.
