@@ -3,43 +3,48 @@
 <title>Slides for LinuxWorld</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body>
-<h1>Slides for LinuxWorld 1999</h1>
+<h1>Slides for LinuxWorld 1999, Session 74</h1>
+<set name=subCaption>S. Savitzky -- Ricoh Silicon Valley</set>
 
 <!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
 <!-- See mail.conferences:102 -->
-<set name=DOC:hh>450</set><!-- Tweak size for Netscape at 800x600 -->
+<set name=DOC:hh>440</set><!-- Tweak size for Netscape at 800x600 -->
+<set name=DOC:logo><img src="Images/pent24.gif"></set>
+
+
 
 <hr>
-<slide>
+<slide><!-- Slide 0 doesn't have a title -->
 <p>&nbsp;
 <p>&nbsp;
 <div align=center valign=center>
 <font size='+2'
   ><strong>An Open-Source Web-Based Document Processing System</strong></font>
 
-<p> Stephen Savitzky
-<p> Ricoh Silicon Valley
+<p> Stephen Savitzky<br>
+    <a href="http://rsv.ricoh.com/~steve/">http://rsv.ricoh.com/~steve/</a><br>
+    <code>&lt;steve@rsv.ricoh.com&gt;</code>
+<p> Ricoh Silicon Valley<br>
+    <a href="http://rsv.ricoh.com/"><code>http://rsv.ricoh.com/</code></a>
 </div>
 
 </slide>
 
 
 <hr>
-<slide>
-<h2>Overview</h2>
+<slide><h2>Overview</h2>
 
 <ol>
   <li> Document Processing
   <li> Documents and the Web
-  <li> The System
+  <li> Architecture and Implementation
   <li> Open Source
 </ol>
 
 </slide>
 
-<hr>
-<slide>
-<h2>Document Processing: Example</h2>
+<hr><set name=subCaption>Document Processing</set>
+<slide><h2>A Simple Example</h2>
 <ul>
   <li> Input: <a href="lw99.html">a document</a>
        <pre>
@@ -49,7 +54,7 @@
           &lt;/ul&gt;
        &lt;/slide&gt;
        </pre>
-  <li> ... processing using a ``<a href="slides.ts">tagset</a>''
+  <li> ... processing using a ``<a href="Images/slides.ts">tagset</a>''
        <ul>
 	 <li> A ``spreadsheet'' for documents
 	 <li> Describes what to do with each tag
@@ -60,11 +65,109 @@
 </slide>
 
 <hr>
-<slide>
-<h2>A Document is not an Object</h2>
+<slide><h2>What's Going On</h2>
+<ul>
+  <li> A document's format is specified by a <br>
+       Document Type Definition (DTD)
+  <li> ... which is <em>another document!</em>
+  <li> ... which we can represent in XML.
+  <li> ... and <em>process</em>
+       <p>
+  <li> A ``<em>tagset</em>'' is a document that combines <br>
+       a DTD with formatting commands. 
+  <li> ... also represented in XML.
+  <li> ... extended with standard programming constructs (XXML)
+  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
+</ul>
+</slide>
+
+<hr>
+<slide><h2>Another Example</h2>
+<ul>
+  <li> Input: <a href="Images/slides.ts">a document tagset specification</a>
+<pre>
+  &lt;tagset name=slides parent=HTML include=xxml recursive&gt; ...
+  &lt;define element=slide parent=body&gt; &lt;action&gt; ...
+  &lt;define entity=topBg&gt;&lt;value&gt;lightblue&lt;/define&gt;...
+</pre>
+  <li> ... processing using a different tagset
+  <li> <code>process -tagset tsdoc slides.ts &gt; slides.html</code>
+  <li> Output: <a href="Images/slides.html">documentation</a>.
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What's Going On?</h2>
+<ul>
+  <li> Documents contain only content and markup (structure)
+  <li> Behavior is associated with tags by a tagset
+  <li> The same document can be processed in different ways with different
+       tagsets.<br>
+       -- think of them as similar to styles
+       <p>
+  <li> One way to look at it:
+       <ul>
+	 <li> we're abusing a text formatter
+	 <li> ... to make a programming language
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>What's <em>Really</em> Going On?</h2>
+<div align=center>
+  <strong>A Document-Processing Engine for the Web</strong>
+</div>
+<ul>
+  <li> The Web is made of documents
+  <li> ``In the future, the only API's that matter will be the API's of web
+       sites'' <br>
+       -- Tim O'Reilly
+  <li> What we have is a general-purpose document processor<br>
+       ... designed <em>specifically</em> for web applications.
+       <ul>
+	 <li> Can operate as client, server, proxy, or any combination
+	 <li> Can process other servers' documents<br>
+	      ... <em>examples further on</em>
+       </ul>
+  <li> Serves as the basis for
+       <ul>
+	 <li> personal web assistants
+	 <li> easy-to-administer servers
+	 <li> web-based information appliances
+       </ul>
+</ul>
+</slide>
+
+<hr><set name=subCaption>Documents and the Web</set>
+<slide><h2>Documents and the Web</h2>
+<ul>
+  <li> The Web has <em>totally transformed</em> the way we think about
+       <ul>
+	 <li> documents
+	 <li> hypertext
+	 <li> the Internet
+	 <li> computers
+	 <li> user interfaces
+       </ul>
+  <li> In particular,
+       <ul>
+	 <li> A document is a web page
+	 <li> a hypertext document is a web site<br>
+	      -- forget about earlier, more elaborate visions
+	 <li> The Internet is the Web
+	 <li> a computer is either a server or a browser
+	 <li> a user interface is a collection of forms
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide><h2>A Document is not an Object</h2>
 <ul>
   <li> Documents are <em>structured</em> data
-  <li> == text + markup
+  <li> ... = text + markup
   <li> Documents <em>separate</em> content from behavior
   <li> Therefore, documents...
        <ul>
@@ -83,42 +186,60 @@
 </slide>
 
 <hr>
-<slide>
-<h2>What's Going On</h2>
+<slide><h2>Appliances</h2>
+<strong>The future of computing is <em>networked appliances</em></strong>
 <ul>
-  <li> A document's format is specified by a <br>
-       Document Type Definition (DTD)
-  <li> ... which is <em>another document!</em>
-  <li> ... which we can represent in XML.
-  <li> ... and <em>process</em>
-       <p>
-  <li> A ``<em>tagset</em>'' is a document that combines <br>
-       a DTD with formatting commands. 
-  <li> ... also represented in XML.
-  <li> ... extended with standard programming constructs (XXML)
-  <li> <em>Any</em> document may contain ``active'' constructs
-  <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
+  <li> Web-enabled
+  <li> Mostly special-purpose
+  <li> May be clients, servers, or (ta-da!) document processors
 </ul>
 </slide>
 
 <hr>
-<slide>
-<h2></h2>
+<slide><h2>Appliances on the Web</h2>
+<strong>An appliance contains a thin server.</strong>
+<a href="/PIA/Doc/Graphics/webprinter.small.gif"><img
+   src="/PIA/Doc/Graphics/webprinter.small1.gif" align=right width=300></a> 
+<ul>
+  <li> Used through its Web pages
+  <li> Pages are generated by agents
+       <ul>
+	 <li> from ``active documents''
+	 <li> (optional) custom code
+       </ul>
+  <li> Agents run on Agency infrastructure
+       <ul>
+	 <li> Processes HTTP requests
+	 <li> Implements XML standard
+	 <li> Runs agents
+       </ul>
+  <li> Examples:
+       <ul>
+	 <li> WebPrinter
+	 <li> Photo Album
+       </ul>
+</ul>
 </slide>
 
 <hr>
-<slide>
-<h2></h2>
+<slide><h2></h2>
+</slide>
+<hr>
+<slide><h2></h2>
+</slide>
+<hr>
+<slide><h2></h2>
+</slide>
+<hr>
+<slide><h2></h2>
+</slide>
+
+<hr><set name=subCaption>Architecture and Implementation</set>
+<slide><h2>Architecture and Implementation</h2>
 </slide>
 
 <hr>
-<slide>
-<h2></h2>
-</slide>
-
-<hr>
-<slide>
-<h2>Agency Architecture Layers</h2>
+<slide><h2>Agency Architecture Layers</h2>
 
 <ul>
   <li> Server Front End
@@ -147,60 +268,29 @@
 
 <hr>
 <slide>
-<h2>PIA's New Document Processor</h2>
-<em>(compared with last year's implementation)</em>
+<h2>PIA's Document Processor</h2>
 <ul>
-  <li> Simpler
+  <li> Simple
        <ul>
 	 <li> Main loop fits on a single page.
-	 <li> Much easier to maintain than the old one.
+	 <li> Easy to maintain and describe.
        </ul>
-  <li> Faster
-       <ul>
-	 <li> 20% faster than old InterForm processor on HTML files
-	 <li> Other speedups are possible
-       </ul>
-  <li> More versatile
+  <li> Versatile
        <ul>
 	 <li> stream, string and parse tree input and output 
 	 <li> can build parse trees while processing
        </ul>
-  <li> More portable
+  <li> Portable
        <ul>
 	 <li> based on W3C's Document Object Model
 	 <li> C or C++ version would be feasible
-       </ul>
-  <li> 
-</ul>
-</slide>
-
-<hr>
-<slide>
-<h2>The Old InterForm Interpretor</h2>
-<ul>
-  <li> Operates on a stream of ``tokens''
-  <li> Algorithm:
-       <ul>
-	 <li> Convert character stream into a stream of ``tokens''
-	 <li> Each ``element'' has a start token, content, and end token.
-	 <li> Associate each token with actions (by table lookup)
-	 <li> Perform the actions, producing new tokens
-	 <li> Either feed the new tokens back as input, <br>
-	      ...or send them on to the output
-	 <li> Where they are converted back to a character stream.
-       </ul>
-  <li> Problems:
-       <ul>
-	 <li> Actions are looked up multiple times for each token
-	 <li> Handling start and end tokens is very complex
-	 <li> Information known at parse time is thrown away
+	 <li> An earlier version was written in Perl
        </ul>
 </ul>
 </slide>
 
 <hr>
-<slide>
-<h2>The New Implementation</h2>
+<slide><h2>The Implementation</h2>
 
 <ul>
   <li> General Technique:
@@ -220,20 +310,140 @@
        <ul>
 	 <li> Basic algorithm is very simple
 	 <li> All table lookup is done once, in the parser
-	 <li> Saving parse trees gives a major speedup
+	 <li> Saving parse trees in server RAM gives a major speedup
        </ul>
 </ul>
 </slide>
 
+<hr>
+<slide><h2>Primitive Actions</h2>
+(all are active SGML <em>elements</em>)
+<ul>
+  <li> &lt;define&gt;       
+  <li> &lt;get&gt;, &lt;set&gt;
+  <li> &lt;if&gt; - &lt;then&gt; - &lt;else-if&gt; - &lt;else&gt;
+  <li> &lt;test&gt;,  &lt;logical&gt;
+  <li> &lt;repeat&gt;
+  <li> &lt;select&gt;
+  <li> &lt;expand&gt;, &lt;protect&gt;, &lt;hide&gt;
+  <li> &lt;text&gt;, &lt;numeric&gt;
+  <li> &lt;subst&gt;
+</ul>
+</slide>
 
 <hr>
-<slide>
-<h2>Developer's Website</h2>
+<slide><h2>I/O and Data Conversion</h2>
+(additional primitives)
+<ul>
+  <li> &lt;parse&gt;<br>
+       <em>converts raw text to marked-up XML.</em>
+  <li> &lt;include&gt;, &lt;output&gt;, &lt;connect&gt;, &lt;status&gt;<br>
+       <em>I/O, including both files and URL's.</em>
+  <li> &lt;DOCUMENT&gt;, &lt;HEADERS&gt;, &lt;URL&gt;, &lt;QUERY&gt;, ...<br>
+       <em>data structure representation and conversion</em>
+  <li> &lt;debug&gt;
+</ul>
+</slide>
+
+<hr>
+<slide><h2>There's more...</h2>
+(but not <em>much</em> more:)
+<p>
+
+<ul>
+  <li> There are a few elements used <em>inside</em> the primitives
+  <li> ... most primitives are modified by <em>attributes</em>,
+  <li> ... but the basic language is still fairly small. 
+       <p>
+  <li> New tags can be easily defined
+       <ul>
+	 <li> usually in terms of old ones
+	 <li> can connect to Java ``handler''
+       </ul>
+       <p>
+  <li> SGML <code>&amp;<em>entities</em>;</code> are used as variables.
+</ul>
+</slide>
+
+<hr>
+<slide><h2>For example...</h2>
+<pre>
+&lt;define element=factorial recursive&gt;
+  &lt;doc&gt;the Factorial function&lt;/doc&gt;
+  &lt;action&gt;
+    &lt;if&gt;&lt;test zero&gt;&amp;content;&lt;/test&gt;
+      &lt;then&gt;1&lt;/then&gt;
+      &lt;else&gt;&lt;numeric product&gt;
+              &amp;content;
+              &lt;factorial&gt;&lt;numeric difference&gt;&amp;content; 1
+                         &lt;/numeric&gt;
+              &lt;/factorial&gt;
+           &lt;/numeric&gt;
+      &lt;/else&gt;
+    &lt;/if&gt;
+  &lt;/action&gt;
+&lt;/define&gt;
+</pre>
+
+<em>It's not really meant for numeric processing!</em>
+</slide>
+
+<hr>
+<slide><h2>A better example...</h2>
+<pre>
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt; hello world!&lt;title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt; a classic example &lt;/header&gt;
+    Hello world!
+    &lt;footer&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<em>it's really meant for web pages.</em>
+</slide>
+
+<hr>
+<slide><h2>For another...</h2>
+<pre>
+  === something more spectacular here, please ===
+  === maybe the history agent's hook, or a sucks-rules-meter ===
+</pre>
+</slide>
+
+<hr>
+<slide><h2></h2>
+</slide>
+
+<hr>
+<slide><h2></h2>
+</slide>
+
+<hr>
+
+<hr><set name=subCaption>Open Source</set>
+<slide><h2></h2>
+</slide>
+
+<hr>
+<slide><h2></h2>
+</slide>
+
+<hr>
+<slide><h2></h2>
+</slide>
+
+<hr>
+<slide><h2>Developer's Website</h2>
 
 <strong>The PIA framework is organized as a web site</strong><br>
 <em>for use by developers</em>
 <ul>
-  <li> <a href="http://pia.crc.ricoh.com:8888/">PIA Group Server</a>
+  <li> <a href="http://pia.rsv.ricoh.com/">http://pia.rsv.ricoh.com/</a>:
+       PIA Group Server
   <li> <a href="/PIA/Doc">Documentation</a>
        <ul>
 	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
@@ -245,9 +455,20 @@
 </ul>
 Makes technical transfer very easy.
 </slide>
+
+<hr>
+<set name=label>TOC</set>
+<slide><!-- toc not working: tagset doesn't seem to be properly recursive. -->
+<h2>Table of Contents:</h2>
+<ol>
+  &slidelist;
+</ol>
+</slide>
+
 <hr>
 <toc>Table of Contents</toc>
 <hr>
+
 <b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 <address><a href="http://rsv.ricoh.com/~steve/"
