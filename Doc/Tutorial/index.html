@@ -351,61 +351,83 @@ Swifty is in the business of producing home pages, all agents will have
 home.xh, regardless of what they do. Listed below is Swifty's home.xh,
 followed by an explanation of all PIA tags.
 <PRE>
-&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0">&lt;HTML>
-&lt;html>&lt;head>
-&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-&lt;title>Prototype Home Page&lt;/title>
-&lt;a name="Swifty Home">&lt;/a>
-&lt;header>
-&lt;/head>
 
-&lt;form action="/Swifty/edit_page" method="POST">
+&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0"&gt;&lt;HTML&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026"&gt;
+&lt;title&gt;Prototype Home Page&lt;/title&gt;
+&lt;a name="Swifty Home"&gt;&lt;/a&gt;
+&lt;header&gt;
+&lt;/head&gt;
 
-&lt;!-- =================================================================== -->
-&lt;!-- Put in a default name in the heading                                -->
-&lt;!-- =================================================================== -->
+&lt;form action="/Swifty/edit_page" method="POST"&gt;
 
-&lt;h1>&lt;font color="#FF0000"> Home Page for &amp;AGENT:fname; &lt;/font>&lt;/h1>
+&lt;!-- =================================================================== --&gt;
+&lt;!-- Put in a default name in the heading
+&lt;!-- =================================================================== --&gt;
 
-&lt;!-- =================================================================== -->
-&lt;!-- Use a table to layout an image column and a links column            -->
-&lt;!-- =================================================================== -->
+&lt;h1&gt;&lt;font color="#FF0000"&gt; Home Page for &AGENT:fname; &lt;/font&gt;&lt;/h1&gt;
 
-&lt;TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="66%" HEIGHT="33%" NOSAVE >
-&lt;TR>
-&lt;!-- Add column headers -->
-&lt;TD>&lt;b>&lt;u>&lt;font size=+2>Photo Album&lt;/font>&lt;/u>&lt;/b>&lt;/TD>
-&lt;TD>&lt;b>&lt;u>&lt;font size=+2>Daily Distractions&lt;/font>&lt;/u>&lt;/b>&lt;/TD>
-&lt;/TR>
+&lt;!-- =================================================================== --&gt;
+&lt;!-- Use a table to layout an image column and a links column
+&lt;!-- =================================================================== --&gt;
 
-&lt;!-- Add an image for some decoration -->
-&lt;TR>
-&lt;TD>&lt;IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100>&lt;/TD>
+&lt;TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="66%" HEIGHT="33%" NOSAVE &gt;
+&lt;TR&gt;
+&lt;!-- Add column headers --&gt;
+&lt;TD&gt;&lt;b&gt;&lt;u&gt;&lt;font size=+2&gt;Photo Album&lt;/font&gt;&lt;/u&gt;&lt;/b&gt;&lt;/TD&gt;
+&lt;TD&gt;&lt;b&gt;&lt;u&gt;&lt;font size=+2&gt;Daily Distractions&lt;/font&gt;&lt;/u&gt;&lt;/b&gt;&lt;/TD&gt;
+&lt;/TR&gt;
 
-&lt;!-- =================================================================== -->
-&lt;!-- Display links, if there are any                                     -->
-&lt;!-- =================================================================== -->
-&lt;TD>
-        &amp;AGENT:links;
-&lt;/TD>
-&lt;/TR>
-&lt;/TABLE>
-&lt;p>
-&lt;hr>
-&lt;p>
-&lt;!-- =================================================================== -->
-&lt;!-- Add an edit button                                                  -->
-&lt;!-- =================================================================== -->
+&lt;!-- Add an image for some decoration --&gt;
+&lt;TR&gt;
+&lt;TD&gt;&lt;IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100&gt;&lt;/TD&gt;
 
-&lt;input type="submit" value="Edit"> 
-&lt;/form>
-&lt;footer>
+&lt;!-- =================================================================== --&gt;
+&lt;!-- Display links, if there are any
+&lt;!-- =================================================================== --&gt;
+&lt;TD&gt;
+	&AGENT:links;
+&lt;/TD&gt;
+&lt;/TR&gt;
 
-&lt;/BODY>
-&lt;/HTML></PRE>
-There are a couple of variables that have been defined in the AGENT namespace:
-one is the fullname (or <A HREF=#setfn>fname</A>) variable, the other
-is the <A HREF=#agentlinks>links</A> variable. Variables defined in the
+&lt;TR&gt;
+&lt;!-- Add column headers --&gt;
+&lt;TD&gt; &lt;/TD&gt;
+&lt;TD&gt;&lt;b&gt;&lt;u&gt;&lt;font size=+2&gt;Yahoo News&lt;/font&gt;&lt;/u&gt;&lt;/b&gt;&lt;/TD&gt;
+&lt;/TR&gt;
+
+&lt;TR&gt;
+&lt;TD&gt; &lt;!  Blank cell&gt;
+
+&lt;!-- =================================================================== --&gt;
+&lt;!-- Display results of connection to Yahoo
+&lt;!-- =================================================================== --&gt;
+&lt;TD&gt;
+	&AGENT:ynews;
+&lt;/TD&gt;
+&lt;/TR&gt;
+
+&lt;/TABLE&gt;
+&lt;p&gt;
+&lt;hr&gt;
+&lt;p&gt;
+&lt;!-- =================================================================== --&gt;
+&lt;!-- Add an edit button
+&lt;!-- =================================================================== --&gt;
+
+&lt;input type="submit" value="Edit"&gt; 
+&lt;/form&gt;
+&lt;footer&gt;
+
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+</PRE>
+There are a three variables that have been defined in the AGENT namespace:
+one is the fullname (or <A HREF=#setfn>fname</A>) variable, the next
+is the <A HREF=#agentlinks>links</A> variable, and finally, there is the
+<A HREF=#ynvar>ynews</A> variable. Variables defined in the
 AGENT namespace are available to all pages that make up the agent. A detailed
 description of the PIA tags used in home.xh is as follows.
 <BR> 
@@ -426,20 +448,28 @@ it is available to any agent running within PIA.</DD>
 <TT>&amp;AGENT:fname;</TT></DT>
 
 <DD>
-The fname variable holds the current value of the name that is to appear
+The <tt>fname</tt> variable holds the current value of the name that is to appear
 in the title for the page. This variable is substituted when home.xh is
-interpreted.If no value has been given, it will print as <TT>&amp;AGENT:fname;</TT></DD>
-
-<DD>
-</DD>
+interpreted.If no value has been given, it will print as <TT>&piaUSER;</TT></DD>
 
 <DT>
 <TT>&amp;AGENT:links;</TT></DT>
 
 <DD>
-The links variable is set to the list of URLs that have been selected by
+The <tt>links</tt> variable is set to the list of URLs that have been selected by
 the user. The current value of this variable is shown as an unordered list
-of URLS. If no links have been selected, it prints <TT>&amp;AGENT:links;</TT></DD>
+of URLS. If no links have been selected, it prints <TT>No links selected yet</TT></DD>
+
+<DT>
+<TT>&amp;AGENT:ynews;</TT></DT>
+
+<DD>
+The <tt>ynews</tt> variable is set to the node list that returned by a
+connection to the News link in the Yahoo home page.  This variable is
+initialized to <tt>No news initialized</tt>.  When the Edit button is
+selected, this will automatically connect to the Yahoo page.
+</DD>
+
 
 <DD>
 <TT></TT></DD>
@@ -485,14 +515,22 @@ of the input processing.
                <A NAME="agentlinks">&lt;set name=AGENT:links&gt;</A>
                   &lt;appendlink&gt;
                &lt;/set&gt;
+
+	&lt;!-- Connect to Yahoo news --&gt;
+
+	<A NAME="ynvar">&lt;set name=AGENT:ynews&gt;</A>
+		&lt;connectto url="http://www.yahoo.com" link=News&gt;&lt;/connectto&gt;
+	&lt;/set&gt;
+
 &lt;/if&gt;
 
-&lt;form action="/Swifty/edit_page" method="POST">
+&lt;form action="/Swifty/edit_page" method="POST"&gt;
 
 &lt;H2&gt;
 Edit Your Home Page&lt;/H2&gt;
 Enter a new or different name for your home page title, or select different
-links.&lt;p&gt;</PRE>
+links.&lt;p&gt;
+</PRE>
 
 <PRE>Enter the name that will appear in the title of your home
 page. 
@@ -522,7 +560,7 @@ clause. If the page is being displayed as a result of a submit from the
 home page (that is, the home page's edit button has been selected), then
 set the two variables <TT>&amp;AGENT:fname</TT> and <TT>&amp;AGENT:links</TT>
 to the values already entered by the user. Next, display the page with
-Title name field showing its current value. A couple of items in the <TT>if</TT>
+Title name field showing its current value. These items in the <TT>if</TT>
 clause deserve closer scrutiny.</DD>
 <ul>
 
@@ -539,23 +577,94 @@ Here, the links variable is being set to <TT>&lt;appendlink&gt;</TT>
 which is a special tag that is defined in Swifty-xhtml.ts.</TT>
 </li>
 
+<li>
+<pre>
+	&lt;set name=AGENT:ynews&gt;
+		&lt;connectto url="http://www.yahoo.com" link=News&gt;&lt;/connectto&gt;
+	&lt;/set&gt;
+
+</pre>
+The <tt>AGENT:ynews</tt> variable is being set to the News link in the Yahoo home page
+using the <a href="#conto"><tt>connectto</tt></a> tag.
+
+</li>
+
+
 <li><PRE><TT>&lt;b>Title name:&lt;/b> &lt;input name="fullname" value="&amp;AGENT:fname;"&gt;</TT></PRE>
 This sets the value in the Title name text field to the current value
 of &amp;AGENT:fname; so that it is shown in the field when the page is
 displayed.
 </li>
+
 </ul>
 </DL>
+
+<H4>Agent Initialize File</H4>
+
+In instances where you need to set some initial values for your agent,
+you need to create an <tt>initialize.xh</tt> file.  This is the first
+file that is loaded by PIA and is used to perform any kind of
+initializations needed by the agent.  Its contents are not visible to
+the end-user. It could be used to restore values saved to disk; for
+Swifty, the <tt>initialize.xh</tt> file is used to set each of the
+agent variables to reasonable initial values.  This file is as
+follows:
+
+<pre>
+
+&lt;!doctype html system "html.dtd"&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;Initialize the &agentName; agent&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Initialize the &agentName; agent&lt;/h1&gt;
+
+&lt;user-message&gt;Initializing &agentName; from &filePath;&lt;/user-message&gt;
+
+&lt;set name="AGENT:fname"&gt;&piaUSER;&lt;/set&gt;
+&lt;set name="AGENT:links"&gt;No links selected yet&lt;/set&gt;
+&lt;set name="AGENT:ynews"&gt;No news initialized&lt;/set&gt;
+
+&lt;hr&gt;
+&lt;b&gt;Copyright &copy; 1997 Ricoh Silicon Valley&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;$Id$&lt;/b&gt;&lt;br&gt;
+&lt;/body&gt;&lt;/html&gt;
+
+</pre>
+
+The items of most interest are:
+<ul>
+<li> 
+<pre>
+&lt;user-message&gt;Initializing &agentName; from
+&filePath;&lt;/user-message&gt; 
+</pre> 
+
+This writes a message to standard
+output.  Use of the <a
+href="/Agency/entities.if"><tt>&agentName;</tt></a> and 
+<a href="/Agency/entities.if"><tt>&filePath;</tt></a> variables gives the
+name of the Agent and the path for the <tt>initialize.xh</tt> file respectively.
+</li>
+
+<li>
+<pre>
+&lt;set name="AGENT:fname"&gt;&piaUSER;&lt;/set&gt;
+</pre>
+This sets an initial value for the title name to the username of the individual
+running Swifty.  <a href="/Agency/entities.if"><tt>&piaUSER</tt></a> is a predefined PIA entity.
+</li>
+
+</ul>
 
 <H4>
 Agent Tagset</H4>
 A tagset is needed when you want to do some special processing or provide
 some capability that is not already provided in the PIA tagset. Creating
-a tag is a way of encapsulating some kind of procedure or processing. The
-two tags defined in <a href="/Swifty/Swifty-xhtml.ts">Swifty-xhtml.ts</a> have one main purpose: to prevent adding
-duplicate links to the list that is displayed in the home page. 
-To do this, two tags have been defined.
-<ul>
+a tag is a way of encapsulating some kind of procedure or processing. 
+Two of the tags defined in <a href="/Swifty/Swifty-xhtml.ts">Swifty-xhtml.ts</a> 
+have one main purpose: to prevent adding duplicate links to the list that is 
+displayed in the home page.  To do this, two tags have been defined. 
+<ol>
 <li><TT>&lt;checklink&gt;</TT> checks to see whether the URL passed in is already
 on the list of links. If it is, it does nothing; if it is not already on
 the list, that link is returned.</li>
@@ -565,7 +674,10 @@ value of each checkbox that was selected by the user. It then calls <TT>&lt;chec
 to see whether it is already on the list. If <TT>&lt;checklink&gt;</TT> returns a value,
 <TT>&lt;appendlink&gt;</TT> does not add that value to the existing <TT>&amp;AGENT:links;</TT> list.
 </li>
-</ul>
+</ol>
+
+The third tag, &lt;connectto&gt;, illustrates how to use the PIA basic tag
+<a href="/PIA/Doc/Manuals/InterForm/Tagset/basic.html#Connect">&lt;connect&gt;</a>.
 
 <H4>
 Define the Checklink Element</H4>
@@ -641,55 +753,54 @@ as follows.
         &lt;set entity name=dejURL&gt;&lt;A HREF="http://www.dejanews.com" TARGET=_blank&gt;DejaNews&lt;/A&gt;&lt;/set&gt;
         &lt;set entity name=hisURL&gt;&lt;a href="/History"&gt;History&lt;/a&gt;&lt;/set&gt;
 
-        &lt;ul&gt;
-        &lt;select&gt;&amp;AGENT:links; &lt;content&gt;&lt;/select&gt;
-                &lt;if&gt;&amp;FORM:wea;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;weaURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
-                                &lt;li&gt; &amp;weaURL;
-                        &lt;/else&gt;&lt;/if&gt;
-                
-                &lt;/if&gt;
-                &lt;if&gt;&amp;FORM:sjmn;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;sjmnURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
-                                &lt;li&gt; &amp;sjmnURL;
-                        &lt;/else&gt;&lt;/if&gt;
-                &lt;/if&gt;
-                &lt;if&gt;&amp;FORM:yah;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;yahURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
-                                &lt;li&gt; &amp;yahURL;
-                        &lt;/else&gt;&lt;/if&gt;
-                &lt;/if&gt;
-                &lt;if&gt;&amp;FORM:dej;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;dejURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
-                                &lt;li&gt; &amp;dejURL;
-                        &lt;/else&gt;&lt;/if&gt;
-                &lt;/if&gt;
-                &lt;if&gt;&amp;FORM:his;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;hisURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
-                                &lt;li&gt; &amp;hisURL;
-                        &lt;/else&gt;&lt;/if&gt;
-                &lt;/if&gt;
-        &lt;/ul&gt;
+	&lt;ul&gt;
+	&lt;select&gt;&AGENT:links; &lt;content&gt;&lt;/select&gt;
+		&lt;if&gt;&FORM:wea;&lt;then&gt;
+			&lt;if&gt;&lt;checklink link=&weaURL;&gt;&lt;/checklink&gt;
+			&lt;else&gt;
+				&lt;li&gt; &weaURL;
+			&lt;/else&gt;&lt;/if&gt;
+		
+		&lt;/if&gt;
+		&lt;if&gt;&FORM:sjmn;&lt;then&gt;
+			&lt;if&gt;&lt;checklink link=&sjmnURL;&gt;&lt;/checklink&gt;
+			&lt;else&gt;
+				&lt;li&gt; &sjmnURL;
+			&lt;/else&gt;&lt;/if&gt;
+		&lt;/if&gt;
+		&lt;if&gt;&FORM:yah;&lt;then&gt;
+			&lt;if&gt;&lt;checklink link=&yahURL;&gt;&lt;/checklink&gt;
+			&lt;else&gt;
+				&lt;li&gt; &yahURL;
+			&lt;/else&gt;&lt;/if&gt;
+		&lt;/if&gt;
+		&lt;if&gt;&FORM:dej;&lt;then&gt;
+			&lt;if&gt;&lt;checklink link=&dejURL;&gt;&lt;/checklink&gt;
+			&lt;else&gt;
+				&lt;li&gt; &dejURL;
+			&lt;/else&gt;&lt;/if&gt;
+		&lt;/if&gt;
+		&lt;if&gt;&FORM:his;&lt;then&gt;
+			&lt;if&gt;&lt;checklink link=&hisURL;&gt;&lt;/checklink&gt;
+			&lt;else&gt;
+				&lt;li&gt; &hisURL;
+			&lt;/else&gt;&lt;/if&gt;
+		&lt;/if&gt;
+	&lt;/ul&gt;
   &lt;/action&gt;
-&lt;/define&gt;</TT></PRE>
+&lt;/define&gt;
+</TT>
+</PRE>
 <TT>&lt;appendlink&gt;</TT> is self-contained, and consequently needs no arguments.
 Looking at the code in more detail, the first few lines are creating an
 entity name for each of the available links.
-<PRE><TT>        &lt;set entity name=weaURL&gt;&lt;A HREF="http://www.nws.noaa.gov" TARGET=_blank&gt;Weather&lt;/A&gt;&lt;/set&gt;
+<PRE>
+<TT>        &lt;set entity name=weaURL&gt;&lt;A HREF="http://www.nws.noaa.gov" TARGET=_blank&gt;Weather&lt;/A&gt;&lt;/set&gt;
         &lt;set entity name=sjmnURL&gt;&lt;A HREF="http://www.sjmercury.com" TARGET=_blank&gt;News&lt;/A&gt;&lt;/set&gt;
         &lt;set entity name=yahURL&gt;&lt;A HREF="http://www.yahoo.com" TARGET=_blank&gt;Yahoo&lt;/A&gt;&lt;/set&gt;
         &lt;set entity name=dejURL&gt;&lt;A HREF="http://www.dejanews.com" TARGET=_blank&gt;DejaNews&lt;/A&gt;&lt;/set&gt;
-        &lt;set entity name=hisURL&gt;&lt;a href="/History"&gt;History&lt;/a&gt;&lt;/set&gt;</TT></PRE>
+        &lt;set entity name=hisURL&gt;&lt;a href="/History"&gt;History&lt;/a&gt;&lt;/set&gt;</TT>
+</PRE>
 It is not necessary to do this, the only reason for it is to create a shorter
 name for each of the URLs. As entities, they are automatically expanded
 wherever they are used.
@@ -708,14 +819,109 @@ the same manner.
 <PRE><TT>        &lt;ul&gt;
         &lt;select&gt;&amp;AGENT:links; &lt;content&gt;&lt;/select&gt;
                 &lt;if&gt;&amp;FORM:wea;&lt;then&gt;
-                        &lt;if&gt;&lt;checklink link=&amp;weaURL;&gt;&lt;/checklink&gt;&lt;then&gt;
-                                &lt;!-- do nothing --&gt;
-                        &lt;/then&gt;&lt;else&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;weaURL;&gt;&lt;/checklink&gt;
+                        &lt;else&gt;
                                 &lt;li&gt; &amp;weaURL;
                         &lt;/else&gt;&lt;/if&gt;
                 
                 &lt;/if&gt;
                                 ...</TT></PRE>
+
+<a name="conto"><H4>Define the Connecto Element</H4></a>
+
+The &lt;connectto&gt; element makes a connection to a given URL and displays a link from
+within the page returned for that URL.  This element was defined mainly to give
+an example of the kinds of things you can do with the 
+<a href="/PIA/Doc/Manuals/InterForm/Tagset/basic.html#Connect"><tt>&lt;connect&gt;</tt></a> tag.
+The element definition is shown below.
+
+<pre>
+
+&lt;define element=connectto&gt;
+	&lt;define attribute=url required&gt;&lt;/define&gt;
+	&lt;define attribute=link required&gt;&lt;/define&gt;
+	&lt;doc&gt;
+		Connects to a url and displays the link from that
+		url specified by link; for example, the News link
+		in the yahoo url.  Only displays links that have absolute
+		urls.  Links are displayed as unordered lists.
+	&lt;/doc&gt;
+	&lt;action&gt;
+		&lt;set entity name=doc&gt;&lt;connect src=&attributes:url; result=content /&gt;&lt;/set&gt;
+		&lt;set entity name=selanchors&gt;&lt;select&gt;&lt;from&gt;&doc;&lt;content&gt;&lt;/from&gt;&lt;name recursive&gt;a&lt;/name&gt;&lt;/select&gt;&lt;/set&gt;
+
+		&lt;ul&gt;
+		&lt;repeat&gt;&lt;foreach entity=x&gt;&selanchors;&lt;/foreach&gt;
+			&lt;if&gt;&lt;test match=&attributes:link;&gt;&x;&lt;/test&gt;&lt;then&gt;
+				&lt;set entity name=sresult&gt;&lt;text split&gt;&x;&lt;/text&gt;&lt;/set&gt;
+					&lt;repeat&gt;&lt;foreach entity=i&gt;&sresult;&lt;/foreach&gt;
+						&lt;if&gt;&lt;test match="http"&gt;&i;&lt;/test&gt;&lt;then&gt;
+							&lt;li&gt; &x;
+						&lt;/then&gt;
+						&lt;/if&gt;
+					&lt;/repeat&gt;
+				&lt;/set&gt;
+			&lt;/then&gt;
+			&lt;/if&gt;
+		&lt;/repeat&gt;
+		&lt;/ul&gt;
+	&lt;/action&gt;
+&lt;/define&gt;
+
+</pre>
+
+Here is a more detailed look at what is happening in this element.
+Two attributes are required: the url you are going to connect to, and
+a word that appears in a link within that page.
+<ul>
+<li>
+First, a connection is made to the named url, which is set to the local variable <tt>doc</tt>.
+(At this point, you could simply return the entire page with <tt>&doc;</tt>.)  
+<pre>
+&lt;set entity name=doc&gt;&lt;connect src=&attributes:url; result=content /&gt;&lt;/set&gt;
+</pre>
+
+<li>
+Next, a recursive select is done to retrieve all nodes that are anchors within the page.  
+The list of anchors is captured in the local variable <tt>selanchors</tt>.
+<pre>
+&lt;set entity name=selanchors&gt;&lt;select&gt;&lt;from&gt;&doc;&lt;content&gt;&lt;/from&gt;&lt;name recursive&gt;a&lt;/name&gt;&lt;/select&gt;&lt;/set&gt;
+</pre>
+</li>
+
+<li>
+The main processing loop iterates through the list of anchors from
+Yahoo, testing each one to see whether its text matches the <tt>link</tt>
+attribute that was passed into the element.  There will be a match if
+the <tt>link</tt> attribute string appears anywhere inside the anchor.  
+
+If there is a match, a second test is made to determine whether this link
+has an absolute url.  If it does, it is returned as an unordered
+list item.  If the link does not have an absolute path, then it would
+need to be put together from the <tt>&attributes:url;</tt> variable
+and the <tt>&attributes:link;</tt> variable.  It is probably easier to
+write a comprehensive URL path handler in Java than to try to do this
+using primitive tags.
+
+<pre>
+	&lt;ul&gt;
+	&lt;repeat&gt;&lt;foreach entity=x&gt;&selanchors;&lt;/foreach&gt;
+		&lt;if&gt;&lt;test match=&attributes:link;&gt;&x;&lt;/test&gt;&lt;then&gt;
+			&lt;if&gt;&lt;test match="http"&gt;&x;&lt;/test&gt;&lt;then&gt;
+				&lt;li&gt; &x;
+			&lt;/then&gt;
+			&lt;/if&gt;
+		&lt;/then&gt;
+		&lt;/if&gt;
+		&lt;/repeat&gt;
+
+	&lt;/ul&gt;
+</pre>
+
+</li>
+</ul>
+
+
 <H4>
 Expanding Swifty</H4>
 There is much room for improvement. For example, suppose you wanted to
