@@ -32,6 +32,7 @@ PRIM_HANDLERS = \
 	  thenHandler.java \
 	includeHandler.java \
 	logicalHandler.java \
+	namespaceHandler.java \
 	numericHandler.java \
 	parseHandler.java \
 	protectHandler.java \
