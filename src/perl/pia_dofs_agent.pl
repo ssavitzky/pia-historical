@@ -76,6 +76,10 @@ sub retrieve_file {
 	$new_request->url($new_url);
 	my $ua = new LWP::UserAgent;
 	$response=$ua->simple_request($new_request); 
+
+	## Show the original request, not the redirected one.
+	$response->request($request->clone);
+
 	## If the content is a directory, the UserAgent will have 
 	##	  given it a base.  Fix it.
 	if ($response->{'_content'} =~ m:<BASE HREF:) {
