@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
-
 import crc.pia.Content;
 
 import crc.pia.ContentOperationUnavailable;
@@ -204,8 +202,8 @@ public abstract   class  StreamingContent  extends GenericContent {
     protected int processOutput() throws IOException{
 
       debug();
-       // manipulate data between outLimit and nextIn, returns
-       // number of bits processed 
+      // manipulate data between outLimit and nextIn, returns
+      // number of bits processed 
       int toProc = (wrapped == olWrapped) ? nextIn - outLimit : buflength - outLimit + nextIn;
       Pia.debug(this," processing "+toProc+" bits in buffer");
       advanceOutLimit(processBuffer(toProc));
@@ -218,15 +216,15 @@ public abstract   class  StreamingContent  extends GenericContent {
 	return -1;
       }
       int len = writeData(a);
+      
+      // satisfy any taps
+      writeOutputTaps(nextOut,len);
 
-     // satisfy any taps
-     writeOutputTaps(nextOut,len);
-
-     // update out  position
-     advanceNextOut(len);
-     totalOut += len;
-     
-     return len;
+      // update out  position
+      advanceNextOut(len);
+      totalOut += len;
+      
+      return len;
     }
    
 
@@ -251,7 +249,6 @@ public abstract   class  StreamingContent  extends GenericContent {
    ** handle tapping
    ************************************************************/
 
-
    /**
     * write output taps -- subclass may override
     */
@@ -259,17 +256,14 @@ public abstract   class  StreamingContent  extends GenericContent {
      for(int i=0;i<outTaps.length;i++){
        try{
 	 //           outTaps[i].write(buf, offset, length);
-           writeData(outTaps[i], offset, length);
+	 writeData(outTaps[i], offset, length);
        }
-	 catch(IOException e)
-	   {
-	     // notify of error write
-	     // Pia.errLog(" problem tapping");
-	   }
+       catch(IOException e) {
+	 // notify of error write
+	 // Pia.errLog(" problem tapping");
+       }
      }
-     
    }
-  
 
    /**
     * write input taps -- subclass  may override
@@ -487,8 +481,8 @@ public abstract   class  StreamingContent  extends GenericContent {
       return writeData(sink,nextOut,length);
      //  exception could be caught here
    }
-      
 
+      
   /**
    * write data to an output stream -- subclass should override
    */
