@@ -27,10 +27,15 @@ public class HTML_ts extends Tagset {
 
   static String emptyTags = "hr br link base img input"; // meta?
 
+/** Tags that create special data structures
+ */
+  static String dataTags = "dl table";
+  
+
   static String phraseTags = "cite code em kbd samp strong var b i u tt" +
   "a img br hr wbr nobr center blink small big font basefont table";
   
-  static String listTags 	= "ul ol dir menu dl";
+  static String listTags 	= "ul ol dir menu";
   static String tableTags 	= "tr td th caption";
   static String tableRowTags 	= "td th caption";
   static String formTags 	= "input select option textarea";
@@ -57,6 +62,11 @@ public class HTML_ts extends Tagset {
     defTags("tr", tableTags);
     defTags("p", phraseTags + " p " + notInParagraph);
     if (! emptyP) defTags(notInParagraph, "p");
+
+    // defined actors to create data structures
+    defActors(dataTags, "parsed", true);
+    
+
   }
 
 }
