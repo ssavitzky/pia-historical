@@ -85,25 +85,31 @@ public class FormContent extends Properties implements Content{
    */
   private synchronized int pullContent() throws IOException{
     int howmany = -1;
-    byte[]buffer = new byte[1024];
 
-    //if( body.available() != 0 ){
+
+    int hlen = headers.contentLength();
+    if( hlen == totalRead ) return -1;
+
+    int len = hlen - totalRead;
+    Pia.instance().debug( this, "content len..." + Integer.toString( len ) );
+
+    if( len > 0 ){
+      byte[]buffer = new byte[ len ];
       try{
-	//howmany = body.read( buffer, numberOfBytes, 1024 );
-	howmany = body.read( buffer, 0, 1024 );
-	if( howmany == -1 ){
-	  setContentLength( totalRead );
-	  return -1;
-	}
+
+	howmany = body.read( buffer, 0, len );
+	Pia.instance().debug( this, "amt read..." + Integer.toString( len ) );
+
 	totalRead += howmany;
 	numberOfBytes += howmany;
 	zbuf.append( buffer, 0, howmany );
+
 	return howmany;
       }catch(IOException e){
 	throw e;
       }
-      //}
-      //return howmany;
+    }
+    return howmany;
   }
 
   /**
@@ -234,13 +240,9 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, 0, buffer.length );
       else{
-	//if( body.available() != 0 ){
-	  len = body.read( buffer );
-	  if( len != -1 )
-	    totalRead += len;
-	  else
-	    setContentLength( totalRead );
-	  //}
+	len = body.read( buffer );
+	if( len != -1 )
+	  totalRead += len;
       }
       return len;
     }catch(IOException e){
@@ -274,13 +276,9 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, offset, buffer.length );
       else{
-	//if( body.available() != 0 ){
-	  len = body.read( buffer, offset, length );
-	  if( len != -1 )
-	    totalRead += len;
-	  else
-	    setContentLength( totalRead );
-	  //}
+	len = body.read( buffer, offset, length );
+	if( len != -1 )
+	  totalRead += len;
       }
       return len;
     }catch(IOException e){
@@ -321,14 +319,23 @@ public class FormContent extends Properties implements Content{
    * @return a copy of this content's data as bytes.
    */
   public byte[] toBytes(){
-    byte[]buffer = new byte[1024];
+
     int bytesRead;
     HttpBuffer data = new HttpBuffer(); 
 
+    int len = headers.contentLength();
+
+    if( len <=0 ) return null;
+
+    byte[]buffer = new byte[ len ];
+
     try{
-      while(true){
-	bytesRead = read( buffer, 0, 1024 );
+      for(; len > 0;){
+	bytesRead = read( buffer, 0, len );
 	if(bytesRead == -1) break;
+
+	len -= bytesRead;
+
 	data.append( buffer, 0, bytesRead );
       }
       
@@ -346,15 +353,28 @@ public class FormContent extends Properties implements Content{
    */
 
   public String toString(){
-    byte[]buffer = new byte[1024];
     int bytesRead;
     HttpBuffer data = new HttpBuffer();
 
+    int hlen = headers.contentLength();
+
+    int len = hlen;
+    if( len <=0 ) return null;
+
     Pia.instance().debug(this, "toString is processing...");
+    Pia.instance().debug(this, "content length is =" + Integer.toString( len ));
+
     try{
-      while(true){
-	bytesRead = read( buffer, 0, 1024 );
+
+      byte[]buffer = new byte[ len ];
+      for(; len > 0;){
+	bytesRead = read( buffer, 0, len );
+	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
+	Pia.instance().debug(this, new String(buffer,0,0,buffer.length));
 	if(bytesRead == -1) break;
+
+	len -= bytesRead;
+
 	data.append( buffer, 0, bytesRead );
       }
 
@@ -445,6 +465,7 @@ public class FormContent extends Properties implements Content{
    * @return original query string
    */
   public String queryString(){
+    Pia.instance().debug(this , "queryString" );
     if( queryString != null )
       return queryString;
     else {
@@ -472,8 +493,8 @@ public class FormContent extends Properties implements Content{
 
   private static void printusage(){
     System.out.println("Needs to know what kind of test");
-    System.out.println("For test 1, here is the command --> java crc.pia.HTTPRequest -1 post.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.HTTPRequest -2 post.txt");
+    System.out.println("For test 1, here is the command --> java crc.pia.FormContent -1 postno1line.txt");
+    System.out.println("For test 2, here is the command --> java crc.pia.FormContent -2 post.txt");
   }
 
 
@@ -503,16 +524,23 @@ public class FormContent extends Properties implements Content{
   * 
   */ 
   private static void test1(String filename){
+
+    HeaderFactory hf = new HeaderFactory();
+
     try{
       InputStream in = (new BufferedInputStream
 			(new FileInputStream (filename)));
     
+      Headers h = hf.createHeader( in );
       FormContent c = new FormContent( in );
+      c.setHeaders( h );
+
       c.setParameters( null );
       c.printParametersOn( System.out );
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
+    System.exit( 0 );
   }
  
   /**
@@ -521,11 +549,16 @@ public class FormContent extends Properties implements Content{
   */ 
   private static void test2(String filename){
     System.out.println( "in test2" );
+    HeaderFactory hf = new HeaderFactory();
+
     try{
       InputStream in = (new BufferedInputStream
 			(new FileInputStream (filename)));
     
+      Headers h = hf.createHeader( in );
       FormContent c = new FormContent( in );
+      c.setHeaders( h );
+
       boolean done = false;
       while( !done ){
 	if( !c.processInput() )
@@ -537,6 +570,7 @@ public class FormContent extends Properties implements Content{
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
+    System.exit( 0 );
   }
  
   
