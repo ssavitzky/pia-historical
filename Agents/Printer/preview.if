@@ -24,6 +24,7 @@ my $self=$agent;print $agent->name . ref($agent) . " is our name andtype\n";
 my %form_parameters=%{$request->parameters()};
 my $ask=$self->create_request('GET',$form_parameters{URL});
 my $element=$self->create_preview($ask);
+$self->option('last_ps_file',PIA::Agent::Printer::ps_file_name());
 
 print "preview created \n";
 return $element;
@@ -33,7 +34,7 @@ return $element;
 <td>
 <form action="/&agentName;/print.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
-<input name="spoolfile" value="&AGENT.ps_file_name;" type=hidden>
+<input name="spoolfile" value="&AGENT.last_ps_file;" type=hidden>
 <input type="SUBMIT" value="Print">
 </form>
 <td>
@@ -54,7 +55,7 @@ return $element;
 <else>
 <form action="&url;" method=POST>
 <set name="myurl"><get trans headers request name=referer></set>
-<input type="URL" name="URL" value=&myurl;><input type="SUBMIT" value="Preview">
+<input type="URL" size=55 name="URL" value=&myurl;><input type="SUBMIT" value="Preview">
 </form>
 </else>
 </if>
@@ -76,6 +77,6 @@ return $element;
 </then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 13:12:50 1997
+Last modified: Mon Jun  9 23:33:30 1997
 <!-- hhmts end -->
 </body></html>

@@ -15,7 +15,7 @@ $agent->option('thumb_height',"140");
 $agent->option('book_depth',"2");
 $agent->option('cache_only',"1");
 $agent->option('max_pages',"2000");
-$agent->option('device',"lp");
+$agent->option('device',"ps6");
 
 my $name= $agent->name;
 my $printer_root_directory=$agent->agent_directory . "/spool/";
@@ -49,6 +49,6 @@ $agent->option('printer_base_url',"/spool/");
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 13:37:51 1997
+Last modified: Mon Jun  9 22:19:26 1997
 <!-- hhmts end -->
 </body></html>

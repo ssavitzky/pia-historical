@@ -18,9 +18,13 @@ return $element;
 my $type=$request->method;
 my %parameters=%{$request->parameters};
 my $file=$parameters{spoolfile};
+
 if($file){
+$file=$agent->option('printer_root_directory') . $file  unless -e $file;
 $status=system("lpr -P$printer $file");
-return "printing $file on $printer...status $status";
+return "Printing document on $printer" unless  $status;
+return "Unable to print $file on $printer....status $status";
+
 }
 
 if($parameters{URL}) {
@@ -63,6 +67,6 @@ return "neither post nor put\n";
 </then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 12:56:09 1997
+Last modified: Mon Jun  9 22:36:15 1997
 <!-- hhmts end -->
 </body></html>

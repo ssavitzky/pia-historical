@@ -15,10 +15,10 @@
 <set agent hook name="_act_on"><protect>
 <trans-control>
 <set entity name=myprinter>http://&piaHOST;:&piaPORT;/&agentName;</set>
-<a href="&myprinter;/printer.if"><img src="&myprinter;/printer.gif" width=27 height=27 alt="PrintPage"></a>
-<a href="&myprinter;/preview.if"><img src="&myprinter;/preview.gif" width=27 height=27 alt="PreviewPage"></a>
+<a href="&myprinter;/printer.if?URL=&url;"><img src="&myprinter;/printer.gif" width=27 height=27 alt="PrintPage"></a>
+<a href="&myprinter;/preview.if?URL=&url;"><img src="&myprinter;/preview.gif" width=27 height=27 alt="PreviewPage"></a>
 <a href="&myprinter;/mkbook.if"><img src="&myprinter;/bookmark.gif" width=30 height=27 alt="MakeBook"></a>
-<a href="&myprinter;/home.if"><img src="/Logo/pent27" width=27 height=27 alt="&agentName;Home"></a>
+<a href="&myprinter;/home.if"><img src="http://&piaHOST;:&piaPORT;/Agency/Icons/pia20.gif" width=40 height=27 alt="&agentName;Home"></a>
 <hr>
 </trans-control>
 </protect></set>
@@ -29,6 +29,6 @@ WebPrinter controls will now be added to all proxied pages.
 </then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 12:48:10 1997
+Last modified: Mon Jun  9 22:29:16 1997
 <!-- hhmts end -->
 </body></html>
