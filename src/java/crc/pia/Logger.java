@@ -27,7 +27,8 @@ public class Logger {
     protected RandomAccessFile  trace    = null ;
     protected Pia               agency   = null ;
     protected String            logdir   = "logs" ;
-    protected int               bufsize  = 8192;
+  //  protected int               bufsize  = 8192;
+    protected int               bufsize  = 52;
     protected int               bufptr   = 0;
     protected byte              buffer[] = null;
 
