@@ -58,12 +58,15 @@ sub read{
  ($method, $url, $proto) = split;
  if ($proto) {
      while (<STDIN>) {
+	print FIZZLE $_;
 	 s/\n|\r//g; # kill CR and NL chars
 	 
 	 /^Content-Length: (\S*)/i && ($content_length=$1);
 	 /^Content-Type: (\S*)/i && ($content_type=$1);
 	 length || last; # empty line - end of header
      }
+     read(STDIN, $buffer, $content_length);
+     print FIZZLE $buffer;
  } else {
      $proto="HTTP/0.9";
  }
