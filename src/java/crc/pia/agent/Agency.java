@@ -146,9 +146,9 @@ public class Agency extends GenericAgent {
     String lhost = null;
 
     Pia.instance().debug(this, "actOn...");
-    Boolean isAgentRequest = (Boolean)trans.is("IsAgentRequest");
+    boolean isAgentRequest = trans.test("IsAgentRequest");
     
-    if( isAgentRequest.booleanValue() == false ) return;
+    if(! isAgentRequest ) return;
 
     URL url = trans.requestURL();
     if(url == null) return;
@@ -194,9 +194,9 @@ public class Agency extends GenericAgent {
   /**
    * initialize 
    */
-  public void initialize(){
-    matchCriterion("IsRequest", new Boolean( true ));
-    matchCriterion("IsAgentRequest", new Boolean( true ));
+  public void initialize() {
+    matchCriterion("IsRequest", true);
+    matchCriterion("IsAgentRequest", true);
     super.initialize();
   }
 

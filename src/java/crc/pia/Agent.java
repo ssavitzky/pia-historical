@@ -10,9 +10,15 @@ import crc.pia.Resolver;
 import crc.pia.Content;
 import java.net.URL;
 
-import crc.ds.Features;
+import crc.ds.Criteria;
+import crc.ds.Criterion;
+
+import crc.sgml.SGML;
+import crc.sgml.Attrs;
+
 import crc.tf.UnknownNameException;
-public interface Agent {
+
+public interface Agent extends Attrs {
   /**
    * Default initialization; implementors may override
    */
@@ -72,19 +78,30 @@ public interface Agent {
 
   /**
    * Agents maintain a list of feature names and expected values;
-   * the features themselves are maintained by a FEATURES object
+   * the features themselves are maintained by a Features object
    * attached to each transaction.
    */
-  public Vector criteria();
+  public Criteria criteria();
+
+  /** 
+   * Add a match criterion to our list of criteria;
+   */
+  public void matchCriterion(Criterion c);
 
   /**
-   * Set a match criterion.
-   * feature is string naming a feature
-   * value is 0,1 (exact match--for don't care, omit the feature)
-   * code is a functor object takes transaction as argument returns Boolean
-   * @return criteria table
+   * Set a match criterion from a "name=value" string.
    */
-  public Vector matchCriterion(String feature, Object value);
+  public void matchCriterion(String match);
+  
+  /**
+   * Set a match criterion that exactly matches a given value.
+   */
+  public void matchCriterion(String feature, Object value);
+  
+  /**
+   * Set a boolean match criterion.
+   */
+  public void matchCriterion(String feature, boolean test);
   
   /**
    * agents are associated with a virtual machine which is an
@@ -162,7 +179,6 @@ public interface Agent {
 
   public Object computeFeature(String featureName) throws UnknownNameException;
 
-  public void setFeatures( Features feature );
 }
 
 

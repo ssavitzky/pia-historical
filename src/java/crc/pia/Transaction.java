@@ -567,18 +567,18 @@ public abstract class Transaction extends AttrBase implements Runnable {
   ************************************************************************/
 
   /** Return the number of defined. */
-  public int nAttrs() {
+  public synchronized int nAttrs() {
     return 0;		// === unimplemented
   }
 
   /** Test whether an attribute exists. */
-  public  boolean hasAttr(String name) {
+  public synchronized boolean hasAttr(String name) {
     return has(name) || hasHeader(name);
   }
   
   /** Retrieve an attribute by name.  Returns null if no such
    *	attribute exists. */
-  public SGML attr(String name) {
+  public synchronized SGML attr(String name) {
     Object o = getFeature(name);
     if (o != null) return crc.sgml.Util.toSGML(o);
 
@@ -594,7 +594,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
   }
 
   /** Set an attribute. */
-  public void attr(String name, SGML value) {
+  public synchronized void attr(String name, SGML value) {
     features.assert(name, value);
     if (Character.isUpperCase(name.charAt(0))) 
       setHeader(name, value.toString());

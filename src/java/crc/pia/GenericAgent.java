@@ -21,30 +21,30 @@ import crc.pia.Content;
 import crc.pia.ByteStreamContent;
 import crc.pia.Pia;
 
-import crc.ds.Features;
+import crc.ds.Criteria;
+import crc.ds.Criterion;
+
+import crc.sgml.SGML;
+import crc.sgml.Attrs;
+import crc.sgml.AttrBase;
+import crc.sgml.AttrTable;
+
 import crc.util.regexp.RegExp;
 import crc.util.regexp.MatchInfo;
 import java.util.Enumeration;
 import crc.interform.Run;
 import w3c.www.http.HTTP;
 
-public class GenericAgent implements Agent {
+public class GenericAgent extends AttrBase implements Agent {
   
   private String filesep = System.getProperty("file.separator");
   public boolean DEBUG = false;  
 
-
-
-  /**
-   * Attribute index - attribute table for storing options
+ /**
+   * Attribute table for storing options
    */
-  protected Hashtable attributes = new Hashtable();
+  protected AttrTable attributes = new AttrTable();
 
-
-  /**
-   * features 
-   */
-  protected Features features;
 
   /**
    * Attribute index - name of this agent
@@ -78,10 +78,9 @@ public class GenericAgent implements Agent {
 
 
   /**
-   * Attribute index - a list of criteria, value pairs
-   *
+   * A list of match criteria.
    */
-  protected Vector criteria;
+  protected Criteria criteria;
 
   /**
    * Attribute index - virtual Machine to which local requests are directed.
@@ -98,8 +97,6 @@ public class GenericAgent implements Agent {
     String url;
     Transaction request;
 
-    features = new Features( this );
-
     if( t != null && !n.equalsIgnoreCase( t ) ) 
       type( t );
 
@@ -115,13 +112,6 @@ public class GenericAgent implements Agent {
       */
     }
 
-  }
-
-  /**
-   * set features
-   */
-  public void setFeatures( Features f ){
-    features = f;
   }
 
   /**
@@ -320,40 +310,45 @@ public class GenericAgent implements Agent {
 
   /**
    * Agents maintain a list of feature names and expected values;
-   * the features themselves are maintained by a FEATURES object
-   * attached to each transaction.  Add either a feature name or its value.
-   */
-  public void criteria(Object element){
-    if( element != null ){
-      if(criteria == null ) criteria = new Vector();
-      criteria.addElement( element );
-    }
-  }
-
-  /**
-   * Agents maintain a list of feature names and expected values;
-   * the features themselves are maintained by a FEATURES object
+   * the features themselves are maintained by a Features object
    * attached to each transaction.
    */
-  public Vector criteria(){
-    if(criteria == null) criteria = new Vector();
+  public Criteria criteria(){
+    if(criteria == null) criteria = new Criteria();
     return criteria;
   }
 
+  /** 
+   * Add a match criterion to our list of criteria;
+   */
+  public void matchCriterion(Criterion c) {
+    if (criteria == null) criteria = new Criteria();
+    criteria.push(c);
+  }
+
   /**
-   * Set a match criterion.
+   * Set a match criterion that exactly matches a given value.
    * feature is string naming a feature
    * value is 0,1 (exact match--for don't care, omit the feature)
-   * @return criteria table
    */
-  public Vector matchCriterion(String feature, Object value){
-    if(value == null)
-      value = new Boolean( true );
-    criteria( feature );
-    criteria( value );
-    return criteria();
+  public void matchCriterion(String feature, Object value) {
+    matchCriterion(Criterion.toMatch(feature, value));
   }
   
+  /**
+   * Set a boolean match criterion.
+   */
+  public void matchCriterion(String feature, boolean test) {
+    matchCriterion(Criterion.toMatch(feature, test));
+  }
+
+  /**
+   * Set a match criterion from a string of the form name=value.
+   */
+  public void matchCriterion(String match) {
+    matchCriterion(Criterion.toMatch(match));
+  }
+
   /**
    * agents are associated with a virtual machine which is an
    * interface for actually getting and sending transactions.  Posts
@@ -427,17 +422,45 @@ public class GenericAgent implements Agent {
     }
   }
 
+  /************************************************************************
+  ** Attrs interface: 
+  ************************************************************************/
+
+  /** Return the number of defined. */
+  public synchronized int nAttrs() {
+    return attributes.nAttrs();
+  }
+
+  /** Test whether an attribute exists. */
+  public synchronized  boolean hasAttr(String name) {
+    return attributes.hasAttr(name);
+  }
+  
+  /** Retrieve an attribute by name.  Returns null if no such
+   *	attribute exists. */
+  public synchronized SGML attr(String name) {
+    return attributes.attr(name);
+  }
+
+  /** Enumerate the defined attributes. */
+  public java.util.Enumeration attrs() {
+    return attributes.attrs();
+  }
+
+  /** Set an attribute. */
+  public synchronized void attr(String name, SGML value) {
+    attributes.attr(name, value);
+  }
+  
   /**
    * Options are strings stored in attributes.  Options may have
    * corresponding features derived from them, which we compute on demand.
    */
-  public void option(String key, String value) throws NullPointerException{
+  public void option(String key, String value) throws NullPointerException {
     if( key == null || value == null )
       throw new NullPointerException("Key or value can not be null.");
 
-      attributes.put( key, value );
-      if( features.has( key ) )
-	features.compute( key, this ); 
+      attributes.attr( key, value );
   }
 
   /**
@@ -446,16 +469,13 @@ public class GenericAgent implements Agent {
    */
   public String optionAsString(String key){
     if( key == null ) return null;
-    if( attributes.containsKey( key ) )
-      return (String)attributes.get( key );
-    else
-      return null;
+    return attributes.attrString(key);
   }
 
 
   /**
    * @return an option's value as boolean 
-   * @return false if key not found
+   * @return false if key not found or null
    */
   public boolean optionAsBoolean(String key){
     if( key == null ) return false;

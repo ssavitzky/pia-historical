@@ -170,8 +170,6 @@ public class Dofs extends GenericAgent {
     String mytype = "Dofs";
     type( mytype );
 
-    features = new Features( this );
-
     matchCriterion("IsRequest", new Boolean( true ));
     matchCriterion("IsAgentRequest", new Boolean( true ));
     /*
