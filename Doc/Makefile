@@ -7,7 +7,7 @@ MF_DIR=$(PIADIR)/Config/makefiles
 MYNAME=Doc
 MYPATH=Doc
 
-SUBDIRS=Graphics Graphics Manuals Papers 
+SUBDIRS=Graphics Manuals Notes Papers 
 
 include $(MF_DIR)/file.make
 include $(MF_DIR)/subdir.make 
