@@ -4,6 +4,7 @@
 
 package crc.pia;
 
+/** Thrown when an unknown MIME type is encountered. */
 public class BadMimeTypeException extends Exception {
     
     public BadMimeTypeException(String msg) {
