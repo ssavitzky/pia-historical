@@ -12,6 +12,7 @@ FILES = \
 	Dofs.java \
 	Fallback.java \
 	Logo.java \
+	Cache.java \
 	AgentInstallException.java
 
 include $(TOPDIR)/makefiles/file.make
