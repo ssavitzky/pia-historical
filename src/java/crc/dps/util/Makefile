@@ -9,6 +9,7 @@ FILES = $(CLASSES) $(UTILITIES)
 
 CLASSES = \
 	BasicNamespace.java \
+	NamespaceWrap.java \
 	BasicEntityTable.java \
 	ContextStack.java \
 	CurrentActive.java \
