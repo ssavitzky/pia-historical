@@ -283,12 +283,12 @@ sub remove_spaces {
     ##	  leading and trailing whitespace removed, and with items that
     ##	  consist only of whitespace deleted completely.
 
-    my @out;
+    my @out = ();
     $in = [$in] unless ref $in;
 
-    for $x (@$in) {
+    foreach $x (@$in) {
 	if (! ref $x) {
-	    $x =~ s/^[\n]*//s;
+	    $x =~ s/^[\n\s]*//s;
 	    $x =~ s/[\n\s]*$//s;
 	}
 	push(@out, $x) unless $x eq '';
@@ -303,13 +303,13 @@ sub analyze {
     ## The result is a hash that associates each of the given tags with 
     ##	  that tag's content in the top level of array @$in.  Anything
     ##	  outside any of the tags is associated with '_', or the first
-    ##	  empty tag if $flag is true. 
+    ##	  empty tag if $flag is true.  Blanks outside tags are ignored.
 
     ##	  If applied to a token instead of an array, attributes will be
     ##	  used if they exist, and the token will be returned instead of
     ##	  constructing a new hash.
 
-    my $out, $x, @tmp, %tags;
+    my ($out, $x, @tmp, %tags);
 
     if (ref($in) eq 'ARRAY') {
 	$out = {};
@@ -318,7 +318,7 @@ sub analyze {
 	$in = $in->content;
     }
 
-    print "Analying\n" if  $main::debugging>1;
+    print "Analzying\n" if  $main::debugging>1;
     for $x (@$tags) {
 	$tags{$x} = 1;
     }
@@ -334,7 +334,7 @@ sub analyze {
 	    }
 	} else {
 	    print "pushing '$x' to tmp\n" if $main::debugging>2;
-	    push(@tmp, $x) unless $x eq '';
+	    push(@tmp, $x) unless $x =~ /^[\s\n]*$/s;
 	}
     }
     if (@tmp) {

@@ -536,6 +536,7 @@ sub push_into {
 
     my $in_stack = $self->in_stack;
     if (!ref($it)) {
+	return unless $it;
 	push(@$in_stack, $it);
     } elsif (ref($it) eq 'ARRAY') {
 	push(@$in_stack, ['', 0, $it]);

@@ -268,12 +268,9 @@ sub if_handle {
     ## The right way to do this would be to parse the condition, then activate 
     ##	  appropriate actors for <then> and <else>.
 
-    ## The easy way at the moment is to quote the whole contents
-    ##	  and pick it apart later.
-
-    analyze($it, ['test', 'then', 'else'], 1);
-    my $test = remove_spaces($it->attr('test'));
-    $test = @$test if ref($test);
+    my $it = &analyze($it->content, ['cond', 'then', 'else'], 1);
+    my $test = remove_spaces($it->{'cond'});
+    $test = scalar @$test if ref($test);
 
     if ($test) {
 	print "<if >$test<then>...\n" if $main::debugging > 1;
@@ -368,7 +365,7 @@ sub test_handle {
     my ($self, $it, $ii) = @_;
     my $result = '';
     my $value = $it->attr('value');
-    my $match, $text;
+    my ($match, $text);
 
     if ($it->attr('text')) {
 	$text = $it->content_text unless defined $value;
@@ -584,7 +581,7 @@ sub agent_running_handle {
     if (ref $a) {
 	$ii->replace_it($name);
     } else {
-	$ii->delete_it;
+	$ii->delete_it();
     }
 }
 
