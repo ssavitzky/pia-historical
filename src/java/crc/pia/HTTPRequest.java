@@ -472,7 +472,8 @@ public class  HTTPRequest extends Transaction {
 	String qs = zurlandmore.substring(pos);
 
 	if( qs!= null )
-	  queryString = Utilities.unescape( qs );
+// queryString should be the original, escaped version!	  queryString = Utilities.unescape( qs );
+	  queryString =  qs ;
 
 	Pia.debug(this, "The query string is: "+qs);
       }
