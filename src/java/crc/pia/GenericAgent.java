@@ -123,6 +123,10 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   protected SGML handleHook;
 
+  /**
+   * Path prefix for data subdirectory.
+   */
+  protected String DATA = "~";
 
   /************************************************************************
   ** Initialization:
@@ -881,7 +885,15 @@ public class GenericAgent extends AttrBase implements Agent {
 
     boolean hadName = false;	// these might be useful someday.
     boolean hadType = false;
-    
+    boolean wasData = false;
+
+    /* Remove a leading /~ from the path and replace it with / */
+
+    if (path.startsWith("/~")) {
+      path = "/" + path.substring(2);
+      wasData = true;
+    }
+
     /* Remove a leading /type or /name or /type/name from the path. */
 
     if (path.startsWith("/" + mytype + "/")) {
@@ -894,6 +906,18 @@ public class GenericAgent extends AttrBase implements Agent {
       hadName = true;
     }
     
+    // === The following fails if pathsep is not "/" ===
+
+    if (path.startsWith("/" + DATA + "/") || path.equals("/" + DATA)) {
+      path = path.substring(DATA.length() + 1);
+      wasData = true;
+    }
+
+    if (wasData) {
+      if_path = new List();
+      if_path.push(agentDirectory());
+    }
+      
     if( path.startsWith("/") )	path = path.substring(1);
     Pia.debug(this, "Looking for -->"+ path);
 
@@ -908,7 +932,7 @@ public class GenericAgent extends AttrBase implements Agent {
     }
     
     return null;
-}
+  }
 
   /** 
    * Send an error message that includes the agent's name and type.

@@ -209,6 +209,8 @@ public class Resolver extends Thread {
     /* Now check for either /name/ or /type/name */
 
     if (path.startsWith("/")) path = path.substring(1);
+    if (path.startsWith("~")) path = path.substring(1);
+
     List pathList = new List(new java.util.StringTokenizer(path, "/"));
 
     Agent a = null;
