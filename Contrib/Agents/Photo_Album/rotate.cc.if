@@ -1,4 +1,0 @@
-<!-- $Id$ -->
-<if>&FORM.file;<then><os-command>mv &FORM.file; &FORM.file;.orig</os-command>
-<os-command>djpeg &FORM.file;.orig | pnmflip -r270 | cjpeg -quality 85> &FORM.file;.orig</os-command></then></if>
-<!-- Copyright 1997 Ricoh Silicon Valley -->
