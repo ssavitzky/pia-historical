@@ -80,7 +80,7 @@ prep_rel::
 pia_bin.toc:: rm_bin_tar prep_rel
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
-	    | grep -v src > pia/pia_bin.toc 
+	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
 
 pia_bin.tar:	pia_bin.toc
 	cd ..; $(TAR) cfT pia/pia_bin.tar pia/pia_bin.toc ;  /bin/gzip pia/pia_bin.tar
