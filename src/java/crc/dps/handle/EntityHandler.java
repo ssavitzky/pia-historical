@@ -44,11 +44,11 @@ public class EntityHandler extends AbstractHandler {
    */
   public static final EntityHandler DEFAULT  = new EntityHandler(true, 0);
 
-  /** An EntityHandler for active, non-indexed entities. */
-  public static final EntityHandler ACTIVE  = new EntityHandler(true, -1);
-
   /** An EntityHandler for active, indexed entities. */
   public static final EntityHandler INDEXED = new EntityHandler(true, 1);
+
+  /** An EntityHandler for active, non-indexed entities. */
+  public static final EntityHandler ACTIVE  = new EntityHandler(true, -1);
 
   /** An EntityHandler for passive entities, which should never be 
    *	replaced by their values during processing.
@@ -60,7 +60,11 @@ public class EntityHandler extends AbstractHandler {
   ************************************************************************/
 
   protected boolean active = true;
-  protected int indexed = 0;	// 1: index; -1: simple.
+  protected boolean simple  = false;
+  protected boolean indexed = false;
+
+  protected String  namespace = null;
+  protected String  namepart  = null;
 
   /************************************************************************
   ** Semantic Operations:
@@ -89,12 +93,19 @@ public class EntityHandler extends AbstractHandler {
     }
     String name = n.getName();
     NodeList value;
-    if (indexed > 0) value = Index.getIndexValue(aContext, name);
-    else if (indexed < 0) value = aContext.getEntityValue(name, false);
-    else if (name.indexOf('.') >= 0)
+    if (simple) {
+      value = (namepart != null)
+	? aContext.getEntityValue(namepart, false)
+	: aContext.getEntityValue(name, false);
+    } else if (indexed) {
+      value = (namepart != null) 
+	? Index.getValue(aContext, namespace, namepart)
+	: Index.getIndexValue(aContext, name);
+    } else if (name.indexOf(':') >= 0) {
       value = Index.getIndexValue(aContext, name);
-    else 
+    } else {
       value = aContext.getEntityValue(name, false);
+    }
 
     //aContext.debug("&" + name + "; => " + value + "\n");
 
@@ -119,7 +130,7 @@ public class EntityHandler extends AbstractHandler {
   public Action getActionForNode(ActiveNode n) {
     ActiveEntity ent = n.asEntity();
     String name = ent.getName();
-    return (name.indexOf('.') >= 0)? INDEXED : ACTIVE;
+    return (name.indexOf(':') >= 0)? INDEXED : ACTIVE;
   }
 
   /************************************************************************
@@ -155,9 +166,24 @@ public class EntityHandler extends AbstractHandler {
    *	periods at run-time; <code>1</code> if the name is an index; 
    *	<code>-1</code> if the name is not an index.
    */
-  public EntityHandler(boolean active, int indexed) {
+  public EntityHandler(boolean active, int syntax) {
     this.active  = active;
-    this.indexed = indexed;
+    this.indexed = syntax > 0;
+    this.simple  = syntax < 0;
+  }
+  /** Construct an EntityHandler
+   *
+   * @param active <code>true</code> (default) if the entity should ever be
+   *	expanded, <code>false</code> otherwise.
+   * @param name the name to look up
+   * @param namespace the (name of the) namespace to look it up in.
+   */
+  public EntityHandler(boolean active, String name, String namespace) {
+    this.active    = active;
+    this.namepart  = name;
+    this.namespace = namespace;
+    this.indexed   = namespace != null;
+    this.simple    = namespace == null;
   }
 
 }

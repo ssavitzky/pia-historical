@@ -22,6 +22,7 @@ FILES = \
 	Filter.java \
 	Handler.java \
 	Input.java \
+	Namespace.java \
 	NodeType.java \
 	Output.java \
 	Parser.java \
