@@ -74,10 +74,6 @@ public class Authenticate extends crc.interform.Handler {
     String salt = entry.substring(0, 2);
     String pass = entry.substring(2);
 
-    System.err.println("salt = " + salt + " entry = " + entry 
-		       + " pass = " + pass);
-    System.err.println("Result =" +  Jcrypt.crypt(salt, password));
-
     return entry.equals(Jcrypt.crypt(salt, password));
   }
 
