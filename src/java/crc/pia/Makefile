@@ -44,3 +44,5 @@ include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
 
 ### Dependencies:
+
+GenericAgent.class: Agent.java

@@ -4,7 +4,7 @@
 package crc.pia;
 
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 import crc.pia.Transaction;
@@ -25,18 +25,18 @@ import crc.sgml.Attrs;
 import crc.tf.UnknownNameException;
 
 /**
- * An agent is an object which maintains state and context  (which is
- * why agents conform to the Attrs interface). <p>
+ * An agent is an object which maintains state and context and corresponds
+ *	to a URL in the PIA server. 
  *
- * Agents can receive requests directly (http://Agency/AGENT_NAME/...), 
- * they can also operate on other transactions.  Direct requests are handled
- * by the respondToInterform methods.  To operate on other transactions,
- * Agents register with the resolver a set of
- * criteria for transactions they are interested in.  When the resolver
- * finds a matching transaction, the agents act_on method is called (and
- * the agent can modify the transaction.  The agent can completely
- * handle a transaction by putting itself on the transaction's list of
- * handlers --  which results in a call back to the agents handle method.
+ * <p> Agents can receive requests directly (http://Agency/AGENT_NAME/...);
+ *	they can also operate on other transactions.  Direct requests are
+ *	handled by the <code>respond</code> methods.  To operate on other
+ *	transactions, Agents register with the resolver a set of criteria for
+ *	transactions they are interested in.  When the resolver finds a
+ *	matching transaction, the agents act_on method is called (and the
+ *	agent can modify the transaction.  The agent can completely handle a
+ *	transaction by putting itself on the transaction's list of handlers --
+ *	which results in a call back to the agents handle method.
  */
 public interface Agent extends Tabular {
 
@@ -85,29 +85,9 @@ public interface Agent extends Tabular {
    * attached to each transaction.
    */
   public Criteria criteria();
-
-  /** 
-   * Add a match criterion to our list of criteria;
-   */
-  public void matchCriterion(Criterion c);
-
-  /**
-   * Set a match criterion from a "name=value" string.
-   */
-  public void matchCriterion(String match);
   
   /**
-   * Set a match criterion that exactly matches a given value.
-   */
-  public void matchCriterion(String feature, Object value);
-  
-  /**
-   * Set a boolean match criterion.
-   */
-  public void matchCriterion(String feature, boolean test);
-  
-  /**
-   * agents are associated with a virtual machine which is an
+   * Agents are associated with a virtual machine which is an
    * interface for actually getting and sending transactionss.  Posts
    * explicitly to an agent get sent to the agent's machine (then to
    * the agent's interform_request method). Other requests can be
@@ -123,8 +103,8 @@ public interface Agent extends Tabular {
   public void machine( Machine vmachine);
 
   /**
-   *  They can also be handled by code or InterForm hooks.  
-   *
+   * This method is called from the Resolver when an Agent's Criteria list
+   * matches a Transaction's Features set.
    */
   public void actOn(Transaction ts, Resolver res);
 
@@ -162,16 +142,8 @@ public interface Agent extends Tabular {
    * Creates one if necessary, starting with
    * USR_ROOT/Agents/name, PIA_ROOT/Agents/type, /tmp/Agents/name
    */
+
   public String agentIfDir();
-
-
-  /**
-   * returns the base url (as string) for this agent
-   * optional path argument just for convenience--
-   * returns full url for accessing that file
-   */
-  //public StringBuffer agentUrl();
-
   /**
    * Find an interform, using a simple search path which allows for user
    *	overrides of standard InterForms, and a crude kind of inheritance.  
@@ -209,8 +181,21 @@ public interface Agent extends Tabular {
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
+   *	@param contentType (optional) -- content type for a POST request.
    */
-  public void createRequest(String method, String url, String queryString);
+  public void createRequest(String method, String url,
+			    String queryString, String contentType);
+
+  /**
+   * Given a url string and content create a request transaction.
+   *	@param m the Machine to which the response is to be sent.
+   *	@param method (typically "GET", "PUT", or "POST").
+   *	@param url the destination URL.
+   *	@param content content object for a POST or PUT request.
+   *	@param contentType (optional) content type for a POST or PUT request.
+   */
+  public void createRequest(Machine m, String method, String url,
+			    InputContent content, String contentType);
 
   /**
    * Given a url string and content create a request transaction.
@@ -218,33 +203,10 @@ public interface Agent extends Tabular {
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
+   *	@param contentType (optional) -- content type for a POST request.
    */
   public void createRequest(Machine m, String method, String url,
-			    String queryString);
-
-  /**
-   * Given a url string and content create a request transaction.
-   *       The results are discarded.
-   *	@param method (typically "GET", "PUT", or "POST").
-   *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
-   *    @param contentType MIME type of content
-   */
-  public void createRequest(String method, String url, 
-			    ByteArrayOutputStream queryStream,
-			    String contentType);
-
-  /**
-   * Given a url string and content create a request transaction.
-   *	@param m the Machine to which the response is to be sent.
-   *	@param method (typically "GET", "PUT", or "POST").
-   *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
-   *    @param contentType MIME type of content
-   */
-  public void createRequest(Machine m, String method, String url,
-			    ByteArrayOutputStream queryStream,
-			    String contentType);
+			    String queryString, String contentType);
 
   /**
    * Given a url string and content create a request transaction.
@@ -252,26 +214,12 @@ public interface Agent extends Tabular {
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param contentType (optional) -- content type for a POST request.
+   *	@param times a Tabular containing the timing information
    */
-  public void createTimedRequest(String method, String url,
-				 String queryString, SGML itt);
+  public void createTimedRequest(String method, String url, String queryString,
+				 String contentType, Tabular times);
 
-  /**
-   * Given a url string and content create a request transaction.
-   *       The results are discarded.
-   *	@param method (typically "GET", "PUT", or "POST").
-   *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
-   *    @param contentType MIME type of content
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
-   */
-  public void createTimedRequest(String method, String url,
-				 ByteArrayOutputStream queryStream,
-				 String contentType,
-				 SGML itt);
 
   /** 
    * Handle timed requests.
@@ -302,9 +250,10 @@ public interface Agent extends Tabular {
   ** interface to content objects
   ************************************************************/
   /**
-   *  agents can register interest in content objects
-   * (content.notifyWhen).  Content objects call the agent back using
-   * contentUpdate.
+   * Agents can register interest in content objects using
+   *	<code>content.notifyWhen</code>.  Content objects call the agent 
+   *	back using <code>updateContent</code>.
+   *
    * @param object: arbitrary object specified by agent in original
    *                notifyWhen call
    */

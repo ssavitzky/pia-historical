@@ -5,15 +5,36 @@
 
 package crc.pia;
 
-import java.util.* ;
-import java.io.File ;
+import java.util.*;
+import java.io.File;
+import crc.ds.Tabular;
 
 /**
  * This class extends the basic properties class of Java, by providing
  * more type conversion.
  */
 
-public class Piaproperties extends Properties {
+public class Piaproperties extends Properties implements Tabular {
+
+  /** Put a value for a name.  (From Tabular interface).
+   * @param name The name of the property to assign.
+   * @param value The new value for this property, or <strong>null</strong>
+   *    if the property setting is to be cancelled.
+   * @see crc.ds.Tabular
+   */
+  public synchronized void put(String name, Object value) {
+    if (value == null) super.remove(name);
+    else super.put(name, value);
+  }
+
+  /** Get value associated with a name.  (From Tabular interface).
+   * @param name The name of the property to assign.
+   * @see crc.ds.Tabular
+   */
+  public synchronized Object get(String name) {
+    return getProperty(name, null);
+  }
+
     /**
      * Assign a value to a property. 
      * @param name The name of the property to assign.
@@ -23,7 +44,7 @@ public class Piaproperties extends Properties {
      *    our observers, <strong>false</strong> otherwise.
      */
     
-    public synchronized boolean putValue (String name, String value) {
+  public synchronized boolean putValue (String name, String value) {
 	// If null value, remove the prop definition:
 	if ( value == null ) {
 	    super.remove(name) ;
@@ -65,29 +86,7 @@ public class Piaproperties extends Properties {
 	return def ;
     }
 
-    /**
-     * Get this property as a String array.
-     * By convention, properties that are get as string arrays should be
-     * encoded as a <strong>|</strong> separated list of Strings.
-     * @param name The property's name.
-     * @param def The default value (if undefined).
-     * @return A String array, or <strong>null</strong> if the property
-     * is undefined.
-     */
-
-    public String[] getStringArray(String name, String def[]) {
-	String v = getProperty(name, null);
-	if ( v == null )
-	    return def;
-	// Parse the property value:
-	StringTokenizer st    = new StringTokenizer(v, "|");
-	int             len   = st.countTokens();
-	String          ret[] = new String[len];
-	for (int i = 0 ; i < ret.length ; i++) {
-	    ret[i] = st.nextToken();
-	}
-	return ret;
-    }
+  // steve: removed getStringArray, getFile -- unused.
 
     /**
      * Get this property value, as an integer.
@@ -129,20 +128,6 @@ public class Piaproperties extends Properties {
 	    }
 	}
 	return def;
-    }
-
-    /**
-     * Get this property value, as a File.
-     * @param name The name of the property to be fetched.
-     * @param def The default value, if the property isn't defined.
-     * @return An instance of File.
-     */
-
-    public File getFile(String name, File def) {
-	String v = getProperty(name, null);
-	if ( v != null )
-	    return new File (v) ;
-	return def ;
     }
 
     /**

@@ -14,6 +14,7 @@ import crc.pia.Resolver;
 
 import crc.ds.Registered;
 import crc.ds.List;
+import crc.ds.Tabular;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
@@ -23,14 +24,14 @@ import crc.sgml.Util;
 import crc.util.Utilities;
 
 import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.text.DateFormat;
 
-public class CrontabEntry extends Element implements Serializable {
+public class CrontabEntry implements Serializable {
 
   /************************************************************************
   ** Request Data:
@@ -46,7 +47,7 @@ public class CrontabEntry extends Element implements Serializable {
   String url;
 
   /** The request content (for POST or PUT). */
-  ByteArrayOutputStream content;
+  String content;
 
   /** The request content type (for POST or PUT). */
   String contentType;
@@ -87,27 +88,23 @@ public class CrontabEntry extends Element implements Serializable {
   ** Creating and Submitting Requests:
   ************************************************************************/
 
-  public CrontabEntry() {
-    super("crontab-entry");
-  }
+  public CrontabEntry() {  }
 
   /**
    * Construct a Crontab entry.
    *	@param agent the Agent submitting the request.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
+   *	@param queryString (optional) -- content for a POST request.
    *    @param contentType MIME type for the request content.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param times a Tabular that contains the timing information.
    */
   public CrontabEntry(Agent agent, String method, String url,
-		      String queryString, SGML itt) {
+		      String queryString, Tabular times) {
     // Convert query string to byte array
     // Assume default content type
-    this(agent, method, url,
-	 Utilities.StringToByteArrayOutputStream(queryString),
-	 "application/x-www-urlencoded", itt);
+    this(agent, method, url, queryString,
+	 "application/x-www-urlencoded", times);
   }
 
   
@@ -117,18 +114,17 @@ public class CrontabEntry extends Element implements Serializable {
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param times  a Tabular containing the timing information
    */
   public CrontabEntry(Agent agent, String method, String url,
-		      ByteArrayOutputStream queryStream,
-		      String contentType, SGML itt) {
+		      String queryString,
+		      String contentType, Tabular itt) {
     this();			// initialize the times to wildcards
     
     this.agent 	 = agent;
     this.method  = method;
     this.url 	 = url;
-    this.content = queryStream;
+    this.content = queryString;
     this.contentType = contentType;
 
     hour 	= entry(itt, "hour");
@@ -141,7 +137,7 @@ public class CrontabEntry extends Element implements Serializable {
     /* Even if the year or weekday is a wildcard, don't repeat unless a
      *	"repeat" attribute is explicitly present.
      */
-    if (itt.hasAttr("repeat")) {
+    if (itt.get("repeat") != null) {
       repeat = entry(itt, "repeat");
     } else if (hour >= 0 && minute >= 0 && day >= 0 && month >= 0) {
       repeat = 1;
@@ -149,8 +145,8 @@ public class CrontabEntry extends Element implements Serializable {
       repeat = -1;
     }
 
-    if (itt.hasAttr("until")) {
-      List until = Util.split(itt.attrString("until"), '-');
+    if (itt.get("until") != null) {
+      List until = Util.split(itt.get("until").toString(), '-');
       untilMonth = untilEntry(until, 0);
       untilDay   = untilEntry(until, 1);
       untilHour  = untilEntry(until, 2);
@@ -169,21 +165,19 @@ public class CrontabEntry extends Element implements Serializable {
     }
   }
 
-  private int entry(SGML itt, String attr) {
-    if (itt.hasAttr(attr)) {
-      if (itt.attr(attr) == crc.sgml.Token.empty) return -1;
-      else return (int)itt.attr(attr).toText().intValue();
-    } else {
-      return -1;
-    }
+  private int entry(Tabular itt, String attr) {
+    Object v = itt.get(attr);
+    if (v == null || "".equals(v.toString())) return -1;
+    else return Integer.valueOf(v.toString()).intValue();
   }
 
-  private int weekDayEntry(SGML itt, String attr) {
-    String s = itt.attrString(attr);
+  private int weekDayEntry(Tabular itt, String attr) {
+    Object o = itt.get(attr);
+    String s = (o == null)? null : o.toString();
 
     if (s == null || "".equals(s)) return -1;
     if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
-      return (int)itt.attr(attr).toText().intValue();
+      return entry(itt, attr);
     }
     return 0;    // === day name lookup not supported ===
   }

@@ -15,7 +15,22 @@ See also:
   <li> <a href="#end">Oldest Entry</a> (at end.)
 </ul>
 
+<h2>Cleanup and refactoring</h2>
 <ol>
+  <li> Move Piaproperties to <code>ds</code>; rename.
+  <li> Make a generic Tabular wrapper similar to Piaproperties.  Use for,
+       e.g., attribute lists.
+  <li> Rename Tabular to StringMap
+  <li> Use StringMap interface for headers, etc.
+</ol>
+
+<h2>Main List</h2>
+<ol>
+  <li> <b>Hole</b> Interface Cleanup <br>
+       Make most attributes conform to get/set convention instead of the
+       legacy perl convention.  Remove most convenience methods,
+       e.g. the ones that set criteria, etc.
+
   <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
        Actually, finding files ought to be in a utility class, because you
        need to get out: the file pathname, the URL path, and the part of the

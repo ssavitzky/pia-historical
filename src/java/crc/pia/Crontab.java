@@ -17,15 +17,13 @@ import crc.pia.Agent;
 import crc.pia.Resolver;
 
 import crc.ds.Registered;
-
-import crc.sgml.SGML;
-import crc.sgml.Element;
-import crc.sgml.Attrs;
+import crc.ds.Tabular;
+import crc.ds.List;
 
 import java.io.Serializable;
 import java.io.ByteArrayOutputStream;
 
-public class Crontab extends Element implements Serializable {
+public class Crontab extends List implements Serializable {
 
   /** The last time the crontab was run, as given by
    *	System.currentTimeMillis().
@@ -38,7 +36,7 @@ public class Crontab extends Element implements Serializable {
 
 
   public void addRequest(CrontabEntry entry) {
-    addItem(entry);
+    push(entry);
   }
 
   /** Remove the earliest entry that matches the one given. */
@@ -58,16 +56,15 @@ public class Crontab extends Element implements Serializable {
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param times  a Tabular containing the timing information
    *
    *	@see crc.pia.CrontabEntry
    */
   public void makeEntry(Agent agent, String method, String url,
-			String queryString, SGML itt) {
+			String queryString, Tabular times) {
     // CrontabEntry will assume defaults for contentType, and will
     // convert queryString to a ByteArrayOutputStream
-    addRequest(new CrontabEntry(agent, method, url, queryString, itt));
+    addRequest(new CrontabEntry(agent, method, url, queryString, times));
   }
 
 
@@ -78,18 +75,16 @@ public class Crontab extends Element implements Serializable {
    *	@param agent the Agent submitting the request.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
+   *	@param queryString content for a PUT or POST request.
    *	@param contentType MIME type for the request content.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param times  a Tabular containing the timing information
    *
    *	@see crc.pia.CrontabEntry
    */
   public void makeEntry(Agent agent, String method, String url,
-			ByteArrayOutputStream queryStream,
-			String contentType, SGML itt) {
-    addRequest(new CrontabEntry(agent, method, url, queryStream,
-				contentType, itt));
+			String queryString, String contentType, Tabular times) {
+    addRequest(new CrontabEntry(agent, method, url, queryString,
+				contentType, times));
   }
 
   /**
@@ -111,9 +106,9 @@ public class Crontab extends Element implements Serializable {
      *	getting confused when an expired entry is removed. */
 
     for (int i = nItems(); --i >= 0; ) {
-      CrontabEntry entry = (CrontabEntry)itemAt(i);
+      CrontabEntry entry = (CrontabEntry)at(i);
       if (entry.handleRequest(previousTime, lastTime)
-	  && entry.expired()) content().remove(entry);
+	  && entry.expired()) remove(entry);
     }
   }
 
@@ -123,7 +118,6 @@ public class Crontab extends Element implements Serializable {
   ************************************************************************/
 
   public Crontab() {
-    super("crontab");		// crontab tag.
   }
 
 }

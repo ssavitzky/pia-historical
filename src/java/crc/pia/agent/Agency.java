@@ -19,6 +19,8 @@ import java.net.URL;
 
 import crc.ds.Table;
 import crc.ds.List;
+import crc.ds.Criterion;
+
 import crc.pia.GenericAgent;
 import crc.pia.Resolver;
 import crc.pia.Agent;
@@ -243,8 +245,9 @@ public class Agency extends GenericAgent {
    * initialize 
    */
   public void initialize() {
-    matchCriterion("IsRequest", true);
-    matchCriterion("IsAgentRequest", true);
+    if (initialized) return;
+    criteria().push(Criterion.toMatch("IsRequest", true));
+    criteria().push(Criterion.toMatch("IsAgentRequest", true));
     super.initialize();
   }
 

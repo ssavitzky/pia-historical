@@ -64,7 +64,7 @@ public class Get_trans extends Get {
       if( cont != null )
         ii.replaceIt( cont );
     }else {
-      SGML result = env.transaction.attr(name);
+      SGML result = Util.toSGML(env.transaction.get(name));
       result = processResult(result, it);
       ii.replaceIt(result);
     }

@@ -57,7 +57,7 @@ public class Set_trans extends Set {
       if(isComplex(index,it)){
 	doComplexSet(key,index,new AttrWrap(new SecureAttrs(trans, ii)), value, ia,it,ii);
       }else {
-	trans.attr(key, value);
+	trans.put(key, value);
       }
     }
 

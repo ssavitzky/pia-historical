@@ -1,19 +1,6 @@
 // Transaction.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
-
-
-/**
- * Transactions generalize the HTTP classes Request and Response.
- * They are used in the rule-based resolver, which associates 
- * transactions with the interested agents.
- *
- * A Transaction has a queue of ``handlers'', which are called
- * (from the transaction.satisfy() method) after all agents
- * have acted on it.  At least one must return true, otherwise
- * the transaction will ``satisfy'' itself.
- */
-
 package crc.pia;
 import java.util.Enumeration;
 import java.net.URL;
@@ -48,7 +35,21 @@ import crc.tf.TFComputer;
 
 import w3c.www.http.HTTP;
 
-public abstract class Transaction extends AttrBase
+/**
+ * Transactions generalize the HTTP classes Request and Response.
+ * They are used in the rule-based resolver, which associates 
+ * transactions with the interested agents.
+ *
+ * <p>A Transaction has a queue of ``handlers'', which are called
+ * (from the transaction.satisfy() method) after all agents
+ * have acted on it.  At least one must return true, otherwise
+ * the transaction will ``satisfy'' itself by sending its content to 
+ * the stream defined by its "toMachine".
+ *
+ * <p> === It would be much better if Transaction was an interface.
+ *	   Move AbstractTransaction, Request, and Response to subdir..
+ */
+public abstract class Transaction 
     implements Runnable, HasFeatures, Tabular
 {
 
@@ -576,43 +577,6 @@ public abstract class Transaction extends AttrBase
     return criteria.match(features, this);
   } 
 
-  /************************************************************************
-  ** Attrs interface: 
-  ************************************************************************/
-
-  /** Return the number of defined. */
-  public synchronized int nAttrs() {
-    return 0;		// === unimplemented
-  }
-
-  /** Test whether an attribute exists. */
-  public synchronized boolean hasAttr(String name) {
-    return has(name) || hasHeader(name);
-  }
-  
-  /** Retrieve an attribute by name.  Returns null if no such
-   *	attribute exists. */
-  public synchronized SGML attr(String name) {
-    Object o = getFeature(name);
-    if (o != null) return crc.sgml.Util.toSGML(o);
-
-    String s = header(name);
-    if (s != null) return new crc.sgml.Text(name);
-
-    return null;
-  }
-
-  /** Enumerate the defined attributes. */
-  public java.util.Enumeration attrs() {
-    return null;		// === unimplemented
-  }
-
-  /** Set an attribute. */
-  public synchronized void attr(String name, SGML value) {
-    features.assert(name, value);
-    if (Character.isUpperCase(name.charAt(0))) 
-      setHeader(name, value.toString());
-  }
   
   /************************************************************************
   ** Tabular Interface:
@@ -633,6 +597,7 @@ public abstract class Transaction extends AttrBase
   }
 
   public synchronized Enumeration keys() {
+      // have to concatenate features.keys and header.keys
     return null;		// === keys unimplemented
   }
 

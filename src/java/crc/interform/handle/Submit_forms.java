@@ -16,18 +16,21 @@ import crc.sgml.Text;
 import crc.sgml.Element;
 
 import crc.ds.TernFunc;
-import crc.pia.agent.AgentMachine;
+import crc.ds.Table;
 
 import crc.pia.Agent;
+import crc.pia.agent.AgentMachine;
 import crc.pia.Headers;
 import crc.pia.BadMimeTypeException;
 import crc.pia.FileAccess;
+import crc.pia.InputContent;
+import crc.pia.FormContent;
 import crc.pia.Content;
+import crc.pia.MultipartFormContent;
+import crc.pia.Pia;
 
 import java.util.Enumeration;
 import crc.util.Utilities;
-
-import w3c.www.mime.MimeType;
 
 import java.io.*;
 
@@ -99,7 +102,7 @@ public class Submit_forms extends crc.interform.Handler {
       } else if (encType.equals("multipart/form-data")) {
 	contentType = "multipart/form-data; boundary="+multipartBoundary;
       } else {
-	crc.pia.Pia.debug(this, "Unknown encoding specified in form: "+encType);
+	Pia.debug(this, "Unknown encoding specified in form: "+encType);
 	return;
       }
 
@@ -112,10 +115,12 @@ public class Submit_forms extends crc.interform.Handler {
 
       // Create the HTTP request
       if (itt == null) {
-	crc.pia.Pia.debug(this,"Making request "+method+" "+url+" "+contentType);
+	Pia.debug(this,"Making request "+method+" "+url+" "+contentType);
 	a.createRequest(m,method, url, formToEncoding(it,encType), contentType);
       } else { 
-	a.createTimedRequest(method, url, formToEncoding(it,encType), contentType, itt);
+	a.createTimedRequest(method, url,
+			     formToEncoding(it,encType).toString(),
+			     contentType, times(itt));
       }
 
     } else if (it.hasAttr("href")) {
@@ -130,10 +135,22 @@ public class Submit_forms extends crc.interform.Handler {
 
       String url = it.attrString("href");
       if (itt == null) 
-	a.createRequest(m,"GET", url, null);
-      else 
-	a.createTimedRequest("GET", url, null, itt);
+	a.createRequest(m,"GET", url, (String) null, null);
+      else {
+	a.createTimedRequest("GET", url, (String) null, null, times(itt));
+      }
     }
+  }
+
+  /** Convert attributes to a Table. */
+  protected Table times(SGML itt) {
+    Table t = new Table();
+    String times[] = {
+      "hour", "minute", "day", "month", "year", "weekday", "until", "repeat"
+    };
+    for (int i = 0; i < times.length; ++i)
+      if (itt.hasAttr(times[i])) { t.put(times[i], itt.attr(times[i])); }
+    return t;
   }
 
   /** Look for forms in the content.  Recursively enumerates the content,
@@ -161,14 +178,14 @@ public class Submit_forms extends crc.interform.Handler {
    *  or a multipart form encoding
    */
 
-  protected ByteArrayOutputStream formToEncoding(SGML it, String encType) {
+  protected InputContent formToEncoding(SGML it, String encType) {
     if (encType.equals("application/x-www-form-urlencoded")) {
-      return trimQuery(formToQuery(it));
+      return new FormContent(trimQuery(formToQuery(it)));
     } else if (encType.equals("multipart/form-data")) {
-      return formToMultipart(it);
+      return new MultipartFormContent(formToMultipart(it));
     } else {
       // WHAT IS CORRECT ACTION HERE?
-      crc.pia.Pia.debug(this, "Unknown encoding specified in form");
+      Pia.debug(this, "Unknown encoding specified in form");
       return null;
     }
   }
@@ -241,7 +258,7 @@ public class Submit_forms extends crc.interform.Handler {
     try {
       partsByte.flush();
     } catch (IOException e) {
-      crc.pia.Pia.debug(this,"Failed to flush");
+      Pia.debug(this,"Failed to flush");
     }
 
     return partsByte;
@@ -287,7 +304,7 @@ public class Submit_forms extends crc.interform.Handler {
 	  // Stream for reading in files
 	  BufferedInputStream B;
 
-	  crc.pia.Pia.debug(this, "Trying to read file "+value);
+	  Pia.debug(this, "Trying to read file "+value);
 	    
 	  // The filename is in the value field
 	  java.io.File UploadFile;
@@ -295,7 +312,7 @@ public class Submit_forms extends crc.interform.Handler {
 	    UploadFile = new java.io.File(value);
 	  } catch (NullPointerException e) {
 	    // If no file name was supplied, do not write anything
-	    crc.pia.Pia.debug(this, "Could not find file name");
+	    Pia.debug(this, "Could not find file name");
 	    return partsByte;
 	  }
 	  if (UploadFile.exists() && UploadFile.canRead()) {
@@ -304,23 +321,23 @@ public class Submit_forms extends crc.interform.Handler {
 	    try {
 	      B = new BufferedInputStream(new FileInputStream(UploadFile));
 	    } catch (IOException e) {
-	      crc.pia.Pia.debug(this, "Could not open file "+value);
+	      Pia.debug(this, "Could not open file "+value);
 	      return partsByte;
 	    }
 	  } else {
-	    crc.pia.Pia.debug(this, "Could not read file "+value);
+	    Pia.debug(this, "Could not read file "+value);
 	    // Do not write anything
 	    return partsByte;
 	  }
 	  
 
-	  crc.pia.Pia.debug(this,"Read the file "+value);
+	  Pia.debug(this,"Read the file "+value);
 	  
 	  // Try to guess the MIME type
 	  // If cannot be determined, used default value of application/octet-stream
 	  // as specified in the RFC
-	  String MimeType = FileAccess.contentType(value,"application/octet-stream");
-	  crc.pia.Pia.debug(this, "Mime type of file set to "+MimeType);
+	  String mimeType = FileAccess.contentType(value,"application/octet-stream");
+	  Pia.debug(this, "Mime type of file set to "+mimeType);
 	  
 	  // Write out header
 	  partsString.write("--" + multipartBoundary + "\r\n");
@@ -339,10 +356,10 @@ public class Submit_forms extends crc.interform.Handler {
 	  // seem to depend on this particular ordering (!!)
 
 	  partsString.write("Content-Disposition: "+ContentDispositionHeader+"\r\n");
-	  partsString.write("Content-Type: " + MimeType +"\r\n\r\n");
+	  partsString.write("Content-Type: " + mimeType +"\r\n\r\n");
 	  
 	  // Then append file
-	  if (MimeType.startsWith("text/")) {
+	  if (mimeType.startsWith("text/")) {
 	    // as text
 	    partsString.write("\n");
 	    // TO DO
@@ -370,12 +387,12 @@ public class Submit_forms extends crc.interform.Handler {
 	    try {
 	      B.close();
 	    } catch (IOException e) {
-	      crc.pia.Pia.debug(this, "Could not close file "+value);
+	      Pia.debug(this, "Could not close file "+value);
 	      return partsByte;
 	    }
 
 
-	    crc.pia.Pia.debug(this,"Written out binary file");
+	    Pia.debug(this,"Written out binary file");
 	  }
 
 	} else {
@@ -392,13 +409,13 @@ public class Submit_forms extends crc.interform.Handler {
 	    // For the input types listed above, it makes sense
 	    // to send the value field as text
 	    
-	    crc.pia.Pia.debug(this,"Writing out " + inputType + " field: "+name+" "+value);
+	    Pia.debug(this,"Writing out " + inputType + " field: "+name+" "+value);
 	    partsString.write("--" + multipartBoundary + "\r\n");
 	    String ContentDispositionHeader = "form-data; name=\"" + name + "\"";
 	    partsString.write("Content-Disposition: "+ContentDispositionHeader+"\r\n\r\n");
 	    partsString.write(value + "\r\n");
 	  } else {
-	    crc.pia.Pia.debug(this,"Cannot handle INPUT field of type "+inputType);
+	    Pia.debug(this,"Cannot handle INPUT field of type "+inputType);
 	    // Write nothing
 	  }	    
 	  partsString.close();
@@ -413,7 +430,7 @@ public class Submit_forms extends crc.interform.Handler {
 	    partsByte = accumulateFormToMultipart((SGML)tokens.nextElement(),
 						  partsByte);
 	  } catch (Exception e) {
-	    crc.pia.Pia.debug(this,"Exception in accumulateFormToMultipart "+e.toString());
+	    Pia.debug(this,"Exception in accumulateFormToMultipart "+e.toString());
 	  }
 	}
       }
@@ -422,11 +439,11 @@ public class Submit_forms extends crc.interform.Handler {
 
   
   /** trim an extraneous &amp; from the end of a query string. */
-  protected static ByteArrayOutputStream trimQuery(String query) {
+  protected static String trimQuery(String query) {
     if (query.endsWith("&")) 
       query = query.substring(0, query.length()-1);
-    crc.pia.Pia.debug("Trimmed query "+query);
-    return Utilities.StringToByteArrayOutputStream(query);
+    Pia.debug("Trimmed query "+query);
+    return (query);
   }
 
   /** Attributes that determine a timed submission */

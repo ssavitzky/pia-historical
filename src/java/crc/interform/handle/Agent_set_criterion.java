@@ -11,6 +11,8 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
+import crc.ds.Criteria;
+import crc.ds.Criterion;
 
 
 /** Handler class for &lt;agent-set-criterion&gt tag 
@@ -37,15 +39,16 @@ public class Agent_set_criterion extends crc.interform.Handler {
 
     Run env = Run.environment(ii);
     crc.pia.Agent a = env.getAgent(aname);
+    Criteria c = a.criteria();
 
     /* Convert the value (a string) to something acceptable as a match
      *	criterion. === setting from a string would be better === */
 
-    if (value == null) a.matchCriterion(name, true);
-    else if (value.equals("")) a.matchCriterion(name, false);
-    else if (value.equals("0")) a.matchCriterion(name, false);
-    else if (value.equals("1")) a.matchCriterion(name, true);
-    else a.matchCriterion(name, value);
+    if (value == null) c.push(Criterion.toMatch(name, true));
+    else if (value.equals("") || value.equals("0"))
+      c.push(Criterion.toMatch(name, false));
+    else if (value.equals("1")) c.push(Criterion.toMatch(name, true));
+    else c.push(Criterion.toMatch(name, value));
 
     ii.deleteIt();
   }
@@ -60,12 +63,13 @@ public class Agent_set_criterion extends crc.interform.Handler {
     String name = atts.getAttributeString("name");
     String value = atts.getAttributeString("value");
     crc.pia.Agent a = env.getAgent(atts.getAttributeString("agent"));
+    Criteria c = a.criteria();
 
-    if (value == null) a.matchCriterion(name, true);
-    else if (value.equals("")) a.matchCriterion(name, false);
-    else if (value.equals("0")) a.matchCriterion(name, false);
-    else if (value.equals("1")) a.matchCriterion(name, true);
-    else a.matchCriterion(name, value);
+    if (value == null) c.push(Criterion.toMatch(name, true));
+    else if (value.equals("") || value.equals("0"))
+      c.push(Criterion.toMatch(name, false));
+    else if (value.equals("1")) c.push(Criterion.toMatch(name, true));
+    else c.push(Criterion.toMatch(name, value));
 
     return true;
   }

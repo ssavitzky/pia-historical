@@ -10,9 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.io.IOException;
 
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
-
 import java.io.PrintStream;
 import java.io.OutputStream;
 
@@ -37,7 +35,6 @@ import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
 import crc.ds.Criteria;
-import crc.ds.Criterion;
 import crc.ds.Tabular;
 import crc.ds.Registered;
 
@@ -97,7 +94,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
   public String homePathSuffix = "/home";
 
   /** Suffix appended to the agent's name to get to its 'index InterForm' */
-  public String indexPathSuffix = "/index";
+  public String indexPathSuffix = "index";
 
   /** If true, run the request for <code>initialize.if</code> through the 
    *	Resolver.  Otherwise, run the interpretor over it directly.
@@ -203,7 +200,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     String n = name();
     String t = type();
-    String url = "/" + n + "/" + "initialize.if";
+    String url = "/" + n + "/" + "initialize";
     Transaction request;
 
     if( t != null && !n.equalsIgnoreCase( t ) ) 
@@ -219,16 +216,16 @@ public class GenericAgent implements Agent, Registered, Serializable {
     }
 
     if (RESOLVE_INITIALIZE) {
-      createRequest("GET", url, null );
+      createRequest("GET", url, null, null );
     } else {
       /* Run the initialization in the current thread to ensure that 
        * agents are initialized in the correct order and that no requests
        * are made on partially-initialized agents.
        */
-      String fn = findInterform("initialize.if");
+      String fn = findInterform("initialize");
       if (fn != null) try {
 	Run.interformSkipFile(this, fn,
-			      makeRequest(machine(), "GET", url, null, 
+			      makeRequest(machine(), "GET", url, (String)null, 
 					  DefaultFormSubmissionContentType),
 			      Pia.instance().resolver());
       } catch (Exception e) {
@@ -267,70 +264,40 @@ public class GenericAgent implements Agent, Registered, Serializable {
    *	@param url the destination URL.
    *	@param queryString (optional) -- content for a POST request.
    */
-  public void createRequest(String method, String url, String queryString){
-    makeRequest(machine(), method, url,
-		Utilities.StringToByteArrayOutputStream(queryString),
-		DefaultFormSubmissionContentType).startThread();
-  }
-
-  /**
-   * Given a url string and content create a request transaction.
-   *       The results are discarded.
-   *	@param method (typically "GET", "PUT", or "POST").
-   *	@param url the destination URL.
-   *	@param queryStream (optional) -- content for a POST request.
-   *    @param contentType MIME type for the submission
-   */
   public void createRequest(String method, String url,
-			    ByteArrayOutputStream queryStream,
-			    String contentType)
-    {
-      makeRequest(machine(), method, url,
-		  queryStream,
-		  contentType).startThread();
-    }
+			    String queryString, String contentType){
+    if (contentType == null) contentType = DefaultFormSubmissionContentType;
+    makeRequest(machine(), method, url, queryString, contentType).startThread();
+  }
+
 
   /**
    * Given a url string and content create a request transaction.
    *	@param m the Machine to which the response is to be sent.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryString (optional) -- content for a POST request.
+   *	@param queryString content for a POST request.
+   *	@param contentType defaults to DefaultFormSubmissionContentType
    */
   public void createRequest(Machine m, String method, String url,
-			    String queryString) {
-    makeRequest(m, method, url, 
-		Utilities.StringToByteArrayOutputStream(queryString),
-		DefaultFormSubmissionContentType).startThread();
+			    String queryString, String contentType) {
+    if (contentType == null) contentType = DefaultFormSubmissionContentType;
+    makeRequest(m, method, url, queryString, contentType).startThread();
   }
+
 
   /**
    * Given a url string and content create a request transaction.
    *	@param m the Machine to which the response is to be sent.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryStream content for a POST request.
-   *    @param contentType MIME type for the submission
+   *	@param queryString content for a POST request.
+   *	@param contentType defaults to DefaultFormSubmissionContentType
    */
   public void createRequest(Machine m, String method, String url,
-			    ByteArrayOutputStream queryStream,
-			    String contentType) {
-    makeRequest(m, method, url, queryStream, contentType).startThread();
-  }
-
-  /**
-   * Given a url string and content create a request transaction.
-   *       The results are discarded.
-   *	@param method (typically "GET", "PUT", or "POST").
-   *	@param url the destination URL.
-   *	@param queryString (optional) -- content for a POST request.
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
-   */
-  public void createTimedRequest(String method, String url,
-				 String queryString, SGML itt) {
-    if (crontab == null) crontab = new Crontab();
-    crontab.makeEntry(this, method, url, queryString, itt);
+			    InputContent content, String contentType) {
+    if (contentType == null) contentType = DefaultFormSubmissionContentType;
+    makeRequest(m, method, url, content, contentType).startThread();
   }
 
 
@@ -339,49 +306,52 @@ public class GenericAgent implements Agent, Registered, Serializable {
    *       The results are discarded.
    *	@param method (typically "GET", "PUT", or "POST").
    *	@param url the destination URL.
-   *	@param queryStream content for a POST request.
-   *    @param contentType MIME type for the submission
-   *	@param itt an SGML object, normally an Element, with attributes
-   *		that contain the timing information.
+   *	@param queryString (optional) -- content for a POST request.
+   *	@param times a Tabular containing the timing information
    */
   public void createTimedRequest(String method, String url,
-				 ByteArrayOutputStream queryStream,
-				 String contentType, SGML itt) {
+				 String queryString, 
+				 String contentType, Tabular times) {
     if (crontab == null) crontab = new Crontab();
-    crontab.makeEntry(this, method, url, queryStream, contentType, itt);
+    crontab.makeEntry(this, method, url, queryString, contentType, times);
   }
 
 
   /** Make a new request Transaction on this agent. */
   public Transaction makeRequest(Machine m, String method, String url, 
-				 ByteArrayOutputStream queryStream,
-				 String contentType) {
-    Pia.debug(this, "makeRequest -->"+method+" "+url);
-    //      + ((queryStream == null)? "" : "?"+queryStream.toString()));
-    Pia.debug(this, "Content type "+contentType);
-
-    Transaction request;
+				 String queryString, String contentType) {
     InputContent c;
 
     if (contentType.startsWith("multipart/form-data")) {
       crc.pia.Pia.debug(this,"Making new MultipartFormContent");
-      c = new MultipartFormContent(queryStream);
+
+      c = new MultipartFormContent(Utilities.StringToByteArrayOutputStream(queryString));
     } else {
       // Convert stream to String, taking care of nulls
-      if (queryStream == null) {
+      if (queryString == null) {
 	// Make sure correct constructor of FormContent is called
 	c = new FormContent((String)null);
       } else {
-	c = new FormContent( queryStream.toString());
+	c = new FormContent( queryString );
       }
     }
+
+    return makeRequest(m, method, url, c, contentType);
+  }
+
+  /** Make a new request Transaction on this agent. */
+  public Transaction makeRequest(Machine m, String method, String url, 
+				 InputContent content, String contentType) {
+    Pia.debug(this, "makeRequest -->"+method+" "+url);
+    Pia.debug(this, "Content type "+contentType);
+
+    Transaction request;
 
     // create things normally gotten from header
     String initString = "HTTP/1.0 "+ method +" "+url;
 
-
     // create the request but don't start processing
-    request = new HTTPRequest( m, (Content)c, false );
+    request = new HTTPRequest( m, content, false );
 
     // Changed "Version" to "User-Agent", not sure why
     // it was version in the first place as it gets assigned
@@ -391,7 +361,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     request.setContentType(contentType);
     try {
-      request.setContentLength(c.getCurrentContentLength());
+      request.setContentLength(content.getCurrentContentLength());
     } catch (ContentOperationUnavailable e) {
       // If we cannot find content length, do not set header
     }
@@ -663,41 +633,10 @@ public class GenericAgent implements Agent, Registered, Serializable {
    * attached to each transaction.
    */
   public Criteria criteria(){
+    if (criteria == null) criteria = new Criteria();
     return criteria;
   }
 
-  /** 
-   * Add a match criterion to our list of criteria;
-   */
-  public void matchCriterion(Criterion c) {
-    if (criteria == null) criteria = new Criteria();
-    criteria.push(c);
-  }
-
-  /**
-   * Set a match criterion that exactly matches a given value.
-   * feature is string naming a feature
-   * value is 0,1 (exact match--for don't care, omit the feature)
-   */
-  public void matchCriterion(String feature, Object value) {
-    Pia.debug(this, name()+" match "+feature+"="+value);
-    matchCriterion(Criterion.toMatch(feature, value));
-  }
-  
-  /**
-   * Set a boolean match criterion.
-   */
-  public void matchCriterion(String feature, boolean test) {
-    Pia.debug(this, name()+" match "+feature+"?"+test);
-    matchCriterion(Criterion.toMatch(feature, test));
-  }
-
-  /**
-   * Set a match criterion from a string of the form name=value.
-   */
-  public void matchCriterion(String match) {
-    matchCriterion(Criterion.toMatch(match));
-  }
 
   /************************************************************************
   **  Content interactions: 
@@ -824,6 +763,9 @@ public class GenericAgent implements Agent, Registered, Serializable {
   /** Retrieve an attribute by name.  Returns null if no such
    *	attribute exists. */
   public synchronized Object get(String name) {
+    if (name.equals("criteria")) {
+	return (criteria() == null)? "" : criteria().toString();
+    }
     return attributes.get(name.toLowerCase());
   }
 
@@ -832,25 +774,32 @@ public class GenericAgent implements Agent, Registered, Serializable {
     return attributes.keys();
   }
 
-  /** Set an attribute. opportunity to do special processing for special attr*/
+  /** Set an attribute. 
+   *	Attributes that correspond to class member veriables require 
+   *	special handling.  This is ugly, but there seems to be no good way
+   *	to do it in Java.  (A switch would be better than the chained if's.)
+   */
   public synchronized void put(String name, Object value) {
-    if( name == null ) return;
+    if (name == null) return;
     name = name.toLowerCase();
     attributes.put(name, value);
     if (name.equals("act-on") || name.equals("_act_on")) {
-      actOnHook = (SGML)value;
+      actOnHook = value;
       Pia.debug(this, "Setting ActOn hook", ":="+value.toString());
     } else if (name.equals("handle") || name.equals("_handle")) {
-      handleHook = (SGML)value;
+      handleHook = value;
       Pia.debug(this, "Setting handle hook", ":="+value.toString());
-    }else if (name.equals("authentication") || name.equals("_authentication")) {
-      
-      if(authPolicy != null) {
+    } else if (name.equals("criteria")) {
+	criteria = new Criteria(value.toString()); // === could be smarter ===
+    } else if (name.equals("authentication")
+	       || name.equals("_authentication")) {
+      if (authPolicy != null) {
 	//should only allow more stringent authentication
 	Pia.debug(this, "attempt to change authPolicy ignored");
       }
       authPolicy = new Authenticator( "Basic", value.toString());
-      Pia.debug(this, "Setting  authentication passwordfile", ":="+value.toString());
+      Pia.debug(this, "Setting  authentication passwordfile:="
+		+value.toString());
     }
   }
 
@@ -945,7 +894,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
     } else if (path.equals("/" + myname + "/")
 	       || path.equals("/" + mytype + "/")
 	       || path.equals("/" + mytype + "/" + myname + "/") ) {
-      if (indexPathSuffix != null) path += "index";
+      if (indexPathSuffix != null) path += indexPathSuffix;
     }
 
     if( originalPath == path ) // we don't have redirection

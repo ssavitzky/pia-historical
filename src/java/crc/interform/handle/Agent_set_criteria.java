@@ -44,7 +44,7 @@ public class Agent_set_criteria extends crc.interform.Handler {
 
     List l = Util.split(s);
     for (int i = 0; i < l.nItems(); ++i) {
-      a.matchCriterion(l.at(i).toString());
+      a.criteria().push(Criterion.toMatch(l.at(i).toString()));
     }
 
     ii.deleteIt();
@@ -62,7 +62,7 @@ public class Agent_set_criteria extends crc.interform.Handler {
 
     List l = Util.split(cstring); // should really be contentText...
     for (int i = 0; i < l.nItems(); ++i) {
-      a.matchCriterion(l.at(i).toString());
+      a.criteria().push(Criterion.toMatch(l.at(i).toString()));
     }
     return true;
   }
