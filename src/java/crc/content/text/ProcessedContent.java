@@ -12,7 +12,6 @@ import crc.pia.Transaction;
 
 import crc.dps.*;
 import crc.dps.active.*;
-import crc.dps.tagset.Loader;
 import crc.dps.output.ToWriter;
 import crc.dps.process.ActiveDoc;
 
@@ -94,13 +93,6 @@ public class ProcessedContent extends  GenericContent {
     agent = a;
   }
 
-  /**
-   * set a tagset as the one to use
-   */
-  public void  setTagset(Tagset t){
-   tagset = t;
-  }
-
   /************************************************************
   ** constructors
   ************************************************************/
@@ -109,15 +101,14 @@ public class ProcessedContent extends  GenericContent {
   }
 
 
-  public ProcessedContent(Agent a, String file, String path, String tsname,
+  public ProcessedContent(Agent a, String file, String path, ActiveDoc p,
 			  Transaction req, Transaction resp, Resolver res) {
 
     inputFileName = file;
     pathExtension = path;
-    tagsetName = tsname;
 
-    processor = new ActiveDoc(a, req, resp, res);
-    initializeTagset();
+    processor = p;
+    tagset = processor.getTagset();
   }
 
 
@@ -184,9 +175,6 @@ public class ProcessedContent extends  GenericContent {
   /** Begin processing.  Most of this ought to go into initialization,
    *	so that the constructor can throw an exception if it fails. */
   protected void beginProcessing(){
-    if (tagset==null) {
-       initializeTagset();
-    }
 
     if (source == null && inputFileName != null) {
       // === here we can handle caching! ===
@@ -250,23 +238,11 @@ public class ProcessedContent extends  GenericContent {
   ** editing / tagset functions
   ************************************************************/
 
-  protected void initializeTagset(){
-    if (tagsetName == null) {
-      tagsetName = "legacy";
-    }
-    if (tagsetName != null) {
-      tagset = Loader.getTagset(tagsetName);
-    } 
-    processor.setTagset(tagset);
-  }
-
-
   /**
    * override add method for strings. where = 0 prepends to body, -1 appends
    * body actor added to tagset
    */
   public void add(String s, int where) throws ContentOperationUnavailable {
-     if(tagset == null)initializeTagset();
      // === create a actor which matches body tags and pushes s onto its content
   }
 
