@@ -3,10 +3,14 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 package crc.dps;
 
+import crc.dps.active.ActiveEntity;
+
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
 import crc.dom.Attribute;
 import crc.dom.AttributeList;
+
 import java.util.Enumeration;
 
 /**
@@ -67,28 +71,25 @@ public interface EntityTable {
    */
   public void setEntityValue(String name, NodeList value, boolean local);
 
-  /** Look up a name and get a (local) binding. */
-  public Attribute getBinding(String name);
+  /** Look up a name and get a binding. */
+  public ActiveEntity getBinding(String name, boolean local);
 
-  /** Add a new binding or replace an existing one. */
-  public void setBinding(Attribute binding);
-
-  /** Construct a new binding or replace the value in an existing one. */
-  public void setBinding(String name, NodeList value);
+  /** Add a new local binding or replace an existing one. */
+  public void setBinding(ActiveEntity binding);
 
   /************************************************************************
   ** Documentation Operations:
   ************************************************************************/
 
   /** Returns the bindings defined in this table. */
-  public AttributeList getBindings();
+  public NodeEnumerator getBindings();
 
   /** Returns an Enumeration of the entity names defined in this table. 
    */
   public Enumeration entityNames();
 
   /** Returns an Enumeration of the entity names defined in this table and
-   *	its context. */
-  public Enumeration allNames();
+   *	its context, in order of definition (most recent last). */
+  public Enumeration allEntityNames();
 
 }
