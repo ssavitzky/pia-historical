@@ -17,7 +17,7 @@
  <then> <set name="printer"><get form name=otherprinter></set></then>
  <else> <set name="printer"><get form name=printer></set></else>
 </if>
-
+<if><get name=printer> <then>
  Printing &myformurl; on &printer; for &user;
 <set name=success><read href="http://salmon.crc.ricoh.com:8001/cgi-bin/imws.cgi"
 query="username=&user;?src_url=http://&piaHOST;:&piaPORT;/My/&agentName;/&printfile;?printer=&printer;"></set>
@@ -31,6 +31,8 @@ query="username=&user;?src_url=http://&piaHOST;:&piaPORT;/My/&agentName;/&printf
          </repeat>
 	</then>
 <hr>
+</then> <else> No printer specified, please go back and specified a
+	printer.</else> </if>
 
 <if><get name=success><else>If an error occurs...<form
 action="panic.if" method=post> Hit the 
