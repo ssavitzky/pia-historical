@@ -45,6 +45,15 @@ public interface Content
   */
   /**  stream like functions go here */
 
+/** 
+ * process data
+ * called transaction idle time to preload incoming data
+ * return false when object is complete
+ * this method should return in a timely fashion and be careful of deadlock
+ */
+  public void processInput(Machine from);
+  
+  
 
  /** set a source stream for this object
   * usually this will come from a machine

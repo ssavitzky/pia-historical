@@ -179,7 +179,9 @@ public class Resolver implements Runnable{
     // Main loop.  
     //	 Entered with some transactions in the input queue.
     //	 Returns total number of transactions processed.
+    // just loop forever
     
+    while( true) {
     while (size() > 0){
       tran = pop();
       url = tran.requestURL();
@@ -198,10 +200,17 @@ public class Resolver implements Runnable{
       It does this by calling each of the handlers that matched agents
       have pushed onto its queue, and looking for a true response.
       */
-      tran.satisfy( this );
+//      tran.satisfy( this );
+// do indirectly by notifying transaction that it is resolved,
+// the transaction thread becomes responsible for running satisfy
+	tran.resolved();
       
     }
-   
+    sleep();// no transactions on queue so nothing to do
+    // maybe check cron jobs here?
+    
+    }
+    
   }
 
   /**

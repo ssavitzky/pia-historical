@@ -4,11 +4,11 @@
 
 
 /**
- * Transactions generalize the HTTP classes Request and Response.
+ * Transactions  abstract the HTTP classes Request and Response.
  * They are used in the rule-based resolver, which associates 
  * transactions with the interested agents.
  * The actual contents are stored in a content instance variable which contains
- * objects which implement the content interface.
+ * objects which implement the content interface which allows agents to operate on the contents.
  *
  * A Transaction has a queue of ``handlers'', which are called
  * (from the $transaction->satisfy() method) after all agents
@@ -16,7 +16,10 @@
  * the transaction will ``satisfy'' itself.
  *
  * Each transaction runs in its own thread, so that blocking io operation
- * don't affect the core system.
+ * don't affect the core system.  This thread interacts with the resolver thread
+ * in two ways: after the header has been created, the transaction notifies resolver
+ * that the transaction is ready for resolution,  then the resolver notifies
+ * the transaction to satisfy itself once it has been resolved.
  *
  */
 
@@ -33,8 +36,10 @@ import crc.pia.Machine;
 import crc.pia.Content;
 import crc.tf.Registry;
 
-public class Transaction extends Thing implements Runnable{
+public class Transaction implements Runnable{
 
+// many of the methods should be abstract method implemented by
+// subclasses
   /**
    * Attribute index - if true transaction is a response.
    *
@@ -42,11 +47,6 @@ public class Transaction extends Thing implements Runnable{
   public boolean isResponse = false ;
 
   /**
-   * Attribute index - if true transaction is a request.
-   *
-   */
-  public boolean isRequest = false;
-
 
   /**
    * Attribute index - from machine -- the machine that originates the request.
@@ -63,6 +63,7 @@ public class Transaction extends Thing implements Runnable{
   /**
    * Attribute index - first line -- can be request or response line
    */
+  // not needed see protocolInitializationString method
   protected String firstLine;
 
   /**
@@ -71,11 +72,36 @@ public class Transaction extends Thing implements Runnable{
    */
   protected Content contentObj;
 
+/** 
+ *  class variable-- factory to generate  content objects
+ */
+  // subclasses probably want to use different factories
+  static public ContentFactory cf;
+
   /**
    * Attribute index - header obj of this transaction.
    */
   protected Headers headerObj;
 
+/** 
+ *  class variable-- factory to generate headers
+ */
+
+  static public HeaderFactory hf;
+
+/** Class variable-- resolver
+ * transactions need to communicate with the resolver
+ *  PIA main should set this
+ */
+
+  static public Resolver  resolver;
+  
+/** 
+ *  Attribute index - has the resolver finished with this transaction?
+ */
+  protected boolean resolved = false;
+  
+  
   /**
    * Attribute index - queue of handlers.
    *
@@ -96,10 +122,10 @@ public class Transaction extends Thing implements Runnable{
 
   /**
    * Below are interfaces related to Request transaction.  
-   *
+   * 
    */
 
-
+// TBD change to use header object
   /**
    *  @returns the content length for this request, or -1 if not known. 
    */
@@ -147,29 +173,16 @@ public class Transaction extends Thing implements Runnable{
      return res;
    }
 
-  /**
-   * @returns the request method. 
-   */
-  public String method() {
-    if(isResponse())
-      return null;
-
-    String m = null;
-    Object result =  is("Method");
-    if( result )
-      m = (String) result;
-
-    return m;   
-  }
 
   /**
-   *   @returns the protocol of the request. 
-   *
+   * @returns the initial protocol string (e.g. everything before the header)
    */
-  public String protocol() {
-    return "HTTP";
-  }
-  
+  public String protocolInitializationString{
+   //subclass should implement
+   return  null;
+ }	
+
+
   /**
    *   @returns the host name of the remote agent, or null if not known. 
    *
@@ -188,7 +201,9 @@ public class Transaction extends Thing implements Runnable{
    *
    */    
   public URL requestURL(){
-    if(isResponse())
+ 
+// should not this return the request url that we are respond to?
+   if(isResponse())
       return null;
 
     URL myUrl = null;
@@ -216,22 +231,6 @@ public class Transaction extends Thing implements Runnable{
 
 
   /**
-   *   @returns the status code for this response. 
-   *
-   */
-  public int statusCode(){
-    int s = -1;
-    if(isRequest())
-      return s;
-
-    Object result =  is("Statuscode");
-    if( result )
-      s = (int) result;
-
-    return s;
-  }
-  
-  /**
    *   Sets the content length for this response. 
    *
    */
@@ -251,82 +250,7 @@ public class Transaction extends Thing implements Runnable{
       res = c.headers().setContentType( type ); 
   }
 
-  // code from jigsaw
-  /**
-   * Get the standard HTTP reason phrase for the given status code.
-   * @param status The given status code.
-   * @return A String giving the standard reason phrase, or
-   * <strong>null</strong> if the status doesn't match any knowned error.
-   */
-
-    public String standardReason(int status) {
-	int category = status / 100;
-	int catcode  = status % 100;
-	switch(category) {
-	  case 1:
-	      if ((catcode >= 0) && (catcode < msg_100.length))
-		  return HTTP.msg_100[catcode];
-	      break;
-	  case 2:
-	      if ((catcode >= 0) && (catcode < msg_200.length))
-		  return HTTP.msg_200[catcode];
-	      break;
-	  case 3:
-	      if ((catcode >= 0) && (catcode < msg_300.length))
-		  return HTTP.msg_300[catcode];
-	      break;
-	  case 4:
-	      if ((catcode >= 0) && (catcode < msg_400.length))
-		  return HTTP.msg_400[catcode];
-	      break;
-	  case 5:
-	      if ((catcode >= 0) && (catcode < msg_500.length))
-		  return HTTP.msg_500[catcode];
-	      break;
-	}
-	return null;
-    }
-
-
-    /**
-     * Set this reply status code.
-     * This will also set the reply reason, to the default HTTP/1.1 reason
-     * phrase.
-     * @param status The status code for this reply.
-     */
-
-    public void setStatus(int status) {
-	if ((statusCode() != this.status) || (reason() == null))
-	    assert("Reason", standardReason(status) );
-	assert("Statuscode", status );
-    }
-
-    /**
-     * Get the reason phrase for this reply.
-     * @return A String encoded reason phrase.
-     */
-
-    public String reason() {
-      if( isRequest() )
-	return null;
-
-      String s = null;
-      Object result =  is("Reason");
-      if( result )
-	s = (String) result;
-
-      return result;
-    }
-
-    /**
-     * Set the reason phrase of this reply.
-     * @param reason The reason phrase for this reply.
-     */
-
-    public void setReason(String reason) {
-	assert("Reason", reson);
-    }
-
+ 
 
   /**
    * @return requested transaction
@@ -342,14 +266,14 @@ public class Transaction extends Thing implements Runnable{
    * true if this transaction is a response
    */
   public boolean isResponse(){
-    return isResponse;
+    return  false;
   }
 
   /**
    * true if this transaction is a request
    */
   public boolean isRequest(){
-    return isRequest;
+    return  false;
   }
 
 
@@ -487,40 +411,10 @@ public class Transaction extends Thing implements Runnable{
     //content source set in fromMachine method
     contentObj = ct;
   }
-  /**
-   * parse the request line to get method, url, http's major and minor version numbers
-   */
-  protected void parseRequestLine()throws IOException{
-    if( !isRequest() ) return;
-    StringTokenizer tokens = new StringTokenizer(firstLine, " ");
-
-    String zmethod = tokens.nextToken();
-    if( !zmethod ) 
-      throw new RuntimeException("Bad request, no method.");
-
-    assert("Method", zmethod );
-
-    String zurlandmore = tokens.nextToken();
-    if( !zurlandmore )
-      throw new RuntimeException("Bad request, no url.");
-    
-    if( zmethod == "GET" ){
-      int pos;
-      if( (pos = zurlandmore.indexOf("?")) == -1 )
-	assert("Url", zurlandmore);
-      else{
-	String zurl = zurlandmore.substring(0, pos);
-	assert("Url", zurl);
-	assert("Querystring", zurl.substring(pos+1);
-      }
-    }
-      
-  }
+ 
 
   /**
-   * temporary treatment of content objects
-   * while transitioning to full objectIvity...
-   * Append previous transaction's content to this trasaction content
+   *   read first line and create headers and content objects
    */
   protected void initialize(HeaderFactory hf, ContentFactory cf ){
     //content source set in fromMachine method
@@ -531,16 +425,24 @@ public class Transaction extends Thing implements Runnable{
 
       DataInputStream input = new DataInputStream( in );
       firstLine = input.readLine();
-
+      parseInitializationString( firstLine);
+      
+      
       headerObj  = hf.createHeader( in );
-      parseRequestLine();
-      parseResponseLine();
+   
       contentObj = cf.createContent( in );
     }catch(IOException e){
     }
   }
 
 
+/** 
+ * parse the first line
+   */
+  protected void parseInitializationString()throws IOException{
+    // subclass should implement
+  }
+  
   /**
    * fromMachine returns machine that initialize the request.
    * 
@@ -566,17 +468,7 @@ public class Transaction extends Thing implements Runnable{
    * 
    */
   public Machine toMachine(){
-    String host;
-    URL url = requestURL();
-    String urlString;
-
-    if(!toMachine && is_request){
-      urlString = url.getFile();
-      if( urlString )
-	host = url.getHost();
-      if( host )
-	toMachine = new Machine( host );
-    }
+    
     return toMachine;
   }
 
@@ -605,63 +497,26 @@ public class Transaction extends Thing implements Runnable{
     return true;
   }
 
-  /**
-   * sendResponse -- Utilities to actually respond to a transaction, get a request, 
-   * or generate (return) an error response transaction.
-   *
-   * These pass the resolver down to the Machine that actually does the 
-   * work, because it might belong to an agent.
-   *
-   */
-  public void sendResponse( Resolver resolver ){
-    /*
-     * Default handling for a response:
-     * send it to the toMachine.  If the destination is not a reference 
-     * to a machine, the response just gets dropped.  'Nowhere' is a good
-     * non-reference to use in this case.
-     */
-    Machine machine = toMachine();
+/** 
+ * defaultHandle --  what to do if nothing else satisfies us
+ */
+ public boolean defaultHandle( Resolver resolver ){
+   // subclass should implement
+ }
+  
+
+
+/** 
+ * resolved:
+ * called by resolver when we are ready to be satisfied
+ */
+
+  public void resolved() 
+  {
+    resolved = true;
     
-    if ( machine ){
-      machine.sendResponse(this, resolver);
-    }
-    else{
-      System.out.println( "dropping  response to $machine\n" );
-      return;
-    }
-    
-  }
-
-  /**
-   * handleRequest -- Default handling for a request:
-   * ask the destination machine to get it.
-   * complain if there's no destination to ask.
-   */
-  public Transaction handleRequest( Resolver resolver ){
-    Machine destination = toMachine();
-    Transaction response;
-
-
-    if(!destination)
-      return errorResponse();
-    response = destination.getRequest( this, resolver );
-    return response;
   }
   
-  /**
-   * errorResponse -- Return a "not found" error for a request with no destination.
-   *
-   *
-   */
-  protected Transaction errorResponse(){
-    Transaction response = new Transaction( pia.thisMachine, fromMachine() );
-    
-    response.setStatus( 404, "Not found" );
-    response.setContentType( "text/plain" );
-    response.setContent("Agency could not find " + requestURL() + ".\n");
-    return response;
-  }
-
 
   /**
    * Satisfying transactions:
@@ -695,93 +550,24 @@ public class Transaction extends Thing implements Runnable{
     //If still not satisfied, do the default thing:
     //  send a response or get a request.
     if(!satisfied){
-      if( isResponse() )
-	sendResponse( resolver );
-      else {
-	if ( isRequest() )
-	  resolver.push( handleRequest( resolver ) );
-      }
+      defaultHandle( resolver ) ;
+      
     }
 
   }
 
-  /**
-   * controls -- Add controls (buttons,icons,etc.) for agents to this response
-   * actual final form determined by machine
-   * NOTE: not implemented
-   */
-  public void addControl( Thing aThing ){
-    controls.addElement( aThing );
-  }
 
-  /**
-   * controls -- Add controls (buttons,icons,etc.) for agents to this response
-   * actual final form determined by machine
-   * NOTE: not implemented
-   */
-  public Thing[] controls(){
-    int size = 0;
-
-    size = controls.size();
-    if( size > 0 ){
-      Thing[] c = new Thing[ size ];
-      for(int i = 0; i < size; i++ ) 
-	c[i] = (Thing) controls[i];
-      return c;
-    }
-    return null;
-  }
-
-  /**
-   * A request transaction 
-   * 
-   */
-  public Transaction( Machine from ){
-    handlers = new Queue();
-
-// we probably only need one instance of these objects
-    HeaderFactory hf  = new HeaderFactory();
-    ContentFactory cf = new ContentFactory();
-    
-
-    initialize( hf, cf );
-    isRequest = true ;
-    fromMachine( from );
-    toMachine( null );
-  }
-
-  /**
-   * A Request transaction
-   */
-  public Transaction( Machine from, Content ct ){
-    handlers = new Queue();
-
-// should we initialize an existing content object?
-    initializeContent( ct );
-    isRequest =  true;
-    fromMachine( from );
-    toMachine( null );
-
-  }
-
-  /**
-   * A Response transaction
-   */
-  public Transaction(Transaction t, Content ct ){
-    handlers = new Queue();
-
-    requestTran = t;
-    initializeContent( ct );
-    isResponse = true;
-    fromMachine( t.toMachine() );
-    toMachine( t.fromMachine() );
-  }
+  // constructor methods should wait until  run method is called to do any
+  // initialization that requires IO
 
 
+ 
+ 
 
-/**  run - process the transaction
- * This should be called  just after a transaction has been created,
- * but before resolution begins.(Resolution should wait until feature values are available).
+
+/** run - process the transaction
+ * THIS should be called  just after a transaction has been but,
+ * created before resolution begins.(Resolution should wait until feature values are available).
  * This thread should live until the transaction has been satisfied.
  * each transaction goes through two logical steps.
  * first the content cones in from the FROM machine 
@@ -789,31 +575,35 @@ public class Transaction extends Thing implements Runnable{
  * for reasons of efficiency,  and interactions with the resolver,
  * the actual processing is not so clean.
  */
-public void run()
+  public void run()
   {
 
-// make sure we have the header information
+    // make sure we have the header information
     if(headerObj ==  null) initializeHeader();
     
-// and the content
-  if(contentObj ==  null) initializeContent();
+    // and the content
+    if(contentObj ==  null) initializeContent();
 
-// assert precomputed features
-  assertFeatures();
+    // assert precomputed features
+    assertFeatures();
   
-// loop until we get resolution, filling content object
-// (up to some memory limit)
-  while(!resolved){
-    //contentobject returns false when object is complete
-    if(!contentObj.processInput(fromMachine)) wait(); 
+    // now we are ready to be resolved
+    resolver.push(this);
+  
+  
+    // loop until we get resolution, filling content object
+    // (up to some memory limit)
+    while(!resolved){
+      //contentobject returns false when object is complete
+      if(!contentObj.processInput(fromMachine)) wait(); 
+    }
+    
+    // resolved, so now satisfy self
+    satisfy( resolver);
+    
+    // cleanup?
+  
   }
-  
-// resolved, so now satisfy self
-  satisfy();
-
-// cleanup?
-  
-}
 
   
 
