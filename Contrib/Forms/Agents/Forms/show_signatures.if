@@ -16,34 +16,16 @@ name=formurl></subst></set>
 <read file=&file;>
 <hr>
 <if> <get name=sigs> <then>
-<h3> Signatures on <a href="&FORM.formurl;">&FORM.formurl; </a></h3>
+<h3> Signatures on <a href="/~&agentName;/&FORM.formurl;">&FORM.formurl; </a></h3>
 
 
  <table>
 <!-- for-every tag=signature object=&sigs; entity=sig -->
-<set  name=mysigs><get name=sigs findall=signature></set>
- <if> <test match=signature exact><get name=mysigs attr=tag></test> <then>
-<!-- just do once -->
- <set name=sig><get name=mysigs></set>
-<TR>
-  <TD>  Signed by: <b><full-name user=&sig.sigblock.signer.Text;></b></TD>
- <if><get index=sig.signedfor> <then> <TD> for: <get index=sig.signedfor> </TD></then></if>
-  <TD>on:
-  <TD>&sig.sigblock.sigdate; </TD>
- <!-- don't show signature &sig.sig; -->
-   <TD>
-       <if><sign user=&sig.sigblock.signer.Text; verify=&sig.sig.Text;>&sig.sigblock;</sign> <then>
-        <b>verified</b></then> <else>
-        <b> does NOT verify</b></else>
-       </if>
-  </TD>
-</TR>
+<set  name=mysigs><dummy><get name=sigs findall=signature></dummy></set>
 
-</then>
- <else>
 <repeat list=&mysigs; entity=sig>
 <TR>
-  <TD>  Signed by:<b><full-name user=&sig.sigblock.signer.Text;></b>
+  <TD>  Signed by:<b><full-name user=&sig.sigblock.signer.Text;></b> (&sig.sigblock.signer.Text;)
   <TD>on:
   <TD>&sig.sigblock.sigdate; </TD>
  <!-- don't show signature &sig.sig; -->
@@ -55,11 +37,10 @@ name=formurl></subst></set>
   </TD>
 </TR>
 </repeat>
-</else></if>
 
 </table>
 </then> <else>
-No signatures for &FORM.formurl; 
+No signatures for <a href="/~&agentName;/&file;">&FORM.formurl; </a>
 </else>
 </if>
 <br> Show <a href=show_route.if?formurl=&FORM.formurl;>route</a>.
