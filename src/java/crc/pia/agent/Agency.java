@@ -87,13 +87,12 @@ public class Agency extends GenericAgent {
 	newAgent.name( name );
 	newAgent.type( type );
       }catch(Exception ex){
-	newAgent = new GenericAgent(name, type);
       }
-      newAgent.initialize();
-      newAgent.parseOptions(ht);
-      installAgent( newAgent );
     }
-    
+    if (newAgent == null) newAgent = new GenericAgent(name, type);
+    newAgent.initialize();
+    newAgent.parseOptions(ht);
+    installAgent( newAgent );
   }
 
   /**
