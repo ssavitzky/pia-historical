@@ -154,7 +154,7 @@ sub dir_attribute {
 
 sub agent_directory{
     ## returns a directory that we can write to
-    ##  creates 1 if necessary, starts with agent_directory,
+    ##  creates one if necessary, starts with agent_directory,
     ##  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
 
     my($self)=@_;
@@ -175,10 +175,11 @@ sub agent_directory{
     push(@possibilities, "/tmp/$name/"); # default of last resort
 
     foreach $directory (@possibilities) {
+	$directory =~ s:/$::;	# mkdir doesn't like trailing slash!
 	if(-e $directory  || mkdir($directory,0777)){
 	    if(-d $directory && -w $directory) {
 		$directory=$self->dir_attribute(agent_directory,$directory );
-		return $directory;
+		return "$directory/";
 	    }
 	}
     }
