@@ -4,38 +4,43 @@
 #	
 #
 # Usage: 
-#	pia [PIA_DIR piadirectory]
+#	pia [option]...
 #
-#	piadirectory  -- is the directory which the PIA is installed
 
-if [ -n "$(echo $1 | grep '-')" ] ; then
-    if [ $1 = "-?" ] ; then
-	exec pia_wrapper crc.pia.Pia ?
-	exit 1
-    fi
+### Find out where this command came from:
+#	Resort to a kludge to get around the fact that "type foo"
+#	returns something like "foo is xxx", but "type -p foo" is
+#	not supported on Solaris.
+
+if [ "$1" = "--kludge" ] ; then
+    echo $4
+    exit
 fi
 
-if [ -n "$(echo $1 | grep 'PIA_DIR=')" ] ; then
-    PIA_PATH=$1
-    PIA_DIR=${PIA_PATH#PIA_DIR=}
-    if [ "$PIA_DIR" = "" ] ; then
-	echo 'usage: pia PIA_DIR=piadirectory args...'
-	exit 1
-    else
-	shift
-    fi
+XXX=`type $0`
+XXX_BIN=`$0 --kludge $XXX` >/dev/null 2>&1
+PIA_BIN_DIR=`dirname $XXX_BIN`
+if [ ! -x "$XXX_BIN" ] ; then
+    echo "Cannot locate binary directory for the PIA."
+    echo "Please put the PIA's binary directory in your $PATH"
+    exit 1
+fi
+PIA_DIR=${PIA_DIR-$PIA_BIN_DIR/..}
+export PIA_DIR
+
+### Handle -v specially: 
+#	it has to be the first option in order for pia_wrapper to see it.
+
+if [ "$1" = "-v" ] ; then
+    V="-v"
+    shift
 fi
 
-if [ "$PIA_DIR" != "" ] ; then 
-    ROOT="-root '$PIA_DIR'"
-fi
+# We will count on Pia to handle multiple occurrances of -root and -u,
+#	so that arguments provided by the user will override anything
+#	this script puts earlier in the argument list.
 
-if [ "$USR_DIR" != "" ] ; then
-    USR="-u '$USR_DIR'"
-fi
-# ... other pia environment variables go here
-
-exec pia_wrapper crc.pia.Pia $ROOT $USR $*
+exec $PIA_BIN_DIR/pia_wrapper crc.pia.Pia $V $*
 
 
 

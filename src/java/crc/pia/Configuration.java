@@ -103,16 +103,40 @@ class Configuration {
       properties = new Properties(System.getProperties());
 
     commandLine = commandLineArgs;
-    // suckEnvironment();
+    suckEnvironment();
     return parseCommandLine(commandLine);
   }
   
 
-  /** Suck in the environment variables specified in envTable. */
+  /** Suck in the environment variables specified in envTable.
+   *	Actually we can't access the real environment, so we fake it by
+   *	assuming that any "name=value" pairs on the command line are
+   *	environment variables.  Also put them in properties, and assume
+   *	that system properties may have been defined using the "-D" flag
+   *	to the java command.
+   */
   protected void suckEnvironment() {
+
+    /* First suck key=value pairs out of the command line. */
+
+    String[] args = commandLine;
+    for (int i = 0; i < args.length; ++i) {
+      int pos = args[i].indexOf("=");
+      if (pos >= 0) {
+	String key = args[i].substring(0, pos);
+	String value = "";
+	if (pos < (args[i].length() - 1)) {
+	  value = args[i].substring( pos+1 );
+	}
+	properties.put(key.trim(), value.trim());
+      }
+    }
+
+    /* Then go through the table for the ones we're interested in. */
+
     if (envTable != null) {
       for (int i = 0; i < envTable.length; i += 2) {
-	String v = System.getenv(envTable[i]);
+	String v = properties.getProperty(envTable[i]);
 	if (v != null) properties.put(envTable[i+1], v);
       }
     }
@@ -160,6 +184,7 @@ class Configuration {
       }
     for (int i = 0; i < args.length; ++i) {
       String opt = args[i];
+      if (opt.indexOf("=") >= 0) continue; // FOO=bar already handled.
       String type = (String)types.at(opt);
       String prop = (String)props.at(opt);
 
@@ -199,10 +224,10 @@ class Configuration {
   ************************************************************************/
 
   // file separator and other information
-  private String filesep  = System.getProperty("file.separator");
-  private String home     = System.getProperty("user.home");
-  private String cwd	  = System.getProperty("user.dir");
-  private String userName = System.getProperty("user.name");
+  protected String filesep  = System.getProperty("file.separator");
+  protected String home     = System.getProperty("user.home");
+  protected String cwd	    = System.getProperty("user.dir");
+  protected String userName = System.getProperty("user.name");
 
   /** Locate a file given an enumeration of the names of directories
    *	it might be in.  Given a null filename, returns the first
@@ -230,5 +255,65 @@ class Configuration {
     if (filename.equals(".")) return cwd;
     return filename;
   }
+
+  /** Check to see whether a file exists. */
+  public boolean fileExists(String filename) {
+    File f = new File(filename);
+    return f.exists();
+  }
+
+  /** Check to see whether a directory exists. */
+  public boolean dirExists(String filename) {
+    File f = new File(filename);
+    return f.isDirectory();
+  }
+
+  /** Merge a set of properties from a file with those already defined. 
+   *	@return false if the file does not exist or an error occurs.
+   */
+  public boolean mergeProperties(String filename) {
+    File pfile = new File(filename);
+    if (! pfile.exists()) return false;
+
+    Properties props = new Properties();
+    try {
+      props.load(new FileInputStream(filename));
+    } catch (FileNotFoundException ex) {
+      return false;
+    } catch (IOException ex) {
+      return false;
+    }
+    Enumeration e = props.propertyNames();
+    while (e.hasMoreElements()) {
+      String prop = e.nextElement().toString();
+      if (! properties.containsKey(prop))
+	properties.put(prop, props.getProperty(prop));
+    }
+    return true;
+  }
+
+  /** Load a set of properties from a file.
+   *	@return null if the file does not exist or an error occurs.
+   */
+  public Properties loadProperties(String filename) {
+    File pfile = new File(filename);
+    if (! pfile.exists()) return null;
+
+    Properties props = new Properties();
+    try {
+      props.load(new FileInputStream(filename));
+    } catch (FileNotFoundException ex) {
+      return null;
+    } catch (IOException ex) {
+      return null;
+    }
+    return null;
+  }
+
 }
+
+
+
+
+
 

@@ -609,7 +609,9 @@ public class Pia {
       thisHost = null;
     }
 
-    verbose 		= properties.getBoolean(PIA_VERBOSE, true);
+    /* Set global variables from properties. */
+
+    verbose 		= properties.getBoolean(PIA_VERBOSE, false);
     debug		= properties.getBoolean(PIA_DEBUG, false);
     piaRootStr		= properties.getProperty(PIA_ROOT, null);
     usrRootStr 		= properties.getProperty(USR_ROOT, null);
@@ -619,6 +621,7 @@ public class Pia {
     loggerClassName 	= properties.getProperty(PIA_LOGGER, loggerClassName);
     docurl 		= properties.getProperty(PIA_DOCURL, docurl);
 
+    // Initialize proxies. 
     // i. e. agency.crc.pia.proxy_http=foobar 
     // get keys from properties
     // enumerate thru keys looking for PIA_PROXIES
@@ -710,7 +713,6 @@ public class Pia {
     properties.setProperty(PIA_LOGGER, loggerClassName);
 
     url = url();
-	
   }
 
   private void createPiaAgency() throws IOException{
@@ -723,17 +725,6 @@ public class Pia {
     agency       = new Agency("Agency", null);
     resolver.registerAgent( agency );
     
-    /*
-    debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-    Table ht = new Table();
-    ht.put("agent", "DOFS");
-    try{
-      agency.install( ht );
-    }catch(AgentInstallException e){
-      debug(this, "Unable to install: " + e.getMessage() );
-    }
-    */
-
     if( verbose )
       verboseMessage();
 
@@ -754,6 +745,10 @@ public class Pia {
     try{
       initializeProperties();
       initializeLogger();
+
+      String fileMap = properties.getProperty("crc.pia.filemap");
+      loadFileMapping(fileMap);
+
       return true;
     }catch(Exception e){
       System.out.println( e.toString() );
@@ -831,27 +826,18 @@ public class Pia {
   }
 
 
+  /** Load the MIME type mappings.  */
   protected Properties loadFileMapping( String where ){
-    String fileMapProp      = null;
+    if (where == null) where = properties.getProperty("crc.pia.filemap");
+
     Properties zFileMapping = new Properties();
-    File guess              = null;
     File mapFile            = null;
 
-    String filesep  = System.getProperty("file.separator");
-
-    if ( where == null ){
-      where = filesep+"pia";
-      // Try to guess it, cause it is really required:
-      guess = new File (new File( where, "Config" ),"filemap.props");
-    }else guess = new File( where );
-
-    fileMapProp = guess.getAbsolutePath();
-
     try {
-      if ( fileMapProp != null ) {
+      if ( where != null ) {
 	verbose ("loading file mapping from: " + where) ;
 	
-	File mapfile = new File( fileMapProp ) ;
+	File mapfile = new File( where ) ;
 	zFileMapping.load ( new FileInputStream( mapfile ) );
 
 	// convert everything to lowercase
@@ -876,54 +862,6 @@ public class Pia {
    instance.piaFileMapping = zFileMapping;
    return zFileMapping;
   }
-
-  private static void setDefaultProperties( Piaproperties piaprops ){
-    piaprops.put(PIA_PORT, "8888");
-    piaprops.put(PIA_REQTIMEOUT, "50000");
-    piaprops.put(PIA_DEBUG, "true");
-    piaprops.put(PIA_VERBOSE, "true");
-    piaprops.put(PIA_LOGGER, "crc.pia.Logger");
-  }
-  
-  protected Piaproperties loadProperties(String cmdroot)throws IOException{
-    String cmdprop      = null;
-    Piaproperties piaprops = null;
-    File guess = null;
-
-    String filesep  = System.getProperty("file.separator");
-
-    if (cmdroot == null){
-      cmdroot = filesep+"pia";
-      // Try to guess it, cause it is really required:
-      guess           = new File (new File(cmdroot, "Config"),"pia.props");
-    }else 
-      guess = new File( cmdroot );
-    
-    cmdprop = guess.getAbsolutePath();
-
-    try {
-      if ( cmdprop != null ) {
-	System.out.println ("loading properties from: " + cmdprop) ;
-	
-	piaprops = new Piaproperties(System.getProperties());
-	File propfile = new File(cmdprop) ;
-	piaprops.load (new FileInputStream(propfile)) ;
-	piaprops.put (PIA_PROP_PATH, propfile.getAbsolutePath()) ;
-      }
-    } catch (FileNotFoundException ex) {
-	    System.out.println ("Unable to load properties: "+cmdprop);
-	    System.out.println ("\t"+ex.getMessage()) ;
-	    System.out.println ("Running with default settings.");
-	    piaprops = new Piaproperties(System.getProperties());
-      setDefaultProperties( piaprops );
-    } catch (IOException exp){
-      throw exp;
-    }
-    System.setProperties (piaprops) ;
-
-    properties = piaprops;
-  return piaprops;
-}
 
   static void reportProps(Properties p, String msg) {
     if (verbose) {
@@ -964,70 +902,24 @@ public class Pia {
 
       verbose = pia.properties.getBoolean("crc.pia.verbose", false);
       if (verbose) {
-	pia.bogusLoad();
 	pia.reportProps(pia.properties, "Properties");
       }
       System.exit(1);
     }
 
-    /** Load property file if requested. */
-    pia.bogusLoad();
-
     /** Initialize it from its properties. */
-    if (! pia.initialize()) return;
+    if (! pia.initialize()) System.exit(1);
 
     reportProps(instance.properties, "System Properties:");
     reportProps(instance.piaFileMapping, "File (MIME type) mapping");
 
-	try
-	  {
-
-	    instance.createPiaAgency();
-
-	    //new Thread( new Shutdown() ).start();
-	  }catch(Exception e){
-	    System.out.println ("===> Initialization failed, aborting !") ;
-	    e.printStackTrace () ;
-	  }
-	    
+    try {
+      instance.createPiaAgency();
+      //new Thread( new Shutdown() ).start();
+    }catch(Exception e){
+      System.out.println ("===> Initialization failed, aborting !") ;
+      e.printStackTrace () ;
+    }
   }
-
-  /** Load the properties and file map. */
-  protected void bogusLoad() {
-    String cmdprop = properties.getProperty("crc.pia.profile");
-    String cmdroot = properties.getProperty("crc.pia.root");
-    Piaproperties piaprops = instance.properties();
-
-	String where = null;
-	String whereFileMap = null;
-
-	// guessing /pia/config is where it is at
-
-	  try{
-
-	    if( cmdprop == null )
-	      where = cmdroot;
-	    else{
-	      File f = new File(cmdprop);
-	      whereFileMap = f.getParent()+ System.getProperty("file.separator") + "filemap.props";
-	      where = cmdprop;
-	    }
-	    piaprops = instance.loadProperties( where );
-
-	  }catch(FileNotFoundException ex) {
-	    System.out.println ("Unable to load properties: "+cmdprop);
-	    System.out.println ("\t"+ex.getMessage()) ;
-	    System.out.println ("Running with default settings.");
-	    piaprops = new Piaproperties(System.getProperties());
-	  }catch(IOException ex) {
-	    System.out.println ("Unable to load properties: "+cmdprop);
-	    System.out.println ("\t"+ex.getMessage()) ;
-	    System.exit (1) ;
-	  }
-
-	
-	loadFileMapping(whereFileMap);
-  }
-
 
 }

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 #	$Id$
 # Pia launcher.  Also handles other classes in the PIA hierarchy.
 #	Always tacks on -p propertyFile, which may be a misfeature.
@@ -6,75 +6,105 @@
 # Usage: 
 #	pia_wrapper [-v] [class [arg]... ]
 
-if [ "$1" = "-v" ] ; then
-    VERBOSE=1
-    shift
+### find out where java is.
+#	Resort to a kludge to get around the fact that "type foo"
+#	returns something like "foo is xxx", but "type -p foo" is
+#	not supported on Solaris.
+
+if [ "$1" = "--kludge" ] ; then
+    echo $4
+    exit
 fi
 
-#find out where java is, ya
-PRG=`which java` >/dev/null 2>&1
-#J_HOME=`dirname $PRG`/..
-J_HOME=`dirname $PRG`/..
+JJ=`type java`
+JAVA_BIN=`$0 --kludge $JJ` >/dev/null 2>&1
+
+if [ ! -x "$JAVA_BIN" ] ; then
+    echo "Cannot locate java."
+    echo "Please put java's binary directory in your $PATH"
+    exit 1
+fi
+export JAVA_BIN
+
+JAVA_BIN_DIR=`dirname $JAVA_BIN`
+J_HOME=$JAVA_BIN_DIR/..
 
 if [ -z "$JAVA_HOME" ] ; then
     export JAVA_HOME
     JAVA_HOME=$J_HOME
 fi
 
-#where zjava lives, ya
-JAVA_BIN=$JAVA_HOME/bin/java
-export JAVA_BIN
+### Find out where this command is:
 
-#where pia lives, ya
-PIA_HOME="${PIA_HOME-$HOME/pia}"
-export PIA_HOME
-
-if [ -f $PIA_HOME/lib/java/crc.zip ] ; then
-    PIA_CLASSES=${PIA_CLASSES-$PIA_HOME/lib/java/crc.zip}
+if [ -z "$PIA_DIR" ] ; then
+  MY=`type $0`
+  MY_BIN=`$0 --kludge $MY` >/dev/null 2>&1
+  MY_BIN_DIR=`dirname $MY_BIN`
+  if [ ! -x "$MY_BIN" ] ; then
+    echo "Cannot locate binary directory for $0."
+    echo "Please put the PIA's binary directory in your shell's PATH"
+    exit 1
+  fi
 else
-    PIA_CLASSES=$PIA_HOME/src/java
+  MY_BIN_DIR=$PIA_DIR/bin
 fi
 
-#where zjigsaw lives, ya
-if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
-    JIGSAW_HOME=${JIGSAW_HOME-$PIA_HOME/lib/java}
-else
-    JIGSAW_HOME="${JIGSAW_HOME-usr/local/Jigsaw}"
-fi
-export JIGSAW_HOME
+### Process the "-v" flag specially 
+#	If it occurs before the class, make Java verbose as well.
 
-if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
-    JIGSAW_CLASSES=${JIGSAW_CLASSES-$PIA_HOME/lib/java/jigsaw.zip}
-else
-    JIGSAW_CLASSES=$JIGSAW_HOME/src/classes
-fi
-
-if [ -z "$1" ] ; then
-    PIA_BIN=crc.pia.Pia
-elif [ "$1" = "--" ] ; then
-    PIA_BIN=crc.pia.Pia
+if [ "$1" = "-v" ] ; then
+    VERBOSE=1
+    V="-v"
     shift
-else
-    PIA_BIN=$1
-    shift
+elif [ "$2" = "-v" ] ; then
+    VERBOSE=2
 fi
 
-if [ -f $home/.pia/pia.props ] ; then
-    # This suggests that a Config agent may eventually exist:
-    PIA_CONFIGFILE=$HOME/.pia/Config/pia.props
-else
-    PIA_CONFIGFILE=$HOME/pia/Config/pia.props
-fi
+### Find out where the PIA is.
+#	The most likely candidate is the parent directory of $0.
 
-CLASSPATH="${CLASSPATH-.}"
-if [ -z "${CLASSPATH}" ] ; then
-    CLASSPATH="$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$PIA_CLASSES"
-else
-    CLASSPATH="$CLASSPATH:$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$PIA_CLASSES"
-fi
+PIA_DIR="${PIA_DIR-$MY_BIN_DIR/..}"
+export PIA_DIR
+
+#The user's .pia directory:
+USR_DIR="${USR_DIR-$HOME/.pia}"
+export USR_DIR
+
+### Build an environment string:
+
+ENV="PIA_DIR=$PIA_DIR HOME=$HOME USER=$USER"
+
+[ -z "$DISPLAY" ] || ENV="$ENV DISPLAY=$DISPLAY"
+
+### Build a CLASSPATH.
+
+# The pia class library.
+PIA_CLASSES=${PIA_CLASSES-$PIA_DIR/lib/java/crc.zip}
+
+# where zjigsaw lives, ya
+JIGSAW_HOME=${JIGSAW_HOME-$PIA_DIR/lib/java}
+JIGSAW_CLASSES=${JIGSAW_CLASSES-$JIGSAW_HOME/jigsaw.zip}
+
+[ -z "$CLASSPATH" ] || CLASSPATH=":$CLASSPATH"
+CLASSPATH=$PIA_CLASSES:$JIGSAW_CLASSES$CLASSPATH
+
+# The pia source directory.  (Later we will test for their existance)
+PIA_SRC=${PIA_SRC-$PIA_DIR/src}
+[ -d $PIA_SRC ] && CLASSPATH=$PIA_SRC/java:$CLASSPATH
+
 export CLASSPATH
 
-[ -z "$VERBOSE" ] || echo $CLASSPATH
-[ -z "$VERBOSE" ] || echo "$JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*"
-exec $JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*
+
+### Identify our main program.
+
+if [ -z "$1" ] ; then
+    PIA_CLASS=crc.pia.Pia
+else
+    PIA_CLASS=$1
+    shift
+fi
+
+[ -z "$VERBOSE" ] || echo CLASSPATH=$CLASSPATH
+[ -z "$VERBOSE" ] || echo "$JAVA_BIN $V $PIA_CLASS $V $ENV $*"
+exec $JAVA_BIN $V $PIA_CLASS $V $ENV $*
 

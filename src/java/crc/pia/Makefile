@@ -56,7 +56,7 @@ Machine.class: Content.java HTTPResponse.java Transaction.java Resolver.java \
 
 Pia.class: PiaInitException.java Machine.java agent/Agency.java \
 	Setup.java Resolver.java Logger.java Transaction.java \
-	agent/AgentInstallException.java 
+	agent/AgentInstallException.java Configuration.java 
 
 Setup.class: Configuration.java
 
