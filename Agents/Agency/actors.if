@@ -20,6 +20,14 @@ Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
        <else><a href="/Agency/installers.if#InterForm"><em>install
        needed!</em></a></else></if>
 <hr>
+<dl>
+  <dt> <b>Note:</b>
+  <dd> This page lists the active tags defined by the <strong>old</strong>,
+       obsolete InterForm interpretor.  See the <a
+       href="/PIA/Doc/Manuals/InterForm/index.html">InterForm manual</a> for
+       documentation on the new tagset.
+</dl>
+<hr>
 
 <set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">

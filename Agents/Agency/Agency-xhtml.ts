@@ -43,9 +43,152 @@
    </define>
 </define>
 
+<h2>Page Components</h2>
+
+<h3>Graphics</h3>
+
+<define entity=blank-170x1>
+  <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
+		alt=" "></value>
+</define>
+<define entity=A100>
+  <value><img src="Logo/A100.gif" height=100 width=111 
+		alt="AGENCY"></value>
+</define>
+<define entity=blue-dot>
+  <value><img src="/Agency/Icons/dot-blue.gif"
+		height=20 width=20 alt="*"></value>
+</define>
 
 
-<h2>Headers and Footers</h2>
+<h3>Miscelaneous tables and lists:</h3>
+
+<define element=agent-index empty>
+  <doc> Put out an index of agents. </doc>
+  <action>
+    <table cellspacing=0 cellpadding=0 border=0>
+      <tr><th width=170 valign=center>
+	    </th>
+	  <td valign=center>
+	    <table cellspacing=0 cellpadding=0 align=center border=0>
+	      <tr><th width=170 align=right><i>Index</i>&nbsp;
+		  <th align=left><i>Home</i></tr>
+	      <repeat list="&agentNames;" entity="li"><tr>
+		  <th align=right><a href="/&li;/">&li;/</a>&nbsp;
+		  <td><agent-home link agent="&li;"></tr>
+	      </repeat>
+	    </table>
+    </table>
+  </action>
+</define>
+
+<define element=agent-index-pre empty>
+  <doc> Put out an index of agents using <tag>pre</tag>.  Might be useful
+	with browsers that lack table support, if there are any left.
+  </doc>
+  <action>
+    <table cellspacing=0 cellpadding=0 align=center border=0>
+    <tr><th width=170 valign=center>&A100;</th>
+    <td valign=center>
+      <table cellspacing=0 cellpadding=0 align=center border=0>
+      <tr> <!-- need an image to fix the size -->
+    <pre><i><text pad align=right width=15>Index</text>	Home</i>
+    <repeat list="&agentNames;" entity="li"
+	   ><text pad align=right width=15><a href="/&li;/"><b>&li;/</b></a
+	   ></text>	<agent-home link agent="&li;">
+    </repeat></pre>
+    </table>
+    </table>
+  </action>
+</define>
+
+<h3>Headers and Footers</h3>
+
+<define element=xa>
+  <doc> Either an anchor link or a bold name.
+  <doc>
+  <define attribute=page>
+    <doc> the base name of the current page, matched against the URL (href
+	  attribute).
+    </doc>
+  </define>
+  <action><if><test match="&attributes:page;">&attributes:href; </test>
+		<then><b>&content;</b></then>
+		<else><a href="&attributes:href;">&content;</a></else>
+	  </if>
+  </action>
+</define> 
+
+<define element=xopt>
+  <doc> Output the content if the page matches one of the listed pages.
+  <doc>
+  <define attribute=page>
+    <doc> the base name of the current page, matched against the
+	  <code>pages</code> attribute.
+    </doc>
+  </define>
+  <define attribute=pages>
+    <doc> space-separated names of the pages represented on this line.
+    </doc>
+  </define>
+  <action><if><test match="&attributes:page;">&attributes:pages; </test>
+		<then>&content;</then>
+	  </if>
+  </action>
+</define> 
+
+<define element=sub-head>
+  <doc> A secondary table located immediately under the header.
+	Content should consist of additional table rows.
+  </doc>
+  <define attribute=page>
+    <doc> the base name of the page, e.g. <code>index</code> or
+	  <code>home</code>.
+    </doc>
+  </define>
+  <action>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr><th align=center valign=center nowrap width=170>&A100;
+    <td>
+    <table cellspacing=0 cellpadding=0 border=0>
+    <tr><th align=left nowrap width=170>&blank-170x1;<td><br>
+    <tr><th align=right><xopt page="&attributes:page;"
+			      pages="home index help options">&blue-dot;</xopt>
+	<td> <xa href="home" page="&attributes:page;">Home</xa>
+    	     <xa href="index" page="&attributes:page;">Index</xa>
+    	     <xa href="help" page="&attributes:page;">Help</xa>
+	     <xa href="options" page="&attributes:page;">Options</xa>
+    <tr><th align=right>
+	     <xopt page="&attributes:page;"
+		   pages="checkpoint restore shutdown">&blue-dot;</xopt>
+	<td> <xa href="checkpoint" page="&attributes:page;">checkpoint</xa> /
+	     <xa href="restore" page="&attributes:page;">restore</xa> state
+	     <if><test exact match='pia'>&piaUSER;</test>
+	         <then><a href="/Agency/shutdown">shut down</a> appliance<br>
+	     </if>
+    <tr><th valign=top align=right>
+	     <xopt page="&attributes:page;"
+		   pages="agents installers remove_agent">&blue-dot;</xopt>
+	<td valign=top> <xa href="/Agency/agents" page="&attributes:page;">list</xa> / 
+	    <xa href="/Agency/installers" page="&attributes:page;">install</xa> / 
+ 	    <xa href="/Agency/remove_agent" page="&attributes:page;">remove</xa> agents<br>
+    <tr><th valign=top align=right>Files:
+	<td><a href="/PIA/Doc/"><b>Docs</b></a>
+	    <a href="/My/">My files</a>
+	    <a href="/PIA/src/">Sources</a>
+	    <a href="/PIA/Agents/&agentPath;/">InterForms</a>
+	    <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <tr><th valign=top align=right><b>Agents:</b>
+        <td valign=top> <repeat list="&agentNames;" entity="foo">
+            <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+            </repeat><br>
+  </table>
+</table>
+
+
+  </action>
+</define>
+
 
 <define element=nav-bar>
   <doc> A navigation bar, usually placed just above the copyright notice in

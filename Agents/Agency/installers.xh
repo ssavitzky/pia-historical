@@ -1,20 +1,10 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>Agent Installers</title>
-<link rev="made" href="mailto:steve@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>Agent Installers</set>
-<read interform file="heading.inc" process>
-
-<table cellspacing=0 cellpadding=0>
-<tr><th width=340><td><br>
-<tr><th align=right>&agentName;:
-	<td> Install / <a href="/Agency/remove_agent">remove</a> agents
-<tr><th><td> <a href="home">Home Page</a>
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-	     (<a href="/My/Agents/&agentName;/">Customized</a>)
-</table>
+<header>Agent Installers</header>
+<sub-head page=installers></sub-head>
 
 <hr>
  
@@ -261,15 +251,5 @@ which is only useful for agents which have no options.
        type:<input name="type" value="Graphics">
        </form></if>
 </dl>
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="file:&filePath;">&filePath;</a>
-<hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/options">options</a>
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+<footer cvsid="$Id$">
 </body></html>

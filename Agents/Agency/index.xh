@@ -3,42 +3,16 @@
 <title>&AGENT:name; Index</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <header>Index Page</header>
-
-<table cellspacing=0 cellpadding=0 border=0>
-<tr><th align=left nowrap width=170><img src="/Agency/Icons/white170x1.gif"
-	                   width=170 height=1></th>
-    <td>
-    <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th align=left nowrap width=170><img src="/Agency/Icons/white170x1.gif"
-	                   width=170 height=1><td><br>
-    <tr><th align=right><img src="/Agency/Icons/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	    <td> <a href="home">Home</a>
-    		 <b href="index">Index</b>
-    		 <a href="help">Help</a>
-    <tr><th><td> <a href="options">Options</a> /
-  	<a href="/Agency/checkpoint">checkpoint</a> /
-	<a href="/Agency/restore">restore</a> state
-    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
-    <tr>
-        <th valign=top align=right><b>Agents:</b>
-        <td valign=top> <repeat list="&agentNames;" entity="foo">
-          <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
-       </repeat><br>
-  </table>
-</table>
-<pre><i><text pad align=right width=15>Index</text>	Home</i>
-<repeat list="&agentNames;"
-       ><text pad align=right width=15><a href="/&li;/"><b>&li;/</b></a
-       ></text>	<agent-home link agent="&li;">
-</repeat></pre>
+<sub-head page=index> </sub-head>
+<p>
+<agent-index/>
 
 <dl>
   <dt> Note:
   <dd> This page does not have an option for removing the
        <a href="/&AGENT:name;">&AGENT:name;</a> agent.  It is required for the
-       proper functioning of this appliance.
+       proper functioning of this <if><test exact match=pia>&piaUSER;</test>
+       <then>appliance<else>agency</if>.
 </dl>
 
 <footer cvsid="$Id$">

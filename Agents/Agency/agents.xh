@@ -1,15 +1,10 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>Agent Index</title>
-<link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <header>Agent Index</header>
-
-<pre><i><text pad align=right width=15>Index</text>	Home</i>
-<repeat list="&agentNames;" entity="li"
-       ><text pad align=right width=15><a href="/&li;/"><b>&li;/</b></a
-       ></text>	<agent-home link agent="&li;">
-</repeat></pre>
-
+<sub-head page=agents />
+<p>
+<agent-index/>
 <footer cvsid="$Id$">
 </body></html>
