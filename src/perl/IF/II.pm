@@ -63,7 +63,7 @@ push(@ISA,'IF::Parser');	# === At some point we will use our own. ===
 
 sub new {
     my ($class, @attrs) = @_;
-    my $self = HTML::Parser->new;
+    my $self = IF::Parser->new;
 
     $self->{_dstack} =  [];	# The stack of items under construction.
     $self->{_cstack} =  [];	# The control stack.
