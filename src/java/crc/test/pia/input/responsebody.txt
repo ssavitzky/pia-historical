@@ -1,0 +1,11 @@
+<html>
+<head>
+<title>Hello-doc</title>
+</head>
+<body>
+<center>
+<h1>Hello to you my friend</h1>
+</center>
+Hello World
+</body>
+</html>
