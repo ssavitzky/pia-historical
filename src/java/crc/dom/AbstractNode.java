@@ -12,21 +12,8 @@
 package crc.dom;
 
 import java.io.*;
-import w3c.dom.Node;
-import w3c.dom.NodeList;
-import w3c.dom.NotMyChildException;
-
 
 public abstract class AbstractNode implements Node {
-
-  public static final class NodeType {
-    public static final int DOCUMENT   = 0;
-    public static final int ELEMENT    = 1;
-    public static final int ATTRIBUTE  = 2;
-    public static final int PI         = 3;
-    public static final int COMMENT    = 4;
-    public static final int TEXT       = 5;
-  };
 
   /**
    * implementing Node methods
@@ -41,35 +28,84 @@ public abstract class AbstractNode implements Node {
   public Node     getPreviousSibling(){ return leftSibling; }
   public Node     getNextSibling(){ return rightSibling; }
 
+  /** Inserts a child node (newChildbefore the existing child node refChild. If
+   *  refChild is null, insert newChild at the end of the list of children. If
+   *  refChild is not a child of the Node that insertBefore is being invoked on, a
+   *  NotMyChildException is thrown. 
+   */
   public void insertBefore(Node newChild, Node refChild)
-       throws NotMyChildException{}
+       throws NotMyChildException
+  {
+    NodeEnumerator e = null;
+
+    if( newChild == null ) return;
+
+    //newChild.setParent( this );
+
+    if( refChild == null ) 
+      insertAtEnd( newChild );
+    else if( refChild.getParentNode() != this ){
+      String err = ("The reference child is not mine.");
+      throw new NotMyChildException(err);
+    }else{
+      children.doInsertBefore( (AbstractNode)newChild, (AbstractNode)refChild );
+    }
+  }
 
   public Node replaceChild(Node oldChild, Node newChild)
-       throws NotMyChildException{ return null; }
+       throws NotMyChildException
+  {
+    if( oldChild.getParentNode() != this ){
+      String err = ("The reference child is not mine.");
+      throw new NotMyChildException(err);
+    }
+    else
+      return children.doReplaceChild((AbstractNode)oldChild, (AbstractNode)newChild);
+  }
 
   public Node removeChild(Node oldChild)
-       throws NotMyChildException{ return null; }
+       throws NotMyChildException
+  {
+    if( oldChild.getParentNode() != this ){
+      String err = ("The reference child is not mine.");
+      throw new NotMyChildException(err);
+    }else
+      return children.doRemoveChild((AbstractNode)oldChild);
+  }
 
   /* mutator for parent and siblings */
-  protected void setParent(Node parent){ this.parent = parent; }
-  protected void setLeftSibling(Node leftSibling){ this.leftSibling = leftSibling; }
-  protected void setRightSibling(Node rightSibling){ this.rightSibling = rightSibling; }
+  protected void setParent(AbstractNode parent){ this.parent = parent; }
+  protected void setPrevious(AbstractNode leftSibling){ this.leftSibling = leftSibling; }
+  protected void setNext(AbstractNode rightSibling){ this.rightSibling = rightSibling; }
+  protected AbstractNode getPrevious(){ return leftSibling; }
+  protected AbstractNode getNext(){ return rightSibling; }
+
+  protected void insertAtEnd( Node newChild ){
+    if( !hasChildren() ) 
+      children = new ChildNodeList( (AbstractNode)newChild ); 
+    else
+      children.doInsertLast( (AbstractNode)newChild );
+  }
 
   /**
    * The parent 
    */
-  protected Node parent;
+  protected AbstractNode parent;
 
   /**
    * Left sibling
    */
-  protected Node leftSibling;
+  protected AbstractNode leftSibling;
 
   /**
    * Right sibling 
    */
-  protected Node rightSibling;
+  protected AbstractNode rightSibling;
 
+  /**
+   * The child collection
+   */
+  protected ChildNodeList children;
 
 }
 
