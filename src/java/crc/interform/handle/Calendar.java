@@ -19,6 +19,7 @@ import crc.sgml.Text;
 import crc.sgml.Element;
 import crc.sgml.AttrWrap;
 import crc.sgml.Attrs;
+import crc.sgml.TableElement;
 
 import java.lang.Process;
 import java.lang.Runtime;
@@ -193,7 +194,8 @@ public class Calendar extends crc.interform.Handler {
   }
 
   protected Element createTable(){
-    return createElement("TABLE");
+    //    return createElement("TABLE");
+    return new TableElement("TABLE");
   }
 
   protected Element createCaption(){
