@@ -10,12 +10,12 @@
 <caption>User Pages</caption>
 <th>pending<th>completed<tr>
 <td><set entity name=namelist><read file="namelist2.dat"></set>
-<repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/&li;.html">&li;<a></repeat>
-<td><repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/&li;_complete.html">&li;<a></repeat><tr>
+<repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/&agentName;/users-pending.if?username=&li;">&li;<a></repeat>
+<td><repeat list="&namelist;"><li><a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=&li;">&li;<a></repeat><tr>
 </table><p>
 
-<center><b>pending</b>: <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Accounting.html">Accounting</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Auditor.html">Auditor</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/FrontOffice.html">Front Office</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Purchasing.html">Purchasing</a><br>
-<b>completed</b>: <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Accounting_complete.html">Accounting</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Auditor_complete.html">Auditor</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/FrontOffice_complete.html">Front Office</a>, <a href="http://&piaHOST;:&piaPORT;/My/&agentName;/users/Purchasing_complete.html">Purchasing</a>
+<center><b>pending</b>: <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-pending.if?username=Accounting">Accounting</a>,<a href="http://&piaHOST;:&piaPORT;/&agentName;/user-pending.if?username=Auditor">Auditor</a>, <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-pending.if?username=FrontOffice">Front Office</a>, <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-pending.if?username=Purchasing">Purchasing</a><br>
+<b>completed</b>: <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=Accounting">Accounting</a>, <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=Auditor">Auditor</a>, <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=FrontOffice">Front Office</a>, <a href="http://&piaHOST;:&piaPORT;/&agentName;/user-complete.if?username=Purchasing">Purchasing</a>
 <p></center>
 
 </body></html>
