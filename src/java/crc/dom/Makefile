@@ -64,7 +64,18 @@ FILES = \
 	Notation.java \
 	OccurrenceType.java \
 	PCDATAToken.java \
-	CRCElement.java
+	CRCElement.java \
+	Entity.java \
+	InternalEntity.java \
+	ExternalEntity.java \
+	ExternalTextEntity.java \
+	ExternalNDATAEntity.java \
+	AbstractEntity \
+	NdataEntity \
+	TextEntity \
+	AgentEntity \
+	LocalEntity \
+	SystemEntity
 
 include $(TOPDIR)/makefiles/file.make
 include $(TOPDIR)/makefiles/package.make
