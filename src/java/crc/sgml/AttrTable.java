@@ -217,12 +217,15 @@ public class AttrTable extends Table implements Attrs {
       } else if (tag.equals("dt")) {
 	if (i == t.nItems()-1 || "dt".equals(t.itemAt(i+1).tag())) {
 	  // missing dd : goes in as Token.empty
-	  attr(v.toString(), Token.empty);
+	  attr(v.contentText().toString(), Token.empty);
 	} else {
 	  // otherwise just save the key for the next item.
-	  k = v.toString();
+	  k = v.contentText().toString();
 	}
       } else {
+	if (tag.equals("dd")) {
+	  v = v.content().simplify();
+	}
 	if (k != null) attr(k, v); else append(v);
       }
     }

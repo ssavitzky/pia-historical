@@ -358,8 +358,9 @@ public class Util {
       if (c == '+') {
 	ss += ' ';
       } else if (c == '%') {
-	int cc = (int)s.charAt(++i);
-	cc = cc * 16 + (int)s.charAt(++i);
+	String foo = "" + s.charAt(++i);
+	foo += s.charAt(++i);
+	int cc = Integer.valueOf(foo, 16).intValue();
 	ss += (char)cc;
       } else {
 	ss += c;
