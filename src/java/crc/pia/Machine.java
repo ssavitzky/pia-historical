@@ -30,15 +30,18 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.net.MalformedURLException;
 import java.net.Socket;
-import java.util.Hashtable;
+import java.util.Enumeration;
 
 import crc.pia.Content;
 import crc.pia.HTTPResponse;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 import crc.util.Timer;
+
+import crc.ds.Table;
+import crc.ds.List;
 
 import w3c.www.http.HTTP;
 
@@ -84,7 +87,7 @@ public class Machine {
   /**
    * Attribute index - proxy
    */
-  protected Hashtable proxyTab = new Hashtable();
+  protected Table proxyTab = new Table();
 
   /**
    * Attribute index - input stream
@@ -204,13 +207,16 @@ public class Machine {
 	isTextHtml = true;
 
 	Pia.instance().debug(this, "Sucking controls...");
-	Object[] c = reply.controls();
+	List c = reply.controls();
 	if( c != null ){
 	  ctrlStrings = new StringBuffer();
-	  for( int i = 0; i < c.length; i++ ){
-	    Object o = c[i];
-	    if( o instanceof String )
-	      ctrlStrings.append( (String)o + " " );
+	  Enumeration els = c.elements();
+	  while( els.hasMoreElements() ){
+	    try{
+	      Object o = els.nextElement();
+	      if( o instanceof String )
+		ctrlStrings.append( (String)o + " " );
+	    }catch(Exception e){}
 	  }
 	}
 	
