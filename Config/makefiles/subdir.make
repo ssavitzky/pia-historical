@@ -54,7 +54,7 @@ setupSub:
 	echo   '### Makefile for' $(MYPATH) 			 > Makefile
 	echo   '#	$$Id$$	'				>> Makefile
 	echo   '# 	COPYRIGHT 1998, Ricoh Silicon Valley' 	>> Makefile
-	echo   ' '						>> Makefile
+	echo    						>> Makefile
 	echo   'PIADIR=$(PIADIR)'				>> Makefile
 	echo   'MF_DIR=$$(PIADIR)/Config/makefiles'		>> Makefile
 	echo   'MYNAME=$(MYNAME)'				>> Makefile
@@ -62,4 +62,4 @@ setupSub:
 	echo   'include $$(MF_DIR)/file.make'			>> Makefile
 	-grep '^include ' ../Makefile \
 		| grep -v file.make | grep -v subdir.make 	>> Makefile
-	echo   ' '						>> Makefile
+	echo    						>> Makefile
