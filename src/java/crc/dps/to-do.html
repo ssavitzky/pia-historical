@@ -247,10 +247,15 @@ Results: &lt;pre&gt;cat                                                         
        (1998-08-05)<br>
 
   <li> <b>Hole:</b> Major changes needed for new DOM. <br>
-       Do this after Level 1 stabilizes.  May involve moving interfaces from
-       <code>crc.dps.active</code> to <code>crc.dom</code>, and the original
-       <code>Node</code> interface (etc.) to the official location in
-       <code>org.w3c.dom</code>.
+       Do this after Level 1 stabilizes.
+       <ul>
+	 <li> Use <code>org.w3c.dom</code> for the <em>official</em>
+	      interfaces, of course.
+	 <li> Move <code>Active*</code> interfaces from
+	      <code>crc.dps.active</code> to <code>crc.dom</code>
+	 <li> Move implementation classes to <code>crc.dom.impl</code>
+	 <li> Keep <code>crc.dps.active</code> for DPS-specific classes.
+       </ul>
        (1998-08-05)<br>
 
   <li> <b>Hole:</b> PI comments <br>

@@ -3,15 +3,21 @@
 <a href="../">[..]</a>
 <a href="#files">[files]</a><p>
 
-This directory contains classes that are used in the DPS for representing
-active documents (parse trees). <p>
+<p> This directory contains classes that are used in the DPS for representing
+    active documents (parse trees).
+
+<p> Eventually it will be used exclusively for interfaces and classes unique
+    to the DPS.  Interfaces and classes that simply extend or implement the
+    DOM (<a href="../../../org/w3c/dom"><code>org.w3c.dom</code></a>) will be
+    in <a href="../../dom"><code>crc.dom</code></a> and
+    <a href="../../dom/tree"><code>crc.dom.tree</code></a>.
 
 <h2>Interfaces</h2>
 
-Interfaces in this package have names that start with ``<code>Active</code>''.
-In general, they are also <em>implementations</em> of
-<a href="../Active.java"><code>crc.dps.Active</code></a> and its extension
-<a href="ActiveNode.java"><code>ActiveNode</code></a>.
+<p> Interfaces in this package have names that start with
+    ``<code>Active</code>''.  In general, they are also extensions of
+    <a href="../Active.java"><code>crc.dps.Active</code></a> and its extension
+    <a href="ActiveNode.java"><code>ActiveNode</code></a>.
 
 <dl>
   <dt> <a href="ActiveNode.java">ActiveNode</a>
@@ -20,10 +26,10 @@ In general, they are also <em>implementations</em> of
 
 <h2>Classes</h2>
 
-Classes in this packages have names that start with ``<code>ParseTree</code>''
-if they are implementations of
-<a href="ActiveNode.java"><code>ActiveNode</code></a>.  The names of auxiliary
-classes are less consistent.
+<p> Classes in this package have names that start with
+    ``<code>ParseTree</code>'' if they are implementations of <a
+    href="ActiveNode.java"><code>ActiveNode</code></a>.  The names of
+    auxiliary classes are less consistent.
 
 <dl>
   <dt> 
@@ -33,9 +39,6 @@ classes are less consistent.
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
 <b>$Id$</b>
-<address><a href="http://rsv.ricoh.com/~steve"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
 <a name="files"><hr></a>
 
 
