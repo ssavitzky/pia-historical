@@ -61,7 +61,7 @@ key=&k;></textarea>
 </repeat>
 
 </table>
-<input type="hidden" name="maxc" value="&maxc;">
+<input type="hidden" name="maxc" value="&c;">
 <input type="submit" value="Save Changes">
 </form>
 Next Step is To Be Determined  .... <a href=main.if>View Kiosk pages</a>.

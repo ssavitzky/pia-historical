@@ -28,12 +28,9 @@ the future</i>
 <if><get name="position&c;" form>
  <then>
   <set name="key"><get name=position&c; form></set>
-  <set name="departments" agent key=&key;><repeat list="headers"
+  <set name="departments" agent key=&key;><repeat list="&headers;"
   entity=h><deptinfo name=&h;><get name=&h;&c; form></deptinfo></repeat></set> </then> 
- <else> </else></if><td><input name="position&c;" value="&k;" size="4"> </td>
-<set name="child"><get name="departments" key=&k;></set>
-<repeat list="&headers;" entity=h>
-</repeat>
+ <else> </else></if>
 </repeat>
 <save-data data=departments>
  </process>
