@@ -4,23 +4,238 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <h1> PIA Tutorial contents</h1>
-
+<h2><a href="#basics"> The Basics</a></h2>
 <ol>
-  <li>  Running a Personal Information Agency
-  <li>  Viewing an agents home page
-  <li>  Using the history agent
+  <li>   <a href="#running">Running a Personal Information Agency</a>
+  <li>   <a href="#viewing">Viewing an agents home page</a>
+  <li>   <a href="#using">Using the history agent</a>
+  <li>  <a href="#directories">Directory structure</a>
        
-  <li>  Customizing an agent (Interform introduction)
-  <li>  Creating a new agent
-  <li>  "Hello World!"
-  <li>  Advanced topics
 </ol>
+<h2>  <a href="#agents">Agents & InterForms</a> </h2>
+<ol>
+  <li>   <a href="#InterForms">Customizing an agent (Introduction to InterForms)</a>
+  <li>  <a href="#creating"> Creating a new agent -- "Hello World!"</a>
+
+  <li>   <a href="#advanced">Advanced topics</a>
+</ol>
+
+
+
+<h2><a  name="basics"> The Basics</a></h2>
+  <h3>   <a href="running">Running a Personal Information Agency</a></h3>
+ <a href="#viewing">(Skip to the next section if you already have an agency
+ running.)</a>
+An <it> Information Agency</it> is a software program written in Java.  To run
+it, you need access to a Java "runtime" (e.g. "java" should be located in one
+of the directories on your  <code> PATH</code> -- for Sun users at CRC,
+/usr/local/src/www/java-SDK/java/bin should work) and a PIA home directory
+(you can either use /pia1/pia or <a
+href="http://pia.crc.ricoh.com:8888/PIA/INSTALL"> install </a> your own).
+<p>
+To run the pia, execute the command  <code>PIA_HOME/bin/pia_wrapper</code>,
+where   <code> PIA_HOME</code> is the PIA home directory. Sun users can simply
+type  <code>pia</code> (/usr/local/bin/pia is a shell wrapper which executes
+pia_wrapper using /pia1/pia as the PIA directory).
+<p>
+Once you have an agency running, you should be able to view your agency's home
+page at  <a href="http://localhost:8888/">http://<it> YOUR HOST NAME
+HERE</it>:8888/</a> using any browser.
+<p>
+ If you have trouble getting to this point, please contact the <a
+ href="http://pia.crc.ricoh.com/8888"> PIA group </a>.
+
+<h3>   <a href="viewing">Viewing an agents home page</a></h3>
+We call our system an Information Agency because every document (or request
+for a document) is processed by one or more agents. Agents are software <b>
+objects with an attitude </b>.  Typically, they perform some specific task
+while maintaining state and context information.  (This state maintenance
+along with the Agency framework allows agents to be more flexible, and much
+easier to generate and maintain than traditional web processes such as CGI
+scripts.)
+<p>
+
+If you have not already done so, please open another browser window on your
+ <a href="http://localhost:8888/"> agencies home page</a>.
+
+<p>
+Notice that the url for this page:
+<pre>http://localhost:8888/Agency/ROOTindex.if
+     ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^ ^^^^^^^^^^^^
+           1                  2         3     </pre>
+ consists of three parts
+<ol>
+  <li>  <code>http://.../</code> -- the machine name and port number
+  <li>   <code> Agency</code> -- the name of the agent handling this request
+  <li>  <code>ROOTindex.if</code> --  an InterForm file name
+</ol>
+
+<p>
+ This url denotes a request to the <tt>Agency</tt> agent (part 2) running on
+ your local information agency (part 1).  The <tt>Agency</tt>
+ agent is sort of the mother of all agents. It is the agent responsible for
+ installing, removing, and listing other agents -- along with some
+ miscellaneous things like <a href="/Agency/bugs.if">reporting bugs</a>. 
+
+<p>
+The third part,   <code>ROOTindex.if,</code> indicates the InterForm -- an
+html file with some special tags -- that the agent processed in order to
+generate the page that your browser is display.
+
+<p>
+On this page, you should see  a listing of all the agents currently running on
+your information agency.  Click on one of the agent links to see the home page
+for that agent.  By default, the agency comes configured to start up with the following agents.
+<dl>
+  <dt> <tt> Agency</tt>
+  <dd> main agent-- manages all other agents
+  <dt> <tt> History</tt>
+  <dd> maintains list of visited web pages --  see below
+  <dt> <tt> FBI</tt>
+  <dd> adds control menu to pages served by your information agency
+  <dt> <tt>CIA</tt>
+  <dd> adds control menu to pages proxied through your agency
+  <dt> <tt> InterForm</tt>
+  <dd> demonstrates features of the InterForm language (an extension of html)
+  <dt> <tt> PIA</tt>
+  <dd> serves files located in the PIA_HOME directory
+  <dt> <tt>MY</tt>
+  <dd>  serves files located in your local PIA_DATA directory (usually ~/.pia)
+</dl>
+
+<h3>   <a href="using">Using the history agent</a></h3>
+ The History agent is meant to keep track of all web pages that you visit from
+ any browser, allowing you to search those url by date or other feature.
+To make best use of the History agent, you should set your browsers to use
+your local information agency as your proxy (this setting is usually found under the
+Network options available under edit/preferences, options/network, or some
+similar menu).
+<p>
+ Once you set your Information Agency as your proxy, browse to a few external
+ web pages, then visit the  <a href="/History/home.if"> History agent's home
+ page</a>. You should see a link to today's date (e.g. <tt>My/History / 1997 /
+ 08 / 04</tt>) which will list the pages you visited.
+
+<h3>  <a href="directories">Directory structure</a></h3>
+ In addition to the PIA_HOME directory (which contains all the code,
+ documentation, agents, etc. released by the PIA group), your information
+ agency also uses PIA_DATA (typically ~/.pia) to store agent data and
+ customized interforms.  By default, agents will read and write their data
+ files into PIA_DATA/AGENT_NAME (where AGENT_NAME is the name of the agent.)
+ For their InterForms, agents look first in PIA_DATA/Agents/AGENT_NAME, and
+ then in PIA_HOME/Agents/AGENT_NAME making it easy to customize your agents
+ simply by putting new InterForm files in
+ PIA_DATA/Agents/AGENT_NAME/FILENAME.if
+
+
+<h2>  <a href="agents">Agents & InterForms</a> </h2>
+ Agents are persistent software objects running on the information agency.
+ When they receive a request for a document, they look for a file (in
+ PIA_xxxx/Agents/AGENT_NAME) which matches that request.  Once the file is
+ found, they  interpret that file  and return the result.  To the end user,
+ these files provide a forms based interface for interacting with the agent,
+ hence they are called interforms (with .if as the conventional extension.) In
+ addition to standard html tags, interforms can include several additional
+ tags or entities which the agent understands processes.  So, for example, if
+ an interform for the History agent includes the text:
+ <code>&amp;agentName;</code> (the &amp;xxx; denotes an "entity") the agent
+ will substitute it's name for this entity,  so in the browser the user would
+ see <code> History</code>.
+<p>
+For more examples, see the <a href="/InterForm"> InterForm</a> demo agent.
+
+<h3>   <a href="InterForms">Customizing an agent</a></h3>
+ To add  new function to the History agent, create a file,
+ <tt>~/.pia/Agents/History/today.if</tt> (assuming that PIA_HOME=~/.pia) with
+ the following contents:<br>
+
+ <code>
+&lt;html&gt;&lt;body&gt;
+&lt;h2&gt; Web pages visited Today&lt;/h2&gt;
+&lt;read file="&amp;year;/&amp;month;/&amp;day;.html&gt;
+&lt;/body&gt;&lt;/html&gt;
+</code>
+<br>
+ Save that file (today.if) and then use your browser to view the url  <a
+ href="/History/today.if">/History/today.if</a>
+ If you have been using your agency as a proxy to view external documents, you
+ should get a listing of all places you visited today.
+
+<h3>  <a href="creating"> Creating a new agent -- "HelloWorld"</a></h3>
+ To create your own agent, first create a directory,
+ <tt>~/.pia/Agents/HelloWorld</tt>.  Now create a home page for your agent, 
+ <tt>~/.pia/Agents/HelloWorld/home.if</tt> with something like the following
+ content:
+<br>
+
+ <code>
+&lt;html&gt; &lt;body&gt; 
+&lt;h2&gt;  I am the &amp;agentName; agent &lt;/h2&gt;
+My owner is &amp;piaUSER;.
+&lt;if&gt;&lt;get form name=data&gt;&lt;then&gt;
+ You asked &lt;get form name=data&gt;
+ to which I have no answer yet.
+&lt;/then&gt;&lt;else&gt;
+&lt;form action="&amp;urlPath; method=post&gt;
+&lt;input name="data"&gt;
+&lt;input type="submit" value="AskMe"&gt;
+&lt;/form&gt;
+&lt;/else&gt;
+&lt;/if&gt;
+&lt;/body&gt;&lt;/html&gt;
+</code>
+
+<p>
+Now install your agent using the
+<a href="/Agency/install_agent.if">/Agency/install_agent.if</a>  InterForm.
+(Go to that page, enter <tt>HelloWorld</tt> as the name of your agent and
+click on the install button.)
+<p>
+You should now the able to see and interact with your  <a
+href="/HelloWorld/home.if">HelloWorld agent</a>.
+
+<h3>   <a href="advanced">Advanced topics</a></h3>
+<dl>
+  <dt>  <a href="/Agency/START-UP.html"><tt> START-UP.html</tt></a>
+  <dd>  On start-up, the agency looks in PIA_xxx/Agents/Agency/START-UP.html
+	for any agents that should be installed.  You will probably want to
+	copy and modify this file to start your own agents.
+  <dt>  Examples
+  <dd>  For more examples of agent InterForms, look in the  <a
+	href="/PIA/Agents/">existing agent directories </a>.  (NOTE: We still
+	need to select the most appropriate examples for learning.)
+       
+  <dt>  InterForms
+  <dd>  See  <a href="/InterForm/demo.if"> InterForm demo page</a> for example
+	uses of InterForm tags and the <a href="/PIA/Doc/Manuals/InterForm/">InterForm manual</a> for
+	detailed Interform usage and functions.  In particular, note that
+	entity variables can be several levels deep.  For example,
+	<tt>&amp;AGENT.employees.1;</tt> might return the first item in a list
+	of employees associated with this agent. 
+  <dt>  Initialization
+  <dd> An agents <tt> initialize.if</tt> InterForm is loaded and interpreted
+       when an agent starts up (if it exists)
+  <dt>  Inheritance
+  <dd>  Standard forms (like options.if) can be inherited from the Agents
+	directory (the agent will look in PIA_xxx/Agents if a form is not
+	found in PIA_xxx/Agents/AGENT_NAME) 
+  <dt>  Processing documents not specifically requested
+  <dd>  The agency allows an agent to process documents moving through the
+	agency even if they are not specifically directed at that agent.  For
+	example, the History and CIA agents process all proxied documents.
+	Each agent registers a criteria for the documents it is interested
+	in.  Whenever the agency sees a document (requests for documents are
+	considered documents in their own right), the agency gives the
+	matching agent(s) a chance to process the document before sending it
+	on to its destination.  
+
+</dl>
 
 
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Jul 31 16:23:34 1997
+Last modified: Mon Aug  4 21:50:27 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
