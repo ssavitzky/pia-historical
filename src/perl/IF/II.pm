@@ -274,6 +274,16 @@ sub quoting {
     $self->state->{'_quoting'};
 }
 
+sub has_local_tagset {
+    my ($self, $v) = @_;
+
+    ## local_actor flag
+    ##	  if true, a local actor context exists..
+
+    $self->state->{'_has_local_tagset'} = $v if defined($v);
+    $self->state->{'_has_local_tagset'};
+}
+
 #############################################################################
 ###
 ### Access to Variables:
@@ -506,7 +516,7 @@ sub next_input {
     return $input unless ref($input) eq 'ARRAY';
 
     my ($tag, $pc, $tokens) = @$input;
-    print "??bad input = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
+    #print "??bad input = [$tag, $pc, $tokens]\n" unless ref $tokens eq 'ARRAY';
     return $input unless ref $tokens eq 'ARRAY';
     my $out = $tokens->[$pc++];
 
@@ -697,7 +707,7 @@ sub end_it {
     }    
 }
 
-### stolen from HTML::TreeBuilder
+### stolen from HTML::TreeBuilder === should be in Tagset.pm ===
 
 # Elements that should only be present in the header
 %isHeadElement = map { $_ => 1 } qw(title base link meta isindex script);
@@ -1047,6 +1057,35 @@ sub complete_it {
     }
 }
 
+sub parse_it {
+    my ($self) = @_;
+
+    $self->parsing(1);
+}
+
+sub quote_it {
+    my ($self, $v) = @_;
+
+    $v = 1 unless defined $v;
+    $self->parsing(1);
+    $self->quoting($v);
+}
+
+sub replace_it {
+    my ($self, $it) = @_;
+
+    $self->state->{_token} = ($it);	# handles undefined
+    $incomplete = 0;
+}
+
+sub delete_it {
+    my ($self) = @_;
+
+    $self->token('');
+}
+
+### === The following should really be in a Tagset module.
+
 sub open_actor_context {
     my ($self, $active, $passive) = @_;
 
@@ -1093,47 +1132,22 @@ sub define_actor {
     ## Define an actor local to the current interpretor.
     ##	  Exactly what to do with names and tags is unsettled so far.
 
-    $self->open_actor_context unless defined $self->actors;
+    $self->open_actor_context unless $self->has_local_tagset;
+    $self->has_local_tagset(1);
+
     if (! ref($actor)) {
       $actor = IF::IA->new($actor, @attrs)
     }
 
     my $name = $actor->attr('name');
-    my $active = $actor->attr('active');
+    my $tag = $actor->attr('tag');
 
-    if ($active) {
-	$self->active_actors->{$name} = $actor;
+    if ($tag) {
+	$self->active_actors->{$tag} = $actor;
     } else {
 	push(@{$self->passive_actors}, $actor);
     }
     $self->actors->{$name} = $actor;
-}
-
-sub parse_it {
-    my ($self) = @_;
-
-    $self->parsing(1);
-}
-
-sub quote_it {
-    my ($self, $v) = @_;
-
-    $v = 1 unless defined $v;
-    $self->parsing(1);
-    $self->quoting($v);
-}
-
-sub replace_it {
-    my ($self, $it) = @_;
-
-    $self->state->{_token} = ($it);	# handles undefined
-    $incomplete = 0;
-}
-
-sub delete_it {
-    my ($self) = @_;
-
-    $self->token('');
 }
 
 

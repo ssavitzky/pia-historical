@@ -39,7 +39,7 @@ sub recruit {
 
 
 sub initialize {
-    my ($self, $name, $active) = @_;
+    my ($self, $name) = @_;
 
     ## Initialize an actor.
     ##	  Force the actor to obey the standard conventions:
@@ -47,7 +47,9 @@ sub initialize {
     ##	    'active' attribute if active.
 
     $name = $self->attr('name') unless defined $name;
-    $active = $self->attr('active') unless defined $active;
+    my $tag = $self->attr('tag');
+    my $active = $self->attr('active');
+    $active = ($tag || $name !~ /^-/ ) unless defined $active;
     my $hook = $active? '_act_for' : '_act_on';
 
     if ($self->attr('content')) {
@@ -55,19 +57,19 @@ sub initialize {
     } elsif ($self->attr('empty')) {
 	$self->hook($hook, \&act_empty);
     } else {
+	$self->hook($hook, \&act_parsed) unless $self->attr('unparsed');
 	$self->hook($hook, \&act_quoted) if $self->attr('quoted');
-	$self->hook($hook, \&act_parsed) if $self->attr('parsed');
     }
 
     if ($active) {
 	$name = lc $name;
-	$self->attr('tag', $name);
-	$self->attr('active', 'active');
+	$self->attr('tag', $name) unless defined $tag;
     }
     $self->attr('name', $name);
 
     if (! $self->attr('_handle')) {
-	$self->{'_handle'} = \&generic_handle;
+	$self->{'_handle'} = ($self->is_empty) ? \&IF::Actors::null_handle 
+	                                       : \&IF::Actors::generic_handle;
     }
     $self;
 }
@@ -268,19 +270,5 @@ sub act_generic {
     }
 }
 
-
-sub generic_handle {
-    my ($self, $it, $ii) = @_;
-
-    ## This is the handler for a generic agent with content.
-    ## === not really clear what to do about context ($it)
-    ## => use an attribute for the name (or parts), and define entities
-    ##	  using shallow binding.
-
-    $ii->defvar("context", $it); # === not very satisfactory
-    $ii->defvar("content", $it->content);
-    $ii->push_into($self->content);
-    $ii->delete_it;
-}
 
 1;

@@ -53,15 +53,13 @@ sub define_actor {
     ## Define a new actor, globally.
     ##	  Optionally takes a name and attribute-list.
 
-    if (! ref($actor)) {
-      $actor = IF::IA->new($actor, @attrs)
-    }
+    $actor = IF::IA->new($actor, @attrs) unless ref($actor);
 
     my $name = $actor->attr('name');
-    my $active = $actor->attr('active');
+    my $tag = $actor->attr('tag');
 
-    if ($active) {
-	$active_actors->{$name} = $actor;
+    if ($tag) {
+	$active_actors->{$tag} = $actor;
     } else {
 	push(@$passive_actors, $actor);
     }
@@ -82,6 +80,20 @@ sub null_handle {
 
 }
 
+sub generic_handle {
+    my ($self, $it, $ii) = @_;
+
+    ## This is the handler for a generic agent with content.
+    ## === not really clear what to do about context ($it)
+    ## => use an attribute for the name (or parts), and define entities
+    ##	  using shallow binding.
+
+    $ii->defvar("element", $it);
+    $ii->defvar("content", $it->content);
+    $ii->push_into($self->content);
+    $ii->delete_it;
+}
+
 #############################################################################
 ###
 ### Passive actors:
@@ -89,11 +101,11 @@ sub null_handle {
 
 ### -eval_perl-		attr: language=perl
 
-define_actor('-eval-perl-', 'quoted' => -1, 'unsafe' => 1,
+define_actor('-eval-perl-', 'quoted' => 'quoted', 'unsafe' => 1,
 	     'attr' => 'language', 'value' => 'perl', 
 	     _match => \&eval_perl_match,
 	     _handle => \&IF::Run::eval_perl,
-	     'dscr' => "evaluate CONTENT as perl code.");
+	     'dscr' => "evaluate CONTENT as perl code (DEPRECATED).");
 
 sub eval_perl_match {
     my ($self, $it, $ii, $incomplete, $quoting) = @_;
@@ -108,7 +120,7 @@ sub eval_perl_match {
 ###	Binds entities &li; &1; ... 
 ###	Optional: entities="n1 ..."
 
-define_actor('-foreach-', 'quoted' => 1, 'attr' => 'foreach',
+define_actor('-foreach-', 'quoted' => 'quoted', 'attr' => 'foreach',
 	     _match => \&foreach_match, _handle => \&foreach_handle,
 	     'dscr' => "repeat ELEMENT for each ENTITY in LIST of words");
 
@@ -162,7 +174,7 @@ sub foreach_handle {
 ### actor:  active, quoted.
 ###	Defines a new actor.
 
-define_actor('actor', 'active' => 1, 'quoted' => 1,
+define_actor('actor', 'quoted' => 'quoted',
 	     _handle => \&actor_handle,
 	     'dscr' => "define an InterForm actor");
 
@@ -191,10 +203,12 @@ sub actor_handle {
 ### === <get file [path="p1:p2..."]
 ###	<file read|write|append [path=] [name=] >content</file>
 
-define_actor('get', 'active' => 1, 'content' => 'name',
+define_actor('get', 'content' => 'name',
 	     _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
 optionally in PIA, ENV, AGENT, FORM, ELEMENT, or ENTITY context.");
+
+### === EXPAND/PROTECT ?===
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
@@ -230,10 +244,12 @@ sub get_handle {
 ### <set name="name" value="value">
 ### <set name="name">value</set>
 
-define_actor('set', 'active' => 1, 'content' => 'value', 'parsed'=>1,
+define_actor('set', 'content' => 'value',
 	     _handle => \&set_handle,
 	     'dscr' => "set NAME to VALUE, 
 optionally in PIA, AGENT, ELEMENT, or ENTITY context.");
+
+### === COPY / COPY PREVIOUS ===
 
 sub set_handle {
     my ($self, $it, $ii) = @_;
@@ -270,11 +286,11 @@ sub set_handle {
 ### <if><test>condition</test><then>...</then><else>...</else></if>
 ###	condition is false if it is empty or consists only of whitespace.
 
-define_actor('if', 'active' => 1, 'parsed' => 1, _handle => \&if_handle,
+define_actor('if', _handle => \&if_handle,
 	     'dscr' => "if TEST non-null, expand THEN, else ELSE.");
-define_actor('then', 'active' => 1, 'quoted' => 1, _handle => \&null_handle,
+define_actor('then', 'quoted' => 'quoted', _handle => \&null_handle,
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
-define_actor('else', 'active' => 1, 'quoted' => 1, _handle => \&null_handle,
+define_actor('else', 'quoted' => 'quoted', _handle => \&null_handle,
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
 
 sub if_handle {
@@ -300,7 +316,7 @@ sub if_handle {
 
 ### <repeat list="..." entity="name">...</repeat>
 ###	
-define_actor('repeat', 'active' => 1, 'quoted' => 1,
+define_actor('repeat', 'quoted' => 'quoted',
 	     _handle => \&repeat_handle, _end_input => \&repeat_end_input,
 	     'dscr' => "repeat CONTENT with ENTITY in LIST of words.");
 
@@ -346,12 +362,12 @@ sub repeat_end_input {
 ### Expansion control: 
 ###	protect, protect-result
 
-define_actor('protect', 'active' => 1, 'quoted' => 1, 
+define_actor('protect', 'quoted' => 'quoted', 
 	     _handle => \&protect_handle,
 	     'dscr' => "protect CONTENT from expansion.  Optionally protect
 MARKUP by converting special characters to entities.");
 
-define_actor('protect-result', 'active' => 1, 'parsed' => 1, 
+define_actor('protect-result', 
 	     _handle => \&protect_handle,
 	     'dscr' => "protect results of expanding CONTENT from expansion.  
 Optionally protect MARKUP by converting special characters to entities.");
@@ -373,7 +389,7 @@ sub protect_handle {
     }
 }
 
-define_actor('expand', 'active' => 1, 'parsed' => 1,
+define_actor('expand', 
 	     _handle => \&expand_handle,
 	     'dscr' => "(re-)expand CONTENT after parsing it.");
 
@@ -416,7 +432,7 @@ sub expand_handle {
 ###	iftrue="..."	string to return if result is true->content
 ###	iffalse="..."	string to return if result is false
 ###
-define_actor('test', 'active' => 1, 'content' => 'value', 'parsed'=>1,
+define_actor('test', 'content' => 'value',
 	     _handle => \&test_handle,
 	     'dscr' => "test VALUE (content); 
 return null or IFFALSE if false, else '1' or IFTRUE. 
@@ -462,7 +478,7 @@ sub test_handle {
 
 ### <equal [options]>strings</equal>
 
-define_actor('equal', 'active' => 1, 'content' => 'list', 'parsed'=>1,
+define_actor('equal', 'content' => 'list',
 	     _handle => \&equal_handle,
 	     'dscr' => "test tokens in LIST (content) for equality; 
 return null or IFFALSE if false, else '1' or IFTRUE. 
@@ -494,7 +510,7 @@ sub equal_handle {
 
 ### <sorted [options]>strings</sorted>
 
-define_actor('sorted', 'active' => 1, 'content' => 'list', 'parsed'=>1,
+define_actor('sorted', 'content' => 'list', 
 	     _handle => \&sorted_handle,
 	     'dscr' => "test tokens in  LIST (content) for sortedness;
 return null or IFFALSE if false, else '1' or IFTRUE. 
@@ -547,7 +563,7 @@ sub sorted_handle {
 ###	text
 ###	numeric
 ###
-define_actor('sort', 'active' => 1, 'content' => 'value', 'parsed'=>1,
+define_actor('sort', 'content' => 'value', 
 	     _handle => \&sort_handle,
 	     'dscr' => "sort tokens in  LIST (content).
 Modifiers: CASE (sensitive), TEXT, NUMERIC, REVERSE.");
@@ -584,7 +600,7 @@ sub sort_handle {
 
 ### <text>content</text>
 
-define_actor('text', 'active' => 1, 'parsed' => 1, 
+define_actor('text', 
 	     _handle => \&text_handle,
 	     'dscr' => "eliminate markup from CONTENT.");
 
@@ -598,7 +614,7 @@ sub text_handle {
 
 ### <trim>content</trim>
 
-define_actor('trim', 'active' => 1, 'parsed' => 1, 
+define_actor('trim', 
 	     _handle => \&trim_handle,
 	     'dscr' => "eliminate leading and trailing whitespace
 from CONTENT.");
@@ -610,14 +626,13 @@ sub trim_handle {
     $ii->replace_it(IF::IT->new()->push($text));
 }
 
-### 
 ### <pad width=N align=[left|right|center] [spaces]>string</pad>
 ###	If the "spaces" attribute is present, only the spaces are 
 ###	returned.  This lets you pad the contents of a link (for
 ###	example) without having to put the padding inside the link
 ###	where it will get underlined and look ugly.
 
-define_actor('pad', 'active' => 1, 'parsed' => 1, 
+define_actor('pad', 
 	     _handle => \&pad_handle,
 	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment
 (left/center/right).  Optionally just generate the SPACES.  Ignores markup.");
@@ -646,8 +661,47 @@ sub pad_handle {
 	$text = '' if $spaces;
 	$ii->replace_it("$right$text$left");
     } else {
-	$it->replace_it(IF::IT->new()->push($right)->push($it)->push($left));
+	$ii->replace_it(IF::IT->new()->push($right)->push($it)->push($left));
     }
+}
+
+### <add-markup>text</add-markup>
+
+define_actor('add-markup', 
+	     _handle => \&add_markup_handle,
+	     'dscr' => "convert common text conventions to markup");
+
+sub add_markup_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $content = $it->content;
+    my $uc = $it->attr('uc') || 'strong'; # What to do with uppercase
+    my $text;
+    my @result;
+
+    foreach $text (@$content) {
+	if (ref $text) {
+	    push(@result, $text); # already marked up
+	} else {
+	    ## Uppercased words.
+	    while ($text =~ /([A-Z][A-Z]+)/ ) {
+		my $x = "<$uc>" . lc $1 . "</$uc>";
+		$text =~ s/$1/$x/;
+	    }
+
+	    ## Words surrounded by _ or *
+
+	    ## Paragraph breaks
+
+	    ## Line breaks
+
+	    ## Horizontal rules
+
+	    push(@result, $text);
+	}
+    }
+
+    $ii->replace_it(\@result);
 }
 
 ### <split [separator="string" | pattern="pattern"]>text</split>
@@ -659,7 +713,7 @@ sub pad_handle {
 
 ### === very kludgy -- should just use attributes ===
 ### <actor-dscr name="name">
-define_actor('actor-dscr', 'active' => 1, 'parsed' => 1, 
+define_actor('actor-dscr', 
 	     'content' => 'name', _handle => \&actor_dscr_handle,
 	     'dscr' => "get an actor's DSCR attribute");
 
@@ -686,7 +740,7 @@ sub actor_dscr_handle {
 ###	Get an actor's attributes in form suitable for documentation.
 ###	The "name", "tag",  and "dscr" attributes are not included.
 
-define_actor('actor-attrs', 'active' => 1, 'parsed' => 1, 
+define_actor('actor-attrs', 
 	     'content' => 'name', _handle => \&actor_attrs_handle,
 	     'dscr' => "get an actor's attributes in documentation format");
 
@@ -726,7 +780,7 @@ sub actor_attrs_handle {
 
 ###	This is incredibly kludgy, but it works!
 
-define_actor('agent-home', 'active' => 1, 'parsed' => 1, 
+define_actor('agent-home', 
 	     'content' => 'name', _handle => \&agent_home_handle,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
@@ -753,7 +807,7 @@ sub agent_home_handle {
 ### <agent-running>name</agent-running>
 ###	Tests whether an agent is running
 
-define_actor('agent-running', 'active' => 1, 'parsed' => 1, 
+define_actor('agent-running', 
 	     'content' => 'name', _handle => \&agent_running_handle,
 	     'dscr' => "Tests whether an agent is running (installed)" );
 
@@ -773,7 +827,7 @@ sub agent_running_handle {
 
 ### <agent-set-options>query_string</agent-set-options>
 
-define_actor('agent-set-options', 'active' => 1, 'parsed' => 1,  'unsafe' => 1,
+define_actor('agent-set-options', 'unsafe' => 1,
 	     'content' => 'options', _handle => \&agent_set_options_handle,
 	     'dscr' => "Sets OPTIONS for agent NAME" );
 
@@ -809,7 +863,7 @@ sub agent_set_options_handle {
 
 ### <agent-options>
 
-define_actor('agent-options', 'active' => 1, 'empty' => 1,  'unsafe' => 1,
+define_actor('agent-options', 'empty' => 1,  'unsafe' => 1,
 	     _handle => \&agent_options_handle,
 	     'dscr' => "Returns list of option names for agent NAME" );
 
@@ -832,7 +886,7 @@ sub agent_options_handle {
 
 ### <agent-install name='n' type='t'>
 
-define_actor('agent-install', 'active' => 1, 'parsed' => 1, 
+define_actor('agent-install', 
 	     'content' => 'options', _handle => \&agent_install_handle,
 	     'dscr' => "Installs an agent with given OPTIONS (content).
 Returns the agent's name." );
@@ -852,7 +906,7 @@ sub agent_install_handle {
 
 ### <agent-remove>name</agent-remove>
 
-define_actor('agent-remove', 'active' => 1, 'parsed' => 1,  'unsafe' => 1,
+define_actor('agent-remove', 'unsafe' => 1,
 	     'content' => 'name', _handle => \&agent_remove_handle,
 	     'dscr' => "Remove (uninstall) an agent with given NAME." );
 
@@ -866,7 +920,7 @@ sub agent_remove_handle {
     $ii->replace_it($name);
 }
 
-define_actor('agent-list', 'active' => 1, 'parsed' => 1,
+define_actor('agent-list', 
 	     'content' => 'type', _handle => \&agent_list_handle,
 	     'dscr' => "List the agents with given TYPE. Possibly SUBS only." );
 
@@ -893,7 +947,7 @@ sub agent_list_handle {
 
 ### <os-command>command</os-command>
 
-define_actor('os-command', 'active' => 1, 'parsed' => 1, 'unsafe' => 1,
+define_actor('os-command', 'unsafe' => 1,
 	     'content' => 'command', _handle => \&os_command_handle,
 	     'dscr' => "Execute an operating system command 
 in the background with proxies set." );
@@ -919,7 +973,7 @@ sub os_command_handle {
 
 ### <os-command-output>command</os-command-output>
 
-define_actor('os-command-output', 'active' => 1, 'parsed' => 1, 'unsafe' => 1,
+define_actor('os-command-output', 'unsafe' => 1,
 	     'content' => 'command', _handle => \&os_command_output_handle,
 	     'dscr' => "Execute an operating system command 
 and capture its output." );

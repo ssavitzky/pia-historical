@@ -470,6 +470,8 @@ sub test_result {
     ##	 handles NOT, IFTRUE, IFFALSE attributes.
 
     $result = ! $result if $it->attr('not');
+    $result = $result ? 1 : '';
+
     if ($result) {
 	my $res = $it->attr('iftrue');
 	$result = $res if defined $res;
@@ -478,7 +480,7 @@ sub test_result {
 	$result = $res if defined $res;
     }
 
-    if ($result) {
+    if ($result ne '') {
 	$ii->replace_it($result);
     } else {
 	$ii->delete_it;

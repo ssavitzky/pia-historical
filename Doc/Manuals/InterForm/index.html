@@ -7,17 +7,20 @@
 
 <blockquote><em>
   This document is a user's manual for the Personal Information Agency's
-  InterForm (Interactive/Interpreted Form) markup language.
-  Eventually it will be an active document, written on the assumption that it
-  is being viewed through a PIA.  Other information of interest to Agent
-  authors can be found in the <a href="../Author/index.html">Agent Author's
-  Manual</a>. 
+  InterForm (Interactive/Interpreted Form) markup language.  It is an ordinary
+  HTML document, but if you are viewing it through a PIA you will be able to
+  use links to an <em>active</em> document, the <a
+  href="/if_demo/home.if">InterForm Demonstration Agent</a>.  Other
+  information of interest to Agent authors can be found in the <a
+  href="../Author/index.html">Agent Author's Manual</a>.
 </em></blockquote>
 
 <h3>Related Documents:</h3>
 
 <ul>
   <li> <a href="../Author/index.html">Agent Author's Manual</a>
+  <li> <a href="/if_demo/home.if">InterForm Demonstration Agent</a> (from PIA
+       only) 
   <li> <a href="/if_demo/entities.if">Entities</a> (from PIA only)
   <li> <a href="/if_demo/actors.if">Actors</a> (from PIA only)
 </ul>
@@ -109,12 +112,12 @@ expect to find a kind of interpretor.  Both would be perfectly correct.<p>
 
 The InterForm Interpretor (II) operates almost exactly like any other SGML
 text-processing application.  It takes in a stream of characters from a file,
-an HTTP server, or an input device, and turns it into a stream of
-``<dfn>tokens</dfn>.''  Each token is either a string of ordinary characters,
-an entity name, or a piece of ``markup:'' a start tag, end tag, or SGML
-declaration.<p>
+an HTTP server, or an input device and turns it into a stream of
+``<dfn>tokens</dfn>.''  Each token is either ``<dfn>text</dfn>'' (a string of
+ordinary characters), an entity name, or a piece of ``<dfn>markup</dfn>'' -- a
+start tag, end tag, or SGML declaration.<p>
 
-Next, any entities in the input stream are ``expanded,'' which means that
+Next, any entities in the input stream are expanded, which means that
 input starts coming from the entity instead of from the original input stream.
 At this point, any end tags are paired with their corresponding start tag.
 Any end tags that may have been omitted (hardly anyone codes ``&lt;/li&gt;,''
@@ -127,8 +130,9 @@ Web browser.<p>
 little.</em> <p>
 
 The complication comes in because of actors.  At any point in the process some
-actor might ``recognize its cue'' and start doing things.  Actors are rather
-limited in what they can do.  They can:<p>
+actor might ``recognize its cue'' and start expanding.  Unlike entities, which
+are simply replaced by a corresponding chunk of text, actors can
+<em>process</em> text.  They can, for example, <p>
 
 <ul>
   <li> tell the interpretor to divert incoming tokens to someplace where the
@@ -147,7 +151,7 @@ is that the interpretor constructs a compound object consisting of the start
 tag and its content--in other words the entire element.<p>
 
 Replacing an element, attribute, or entity with new data is called
-``<dfn>expanding</dfn>'' it, because it usually (not always) gets bigger as a
+``<dfn>expanding</dfn>'' it, because it often (not always) gets bigger as a
 result.<p>
 
 Allowing an actor to perform processing on an element is called
@@ -168,10 +172,13 @@ actors) is called ``<dfn>evaluating</dfn>'' it.<p>
 The syntax of the InterForm language is basically that of HTML; more
 specifically it is derived from the SGML reference syntax, which it follows
 <em>exactly</em>.  Any InterForm can be parsed using an SGML parser (with an
-appropriate Document Type Definition).   Most HTML editors can handle
-InterForms; all that is needed is the ability to enter non-standard element
-tags.  Most HTML editors can do this, because companies like Netscape and
-Microsoft keep adding tags faster than the editor vendors can keep up.<p>
+appropriate Document Type Definition).  Most HTML editors can handle
+InterForms; all that is needed is the ability to enter non-standard entities
+and element tags.  Most HTML editors can do this, because companies like
+Netscape and Microsoft keep adding tags faster than the editor vendors can
+keep up.<p>
+
+<h3>Entities</h3>
 
 ===<p>
 
@@ -197,12 +204,12 @@ Note that a &lt;table&gt; is therefore a list of lists.
 In addition, a description list (&lt;dl&gt;) can be treated as a list of
 two-element (&lt;dt&gt;, &lt;dd&gt;) lists.<p>
 
-A string, especially an attribute, is turned into a list by splitting it
+A text string, especially an attribute, is turned into a list by splitting it
 on whitespace; the &lt;split&gt; actor can be used to split on any text
 pattern.<p> 
 
-<em>Any</em> sequence of tokens can be treated as a list, again by splitting
-it on whitespace.<p>
+<em>Any</em> sequence of tokens can be treated as a list, by splitting
+it either on whitespace, or on token boundaries.<p>
 
 
 <h3>Associations</h3>
@@ -245,6 +252,14 @@ database languages).<p>
 
 <h2>The <a name="standard_tagset">Standard Tagset</a></h2>
 
+<dl>
+  <dt> <b>Note:</b>
+  <dd> <em>Complete</em> listings of defined <a
+       href="/agency/actors.if" >actors</a> and <a href="/agency/entities.if"
+       >entities</a> can be obtained from your PIA.  The <a
+       href="/if_demo">InterForm Demo</a> agent has more information,
+       including sample code.
+</dl>
 
 <h2><a name="other_tagsets">Other Tagsets</a></h2>
 
@@ -306,7 +321,7 @@ files.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Jan  8 18:12:29 1997
+Last modified: Fri Jan 10 09:53:41 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
