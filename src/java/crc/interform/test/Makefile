@@ -15,7 +15,7 @@ DEBUG=-d
 CLASS=crc.interform.Filter
 
 .txt.out:
-	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) $< > $@ 2>$*.log
+	$(BINDIR)/pia_wrapper $(CLASS) $(DEBUG) -t Bootstrap $< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 .html.out:

@@ -8,6 +8,8 @@
 <!-- wonder if comments work? -- <bar> -->
 <!decl some additional junk for declarations... >
 
+<foo a=a a a b=b c=c></foo>
+
 <h2>Let's try some actors</h2>
 <foo>contents of foo before it's defined</foo>
 [foo: parsed]
