@@ -6,6 +6,7 @@ package crc.interform;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -234,6 +235,14 @@ public class Run  extends Environment {
   public static InputStream interformFile(Agent agent, String filepath, 
 					  Transaction trans, Resolver res) {
     return new Run(agent, trans, res, filepath).filterFile("Standard");
+  }
+
+  /** Run a string and return an InputStream. */
+  public static InputStream interformString(Agent agent, String filename, 
+					    String page, Transaction trans,
+					    Resolver res) {
+    InputStream in = new StringBufferInputStream(page);
+    return new Run(agent, trans, res, filename).filterStream(in, "Standard");
   }
 
   /** Run a standard InterForm file and discard the output. */
