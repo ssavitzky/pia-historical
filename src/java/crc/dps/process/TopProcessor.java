@@ -48,6 +48,13 @@ public class TopProcessor extends BasicProcessor implements TopContext
   /** Set the current Tagset. */
   public void setTagset(Tagset bindings) { tagset = bindings; }
 
+  /** Return the current ProcessorInput, if there is one. */
+  public ProcessorInput getProcessorInput() {
+    return (getInput() instanceof ProcessorInput)
+      ? (ProcessorInput)getInput()
+      : null;
+  }
+
   /************************************************************************
   ** Input and Output
   ************************************************************************/
