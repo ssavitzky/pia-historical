@@ -1,6 +1,8 @@
 ### Makefile for pia/src/app/setuid
 ###	$Id$
-###	All are owned by root so it can set the real user ID.
+###	COPYRIGHT 1997, Ricoh Silicon Valley
+
+###	All apps are owned by root so they can set the real user ID.
 
 PIADIR=../../..
 
