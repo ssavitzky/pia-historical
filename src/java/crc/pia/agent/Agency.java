@@ -111,7 +111,8 @@ public class Agency extends GenericAgent {
   public String proxyFor(String destination, String protocol){
     String s = null;
     List list = noProxies();
-    if (list != null) {
+
+    if (list != null && destination != null) {
       Enumeration e = list.elements();
       while( e.hasMoreElements() ){
 	s = (String)e.nextElement();
@@ -133,11 +134,19 @@ public class Agency extends GenericAgent {
    * @return proxy string given protocol
    */
   public String proxy(String protocol){
+    if( protocol == null ) return null;
+
     Table ht = Pia.instance().proxies();
-    if( !ht.isEmpty() && ht.containsKey( protocol ) ){
-      String v = (String)ht.get( protocol );
-      return v;
+
+    String myprotocol = protocol.toLowerCase().trim();
+    //    if( !ht.isEmpty() && ht.containsKey( myprotocol ) ){
+    if( ht.isEmpty() != false ){
+      if(ht.containsKey( myprotocol ) ){
+	String v = (String)ht.get( myprotocol );
+	return v;
+      }
     }
+
     return null;
   }
 
