@@ -181,7 +181,8 @@ public class Utilities {
    *	interface it is registered.  If the object is a List, every object
    *	on the list is registered if necessary.
    *
-   *	@see crc.ds.List, crc.ds.Registered
+   *	@see crc.ds.List
+   *	@see crc.ds.Registered
    */
   public static synchronized Object readObjectFrom( String fileName )
        throws NullPointerException, FileNotFoundException, IOException
@@ -223,7 +224,8 @@ public class Utilities {
    *	Registered interface are registered.  Lists in the input file are
    *	quietly appended.
    *
-   *	@see crc.ds.List, crc.ds.Registered
+   *	@see crc.ds.List
+   *	@see crc.ds.Registered
    */
   public static synchronized List readObjectsFrom( String fileName )
        throws NullPointerException, FileNotFoundException, IOException

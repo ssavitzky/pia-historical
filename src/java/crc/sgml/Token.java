@@ -31,7 +31,7 @@ import java.io.Writer;
  *	which are considered <em>true</em>, from entries whose value is
  *	a null string, which are considered <em>false</em>. <p>
  *
- *	@see Tokens.
+ *	@see crc.sgml.Tokens
  */
 public class Token implements SGML {
 
