@@ -21,10 +21,38 @@ public abstract class AbstractNode implements Node, Cloneable {
 
   public abstract int getNodeType();
 
+  /**
+   * Returns the parent of the given Node instance. If this node is the root of the
+   *  document object tree, null is returned. 
+   */
   public Node     getParentNode(){ return parent; }
-  public NodeList getChildren(){ return null; }
-  public boolean  hasChildren(){ return false; }
-  public Node     getFirstChild(){ return null; }
+
+  /**
+   *Returns a NodeList object containing the children of this node. If there are no
+   *children, null is returned. The content of the returned NodeList is "live" in
+   *the sense that changes to the children of the Node object that it was created
+   *from will be immediately reflected in the set of Nodes the NodeList contains;
+   *it is not a static snapshot of the content of the Node. Similarly, changes made
+   *to the NodeList will be immediately reflected in the set of children of the
+   *Node that the NodeList was created from. 
+   */
+  public NodeList getChildren()
+  {
+    return (head == null) ? null : new ChildNodeList( this ); 
+  }
+
+  /**
+   *Returns true if the node has any children, false if the node has no children at
+   *all. This method exists both for convenience as well as to allow
+   *implementations to be able to bypass object allocation, which may be required
+   *for implementing getChildren(). 
+   */
+  public boolean  hasChildren()
+  {
+    return  head != null && tail != null;
+  }
+
+  public Node     getFirstChild(){ return head; }
   public Node     getPreviousSibling(){ return leftSibling; }
   public Node     getNextSibling(){ return rightSibling; }
 
@@ -34,44 +62,62 @@ public abstract class AbstractNode implements Node, Cloneable {
    *  NotMyChildException is thrown. 
    */
   public void insertBefore(Node newChild, Node refChild)
-       throws NotMyChildException
+       throws NotMyChildException 
   {
-    NodeEnumerator e = null;
-
+    AbstractNode nc = null;
     if( newChild == null ) return;
 
-    //newChild.setParent( this );
+    if( refChild != null && !(refChild instanceof AbstractNode) )
+      throw new NotMyChildException("The reference child is not mime.");
+    else if( !(newChild instanceof AbstractNode) )
+      nc = new NodeWrapper( newChild );
+    else nc = (AbstractNode)newChild;
 
-    if( refChild == null ) 
-      insertAtEnd( newChild );
-    else if( refChild.getParentNode() != this ){
-      String err = ("The reference child is not mine.");
-      throw new NotMyChildException(err);
-    }else{
-      children.doInsertBefore( (AbstractNode)newChild, (AbstractNode)refChild );
-    }
+    insertBefore(nc, (AbstractNode)refChild);
   }
 
+  /**
+   *Replaces the child node oldChild with newChild in the set of children of the
+   *given node, and return the oldChild node. If oldChild was not already a child
+   *of the node that the replaceChild method is being invoked on, a NotMyChildException is
+   *thrown. 
+   */
   public Node replaceChild(Node oldChild, Node newChild)
        throws NotMyChildException
   {
-    if( oldChild.getParentNode() != this ){
-      String err = ("The reference child is not mine.");
-      throw new NotMyChildException(err);
-    }
-    else
-      return children.doReplaceChild((AbstractNode)oldChild, (AbstractNode)newChild);
+
+    AbstractNode nc = null;
+    if( newChild == null || oldChild == null ) return null;
+
+    if( !(oldChild instanceof AbstractNode) )
+      throw new NotMyChildException("The old child is not mime.");
+    else if( !(newChild instanceof AbstractNode) )
+      nc = new NodeWrapper( newChild );
+    else nc = (AbstractNode)newChild;
+
+    return replaceChild((AbstractNode) oldChild, nc); 
   }
 
+  /**
+   *Removes the child node indicated by oldChild from the list of children and
+   *returns it. If oldChild was not a child of the given node, a NotMyChildException is
+   *thrown. 
+   */
   public Node removeChild(Node oldChild)
        throws NotMyChildException
   {
-    if( oldChild.getParentNode() != this ){
-      String err = ("The reference child is not mine.");
+    if( oldChild == null ) return null;
+
+    if( !(oldChild instanceof AbstractNode) ){
+      String err = ("The old child is not mine.");
       throw new NotMyChildException(err);
     }else
-      return children.doRemoveChild((AbstractNode)oldChild);
+      return removeChild((AbstractNode)oldChild);
   }
+
+  /**************************************
+   * protected functions
+   */
 
   /* mutator for parent and siblings */
   protected void setParent(AbstractNode parent){ this.parent = parent; }
@@ -80,11 +126,177 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected AbstractNode getPrevious(){ return leftSibling; }
   protected AbstractNode getNext(){ return rightSibling; }
 
-  protected void insertAtEnd( Node newChild ){
-    if( !hasChildren() ) 
-      children = new ChildNodeList( (AbstractNode)newChild ); 
-    else
-      children.doInsertLast( (AbstractNode)newChild );
+  protected void insertBefore(AbstractNode newChild, AbstractNode refChild)
+       throws NotMyChildException
+  {
+    NodeEnumerator e = null;
+
+    if( newChild == null ) return;
+
+    newChild.setParent( this );
+
+    if( refChild == null ) 
+      insertAtEnd( newChild );
+    else if( refChild.getParentNode() != this ){
+      String err = ("The reference child is not mine.");
+      throw new NotMyChildException(err);
+    }else{
+      doInsertBefore( newChild, refChild );
+    }
+  }
+
+  /**
+   * If the children list is previously empty, make head and tail refer to new child
+   * otherwise, append to end.
+   */
+  protected void insertAtEnd( AbstractNode newChild ){
+    if( !hasChildren() ){ 
+      newChild.setPrevious( null );
+      newChild.setNext( null );
+      
+      head = newChild;
+      tail = newChild;
+    }
+    else append( (AbstractNode)newChild );
+  }
+
+  /**
+   * Append child to end.  Move tail
+   */
+  protected void append( AbstractNode newChild ){
+    AbstractNode last = tail;
+    
+    newChild.setPrevious( last );
+    newChild.setNext( last.getNext() );
+    
+    last.setNext( newChild );
+    
+    tail = newChild;
+  }
+
+  /**
+   * Inserting child at start. Move head
+   */
+  protected void doInsertAtStart(AbstractNode newChild){
+    Report.debug(this, "doInsertAtStart");
+    if( newChild == null || head == null ) return;
+
+    newChild.setPrevious( null );
+    newChild.setNext( head );
+
+    head.setPrevious( newChild );
+
+    head = newChild;
+  }
+
+  
+  /**
+   * Normal case insert somewhere in the middle
+   */
+  protected void doInsertBefore(AbstractNode newChild, AbstractNode refChild){
+    if( newChild == null || refChild == null ) return;
+    
+    if( refChild == head ){
+      doInsertAtStart(newChild);      
+      return;
+    }
+    
+    AbstractNode temp = refChild.getPrevious();
+    
+    newChild.setPrevious( temp );
+    newChild.setNext( refChild );
+    
+    refChild.setPrevious( newChild );
+    
+    temp.setNext( newChild );
+  }
+
+
+  /**
+   * remove a child
+   */
+  protected Node removeChild( AbstractNode p )
+       throws NotMyChildException 
+  {
+    if( p == null ) return null;
+    
+    if( p.getParentNode() != this )
+      throw new NotMyChildException("The child is not mime.");
+
+    if( head == tail && hasChildren() ){ // only one child
+      Report.debug("Removing only one child...");
+      head = null;
+      tail = null;
+    }else if( tail == p ){// remove the last child, should adjust header's next reference
+      Report.debug("Removing last child...");
+      p.getPrevious().setNext( p.getNext() );
+      tail = p.getPrevious(); 
+    }else if( head == p ){ // the first item, but more than one child
+      Report.debug("Removing first child...");
+      p.getNext().setPrevious( null );
+      head = p.getNext();
+    }else{
+      Report.debug("Removing somewhere in the middle...");
+      p.getPrevious().setNext( p.getNext() );
+      p.getNext().setPrevious( p.getPrevious() );
+    }
+    p.setPrevious( null );
+    p.setNext( null );
+    p.setParent( null );
+    return p;
+  }
+
+  /**
+   * replace a child
+   */
+  protected Node replaceChild(AbstractNode oldChild, AbstractNode newChild)
+       throws NotMyChildException
+  {
+    Report.debug(this, "do replace child...");
+    if( oldChild == null || newChild == null ) return null;
+    
+    if( oldChild.getParentNode() != this )
+      throw new NotMyChildException("The old child is not mime.");
+    
+    AbstractNode previous = oldChild.getPrevious();
+    AbstractNode next = oldChild.getNext();
+    
+    newChild.setPrevious( previous );
+    newChild.setNext( next );
+    newChild.setParent( this );
+
+    if ( head == tail && hasChildren() ){ // only one item
+      Report.debug("Replacing only one item...");
+      head = newChild;
+      tail  = newChild;
+    }else if( oldChild == head ){ // sub the first guy, adjust header
+      Report.debug("Replacing the first child...");
+      next.setPrevious( newChild );
+      head = newChild;
+    }else if ( oldChild == tail ){ // replacing the last item
+      Report.debug("Replacing the last child...");
+      previous.setNext( newChild );
+      tail = newChild;
+    }else{
+      Report.debug("Replacing somewhere in the middle...");
+      previous.setNext( newChild );
+      previous.setPrevious( newChild );
+    }
+
+    oldChild.setPrevious (null );
+    oldChild.setNext ( null );
+    oldChild.setParent( null );
+    Report.debug("Leaving replaceChild.");
+    return oldChild;
+  }
+
+
+  protected void printChildren(){
+    Node n = getFirstChild();
+    while( n != null ){
+      Report.debug( Integer.toString( n.getNodeType() ) );
+      n = n.getNextSibling();
+    }
   }
 
   /**
@@ -103,10 +315,14 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected AbstractNode rightSibling;
 
   /**
-   * The child collection
+   * Reference to first child
    */
-  protected ChildNodeList children;
+  protected AbstractNode head;
 
+  /**
+   * Reference to last child
+   */
+  protected AbstractNode tail;
 }
 
 
