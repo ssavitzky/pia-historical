@@ -215,6 +215,13 @@ public class Tokens extends List implements SGML {
     copyContentFrom(s);
   }
 
+  public Tokens(java.util.Enumeration e) {
+    this();
+    while (e.hasMoreElements()) {
+      push(Util.toSGML(e.nextElement()));
+    }
+  }
+
   /************************************************************************
   ** Copying:
   ************************************************************************/
