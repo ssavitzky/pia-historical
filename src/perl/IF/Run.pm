@@ -205,64 +205,89 @@ sub interform_hook {
 	     July, August, September, October, November, December);
 
 sub if_entities {
-    my ($agent, $file, $request) = @_;
+    my ($agent, $file, $trans) = @_;
 
     ## Load a standard set of entity bindings.
     ##	  === eventually this should be a set of separately-loaded packages
 
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time());
-    my $date=sprintf("%d%02d%02d", $year, $mon+1, $mday);
-    ## === should be $year + 1900, of course.
-    my $time=sprintf("%02d:%02d", $hour, $min);
+    my $ents = $trans->test('entities') if defined $trans;
 
-    my $response;
-    if (defined $request && $request->is_response) {
-	$response = $request;
-	$request  = $response->request;
+    if (! ref $ents) {
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=
+	    localtime(time());
+	my $date=sprintf("%d%02d%02d", $year, $mon+1, $mday);
+	## === should be $year + 1900, of course.
+	my $time=sprintf("%02d:%02d", $hour, $min);
+
+	my ($request, $response);
+	if (defined $trans && $trans->is_response) {
+	    $response = $trans;
+	    $request  = $response->request;
+	} else {
+	    $request = $trans;
+	}
+	my $url = $request->url if defined $request;
+	my $path = $url->path if defined $url;
+	my $query = $url->query if defined $url;
+	$file =~ m:([^/]*)$:;
+	my $fn = $1;
+
+	## === request method, response type, etc. ===
+
+	my $agentNames = join(' ', sort($resolver->agent_names));
+
+	my $transAgentName = $trans->test('agent');
+	my $transAgentType;
+	if ($transAgentName) {
+	    my $ta = $resolver->agent($transAgentName);
+	    $transAgentType = $ta->type if $ta;
+	}
+
+	$ents = {
+	    'transAgentName'	=> $transAgentName,
+	    'transAgentType'	=> $transAgentType,
+
+	    'agentName' 	=> $agent->name,
+	    'agentType' 	=> $agent->type,
+	    'fileName' 		=> $fn,
+	    'filePath' 		=> $file,
+
+	    'url'		=> $url->as_string,
+	    'urlQuery'		=> $query,
+	    'urlPath'		=> $path,
+
+	    'piaUSER'		=> $ENV{'USER'} || getlogin,
+	    'piaHOME'		=> $ENV{'HOME'},
+	    'piaHOST'		=> $main::PIA_HOST,
+	    'piaPORT'		=> $main::PIA_PORT,
+	    'piaDIR'		=> $main::PIA_DIR,
+
+	    'agentNames'	=> $agentNames,
+	    'entityNames'   	=> '',
+	    'actorNames'	=> join(' ', sort( keys %$IF::Actors::actors)),
+
+	    'second'		=> $sec,
+	    'minute'		=> $min,
+	    'hour'		=> $hour,
+	    'day'		=> $mday,
+	    'month'		=> $mon+1,
+	    'year'		=> $year+1900,
+	    'weekday'		=> $wday,
+	    'dayName'		=> $dayNames[$wday],
+	    'monthName'		=> $monthNames[$mon],
+	    'yearday'		=> $yday,
+	    'date'		=> $date,
+	    'time'		=> $time,
+	};
+
+	$ents->{'entityNames'} = join(' ', sort keys %$ents);
+
+	$trans -> assert('entities', $ents) if defined $trans;
+	## === WARNING! Agents can pass info through entities now ===
     }
-    my $url = $request->url if defined $request;
-    my $path = $url->path if defined $url;
-    my $query = $url->query if defined $url;
-    $file =~ m:([^/]*)$:;
-    my $fn = $1;
 
-    my $agentNames = join(' ', sort($resolver->agent_names));
-
-    my $ents = {
-	'agentName' 	=> $agent->name,
-	'agentType' 	=> $agent->type,
-	'fileName' 	=> $fn,
-	'filePath' 	=> $file,
-
-	'url'		=> $url->as_string,
-	'urlQuery'	=> $query,
-	'urlPath'	=> $path,
-
-	'piaUSER'	=> $ENV{'USER'} || getlogin,
-	'piaHOME'	=> $ENV{'HOME'},
-	'piaHOST'	=> $main::PIA_HOST,
-	'piaPORT'	=> $main::PIA_PORT,
-	'piaDIR'	=> $main::PIA_DIR,
-
-	'agentNames'	=> $agentNames,
-	'entityNames'   => '',
-	'actorNames'	=> join(' ', sort( keys %$IF::Actors::actors)),
-
-	'second'	=> $sec,
-	'minute'	=> $min,
-	'hour'		=> $hour,
-	'day'		=> $mday,
-	'month'		=> $mon+1,
-	'year'		=> $year+1900,
-	'weekday'	=> $wday,
-	'dayName'	=> $dayNames[$wday],
-	'monthName'	=> $monthNames[$mon],
-	'yearday'	=> $yday,
-	'date'		=> $date,
-	'time'		=> $time,
-    };
-
-    $ents->{'entityNames'} = join(' ', sort keys %$ents);
+    $ents->{'agentName'} 	= $agent->name;
+    $ents->{'agentType'} 	= $agent->type;
     $ents;
 }
 
