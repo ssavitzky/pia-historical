@@ -2,7 +2,6 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 package crc.pia;
-import java.util.Hashtable;
 import java.util.Vector;
 import crc.tf.UnknownNameException;
 import java.io.File;
@@ -22,6 +21,9 @@ import crc.pia.Content;
 import crc.pia.ByteStreamContent;
 import crc.pia.Pia;
 
+import crc.ds.Features;
+import crc.ds.Table;
+import crc.ds.List;
 import crc.ds.Criteria;
 import crc.ds.Criterion;
 
@@ -29,9 +31,10 @@ import crc.sgml.SGML;
 import crc.sgml.Attrs;
 import crc.sgml.AttrBase;
 import crc.sgml.AttrTable;
+import crc.sgml.Text;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 import java.util.Enumeration;
 import crc.interform.Run;
 import w3c.www.http.HTTP;
@@ -69,13 +72,13 @@ public class GenericAgent extends AttrBase implements Agent {
    * Attribute index - directory that this agent can write to
    *
    */
-  protected Hashtable dirTable;
+  protected Table dirTable;
 
   /**
    * Attribute index - files that this agent can write to
    *
    */
-  protected Hashtable fileTable;
+  protected Table fileTable;
 
 
   /**
@@ -118,13 +121,54 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Create a new request given method, url
    */
-  private void createRequest(String method, String url){
-    Transaction request =  new HTTPRequest();
+  public void createRequest(String method, String url, String queryString){
+    Transaction request = null;
+
+    if( queryString == null ){
+      request =  new HTTPRequest();
+      request.fromMachine( machine() );
+
+    }else{
+      FormContent c = new FormContent( queryString );
+      request = new HTTPRequest( machine(), c, false );
+
+      request.setHeader("Version", version());
+      request.setContentType( "application/x-www-form-urlencoded" );
+      request.setHeader("Accept", "image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*");
+      request.setContentLength( queryString.length() );
+    }
+
     request.toMachine( Pia.instance().thisMachine() );
     request.setMethod( method );
     request.setRequestURL( url );
+
     request.startThread();
   }
+
+  /**
+   * Create a new request given method, url
+   */
+  public void createRequest(Machine m, String method, String url, String queryString){
+    Transaction request = null;
+
+    if( queryString == null ){
+      request =  new HTTPRequest();
+      request.fromMachine( m );
+
+    }else{
+      FormContent c = new FormContent( queryString );
+      request = new HTTPRequest( m, c, false );
+      request.setContentLength( queryString.length() );
+    }
+
+    request.toMachine( Pia.instance().thisMachine() );
+    request.setMethod( method );
+    request.setRequestURL( url );
+
+    request.startThread();
+  }
+ 
+
  
   /**
    * @return name of agent
@@ -181,19 +225,19 @@ public class GenericAgent extends AttrBase implements Agent {
    * set a file attribute
    *
    */
-  public void fileAttribute(String key, String[] value){
+  public void fileAttribute(String key, List value){
     fileTable.put( key, value ); 
   }
 
   /**
    * get a file attribute
    */
-  public String[] fileAttribute(String key){
+  public List fileAttribute(String key){
     String v = null;
-    String[] res = null;
+    List res = null;
 
     if( fileTable.containsKey( key ) )
-      res = (String[])fileTable.get(key);
+      res = (List)fileTable.get(key);
     if( res == null ){
       v = optionAsString( key );
       if ( v!=null && v.startsWith("~/") ){
@@ -202,17 +246,25 @@ public class GenericAgent extends AttrBase implements Agent {
 	  value = new StringBuffer( v.substring(1) );
 	  value.insert(0,home);
 	  v = new String( value );
-	  res = new String[1];
-	  res[0] = v;
+	  res = new List();
+	  res.push( v );
 	  fileTable.put( key, res );
       }else if( v!=null){
-	res = new String[1];
-	res[0] = v;
+	res = new List();
+	res.push( v );
 	fileTable.put( key, res );
       }
       
     }
-
+    
+    Enumeration enum = res.elements();
+    String zpath = null;
+    while( enum.hasMoreElements() ){
+      try{
+	zpath = (String)enum.nextElement();
+	Pia.instance().debug(this, "file attribute-->"+ zpath);
+      }catch(Exception e){}
+    }
     return res;
   }
 
@@ -220,7 +272,7 @@ public class GenericAgent extends AttrBase implements Agent {
    * set a directory attribute
    *
    */
-  public void dirAttribute(String key, String[] value){
+  public void dirAttribute(String key, List value){
     dirTable.put( key, value ); 
   }
 
@@ -228,12 +280,12 @@ public class GenericAgent extends AttrBase implements Agent {
    * retrieve a directory attribute. 
    * Makes sure that it ends in a file separator character.
    */
-  public String[] dirAttribute(String key){
+  public List dirAttribute(String key){
     String v = null;
-    String[] res = null;
+    List res = null;
 
     if( dirTable.containsKey( key ) )
-      res = (String[])dirTable.get(key);
+      res = (List)dirTable.get(key);
     if( res== null ){
       v = optionAsString( key );
       if ( v!=null && v.startsWith("~/") ){
@@ -243,12 +295,12 @@ public class GenericAgent extends AttrBase implements Agent {
 	  value.insert(0,home);
 	  v = new String( value );
 	  if(!v.endsWith(filesep) ) { v = v + filesep; }
-	  res = new String[1];
-	  res[0] = v;
+	  res = new List();
+	  res.push( v );
 	  dirTable.put( key, res );
       }else if( v!=null){
-	res = new String[1];
-	res[0] = v;
+	res = new List();
+	res.push( v );
 	dirTable.put( key, res );
       }
     }
@@ -266,9 +318,9 @@ public class GenericAgent extends AttrBase implements Agent {
    * A directory is qualified if it can be writen into.
    */
   public String agentDirectory(){
-    String[] directories = dirAttribute("agent_directory");
-    if( directories!=null && directories.length > 0)
-      return directories[0];
+    List directories = dirAttribute("agent_directory");
+    if( directories!=null && directories.nItems() > 0)
+      return (String)directories.at(0);
 
     String[] possibilities = { Pia.instance().piaUsrRoot() + filesep + name() + filesep,
 			       Pia.instance().piaUsrRoot() + filesep + type() + filesep,
@@ -282,8 +334,8 @@ public class GenericAgent extends AttrBase implements Agent {
       File myFileDir = new File( dir );
       if( myFileDir.exists() || myFileDir.mkdir() ){
 	if( myFileDir.isDirectory() && myFileDir.canWrite() ){
-	  String[] dirs = new String[1];
-	  dirs[0] = dir;
+	  List dirs = new List();
+	  dirs.push( dir );
 	  dirAttribute( "agent_directory", dirs );
 	  return dir;
 	}
@@ -480,8 +532,8 @@ public class GenericAgent extends AttrBase implements Agent {
   public boolean optionAsBoolean(String key){
     if( key == null ) return false;
     if( attributes.containsKey( key ) ){
-      String v = (String)attributes.get( key );
-      return "true".equalsIgnoreCase(v) ? true : false ;
+      Text v = (Text)attributes.get( key );
+      return "true".equalsIgnoreCase(v.toString()) ? true : false ;
     }
     else
       return false;
@@ -492,7 +544,7 @@ public class GenericAgent extends AttrBase implements Agent {
    * Set options with a hash table
    *
    */
-  public void parseOptions(Hashtable hash){
+  public void parseOptions(Table hash){
     Enumeration e = null;
     if( hash != null )
       e = hash.keys();
@@ -552,7 +604,7 @@ public class GenericAgent extends AttrBase implements Agent {
       }
     }
     
-    String[] if_path = dirAttribute( "if_path" );
+    List if_path = dirAttribute( "if_path" );
     if( if_path == null ){
       /*
        * If the path isn't already defined, set it up now.
@@ -578,12 +630,12 @@ public class GenericAgent extends AttrBase implements Agent {
       String home = Pia.instance().piaAgents();
       if ( !home.endsWith( filesep ) ){ home = home + filesep; }
       
-      String[] roots = dirAttribute( "if_root" );
+      List roots = dirAttribute( "if_root" );
       String root;
-      if ( roots!= null && roots.length == 1 ){
+      if ( roots!= null && roots.nItems() > 0 ){
 	// handle a user-defined root first:
 	
-	root = roots[0];
+	root = (String)roots.at(0);
 	if ( !root.endsWith( filesep ) ) { root = root + filesep; }
 	if ( root.endsWith( filesep + myname + filesep )) {
 	  try{
@@ -634,13 +686,14 @@ public class GenericAgent extends AttrBase implements Agent {
       pathVector.addElement( home );
       
       
-      String[] tmp = new String[pathVector.size()];
+      List list = new List();
       for(int i=0; i<pathVector.size(); i++){
-	tmp[i] = (String) pathVector.elementAt(i);
+	String onePath = (String)pathVector.elementAt(i);
+	list.push( onePath );
 	if( DEBUG )
-	  System.out.println("GenericAgent findInterform-->" + tmp[i] );
+	  System.out.println("GenericAgent findInterform-->" + (String)onePath );
       }
-      dirAttribute("if_path", tmp );
+      dirAttribute("if_path", list );
       
     }
     File f;
@@ -730,15 +783,15 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /* name and type should be set latter */
   public GenericAgent(){
-    dirTable = new Hashtable();
-    fileTable = new Hashtable();
+    dirTable = new Table();
+    fileTable = new Table();
     name("GenericAgent");
     type("GenericAgent");
   }
 
   public GenericAgent(String name, String type){
-    dirTable = new Hashtable();
-    fileTable = new Hashtable();
+    dirTable = new Table();
+    fileTable = new Table();
 
     if( name != null ) this.name( name );
     if( type != null )
