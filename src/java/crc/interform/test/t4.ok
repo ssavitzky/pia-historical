@@ -1,0 +1,23 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>t4.if</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>InterForm test file t4.if</h1>
+
+This file includes more expensive tests, for example those that read and write
+intermediate files and/or perform expensive computations.
+
+<h2>Authentication</h2>
+
+
+
+
+should be 'foobar' 'foobar'
+should be '' ''
+should be '' ''
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<!-- the following conditional keeps the id out of the results -->
+</body></html>
