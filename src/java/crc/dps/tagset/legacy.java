@@ -82,9 +82,11 @@ public class legacy extends HTML_ts {
     handlerCache.at(cname, handler);
   }
 
+    /*
   protected static void defLegacy(String cname, crc.interform.Handler h) {
     handlerCache.at(cname, new LegacyHandler(h));
   }
+    */
 
   static {
     defHandle("else", new elseHandler());
@@ -98,7 +100,7 @@ public class legacy extends HTML_ts {
     defHandle("then", new thenHandler());
 
     // === need Table, Dl, etc. ===
-
+    /*
     defLegacy("actor", new Actor());
     defLegacy("actor-attrs", new Actor_attrs());
     defLegacy("actor-dscr", new Actor_dscr());
@@ -154,7 +156,7 @@ public class legacy extends HTML_ts {
     defLegacy("foreach", new Foreach());
     defLegacy("actor", new Actor());
     defLegacy("process", new crc.interform.handle.Process());
-
+    */
   }
 
   /** Instantiate an appropriate handler.  Uses a static cache for speed.
