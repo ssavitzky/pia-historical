@@ -7,39 +7,58 @@ package crc.dom;
 import java.io.*;
 
 
-
-
-
-
-
-
-
-
 public class AppNamedNodeList extends AbstractNamedList implements NamedNodeList {
 
   public AppNamedNodeList(){
-    itemList = null;
-    namedItemSpace = null;
   }
-  public AppNamedNodeList(NamedNodeList l){
-    itemList = null;
-    namedItemSpace = null;
+
+  public AppNamedNodeList(AppNamedNodeList l){
+    initialize( l );
   }
 
 
   // Core get and set public interface. Note that implementations may
   // build the list lazily
 
-  public Node getNode(String name){return null;}
-  public Node setNode(String name, Node node){return null;}
+  public Node getNode(String name)
+  {
+    Node n = (Node)getItem( name );
+    return ( n != null ) ? (Node)n : null;
+  }
+
+  public Node setNode(String name, Node node)
+  {
+    if( name == null || node == null ) return null;
+    Node n = (Node)setItem( name, node );
+    return ( n != null ) ? (Node)n : null;
+  }
  
   public Node remove(String  name)
-       throws NoSuchNodeException{return null;}
+       throws NoSuchNodeException
+  {
+    try{
+      Node n = (Node)removeItem( name );
+      return ( n != null ) ? (Node)n : null;
+    }catch(NoSuchNodeException e){
+      throw e;
+    }
+  }
 
   public Node item(long index)
-       throws NoSuchNodeException{return null;}
+       throws NoSuchNodeException
+  {
+    try{
+      Node n = (Node)itemAt( index );
+      return ( n != null ) ? (Node)n : null;
+    }catch(NoSuchNodeException e){
+      throw e;
+    }
+  }
 
-  public long getLength(){return 0;}
+  public long getLength(){return getItemListLength();}
 
-  public NodeEnumerator getEnumerator(){return null;}
+  public NodeEnumerator getEnumerator(){return getListEnumerator();}
 }
+
+
+
