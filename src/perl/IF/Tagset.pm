@@ -1,5 +1,6 @@
 package IF::Tagset; ###### Sets of Tags (Interform Actors)
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	A Tagset is a collection of related Actors.  It is defined
 ###	using a <tagset name="...">...</tagset> element containing the
@@ -15,7 +16,7 @@ package IF::Tagset; ###### Sets of Tags (Interform Actors)
 ###	tagsets: one that actually defines the tagset and its actors,
 ###	one that formats it as a document, and one that deletes
 ###	extraneous text for more efficient loading.  The latter two
-###	are usually run to generate .html and .ts files, respectively.
+###	will usually be used to generate .html and .ts files, respectively.
 
 use IF::IT;
 push(@ISA,IF::IT);
@@ -114,7 +115,7 @@ sub include {
     print "Including " . $ts->name . " in " . $self->name . "\n"
 	unless $main::quiet;
 
-    return $self;
+    return $self->attr('doc')? IF::IT->new('h3', "Include $name") : '';
 }
     
 
@@ -172,11 +173,19 @@ sub define_actor {
 
     my $name = $actor->attr('name');
     my $tag = $actor->attr('tag');
+    my $doc = $self->attr('doc');
 
     push(@{$self->passive}, $actor) unless $tag;
     $self->actors->{$name} = $actor;
 
     print "Defined IF actor $name in ".$self->name."\n" if $main::debugging; 
+    if ($doc) {
+	## === worry about defining a documentation actor ===
+	return IF::IT->new('h3', IF::IT->new('a', 'name'=> $name,
+					     "Actor $name"));
+    } else {
+	return '';
+    }
 }
 
 

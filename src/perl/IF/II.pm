@@ -1,5 +1,6 @@
 package IF::II; ###### Interform Interpretor
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	The Interform Interpretor parses a string or file, evaluating any 
 ###	Interform Actors it runs across in the process.  Evaluation is
@@ -260,8 +261,28 @@ sub tagset {
     if (defined $v) {
 	$v = IF::Tagset::tagset($v) unless ref $v;
 	$self->state->{'_tagset'} = $v;
-    } 
+    }
     $self->state->{'_tagset'};
+}
+
+sub use_tagset {
+    my ($self, $name, $doc) = @_;
+
+    ## Use a named tagset.
+    ##	  If $doc is true, actor declarations will be documented.
+
+    my $ts;
+    if ($name) {
+	$ts = $self->tagset($name);
+    } else {
+	$ts = $self->open_actor_context;
+    } 
+
+    if ($doc) {
+	$ts->attr('doc', 1);
+	return IF::IT->new('h2', ($name? $name : '(Default)') . ' Tagset');
+    }
+    return;
 }
 
 
@@ -1012,12 +1033,13 @@ sub open_actor_context {
     ##	  The old set is cloned unless a new one is supplied
 
     if ($tagset) {
-	$self->tagset($tagset);
+	$tagset = $self->tagset($tagset);
 	$self->has_local_tagset(0);
     } else {
-	$self->tagset($self->tagset->clone);
+	$tagset = $self->tagset($self->tagset->clone);
 	$self->has_local_tagset(1);
     }
+    $tagset;
 }
 
 

@@ -1,5 +1,6 @@
 package IF::IT;  ###### Interform Token
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	An InterForm Token is like an HTML::Element, only somewhat simpler.
 ###	In particular, it does not have a _parent link, and the _tag is

@@ -1,5 +1,6 @@
 package IF::Semantics; ###### Semantic utilities for Actors.
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This module contains the utilities that define the semantics 
 ###	(and to a lesser extent the syntax) of the ``standard'' set of
@@ -7,7 +8,7 @@ package IF::Semantics; ###### Semantic utilities for Actors.
 ###	to access data _in_ Tokens.
 
 ### ===	It would be simpler all around if many of these were methods on 
-###	DS::Thing.  There should also be an array counterpart, for content.
+###	IF::IT or DF::Tokens (which probably should be in IF).
 
 require Exporter;
 push(@ISA,Exporter);

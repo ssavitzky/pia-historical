@@ -1,5 +1,6 @@
 package IF::Actors; ###### Standard actors for InterForms
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This module contains the definitions of the ``standard'' set of
 ###	InterForm Interpretor actors.  It is easy to create other sets.
@@ -153,8 +154,28 @@ define_actor('actor', 'quoted' => 'quoted',
 
 sub actor_handle {
     my ($self, $it, $ii) = @_;
-    $ii->define_actor(IF::IA->recruit($it));
-    $ii->delete_it;
+    $ii->replace_it($ii->define_actor(IF::IA->recruit($it)));
+}
+
+define_actor('tagset', 'streamed'=>1,
+	     'dscr' => "start using an InterForm tagset called NAME.
+Optionally pass-through DOCumentation.");
+
+sub tagset_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    $ii->use_tagset('name', $it->attr('doc'));
+}
+
+define_actor('tagset-include', 'empty'=> 1,
+	     'dscr' => "include an InterForm tagset called NAME.");
+
+sub tagset_include_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    $ii->replace_it($ii->tagset->include('name'));
 }
 
 ### submit

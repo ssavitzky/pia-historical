@@ -1,11 +1,12 @@
 package IF::Parser; ###### InterForm Parser
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This is really an SGML _scanner_ specialized for HTML
 ###	(basically the SGML reference syntax).
 ###
 
-### Copied from HTML::Parser by Gisle Aas <aas@sn.no>
+### Portions copied from HTML::Parser by Gisle Aas <aas@sn.no>
 ### Modified to fit into the PIA code hierarchy by 
 ###	Stephen Savitzky <steve@crc.ricoh.com>
 

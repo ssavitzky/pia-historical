@@ -1,5 +1,6 @@
 ###### Interform Actor
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This is the parent class for actors that operate inside of
 ###	Interforms.  An actor is basically an active SGML element;
@@ -86,6 +87,7 @@ sub initialize {
     } else {
 	$self->hook($hook, \&act_parsed) unless $self->attr('unparsed');
 	$self->hook($hook, \&act_quoted) if $self->attr('quoted');
+	$self->hook($hook, \&act_streamed) if $self->attr('streamed');
     }
 
     if ($active) {
@@ -280,6 +282,17 @@ sub act_empty {
     } elsif (! $quoting) {
 	$ii->add_handler($self);
     }
+}
+
+sub act_streamed {
+    my ($self, $it, $ii, $inc, $quoting) = @_;
+
+    ## streamed:
+    ##	  Perform the handler immediately.  Leave the parser doing whatever 
+    ##	  it _was_ doing.  === Worry about whether or not to pass it.
+
+    return 0 if $quoting || $inc <= 0;
+    $self->handle($it, $ii, $inc);
 }
 
 sub act_generic {

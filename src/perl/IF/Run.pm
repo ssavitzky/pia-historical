@@ -1,5 +1,6 @@
 package IF::Run; ###### Run the Interform Interpretor
 ###	$Id$
+###	Copyright 1997, Ricoh California Research Center.
 ###
 ###	This module contains the routines that actually *run* the
 ###	InterForm Interpretor on inputs of various sorts.
