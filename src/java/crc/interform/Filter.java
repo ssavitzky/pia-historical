@@ -44,8 +44,7 @@ public class Filter {
       System.exit(-1);		// return an error
     }
 
-    /* Open the input and output files.
-     * === ignore the property file for now. */
+    /* Open the input and output files. */
 
     InputStream in = System.in;
     try {
@@ -99,7 +98,6 @@ public class Filter {
     o.println("        -e	no entities");
     o.println("        -h	print help string");
     o.println("        -o file	specify output file");
-    o.println("        -p file	specify property file");
     o.println("        -t ts	specify tagset name");
     o.println("	       -v	verbose");
     o.println("        -d	debug");
@@ -109,8 +107,11 @@ public class Filter {
    *	Returns false if the -h option or an invalid option is present.
    */
   public static boolean options(String[] args) {
+    suckEnvironment(args);
     for (int i = 0 ; i < args.length ; i++) {
-      if (args[i].equals("-h")) {
+      if (args[i].indexOf("=") >= 0) {
+	continue;
+      } else if (args[i].equals("-h")) {
 	return false;
       } else if (args[i].equals("-tree")) {
 	tree = true;
@@ -121,9 +122,6 @@ public class Filter {
       } else if (args[i].equals("-o")) {
 	if (i == args.length - 1) return false;
 	outfile = args[++i];
-      } else if (args[i].equals("-p")) {
-	if (i == args.length - 1) return false;
-	propfile = args[++i];
       } else if (args[i].equals("-t")) {
 	if (i == args.length - 1) return false;
 	tsname = args[++i];
@@ -138,5 +136,20 @@ public class Filter {
       }
     }
     return true;
+  }
+
+  /** Stolen from Configuration.  Set system props from name=value pairs. */
+  protected static void suckEnvironment(String[] args) {
+    for (int i = 0; i < args.length; ++i) {
+      int pos = args[i].indexOf("=");
+      if (pos >= 0) {
+	String key = args[i].substring(0, pos);
+	String value = "";
+	if (pos < (args[i].length() - 1)) {
+	  value = args[i].substring( pos+1 );
+	}
+	System.getProperties().put(key.trim(), value.trim());
+      }
+    }
   }
 }
