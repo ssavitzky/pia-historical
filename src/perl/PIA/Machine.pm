@@ -119,6 +119,12 @@ sub send_response{
 	    $content =~ s/(\<body[^>]*\>)/$1$control/is;
 	} elsif ($control && $content =~ m/\<noframe[^>]*\>/is) {
 	    $content =~ s/(\<noframe[^>]*\>)/$1$control/is;
+	} elsif ($control && $content =~ m/\<frameset[^>]*\>/is) {
+	    if ($content =~ /<\/html/is) {
+		$content =~ s/(\<\/html)/$control$1/is;
+	    } else {
+		$content .= $control;
+	    }
 	} else {
 	    ## === if they're stupid enough to put in frames without 
 	    ##     a noframes tag, we're probably hosed for now. ===
