@@ -4,7 +4,7 @@
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<if><agent-running name=InterForm>
+<if><get name=agentName>
 <then>
 <!-- normal mode; running from the InterForm agent. -->
 <set entity name=title>Standard Tagset Manual</set>
@@ -725,7 +725,7 @@ URL's. <p>
 </ul>
   
 
-<if><agent-running name=InterForm>
+<if><get name=agentName>
 <then>
 <hr>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
