@@ -24,8 +24,8 @@ public class Basic_ts extends HTML_ts {
 
   static String emptyActors = "get tagset-include element actor-names";
   static String parsedActors = "add-markup difference equal expand if"
-  + " pad product quotient set sort sorted subst sum tagset test text"
-  + " trim user-message";
+  + " pad product protect-result quotient set sort sorted subst sum"
+  + " tagset test text trim user-message";
   static String quotedActors = "protect repeat actor";
 
   public Basic_ts() {
@@ -44,9 +44,6 @@ public class Basic_ts extends HTML_ts {
     a.attr("match", "foreach");
     a.initMatch();
     define(a);
-
-    // Actors for which name != handle
-    define(new Actor("protect-result", "protect-result", "parsed", "protect"));
 
     defTags("then else", "then else");
   }

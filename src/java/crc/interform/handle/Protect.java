@@ -19,15 +19,6 @@ import crc.sgml.Text;
  *	MARKUP by converting special characters to entities.
  */
 
-/* Syntax:
- *	<protect-result [markup]>content</protect-result>
- * Dscr:
- *	Expand CONTENT and protect the result from further expansion.
- *	Optionally protect MARKUP by converting special characters to
- *	entities.
- */
-
-
 /** Handler class for &lt;protect&gt tag */
 public class Protect extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {

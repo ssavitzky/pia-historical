@@ -22,6 +22,7 @@ BASIC_ACTORS = \
 	Pad.java \
 	Product.java \
 	Protect.java \
+	Protect_result.java \
 	Quotient.java \
 	Repeat.java \
 	Set.java \
