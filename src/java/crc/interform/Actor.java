@@ -159,7 +159,9 @@ public class Actor extends Element {
       if (noContent) {
 	ii.completeIt();
       } else {
-	if (quoting == 0 || quoteContent < 0) ii.setQuoting(quoteContent);
+	// === may need to set a syntactic flag saying end tag expected.
+	if (quoting == 0 || quoteContent < 0) 
+	  ii.setQuoting(quoteContent);
 	if (parseContent) ii.setParsing();
       }
       //if (quoting != 0) return;

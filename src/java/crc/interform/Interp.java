@@ -559,18 +559,26 @@ public class Interp extends State {
   ** The Resolver (interpretor) itself:
   ************************************************************************/
 
-  /** The ``Resolver'' is the InterForm Interpretor's main loop.
-   *	If passed a token it processes just that token, otherwise it
-   *	pulls incoming tokens or completed subtrees off the input
-   *	stack and processes them.  This allows the interpretor to be
-   *	used either in ``push'' or in ``pull'' mode.<p>
+  /** The ``Resolver'' is the InterForm Interpretor's main loop.  If
+   *	passed a token it processes just that token; if called with
+   *	the <code>once</code> parameter set, it runs until output is
+   *	passed; otherwise it runs to completion.  This allows the
+   *	interpretor to be used either in ``push'' or in ``pull''
+   *	mode.<p>
+   *
+   *	The resolver pulls tokens off the input stack using
+   *	<code>nextInput</code>.  Each token is matched with interested
+   *	actors, and their actOn and handler methods are called, very
+   *	much as in the PIA's Resolver.  The main difference is the
+   *	presence of the parse stack, which is used to associate end
+   *	tags with their corresponding start tags, and for constructing
+   *	a parse tree when required. <p>
    *
    * Debugging output: "[" + flag + tag + "]" + actions + EOL.  The
    *	flag is "/" for end tags, "\" for start tags, and "|" for
    *	completed elements.  Actions include <em>name</em>? for every
    *	``interested'' actor, <em>name</em>: for every actor pushed
-   *	as a handler, and <em>name</em>! for every handler called.<p>
-   */
+   *	as a handler, and <em>name</em>! for every handler called.<p> */
   public final void resolve(SGML token, boolean once) {
     Actor syntax;
 
@@ -629,8 +637,10 @@ public class Interp extends State {
 	  boolean wasParsing = parsing;
 	  popState();
 	  if (it != null) {
+	    Element itt = (it instanceof Element)? (Element) it : null;
 	    incomplete = (byte)(wasParsing? 0 : -1);
 	    it.incomplete(incomplete);
+	    if (itt != null) itt.endTagRequired((byte)1); // === -1 if implicit. 
 	    tag = it.tag();
 	    syntax = tagset().forTag(tag);
 	  } else {
