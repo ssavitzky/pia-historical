@@ -85,6 +85,11 @@ sub is {
     return $self->features->test($feature, $self);
 }
 
+sub test {
+    my ($self, $feature) = @_;
+    return $self->features->test($feature, $self);
+}
+
 sub compute {
     my ($self, $feature) = @_;
     return $self->features->compute($feature, $self);
@@ -279,7 +284,59 @@ sub title {
     return $ttl;
 }
 
-#utilityfunction to turn post content into hash
+###### response->add_at_front($text)
+###
+###	Add $text at the front of an HTML page, just after <body>
+###
+sub add_at_front {
+    my ($self, $text) = @_;
+    return unless $self->is_response();
+    my $flag = '<!-- PIA front -->';
+
+    my $type = $self->content_type();
+    return unless $type && $type =~ m:text/html:;
+
+    $self->read_content();	# === hopefully this is idempotent!
+    if ($self->{'_content'} !~ /$flag/) {
+	if ($self->{'_content'} =~ /<body[^>]*>/is) {
+	    $self->{'_content'} =~ s/(<body[^>]*>)/$1$flag/is;
+	} elsif ($self->{'_content'} !~ /<head/i) {
+	    $self->{'_content'} = $flag . $self->{'_content'};
+	} else {
+	    return;
+	}
+    }
+    $self->{'_content'} =~ s/$flag/$text$flag/;
+}
+
+
+###### response->add_at_end($text)
+###
+###	Add $text at the end of an HTML page, just before </body>
+###
+sub add_at_end {
+    my ($self, $text) = @_;
+    return unless $self->is_response();
+    my $flag = '<!-- PIA end -->';
+
+    my $type = $self->content_type();
+    return unless $type && $type =~ m:text/html:;
+
+    $self->read_content();	# === hopefully this is idempotent!
+    if ($self->{'_content'} !~ /$flag/) {
+	if ($self->{'_content'} =~ /(<\/body)/i) {
+	    $self->{'_content'} =~ s/(<\/body)/$flag$1/i;
+	} elsif ($self->{'_content'} !~ /<head/i) {
+	    $self->{'_content'} = $self->{'_content'} . $flag;
+	} else {
+	    return;
+	}
+    }
+    $self->{'_content'} =~ s/$flag/$text$flag/;
+}
+
+
+# utility function to turn post content into hash
 
 # unescape URL-encoded data
 sub unescape {
