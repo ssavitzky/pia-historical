@@ -143,14 +143,15 @@ class define_element extends defineHandler {
     ActiveElement value = getValue(content);
     if (value != null) unimplemented(in, cxt, "element with value");
 
+    GenericHandler h = null;
     if (action == null && handlerClass == null) {
       // No action, no handler: it's an ordinary non-active Element
       ts.defTag(tagname, notIn, parents, syntax, null, null);
     } else if (handlerClass == null) {
-      ts.defTag(tagname, notIn, parents, syntax, null, newContent);
+      h = (GenericHandler)
+	ts.defTag(tagname, notIn, parents, syntax, null, newContent);
     } else  {
       // Handler: load the class
-      GenericHandler h = null;
       int nsIndex = handlerClass.indexOf(":");
       if (nsIndex >= 0) {
 	// Use an existing tagset as a namespace.
@@ -192,6 +193,27 @@ class define_element extends defineHandler {
 
       // === need to set parent nodes in handler. ===
       ts.setHandlerForTag(tagname, h);
+    }
+    if (h != null && action != null) {
+      String mode = action.getAttributeString("mode");
+      if (mode == null ||
+	  mode.equalsIgnoreCase("element") ||
+	  mode.equalsIgnoreCase("replace-element")) {
+	// Default case -- nothing to do
+      } else if (mode.equalsIgnoreCase("content") ||
+		 mode.equalsIgnoreCase("replace-content")) {
+	h.setPassTag(true);
+      } else if (mode.equalsIgnoreCase("append") ||
+		 mode.equalsIgnoreCase("append-content")) {
+	h.setPassTag(true);
+	h.setPassContent(true);
+      } else if (mode.equalsIgnoreCase("silent")) {
+	h.setPassTag(true);
+	h.setPassContent(true);
+	h.setHideExpansion(true);
+      } else if (mode.equalsIgnoreCase("delete")) {
+	h.setHideExpansion(true);
+      }
     }
   }
 

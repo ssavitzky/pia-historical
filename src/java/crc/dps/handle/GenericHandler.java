@@ -10,6 +10,7 @@ import crc.dom.Element;
 import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
+import crc.dps.output.DiscardOutput;
 
 /**
  * Generic implementation for an Element Handler. <p>
@@ -65,7 +66,7 @@ public class GenericHandler extends BasicHandler {
   /** If <code>true</code>, only Text in the content is retained. */
   public void setTextContent(boolean value) { textContent = value; }
 
- 
+
   /************************************************************************
   ** State Used for Semantics:
   ************************************************************************/
@@ -75,7 +76,26 @@ public class GenericHandler extends BasicHandler {
 
   /** The parse tree of the action to perform at expansion time. */
   protected ActiveNode expandAction = null;
-  
+
+  protected boolean hideExpansion = false;
+  protected boolean passTag = false;
+  protected boolean passContent = false;
+
+  /** If <code>true</code>, the tag is passed through. */
+  public boolean passTag() { return passTag; }
+  /** If <code>true</code>, the tag is passed through. */
+  public void setPassTag(boolean value) { passTag = value; }
+ 
+  /** If <code>true</code>, the content is passed through. */
+  public boolean passContent() { return passContent; }
+  /** If <code>true</code>, the content is passed through. */
+  public void setPassContent(boolean value) { passContent = value; }
+ 
+  /** If <code>true</code>, the expansion is hidden. */
+  public boolean hideExpansion() { return hideExpansion; }
+  /** If <code>true</code>, the expansion is hidden. */
+  public void setHideExpansion(boolean value) { hideExpansion = value; }
+ 
 
   /************************************************************************
   ** Semantic Operations:
@@ -108,8 +128,15 @@ public class GenericHandler extends BasicHandler {
   protected final void defaultAction(Input in, Context aContext, Output out) {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);
     if (atts == null) atts = NO_ATTRS;
+    if (passTag) {
+      ActiveElement e = in.getActive().asElement();
+      ActiveElement element = e.editedCopy(atts, null);
+      out.startElement(element);
+    }
     ParseNodeList content = null;
+    boolean empty = false;
     if (!in.hasChildren()) {
+      empty = true;
       // aContext.debug("   no children...\n");
     } else if (textContent) {
 	content = expandContent
@@ -120,7 +147,15 @@ public class GenericHandler extends BasicHandler {
 	  ? Expand.getProcessedContent(in, aContext)
 	  : Expand.getContent(in, aContext);
     }
-    action(in, aContext, out, atts, content);
+    if (passContent) {
+      Copy.copyNodes(content, out);
+    }
+    action(in, aContext,
+	   (hideExpansion? new DiscardOutput() : out),
+	   atts, content);
+    if (passTag) {
+      out.endElement(empty);
+    }
   }
 
   /** This routine does the work; it should be overridden in specialized
@@ -160,6 +195,8 @@ public class GenericHandler extends BasicHandler {
 
       // Create a suitable sub-context for the expansion:
       //    === not clear if entities should still be lowercase.  For now...
+      //    === This may want to go into defaultAction ===
+
       Tagset ts = aContext.getTopContext().getTagset();
       BasicEntityTable ents = new BasicEntityTable(e.getTagName());
       ents.setEntityValue(aContext, "content", content, ts);
