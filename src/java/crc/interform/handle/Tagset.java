@@ -5,7 +5,7 @@
 package crc.interform.handle;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
+import crc.sgml.SGML;
 
 /** Note: 
  *	There is special hackery in this file because there the class

@@ -18,10 +18,12 @@ import java.util.Date;
 import crc.interform.Parser;
 import crc.interform.Input;
 import crc.interform.Interp;
-import crc.interform.SGML;
 import crc.interform.Tagset;
-import crc.interform.Text;
 import crc.interform.Environment;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Token;
 
 import crc.pia.Agent;
 import crc.pia.Transaction;
@@ -131,7 +133,7 @@ public class Run  extends Environment {
       ent("urlQuery", transaction.hasQueryString()? 
 	  (SGML)new Text(transaction.queryString()) : (SGML)Token.empty);
 
-      Object aname = transaction.is("agent");
+      Object aname = transaction.getFeature("agent");
       Agent  ta = (aname == null)? null : resolver.agent(aname.toString());
       if (ta != null) {
 	ent("transAgentName", ta.toString());
@@ -146,9 +148,9 @@ public class Run  extends Environment {
       ent("piaPORT", pia.properties().getProperty("PIA_PORT"));
       ent("piaDIR", pia.properties().getProperty("PIA_DIR"));
 
-      ent("agentNames", new Tokens(resolver.agentNames(), " "));
+      ent("agentNames", new crc.sgml.Tokens(resolver.agentNames(), " "));
       ent("entityNames", "");
-      ent("entityNames", new Tokens(entities.keys(), " "));
+      ent("entityNames", new crc.sgml.Tokens(entities.keys(), " "));
     }
 
     /* Set these even if we retrieved the entity table from the */

@@ -3,9 +3,12 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
-import crc.interform.Tokens;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Tokens;
 
 /**
  * A stream of SGML Token's.  

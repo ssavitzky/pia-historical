@@ -5,6 +5,9 @@
 package crc.interform;
 import crc.interform.Util;
 
+import crc.sgml.SGML;
+import crc.sgml.Token;
+
 import crc.ds.Table;
 import crc.ds.List;
 

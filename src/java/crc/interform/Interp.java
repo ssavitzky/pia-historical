@@ -4,10 +4,13 @@
 
 package crc.interform;
 import crc.interform.Actor;
-import crc.interform.Token;
-import crc.interform.Tokens;
 import crc.interform.Input;
 import crc.interform.State;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -185,6 +188,12 @@ public class Interp extends State {
       passing = stack.passing;
       quoting = stack.quoting;
     }
+  }
+
+  /** Push a token onto the parse stack. */
+  public final void stackToken(SGML t) {
+    it = t;
+    pushState();
   }
 
   /************************************************************************
@@ -666,7 +675,7 @@ public class Interp extends State {
   ************************************************************************/
 
   /** Pass a token or tree to the output. */
-  void passToken(SGML it) {
+  final void passToken(SGML it) {
     if (! streaming) {		// Not streaming: just pass the tree
       output.append(it);
     } else {
@@ -681,7 +690,7 @@ public class Interp extends State {
   /** Push a completed tree onto the contents of its parent,
    *	or onto the output queue if we're at the top level.
    */
-  void pushToken(SGML it) {
+  final void pushToken(SGML it) {
     if (it == null) return;
     if (stack == null || stack.it == null) {
       passToken(it);

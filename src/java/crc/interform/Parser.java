@@ -4,8 +4,12 @@
 
 package crc.interform;
 import crc.interform.Input;
-import crc.interform.Token;
-import crc.interform.Tokens;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.BitSet;
@@ -469,7 +473,7 @@ public class Parser extends Input {
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
-      it.incomplete = (byte)2;
+      it.incomplete((byte)2);
       next = it;
       if (last >= 0) last = 0;
     } else if (last == '/') {	// </...	end tag
@@ -482,7 +486,7 @@ public class Parser extends Input {
       if (last != '>') return false;
       Token it = Token.endTagFor(ident);
       it.incomplete((byte)-2);
-      it.endTagRequired = 1;
+      it.endTagRequired((byte)1);
       next = it;
       buf.setLength(tagStart);
       if (last >= 0) last = 0;

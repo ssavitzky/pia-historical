@@ -6,6 +6,8 @@ package crc.interform;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
+import crc.sgml.SGML;
+
 /**
  * Interface for Input stack frames.
  *	The input stack may contain either "raw" tokens (the easy case),

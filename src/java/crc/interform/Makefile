@@ -17,13 +17,9 @@ FILES = \
 	Interp.java \
 	Parser.java \
 	Run.java \
-	SGML.java \
 	State.java \
 	Tagset.java \
-	Text.java \
-	Token.java \
 	TokenStream.java \
-	Tokens.java \
 	Util.java
 
 include $(TOPDIR)/makefiles/file.make
@@ -34,33 +30,30 @@ include $(TOPDIR)/makefiles/package.make
 ###	depends on.  This happens quietly (unfortunately), but make
 ###	seems to cope with it and not build anything twice.
 
-Actor.class: Actor.java Token.java Tokens.java SGML.java \
-	Interp.java Handler.java
+Actor.class: Actor.java Interp.java Handler.java \
+	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java 
 
 Environment.class: Environment.java Interp.java ../ds/Table.java
 
 Filter.class: Filter.java Interp.java 
 
-Handler.class: Handler.java Actor.java Interp.java SGML.java ../ds/Table.java
+Handler.class: Handler.java Actor.java Interp.java \
+	../sgml/SGML.java ../ds/Table.java
 
-Interp.class: Interp.java Actor.java Input.java Token.java Tokens.java \
-	SGML.java State.java
+Interp.class: Interp.java Actor.java Input.java State.java \
+	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java
 
-Parser.class: Parser.java Input.java Token.java Tokens.java SGML.java
+Parser.class: Parser.java Input.java \
+	../sgml/Token.java ../sgml/Tokens.java ../sgml/SGML.java
 
 Run.class: Run.java Environment.java Interp.java ../ds/Table.java
 
 State.class: ../ds/List.java ../ds/Table.java
 
-Tagset.class: Tagset.java Token.java SGML.java
+Tagset.class: Tagset.java ../sgml/Token.java ../sgml/SGML.java
 
-Text.class: Text.java Token.java SGML.java
+TokenStream.class: TokenStream.java ../sgml/Tokens.java 
 
-Token.class: Token.java Tokens.java SGML.java ../ds/List.java ../ds/Table.java
-
-Tokens.class: Tokens.java SGML.java 
-
-TokenStream.class: TokenStream.java Tokens.java 
-
-Util.class: SGML.java ../ds/List.java ../ds/Table.java
+Util.class: Util.java ../sgml/Util.java ../sgml/SGML.java \
+	../ds/List.java ../ds/Table.java
 

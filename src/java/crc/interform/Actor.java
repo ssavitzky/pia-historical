@@ -3,11 +3,14 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
-import crc.interform.Token;
-import crc.interform.Tokens;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
+
+import crc.sgml.SGML;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
+import crc.sgml.Text;
 
 import crc.ds.List;
 import crc.ds.Table;
@@ -47,10 +50,8 @@ public class Actor extends Token {
   /** List of match criteria, as a sequence of attribute, value, etc.
    *	Attribute names are Text; values are Text or List.  A value of
    *	null matches if the attribute is missing; an empty list
-   *	matches if it is present.  (This seems backwards, but testing
-   *	for presence is very common and this speeds it up.) Text
-   *	matches the value converted to lowercase.  A null criteria
-   *	list matches anything. */
+   *	matches if it is present.  Text matches the value converted to
+   *	lowercase.  A null criteria list matches anything. */
   Tokens criteria = null;
 
   /** Determine whether this actor matches a given token.  Note that a
@@ -69,9 +70,9 @@ public class Actor extends Token {
       SGML v = criteria.itemAt(i+1);
       SGML av = itt.attr(a);
 
-      if (v == null) {		// Null v matches if attr is present.
+      if (v == null) {		// Null v matches if attr is missing.
 	if (av == null) return false;
-      } else if (v.isList()) { 	// (null) List matches if attr is missing
+      } else if (v.isList()) { 	// (null) List matches if attr is present
 	// === eventually perhaps a list of alternate values.
 	if (av != null) return false; 
       } else if (av == null) {	// Anything else fails if the attr is missing
@@ -301,11 +302,17 @@ public class Actor extends Token {
   }
 
   /** Initialize the match <code>criteria</code> list. */
-  void initMatch() {
+  public void initMatch() {
     String m = attrString("match");
     if (m == null) return;
 
-    // === 
+    List l = Util.split(m);
+    criteria = new Tokens();
+    for (int i = 0; i < l.nItems(); ++i) {
+      String s = l.at(i).toString();
+      // === non-null match criteria unimplemented
+      criteria.push(new Text(s));
+    }
   } 
 
   /** Initialize the syntax flags. */

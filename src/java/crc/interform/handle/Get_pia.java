@@ -7,12 +7,13 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
-import crc.interform.Token;
-import crc.interform.Tokens;
-import crc.interform.Text;
 import crc.interform.Util;
 import crc.interform.Run;
+
+import crc.sgml.SGML;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
+import crc.sgml.Text;
 
 /* Syntax:
  *	<get.pia [name="name"]>

@@ -7,10 +7,12 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
-import crc.interform.Token;
-import crc.interform.Tokens;
 import crc.interform.Util;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
 
 /* Syntax:
  *	<sum>n1 n2 ... </sum>
@@ -28,7 +30,7 @@ public class Sum extends crc.interform.Handler {
     while (list.nItems() > 0) {
       result += Util.numValue((SGML)list.shift());
     }    
-    ii.replaceIt(new crc.interform.Text(java.lang.Double.toString(result)));
+    ii.replaceIt(new Text(java.lang.Double.toString(result)));
   }
 }
 

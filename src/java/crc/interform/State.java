@@ -3,6 +3,9 @@
 //	Copyright 1997, Ricoh California Research Center.
 
 package crc.interform;
+
+import crc.sgml.SGML;
+
 import crc.ds.Table;
 import crc.ds.List;
 

@@ -7,8 +7,8 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
-import crc.interform.Token;
+import crc.sgml.SGML;
+import crc.sgml.Token;
 
 /* Syntax:
  *	<actor-dscr name="name">

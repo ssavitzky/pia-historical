@@ -5,7 +5,8 @@
 package crc.interform;
 import crc.interform.Actor;
 import crc.interform.Interp;
-import crc.interform.SGML;
+
+import crc.sgml.SGML;
 import crc.ds.Table;
 
 /** Handler functor (<b>Strategy</b> pattern) for Actors.  Handlers

@@ -5,10 +5,11 @@
 package crc.interform.handle;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
 import crc.interform.Tagset;
 import crc.interform.Util;
 import crc.interform.Actor;
+
+import crc.sgml.SGML;
 
 import crc.ds.Table;
 import crc.ds.List;
@@ -38,8 +39,11 @@ public class Basic_ts extends HTML_ts {
     defActors(parsedActors, "parsed", true);
     defActors(quotedActors, "quoted", true);
 
-    // -foreach- needs a match. ===
-    //define(new Actor("-foreach-", null, null, "foreach"));
+    // -foreach- needs a match.
+    Actor a = new Actor("-foreach-", null, "quoted", "foreach");
+    a.attr("match", "foreach");
+    a.initMatch();
+    define(a);
 
     // Actors for which name != handle
     define(new Actor("protect-result", "protect-result", "parsed", "protect"));

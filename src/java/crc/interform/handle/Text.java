@@ -7,7 +7,7 @@ package crc.interform.handle;
 import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
+import crc.sgml.SGML;
 
 /* Syntax:
  *	<text>content</text>

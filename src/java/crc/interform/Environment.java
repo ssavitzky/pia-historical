@@ -18,9 +18,12 @@ import java.util.Date;
 import crc.interform.Parser;
 import crc.interform.Input;
 import crc.interform.Interp;
-import crc.interform.SGML;
 import crc.interform.Tagset;
-import crc.interform.Text;
+
+import crc.sgml.SGML;
+import crc.sgml.Text;
+import crc.sgml.Token;
+import crc.sgml.Tokens;
 
 import crc.ds.List;
 import crc.ds.Table;

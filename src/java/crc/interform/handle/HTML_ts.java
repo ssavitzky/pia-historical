@@ -5,10 +5,11 @@
 package crc.interform.handle;
 import crc.interform.Handler;
 import crc.interform.Interp;
-import crc.interform.SGML;
 import crc.interform.Tagset;
 import crc.interform.Util;
 import crc.interform.Actor;
+
+import crc.sgml.SGML;
 
 import crc.ds.Table;
 import crc.ds.List;
