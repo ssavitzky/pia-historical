@@ -318,6 +318,433 @@ current document&nbsp;</TD>
 Basically, what this InterForm does is check to see if the user submitted
 a form. If so, the form data is processed and the results displayed, otherwise
 the form is presented for the user to fill out.
+
+<H3>
+Creating a More Advanced Agent</H3>
+Swifty is an example of a simple agent that may be used to create a home
+page. Like most home pages, the one produced by Swifty contains a set of the
+most commonly-used URLs. Many other categories of information could be
+added, but as this is a tutorial, we wanted to keep it simple. What Swifty
+does, is present you with a home page that has an edit button so that you
+can change the page to a certain extent. There are two different types
+of edits: you can enter a string that will be included in the home page
+title; or you can select from among a number of buttons to indicate which
+URLs you would like to include on your home page. 
+<p>
+The two pages presented
+by Swifty are: <A HREF="/Swifty/home.xh">home.xh</A>, which is the current version of the home page,
+and <A HREF="/Swifty/edit_page.xh">edit_page.xh</A>, which provides some editing capabilities. Both agent
+pages are given a <A HREF="/PIA/Doc/Manuals/InterForm/index.html#file_ext">
+.xh</A> extension, to indicate that they are extended-html
+documents. Extended html means that you can use pre-defined 
+<A HREF="/PIA/Doc/Manuals/InterForm/index.html#tagsets">PIA tags</A>, or
+create your own tags. These tags are interpreted and processed by the PIA
+interpreter. The bulk of the code in these files is standard html; however,
+this tutorial concentrates on explaining the PIA tags. A third file associated
+with this agent, <A HREF="/Swifty/Swifty-xhtml.ts">Swifty-xhtml.ts</A>, 
+contains some additional tags that are used to process user edits.
+<H4>
+Creating the Agent Home Page</H4>
+Each agent has a home.xh page. This is the page that comes up when the
+agent is selected from the Agency's list of running agents. Even though
+Swifty is in the business of producing home pages, all agents will have
+home.xh, regardless of what they do. Listed below is Swifty's home.xh,
+followed by an explanation of all PIA tags.
+<PRE>
+&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0">&lt;HTML>
+&lt;html>&lt;head>
+&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+&lt;title>Prototype Home Page&lt;/title>
+&lt;a name="Swifty Home">&lt;/a>
+&lt;header>
+&lt;/head>
+
+&lt;form action="/Swifty/edit_page" method="POST">
+
+&lt;!-- =================================================================== -->
+&lt;!-- Put in a default name in the heading                                -->
+&lt;!-- =================================================================== -->
+
+&lt;h1>&lt;font color="#FF0000"> Home Page for &amp;AGENT:fname; &lt;/font>&lt;/h1>
+
+&lt;!-- =================================================================== -->
+&lt;!-- Use a table to layout an image column and a links column            -->
+&lt;!-- =================================================================== -->
+
+&lt;TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="66%" HEIGHT="33%" NOSAVE >
+&lt;TR>
+&lt;!-- Add column headers -->
+&lt;TD>&lt;b>&lt;u>&lt;font size=+2>Photo Album&lt;/font>&lt;/u>&lt;/b>&lt;/TD>
+&lt;TD>&lt;b>&lt;u>&lt;font size=+2>Daily Distractions&lt;/font>&lt;/u>&lt;/b>&lt;/TD>
+&lt;/TR>
+
+&lt;!-- Add an image for some decoration -->
+&lt;TR>
+&lt;TD>&lt;IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100>&lt;/TD>
+
+&lt;!-- =================================================================== -->
+&lt;!-- Display links, if there are any                                     -->
+&lt;!-- =================================================================== -->
+&lt;TD>
+        &amp;AGENT:links;
+&lt;/TD>
+&lt;/TR>
+&lt;/TABLE>
+&lt;p>
+&lt;hr>
+&lt;p>
+&lt;!-- =================================================================== -->
+&lt;!-- Add an edit button                                                  -->
+&lt;!-- =================================================================== -->
+
+&lt;input type="submit" value="Edit"> 
+&lt;/form>
+&lt;footer>
+
+&lt;/BODY>
+&lt;/HTML></PRE>
+There are a couple of variables that have been defined in the AGENT namespace:
+one is the fullname (or <A HREF=#setfn>fname</A>) variable, the other
+is the <A HREF=#agentlinks>links</A> variable. Variables defined in the
+AGENT namespace are available to all pages that make up the agent. A detailed
+description of the PIA tags used in home.xh is as follows.
+<BR> 
+<DL>
+<DT>
+<TT>&lt;header></TT></DT>
+
+<DD>
+This is an element that puts the standard agent header at the top of the
+page. This includes the PIA logo, that lets you navigate back to the Agency
+home page. This tag is part of the predefined pia-xhtml tagset. This means
+it is available to any agent running within PIA.</DD>
+
+<DD>
+</DD>
+
+<DT>
+<TT>&amp;AGENT:fname;</TT></DT>
+
+<DD>
+The fname variable holds the current value of the name that is to appear
+in the title for the page. This variable is substituted when home.xh is
+interpreted.If no value has been given, it will print as <TT>&amp;AGENT:fname;</TT></DD>
+
+<DD>
+</DD>
+
+<DT>
+<TT>&amp;AGENT:links;</TT></DT>
+
+<DD>
+The links variable is set to the list of URLs that have been selected by
+the user. The current value of this variable is shown as an unordered list
+of URLS. If no links have been selected, it prints <TT>&amp;AGENT:links;</TT></DD>
+
+<DD>
+<TT></TT></DD>
+
+<DT>
+<TT>&lt;footer></TT></DT>
+
+<DD>
+This element is similar to <TT>&lt;header></TT> and also a member of the
+pia-xhtml tagset. It provides the navigation bar at the bottom of the screen,
+along with a copyright notice. If you wanted to create your own footer,
+you would add it to a file in the Swifty directory called Swifty-xhmtl.ts
+and define the footer element there. Look at the Camera agent for an example
+of a different footer.</DD>
+</DL>
+
+<H4>
+Creating the Editing Page</H4>
+The second file associated with Swifty is edit_page.xh. This is the page
+that presents you with editing capabilities and processes all user inputs.
+When the Submit button is selected, it sets the AGENT namespace variables
+associated with each form input. In order to see the effect of these edits
+in the home page, you need to select the Swifty link in the top right corner
+of the page. edit_page.xh is shown below, followed by a detailed description
+of the input processing.
+<PRE>&lt;!doctype html public "-//IETF//DTD HTML//EN//2.0">
+
+&lt;html>&lt;head>
+&lt;body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+&lt;title>Home Page Editor&lt;/title>
+&lt;a name="Swifty Edit">&lt;/a>
+&lt;header>
+&lt;/head>
+
+&lt;!-- Process form variables -->
+
+&lt;if>&lt;get name="FORM:submission"> &lt;then>
+
+        &lt;if>&amp;FORM:fullname;&lt;then>
+              <A NAME="setfn">&lt;set name="AGENT:fname"&gt;&amp;FORM:fullname;&lt;/set&gt;</A>         
+        &lt;/if&gt;       
+               &lt;!-- Process links selections --&gt; 
+               <A NAME="agentlinks">&lt;set name=AGENT:links&gt;</A>
+                  &lt;appendlink&gt;
+               &lt;/set&gt;
+&lt;/if&gt;
+
+&lt;form action="/Swifty/edit_page" method="POST">
+
+&lt;H2&gt;
+Edit Your Home Page&lt;/H2&gt;
+Enter a new or different name for your home page title, or select different
+links.&lt;p&gt;</PRE>
+
+<PRE>Enter the name that will appear in the title of your home
+page. 
+&lt;p&gt; &lt;b&gt;Title name:&lt;/b&gt; &lt;input name="fullname" value="&amp;AGENT:fname;"&gt;
+&lt;p&gt; &lt;HR&gt; &lt;p&gt; 
+
+&lt;h2&gt; Select Links for Home Page &lt;/h2&gt; 
+
+&lt;inputtype="checkbox" name="wea" value="Weather"&gt;Weather 
+&lt;input type="checkbox"name="sjmn" value="San Jose Mercury News"&gt;San Jose Mercury News 
+&lt;inputtype="checkbox" name="yah" value="Yahoo"&gt;Yahoo 
+&lt;input type="checkbox"name="dej" value="DejaNews"&gt;DejaNews 
+&lt;input type="checkbox" name="his"value="History"&gt;History &lt;p&gt; &lt;HR&gt; 
+&lt;input type="submit" name="submission"value="Submit"&gt; 
+&lt;input type="reset" value="Reset"&gt; &lt;/form&gt; 
+&lt;footer&gt;
+&lt;/body&gt;&lt;/html&gt;
+</PRE>
+
+<DL>
+<DT>
+Processing logic</DT>
+
+<DD>
+The main processing logic for edit_page.xh is contained in the <TT>if</TT>
+clause. If the page is being displayed as a result of a submit from the
+home page (that is, the home page's edit button has been selected), then
+set the two variables <TT>&amp;AGENT:fname</TT> and <TT>&amp;AGENT:links</TT>
+to the values already entered by the user. Next, display the page with
+Title name field showing its current value. A couple of items in the <TT>if</TT>
+clause deserve closer scrutiny.</DD>
+<ul>
+
+<li><PRE>        &lt;if>&amp;FORM:fullname;&lt;then>
+                &lt;set name="AGENT:fname">&amp;FORM:fullname;&lt;/set>
+        &lt;/if></PRE>
+This is where the fname variable is set within the AGENT namespace.
+</li>
+
+<li><PRE>        &lt;set name=AGENT:links>
+                &lt;appendlink>
+        &lt;/set></PRE>
+Here, the links variable is being set to <TT>&lt;appendlink&gt;</TT>
+which is a special tag that is defined in Swifty-xhtml.ts.</TT>
+</li>
+
+<li><PRE><TT>&lt;b>Title name:&lt;/b> &lt;input name="fullname" value="&amp;AGENT:fname;"&gt;</TT></PRE>
+This sets the value in the Title name text field to the current value
+of &amp;AGENT:fname; so that it is shown in the field when the page is
+displayed.
+</li>
+</ul>
+</DL>
+
+<H4>
+Agent Tagset</H4>
+A tagset is needed when you want to do some special processing or provide
+some capability that is not already provided in the PIA tagset. Creating
+a tag is a way of encapsulating some kind of procedure or processing. The
+two tags defined in <a href="/Swifty/Swifty-xhtml.ts">Swifty-xhtml.ts</a> have one main purpose: to prevent adding
+duplicate links to the list that is displayed in the home page. 
+To do this, two tags have been defined.
+<ul>
+<li><TT>&lt;checklink&gt;</TT> checks to see whether the URL passed in is already
+on the list of links. If it is, it does nothing; if it is not already on
+the list, that link is returned.</li>
+
+<li><TT>&lt;appendlink&gt;</TT> checks the
+value of each checkbox that was selected by the user. It then calls <TT>&lt;checklink&gt;</TT>
+to see whether it is already on the list. If <TT>&lt;checklink&gt;</TT> returns a value,
+<TT>&lt;appendlink&gt;</TT> does not add that value to the existing <TT>&amp;AGENT:links;</TT> list.
+</li>
+</ul>
+
+<H4>
+Define the Checklink Element</H4>
+What appear as tags in extended XML pages are defined as elements in a tagset.  An element
+is a data structure similar to a C++ or Java class, in that it contains some data and performs
+some sort of action.  The <TT>&lt;checklink&gt;</TT> element is defined as follows.
+<PRE><TT>&lt;define element=checklink&gt;
+        &lt;define attribute=link required&gt;&lt;/define&gt;
+        &lt;doc&gt;
+                Goes through the existing list of links and checks
+                whether the attribute link is on the list.  If it is,
+                that link is returned.
+        &lt;/doc&gt;
+        &lt;action&gt;
+        &lt;select&gt;&amp;AGENT:links;&lt;content&gt;
+                &lt;repeat list="&amp;selected;"&gt;
+                        &lt;if&gt;&lt;test match=&amp;attributes:link;&gt;&amp;li;&lt;/test&gt;&lt;then&gt;
+                                &amp;li;
+                        &lt;/then&gt;
+                        &lt;/if&gt;
+        &lt;/repeat&gt;
+        &lt;/select&gt;
+        &lt;/action&gt;
+&lt;/define&gt;</TT></PRE>
+
+The first two lines define the tag and specify that it has a required
+argument. 
+
+<PRE><TT> 
+&lt;define element=checklink&gt;
+        &lt;define attribute=link required&gt;&lt;/define&gt;</TT></PRE>
+
+In this case the argument, <TT>link</TT>, is the URL that is going to
+be checked. The argument, or attribute value, passed into the element is set
+to the <TT>attribute</TT> local variable. The text that appears between the <TT>doc</TT>
+start and end tags is the documentation for this element. Processing for this
+element is defined between the <TT>action</TT> start and end tags.</TT></PRE>
+
+In the action code, the current contents of the global variable <TT>&amp;AGENT:links;</TT>
+is selected. This means that the current list of links is captured in variable
+<TT>&amp;selected;</TT>. Using the <TT>&lt;repeat&gt;</TT> tag, we iterate through the list
+of links. At each iteration, we use the <TT>&lt;test&gt;</TT> tag to see whether the
+list member <TT>&amp;li;</TT> for that iteration matches against the argument that
+we passed in (which is available as local variable <TT>&amp;attributes:link;</TT>).
+If there is a match, then we return the list member, otherwise do nothing.
+
+<PRE><TT>        &lt;action&gt;
+        &lt;select&gt;&amp;AGENT:links;&lt;content&gt;
+                &lt;repeat list="&amp;selected;"&gt;
+                        &lt;if&gt;&lt;test match=&amp;attributes:link;&gt;&amp;li;&lt;/test&gt;&lt;then&gt;
+                                &amp;li;
+                        &lt;/then&gt;
+                        &lt;/if&gt;
+        &lt;/repeat&gt;
+        &lt;/select&gt;
+        &lt;/action&gt;</TT></PRE>
+
+
+<H4>
+Define the Appendlink Element</H4>
+<TT>&lt;appendlink&gt;</TT> checks user link selections to determine whether
+it is appropriate to add them to the existing list of links. It is defined
+as follows.
+<PRE><TT>&lt;define element=appendlink&gt;
+  &lt;doc&gt;
+        If a link selection has been made and the link is not already on
+        the list of links, add it.
+  &lt;/doc&gt;                
+  &lt;action&gt;
+        &lt;set entity name=weaURL&gt;&lt;A HREF="http://www.nws.noaa.gov" TARGET=_blank&gt;Weather&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=sjmnURL&gt;&lt;A HREF="http://www.sjmercury.com" TARGET=_blank&gt;News&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=yahURL&gt;&lt;A HREF="http://www.yahoo.com" TARGET=_blank&gt;Yahoo&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=dejURL&gt;&lt;A HREF="http://www.dejanews.com" TARGET=_blank&gt;DejaNews&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=hisURL&gt;&lt;a href="/History"&gt;History&lt;/a&gt;&lt;/set&gt;
+
+        &lt;ul&gt;
+        &lt;select&gt;&amp;AGENT:links; &lt;content&gt;&lt;/select&gt;
+                &lt;if&gt;&amp;FORM:wea;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;weaURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;weaURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                
+                &lt;/if&gt;
+                &lt;if&gt;&amp;FORM:sjmn;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;sjmnURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;sjmnURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                &lt;/if&gt;
+                &lt;if&gt;&amp;FORM:yah;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;yahURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;yahURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                &lt;/if&gt;
+                &lt;if&gt;&amp;FORM:dej;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;dejURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;dejURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                &lt;/if&gt;
+                &lt;if&gt;&amp;FORM:his;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;hisURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;hisURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                &lt;/if&gt;
+        &lt;/ul&gt;
+  &lt;/action&gt;
+&lt;/define&gt;</TT></PRE>
+<TT>&lt;appendlink&gt;</TT> is self-contained, and consequently needs no arguments.
+Looking at the code in more detail, the first few lines are creating an
+entity name for each of the available links.
+<PRE><TT>        &lt;set entity name=weaURL&gt;&lt;A HREF="http://www.nws.noaa.gov" TARGET=_blank&gt;Weather&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=sjmnURL&gt;&lt;A HREF="http://www.sjmercury.com" TARGET=_blank&gt;News&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=yahURL&gt;&lt;A HREF="http://www.yahoo.com" TARGET=_blank&gt;Yahoo&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=dejURL&gt;&lt;A HREF="http://www.dejanews.com" TARGET=_blank&gt;DejaNews&lt;/A&gt;&lt;/set&gt;
+        &lt;set entity name=hisURL&gt;&lt;a href="/History"&gt;History&lt;/a&gt;&lt;/set&gt;</TT></PRE>
+It is not necessary to do this, the only reason for it is to create a shorter
+name for each of the URLs. As entities, they are automatically expanded
+wherever they are used.
+
+The code that is performing the most useful function is shown below. Like
+<TT>&lt;checklink&gt;</TT> this is selecting the contents of <TT>&amp;AGENT:links;</TT>
+as the selected set of links. Note that the contents of <TT>&amp;AGENT:links;</TT> is being expanded
+within an <TT>&lt;ul&gt;</TT> environment. Then, for each checkbox button on the agent
+editing page, it checks to see whether it has been selected. If so, it
+calls <TT>&lt;checklink&gt;</TT> to see if it is already on the list. If <TT>&lt;checklink&gt;</TT>
+returns that link, nothing further needs to be done. If the link is not
+already on the list, a <TT>&lt;li&gt;</TT> list item is created for that link and it
+is added to the unordered list of links. Each checkbox is checked in exactly
+the same manner.
+
+<PRE><TT>        &lt;ul&gt;
+        &lt;select&gt;&amp;AGENT:links; &lt;content&gt;&lt;/select&gt;
+                &lt;if&gt;&amp;FORM:wea;&lt;then&gt;
+                        &lt;if&gt;&lt;checklink link=&amp;weaURL;&gt;&lt;/checklink&gt;&lt;then&gt;
+                                &lt;!-- do nothing --&gt;
+                        &lt;/then&gt;&lt;else&gt;
+                                &lt;li&gt; &amp;weaURL;
+                        &lt;/else&gt;&lt;/if&gt;
+                
+                &lt;/if&gt;
+                                ...</TT></PRE>
+<H4>
+Expanding Swifty</H4>
+There is much room for improvement. For example, suppose you wanted to
+create a real photo album, where you cycle through a different picture
+every day? In this instance, you could create a <TT>&lt;displayphoto&gt;</TT> tag that
+contains a list of seven gifs. It would be easy to cycle through them using
+the PIA entity <a href="/Agency/entities.if"><TT>&lt;dayName&gt;</TT></a> tag.
+
+<H4>
+Agent Debugging</H4>
+As with any code, agent code does not always work correctly the first
+time. Here are some techniques for understanding what is happening within
+your agent. 
+<UL>
+<li>Use the <TT>&amp;urlQuery</TT>; PIA tag to check the name/value pairs
+that are being posted from one page to another. 
+For example: fullname=Master+of+the+Universe&amp;wea=Weather&amp;submission=Submit
+indicates these entries: fullname, Weather checkbox and Submit button.</li>
+
+<li> Look at the HTML source that is generated, using View/Document Source in the
+browser menu. This will give a good indication of where the code broke
+down.</li>
+
+<li> Put in print statements and expand variables inside tagset elements
+to check whether they have been set correctly.
+</li>
+</ul>
+
+
 <H3>
 <A NAME="advanced"></A>Advanced topics</H3>
 
