@@ -85,7 +85,7 @@ public class includeHandler extends GenericHandler {
 
     ActiveEntity ent = null;
     if (entname != null) {
-      ent = new ParseTreeEntity(entname);
+      ent = ts.createActiveEntity(entname, null);
       p.setDocument(ent);
     }
 

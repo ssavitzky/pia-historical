@@ -156,15 +156,15 @@ public class GenericHandler extends BasicHandler {
     if (hasChildren()) {	
       // Children exists, so this is a defined action (macro). 
 
-      //aContext.debug("expanding <" + tag + "> " + getChildren() + "\n");
+      //aContext.debug("expanding <"+in.getTagName()+"> "+getChildren()+"\n");
 
       // Create a suitable sub-context for the expansion:
       //    === not clear if entities should still be lowercase.  For now...
-
+      Tagset ts = aContext.getTopContext().getTagset();
       BasicEntityTable ents = new BasicEntityTable(e.getTagName());
-      ents.setValue("content", content);
-      ents.setValue("element", new ParseNodeList(element));
-      ents.setValue("attributes", atts); // === should be a bound namespace
+      ents.setValue("content", content, ts);
+      ents.setValue("element", new ParseNodeList(element), ts);
+      ents.setValue("attributes", atts, ts);
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
       Processor p = aContext.subProcess(def, out, ents);

@@ -17,12 +17,7 @@ import crc.dps.util.*;
  * Handler for &lt;set&gt;  <p>
  *
  *	This is an approximation to the legacy &gt;set&gt;; it lacks many
- *	of the old extraction modifiers, which have moved to &lt;find&gt;. <p>
- *
- *	It is permissible for the <code>name</code> attribute to be missing,
- *	in which case the entire namespace will be returned.  The 
- *	<code>keys</code>, <code>values</code>, and <code>bindings</code>
- *	attributes are supported.
+ *	of the old extraction modifiers, which have moved to &lt;select&gt;. <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -39,6 +34,10 @@ public class setHandler extends GenericHandler {
   		     ActiveAttrList atts, NodeList content) {
     // Actually do the work. 
     String name = atts.getAttributeString("name");
+    if (name == null || name.equals("")) {
+      aContext.message(-2, "Setting null name to "+content, 0, true);
+      return;
+    }
     Index.setIndexValue(aContext, name, content);
   }
 

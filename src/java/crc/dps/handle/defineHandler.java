@@ -207,8 +207,20 @@ class define_element extends defineHandler {
 class define_entity extends defineHandler {
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
-    String       name = atts.getAttributeString(attrName);
-    TopContext   top  = cxt.getTopContext();
+    TopContext  top  = cxt.getTopContext();
+    Tagset	ts   = top.getTagset();
+    String      name = atts.getAttributeString(attrName);
+
+    // General attributes.  === currently unimplemented ===
+    boolean parameter= atts.hasTrueAttribute("parameter");
+    boolean   retain = atts.hasTrueAttribute("retain");
+
+    // Attributes for external entities.
+    String   sysName = atts.getAttributeString("system");
+    String   pubName = atts.getAttributeString("public");
+    String	mode = atts.getAttributeString("mode");
+    String writeMode = atts.getAttributeString("write-mode");
+    String    method = atts.getAttributeString("method");
 
     NodeList newContent = null;
     // Get the action, if any.
@@ -226,15 +238,32 @@ class define_entity extends defineHandler {
     TagsetProcessor tproc = (top instanceof TagsetProcessor)
       ? (TagsetProcessor) top : null;
 
+    ActiveEntity ent = null;
+    if (sysName != null) {
+      // External 
+      ParseTreeExternal ext = new ParseTreeExternal(name, sysName, null);
+      ext.method = (method == null)? "GET" : method.toUpperCase();
+      // === punt on the write stuff for now. ===
+
+      // === use tagset to set the handler. 
+      Handler h = ts.getHandlerForType(NodeType.ENTITY);
+      ext.setHandler(h);
+      ext.setAction(h.getActionForNode(ext));
+      if (newContent != null) ext.setValue(new ParseNodeList(newContent));
+      ent = ext;
+    } else {
+      ent = ts.createActiveEntity(name, newContent);
+    }
+    
     if (hasNamespace(name)) {
       // Have to worry about namespace. 
-      cxt.setEntityValue(name, newContent, false);
+      cxt.setEntityBinding(name, ent, false);
     } else if (tproc != null ) {
       // If we're in a tagset, define it there.
-      tproc.getTagset().setEntityValue(name, newContent);
+      tproc.getTagset().setEntityBinding(name, ent);
     } else {
       // Otherwise, define it in the document's entity table. 
-      top.setEntityValue(name, newContent, false);
+      top.setEntityBinding(name, ent, false);
     }
   }
   define_entity(String aname) { super(aname); }

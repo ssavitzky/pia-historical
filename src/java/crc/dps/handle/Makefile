@@ -39,7 +39,6 @@ PRIM_HANDLERS = \
 	repeatHandler.java \
 	selectHandler.java \
 	statusHandler.java \
-	submitHandler.java \
 	substHandler.java \
 	tagsetHandler.java \
 	testHandler.java \
@@ -60,6 +59,7 @@ XHTM_HANDLERS = \
 ### These handlers can affect the operation of the PIA
 
 PIA_HANDLERS= \
+	submitHandler.java
 
 
 HANDLERS = $(PRIM_HANDLERS) $(XXML_HANDLERS) $(XHTM_HANDLERS) $(PIA_HANDLERS)

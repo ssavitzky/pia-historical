@@ -48,6 +48,7 @@ public class selectHandler extends GenericHandler {
     NodeList currentSet = null;
     boolean terminateSelect = false;
 
+    // === strictly speaking, this should use the tagset to create the entity.
     ParseTreeEntity selected = new ParseTreeEntity("selected");
     ents.setBinding("selected", selected);
     Processor process = cxt.subProcess(in, collect, ents);

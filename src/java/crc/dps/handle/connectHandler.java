@@ -13,7 +13,7 @@ import crc.dps.util.*;
 /**
  * Handler for &lt;connect&gt;....&lt;/&gt;  <p>
  *
- *	
+ * <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -28,6 +28,11 @@ public class connectHandler extends GenericHandler {
   /** Action for &lt;connect&gt; node. */
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
+    String src   = atts.getAttributeString("src");
+    String ename = atts.getAttributeString("entity");
+
+    ParseTreeExternal ent = new ParseTreeExternal(ename, src, null);
+
     // Actually do the work. 
     unimplemented(in, cxt);	// <connect> ===
   }

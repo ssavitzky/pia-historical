@@ -10,10 +10,13 @@ import crc.dps.*;
 import crc.dps.active.*;
 import crc.dps.util.*;
 
+import java.io.File;
+import java.net.URL;
+
 /**
  * Handler for &lt;status&gt;....&lt;/&gt;  
  *
- * <p>	
+ * <p>	Determine the status of a resource. 
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
@@ -28,7 +31,10 @@ public class statusHandler extends GenericHandler {
   /** Action for &lt;status&gt; node. */
   public void action(Input in, Context cxt, Output out, 
   		     ActiveAttrList atts, NodeList content) {
-    // Actually do the work. 
+    String entityName = atts.getAttributeString("entity");
+    String srcURL     = atts.getAttributeString("src");
+    if (srcURL != null) getStatusForURL(srcURL, cxt, out, atts);
+    if (entityName != null) getStatusForEntity(entityName, cxt, out, atts);
   }
 
   /** This does the parse-time dispatching. <p>
@@ -39,7 +45,8 @@ public class statusHandler extends GenericHandler {
    */
   public Action getActionForNode(ActiveNode n) {
     ActiveElement e = n.asElement();
-    if (dispatch(e, "")) 	 return status_.handle(e);
+    if (dispatch(e, "src")) 	 return status_src.handle(e);
+    if (dispatch(e, "entity")) 	 return status_entity.handle(e);
     return this;
   }
 
@@ -56,20 +63,63 @@ public class statusHandler extends GenericHandler {
     /* Syntax: */
     parseElementsInContent = true;	// false	recognize tags?
     parseEntitiesInContent = true;	// false	recognize entities?
-    syntaxCode = NORMAL;  		// EMPTY, QUOTED, 0 (check)
+    syntaxCode = EMPTY;  		// NORMAL, QUOTED, 0 (check)
   }
 
   statusHandler(ActiveElement e) {
     this();
     // customize for element.
   }
+
+  /************************************************************************
+  ** Actually doing the work:
+  ************************************************************************/
+
+  /** Get the status for an entity that may be connected to an external
+   *	resource.
+   */
+  void getStatusForEntity(String name, Context cxt, Output out, 
+			  ActiveAttrList atts) {
+    String item = atts.getAttributeString("item");
+    ActiveEntity entity = cxt.getEntityBinding(name, false);
+    putList(out, Status.getStatusItem(entity, item));
+  }
+
+  /** Get the status for a URL that refers to an external resource. */
+  void getStatusForURL(String url, Context cxt, Output out,
+		       ActiveAttrList atts) {
+    String item = atts.getAttributeString("item");
+    TopContext top = cxt.getTopContext();
+    if (url.indexOf(":") < 0 || url.startsWith("file:") ||
+	url.indexOf("/") >= 0 && url.indexOf(":") > url.indexOf("/")) {
+      File local = top.locateSystemResource(url, false);
+      if (local != null) {
+	putList(out, Status.getStatusItem(local, item));
+      }
+    } else {
+      URL remote = top.locateRemoteResource(url, false);
+      putList(out, Status.getStatusItem(remote, item));
+    }
+  }
 }
 
-class status_ extends statusHandler {
+class status_src extends statusHandler {
   public void action(Input in, Context cxt, Output out,
   		     ActiveAttrList atts, NodeList content) {
-    unimplemented (in, cxt); // do the work
+    String srcURL     = atts.getAttributeString("src");
+    getStatusForURL(srcURL, cxt, out, atts);
   }
-  public status_(ActiveElement e) { super(e); }
-  static Action handle(ActiveElement e) { return new status_(e); }
+  public status_src(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new status_src(e); }
 }
+
+class status_entity extends statusHandler {
+  public void action(Input in, Context cxt, Output out,
+  		     ActiveAttrList atts, NodeList content) {
+    String entityName = atts.getAttributeString("entity");
+    getStatusForEntity(entityName, cxt, out, atts);
+  }
+  public status_entity(ActiveElement e) { super(e); }
+  static Action handle(ActiveElement e) { return new status_entity(e); }
+}
+

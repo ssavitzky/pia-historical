@@ -25,12 +25,14 @@ public class Loader {
 
   protected static Table handlerCache = new Table();
 
-  /** Define a handler class.  
-   *	This is available for use in handler implementations, for preloading
+  /** Define (pre-load) a handler class.  
+   *<p>	This is available for use in handler implementations, for preloading
    *	the cache with subclasses and variants.  Such a handler should perform
    *	any additional initialization in its default constructor.
+   *
+   *<p>	It may also be used in specialized processors, or even Agents.
    */
-  static void defHandle(String cname, AbstractHandler handler) {
+  public static void defHandle(String cname, AbstractHandler handler) {
     handlerCache.at(cname, handler);
   }
 
@@ -50,11 +52,13 @@ public class Loader {
     defHandle("include", new includeHandler());
     defHandle("logical", new logicalHandler());
     defHandle("numeric", new numericHandler());
+    defHandle("parse", new parseHandler());
     defHandle("protect", new protectHandler());
     defHandle("repeat", new repeatHandler());
+    defHandle("select", new selectHandler());
     defHandle("set", new setHandler());
+    defHandle("status", new statusHandler());
     defHandle("subst", new substHandler());
-    defHandle("tagset", new tagsetHandler());
     defHandle("test", new testHandler());
     defHandle("text", new textHandler());
   }
