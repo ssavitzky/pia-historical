@@ -267,7 +267,25 @@ See also:
        The language design is done and the basics are working; missing
        handlers are now at the level of bugs.
 
-       
+  <li> 1998-08-11 <b>Bug:</b> Tagset files don't have search path. <br>
+       Need to check <code>.tss</code> and <code>.tso</code> files.
+       (1998-08-11) <br>
+
+  <li> 1998-08-12 <b>Bug:</b> Tagsets don't handle bad <code>.tso</code> files. <br>
+       Need to try a separate load so we can fall back on <code>.tss</code> or
+       <code>.ts</code> if the <code>.tso</code> file causes exceptions.
+       (1998-08-11) <br>
+
+  <li> 1998-08-12 <b>Bug:</b> Tagsets not loaded from resources. No search path. <br>
+       Need to be able to use class loader; check <code>.tss</code> and
+       <code>.tso</code> files.
+       (1998-08-11) <br>
+
+  <li> 1998-08-12 <b>Bug:</b> <code>implied</code> -&gt; <code>optional</code> <br>
+       Check the semantics of <code>implied</code> in SGML.  In any case it's
+       not clear; ``optional'' is better. 
+       (1998-08-12) <br>
+
 </ul>
 <a name="end">End of list.</a>
 <hr>

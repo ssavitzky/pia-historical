@@ -17,10 +17,28 @@ See also:
 </ul>
 
 <ol>
-  <li> <b>Bug:</b> Tagsets not loaded from resources. No search path. <br>
-       Need to be able to use class loader; check <code>.tss</code> and
-       <code>.obj</code> files.
-       (1998-08-11) <br>
+  <li> <b>Hole:</b> Namespaces in Entities, Get, Set. <br>
+       Easy thing is to make an entity with a name ending in colon a namespace
+       entity.  Look them up as usual.  As long as a namespace implements
+       NamedNodeList we're cool.
+       (1998-08-12)<br>
+
+  <li> <b>Bug:</b> Tagsets don't hack resource names correctly. <br>
+       Need to decide between Class and ClassLoader conventions.
+       (1998-08-12) <br>
+
+  <li> <b>Bug:</b> Loading tagset from file should use resource. <br>
+       <code>ClassLoader.getSystemResource</code> should do the right thing.
+       (1998-08-12) <br>
+
+  <li> <b>Hole:</b> Sorting unimplemented. <br>
+       (1998-08-12) <br>
+
+  <li> <b>Hole:</b> <code>isChildOf</code> unused in parser. <br>
+       (1998-08-12) <br>
+
+  <li> <b>Hole:</b> &lt;select&gt; unimplemented. <br>
+       (1998-08-12) <br>
 
   <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>
        Best done with a predefined tagset (STRIP_ts). 
@@ -33,25 +51,28 @@ See also:
 
   <li> <b>Bug:</b> Rename TextHandler to avoid conflict. <br>
        Rename to TextNodeHandler to avoid Windows conflict with textHandler.
-       (1998-08-07) <br>
+       (1998-08-07)<br>
 
   <li> <b>Hole:</b> Functional programming tools. <br>
        See <a href="http://www.python.org/doc/tut/functional.html">Python</a>
-       (1998-08-05) <br>
+       (1998-08-05)<br>
 
   <li> <b>Hole:</b> Namespace changes needed. <br>
        Tagset wants to extend Namespace (sigh).  Index -&gt; namespace.
        Changes in &lt;get&gt;, &lt;set&gt;, etc.
-       (1998-08-05) <br>
+       (1998-08-05)<br>
 
   <li> <b>Hole:</b> Major changes needed for new DOM. <br>
-       Do this after Level 1 stabilizes.
-       (1998-08-05) <br>
+       Do this after Level 1 stabilizes.  May involve moving interfaces from
+       <code>crc.dps.active</code> to <code>crc.dom</code>, and the original
+       <code>Node</code> interface (etc.) to the official location in
+       <code>org.w3c.dom</code>.
+       (1998-08-05)<br>
 
   <li> <b>Check:</b> entity-reference termination in InterForms <br>
        The old parser accepts entity references without a closing semicolon.
        The new one doesn't.
-       (1998-07-23) <br>       
+       (1998-07-23)<br>       
 
   <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <br>
        Not clear at this point exactly what use to make of this.
@@ -76,7 +97,7 @@ See also:
        replacing almost all <code>new ParseTree<em>Whatever</em></code> with
        <code>create<em>Whatever</em></code> operations on the current
        Tagset. Easily enforced by eliminating constructors without handlers.
-       (1998-07-10) <br>
+       (1998-07-10)<br>
 
   <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
        Neither does its predecessor, InterFormContent.
