@@ -37,8 +37,8 @@ directory (you can either use <code>/pia1/pia</code> or <a
 href="../../INSTALL"> install </a> your own).
 <p>
 
-To run the pia, execute the command <code>PIA_HOME/bin/pia</code>, where
-<code> PIA_HOME</code> is the PIA home directory. Sun users at CRC can simply
+To run the pia, execute the command <code>PIA_DIR/bin/pia</code>, where
+<code> PIA_DIR</code> is the PIA home directory. Sun users at CRC can simply
 type <code>jpia</code> (<code>/usr/local/bin/jpia</code> is a shell wrapper
 which executes <code>pia</code> using <code>/pia1/pia</code> as the PIA
 directory).
@@ -78,13 +78,13 @@ http://localhost:8888/Agency/ROOTindex.if
 It consists of three parts
 <ol>
   <li>  <code>http://.../</code> -- the machine name and port number
-  <li>   <code> Agency</code> -- the name of the agent handling this request
+  <li>   <tt> Agency</tt> -- the name of the agent handling this request
   <li>  <code>ROOTindex.if</code> --  an InterForm file name
 </ol>
 
 <p>
  This url denotes a request to the <tt>Agency</tt> agent (part 2) running on
- your local information agency (part 1).  The <tt>Agency</tt>
+ your local Information Agency (part 1).  The <tt>Agency</tt>
  agent is sort of the mother of all agents. It is the agent responsible for
  installing, removing, and listing other agents -- along with some
  miscellaneous things like <a href="/Agency/bugs.if">reporting bugs</a>. 
@@ -92,37 +92,38 @@ It consists of three parts
 <p>
 The third part,   <code>ROOTindex.if,</code> indicates the InterForm -- an
 html file with some special tags -- that the agent processed in order to
-generate the page that your browser is display.
+generate the page that your browser displays.
 
 <p>
 On this page, you should see  a listing of all the agents currently running on
-your information agency.  Click on one of the agent links to see the home page
-for that agent.  By default, the agency comes configured to start up with the following agents.
+your Information Agency.  Click on one of the agent links to see the home page
+for that agent.  By default, the agency comes configured to start up with the following agents:
 <dl>
   <dt> <tt> Agency</tt>
   <dd> main agent-- manages all other agents
   <dt> <tt> History</tt>
   <dd> maintains list of visited web pages --  see below
   <dt> <tt> FBI</tt>
-  <dd> adds control menu to pages served by your information agency
+  <dd> adds control menu to pages served by your Information Agency
   <dt> <tt>CIA</tt>
   <dd> adds control menu to pages proxied through your agency
   <dt> <tt> InterForm</tt>
   <dd> demonstrates features of the InterForm language (the extension of HTML
        in which agents are written)
   <dt> <tt> PIA</tt>
-  <dd> serves files located in the PIA_HOME directory
+  <dd> serves files located in the PIA_DIR directory
   <dt> <tt>MY</tt>
-  <dd>  serves files located in your local PIA_DATA directory (usually ~/.pia)
+  <dd>  serves files located in your local PIA_HOME directory (usually ~/.pia)
 </dl>
 
 <h3>   <a name="using">Using the history agent</a></h3>
  The History agent is meant to keep track of all web pages that you visit from
- any browser, allowing you to search those url by date or other feature.
+ any browser, allowing you to search those urls by date or other feature.
 To make best use of the History agent, you should set your browsers to use
-your local information agency as your proxy (this setting is usually found under the
+your local Information Agency as your proxy (this setting is usually found under the
 Network options available under edit/preferences, options/network, or some
-similar menu).
+similar menu.  You need to specify both the host name and port--8888 by
+default-- where your agency is running.)
 <p>
  Once you set your Information Agency as your proxy, browse to a few external
  web pages, then visit the  <a href="/History/home.if"> History agent's home
@@ -130,19 +131,22 @@ similar menu).
  08 / 04</tt>) which will list the pages you visited.
 
 <h3>  <a name="directories">Directory structure</a></h3>
- In addition to the PIA_HOME directory (which contains all the code,
+ In addition to the PIA_DIR directory (which contains all the code,
  documentation, agents, etc. released by the PIA group), your information
- agency also uses PIA_DATA (typically ~/.pia) to store agent data and
+ agency also uses PIA_HOME (typically ~/.pia) to store agent data and
  customized interforms.  By default, agents will read and write their data
- files into PIA_DATA/AGENT_NAME (where AGENT_NAME is the name of the agent.)
- For their InterForms, agents look first in PIA_DATA/Agents/AGENT_NAME, and
- then in PIA_HOME/Agents/AGENT_NAME making it easy to customize your agents
+ files into PIA_HOME/AGENT_NAME (where AGENT_NAME is the name of the agent.
+ So, by default the History agent keeps lists of visited urls in
+  <code>~/.pia/History/</code>) 
+ For their InterForms, agents look first in PIA_HOME/Agents/AGENT_NAME, and
+ then in PIA_DIR/Agents/AGENT_NAME making it easy to customize your agents
  simply by putting new InterForm files in
- PIA_DATA/Agents/AGENT_NAME/FILENAME.if
+ PIA_HOME/Agents/AGENT_NAME/FILENAME.if (so a customized form,  <code>foo.if</code> for the History
+ agent would go in  <code>~/.pia/Agents/History/foo.if</code>). 
 
 
 <h2>  <a name="agents">Agents &amp; InterForms</a> </h2>
- Agents are persistent software objects running on the information agency.
+ Agents are persistent software objects running on the Information Agency.
  When they receive a request for a document, they look for a file (in
  PIA_xxxx/Agents/AGENT_NAME) which matches that request.  Once the file is
  found, they  interpret that file  and return the result.  To the end user,
@@ -151,7 +155,7 @@ similar menu).
  hence they are called InterForms (with <code>.if</code> as the conventional
  extension.) In 
  addition to standard HTML tags, InterForms can include several additional
- tags or entities which the agent understands processes.  So, for example, if
+ tags or entities which the agent understands and processes.  So, for example, if
  an InterForm for the History agent includes the text:
  <code>&amp;agentName;</code> (the &amp;xxx; denotes an "entity") the agent
  will substitute it's name for this entity,  so in the browser the user would
@@ -168,7 +172,7 @@ the <a href="../Manuals/InterForm/index.html">InterForm Manual</a>.
  <code>
 &lt;html&gt;&lt;body&gt;   <br>
 &lt;h2&gt; Web pages visited Today&lt;/h2&gt;   <br>
-&lt;read file="&amp;year;/&amp;month;/&amp;day;.html&gt;   <br>
+&lt;read file="&amp;year;/&amp;month;/&amp;day;.html"&gt;   <br>
 &lt;/body&gt;&lt;/html&gt;   <br>
 </code>
 <br>
@@ -176,6 +180,17 @@ the <a href="../Manuals/InterForm/index.html">InterForm Manual</a>.
  href="/History/today.if">/History/today.if</a>
  If you have been using your agency as a proxy to view external documents, you
  should get a listing of all places you visited today.
+
+<h4> What's going on?</h4>
+ The History agent stores urls in files organized by date.  The file
+ <code>~/.pia/History/1997/07/11.html</code> stores all the urls visited on
+ July 11, 1997.  Using the pre-defined entities in the Interform language,
+ the file for today's date (relative to the History data directory) can be
+ written as  <code>&amp;year;/&amp;month;/&amp;day;.html</code>.
+ The  <code>&lt;read file="FILENAME"&gt; </code> tells the History agent to
+ read the specified file and insert the contents at this location.  (If the
+ file does not exist, nothing gets inserted.)
+
 
 <h3>  <a name="creating"> Creating a new agent -- "HelloWorld"</a></h3>
  To create your own agent, first create a directory,
@@ -192,9 +207,9 @@ My owner is &amp;piaUSER;.   <br>
  You asked &lt;get form name=data&gt;   <br>
  to which I have no answer yet.   <br>
 &lt;/then&gt;&lt;else&gt;   <br>
-&lt;form action="&amp;urlPath; method=post&gt;   <br>
-&lt;input name="data"&gt;   <br>
+&lt;form action="&amp;urlPath;" method="post"&gt;   <br>
 &lt;input type="submit" value="AskMe"&gt;   <br>
+A Question: &lt;input name="data"&gt;   <br>
 &lt;/form&gt;   <br>
 &lt;/else&gt;   <br>
 &lt;/if&gt;   <br>
@@ -209,6 +224,36 @@ click on the install button.)
 <p>
 You should now the able to see and interact with your  <a
 href="/HelloWorld/home.if">HelloWorld agent</a>.
+
+<h4> What's going on?</h4>
+Most of the above <tt>home.if</tt> is just standard html (for which plenty of
+ <a
+ href="http://www.yahoo.com/Computers_and_Internet/Internet/World_Wide_Web/Information_and_Documentation/Beginner_s_Guides/Beginner_s_HTML/">references are available on the net in</a>).  The InterForm extensions are explained below:
+ <table>
+<TR><TH>InterForm <TH> Explanation
+<TR><TD>&amp;agentName;  <TD> entity (like a variable) specifying current
+agent's name
+<TR><TD>&amp;piaUSER; <TD>  entity specifying user id agency is running under
+<TR><TD>&lt;if&gt;&lt;get form name=data&gt;&lt;then&gt; <TD><tt> if</tt> the
+request  for this document included a non-empty form input field named <tt>data</tt>,
+<tt> then</tt> do the following.  
+<TR><TD>&lt;get form name=data&gt; <TD> specifies the value (if any) of the
+<tt> data </tt> field of the form submitted as part of the request for this
+     document.  (The <tt>get</tt> tag is another way to look
+     up variables.  &lt;get form name=data&gt;&lt; is synonymous with
+     &amp;FORM.data;)
+<TR><TD>&lt;/then&gt;&lt;else&gt; <TD> end of <tt>then</tt> tag, start of <tt>
+else</tt> tag (contents interpreted only if the <tt>data</tt> does not exist).
+<TR> <TD>action="&amp;urlPath;" <TD> specifies that this form  should be
+     submitted to the same url as the current document
+<TR><TD>&lt;/else&gt; &lt;/if&gt; <TD> end of <tt>else</tt> and <tt>if</tt> tags
+</table>
+
+
+<p>
+Basically, what this InterForm does is check to see if the user submitted a
+form.  If so, the form data is processed and the results displayed,  otherwise
+the form is presented for the user to fill out.
 
 <h3>   <a name="advanced">Advanced topics</a></h3>
 <dl>
@@ -251,7 +296,7 @@ href="/HelloWorld/home.if">HelloWorld agent</a>.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Aug  5 10:44:29 1997
+Last modified: Tue Aug  5 14:13:29 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
