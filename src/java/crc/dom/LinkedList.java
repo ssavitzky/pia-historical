@@ -1,7 +1,16 @@
+// LinkedList.java
+// $Id$
+// (c) COPYRIGHT Ricoh California Research Center, 1998.
+
 package crc.dom;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Implementation of a singular linked list with
+ * head pointing to first element and tail pointing
+ * to last element
+ */
 
 public class LinkedList
 {  
@@ -9,7 +18,7 @@ public class LinkedList
    * resets the cursor
    */
    
-   public void reset()
+   protected void reset()
 
    {  pre = null;
    }
@@ -20,7 +29,7 @@ public class LinkedList
     * @return true iff the cursor is not at the end of the
     * list 
     */
-   public boolean hasMoreElements() 
+   protected boolean hasMoreElements() 
    {  return cursor() != null;
    }
 
@@ -32,7 +41,7 @@ public class LinkedList
     * @exception NoSuchElementException if already at the
     * end of the list
     */
-   public Object getNextElement()
+   protected Object getNextElement()
    {  if (pre == null) pre = head; else pre = pre.next;
       if (pre == null) 
          throw new NoSuchElementException();
@@ -41,7 +50,9 @@ public class LinkedList
 
 
   /**
-   * elementAt
+   * Retreiving element at the requested position
+   * @return element at position
+   * @exception NoSuchElementException if index is less than 0 or greater or equal to size
    */
   public synchronized Object elementAt(int p){
     if( p >= size() || p < 0)
@@ -51,18 +62,47 @@ public class LinkedList
     return currentElement();
   }
 
-
+  /**
+   * Inserting element before indexed position
+   * If indexed is same as size, append element
+   * @exception NoSuchElementException if index is less than 0 or greater than size
+   */
   public synchronized void insertElementAt(Object obj,
 					   int p){
     int size = size();
-
-    if( (p >= size && size != 0) || p < 0)
+    //Report.debug(this,"My size is-->"+Integer.toString( size ));
+    //Report.debug(this,"p is-->"+Integer.toString( p ));
+    if( (p > size ) || p < 0)
       throw new NoSuchElementException();
     moveCursorTo( p );
     insert( obj );
   }
 
+  /**
+   * Find the position of a given lement
+   * @return position of an element
+   */
+  public synchronized int indexOf(Object o)
+  {
+    Link ptr = head;
+    int i = 0;
 
+    while( ptr != null ){
+      if( o == ptr.data )
+	return i;
+
+      i++;
+      ptr = ptr.next;
+    }
+    return -1;
+  }
+
+  /**
+   * Remove and return an element at the indicated position
+   * Position is indexed from 0 to size -1 
+   * @return element removed
+   * 
+   */
   public synchronized Object removeElementAt(int p){
     if( p >= size() || p < 0)
       throw new NoSuchElementException();
@@ -70,10 +110,12 @@ public class LinkedList
     return remove();
   } 
 
-
+  /**
+   * Replace a given element at the index position
+   * @return old element at index position
+   */
   public synchronized Object setElementAt(Object obj,int p){
-    int size = size();
-    if( (p >= size && size != 0) || p < 0)
+    if( (p > size() - 1 ) || p < 0)
       throw new NoSuchElementException();
     moveCursorTo( p );
 
@@ -96,13 +138,13 @@ public class LinkedList
     return cur.data;
   }
 
-  public void moveCursorTo(int p){
+  protected void moveCursorTo(int p){
     if (p == 0){
       reset();
       return;
     }
 
-    if( p >= size() || p < 0)
+    if( p > size() || p < 0)
       throw new NoSuchElementException();
     reset();
     for( int i = 0; i < p; i++ )
@@ -119,7 +161,7 @@ public class LinkedList
     * end of the list
     */
    
-   public Object currentElement() 
+   protected Object currentElement() 
    {  Link cur = cursor();
       if (cur == null) 
          throw new NoSuchElementException();
@@ -131,7 +173,7 @@ public class LinkedList
     * @param n the object to insert
     */
 
-   public void insert(Object n)
+   protected void insert(Object n)
    {  Link p = new Link(n, cursor());
 
       if (pre != null)
@@ -152,7 +194,7 @@ public class LinkedList
     * @param n - the value to insert
     */
    
-   public void addElement(Object n)
+   protected synchronized void addElement(Object n)
    {  Link p = new Link(n, null);
       if (head == null) head = tail = p;
       else
@@ -169,7 +211,7 @@ public class LinkedList
     * end of the list
     */
 
-   public Object remove()
+   protected Object remove()
    {  Link cur = cursor();
       if (cur == null) 
          throw new NoSuchElementException();
@@ -203,24 +245,6 @@ public class LinkedList
    {  return new ListEnumeration(head); 
    }
 
-   public static void main(String[] args)
-   {  LinkedList a = new LinkedList();
-      for (int i = 1; i <= 10; i++) 
-         a.insert(new Integer(i));
-      java.util.Enumeration e = a.elements();
-      while (e.hasMoreElements())
-         System.out.println(e.nextElement());
-
-      a.reset();
-      while (a.hasMoreElements())
-      {  a.remove();
-         a.getNextElement();
-      }
-      a.reset();
-      while (a.hasMoreElements())
-         System.out.println(a.getNextElement());
-   }
-   
    private Link cursor() 
    {  if (pre == null) return head; else return pre.next;
    }
