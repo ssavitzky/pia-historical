@@ -15,7 +15,26 @@ See also:
 </ul>
 
 <ol>
+  <li> 1998-10-?? <b>Bug</b> GenericAgent.findInterform needs extension list.
+       <br>
+       Actually, finding files ought to be in a utility class, because you
+       need to get out: the file pathname, the URL path, and the part of the
+       URL after the file that was found (which gets passed to the
+       interform). 
+       (1998-10-13) <br>
        
+  <li> 1998-10-30 <b>Hole:</b> PIA datatype transition. <br>
+       During the transition Agent and Transaction need to be able to
+       return both SGML and DOM data as needed.  Fortunately most of the
+       namespaces contain only strings; it's really only hooks that differ.
+       (1998-06-18) <br>
+       -- Make Agent and Transaction implement an interface with methods
+	  like <code>getObjectAt</code> and <code>getStringAt</code>,
+	  etc. instead of the Attr interface; sort it out in the handlers.
+       
+  <li> 1998-10-30 <b>Bug</b> DPS hooks aren't executed <br>
+       (1998-10-28)<br>
+
 </ol>
 <a name="end">End of list.</a>
 <hr>

@@ -22,34 +22,30 @@ See also:
        e.g., attribute lists.
   <li> Rename Tabular to StringMap
   <li> Use StringMap interface for headers, etc.
+  <li> <b>Hole</b> Simplify the Pia class and initialization.
 </ol>
 
 <h2>Main List</h2>
 <ol>
+  <li> <b>Impr</b> InterForm lookup should be in a utility class <br>
+       (1998-11-02)<br>
+
+  <li> <b>Hole</b> Namespaces needed: PIA, ENV, LOG, AGENTS <br>
+       PIA: PiaProperties; basically everything on the Pia class.
+       ENV: the environment (Java system props)
+       LOG: User messages.  names include "debug", "message", "verbose", ...
+       AGENTS: Resolver's agent table.  Initialize an agent with
+       <code>&lt;set name=AGENTS:foo&gt;options&lt;/&gt;</code>.
+       (1998-11-02)<br>
+
   <li> <b>Hole</b> Interface Cleanup <br>
        Make most attributes conform to get/set convention instead of the
        legacy perl convention.  Remove most convenience methods,
        e.g. the ones that set criteria, etc.
 
-  <li> <b>Bug</b> GenericAgent.findInterform needs extension list. <br>
-       Actually, finding files ought to be in a utility class, because you
-       need to get out: the file pathname, the URL path, and the part of the
-       URL after the file that was found (which gets passed to the
-       interform). 
-       (1998-10-13) <br>
-       
   <li> <b>Bug</b> no namespace for all installed agents. <br>
        (1998-10-12) <br>
        
-  <li> <b>Hole:</b> PIA datatype transition. <br>
-       During the transition Agent and Transaction need to be able to
-       return both SGML and DOM data as needed.  Fortunately most of the
-       namespaces contain only strings; it's really only hooks that differ.
-       (1998-06-18) <br>
-       -- Make Agent and Transaction implement an interface with methods
-	  like <code>getObjectAt</code> and <code>getStringAt</code>,
-	  etc. instead of the Attr interface; sort it out in the handlers.
-
   <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
        Neither does its predecessor, InterFormContent.
        (1998-07-08) <br>
@@ -60,8 +56,6 @@ See also:
        initialization, and dates as presented by the History agent's hook.
        (1998-06-18) <br>
        -- Should add timezone and UTC time/date as well.
-
-
 </ol>
 
 <a name="end">(End of list)</a>
