@@ -598,7 +598,7 @@ Note that spaces, tabs, and HTML comments are all considered whitespace.<p>
 <hr> <!-- ========================================================== -->
 <h2><a name="os">OS Operations</a></h2>
 <alist>authenticate os-command os-command-output password-file-entry
-       read write</alist>
+       file read write</alist>
 
 <adscr>authenticate</adscr>
 
@@ -618,9 +618,23 @@ given username and password.  The other fields in the line can be generated,
 but are ignored by the <an>authenticate</an> actor.<p>
 
 
+<adscr>file</adscr>
+
+This Actor is used to perform operations on files that do not require input
+from the document; for example deletion, renaming, and file-to-file copying.<p>
+
+
 <adscr>read</adscr>
 
+The <an>read</an> operation can be performed on <em>either</em> files or
+URL's. <p>
+
+
 <adscr>write</adscr>
+
+The <an>write</an> operation can be performed on <em>either</em> files or
+URL's. <p>
+
 
 <h3>Specialized Versions</h3>
 <alist>read.file read.href write.file write.href</alist>

@@ -484,7 +484,7 @@ element</alist>
 <hr> <!-- ========================================================== -->
 <h2>OS Operations</h2>
 <alist>authenticate os-command os-command-output password-file-entry
-       read write</alist>
+       file read write</alist>
 
 <adscr>authenticate</adscr>
 
@@ -501,8 +501,13 @@ element</alist>
              >more:info</password-file-entry></demo>
   <dd> Note that a 12-bit random number is used as part of the
        password-generation process, so password-file-entry will rarely
-       generate the same results twice even for the same password.
+       generate the same results twice even for the same password.<p>
+
+       Passwords are case-sensitive, and are truncated to eight characters
+       long. 
 </dl>
+
+<adscr>file</adscr>
 
 <adscr>read</adscr>
 
