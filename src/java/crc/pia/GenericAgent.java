@@ -902,8 +902,11 @@ public class GenericAgent extends AttrBase implements Agent {
      */
 
     for (int i = 0; i < tails.nItems(); ++i) 
-      for (int j = 0; j < roots.nItems(); ++j)
-	path.push(roots.at(j).toString() + tails.at(i).toString());
+      for (int j = 0; j < roots.nItems(); ++j) {
+	String dirname = roots.at(j).toString() + tails.at(i).toString();
+	File dir = new File(dirname);
+	if (dir.isDirectory()) path.push(dirname);
+      }
     
     /* Finally, try just the roots */
 
