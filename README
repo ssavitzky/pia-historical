@@ -5,8 +5,8 @@ This is 0.9 release of the Personal Information Agency (PIA).  The
 PIA is a proxy server that provides you a framework to develop agents
 that do computation on requested documents.
 
-Please read ===X FILE=== for further information about the PIA and agent
-concepts.
+For further information about the PIA and agent
+concepts, please select Doc from the PIA homepage.
 
 Supported platforms
 -------------------
@@ -20,9 +20,4 @@ see the following documentation:
 
 	INSTALL
 		How to get and install the PIA.
-
-After installation information about User's manual, PIA vision, and Agent authoring
-is availabe from a browser at: file:.../pia/Doc/overview.html
-
-
 
