@@ -156,6 +156,32 @@ public class Text implements SGML {
     return this;
   }
 
+  /** Retrieve an attribute by name.  Text doesn't have any.*/
+  public SGML attr(String name) {
+    return null;
+  }
+
+  /** Retrieve an attribute by name, returning its value as a String. */
+  public String attrString(String name) {
+    return null;
+  }
+
+  /** Test whether an attribute exists.  It doesn't. */
+  public boolean hasAttr(String name) {
+    return false;
+  }
+
+  /** Return the numeric value of the Text.  Anything that isn't a number
+   *	gets returned as 0.0; no exceptions are thrown. */
+  public double numValue() {
+    String s = toString();
+    if ("".equals(s)) return 0.0;
+    try {
+      return java.lang.Double.valueOf(s).doubleValue();
+    } catch (Exception e) {
+      return 0.0;
+    }
+  }
 
   /************************************************************************
   ** Construction:

@@ -147,6 +147,22 @@ public class Tokens extends List implements SGML {
     }
   }
     
+  /** Retrieve an attribute by name.  Lists don't have any.*/
+  public SGML attr(String name) {
+    return null;
+  }
+
+  /** Retrieve an attribute by name, returning its value as a String. */
+  public String attrString(String name) {
+    return null;
+  }
+
+  /** Test whether an attribute exists.  It doesn't. */
+  public boolean hasAttr(String name) {
+    return false;
+  }
+
+
   /************************************************************************
   ** Access to parts of content:
   ************************************************************************/
