@@ -3,12 +3,17 @@
 <title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<h1></h1>
+<h1>NOTE: USE  this form only if your passphrase has been stolen or becomes 
+irrecoverable. </h1>
+ All your previous signatures will appear to not verify
+(though with work, they can be checked.)
 
+<p>
 <form action="register.if" method=post>
  Please enter a pass-phrase:<input name="pass1" size="30" type=password>
 <br> and again for safety:<input name="pass2" size="30" type=password>
 <br><input type="SUBMIT" value="CreateKey"> (This may take a minute or two.)
 </form>
+
 
 </body></html>

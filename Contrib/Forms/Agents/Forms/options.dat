@@ -1,0 +1,19 @@
+ <!-- default options for Forms agent -->
+
+ <options>
+  <agentoption>
+   <optionname>mailnotifications</optionname>
+    <optionvalue>true</optionvalue>
+    <optiondescription>If true, send email notification to users when a form
+  is waiting for their signature (only when a new form
+  appears and the user has not been notified since the last time they signed
+  a form.)</optiondescription>
+  </agentoption>
+ <agentoption>
+   <optionname>printers</optionname>
+    <optionvalue></optionvalue>
+    <optiondescription>List of possible printers for printing forms (not
+  currently used) </optiondescription>
+  </agentoption>
+
+ </options>

@@ -53,10 +53,12 @@
      </li>
   </ul>
   <input type=hidden name=uid value=&user;>
-  <input type="SUBMIT" value="Remove" name=buttonaction> selected forms
+  <input type="SUBMIT" value="Remove" name=buttonaction> selected forms (and
+ keep all unselected forms on your pending list)<br>
   <b>or</b> <input type="SUBMIT" value="Keep" name=buttonaction> selected
-  forms on "pending" list (forms removed from this list will remain on the
-  system, but will not be routed to any other users).
+  forms (and remove all unselected forms from your pending list).
+ Forms will be removed from your pending list will.  They will remain on the
+  system, but will not be routed to any other users.
  </form>
 
 </then> <else>No forms pending for &user;</else></if>

@@ -13,37 +13,23 @@
 <set name=file><subst match="^\.\./" result=""><get form
 name=formurl></subst></set>
 
-<read file=&file;>
+<set name=document><read file=&file;></set>
+<if> <get name=document>  <then>
+	 <set name=hash><hash><get name=document></hash></set>
+         <get name=document>
+	 </then><else><h1>NO DOCUMENT FOUND--report error </h1></else></if>
 <hr>
 <if> <get name=sigs> <then>
 <h3> Signatures on <a href="/~&agentName;/&FORM.formurl;">&FORM.formurl; </a></h3>
+ 
+<show-sig-table signatures=&sigs; hash=&hash;>
 
-
- <table>
-<!-- for-every tag=signature object=&sigs; entity=sig -->
-<set  name=mysigs><dummy><get name=sigs findall=signature></dummy></set>
-
-<repeat list=&mysigs; entity=sig>
-<TR>
-  <TD>  Signed by:<b><full-name user=&sig.sigblock.signer.Text;></b> (&sig.sigblock.signer.Text;)
-  <TD>on:
-  <TD>&sig.sigblock.sigdate; </TD>
- <!-- don't show signature &sig.sig; -->
-   <TD>
-       <if><sign user=&sig.sigblock.signer.Text; verify=&sig.sig.Text;>&sig.sigblock;</sign> <then>
-        <b>verified</b></then> <else>
-        <b> does NOT verify</b></else>
-       </if>
-  </TD>
-</TR>
-</repeat>
-
-</table>
 </then> <else>
 No signatures for <a href="/~&agentName;/&file;">&FORM.formurl; </a>
 </else>
 </if>
-<br> Show <a href=show_route.if?formurl=&FORM.formurl;>route</a>.
+<br> Click <a href=show_route.if?formurl=&FORM.formurl;>here to view or
+change route </a> of this form.
 </then>
 </if>
 <hr>

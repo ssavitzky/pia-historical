@@ -28,7 +28,7 @@ Processing group &egroup; edits:
           <if><get form name=&li;><then><li>&li;</li></then></if>
 	  </ul>
 	  </set>
-    		    <read interform file=groups-save.inc process>
+    		    <save-data data=groups>
 	  </then>
 	   <else>
 	  <h2>NOT Authorized</h2>
@@ -85,7 +85,7 @@ Add Group:
    <process copy>
    <set name=dgroup> <get form name=delgroup></set>
    <set agent name=groups key=&dgroup; delete></set>
-    <read interform file=groups-save.inc process>
+    <save-data data=groups>
   </process>
  Delete group:
   

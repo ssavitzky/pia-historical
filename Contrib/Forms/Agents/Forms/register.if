@@ -53,7 +53,7 @@ return to this page.
 </write>
  <set name=u><get agent name=users key=&user;></set>
  <set index=u.userpublickey replace><get name=key></set>
-<read interform file=users-save.inc process> 
+    <read interform file=users-save.inc process>
 <p>
 
  <a href="/&agentName;/home.if"> Return to  home page</a>

@@ -17,9 +17,11 @@
 <if> <sign user=&user; exists></sign> <then>
  
 <if> <get form name=password> <then>
+<!-- the sighash is hash of the form -- verification should ensure that the hash is identical to current doc -->
 <set name=formanchor><a href="&myformurl;">&myformurl;</a></set>
 <set name=tosign><sigblock>
 <signer><get form name=user></signer>
+<if><get form name=signas><then><signas><get form name=signas></signas></then></if>
 <sigdoc><get  name=formanchor></sigdoc>
 <sighash><get form name=hash></sighash>
 <sigdate>&dateString;</sigdate>
@@ -29,19 +31,23 @@
 
 
 <if> <get name=signature> <then>
-
-	 Signature added to <a href=show_signatures.if?formurl=&myformurl;>form.</a>
-	 <notify-next-recipient form=&myformurl; user=&FORM.user;>
-
+<!-- save sig file -->
 <write append file=&myformurl;.sig>
 <signature>
 <get name=tosign>
 <sig><get name=signature></sig>
+<if><get form name=comments><then><sigcomment><get form
+name=comments></sigcomment></then></if>
 <if><get name=toremove> <then> <if> <test match=&FORM.user;><get
 name=toremove></test> <then></then> <else><signedfor><get name=toremove></signedfor></else></if></then></if>
 </signature>
 </write>
-<hr>
+
+	 Signature added to <a href=show_signatures.if?formurl=&myformurl;>form.</a>
+	 <append-form-history form=&myformurl;>Signed by <get form name=user></append-form-history>
+	 <notify-next-recipient form=&myformurl; user=&FORM.user; signedas=&FORM.signas;>
+
+<hr><!-- show next forms for user to sign -->
          <show-pending user=&FORM.user;>
          <repeat list=&AGENT.groups.keys; entity=mygrpo>
          <if-in-group user=&FORM.user; group=&mygrpo;>
@@ -60,32 +66,32 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
 	</then></if>
 	 <if> <get name=document>  <then>
 	 <set name=hash><hash><get name=document></hash></set>
-  <set name=sigfile><read file=&myformurl;.sig process></set>
- <set name=sigdl><get name=sigfile findall=dl></set>
-  <if> <get name=sigdl> <then>
-   This document has been signed by: 
- <table>
- <if> <test exact match="dl"><get name=sigdl attr=tag></test>
- <then><TR><TD><b> <get name=sigdl key=user> </b> <TD> on  <TD> <get name=sigdl key=date> </TR></then><else>
- <repeat list=&sigdl; entity=sdl>
- <TR><TD><b> <get name=sdl key=user> </b> <TD> on  <TD> <get name=sdl key=date> </TR>
- </repeat>
-</else>
-</if>
-</table>
-  </then> <else>Please sign the following document:</else></if>
+         <set name=sigfile><read file=&myformurl;.sig process></set>
+    
+   Please sign the following document:
 	   <hr>
 	<get name=document>
 	<hr>
+	<show-sig-table signatures=&sigfile;>
+
 	<form action="&url;" method="post">
+	
 	<input name="formurl" type=hidden value=&myformurl;>
 	<input name="hash" type=hidden value=&hash;>
+	<br>
 	  <a href="help_signature.html">Signature for</a>
     <select name="user"> <option><get trans name=AuthenticatedUser></option>
     <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
     </select>
+         <!-- signing as anybody?? -->
+	<if><get form name=signas><then><set name=signas><get form
+	name=signas></set>
+	<input name="signas" type=hidden value=&signas;>
+	(signing as <get name=signas>)
+	</then></if>
 	 PassPhrase:<input type="password" name="password" size="25"> 
-	<input type="SUBMIT" value="SIGN">
+	<input type="SUBMIT" value="SIGN"><br>
+	Notes:<textarea name="comments" rows=2 cols=60></textarea>
 </form>
 	  </then> 
  <else>NO form found -- please report this error ---</else>

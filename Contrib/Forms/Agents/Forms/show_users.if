@@ -1,0 +1,12 @@
+ <table align=center>
+ <caption> Users </caption>
+<TR><TH>userid<TH>username<TH>manager<TH>extension</TH> </TR>
+<set name=users><get agent name=users values></set>
+ <repeat list=&users; entity=u><TR>
+      <TD> <a href="edit_user.if?euser=&u.userid.Text;"><get index=u.userid></a>
+      <TD> <get index=u.username>
+  <TD><get index=u.usermanager>
+        <TD><get index=u.userext>
+        <TD><get index=u.userdept>
+      </TR></repeat>
+ </table>

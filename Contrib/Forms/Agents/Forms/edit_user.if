@@ -23,16 +23,22 @@
    <if><get name=allow>  <then>
    <set name=u><get agent name=users key=&uid;></set>
     <set index=u.username replace><get name=username form></set>
-    <set index=u.usermanager replace><get name=usermanager form></set>
-    <set index=u.userdept replace><get name=userdept form></set>
+     <set name=olddept><user-dept user=&uid;></set>
+     <if><test match=&FORM.userdept;><get name=olddept></test> <else>
+         <set index=u.userdept replace><get name=userdept form></set>
+	 <dept-remove-member member=&uid; department=&olddept;>
+	 <dept-add-member member=&uid; department=&FORM.userdept;>
+	 <save-data data=departments>
+     </else> </if>
     <set index=u.userext replace><get name=userext form></set>
 
 
   
 
 		    <!-- Saving new data to disk -->
-		    <read interform file=users-save.inc process> 
-    		    <read interform file=groups-save.inc process>
+		    <save-data data=users>
+		    <save-data data=groups>
+
    </then> <else>
    <h2>NOT Authorized</h2>
    Users not in the admin group can only change entries for themselves.
@@ -45,11 +51,10 @@
  <table>
 <TR><TD>user-id: <TD><get name=uid>
 <TR><TD> Full name:<TD><input name="username" size="30" value=&u.username.Text;>
-<TR><TD> Manager:<TD><select name="usermanager">
- <option>&u.usermanager.Text;</option>
- <repeat list=&AGENT.users.keys;> <option><get name=li></option></repeat>
+<TR> <TD> <a href=show_depts.if>Department:</a><TD><select name="userdept">
+<option>&u.userdept.Text;</option>
+ <repeat list=&AGENT.departments.keys;> <option><get name=li></option></repeat>
 </select>
-<TR> <TD> Department:<TD><input name="userdept" size="10" value=&u.userdept.Text;>
 <TR> <TD>Phone extension:<TD><input name="userext" size="3" value=&u.userext.Text;>
 </table>
 
@@ -93,13 +98,19 @@
 <form action="&url;" method=post copy id="deluser1">
    <process copy>
    <set name=duser> <get form name=deluser></set>
+   <set name=u><get agent name=users key=&duser;></set>
    <set agent name=users key=&duser; delete></set>
+   <set name=udept><get index=u.userdept.Text></set>
+    <if> <get name=udept><then>
+	 <dept-remove-member member=&duser; department=&udept;>
+	 <save-data data=departments>
+	 </then> </if>
    <repeat list=&AGENT.groups.keys;>
    <group-remove-user user=&duser; group=&li;>
    </repeat>
     <b>  Deleted &duser; </b>
-    <read interform file=users-save.inc process>
-    <read interform file=groups-save.inc process>
+    <save-data data=users>
+    <save-data data=groups>
   </process>
  Delete userid:
   

@@ -29,9 +29,11 @@ Sums and other combinations of variables can also be added, see other forms
 for examples.
  </write>
 &formtype; has been created, please <a href="edit_form.if?form=&formtype;">
-edit</a> this form.  (To add to the list of forms currently requires
-re-initialization of the forms server, see the <a href="admin.if">admin</a>
-page. 
+edit</a> this form.  
+<br>
+UPDATING forms list:
+ <set agent name=forms><read process quiet interform file="." directory match="^[^.]+$" ></set>
+
 </then> <else>
 <form action="&url;" method=post process copy>
 

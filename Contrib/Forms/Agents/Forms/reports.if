@@ -8,6 +8,23 @@
 
 <tagset-load name=Form-agent-actors>
 
+Note this page needs lots of work, but does mostly function properly.
+
+<h2> Department Listing </h2>
+Forms submitted on or before May 15 will not show up with the by department listings.
+
+<form action=reports_dept.if method=post> 
+<a href=show_depts.if>Department:</a><select name="dept">
+ <repeat list=&AGENT.departments.keys;> <option>&li;</option></repeat>
+ </select>
+Month: <select name=startmonth><option selected>&month;</option></else></if>
+ <repeat list="01 02 03 04 05 06 07 08 09 10 11 12"> <option>&li;</option></repeat>
+</select>
+<input type="SUBMIT" value="Show Forms submitted by Department">
+</form>
+
+<!-- add something to view by department -->
+
 <repeat list=&AGENT.groups.keys; entity=grp>
 <if-in-group group=&grp;><set name=allow>true</set></if-in-group>
 </repeat>
@@ -148,6 +165,7 @@ Found <get name=forms size> &form; forms filled out between &FORM.startmonth;,
 </else></if>
 <hr>
  </process>
+<h2>Generic Reports by type of form </h2>
 Show
 <select name="form">
  <repeat list=&AGENT.forms;>

@@ -115,6 +115,9 @@ attr=name></text></repeat></set>
             <if><get name=genericroute> <then>
              <option>user</option>
              <option>manager</option>
+             <option>secondManager</option>
+	     <option>deptAdmin</option>
+	     <option>deptManager</option>
             </then></if>
             <option>printer</option>
             <repeat list=&AGENT.groups.keys; entity=mygrp>

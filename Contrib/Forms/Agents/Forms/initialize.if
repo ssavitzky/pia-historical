@@ -12,16 +12,29 @@
 <read process quiet interform file=tagset.inc>
 
 <br>
-(USERs and groups should be in a database...)
+(USERs and groups and departments should be in a database...)
 <br>
 Initializing users
-<read process quiet interform file=users-init.inc>
+<load-data data=users>
+
 <br>
  Initializing groups
-<read process quiet interform file=groups-init.inc>
+<load-data data=groups>
+
+<br>
+ Initializing departments (mostly redundant with users)
+<load-data data=departments>
 
  Initializing List of Forms
  <set agent name=forms><read process quiet interform file="." directory match="^[^.]+$" ></set>
+
+<br>
+Initializing options (stored in formsoptions.dat in a dl)
+ <if> <read file=formsoptions.dat info> <else>
+ <write file=formsoptions.dat><read interform file=options.dat></write></else>
+ </if>
+<!-- now load the options -->
+ <load-options> <read file=formsoptions.dat process> </load-options>
 
 
 <br>

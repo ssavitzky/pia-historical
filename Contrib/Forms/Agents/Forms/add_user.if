@@ -23,7 +23,9 @@
 </user></set>
  Thanks for registering.  If this information is correct, please <a
  href="register.if?user=&uid;"> click here</a> to complete registration by creating your digital key.
-<read interform file=users-save.inc process> 
+ <save-data data=users>
+ <dept-add-member dept=&FORM.userdept; user=&uid;>
+ <save-data data=departments>
  </process>
 <h2> Registering new user</h2>
  <set name=u><get agent name=users key=&uid;></set>

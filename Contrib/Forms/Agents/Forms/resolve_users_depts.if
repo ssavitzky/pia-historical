@@ -1,0 +1,97 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&agentName; administration</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<set entity name=title> resolve Departments</set>
+<read interform file="heading.inc" process>
+
+<!-- read process quiet interform file=tagset.inc -->
+
+<tagset-load name=Form-agent-actors>
+For each user, make sure that they are listed in the appropriate department.
+(Can be used to create department list from scratch.)
+<hr>
+ 
+<set name=users><get agent name=users values></set>
+
+<if><get form name=resetdept><then><set agent name=departments><dl> </dl></set></then></if>
+ <repeat list=&users; entity=u>
+      <set name=uid><get index=u.userid.Text></set>
+      <set name=udept><get index=u.userdept.Text></set>
+      <set name=uman><get index=u.usermanager.Text></set>
+
+<if><get name=udept><then>
+       <set name=dept><get agent name=departments key=&udept;></set>
+       <!-- create one if it does not exist -->
+        <if> <get name=dept><then>
+	 <!-- make sure that user is in department -->
+	 <!-- not exact but close enough for now -->
+	  <if><test match=&uid;><get index=dept.deptmembers.deptmember.Text></test>
+	   <else><dept-add-member member=&uid; department=&udept;></else> </if>
+        </then> <else>
+	<set name=dept><department>
+	     <deptnumber><get name=udept></deptnumber>
+	     <deptmanager><get name=uman></deptmanager>
+	     <deptsecondmanager>hart</deptsecondmanager>
+	     <deptadmin>FrontOffice</deptadmin>
+	     <deptmembers><deptmember><get name=uid></deptmember></deptmembers>
+	     </department></set>
+	<set name=departments agent key=&udept;><get name=dept></set>
+	</else> </if>
+    </then><else> No dept for &uid;</else></if>
+	</repeat>
+
+<hr>
+CHANGES NOT COMMITTED
+<hr>
+<!-- resort users -->
+ <set name=susers><sort><get agent name=users keys></sort></set>
+USERS: <get name=susers><br>
+ <set name=newu><dl foreach list=&susers;> 
+	<dt>&li;</dt>
+	<dd><get agent name=users key=&li;></dd> 
+  </dl></set>
+ <set name=users agent><get name=newu></set>
+
+<br>
+<table align=center>
+ <caption> Users </caption>
+<TR><TH>userid<TH>username<TH>manager<TH>extension</TH> </TR>
+<set name=users><get agent name=users values></set>
+ <repeat list=&users; entity=u><TR>
+      <TD> <a href="edit_user.if?euser=&u.userid.Text;"><get index=u.userid></a>
+      <TD> <get index=u.username.Text>
+  <TD><get index=u.usermanager>
+        <TD><get index=u.userext>
+        <TD><get index=u.userdept>
+      </TR></repeat>
+ </table>
+<hr>
+Departments:<get agent name=departments>
+<hr>
+
+ <set name=depts><get agent name=departments values></set>
+ <table align=center>
+ <caption>Departments (click on dept# to edit) </caption>
+<TR><TH>Dept#<TH>manager<th>2nd level<TH>Administrator</TH><th>Members </th> </TR>
+ <repeat list=&depts; entity=d><TR>
+      <TD> <a href="edit_dept.if?dept=&d.deptnumber.Text;"><get
+ index=d.deptnumber></a><br><get index=d.deptdesc>
+      <TD> <get index=d.deptmanager>
+      <TD> <get index=d.deptsecondmanager>
+      <TD> <get index=d.deptadmin>
+      <TD> <dept-get-members department=&d.deptnumber.Text;> 
+	   </TD>
+      </TR></repeat>
+ </table>
+<hr>
+
+ 
+<expand><get agent name=navbar></expand>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<!-- $Id$ -->
+<!-- hhmts start -->
+Last modified: Tue Feb 17 15:56:10 1998
+<!-- hhmts end -->
+</body></html>
