@@ -167,7 +167,7 @@ public class Hook extends ActiveDoc {
   }
 
   public Hook(Input in, Output out) {
-    super(in, null, out, null);
+    super(in, null, out, (Tagset) null); // casting prevents ambiguity
     initializeEntities();
   }
 
