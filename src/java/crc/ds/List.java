@@ -239,6 +239,11 @@ public class List implements Stuff {
     return new List(new java.util.StringTokenizer(s));
   }
 
+  /** Create a list by splitting a string on characters in the delimiter set. */
+  public static List split(String s, String delimiters, boolean returnTokens) {
+    return new List(new java.util.StringTokenizer(s, delimiters, returnTokens));
+  }
+
   public Object clone() {
     return new List(this);
   }
