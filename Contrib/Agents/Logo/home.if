@@ -1,0 +1,158 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>The PIA Logo Agent home page</title>
+<link rev="made" href="mailto:steve@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff">
+<h1>The 
+<img src="height=60&type=Logo" align=top alt=LOGO>
+Agent</h1>
+
+For the <img src="height=72&type=pia" align=top>
+
+
+<if><agent-running name=Logo>
+  <then>is installed and running.
+        <a href="initialize">[re-initialize]</a></then>
+  <else>is not currently installed.
+        <form method=POST action="/Admin/install-agent">
+		<input name="agent" value="Logo" size=30>
+		<input type="submit" value="Install Now">
+        </form>
+  </else>
+</if>
+<p>
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+<hr>
+ 
+The Logo Agent's job is to generate flashy pentagon and PIA logos in various
+sizes, like this:
+<p>
+
+<img src="height=24&type=pia">, and this, 
+<img src="height=32&type=pia">, and this, 
+<img src="height=32&type=dofs">, and this,
+<img src="height=32&type=pent">, 
+and even these:<br>
+<img src="foo?height=200&width=210&type=pent"> 
+<img src="height=220&scale=2&type=pia"> <br>
+; they were generated using:
+
+<listing>
+&lt;img src="height=24&amp;type=pia"&gt;
+&lt;img src="height=32&amp;type=pia"&gt;
+&lt;img src="height=32&amp;type=pent"&gt;
+&lt;img src="height=200&amp;width=210&amp;type=pent"&gt;
+&lt;img src="height=220&amp;scale=2&amp;type=pia"&gt;
+</listing>
+
+The only really important parameters are <code>height</code> and
+<code>type</code>; everything else is derived automatically, though you might
+disagree with the defaults.  You can also use the following, superior format: 
+
+<listing>
+&lt;img src="/Logo/pia24"&gt;
+&lt;img src="/Logo/pia32"&gt;
+&lt;img src="/Logo/pent32"&gt;
+&lt;img src="/Logo/pent200"&gt;
+&lt;img src="/Logo/pia220"&gt;
+</listing>
+
+The <code>height</code> and <code>type</code> in the query string are ignored
+in this mode; other attributes are used as usual.  The query string is
+optional.<p>
+
+<h3>Limitations:</h3>
+
+Things don't look too good in small sizes; The smallest reliable height seems
+to be 20 at the moment, although some smaller sizes can work.  16 is,
+fortunately, passable in both <code>pia</code> and <code>pent</code> styles.
+Border width is forced to 0 below height=21, which helps.<br>
+
+pia14.gif = <img src="pia14.gif">;
+pia15.gif = <img src="pia15.gif">;
+pia16.gif = <img src="pia16.gif">;
+pia17.gif = <img src="pia17.gif">;
+pia18.gif = <img src="pia18.gif">;
+pia19.gif = <img src="pia19.gif">;
+pia20.gif = <img src="pia20.gif">;
+pia21.gif = <img src="pia21.gif">;
+pia22.gif = <img src="pia22.gif">;
+pia23.gif = <img src="pia23.gif">;
+pia24.gif = <img src="pia24.gif">;
+<p>
+pent14.gif = <img src="pent14.gif">;
+pent15.gif = <img src="pent15.gif">;
+pent16.gif = <img src="pent16.gif">;
+pent17.gif = <img src="pent17.gif">;
+pent18.gif = <img src="pent18.gif">;
+pent19.gif = <img src="pent19.gif">;
+pent20.gif = <img src="pent20.gif">;
+pent21.gif = <img src="pent21.gif">;
+pent22.gif = <img src="pent22.gif">;
+pent23.gif = <img src="pent23.gif">;
+pent24.gif = <img src="pent24.gif">;
+<p>
+
+In the absence of a good way for one agent to require another, it's difficult
+(but not impossible) to use the Logo agent to generate a logo on, say, the
+PIA's home page.<p>
+
+<h3>To Do:</h3>
+
+<ul>
+  <li> There should be a form to fill out for trying out the various parameters.
+  <li> Should allow output="path" for creating files.  (dangerous!)  Cache may
+       be better.
+</ul>
+
+<h3>Attributes</h3>
+The query attributes are:
+
+<dl compact>
+  <dt> <code>height</code>
+  <dd> 
+  <dt> <code>width</code>
+  <dd> 
+  <dt> <code>type</code>
+  <dd> 
+  <dt> <code>lw</code>
+  <dd> line width, usually <em>height</em> * 0.15
+  <dt> <code>bw</code>
+  <dd> border width, usually 1
+  <dt> <code>sp</code>
+  <dd> character spacing, usually <em>height</em> * 0.1
+</dl>
+
+<h3>Types</h3>
+The types are
+
+<dl>
+  <dt> <code>pia</code>
+  <dd> ``PIA''
+  <dt> <code>dofs</code>
+  <dd> ``DOFS'' -- the ``S'' is particularly ugly
+  <dt> <code>pent</code>
+  <dd> The ``nested pentagons'' logo, unadorned.
+  <dt> <code>logo</code>
+  <dd> ``LOGO'' in typical style; admittedly a cheap shot.
+</dl>
+
+<h3>Bugs</h3>
+
+<ul>
+  <li> Eventually we may expand the types to include a complete alphabet.
+  <li> The internal workings (in <code>PIA::Agents::Logo.pm</code>) are
+       particularly revolting.<p>
+</ul>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
+<b>$Id$</b><br>
+<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
+         >steve@crc.ricoh.com</a>&gt;</address>
+</body></html>
