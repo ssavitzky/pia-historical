@@ -42,8 +42,8 @@ import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
 
-import gnu.regexp.RegExp;
-import gnu.regexp.MatchInfo;
+import crc.util.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import w3c.www.http.HTTP;
@@ -83,18 +83,19 @@ public class Dofs extends GenericAgent {
 
     Agent agnt = this;
 
-    if( !myname.equals(mytype) && path.startsWith("/"+myname+"/")){
-      crc.pia.Pia.instance().debug(this, "Inside starts with `/myname/'...");
+    if (!myname.equals(mytype) && path.startsWith("/"+myname+"/")){
+      crc.pia.Pia.instance().debug(this, ".../"+myname+"/... -- file.");
       try{
 	retrieveFile( url, request );
       }catch(PiaRuntimeException e){
 	throw e;
       }
-    }else {
-      if( !myname.equals(mytype) && path.startsWith("/"+myname) && path.endsWith("/"+myname)){
-	crc.pia.Pia.instance().debug(this, "Inside `/myname/'...");
+    } else {
+      if (!myname.equals(mytype) && path.startsWith("/"+myname)
+	  && path.endsWith("/"+myname)) {
+	crc.pia.Pia.instance().debug(this, ".../"+myname+" -- home.");
 	path = "/"+myname+"/home.if";
-      }else {
+      } else {
 	// http://napa:7777/dofs/doc/foobar.if
 	RegExp re = null;
 	MatchInfo mi = null;
@@ -102,7 +103,6 @@ public class Dofs extends GenericAgent {
 	  re = new RegExp("^/" + mytype + "/([^/]+)" + "/");
 	  mi = re.match( path );
 	}catch(Exception e ){;}
-	
 	
 	if(mi!=null){
 	  String search = "/" + mytype + "/";
@@ -173,8 +173,9 @@ public class Dofs extends GenericAgent {
     String mytype = "Dofs";
     type( mytype );
 
-    matchCriterion("IsRequest", new Boolean( true ));
-    matchCriterion("IsAgentRequest", new Boolean( true ));
+    // === [ss] I don't think these are needed; Agency routes it.
+    //matchCriterion("IsRequest", true);
+    //matchCriterion("IsAgentRequest",true);
     /*
     String myurl = "/"+ mytype + "/" + myname + "/" + "initialize.if";
     if( DEBUG )
@@ -256,14 +257,14 @@ public class Dofs extends GenericAgent {
       RegExp re = null;
       MatchInfo mi = null;
 
+      boolean all = optionAsBoolean("all");
 
       // Ensure that the base URL is "/" terminated
       URL myurl = request.requestURL();
-      String dpath = null;
-      String mybase = myurl.toExternalForm();
-      if( !mybase.endsWith("/") )
-	dpath = mybase + "/";
+      String mybase = myurl.toExternalForm(); // mybase = base for href's
+      if( !mybase.endsWith("/") ) mybase += "/";
 
+      String mypath = myurl.getFile(); // mypath = path for heading and title
 
       for (ls = myfile.list(), i = 0; ls != null && i < ls.length; i++){
 	String zfile = ls[i];
@@ -280,22 +281,15 @@ public class Dofs extends GenericAgent {
 	  mi = re.match( zfile );
 	}catch(Exception e){;}
 	if( mi != null && !zfile.endsWith("~") )
-	  head = suckBody(  filepath );
+	  head = suckBody(filepath);
 
-	boolean all = optionAsBoolean("all");
-	boolean ignore = ignoreFile(zfile, filepath);
-	boolean todo = ! (all && ignore);
-	if( todo )
-	  //url.addElement( "<LI> <a href=\"" + zfile + "\">" + zfile + "</a>" );
-	  url.addElement( "<LI> <a href=\"" + dpath+zfile + "\">" + zfile + "</a>" );
+	if (all || !ignoreFile(zfile, filepath))
+	  url.addElement( "<LI> <a href=\"" + mybase+zfile + "\">"
+			  + zfile + "</a>" );
 	  
       }
 
-      String next = null;
-      if( head != null ) 
-	next = head;
-      else
-	next = "<H1>Directory listing of "+ mybase +" </H1>";
+      if (head == null) head = "<H1>Directory listing of "+ mybase +"</H1>";
 
       String allurls = new String();
       for(int j = 0; j < url.size(); j++){
@@ -303,7 +297,11 @@ public class Dofs extends GenericAgent {
 	allurls += "\n";
       }
 
-      String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + dpath + "</TITLE>" + "</HEAD>\n<BODY>" + next + "<h3>local path: " + path + "</h3>" + "<h3>DOFS path: " + dpath + "</h3>" + "<UL>" + allurls + "</UL>" + "</BODY>\n</HTML>\n";
+      String html = "\n" + "<HTML>\n<HEAD>" + "<TITLE>" + mypath + "</TITLE>"
+	+ "</HEAD>\n<BODY>" + head
+	+ "<h3>local path: " + path + "</h3>"
+	+ "<h3>DOFS path: " + mypath + "</h3>"
+	+ "<UL>" + allurls + "</UL>" + "</BODY>\n</HTML>\n";
      
       InputStream in = new StringBufferInputStream( html );
       ByteStreamContent bs = new ByteStreamContent( in );
