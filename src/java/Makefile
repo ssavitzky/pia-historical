@@ -57,6 +57,9 @@ pia_class.toc::
 
 crc.zip: pia_class.toc
 	$(BINDIR)/jarcrc
+	for p in $(PACKAGES); do \
+		(cd `echo $$p`; make clean) ; \
+	done
 	mv $@ $(LIBDIR)
 
 ### Recursive documentation:
