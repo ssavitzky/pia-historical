@@ -256,7 +256,7 @@ public class Interp extends State {
    *	path, picks it apart and does a series of lookups.
    */
   public final SGML getEntity(String name) {
-    // === path hacking. ===
+    // === Multi-level path lookup unimplemented. ===
     for (State state=this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
 	return (SGML)state.variables.at(name);

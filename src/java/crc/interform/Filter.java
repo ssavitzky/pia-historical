@@ -21,7 +21,8 @@ import crc.ds.List;
 import crc.ds.Table;
 
 /**
- * Interpret an input stream or file as an InterForm.
+ * Interpret an input stream or file as an InterForm.  
+ *	=== Should really descend from Environment.
  */
 public class Filter {
   static String infile = null;
