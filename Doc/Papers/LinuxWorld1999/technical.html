@@ -44,6 +44,7 @@
    <tr><td align=right>Sign: <td> <input name=pass>
    <tr><td align=right><input type=submit value="Route to">:
        <td> <input name=next value="Peter Hart">
+  </table>
 </form>
 
 </slide>
@@ -136,19 +137,19 @@ Also,
 </slide>
 
 <slide><h2>How <em>we</em> do it</h2>
+<p><em>(OK -- this is it!)</em>
+<p>&nbsp;
+
 <ul><!-- === needs a lot of work:  central -->
-  <li> <b>Everything is a document</b>
+  <li> <b>Everything needed for a form is in <em>one file</em> </b>
        <ul>
-	 <li> All information is XML --
-	      easy to parse and extract
-	 <li> All <em>actions</em> are XML --
-	      <em>embedded</em> in the form itself
+	 <li> documents have embedded processing instructions
        </ul>
-  <li> <b>A document can contain its own processing instructions</b>
+  <li> <b>and <em>one language</em> (XML)</b>
        <ul>
-	 <li> No separate CGI scripts!
+	 <li> In other words, we simply define <em>actions</em> for some of
+	      the tags.
        </ul>
-  <li> <b>Everything needed for a form is in <em>one file</em> and <em>one language</em></b>
 </ul>
 </slide>
 
@@ -177,12 +178,51 @@ Also,
 </slide>
 
 <slide><h2>An Application is a Web Site</h2>
+<!-- === needs a lot of work, along with "how we do it" === central === -->
 
-<p>&nbsp;
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr><td colspan=2>
+<ul>
+  <li> The PIA makes an application into a web site
+       <ul>
+	 <li> most of it consists of ``<em>active documents</em>''
+       </ul>
+</ul>       
+ 
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> <b>A group of active documents performs a task</b>
+       <ul>
+	 <li> we call this group an <em>Agent</em>
+	 <li> <code>/Purchasing/purchase-request</code><br>
+	      <code>/Purchasing/approve-check</code><br>
+	      <code>/Purchasing/confirm-receipt</code><br>
+       </ul>
+</ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <td bgcolor=lightgreen colspan=3 align=right> Infoware Layer
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+
+<ul>
+  <li> <b>Agents ``live'' on a web server</b>
+       <ul>
+	 <li> which we call the <em>Agency</em>
+	 <li> makes the documents <em>active</em>
+       </ul>
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <td bgcolor=lightblue colspan=3 align=right>Software layer
+
+</table>
+
+
+<p> <em>It's very much like a ``spreadsheet for documents.''</em>
 
 <p>You access a form through its URL:
-<p>&nbsp;
-
 <table cellspacing=0 cellpadding=2 border=0 align=center>
   <tr>  <td>&nbsp;
 	<th bgcolor=lightblue> Software layer
@@ -205,42 +245,73 @@ Also,
 	<td>&nbsp;
 </table>
 
-<dl>
-  <dt> The PIA makes an application into a web site
-  <dd> most of the application consists of ``<em>active documents</em>''
+</slide>
+
+
+<slide><h2>The Infoware Layer</h2>
+<p>&nbsp;
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> <b>An application <em>is</em> a website</b>
+  <li> <b>Each <em>agent</em> looks like a directory</b>
        <ul>
-	 <li> it's a web site for the <em>author</em>
-	 <li> as well as the user.
+	 <li> that contains active documents
+	 <li> that work together to perform a task
        </ul>
-  <dt> Tasks are performed by ``<em>agents</em>''
-  <dd> which look like top-level directories on the server.
-</dl>
-
+  <li> <b>Documents can have embedded action tags</b>
+       <ul>
+	 <li> <em>everything</em> uses XML syntax.
+	 <li> only one language to learn.
+	 <li> some tags are macros, defined by document fragments
+	 <li> a few are ``primitive'' and defined by software.
+       </ul>
+</ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+</table>
 </slide>
 
-<slide><h2>For example...</h2>
 
-<p> Here's a typical ``active document''
-
-<pre><font color=green>
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt; Hello world!&lt;title&gt;
-  &lt;/head&gt;
-  &lt;body&gt;</font>
-    &lt;header&gt; a classic example &lt;/header&gt;<font color=green>
-    &lt;hr&gt;
-    Hello world!</font>
-    &lt;footer cvsid="$ Id... $"&gt;<font color=green>
-  &lt;/body&gt;
-&lt;/html&gt;</font>
-</pre>
-
-...which becomes <a href="/demo/hello-world">this page on the server</a>.
-(<a href="Images/hello-world.html">local copy</a>)<br>
-(<a href="appendices.slides.html#previewer">another example</a>)
+<slide><h2>The Software Layer</h2>
+<p>&nbsp;
+<table width='80%' border=0 cellspacing=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> <b>Document Processor</b>
+       <ul>
+	 <li> Assigns meaning to &lt;tags&gt;
+	 <li> Driven by a <em>tagset</em> document
+       </ul>
+  <li> <b>Web server</b>
+       <ul>
+	 <li> Routes requests to appropriate agents
+	 <li> Allows agents to modify documents
+       </ul>
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3 align=left>hooks:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> Agent API for documents
+  <li> Action API for tags
+</ul>  
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3>&nbsp;
+</table>
 </slide>
-
 
 <slide><h2>The Platform</h2>
 <dl>
@@ -277,136 +348,6 @@ Also,
 
 </slide>
 
-
-<slide><h2>The Infoware Layer</h2>
-<p>&nbsp;
-<table width='80%' cellspacing=0 border=0 align=center>
-  <tr><th bgcolor="#c40026"> PIA
-      <th> Platform for Information Applications
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
-  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
-  <tr> <th bgcolor=lightgreen>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> <b>An application looks like a website</b>
-  <li> <b>Each agent looks like a directory</b>
-       <ul>
-	 <li> everything is done using active documents
-       </ul>
-  <li> <b>Documents can have embedded action tags</b>
-       <ul>
-	 <li> <em>everything</em> uses XML syntax.
-	 <li> only one language to learn.
-       </ul>
-</ul>
-       <th bgcolor=lightgreen>&nbsp;
-  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
-  <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
-</table>
-</slide>
-
-
-<slide><h2>The Software Layer</h2>
-<p>&nbsp;
-<table width='80%' border=0 cellspacing=0 align=center>
-  <tr><th bgcolor="#c40026"> PIA
-      <th> Platform for Information Applications
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
-  <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
-  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
-  <tr> <th bgcolor=lightblue>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> <b>Document Processor</b>
-       <ul>
-	 <li> Assigns meaning to &lt;tags&gt;
-	 <li> Driven by a <em>tagset</em> document
-       </ul>
-  <li> <b>Web server</b>
-       <ul>
-	 <li> Routes requests to appropriate agents
-	 <li> Allows agents to modify documents
-       </ul>
-</ul>
-       <th bgcolor=lightblue>&nbsp;
-  <tr>
-  <tr> <th bgcolor=lightblue colspan=3 align=left>hooks:
-  <tr> <th bgcolor=lightblue>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> Agent API for documents
-  <li> Action API for tags
-</ul>  
-       <th bgcolor=lightblue>&nbsp;
-  <tr> <th bgcolor=lightblue colspan=3>&nbsp;
-</table>
-</slide>
-
-<slide><h2>Advantages: Software</h2>
-<table width='80%' cellspacing=0 border=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
-  <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
-  <tr> <th bgcolor=lightblue>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> <b>Simple</b>
-       <ul>
-	 <li> <a href="appendices.slides.html#main-loop">main loop</a>
-	      is one page of code
-	 <li> hooks for special-purpose code: easy to extend
-       </ul>
-  <li> <b>Highly portable</b>
-       <ul>
-	 <li> written in Java
-	 <li> based on standards: XML, DOM, HTTP ...
-	 <li> Linux on Intel, Sun (SPARC), Corel (ARM)
-	 <li> Windows, Solaris, ...
-       </ul>
-  <li> <b>Efficient</b>
-       <ul>
-	 <li> can save memory in pass-through mode
-	 <li> or cache document parse trees for speed
-       </ul>
-</ul>
-       <th bgcolor=lightblue>&nbsp;
-  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
-</table>
-</slide>
-
-
-<slide><h2>Cool Stuff</h2>
-<p> There's lots more cool stuff I haven't mentioned.
-<p>&nbsp;
-<table width='80%' cellspacing=0 border=0 align=center>
-  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
-  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
-  <tr> <th bgcolor=lightgreen>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> You can use other servers as resources
-  <li> ...and reprocess their documents
-  <li> The tag language is highly extensible
-</ul>
-       <th bgcolor=lightgreen>&nbsp;
-  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
-  <tr>
-  <tr> <th bgcolor=lightblue colspan=3> Software Layer
-  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
-  <tr> <th bgcolor=lightblue>&nbsp;
-       <td bgcolor=white>
-<ul>
-  <li> There are plenty of hooks in the code
-  <li> ...for hanging special-purpose software
-</ul>
-       <th bgcolor=lightblue>&nbsp;
-  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
-</table>
-</slide>
-
-
 <slide><h2>A Framework for Infoware</h2>
 
 <p> The PIA is what we sometimes call a ``<strong>framework</strong>:''
@@ -437,6 +378,46 @@ Also,
        <th bgcolor=lightblue>&nbsp;
   <tr> <th bgcolor=lightblue colspan=3> &nbsp;
 </table>
+</slide>
+
+<slide><h2>More about Frameworks:</h2>
+<strong>A framework consists of:</strong>
+<ol>
+  <li> A shared software base
+       <ul>
+	 <li> stable, so most applications don't need to change it
+	 <li> open, so that it can be examined and extended
+       </ul>
+  <li> <em>Lots</em> of documentation
+       <ul>
+	 <li> User's manual, tutorials, etc.
+	 <li> Internals, maintenance documents, etc.
+       </ul>
+  <li> <strong><em>Working</em> sample applications</strong> (agents)
+       <ul>
+	 <li> Meant to be extended and modified
+	 <li> The designer starts from something that <em>already works</em>
+       </ul>
+</ol>
+</slide>
+
+<slide><h2>The Open-Source Community</h2>
+
+<ul>
+  <li> The typical infoware application is mostly information
+       <ul>
+	 <li> perhaps 80% documents, 20% processing
+       </ul>
+  <li> In the PIA, most of that processing can be done <em>in the
+       documents</em> using tags
+  <li> An application may need one or two task-specific tags
+       <ul>
+	 <li> e.g. digital signatures in the form agent
+       </ul>
+  <li> But with an open-source community, <em>someone</em> has probably had
+       the same need, and filled it.
+</ul>
+
 </slide>
 
 <em>So now let's look at the applications...</em>

@@ -57,15 +57,43 @@
 </slide>
 
 <hr><set name=subCaption>Questions and Answers</set><set name=label>QA</set>
-<slide><h2>Isn't this just &lt;active page language&gt;?</h2>
+<slide><h2>Isn't this just like &lt;active page language&gt;?</h2>
+
+(Fill in the &lt;blank&gt; with ASP (Basic) / JSP (Java) / PHS (Python)...)
+
 <ul>
-  <li> 
+  <li> PIA is the <em>only</em> system using XML syntax (AFAIK)
+       <ul>
+	 <li> <strong>only one syntax to learn</strong>
+       </ul>
+  <li> Seamless integration with document processing
+       <ul>
+	 <li> same tags used for code, data, and documents
+       </ul>
+  <li> ``Scripts'' can be <em>processed</em>, too!
+       <ul>
+	 <li> Automatically-generated documentation
+	 <li> code and document pretty-printing
+	 <li> Analysis, indexing, metrics
+	 <li> Re-use (can select code and text fragments in other documents) 
+       </ul>
 </ul>
 </slide>
 
 <slide><h2>Why not just use &lt;page-building tool&gt;?</h2>
 <ul>
-  <li> 
+  <li> Most of these are proprietary
+       <ul>
+	 <li> so they lock you in to proprietary server-side runtime
+	      packages.
+	 <li> not to mention being non-portable
+       </ul>
+  <li> Even the open ones generate opaque code
+       <ul>
+	 <li> ugly and hard to maintain by hand
+	 <li> ...so you're locked in to the tool again
+       </ul>
+  <li> Many generate code that runs on the <em>client</em> side.
 </ul>
 </slide>
 
@@ -117,6 +145,52 @@
     bits are still warm.  There's an up-to-date version on our web site.
 </slide>
 
+<slide><h2>O'Reilly on Infoware</h2><set name=label>infoware</set>
+
+<p><em>``<font color=red><strong>A killer application is</strong></font> no
+longer a desktop productivity application or even a back-office enterprise
+software system, but <font color=red><strong>an entirely new breed, something
+you might call</strong></font> an `information application' or perhaps even
+`<font color=red><strong>infoware.</strong></font>'</em>
+
+<p><em> ``Traditional software embeds small amounts of information in a lot of
+software; <font color=red><strong>infoware embeds small amounts of software in
+a lot of information.</strong></font> The `actions' in an infoware product are
+generally fairly simple: make a choice, buy or sell, enter a small amount of
+data and get back a customized result -- the primary interaction with the user
+is managed largely via the Web page (which may have been <font
+color=red><strong>created by a writer, editor, or designer</strong></font>
+rather than by a programmer, with a relatively small amount of programming
+support.)''  </em>
+
+<div align=right>-- Tim O'Reilly, of O'Reilly and Associates.</div>
+</slide>
+
+
+<slide><h2>The Implementation</h2><set name=label>implementation</set>
+<ul>
+  <li> General Technique:
+       <ul>
+	 <li> Processor gets input from a parse tree traverser
+	 <li> Sends output to a parse tree constructor
+       </ul>
+  <li> Algorithm:
+       <ul>
+	 <li> Convert input to a parse tree.
+	 <li> Each ``element'' has a parent Node and content NodeList.
+	 <li> Parser associates an action with each node
+	 <li> Traverse the parse tree depth first
+	 <li> Actions pass result nodes to an output tree constructor
+       </ul>
+  <li> Advantages:
+       <ul>
+	 <li> Basic algorithm is very simple
+	 <li> All table lookup is done once, in the parser
+	 <li> Saving parse trees in server RAM gives a major speedup
+       </ul>
+</ul>
+</slide>
+
 <slide><h2>Main Loop</h2><set name=label>main-loop</set>
 <pre>
   <font color=red>/** Process the current Node */</font>
@@ -138,6 +212,56 @@
     }
     output.endNode();    input.toParent();
   }</pre>
+</slide>
+
+
+<slide><h2>Primitive Actions</h2><set name=label>primitives</set>
+(all are active SGML <em>elements</em>)
+<ul>
+  <li> &lt;define&gt;       
+  <li> &lt;if&gt; - &lt;then&gt; - &lt;else-if&gt; - &lt;else&gt;
+  <li> &lt;test&gt;,  &lt;logical&gt;
+  <li> &lt;repeat&gt;
+  <li> &lt;extract&gt;
+  <li> &lt;expand&gt;, &lt;protect&gt;, &lt;hide&gt;
+  <li> &lt;text&gt;, &lt;numeric&gt;
+  <li> &lt;subst&gt;
+</ul>
+also:
+<ul>
+  <li> SGML <code>&amp;<em>entities</em>;</code> are used as variables.
+</ul>
+</slide>
+
+
+<slide><h2>I/O and Data Conversion</h2>
+(additional primitives and convenience functions)
+<ul>
+  <li> &lt;get&gt;, &lt;set&gt;
+  <li> &lt;parse&gt;<br>
+       <em>converts raw text to marked-up XML.</em>
+  <li> &lt;include&gt;, &lt;output&gt;, &lt;connect&gt;, &lt;status&gt;<br>
+       <em>I/O, including both files and URL's.</em>
+  <li> &lt;DOCUMENT&gt;, &lt;HEADERS&gt;, &lt;URL&gt;, &lt;QUERY&gt;, ...<br>
+       <em>data structure representation and conversion</em>
+  <li> &lt;debug&gt;
+</ul>
+
+<p>
+(There's more, but not <em>much</em> more:)
+
+<ul>
+  <li> There are a few elements used <em>inside</em> the primitives
+  <li> ... most primitives are modified by <em>attributes</em>,
+  <li> ... but the basic language is still fairly small. 
+       <p>
+  <li> New tags can be easily defined
+       <ul>
+	 <li> usually in terms of old ones
+	 <li> can connect to Java ``handler''
+       </ul>
+       <p>
+</ul>
 </slide>
 
 <slide><h2>Webmaster's Assistant</h2><set name=label>assistant</set>
@@ -162,6 +286,30 @@
        </ul>
 </dl>
 </slide>
+
+<slide><h2>For example...</h2><set name=label>hello-world</set>
+
+<p> Here's a typical ``active document''
+
+<pre><font color=green>
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt; Hello world!&lt;title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;</font>
+    &lt;header&gt; a classic example &lt;/header&gt;<font color=green>
+    &lt;hr&gt;
+    Hello world!</font>
+    &lt;footer cvsid="$ Id... $"&gt;<font color=green>
+  &lt;/body&gt;
+&lt;/html&gt;</font>
+</pre>
+
+...which becomes <a href="/demo/hello-world">this page on the server</a>.
+(<a href="Images/hello-world.html">local copy</a>)<br>
+(<a href="appendices.slides.html#previewer">another example</a>)
+</slide>
+
 
 <slide><h2>Example: Slide Previewer</h2><set name=label>previewer</set>
 Here's what I used for a <a href="/View/slides">Slide previewer</a>.
@@ -229,6 +377,69 @@ Here's what I used for a <a href="/View/slides">Slide previewer</a>.
   <li> Documents are the only interfaces.
 </ul>
 
+</slide>
+
+
+<slide><h2>Cool Stuff</h2><set name=label>cool-stuff</set>
+<p> There's lots more cool stuff I haven't mentioned.
+<p>&nbsp;
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr> <th bgcolor=lightgreen colspan=3 valign=top align=left> Agents:
+  <tr> <th bgcolor=lightgreen>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> You can use other servers as resources
+  <li> ...and reprocess their documents
+  <li> The tag language is highly extensible
+</ul>
+       <th bgcolor=lightgreen>&nbsp;
+  <tr> <th bgcolor=lightgreen colspan=3>&nbsp;
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>Agency:
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> There are plenty of hooks in the code
+  <li> ...for hanging special-purpose software
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+</table>
+</slide>
+
+
+<slide><h2>More Cool Stuff: Software</h2>
+<table width='80%' cellspacing=0 border=0 align=center>
+  <tr> <th bgcolor=lightgreen colspan=3> Infoware Layer
+  <tr>
+  <tr> <th bgcolor=lightblue colspan=3> Software Layer
+  <tr> <th bgcolor=lightblue>&nbsp;
+       <td bgcolor=white>
+<ul>
+  <li> <b>Simple</b>
+       <ul>
+	 <li> <a href="appendices.slides.html#main-loop">main loop</a>
+	      is one page of code
+	 <li> hooks for special-purpose code: easy to extend
+       </ul>
+  <li> <b>Highly portable</b>
+       <ul>
+	 <li> written in Java
+	 <li> based on standards: XML, DOM, HTTP ...
+	 <li> Linux on Intel, Sun (SPARC), Corel (ARM)
+	 <li> Windows, Solaris, ...
+       </ul>
+  <li> <b>Efficient</b>
+       <ul>
+	 <li> can save memory in pass-through mode
+	 <li> or cache document parse trees for speed
+       </ul>
+</ul>
+       <th bgcolor=lightblue>&nbsp;
+  <tr> <th bgcolor=lightblue colspan=3> &nbsp;
+</table>
 </slide>
 
 
