@@ -16,7 +16,7 @@ INTERFACES = \
 	ActiveText.java
 
 CLASSES = \
-	CurrentActive.java \
+	NotActiveNodeException.java \
 	ParseTreeAttribute.java \
 	ParseTreeComment.java \
 	ParseTreeElement.java \
