@@ -17,33 +17,6 @@
 <b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 <b>File:</b> <a href="file:&filePath;">&filePath;</a>
 <hr>
- 
-<h3>Implementation Note:</h3>
-<blockquote><em>
-  If you look at the <a href="/PIA/Agents/agency/agents.if">InterForm code
-  for this page</a>, you'll see some ugliness involved in listing the
-  agents.  This is mainly because we're using a &lt;pre&gt; tag for a compact,
-  two-column display with a header line; otherwise it would be possible to use
-  a &lt;dl&gt; or &lt;table&gt; with an implicit loop.  &lt;dl compact&gt; is
-  tempting but most browsers don't allocate enough space for the &lt;dt&gt;
-  and put in a line break anyway if it's too long.
-<p>
-  As it is, both extra line breaks and excessively-long lines are avoided by
-  putting line breaks inside tags, which is disgusting but it works.  The
-  following is much more elegant, but it doesn't have headers and doesn't work
-  well in browsers without tables.
-</em></blockquote>
-
-<table foreach list="&agentNames;">
-  <tr> <th align=right> <a href="/&li;/">&li;/</a> 
-       <td> <agent-home link name="&li;"><br>
-</table>
-
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="file:&filePath;">&filePath;</a>
-<hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
 <a href="&agentName;/">index</a>
 <a href="&agentName;/options.if">options</a>
