@@ -34,7 +34,7 @@ public final class IsLocal implements UnaryFunctor{
 	String lhost = host.toLowerCase();
 	if( lhost.startsWith("agency") || lhost == "" )
 	  return new Boolean( true );
-	String mhost = Pia.instance.getHost().toLowerCase();
+	String mhost = Pia.getInstance().getHost().toLowerCase();
 	if( mhost.startsWith(lhost) )
 	  return new Boolean( true );
 	if( lhost.indexOf("localhost") != -1 )
