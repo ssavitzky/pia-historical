@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 
+import crc.pia.Pia;
 import crc.pia.Machine;
 import crc.pia.agent.AgentMachine;
 import crc.pia.Content;
@@ -59,8 +60,9 @@ public class  T_hTTPRequest {
 
     try{
       crc.pia.GenericAgent.DEBUG = true;
+      //Pia.debug( true );
       InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
+      Machine machine1 = new Machine(Pia.instance().host(), 8222);
       machine1.setInputStream( in );
 
       // make use of debugging version, which uses HTTPRequest run method
@@ -253,16 +255,16 @@ public class  T_hTTPRequest {
   private static void printMethods(Transaction t){
     PrintStream out = new PrintStream( System.out );
     out.println( "----->>>> Testing headers <<<<<------ " );
-    out.print( t.headersAsString() );
+    System.out.println( t.headersAsString() );
     out.println( "----->>>> End testing headers <<<<<------ " );
 
     out.println("\n\n");
     out.println( "----->>>> Testing request methods <<<<<------ " );
-    out.println( "content length -->" + Integer.toString( t.contentLength() ) );
-    out.println( "content type   -->" + t.contentType() );
-    out.println( "method         -->" + t.method() );
-    out.println( "protocol       -->" + t.protocol() );
-    out.println( "host           -->" + t.host() );
+    out.println( "content length method -->" + Integer.toString( t.contentLength() ) );
+    out.println( "content type   method -->" + t.contentType() );
+    out.println( "method         method -->" + t.method() );
+    out.println( "protocol       method -->" + t.protocol() );
+    out.println( "host           method -->" + t.host() );
     if( t.requestURL() != null )
       out.println( "url            -->" + t.requestURL().getFile() );
     out.println( "HTTP version   -->" + t.version() ); 
@@ -273,7 +275,9 @@ public class  T_hTTPRequest {
     out.println( "----->>>> The whole request message <<<<<------ " );
     try{
       t.printOn( out );
-    }catch(Exception e){;}
+    }catch(Exception e){ 
+      e.printStackTrace();
+		      }
   }  
 
 }
