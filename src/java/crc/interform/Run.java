@@ -168,8 +168,8 @@ public class Run  extends Environment {
       ent("piaDIR", pia.properties().getProperty(Pia.PIA_ROOT));
 
       // === shouldn't have to convert these to text.
-      Tokens anames = new Tokens(resolver.agentNames()).sortAscending();
-      ent("agentNames", new crc.sgml.Tokens(anames.elements(), " ").toText());
+      Tokens anames = new Tokens(resolver.agentNames(), " ").sortAscending();
+      ent("agentNames", anames.toText());
     }
 
     /* Set these even if we retrieved the entity table from the */
@@ -179,8 +179,8 @@ public class Run  extends Environment {
     ent("agentType", agent.type());
 
     ent("entityNames", "");
-    Tokens enames = new Tokens(entities.keys()).sortAscending();
-    ent("entityNames", new crc.sgml.Tokens(enames.elements(), " ").toText());
+    Tokens enames = new Tokens(entities.keys(), " ").sortAscending();
+    ent("entityNames", enames.toText());
 
     return entities;
   }
