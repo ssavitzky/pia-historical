@@ -1,0 +1,15 @@
+ <set name=currentcal><get agent name=currentcal></set>
+ <set name=mymonth><get agent name=selmonth></set>
+ <set name=myyear><get agent name=selyear></set>
+ <if><test exact match=''>&mymonth;</test>
+ <then>
+      <set name=mymonth>&month;</set>
+      <set name=myyear>&year;</set>
+ </then>
+ </if>
+ <if>&mymonth;
+ <then>
+      <set agent name=tinycal><calendar month=&mymonth; year=&myyear;></calendar></set>
+ </then>    
+ </if>
+
