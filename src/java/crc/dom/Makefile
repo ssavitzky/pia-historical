@@ -8,14 +8,17 @@ TOPDIR=../..
 PACKAGES =
 
 FILES = \
+	LinkedList.java \
+	LinkedNodeListEnumerator.java \
 	Attribute.java \
 	AttributeList.java \
 	Comment.java \
 	DOM.java \
 	DOMFactory.java \
 	Document.java \
+	CRCDocument.java \
 	DocumentContext.java \
-	EditableNodeList.java \
+	ArrayNodeListEnumerator.java \
 	Element.java \
 	NamedNodeList.java \
 	NoSuchNodeException.java \
@@ -43,7 +46,6 @@ FILES = \
 	ChildNodeList.java \
 	ChildNodeListEnumerator.java \
 	LinkedNodeList.java \
-	EditNodeListEnumerator.java \
 	ArrayNodeList.java \
 	AttrList.java \
 	Report.java \
