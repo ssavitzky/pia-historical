@@ -37,6 +37,7 @@ use IF::IT;
 	     'passive_agents' => [],
 	     );
 
+local $entities;
 
 #############################################################################
 ###
@@ -57,6 +58,7 @@ sub run_file {
 
     if (!defined $interp) {
 	$interp = IF::II->new(@if_defaults);
+	$interp->entities($entities) if defined $entities;
     } elsif (! ref($interp)) {
 	shift;
 	$interp = IF::II->new(@_);
@@ -151,6 +153,7 @@ local $agent, $request;
 sub interform_file {
     local ($agent,$file,$request)=@_;
 
+    local $entities = if_entities($agent, $file, $request);
     my $string = run_file($file);
 
     if (!string || ref($string)) {
@@ -158,6 +161,54 @@ sub interform_file {
 	$main::debugging=0;	# look at the first post-mortem.
     }
     return $string;
+}
+
+@dayNames=(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday);
+@monthNames=(January, February, March, April, May, June,
+	     July, August, September, October, November, December);
+
+sub if_entities {
+    my ($agent, $file, $request) = @_;
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time());
+    my $date=sprintf("%d%02d%02d", $year, $mon+1, $mday);
+    ## === should be $year + 1900, of course.
+    my $time=sprintf("%02d:%02d", $hour, $min);
+
+    my $response;
+    if (defined $request && $request->is_response) {
+	$response = $request;
+	$request  = $response->request;
+    }
+    my $url = $request->url if defined $request;
+    my $path = $url->path if defined $url;
+
+    my $ents = {
+	'agentName' 	=> $agent->name,
+	'fileName' 	=> $file,
+	'url'		=> $url,
+	'path'		=> $path,
+
+	'piaUSER'	=> $ENV{'USER'},
+	'piaHOME'	=> $ENV{'HOME'},
+	'piaHOST'	=> $main::PIA_HOST,
+	'piaPORT'	=> $main::PIA_PORT,
+
+	'second'	=> $sec,
+	'minute'	=> $min,
+	'hour'		=> $hour,
+	'day'		=> $mday,
+	'month'		=> $mon+1,
+	'year'		=> $year+1900,
+	'weekday'	=> $wday,
+	'dayName'	=> $dayNames[$wday],
+	'monthName'	=> $monthNames[$mon],
+	'yearday'	=> $yday,
+	'date'		=> $date,
+	'time'		=> $time,
+    };
+
+    $ents;
 }
 
 ### These are used by eval_perl, which is really in II.pm

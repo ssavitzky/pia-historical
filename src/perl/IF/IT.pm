@@ -208,6 +208,7 @@ sub leave_handlers {
 
 sub push {
     ## Push something into the content.  Strings are merged.
+    ##	  Tagless tokens have their content treated as arrays.
 
     my $self = shift;
     $self->{'_content'} = [] unless exists $self->{'_content'};
@@ -216,7 +217,12 @@ sub push {
 	if (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
 	} elsif (ref $_) {
-	    push(@$content, $_);
+	    my $t = $_->{'_tag'};
+	    if ($t) {
+		push(@$content, $_);
+	    } else {
+		$self->push($_->content);
+	    }
 	} else {
 	    # The current element is a text segment
 	    if (@$content && !ref $content->[-1]) {

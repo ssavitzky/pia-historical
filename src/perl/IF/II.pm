@@ -11,7 +11,7 @@
 package IF::II;
 
 require IF::Parser;
-
+use HTML::Entities ();
 use IF::IT;
 use IF::IA;
 
@@ -207,6 +207,17 @@ sub variables {
     $self->state->{'_variables'};
 }
 
+sub entities {
+    my ($self, $v) = @_;
+
+    ## entity table:
+    ##	  A hash table that defines the current set of entities.
+    ##	  Unlike variables and like agents, entities are rarely rebound.
+
+    $self->state->{'_entities'} = $v if defined($v);
+    $self->state->{'_entities'};
+}
+
 sub passing {
     my ($self, $v) = @_;
 
@@ -392,7 +403,29 @@ sub text {
     ##	if $expanded is false, entities have NOT been expanded, so
     ##  HTML::Entities::decode($text) may need to be called.
 
+    if (! $expanded && ! $self->quoting) {
+	$self->expand_entities($text);
+    }
     $self->resolve($text);
+}
+
+sub expand_entities {
+    my $ii = shift;
+
+    ## expand_entities($ii, $string) replaces valid HTML entities 
+    ##	in the string with the corresponding entry in $ii's current 
+    ##	current entity table.  #digit is *not* expanded.
+
+    ##  === Entities must expand as strings.  Use <get-> for tokens. ===
+
+    my $entities = $ii->entities;
+    $entities = \%entity2char unless defined $entities;
+
+    for (@_) {
+#	s/(&\#(\d+);?)/$2 < 256 ? chr($2) : $1/eg;
+	s/(&(\w+);?)/$entities->{$2} || $1/eg;
+    }
+    $_[0];
 }
 
 #############################################################################
@@ -872,6 +905,19 @@ sub open_agent_context {
     $self->state->{_passive_agents} = (\@newpassive);
 
     $self->state->{_agents} = {}; # make a new agent symbol table
+}
+
+
+sub open_entity_context {
+    my ($self, $entities) = @_;
+
+    ## Start using a new set of entities
+    ##	  The old set are copied unless $entities is supplied
+
+    $entities = $self->entities unless defined $entities;
+
+    my %newents = %$entities;	# copy the current set
+    $self->state->{_entities} = (\%newents);
 }
 
 

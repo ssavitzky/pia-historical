@@ -8,7 +8,7 @@ package IF::Parser;
 
 use strict;
 
-use HTML::Entities ();
+#use HTML::Entities ();
 use vars qw($VERSION);
 $VERSION = sprintf("%d.%02d", q$Revision$ =~ /(\d+)\.(\d+)/);
 
@@ -139,18 +139,18 @@ sub parse
 		    my $val;
 		    # The attribute might take an optional value (first we
 		    # check for an unquoted value)
-		    if ($$buf =~ s|(^=\s*([^\"\'>\s][^>\s]*)\s*)||) {
+		    if ($$buf =~ s|(^=\s*([^\"\'>\s][^>\s]*)\s*)||) { #"
 			$eaten .= $1;
 			$val = $2;
-			HTML::Entities::decode($val);
-		    # or quoted by " or '
-		    } elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) {
+			$self->expand_entities($val);
+		    # or quoted by " "or ' '
+		    } elsif ($$buf =~ s|(^=\s*([\"\'])(.*?)\2\s*)||s) { #"
 			$eaten .= $1;
 			$val = $3;
-			HTML::Entities::decode($val);
+			$self->expand_entities($val);
                     # truncated just after the '=' or inside the attribute
 		    } elsif ($$buf =~ m|^(=\s*)$| or
-			     $$buf =~ m|^(=\s*[\"\'].*)|s) {
+			     $$buf =~ m|^(=\s*[\"\'].*)|s) { #"
 			$$buf = "$eaten$1";
 			return $self;
 		    } else {
