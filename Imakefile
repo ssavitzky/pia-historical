@@ -1,0 +1,58 @@
+XCOMM $Id$
+
+#define IHaveSubdirs
+#define PassCDebugFlags
+
+#include "pia.tmpl"
+
+/*** Version and directory stuff for making a CD-ROM ***/
+#ifndef vendor_tag
+#define vendor_tag PIA
+#endif
+
+#ifndef cd_rom_src_dir
+#define cd_rom_src_dir /pia1/pia_cd
+#endif
+#ifndef cd_rom_dest_dir
+#define cd_rom_dest_dir /d
+#endif
+#ifndef cd_rom_pub
+#define cd_rom_pub Ricoh California Research Center
+#endif
+
+CD_ROM_SRC_DIR	= cd_rom_src_dir
+CD_ROM_DEST_DIR	= cd_rom_dest_dir
+CD_ROM_PUB      = cd_rom_pub
+
+VENDOR_TAG  = vendor_tag
+RELEASE         = 1
+MAJOR           = 1
+MINOR           = 1
+SUFFIX          = 
+VERSION_ID = $(VENDOR_TAG)$(RELEASE)_$(MAJOR)_$(MINOR)$(SUFFIX)
+VERSION    = $(VENDOR_TAG)$(RELEASE).$(MAJOR).$(MINOR)$(SUFFIX)
+
+
+/*** Standard Imake stuff ***/
+
+SUBDIRS 	=  Doc /* pub src */
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+/* Common cvs operations */
+
+cvs_tag::
+	cvs tag $(VERSION_ID)
+
+cvs_rtag::
+	cvs rtag $(VERSION_ID) rest
+
+/* Stuff for making a CD-ROM */
+
+version_id::
+	echo $(VERSION) `date` > version_id
+
+cd_rom:		$(CD_ROM_SRC_DIR) $(CD_ROM_DEST_DIR) version_id
+	mkisofs -f -R -T \
+	    -P "$(CD_ROM_PUB)" -A $(VERSION_ID) -V $(VERSION_ID) \
+	    -o $(CD_ROM_DEST_DIR)/pia.iso $(CD_ROM_SRC_DIR)
