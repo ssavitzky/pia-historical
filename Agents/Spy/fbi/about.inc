@@ -1,4 +1,5 @@
 <h2>About the FBI</h2> <!-- -*-html-helper-*- -->
+<!-- Copyright 1997 Ricoh Silicon Valley -->
 
 The FBI puts banners on top of pages that come from <em>inside</em> the PIA.
 This is indicated by the PIA logo (<img src="Logo/pia24.gif" height=24
