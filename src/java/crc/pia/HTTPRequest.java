@@ -718,7 +718,7 @@ public class  HTTPRequest extends Transaction {
     trans.deny( "IsText" );
     System.out.println("Recheck IsText (should be false) ->" + trans.test( "IsText" ));
     System.out.println("Checking has( IsText ) (should be true) ->" + trans.has( "IsText" ));
-    System.out.println("Checking is ( IsImage ) (should be true) ->" + trans.is( "IsImage" ).toString());
+    System.out.println("Checking getFeature ( IsImage ) (should be true) ->" + trans.getFeature( "IsImage" ).toString());
     System.exit( 0 );
   }
 

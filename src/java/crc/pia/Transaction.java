@@ -28,17 +28,23 @@ import crc.ds.Features;
 import crc.ds.Queue;
 import crc.ds.UnaryFunctor;
 
+import crc.sgml.SGML;
+import crc.sgml.AttrBase;
+
 import crc.pia.Machine;
 import crc.pia.Content;
 import crc.pia.Resolver;
-import crc.tf.Registry;
+import crc.pia.Athread;
+
 import crc.util.Utilities;
 
-import crc.pia.Athread;
+import crc.tf.Registry;
 import crc.tf.UnknownNameException;
+
 import w3c.www.http.HTTP;
 
-public abstract class Transaction implements Runnable{ // implements Runnable added by Greg
+public abstract class Transaction extends AttrBase implements Runnable {
+				// implements Runnable added by Greg
   public boolean DEBUG = false;
   /**
    * Attribute index - use to notify thread pool when this transaction is done
@@ -123,15 +129,14 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    */
   protected String minor = "0";
 
+  /************************************************************************
+  ** Request Transaction:
+  ************************************************************************/
+
   /**
    * Attribute index - store a request transaction
    */
   protected Transaction requestTran;
-
-  /**
-   * Below are interfaces related to Request transaction.  
-   *
-   */
 
   /**
    * @return header object
@@ -152,7 +157,6 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
 
   /**
    *  @returns the content type for this request, or null if not known. 
-   *
    */
   public String contentType(){
     String res = null;
@@ -164,7 +168,6 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   /**
    * Returns the value of a header field, or null if not known.
    * @returns the value of a header field, or null if not known. 
-   *
    */
   public String header(String name){
     String res = null;
@@ -173,10 +176,16 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     return res;
   }
 
+  /** 
+   * Tests to see whether a given header exists.
+   */
+  public boolean hasHeader(String name) {
+    return header(name) != null;
+  }
+
   /**
    * Returns all header information as string.
    * @returns all header information as string.
-   *
    */
    public String headersAsString(){
      String res = null;
@@ -276,10 +285,9 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    }
 
 
-  /**
-   * Interfaces related to Response.
-   */
-
+  /************************************************************************
+  ** Response Transaction:
+  ************************************************************************/
 
   /**
    *   @returns the status code for this response. 
@@ -448,6 +456,10 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     return handlers.size();
   }
 
+  /************************************************************************
+  ** Features:
+  ************************************************************************/
+
   /**
    * return a ds's Feature object 
    */
@@ -468,8 +480,17 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    * Get the value of the named feature.  If does not exist,
    * compute it and return the value
    */
-  public Object is( String name ) {
+  public Object getFeature( String name ) {
     return features.feature( name, this );
+  }
+
+  /**
+   * Get the value of the named feature as a string.  If does not exist,
+   * compute it and return the value.
+   */
+  public String getFeatureString( String name ) {
+    Object f = features.feature( name, this );
+    return (f == null)? null : f.toString();
   }
 
   /**
@@ -531,6 +552,57 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
       throw e;
     }
   }
+
+  /**
+   * Test whether a criteria matches one of those of the features
+   * @param criteria a vector of criterias
+   * @return true if there is a match
+   */
+  protected boolean matches(Vector criteria){
+    return features().matches( criteria, this );
+  } 
+
+  /************************************************************************
+  ** Attrs interface: 
+  ************************************************************************/
+
+  /** Return the number of defined. */
+  public int nAttrs() {
+    return 0;		// === unimplemented
+  }
+
+  /** Test whether an attribute exists. */
+  public  boolean hasAttr(String name) {
+    return has(name) || hasHeader(name);
+  }
+  
+  /** Retrieve an attribute by name.  Returns null if no such
+   *	attribute exists. */
+  public SGML attr(String name) {
+    Object o = getFeature(name);
+    if (o != null) return crc.sgml.Util.toSGML(o);
+
+    String s = header(name);
+    if (s != null) return new crc.sgml.Text(name);
+
+    return null;
+  }
+
+  /** Enumerate the defined attributes. */
+  public java.util.Enumeration attrs() {
+    return null;		// === unimplemented
+  }
+
+  /** Set an attribute. */
+  public void attr(String name, SGML value) {
+    features.assert(name, value);
+    if (Character.isUpperCase(name.charAt(0))) 
+      setHeader(name, value.toString());
+  }
+  
+  /************************************************************************
+  ** Content:
+  ************************************************************************/
 
   /**
    * Accessing function to content object
@@ -684,6 +756,10 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   }
 
 
+  /************************************************************************
+  ** Handlers:
+  ************************************************************************/
+
 
   /**
    * handle -- A transaction can handle a request by pushing itself
@@ -735,22 +811,12 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   public void handleRequest( Resolver resolver ){
   }
   
-  /**
-   * errorResponse -- Return a "not found" error for a request with no destination.
-   *
-   *
+  /** 
+   * errorResponse -- Return a "not found" error for a request with
+   * no destination.
    */
   protected void errorResponse(int code, String msg){
   }
-
-  /**
-   * Test whether a criteria matches one of those of the features
-   * @param criteria a vector of criterias
-   * @return true if there is a match
-   */
-  protected boolean matches(Vector criteria){
-    return features().matches( criteria, this );
-  } 
 
   /**
    * Satisfying transactions:
@@ -803,6 +869,10 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
   public void addControl( Object aThing ){
   }
 
+
+  /************************************************************************
+  ** Runnable interface:
+  ************************************************************************/
 
  // constructor methods should wait until  run method is called to do any
  // initialization that requires IO
