@@ -38,3 +38,11 @@
 
 .dvi.ps:
 	dvips -r0 -o $*.ps $*
+
+### HTML to `slides'
+
+PROCESS=$(PIADIR)/bin/process
+SLIDES_TS = $(PIADIR)/src/java/crc/dps/tagset/slides.ts
+
+%.slides.html: %.html $(SLIDES_TS)
+	time $(PROCESS) -t slides $*.html > $@
