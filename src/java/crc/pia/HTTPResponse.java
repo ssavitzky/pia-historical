@@ -450,7 +450,7 @@ public class  HTTPResponse extends Transaction {
 
   }
 
-
+  /* ========================================
   private static void test1( String filename ){
     try{
       System.out.println("Testing response w/ from and to machines as arguments.");
@@ -675,10 +675,6 @@ public class  HTTPResponse extends Transaction {
     System.out.println("For test 5, (trans. features) --> java crc.pia.HTTPResponse -5 post.txt response.txt");
   }
 
- /**
-  * For testing.
-  * 
-  */ 
   public static void main(String[] args){
 
     if( args.length == 0 ){
@@ -740,6 +736,7 @@ public class  HTTPResponse extends Transaction {
 
 
   }
+========================================= */
   
   public void run(){
     if(!DEBUG)
@@ -868,7 +865,6 @@ public class  HTTPResponse extends Transaction {
 
   }
   
-
   
 }
 
