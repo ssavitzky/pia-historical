@@ -3,6 +3,8 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
 package crc.pia;
+import java.util.Properties;
+import java.io.IOException;
 
 public class FormContent extends Properties implements Content{
  
@@ -110,7 +112,7 @@ public class FormContent extends Properties implements Content{
     }
 
 
-  public ParamPropList(String toSplit){
+  public FormContent(String toSplit){
     StringTokenizer tokens;
     String token;
     String[] pairs;
@@ -129,7 +131,7 @@ public class FormContent extends Properties implements Content{
       pairs[i++] = token;
     }
     i = 0;
-    for(i; i < pairs.length(); i++){
+    for(; i < pairs.length(); i++){
       String s = pairs[i];
       pos = s.indexOf('=');
       String p = s.substring(0, pos);
