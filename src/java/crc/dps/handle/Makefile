@@ -5,8 +5,8 @@
 PACKAGE=crc.dps.handle
 TOPDIR=../../..
 
-### These Handler implementations are purely syntactic.
-HANDLERS = \
+### Base classes and generic node-class handlers:
+BASE_CLASSES = \
 	AbstractHandler.java \
 	BasicHandler.java \
 	EntityHandler.java \
@@ -17,77 +17,71 @@ HANDLERS = \
 	TextHandler.java \
 	TypicalHandler.java
 
-### The effect of these actors is entirely confined to the current document
-BASIC_ACTORS = \
+### These are the primitive handlers defined in basic.ts
+###	Indented names are handlers for active sub-elements.
+PRIM_HANDLERS = \
 	defineHandler.java \
 	  actionHandler.java \
 	  valueHandler.java \
-	elseHandler.java \
-	elsfHandler.java \
 	expandHandler.java \
-	getHandler.java \
 	hideHandler.java \
 	ifHandler.java \
+	  elseHandler.java \
+	  elsfHandler.java \
+	  thenHandler.java \
+	logicalHandler.java \
+	numericHandler.java \
+	protectHandler.java \
 	repeatHandler.java \
-	setHandler.java \
+	selectHandler.java \
 	substHandler.java \
 	tagsetHandler.java \
 	testHandler.java \
-	thenHandler.java
+	textHandler.java
 
 ### Additional actions for StandAlone XML
 
-SA_ACTORS = \
+XXML_HANDLERS = \
+	getHandler.java \
+	setHandler.java 
 
-### These actors can affect the operation of the PIA
+### Additional handlers for extended HTML
 
-PIA_ACTORS= \
+XHTM_HANDLERS = \
+	formHandler.java \
+	processHandler.java
+
+### These handlers can affect the operation of the PIA
+
+PIA_HANDLERS= \
 
 
-ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
-FILES = $(HANDLERS) $(ACTORS) Loader.java
+HANDLERS = $(PRIM_HANDLERS) $(XXML_HANDLERS) $(XHTM_HANDLERS) $(PIA_HANDLERS)
+FILES = $(BASE_CLASSES) $(HANDLERS) Loader.java
 
 include $(TOPDIR)/makefiles/file.make
 
-TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
-
 ### Reporting.
 
-### Count unimplemented and total actor handles.  
-###	This finds only actors that call "Interp.unimplemented", not
-###	individual features that call "Interp.error" directly.
-count::
-	@echo 'Handlers: ' `ls -l $(ACTORS) | wc -l` top, \
-		`grep 'class ' $(ACTORS) | wc -l` total, \
-		`grep 'unimplemented(' $(ACTORS) | wc -l` unimp.
+report:: count check
 
-bogus_count::
-	@echo 'BASIC	' `ls -l $(BASIC_ACTORS) | wc -l`,  \
-		`grep 'unimplemented(' $(BASIC_ACTORS) | wc -l` unimp.
-	@echo 'SA	' `ls -l $(SA_ACTORS)  | wc -l`, \
-		`grep 'unimplemented(' $(SA_ACTORS) /dev/null | wc -l` unimp.
-	@echo 'PIA	' `ls -l $(PIA_ACTORS)  | wc -l`, \
-		`grep 'unimplemented(' $(PIA_ACTORS) /dev/null | wc -l` unimp.
+### Count unimplemented and total handlers.  
+count::
+	@echo 'Handlers - ' `echo $(HANDLERS) | wc -w` top, \
+		`grep 'class ' $(HANDLERS) | wc -l` total, \
+		`grep 'unimplemented(' $(HANDLERS) | wc -l` unimp.
 
 ### This finds and prints out every instance of the string "unimplemented" 
-report:: count
-report::
-	@grep -q 'unimplemented(' $(BASIC_ACTORS) && \
-	  (echo 'BASIC:	' ; grep 'unimplemented(' $(BASIC_ACTORS)) || true
-	@grep -q 'unimplemented(' $(SA_ACTORS) && \
-	  (echo 'SA:	' ; grep 'unimplemented(' $(SA_ACTORS)) || true
-	-@grep -q 'unimplemented(' $(PIA_ACTORS) && \
-	  (echo 'PIA:	' ; grep 'unimplemented(' $(PIA_ACTORS)) || true
+check::
+	-@grep -n 'unimplemented(' `ls $(HANDLERS)` 
 
-### Run a perl script over all actors.  It can be redefined for various
+### Run a perl script over all handlers.  It can be redefined for various
 ###	one-shot fixups; the first use is transforming syntax comments
 ###	into a combination of javadoc and executable forms.
 
 FIXUP=./fixup.pl
 fixup:
-	$(FIXUP) $(BASIC_ACTORS)
-	$(FIXUP) $(SA_ACTORS)
-	$(FIXUP) $(PIA_ACTORS)
+	$(FIXUP) $(HANDLERS)
 
 unfix:
 	for f in *.java ; do if [ -f $$f.bak ]; then mv -f $$f.bak $$f; fi ; done
@@ -105,8 +99,33 @@ class:
 
 ### Dependencies:
 
+HANDLER_DEPS = GenericHandler.java BasicHandler.java AbstractHandler.java \
+	../Handler.java
+
 AbstractHandler.class: ../Handler.java
 BasicHandler.class: AbstractHandler.java ../Handler.java
 EntityHandler.class: AbstractHandler.java ../Handler.java
 GenericHandler.class: BasicHandler.java AbstractHandler.java ../Handler.java
 TextHandler.class: AbstractHandler.java ../Handler.java
+
+
+defineHandler.class: $(HANDLER_DEPS)
+actionHandler.class: $(HANDLER_DEPS)
+valueHandler.class: $(HANDLER_DEPS)
+elseHandler.class: $(HANDLER_DEPS)
+elsfHandler.class: $(HANDLER_DEPS)
+expandHandler.class: $(HANDLER_DEPS)
+getHandler.class: $(HANDLER_DEPS)
+hideHandler.class: $(HANDLER_DEPS)
+logicalHandler.class: $(HANDLER_DEPS)
+numericHandler.class: $(HANDLER_DEPS)
+ifHandler.class: $(HANDLER_DEPS)
+protectHandler.class: $(HANDLER_DEPS)
+repeatHandler.class: $(HANDLER_DEPS)
+selectHandler.class: $(HANDLER_DEPS)
+setHandler.class: $(HANDLER_DEPS)
+substHandler.class: $(HANDLER_DEPS)
+tagsetHandler.class: $(HANDLER_DEPS)
+testHandler.class: $(HANDLER_DEPS)
+textHandler.class: $(HANDLER_DEPS)
+thenHandler.class: $(HANDLER_DEPS)
