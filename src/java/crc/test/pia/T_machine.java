@@ -65,7 +65,7 @@ public class T_machine {
       // do not create any request
       crc.pia.GenericAgent.DEBUG = true;
       InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
+      Machine machine1 = new Machine(Pia.instance().host(), 8853);
 
       machine1.setInputStream( in );
       machine1.setOutputStream( System.out );
@@ -100,12 +100,14 @@ public class T_machine {
     try{
       System.out.println("Testing response w/ from and to machines as arguments.");
       System.out.println("From machine gets its data from response.txt file.");
+      System.out.println("Also control strings --major tom --is added to the output.");
       
       InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
+      Machine machine1 = new Machine(Pia.instance().host(), 9497);
+
       machine1.setInputStream( in );
       
-      Machine machine2 = new Machine();
+      Machine machine2 = new Machine(Pia.instance().host(), 9949);
       machine2.setOutputStream( System.out );
       
       boolean debug = true;
