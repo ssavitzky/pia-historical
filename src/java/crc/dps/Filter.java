@@ -101,14 +101,14 @@ public class Filter {
 
     if (debug) {
       System.err.print("Tags defined in Tagset(" + tsname + "): ");
-      java.util.Enumeration names = ts.elementNames();
+      java.util.Enumeration names = ts.allHandlerNames();
       while (names.hasMoreElements()) {
 	String name = names.nextElement().toString();
 	Handler h = ts.getHandlerForTag(name);
 	GenericHandler gh =
 	  (h instanceof GenericHandler)? (GenericHandler)h : null;
 	if (gh != null) {
-	  name += gh.getElementSyntax() < 0? "E" : h.expandContent()? "X" : "Q";
+	  name += gh.getSyntaxCode() < 0? "E" : h.expandContent()? "X" : "Q";
 	  String cname = gh.getClass().getName();
 	  if (cname.equals("crc.dps.handle.GenericHandler")
 	      || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
@@ -118,7 +118,6 @@ public class Filter {
       }
       System.err.print("\n");
     }
-    
     if (in == null || out == null) System.exit(-1);
 
     /* Ask the Tagset for an appropriate parser, and set its Reader. */
@@ -130,6 +129,17 @@ public class Filter {
     ii.setInput(p);
     ii.setTagset(ts);
 
+    if (debug) {
+      System.err.println("Entities defined: ");
+      java.util.Enumeration names = ii.getEntities().allEntityNames();
+      while (names.hasMoreElements()) {
+	String name = names.nextElement().toString();
+	crc.dom.NodeList v = ii.getEntities().getEntityValue(name, false);
+	System.err.println(" " + name + "=" + v);
+      }
+      System.err.print("\n");
+    }
+     
     ToParseTree outputTree = null;
     Output output = null;
     if (parsing) {
