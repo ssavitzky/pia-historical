@@ -307,6 +307,16 @@ implements Handler {
   /** per-document notification flag. */
   protected boolean notified = false;
 
+  /** Notify the user about a problem. 
+   *	Such notice is only given once per tag.
+   */
+  protected void notify(Input in, Context cxt, String message) {
+    if (!notified) {
+      cxt.message(0, message + " in " + Log.node(in.getNode()), 0, true);
+      notified = true;
+    }
+  }
+
   protected void unimplemented (Input in, Context cxt) {
     // Kludge: the space here ^ keeps grep from noticing.
     cxt.message(-1, "Unimplemented handler " + getClass().getName()
