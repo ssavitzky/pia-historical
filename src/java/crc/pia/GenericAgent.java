@@ -684,13 +684,16 @@ public class GenericAgent implements Agent {
       }
       if( request.test("interform") ){
 	interformOutput = Run.interformFile(this, file, request, res);
+	return interformOutput;
       }
       
-    }
+      if( lfile.endsWith(".cgi") ){
+	//what to do here
+      }
 
-    return interformOutput;
+      return null;
       
-
+    }
     
   }
   
