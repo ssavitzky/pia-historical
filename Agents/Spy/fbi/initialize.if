@@ -7,7 +7,7 @@
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
 <agent-set-criteria>response agent-response html</>
-<set agent hook name="act-on"><protect>
+<set agent hook name="act-on"><protect><if><get agent name=hidden><else>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/" target="_top"><img src="&pia/fbi/Logo/pia24.gif"
@@ -22,7 +22,7 @@
 <a href="&pia;/&transAgentName;/"> / </a> )
 <a href="/PIA/Agents/&urlPath;">&urlPath;</a>
 <hr>
-</trans-control>
+</trans-control></if>
 </protect></set>
 
 <hr>

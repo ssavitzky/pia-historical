@@ -9,7 +9,7 @@
 <agent-set-criteria>response agent-response- html</agent-set-criteria>
 <user-message>&agentName; criteria: <agent-criteria></user-message>
 
-<set agent hook name="act-on"><protect>
+<set agent hook name="act-on"><protect><if><get agent name=hidden><else>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/" target="_top"><img src="&pia;/cia/Logo/pent24.gif"
@@ -19,7 +19,7 @@
 <!-- making this a link is actually useful: it gets you out of a frame. -->
 <a href="&url;" target="_top">&lt;URL:&url;&gt;</a>
 <hr>
-</trans-control>
+</trans-control></if>
 </protect></set>
 
 <hr>

@@ -10,6 +10,7 @@
 <set agent hook name="controls"><protect><!-- Generic Spy controls: -->
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/My/" target="_top">[~]</a>
+<a href="&pia;&agentPath;/hide.if?hide=true" target="_top">[X]</a>
 <a href="&pia;&agentPath;/help.if?topic=toolbar" target="_top">[help]</a>
 </protect></set>
 
