@@ -56,17 +56,22 @@ public class Agent_install extends crc.interform.Handler {
     }
     form.at("name", name);
     form.at("agent", name);
+
+    crc.pia.agent.Agency agency = null;
     try {
-      crc.pia.agent.Agency agency = (crc.pia.agent.Agency) env.agent;
-      agency.install(form); 
-      ii.message("Agent "+name+" installed.");
+      agency = (crc.pia.agent.Agency) env.agent;
     } catch (Exception e) {
-      // === Not clear where this is happening. ===
-      //ii.error(ia, "only works in the Agency agent");
+      ii.error(ia, "only works in the Agency agent");
       ii.deleteIt();
       return;
     }
-
+    try {
+      agency.install(form); 
+    } catch (crc.pia.agent.AgentInstallException e) {
+      ii.error(ia, "Install exception: " + e.getMessage());
+      ii.deleteIt();
+    } 
+    ii.message("Agent "+name+" installed.");
     ii.replaceIt(name);
   }
 }

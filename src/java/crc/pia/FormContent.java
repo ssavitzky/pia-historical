@@ -505,9 +505,11 @@ public class FormContent extends Properties implements Content{
 	param = Utilities.unescape( eparam );
 	Pia.debug(this, "a param2-->"+ param);
 	
-	String v = s.substring( pos+1 );
-	String evalue = v.trim();
-	paramKeys.addElement( evalue );
+	String evalue = "";
+	if (pos < (s.length() - 1)) {
+	  String v = s.substring( pos+1 );
+	  evalue = v.trim();
+	}
 	value = Utilities.unescape( evalue );
 	Pia.debug(this, "a val2-->"+ value);
       }

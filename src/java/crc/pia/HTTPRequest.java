@@ -495,7 +495,7 @@ public class  HTTPRequest extends Transaction {
       "on request for <code>" + requestURL() + "</code><br>\n";
 
     if ( msg != null ){
-      masterMsg += msg;
+      masterMsg += msg + "\n<hr>\n";
       inputStream = new StringBufferInputStream( masterMsg  );
     }
     else{
@@ -504,6 +504,7 @@ public class  HTTPRequest extends Transaction {
 	masterMsg += ".\n";
       else
 	masterMsg = standardMsg;
+      masterMsg += "\n<hr>\n";
       inputStream = new StringBufferInputStream( masterMsg );
     }
 

@@ -3,12 +3,17 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
 /**
- * subclass of machine for agents, these are really virtual machines
- * used by agents when they want to receive transactions
+ * Subclass of Machine for agents, as the source or destination of a 
+ *	transaction.  Sometimes called a ``virtual'' machine
+ *	because the Agent is pretending to be a client or server at the
+ *	other end of the wire.
  */
 
 package crc.pia.agent;
+
 import java.io.StringBufferInputStream;
+import w3c.www.http.HTTP;
+
 import crc.ds.TernFunc; 
 
 import crc.pia.Machine;
@@ -93,7 +98,8 @@ public class AgentMachine extends Machine {
    * Normally done by running an InterForm, but the agent can 
    * perform special processing first.
    */
-  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException {
+  public void getRequest(Transaction request, Resolver resolver)
+       throws PiaRuntimeException {
     StringBufferInputStream sb = null;
 
     Agent agnt = agent;
@@ -104,7 +110,8 @@ public class AgentMachine extends Machine {
 	throw ue;
       }
     }else{
-      throw new PiaRuntimeException(this, "getRequest", "Unable to find agent to handle request");
+      request.errorResponse(HTTP.NOT_FOUND,
+			    "Unable to find agent to handle request");
     }
 
   }

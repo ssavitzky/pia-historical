@@ -152,8 +152,16 @@ public class GenericAgent extends AttrBase implements Agent {
        * are made on partially-initialized agents.
        */
       String fn = findInterform("initialize.if");
-      Run.interformSkipFile(this, fn, makeRequest(machine(), "GET", url, null),
-			    Pia.instance().resolver());
+      if (fn == null) return;
+      try {
+	Run.interformSkipFile(this, fn,
+			      makeRequest(machine(), "GET", url, null),
+			      Pia.instance().resolver());
+      } catch (Exception e) {
+	System.err.println(e.toString());
+	e.printStackTrace();
+	System.err.println("PIA recovering.");
+      }
     }
   }
 
@@ -937,6 +945,9 @@ public class GenericAgent extends AttrBase implements Agent {
       }catch(PiaRuntimeException ee ){
 	throw ee;
       } catch (Exception e) {
+	System.err.println(e.toString());
+	e.printStackTrace();
+	System.err.println("PIA recovering.");
 	throw new PiaRuntimeException(this, "respondToInterform",
 				      "Exception in InterForm: "
 				      + e.toString());

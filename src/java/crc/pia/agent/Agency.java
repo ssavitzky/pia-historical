@@ -54,10 +54,10 @@ public class Agency extends GenericAgent {
     String type      = (String)ht.get("type");
     String className = (String)ht.get("class");
 
-    if (name == null)
+    if (name == null || name.equals(""))
       throw new AgentInstallException("No agent name");
 
-    if (type == null)
+    if (type == null || type.equals(""))
       type = name;
 
     /* Compute a plausible class name from the type. */
