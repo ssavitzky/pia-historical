@@ -2,14 +2,43 @@
 <html><head>
 <title>InterForm Actors</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-</head><body bgcolor="#ffffff">
-<h1>List of Defined InterForm Actors</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>&agentName; Agent<br>Actor List</set>
+<read interform file="heading.inc" process>
+
+<set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr><th width=170 valign=center>
+<td>
+  <table cellspacing=0 BORDER=0>
+  <tr><th align=right width=170>&nbsp;<td>
+  <tr>
+    <th valign=top align=right>
+    <td valign=top> Demonstration and Test agent
+  <tr><th><a href="&agentName;"><b>&agentName;:</b></a>
+	  <td> <a href=actors.if>Defined InterForm Actors</a>
+  <tr><th><td> <a href=entities.if>Defined Entities</a>
+  <tr><th><td> <a href=/Agency/agents.if>Running PIA Agents</a>
+  <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
+  </table>
+</table>
+ 
+<h2>Defined Actors</h2>
 
 
 <set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">
-  <dt> &lt;<strong>&li;</strong><actor-attrs name="&li;">&gt;
-  <dd> <actor-dscr name="&li;">
+  <dt> <strong>&li;</strong> <actor-attrs name="&li;">
+  <dd> <if><actor-dscr name="&li;"><then>
+       <dl>
+	 <dt> <b>Syntax:</b>
+	 <dd> <add-markup><actor-syntax name="&li;"></add-markup>
+	 <dt> <b>Description:</b>
+	 <dd> <add-markup><actor-dscr name="&li;"></add-markup>
+       </dl>
+       </then>
+       <else> (HTML tag) </if>
 </dl>
 
 <h3>Note:  Action or Actor?</h3>
@@ -36,7 +65,4 @@
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>

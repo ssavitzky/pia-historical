@@ -2,28 +2,39 @@
 <html><head>
 <title>InterForm Actor Test Page</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com">
-</head><body bgcolor="#ffffff">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <h1>InterForm Actor Test Page</h1>
 
-<hr><!-- Standard header for if_demo files -->
-&lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-&lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
-<hr>
- 
+<set entity name=title>&agentName; Agent<br>Actor Demonstration Page</set>
+<read interform file="heading.inc" process>
 
-<h3>Useful Information:</h3>
-<ul>
-  <li> <a href=/&agentName;/actors.if>list defined InterForm Actors</a>
-  <li> <a href=/Agency/agents.if>list running PIA agents</a>
-  <li> <a href=/&agentName;/entities.if>list defined entities</a>
-  <li> <a href=/&agentName;/options.if>view/change options</a>
-  <li> <a href=/Agency/debug.if>toggle debugging</a> (currently 
-       <code language="perl"> $main::debugging? "on" : "off"; </code> );
-  <li> <a href="/PIA/Agents/&agentName;/">Source directory (DOFS)</a>
-</ul>
+<set entity name=IFman>/PIA/Doc/Manuals/InterForm/index.html</set>
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr><th width=170 valign=center>
+<td>
+  <table cellspacing=0 BORDER=0>
+  <tr><th align=right width=170>&nbsp;<td>
+  <tr>
+    <th valign=top align=right width=170>
+    <td valign=top> Demonstration and Test agent
+  <tr><th align=right><a href="/&agentName;"><b>&agentName;:</b></a>
+          <td> <a href=demo.if>InterForm Test Page</a>
+  <tr><th><td> <a href=actors.if>Defined InterForm Actors</a>
+  <tr><th><td> <a href=entities.if>Defined Entities</a>
+  <tr><th><td> <a href=/Agency/agents.if>Running PIA Agents</a>
+  <tr><th><td> <a href="&IFman;">PIA InterForm Manual</a>
+  </table>
+</table>
 
-<h2>About This Agent:</h2>
+
+<h2>About This Page:</h2>
+
+<dl>
+  <dt> <b>Note:</b>
+  <dd> You are <em>strongly</em> encouraged to make a copy of this page
+       in the &agentName; subdirectory of your personal Agents directory
+       (<code><a href="/My/Agents/">&usrDir;/Agents</a></code>).
+</dl>
 
 <!-- Note: the b and a tags below have nameless end tags in the .if file: -->
 The <b><a href="/&agentName;/">&agentName;</></b> agent is intended as a
@@ -97,9 +108,10 @@ urlQuery = '&urlQuery;'<p>
 </pre>
 
 <hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+<hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b><br>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
 </body></html>
