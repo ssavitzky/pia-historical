@@ -1,0 +1,87 @@
+<html> <head>
+<title>Future agent applications</title>
+</head>
+
+<body>
+<h1>Applications of PIA technology</h1>
+<h2>Introduction</h2>
+<p>
+The World Wide Web consists of information content and applications that serve it. One can browse information over the Internet, but sometimes, there are needs to use documents' content in an application's context.  Currrently, many companies are creating software to access or filter WWW content. We, at Ricoh Silicon Valley, inc., have developed a document processing system, called the PIA (Personal Information Agency). The PIA is a kind of proxy web server that provides an environment for document processing agents. Agents (pieces of software) can be created quickly and effortlessly to access, filter, or modify WWW content.<p>
+Using agents a new kind of applications can be developed. Unlike traditional software where the application processes and  stores data on local machine, agents applications can use data locally and afar.  They can function as both servers and clients, pulling content from the Internet and Intranet servers. Without user intervention, agents can access documents, add functions to those documents, and present them to a user in meaningful ways. Also, as servers, agents can serve their documents to any web application or other agent.<p>
+To demonstrate this new application concept, we wrote two agents: business- card and link-manager. A business-card agent behaves like a roller-dex application, but interacts with a WWW server. A link manager, on the other hand, visits URL addresses in mail content and also interacts with the business-card and Whowhere web server ( a server that serves peoples' information ). 
+<p>
+<h2>Objective</h2>
+<p>
+The objective of writing these agents is the following:
+<ol>
+<li>Show a new application concept.
+<li>Improve and test the PIA framework.
+<li>Demonstrate how quickly these agents can be written.
+</ol>
+<p>
+<h2>Approach</h2>
+<p>
+For the first part of the objective, we show how the business card and the link manager interacts with each other and other Web servers. <p>
+The PIA processes documents written using Interform, a language whose syntax is SGML. To satisfy the second part of the objective, we wrote the business-card and link-manager as Interform documents. By exercising features offered by the Interform, we can identify whether the PIA and the Interform need additional work.<p> 
+Finally, these two agents were developed within one month period.   We estimate that if one were to implement the agents using traditional languages such as Perl or Java, it would have taken three-person months.
+<p>
+<h2>Agent applications</h2>
+<p>
+The business-card and link-manager is described below.<p> 
+A business-card agent enables a user to manage business card information. Commercial business card application is usually bundled with a scanner, and a user can enter data manually or use OCR-result data from scanned business card as input. Our application allows the user to do the same, but the latter data is retrieved from our Intranet server called IMC.   IMC serves documents from our infinite-memory copier which stores copied images and their OCR results. <p>
+Thus, one can imagine a scenario in which a user copies a business card using the IMC; then, visits the business-card home page to add the new card from the IMC.   When, the user visits the business-card home page, the agent, as a WWW client, has already retrieved the most recent and top-ten scanned images from  IMC.<p>
+
+<blockquote><a href="images/busshome.gif"><IMG SRC="images/busshome.gif" WIDTH="300 " HEIGHT="400" ALIGN="BOTTOM" NATURALSIZEFLAG="3"></a></blockquote>
+Figure one.  Business-card agent home page.
+<p>
+Figure one shows the business-card home page in which the last card added is shown at the top, and functions to add cards are shown as icons of the Ricoh building.   If one of the icons is selected, a modified IMC document appears.
+<p>
+Within each IMC's document, there are sections devoted to each copied document.  In the modified one, the agent appends a function to each section as to enable a user to identify which OCR-result of an image should be use as the business card input.
+Figure below shows a modified IMC's page.<p>
+
+<blockquote><a href="images/im2.gif"><IMG SRC="images/im2.gif" WIDTH="300 " HEIGHT="400" ALIGN="BOTTOM" NATURALSIZEFLAG="3"></a></blockquote>
+Figure two.  "Add to business card" is appended to links.
+<p>
+Once, an OCR result is identified, the agent parses for business card fields such as name, address, phone, and URL. A result page is, then, shown.  Any recognized information is displayed in its relevant field, and for address and URL, the agent will do more processing. Basically, a live link is made to Yahoo's map for the former and a link to actual site for the latter. As for un-recognized information, it is displayed for the user to edit and later save. <p>
+As a WWW server the business card agent allows another agent or web applications to query for cards using first and last name as key words. If found, a card form is returned with relevant information filled.<p>
+The business-card agent composes of a few Interforms:<p>
+<ol>
+<li>home.if<br> 
+Contains information about how the home page is going to be displayed.
+If "Add card" is selected, ask Card.if to show a blank business card.
+If  a user want to search using "First name" and "Last name" fields, submit request to Search.if
+<li>Card.if<br>
+Shows a blank business-card form which the agent will submit to Buss.if.
+<li>Buss.if<br>
+Categorized submitted card alphabetically accoding to last name.
+<li>Search.if<br>
+Find card according to last name.  If found ask Getcardpost.if to display it.
+<li>Getcardpost.if<br>
+Shows found card with functions to update or delete ( Update.if or Delete.if) .
+<li>Update.if<br>
+Update card with new information.
+<li>Delete.if<br>
+Delete a card.
+<li>Validate.if<br>
+Validate card fields before add or update functions are executed.
+<li>Recog.if<br>
+Shows recognized and un-recognized business card fields.  Also, allow a user to edit and save card.
+<li>Parsecard.if<br>  
+Parses scanned, business-card image's OCR-result.
+</ol>
+A link manager agent make URLs within mails live.<br>
+
+<blockquote><a href="images/mailhome.gif"><IMG SRC="images/mailhome.gif" WIDTH="300 " HEIGHT="400" ALIGN="BOTTOM" NATURALSIZEFLAG="3"></a></blockquote>
+
+The agent, as a client, visits those URLs sites, retrieves their home pages, gets interesting images and title, and displays them in the home page using calendar format.<p>
+Furthermore, a link-manager's user might be interested in who the mail sender is. To anticipate this, the agent query the business card agent if the sender's information exists locally.If not the agent will query another personal information server, http://www.whowhere.com, on the Internet for the sender's information. Information found locally is signaled with a folder icon and found from a remote server is displayed as a yellow page. <p>
+
+<h2>Conclusion</h2>
+The two agents described above show one kind of application of the PIA technology where processing documents has crossed to the Internet and Intranet.  The PIA framework enables one (document designer) to quickly write applications without resorting to programming languages.
+<p>
+<hr>
+<address><a href="http://www.crc.ricoh.com/~rithy/">Rithy Roth &lt;rithy@crc.ricoh.com&gt;</a></address>
+<!-- hhmts start -->
+Last modified: Wed Mar 18 17:15:30 1998
+<!-- hhmts end -->
+</body> </html>
