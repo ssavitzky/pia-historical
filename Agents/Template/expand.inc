@@ -5,17 +5,26 @@
 
 <set name=srcDir>&tDir;/proto</set>
 <set name=dstDir>&dDir;</set>
+<set name=srcDOFS>&tDOFS;/proto</set>
+<set name=dstDOFS>&dDOFS;</set>
 
 <table cellpadding=0 cellspacing=0 border=0>
 
 <tr><th align=right> Data file:
     <td> <a href="file:&data-file;"><get name=data-file></a>
-<tr><th align=right> Template dir:
-    <td> <a href="file:&tDir;/"><get name=tDir>/</a>
-<tr><th align=right> Source dir:
-    <td> <a href="file:&srcDir;/"><get name=srcDir>/</a>
-<tr><th align=right> Target dir:
-    <td> <a href="file:&dstDir;/"><get name=dstDir>/</a>
+<tr><th align=right> Template 
+    <td> <a href="file:&tDOFS;/">[dofs]</a>
+	 <a href="file:&tDir;/">[dir]</a> <get name=tDir>/
+<tr><th align=right>
+    <td> <b>base:</b> <get name=tBase>
+	 <b>name:</b> <get name=tName>
+<tr><th align=right> Source
+    <td> <a href="file:&srcDOFS;/">[dofs]</a>
+	 <a href="file:&srcDir;/">[dir]</a> <get name=srcDir>/
+<if>&dstDir;<then>
+<tr><th align=right> Target
+    <td> <a href="file:&dstDOFS;/">[dofs]</a>
+	 <a href="file:&dstDir;/">[dir]</a> <get name=dstDir>/
 	 <if><read info=p file="&dstDir;">
 	 <else><if><get name=t-expanding>
 		   <then><b>did not exist:</b>
@@ -23,12 +32,11 @@
 			 <b>created.</b>
 		   <else><b>does not exist</b>
 	 </if></if>
-<tr><th align=right> [dofs]:
-    <td> <a href="file:&dDOFS;/"><get name=dDOFS>/</a>
 <tr><th align=right>
     <td> <b>root:</b> <get name=dRoot> (<get name=dRoot-path>)
 	 <b>path:</b> <get name=dPath>
 	 <b>name:</b> <get name=dName>
+</if>
 </table>
 
 <actor tag=t-report-file empty dscr="Report on FILE">
@@ -40,11 +48,13 @@
 	<else><if><get name="m-&file;"><then>make</then>
 	<else>skip</else>
   </if></if></if></if>:</b></code>
-  <a href="file:&srcDir;/&file;">[src]</a> <b>-&gt;</b>
+  <code><if><read info=p file="&srcDir;/&file;">
+      <then><a href="&srcDOFS;/&file;">[src]</a></then>
+      <else>[---]</else></if></code> <b>-&gt;</b>
   <code><if>
     <read info=p file="&dstDir;/&file;">
-    <then><a href="file:&dstDir;/&file;">[dst]</a></then>
-    <else><a href="file:&dstDir;/&file;">[new]</a></else>
+    <then><a href="&dstDOFS;/&file;">[dst]</a></then>
+    <else><a href="&dstDOFS;/&file;">[new]</a></else>
   </if></code>
   <code>&file;</code>
 </actor>
@@ -52,7 +62,7 @@
 <actor tag=t-write-backup empty dscr="Write backup for FILE">
   <if><get name=t-expanding><then>
       <if><read info=p file="&dstDir;/&file;">
-          <then><a href="file:&dstDir;/&file;.bak">[backup]</a>
+          <then><a href="&dstDOFS;/&file;.bak">[backup]</a>
 		<if><read info=p file="&dstDir;/&file;.bak">
 		    <then><file remove file="&dstDir;/&file;.bak">
 			  <set local name=over>over</set>

@@ -13,19 +13,25 @@
 
 <if><get name="data-file"><then><read process quiet file="&data-file;"></if>
 
+<if><get name=dName><then>
 <if><get name=dDir>
     <else><if><get name=dRoot-path>
 	  <then><set name=dDir>&dRoot-path;/&dPath;/&dName;</set>
 </if></if>
-
 <if><get name=dRoot-DOFS>
     <then><set name=dDOFS>&dRoot-DOFS;/&dPath;/&dName;</set>
     <else><set name=dDOFS></set>
 </if>
-
+<else>
+      <set name=dDir></set>
+      <set name=dDOFS></set>
+</if>
 
 <a href="/&agentName;">&agentName;</a> for <b>&tName;:</b>
-<a href="#template">Form</a>  || <a href="#files">File report.</a><br>
+<a href="#template">Form</a>  || <a href="#files">File report.</a>
+|| <a href="&tDOFS;/proto/">[src]</a>
+<if>&dDOFS;<then><b>-&gt;</b> <a href="&dDOFS;/">[dst]</a></if>
+<br>
 
 <if><get name="details"><then>
 <table cellpadding=0 cellspacing=0 border=0>
@@ -44,10 +50,13 @@
 <tr><th>
     <td> <b>root:</b> <get name=dRoot> (<get name=dRoot-path>)
 	 <b>path:</b> <get name=dPath>
+	 <if><get name=dName>
+	     <then><b>name:</b> <get name=dName>
 </table>
 </if>
 <hr>
 
+<!-- === should switch to alternate label when t-data-present === -->
 <if><get name=tName-label><then>
     <h3 align=center><a name="template">&tName-label;</a></h3>
 </if>

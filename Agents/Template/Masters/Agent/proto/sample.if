@@ -1,17 +1,25 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Sample Form</title>
-</head><body>
+<title>|dName|: Sample Form</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Sample Form</set>
 <read interform file="heading.inc" process>
 <read interform file="subhead.inc" process>
 <hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
 
 <form method=POST target="&url;" process copy>
 
 <!-- You will need to edit this, possibly with another template... -->
 
-<input type=submit>
+  <table>
+    <tr><th valign=top align=right>Text Input
+	<td><input name=textInput value="sample text">
+    <tr><th valign=top align=right>Text Area
+	<td><textarea name=textInput> longer text goes here</textarea>
+
+    <tr><th valign=top align=right><input type=submit>
+  </table>
 
 <process copy>
 
@@ -31,6 +39,7 @@
 </form>
 
 <hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
 <b>|dCopyright|</b><br>
 <b>$Id$</b><br>
 </body></html>

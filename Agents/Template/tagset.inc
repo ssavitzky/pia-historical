@@ -36,12 +36,12 @@
   </if></if></if>
 </actor>
 
-<!-- Initializing entities: ====================================== -->
+<!-- *** Initializing entities: -->
 <set name=tFieldNames></set>
 <set name=t-file-names></set>
 <set name=t-required-fields></set>
 
-<!-- Actors used in template data files. ========================= -->
+<!-- *** Actors used in template data files. -->
 <actor tag=t-data quoted dscr="set value and TYPE strings for NAME.
     Optionally LABEL, REQUIRED.
     Value is set from form if present, else from CONTENT.">
@@ -79,7 +79,7 @@
       <then><if><expand>&content;</expand></if></if>
 </actor>
 
-<!-- Special hacks for constructing form elements ===================== -->
+<!-- *** Special hacks for constructing form elements -->
 <actor tag=t-radio-btn empty dscr="template radio button element">
   <set local name=nn><get element name=name></set>
   <set local name=vv><get element name=value></set>
@@ -90,7 +90,7 @@
   </if>
 </actor>
 
-<!-- Form elements ==================================================== -->
+<!-- *** Form elements -->
 <actor tag=t-input empty dscr="Input tag with default from template data">
   <set local name=name><get element name=name></set>
   <set local name=value><protect-result><get name="&name;"></set>
@@ -186,8 +186,8 @@
   <input name="&name;-alt" size=50>
 </actor>
 
-<!-- special format:  extending a template. -->
-<actor tag=t-extend empty dscr="Add a new item to template data">
+<actor tag=t-extend empty dscr="Special format:  extend a template by
+	adding a new item to template data">
   <set local name=name><get element name=name></set>
   <set name="&name;"></set>
   <b>Name:</b> <input name="&name;-n" size=20>
@@ -218,15 +218,14 @@
   </if>
 </actor>
 
-<!-- special format:  expanding the template. -->
-<actor tag=t-expand empty dscr="Extra stuff associated with an Expand button">
+<actor tag=t-expand empty dscr="Special format: expanding the template.">
   <set local name=name><get element name=name></set>
   <input type=submit name="expand-c" value="Continue">
   <input type=hidden name=tDir  value="&tDir;">
 </actor>
 
-<!-- special format:  Base directory path from root.  Name should be dPath -->
-<actor tag=t-path empty dscr="Standard base directory path setup.">
+<actor tag=t-path empty dscr="Special format:
+	Standard base directory path setup.">
   <set local name=name><get element name=name></set>
   <set local name=value><if><get form name="&name;">
 			    <then><get form name="&name;"></then>
@@ -237,8 +236,7 @@
   <i><a href="&agentPath;/help.if?topic=path">[path]</a></i>
 </actor>
 
-<!-- special format:  Root directory.  Name should be dRoot -->
-<actor tag=t-root empty dscr="Standard root directory setup.">
+<actor tag=t-root empty dscr="Special format: Standard root directory setup.">
   <set local name=name><get element name=name></set>
   <set local name=r><get name="&name;"></set>
   <t-radio-btn type=radio name="&name;" value="usrDIR" test="&r;"> User
@@ -247,7 +245,7 @@
   <i><a href="&agentPath;/help.if?topic=root">[help]</a></i>
 </actor>
 
-<!-- Actors for constructing form data fields and labels  -->
+<!-- *** Actors for constructing form data fields and labels  -->
 
 <actor tag=t-field empty dscr="generate a field data entry">
   <set local name=name><get element name=name></set>
@@ -291,8 +289,7 @@
   <test match=file>&type;</test>
 </actor>
 
-<!-- this returns the actual label.  Extend uses a button. -->
-<actor tag=t-label empty dscr="return NAME-label if needed">
+<actor tag=t-label empty dscr="return appropriate label for NAME if needed">
   <set local name=name><get element name=name></set>
   <set local name=type><get name="&name;-type"></set>
   <set local name=label><get name="&name;-label"></set>
@@ -321,10 +318,17 @@
       <then><if><get name="&name;-nobreak"><else><br></if></if>
 </actor>
 
+<actor tag=t-hidden-form-elements empty dscr="Generate standard set of
+	hidden elements for form.">
+ <if><get name=dDir>
+     <then><input type=hidden name=dDir value="&dDir;"></if>
+</actor>
+
 <!-- Actors that format template forms.  Suitable for value of "tFormat"  -->
 
 <actor tag=t-tabular-form empty dscr="construct a tabular form">
   <form method=POST target="&tFormURL;">
+    <t-hidden-form-elements>
     <table>
       <tr><th valign=top><em>field index:</em>
 	  <td> <repeat list="&tFieldNames;"><t-field-link name="&li;"></repeat>
@@ -369,6 +373,7 @@
 
 <actor tag=t-list-form empty dscr="construct a description-list form">
   <form method=POST target="&tFormURL;">
+    <t-hidden-form-elements>
     <dl>
       <dt>field index:
       <dd> <repeat list="&tFieldNames;"><t-field-link name="&li;"></repeat>
@@ -400,44 +405,44 @@
 <set entity name=title>&tName; &tForm;</set>
 <if><get form name=tName>
     <then>
+    	<t-data name=tBase type=hidden></t-data>
 	<set name=tName><get form name=tName></set>
+
 	<set name=tForm><get form name=tForm></set>
 	<if>&tForm;<else><set name=tForm></set></if>
 
-	<!-- set base directory. -->
-	<if><test match=user><get form name=tBase></test>
+	<!-- set base directory.  DOFS stuff fails if no /My and /PIA. -->
+	<if><test match=user>&tBase;</test>
     	    <then><set name=t-base><read info=p file="Masters"></set>
-        <else><if><test match=system><get form name=tBase></test>
+    		  <set name=t-base-DOFS>/My/&agentName;/Masters</set>
+        <else><if><test match=system>&tBase;</test>
     	    <then><set name=t-base><read info=p interform file="Masters"></set>
-	<else><if><get form name=tBase>
+    		  <set name=t-base-DOFS>/PIA/Agents/&agentName;/Masters</set>
+	<else><if>&tBase;
     	    <then><set name=t-base><get form name=tBase></set>
+    		  <set name=t-base-DOFS>/Root&tBase;</set>
     	<else><set name=t-base><read info=p interform file="Masters"></set>
+    		  <set name=t-base-DOFS>/PIA/Agents/&agentName;/Masters</set>
 	</if></if></if>
 
     	<set name=tDir>&t-base;/&tName;</set>
+	<set name=tDOFS>&t-base-DOFS;/&tName;</set>
 
 	<!-- template-wide constants are in template.inc -->
-	<set name=tTemplateFilePath>&tDir;/template.inc</set>
-	<set name=foo><read process quiet file="&tTemplateFilePath;"> </set>
+	<set name=t-template-path>&tDir;/template.inc</set>
+	<set name=foo><read process quiet file="&t-template-path;"> </set>
 
 	<if><get name=tDataFile><else><set name=tDataFile>data.inc</if>
 	<set name=t-data-path>&tDir;/&tDataFile;</set>
     
 	<!-- now the destination directory and destination form data -->
-	<if><test match=user><get form name=dBase></test>
-    	    <then><set name=d-base><get name=tUserBase></set>
-        <else><if><test match=system><get form name=tBase></test>
-    	    <then><set name=d-base><get name=tSystemBase></set>
-	<else><if><get form name=dBase>
-    	    <then><set name=d-base><get form name=dBase></set>
-    	<else><set name=d-base></set>
-	</if></if></if>
+	<!-- We can get everything else out of the form data.  -->
 
-	<if><get form name=dDirPath>
-	    <then><set name=dDirPath><get form name=dDirPath></set>
-		  <set name=d-data-path>&dDirPath;/&tDataFile;</set>
+	<if><get form name=dDir>
+	    <then><set name=dDir><get form name=dDir></set>
+		  <set name=d-data-path>&dDir;/&tDataFile;</set>
 		  <set name=d-data-present><read info=p file=d-data-path></set>
-	    <else><set name=dDirPath></set>
+	    <else><set name=dDir></set>
 		  <set name=d-data-path></set>
 		  <set name=d-data-present></set>
 	</if>
@@ -453,14 +458,16 @@
 	</if>
 
 	<!-- if a data file is present in the dest. directory, use it. -->
-	<set name=data-file><if>&d-data-present;
-				<then>&d-data-path;</then>
-				<else>&t-data-path;</else></if></set>
-
+	<if>&d-data-present;
+	    <then><set name=data-file>&d-data-path;</set>
+		  <!-- also clear field list, since they're all in the data -->
+		  <set name=tFieldNames></set>
+	    <else><set name=data-file>&t-data-path;</set>
+	</if>
     <else>
 	<set name=tFormFile></set>
-	<set name=t-data-file></set>
-	<set name=tTemplateFilePath></set>
+	<set name=t-data-path></set>
+	<set name=t-template-path></set>
 </if>
 </actor>
 

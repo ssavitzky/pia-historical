@@ -6,31 +6,21 @@
 
 <set entity name=title>Home Page</set>
 <read interform file="heading.inc" process>
-<read interform file="subhead.inc" process>
+<!-- === should be done in template === -->
+<if><read info=p interform file="althead.inc">
+    <then><read interform file="althead.inc" process>
+    <else><read interform file="subhead.inc" process>
+</if>
 <hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
 
 <!-- See whether there's an "about" file for this agent. -->
 <read interform file="about.inc" quiet process>
 <p>
-<hr>
-<h2 align=center>Template Index</h2>
-<read interform process file=t-index.inc>
+
 
 <hr>
-<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
-<if><test not exact match="&agentType;">&agentName;</test>
-    <then><a href="/&agentType;/home.if">&agentType;</a>
-          <a href="/&agentType;/"> / </a>
-          <a href="/&agentType;/&agentName;">&agentName;</a>:
-          <a href="/&agentType;/&agentName;/">index</a>
-          <a href="/&agentType;/&agentName;/">help</a>
-	  <a href="/&agentType;/&agentName;/options.if">options</a>
-    <else><a href="/&agentName;/home.if">&agentName;</a>:
-	  <a href="/&agentName;/">index</a>
-	  <a href="/&agentName;/help.if">help</a>
-	  <a href="/&agentName;/options.if">options</a>
-</if>
-<hr>
+<if>|dNavBar|<then><expand><get agent name=navbar></expand></if>
 <b>|dCopyright|</b><br>
 <b>$Id$</b><br>
 </body></html>
