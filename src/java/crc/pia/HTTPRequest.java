@@ -321,7 +321,7 @@ public class  HTTPRequest extends Transaction {
      if( headersString != null )
        out.print( headersString );
 
-     if( method().equals("POST")  ){
+     if( method().equalsIgnoreCase("POST")  ){
        String qs = queryString(); 
        if( qs != null ){
 	 Pia.debug(this, "the content is ..." + qs);
