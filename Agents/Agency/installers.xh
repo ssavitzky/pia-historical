@@ -205,8 +205,7 @@ Provides basic file browsing capabilities.
        <else>
   <dd> <form action="/Agency/install_agent" method="POST">
        name: <input name="agent" value="WebPrinter"><br>
-       type: <input name="type" value="printer"><br>
-       class: <input name="class" value="PIA::Agent::Printer">
+       type: <input name="type" value="Printer"><br>
        <input type="submit" value="Install">
        </form></else></if>
 </dl>
