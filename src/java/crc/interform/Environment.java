@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.StringBufferInputStream;
 
 import java.util.Date;
 
@@ -199,6 +200,25 @@ public class Environment {
 
   public String evalFile(String tsname) {
     return evalStream(open(filename), tsname);
+  }
+
+  /** Filter an InputStream on an interform, i.e. produce an InputStream 
+   *	that contains the results of evaluating the interform.
+   */
+  public InputStream filterStream(InputStream in, String tsname) {
+    Parser p = new Parser(in, null);
+    Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
+    ii.from(p).toText();
+    use(ii);
+
+    // === this is a kludge, to be fixed later. 
+
+    String interformOutput = ii.run().toString();
+    return new StringBufferInputStream( interformOutput );
+  }
+
+  public InputStream filterFile(String tsname) {
+    return filterStream(open(filename), tsname);
   }
 
   public void runCode(SGML code, String tsname) {

@@ -38,7 +38,7 @@ public class Set extends crc.interform.Handler {
       String name = Util.getString(it, "name", null);
       if (ii.missing(ia, "name", name)) return;
 
-      SGML value = it.content().simplify();
+      SGML value = it.isEmpty()? crc.sgml.Token.empty : it.content().simplify();
       if (it.hasAttr("element")) {
 	ii.setAttr(name, value, it.attr("tag").toString());
       } else if (it.hasAttr("local")) {

@@ -189,9 +189,15 @@ public class Run  extends Environment {
   /** Run a standard InterForm file and return a String.  Use of this
    *	operation is deprecated, but it will be useful while we're
    *	figuring out how to properly interface using streams. */
-  public static String interformFile(Agent agent, String filepath, 
-				     Transaction trans, Resolver res) {
+  public static String interformEvalFile(Agent agent, String filepath, 
+					 Transaction trans, Resolver res) {
     return new Run(agent, trans, res, filepath).evalFile("Standard");
+  }
+
+  /** Run a standard InterForm file and return an InputStream. */
+  public static InputStream interformFile(Agent agent, String filepath, 
+					  Transaction trans, Resolver res) {
+    return new Run(agent, trans, res, filepath).filterFile("Standard");
   }
 
   /** Run an already-parsed InterForm element as an Agent's actOn hook. */
@@ -208,8 +214,8 @@ public class Run  extends Environment {
    *      given SGML. */
   public String lookupFile(String fn, SGML it, boolean write) {
     // === both agentIfRoot and findInterform(String) are unimplemented! 
-    // === if (write) return Util.makePath(agent.agentIfRoot(), fn);
-    return fn; // === return agent.findInterformFile(fn);
+    // if (write) return Util.makePath(agent.agentIfRoot(), fn);
+    return agent.findInterform(fn, false);
   }
 
   /** Retrieve a URL. */
@@ -230,45 +236,4 @@ public class Run  extends Environment {
     return "";			// === String Pia.proxies unimplemented()
   }
 
-/*========================================================================
-
-
-### === These really ought to be in Agent
-
-sub agent {
-    return $agent;
-}
-sub request {
-    return $request;
-}
-sub transaction {
-    return $request;
-}
-sub resolver {
-    return $resolver;
-}
-
-sub eval_perl {
-    my ($ia, $it, $ii) = @_;
-
-    ## This bit of legacy crud evaluates the contents of $it as PERL code.
-    ##	  The local variables $agent and $request will already have been
-    ##	  set up by run_interform.
-
-    print "II Error: missing token\n" unless defined $it;
-    print "II Error: $it not a token\n" unless ref($it);
-    return unless ref($it);
-
-    my $status = $agent->run_code($it->content_string, $request, $resolver);
-    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-    print "code result is $status\n" if  $main::debugging;
-
-    $ii->token(IF::IT->new($it->tag, $status));    
-    return;
-}
-
-1;
-
-
-=================================================================== */
 }

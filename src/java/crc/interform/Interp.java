@@ -862,7 +862,9 @@ public class Interp extends State {
 
   /** Generate an error message and display it to the user.  We need to know 
    *	which actor generated the message; the token itself is in 
-   *	<code>it</code> in case we decide to display it.
+   *	<code>it</code> in case we decide to display it.<p>
+   *
+   *	=== Need to go through environment, which may throw an exception
    */
   public final void error(Actor ia, String message) {
     String msg = errheader(ia) + message;
@@ -891,7 +893,7 @@ public class Interp extends State {
   public final String errheader(Actor ia) {
     String s = "Interform Error: ";
     if (debug) s = "\n"+s;
-    String tag = (ia == null)? null : ia.tag();
+    String tag = (ia == null)? null : ia.attrString("tag");
     String name = (ia == null)? null : ia.name();
 
     if (tag != null) s += "<" + tag + "> ";
