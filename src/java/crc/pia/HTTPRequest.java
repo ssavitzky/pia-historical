@@ -534,9 +534,9 @@ public class  HTTPRequest extends Transaction {
 	Pia.debug(this, "Going to get request...");
 	destination.getRequest( this, resolver );
       }catch(PiaRuntimeException e){
-	errorResponse( 500, e.getMessage() );
-      }catch(UnknownHostException e2){
-	errorResponse( 400 , null );
+	errorResponse(e);
+      }catch(IOException e){
+	errorResponse(e);
       }
     }
   }
@@ -574,6 +574,38 @@ public class  HTTPRequest extends Transaction {
     response.startThread();
   }
 
+  /** 
+   * Construct and return an error response appropriate for a given
+   *	exception.
+   */
+  public void errorResponse(Exception e) {
+    int code = 500;
+    String msg = e.toString();
+
+    if (e instanceof PiaRuntimeException) {
+      msg = "PIA internal error: " + e.getMessage();
+    } else if (e instanceof java.net.UnknownHostException) {
+      code = 400;
+      msg = "Unknown host: <code>" + e.getMessage() + "</code>";
+    } else if (e instanceof java.net.UnknownServiceException) {
+      code = 400;
+      msg = "Unknown service: " + e.getMessage();
+    } else if (e instanceof java.net.ConnectException) {
+      code = 400;
+      msg = "Cannot connect to host: " + e.getMessage();
+    } else if (e instanceof java.net.NoRouteToHostException) {
+      code = 400;
+      msg = "No Route to host: " + e.getMessage();
+    } else if (e instanceof java.net.MalformedURLException) {
+      code = 400;
+      msg = "Malformed URL: " + e.getMessage();
+    } else if (e instanceof IOException) {
+      msg = "IO error: " + e.toString();
+    }
+
+    errorResponse(code, msg);
+  }
+
   /************************************************************************
   ** Construction:
   ************************************************************************/
@@ -590,7 +622,6 @@ public class  HTTPRequest extends Transaction {
     // we probably only need one instance of these objects
     fromMachine( null );
     toMachine( null );// done by default anyway
-
   }
 
 
@@ -717,11 +748,11 @@ public class  HTTPRequest extends Transaction {
 	    contentObj.setHeaders( headersObj );
 	}
       }catch (PiaRuntimeException e){
-	errorResponse(500, "Server internal error");
+	errorResponse(e );
 	Thread.currentThread().stop();      
 	notifyThreadPool();
-      }catch( IOException ioe){
-	errorResponse(500, "Server internal error");
+      }catch( IOException e){
+	errorResponse(e);
 	Thread.currentThread().stop();      
 	notifyThreadPool();
       }
@@ -779,14 +810,12 @@ public class  HTTPRequest extends Transaction {
 	if( headersObj!= null && contentObj != null )
 	  contentObj.setHeaders( headersObj );
       }catch (PiaRuntimeException e){
-	errorResponse(500, "Server internal error");
+	errorResponse(e);
 	Thread.currentThread().stop();      
-      }catch( IOException ioe ){
-	errorResponse(500, "Server internal error");
+      }catch( IOException e ){
+	errorResponse(e);
 	Thread.currentThread().stop();
       }
-      
-
 
       if( contentObj != null ){
 	boolean done = false;
@@ -798,15 +827,14 @@ public class  HTTPRequest extends Transaction {
       }
 
       Pia.debug(this, "Done running");
-   
     }
   }
 
   /**
    * Take machine as source of input -- this is a debugging constructor
    * @param from source of input for header and content
-   * @param debugflag set DEBUG flag -- if true use local run method and thread does not start
-   * automatically
+   * @param debugflag set DEBUG flag -- if true use local run method;
+   *	thread does not start automatically.
    */
   public HTTPRequest( Machine from, boolean debugflag ){
     super();

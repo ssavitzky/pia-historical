@@ -496,7 +496,7 @@ bytesRead=c.writeTo(out);
    * Get request through a proxy by opening the proxy socket
    */
   protected void getReqThruSock(URL url, Transaction request, Resolver resolver)
-       throws PiaRuntimeException, UnknownHostException {
+       throws PiaRuntimeException, IOException, UnknownHostException {
 
     int zport = 80;
     String zhost;
@@ -519,10 +519,7 @@ bytesRead=c.writeTo(out);
     }catch(UnknownHostException ue){
       throw ue;
     }catch(IOException e){
-      String msg = "Can not get data through proxy request\n";
-      throw new PiaRuntimeException (this
-				     , "getReqThruSock"
-				     , msg) ;
+      throw e;
     }
     Pia.debug(this, "Leaving proxy request");
   }
@@ -531,7 +528,7 @@ bytesRead=c.writeTo(out);
    * Get request data and create a response with the data 
    */
   public void getRequest(Transaction request, Resolver resolver)
-       throws PiaRuntimeException, UnknownHostException  {
+       throws PiaRuntimeException, IOException, UnknownHostException  {
 
     URL proxy;
     URL agentURL;
@@ -550,12 +547,11 @@ bytesRead=c.writeTo(out);
 	if( url != null )
 	  getReqThruSock( url, request, resolver );
     }catch(PiaRuntimeException e){
-      String msg = e.toString();
-      throw new PiaRuntimeException (this
-				     , "getRequest"
-				     , msg) ;
+      throw e;
     }catch(UnknownHostException e2){
       throw e2;
+    } catch (IOException e) {
+      throw e;
     }finally{
       ztimer.stop();
     }
