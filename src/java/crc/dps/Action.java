@@ -31,8 +31,7 @@ public interface Action {
   ** Semantic Operations:
   ************************************************************************/
 
-  /** Performs the action associated with the current Node in a given
-   *	Processor.
+  /** Returns an action code to a Processor.
    *
    *	The current node is the one obtainable from the Input via 
    *	<code>getNode</code>.  The action routine is free to make any 
@@ -42,24 +41,38 @@ public interface Action {
    *	cursor to operate on it. <p>
    *
    * @return integer ``action code'' indicating what additional action to take:
-   *	<dl compact>
-   *	   <dt> -1 <dd> Copy node without expansion.
-   *	   <dt>  0 <dd> No additional action required.
-   *	   <dt>  1 <dd> Copy node, expanding attributes and content.
-   *	   <dt>  2 <dd> Copy node, expanding attributes but not content.
-   *	</dl>
    */
-  public int action(Input in, Processor p);
+  public int actionCode(Input in, Processor p);
 
-  public static final int COPY_NODE   = -1;
-  public static final int COMPLETED   =  0;
+  /** Action code: <code>actionCode</code> has completed the action. */
+  public static final int COMPLETED   = -1;
+
+  /** Action code: copy the node and its contents. */
+  public static final int COPY_NODE   =  0;
+
+  /** Action code: expand entities in the node's attributes; perform
+   *	processing actions in its content. 
+   */
   public static final int EXPAND_NODE =  1;
+
+  /** Action code: expand entities in the node's attributes; blindly copy
+   *	its content. 
+   */
   public static final int EXPAND_ATTS =  2;
 
-  public static final String actionNames[] = { 
-    "COPY_NODE", "COMPLETED", "EXPAND_NODE", "EXPAND_ATTS"};
+  /** Action code: put the node on the output.  Its content has either 
+   *	already been parsed, or (more likely) does not exist. 
+   */
+  public static final int PUT_NODE    =  3;
+  public static final int PUT_VALUE   =  4;
 
-  /** Performs the action associated with the current Node in a given Context. 
+  public static final String actionNames[] = { 
+    "COMPLETED", "COPY_NODE", "EXPAND_NODE", "EXPAND_ATTS",
+    "PUT_NODE", "PUT_VALUE" };
+
+  /** Performs the action associated with the current Node in a given Context.
+   *	Calling this instead of calling <code>actionCode</code> should always
+   *	produce correct results. 
    */
   public void action(Input in, Context aContext, Output out);
 
@@ -148,6 +161,5 @@ public interface Action {
    *	</pre>
    */
   public String convertToString(ActiveNode n, int syntax);
-
 
 }
