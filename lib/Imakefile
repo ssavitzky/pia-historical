@@ -4,15 +4,16 @@ XCOMM $Id$
 
 #include "pia.tmpl"
 
-all:: perl java
+all:: perl
 	@echo "symlinks made"
 
 perl: 
 	test -d perl || ln -s ../src/lib/perl .
 
+/* java is now a real subdir
 java: 
 	test -d java || ln -s ../src/lib/java .
-
+*/
 
 
 
