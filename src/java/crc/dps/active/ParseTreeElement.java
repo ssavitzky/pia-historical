@@ -12,87 +12,96 @@ import crc.dom.Attribute;
 import crc.dom.AttributeList;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
-import crc.dom.BasicElement;
 import crc.dom.ElementDefinition;
-import crc.dom.Text;
-import crc.dom.Comment;
-import crc.dom.PI;
+import crc.dom.NoSuchNodeException;
+import crc.dom.NotMyChildException;
 
-import crc.dps.*;
-import crc.dps.aux.Copy;
+import crc.dps.NodeType;
+import crc.dps.Handler;
 
 /**
  * An implementation of the ActiveElement interface, suitable for use in 
- *	DPS parse.
+ *	DPS parse trees.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
  * @see crc.dom.Node
+ * @see crc.dom.Element
+ * @see crc.dom.BasicElement
  * @see crc.dps.Context
  * @see crc.dps.Processor
  */
-public class ParseTreeElement extends BasicElement implements ActiveElement {
+public class ParseTreeElement extends ParseTreeNode implements ActiveElement
+{
 
   /************************************************************************
-  ** Instance Variables:
+  ** Element interface:
   ************************************************************************/
 
-  protected Handler handler = null;
-  protected Action  action  = null;
+  public int getNodeType() { return NodeType.ELEMENT; }
 
-  protected ElementDefinition definition = null;
+  public String getTagName(){ return tagName; }
+  public void setTagName(String tagName){ this.tagName = tagName; }  
 
-  /** flag for presence of closing semicolon on an Entity. */
-  protected boolean hasClosingDelim = true;
+  public AttributeList getAttributes(){ return attrList; }
+  public void setAttributes(AttributeList attrs)  { attrList = attrs; }
+  
+  public void setAttribute(Attribute newAttr)  {
+    if( newAttr == null ) return;
+    if (attrList == null) attrList = new ParseTreeAttrs();
+    attrList.setAttribute( newAttr.getName(), newAttr );
+  }
 
+  /** 
+   * Produces an enumerator which iterates over all of the Element nodes that
+   * are descendants of the current node whose tagName matches the given
+   * name. The iteration order is a depth first enumeration of the elements as
+   * they occurred in the original document.
+   */
+  public NodeEnumerator getElementsByTagName(String name)
+  {
+    ArrayNodeList result = new ArrayNodeList();
+    findAll( name, this, result );
+    return result.getEnumerator();
+    
+  }
 
   /************************************************************************
   ** ActiveNode interface:
   ************************************************************************/
 
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    // === used to call newHandler.getHandlerForToken
-    action  = handler;
-    isEmptyElement = handler.isEmptyElement(this);
-  }
-
- 
   // Exactly one of the following will return <code>this</code>:
 
   public ActiveElement	 asElement() 	{ return this; }
-  public ActiveText 	 asText()	{ return null; }
-  public ActiveAttribute asAttribute() 	{ return null; }
-  public ActiveEntity 	 asEntity() 	{ return null; }
-  public ActiveDocument  asDocument() 	{ return null; }
-
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
 
 
   /************************************************************************
   ** ActiveElement interface:
   ************************************************************************/
 
-  /** Append a new attribute.
-   *	Can be more efficient than setAttribute.
+  /** Make a copy with a different attribute list and content. */
+  public ActiveElement editedCopy(AttributeList atts, NodeList content) {
+    return new ParseTreeElement(this, atts, content);
+  }
+
+  /** Convenience function: get an Attribute by name. */
+  public Attribute getAttribute(String name) {
+    if (attrList == null || name == null) return null;
+    return attrList.getAttribute(name);
+  }
+
+  /** Convenience function: get an Attribute by name and return its value. */
+  public NodeList getAttributeValue(String name) {
+    Attribute attr = getAttribute(name);
+    return (attr == null)? null : attr.getValue();
+  }
+
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a String.
    */
-  public void addAttribute(String aname, NodeList value) {
-    crc.dom.Attribute attr = new ParseTreeAttribute(aname, value);
-    attr.setSpecified(value != null);
-    setAttribute(attr);
-    //System.err.println("***Added attribute " + attr.toString() 
-    //			 + " value= " + attr.getChildren());
+  public String getAttributeString(String name) {
+    NodeList v = getAttributeValue(name);
+    return (v == null) ? null : v.toString();
   }
 
   public boolean hasTrueAttribute(String name) {
@@ -111,6 +120,112 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     setAttributeValue(name, new ParseTreeText(value));
   }
 
+  /** Append a new attribute.
+   *	Can be more efficient than setAttribute.
+   */
+  public void addAttribute(String aname, NodeList value) {
+    crc.dom.Attribute attr = new ParseTreeAttribute(aname, value);
+    attr.setSpecified(value != null);
+    setAttribute(attr);
+    //System.err.println("***Added attribute " + attr.toString() 
+    //			 + " value= " + attr.getChildren());
+  }
+
+
+  /************************************************************************
+  ** Additional Syntactic Operations:
+  ************************************************************************/
+
+  protected boolean isEmptyElement = false;
+  protected boolean hasEmptyDelim = false;
+  protected boolean implicitEnd = false;
+
+  /** Returns <code>true</code> if the Element has no content. 
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care
+   *	of the common case where the DTD is unknown or incomplete.  Also
+   *	it can greatly speed up many operations that would otherwise require
+   *	knowledge of the DTD.
+   */
+  public boolean isEmptyElement() { return isEmptyElement; }
+
+  /** Sets the internal flag corresponding to isEmptyElement. */
+  public void setIsEmptyElement(boolean value) { isEmptyElement = value; }
+
+  /** Returns <code>true</code> if the Element has an XML-style 
+   *	``<code>/</code>'' denoting an empty element.
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care of
+   *	the common case where the DTD is unknown or incomplete; for example,
+   *	where XML extensions are mixed in with HTML.  Also it can greatly
+   *	speed up many operations that would otherwise require knowledge of the
+   *	DTD.
+   */
+  public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
+
+  /** Sets the internal flag corresponding to hasEmptyDelim. */
+  public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
+
+  /** Returns true if the Token corresponds to an Element which has content
+   *	but no end tag, because the end tag can be deduced from context.
+   *
+   *	This flag is redundant given a valid DTD; it exists to take care
+   *	of the common case where the DTD is unknown or incomplete, or where
+   *	an effort needs to be made to preserve exact input formatting in
+   *	the parse tree. <p>
+   *
+   * === Strictly speaking it has to be turned off if a Text node is inserted
+   *	 following this Element.
+   */
+  public boolean implicitEnd() 		   { return implicitEnd; }
+
+  /** Sets the internal flag corresponding to implicitEnd. */
+  public void setImplicitEnd(boolean flag) { implicitEnd = flag; }
+
+
+  /************************************************************************
+  ** Utilities:
+  ************************************************************************/
+  
+  protected void findAll( String tag, Element elem, ArrayNodeList result){
+    Element child = null;
+    
+    if( elem.hasChildren() ){
+      NodeEnumerator enum = elem.getChildren().getEnumerator();
+      
+      child =  (Element)enum.getFirst();
+      while( child != null ) {
+	//Report.debug(this, "child name-->"+ child.getTagName());
+	if( child.getTagName().equalsIgnoreCase( tag ) ){
+	  try{
+	    result.insert( result.getLength(), child );
+	  }catch(NoSuchNodeException err){
+	  }
+	}
+	findAll( tag, child, result );
+	child = (Element)enum.getNext();
+      }
+      
+    }
+  }
+
+
+  /************************************************************************
+  ** Instance Variables:
+  ************************************************************************/
+
+  /* tag name */
+  protected String tagName;
+
+  /* attribute list */
+  protected AttributeList attrList = new ParseTreeAttrs();
+
+  protected ElementDefinition definition = null;
+
+  /** flag for presence of closing semicolon on an Entity. */
+  protected boolean hasClosingDelim = true;
+
+
   /************************************************************************
   ** Syntax:  DTD entry:
   ************************************************************************/
@@ -121,18 +236,41 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
   }
 
   /************************************************************************
-  ** Syntax: convenience flags:
-  ************************************************************************/
-
-  public boolean isEmptyElement() { return isEmptyElement; }
-  public void setIsEmptyElement(boolean value) { isEmptyElement = value; }
-
-  public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
-  public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
-
-  /************************************************************************
   ** Construction:
   ************************************************************************/
+
+  public ParseTreeElement(){
+    setTagName( "" );
+  }
+
+  /** Construct a ParseTreeElement with given tagname, attributes, and content. 
+   * @see crc.dom.Element
+   */
+  public ParseTreeElement( String tag, AttributeList atts, NodeList content ){
+    setTagName( tag );
+    if (atts != null) 	 setAttributes( new ParseTreeAttrs(atts) );
+    if (content != null) copyContent(content);
+  }
+
+  public ParseTreeElement(Element e, AttributeList atts, NodeList content) {
+    setTagName( e.getTagName() );
+    if (e instanceof ActiveElement) copyActiveInfo((ActiveElement)e);
+    if (atts != null)       	    setAttributes( new ParseTreeAttrs(atts) );
+    if (content != null) 	    copyContent(content);
+  }
+
+  protected final void copyContent(NodeList content) {
+    if (content != null) {
+      NodeEnumerator enum = content.getEnumerator();
+      for (Node elem = enum.getFirst(); elem != null; elem = enum.getNext()) {
+	try{
+	  insertBefore( elem, null );
+	}catch(NotMyChildException ex){
+	  //Report.debug(ex.toString());
+	}
+      }
+    }
+  }
 
   protected final void copyActiveInfo(ActiveElement e) {
     setTagName(e.getTagName());
@@ -143,40 +281,24 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     implicitEnd = e.implicitEnd();
   }
 
-  public ActiveElement editedCopy(AttributeList atts, NodeList content) {
-    return new ParseTreeElement(this, atts, content);
-  }
-
-  /** Construct a ParseTreeElement with all fields to be filled in later. */
-  public ParseTreeElement() {
-  }
-
-  public ParseTreeElement(ActiveElement e) {
-    super((BasicElement)e);
-    copyActiveInfo(e);
-  }
-
-  public ParseTreeElement(ActiveElement e, AttributeList atts) {
-    super((BasicElement)e, atts);
-    copyActiveInfo(e);
-  }
-
   public ParseTreeElement(ActiveElement e,
 			  AttributeList atts, NodeList content) {
-    super((BasicElement)e, atts, content);
+    setTagName( e.getTagName() );
     copyActiveInfo(e);
+    if (atts != null)       	    setAttributes( new ParseTreeAttrs(atts) );
+    if (content != null) 	    copyContent(content);
   }
 
-  public ParseTreeElement(Element e) {
-    super(e);
-    if (e instanceof ActiveElement) copyActiveInfo((ActiveElement)e);
-    else setTagName(e.getTagName());
+  public ParseTreeElement(ParseTreeElement e, boolean copyChildren) {
+    tagName = e.tagName;
+    copyActiveInfo(e);
+    AttributeList attrs = e.getAttributes();
+    if (attrs != null) setAttributes( new ParseTreeAttrs( attrs ) );
+    if (copyChildren) copyChildren(e);
   }
 
   public ParseTreeElement(Element e, AttributeList atts) {
-    super((BasicElement)e, atts);
-    if (e instanceof ActiveElement) copyActiveInfo((ActiveElement)e);
-    else setTagName(e.getTagName());
+    this(e, e.getAttributes(), null);
   }
 
   /** Construct a ParseTreeElement with given tagname and attributes. 
@@ -187,12 +309,6 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
     if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
   }
 
-  /** Construct a ParseTreeElement with given tagname, attributes, and content. 
-   * @see crc.dom.Element
-   */
-  public ParseTreeElement(String tagname, AttributeList attrs, NodeList nl) {
-    super(tagname, attrs, nl);
-  }
 
   /** Construct a ParseTreeElement with given tagname and syntax,
    *	and a given implicitEnd flag (almost invariably <code>true</code>).
@@ -269,21 +385,13 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    ParseTreeElement e = new ParseTreeElement(this);
-    return e;
+    return new ParseTreeElement(this, false);
   }
 
   /** Return a deep copy of this Token.  Attributes and children are copied.
    */
   public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Copy.appendNode(newChild, node);
-    }
-    return node;
+    return new ParseTreeElement(this, true);
   }
 
   /** Return new node corresponding to this Token, made using the given 
@@ -293,8 +401,8 @@ public class ParseTreeElement extends BasicElement implements ActiveElement {
    */
   public Node createNode(DOMFactory f) {
     Element e = f.createElement(getTagName(), getAttributes()); 
-    if (e instanceof BasicElement) {
-      BasicElement be = (BasicElement)e;
+    if (e instanceof ActiveElement) {
+      ActiveElement be = (ActiveElement)e;
       be.setHasEmptyDelimiter(hasEmptyDelimiter());
       be.setIsEmptyElement(isEmptyElement());
       be.setImplicitEnd(implicitEnd());

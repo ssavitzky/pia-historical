@@ -23,44 +23,22 @@ import crc.dps.aux.Copy;
  * @see crc.dom.Node
  * @see crc.dps.active.ActiveNode
  */
-public class ParseTreeComment extends BasicComment implements ActiveComment {
+public class ParseTreeComment extends ParseTreeNode implements ActiveComment {
+
+  /************************************************************************
+  ** Comment Interface:
+  ************************************************************************/
+
+  public int getNodeType(){ return NodeType.COMMENT; }
+  public void setData(String data){ this.data = data; }
+  public String getData(){ return data; }
+
 
   /************************************************************************
   ** Instance Variables:
   ************************************************************************/
 
-  protected Handler handler = null;
-  protected Action  action  = null;
-
-  /************************************************************************
-  ** ActiveNode interface:
-  ************************************************************************/
-
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    action  = handler;
-  }
-
-  // At most one of the following will return <code>this</code>:
-
-  public ActiveElement	 asElement() 	{ return null; }
-  public ActiveText 	 asText()	{ return null; }
-  public ActiveAttribute asAttribute() 	{ return null; }
-  public ActiveEntity 	 asEntity() 	{ return null; }
-  public ActiveDocument  asDocument() 	{ return null; }
-
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
+  String data;
 
   /************************************************************************
   ** Construction:
@@ -70,21 +48,25 @@ public class ParseTreeComment extends BasicComment implements ActiveComment {
   public ParseTreeComment() {
   }
 
-  public ParseTreeComment(ParseTreeComment e) {
-    super(e);
-    handler = e.handler;
-    action = e.action;
+  public ParseTreeComment(ParseTreeComment n, boolean copyChildren) {
+    super(n, copyChildren);
+    data = n.getData();
+  }
+
+  public ParseTreeComment(Comment n, boolean copyChildren) {
+    super((ActiveComment)n, copyChildren);
+    data = n.getData();
   }
 
   /** Construct a node with given data. */
   public ParseTreeComment(String data) {
-    super(data);
+    this.data = data;
   }
 
   /** Construct a node with given data and handler. */
   public ParseTreeComment(String data, Handler handler) {
-    super(data);
-    setHandler(handler);
+    super(handler);
+    this.data = data;
   }
 
 
@@ -131,22 +113,10 @@ public class ParseTreeComment extends BasicComment implements ActiveComment {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreeComment(this);
+    return new ParseTreeComment(this, false);
   }
 
-  /** Return a deep copy of this Token.  Attributes and children are copied.
-   */
-  public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Copy.appendNode(newChild, node);
-    }
-    return node;
-  }
-
+ 
   /** Return new node corresponding to this Token, made using the given 
    *	DOMFactory.  Children <em>are not</em> copied.
    */

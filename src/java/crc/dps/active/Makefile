@@ -17,19 +17,37 @@ INTERFACES = \
 	ActivePI.java \
 	ActiveText.java
 
-CLASSES = \
-	NotActiveNodeException.java \
-	ParseNodeList.java \
+BASE_CLASSES = \
+	ParseTreeNode.java \
+	ParseTreeNamed.java
+
+NODE_CLASSES = \
 	ParseTreeAttribute.java \
-	ParseTreeAttrs.java \
 	ParseTreeComment.java \
 	ParseTreeElement.java \
 	ParseTreeEntity.java \
 	ParseTreePI.java \
 	ParseTreeText.java
 
+OTHER_CLASSES = \
+	NotActiveNodeException.java \
+	ParseTreeAttrs.java \
+	ParseNodeList.java \
+	ParseChildList.java \
+	ParseChildEnum.java
+
+CLASSES = $(BASE_CLASSES) $(NODE_CLASSES) $(OTHER_CLASSES)
+
 FILES = $(INTERFACES) $(CLASSES)
 
 include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies
+
+ParseTreeAttribute.class: ParseTreeNode.java ParseTreeNamed.java
+ParseTreeEntity.class: ParseTreeNode.java ParseTreeNamed.java
+ParseTreePI.class: ParseTreeNode.java ParseTreeNamed.java
+
+ParseTreeComment.class: ParseTreeNode.java
+ParseTreeElement.class: ParseTreeNode.java
+ParseTreeText.class: ParseTreeNode.java

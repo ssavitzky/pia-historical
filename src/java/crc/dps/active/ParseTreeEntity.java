@@ -23,44 +23,12 @@ import crc.dps.aux.Copy;
  * @see crc.dom.Node
  * @see crc.dps.active.ActiveNode
  */
-public class ParseTreeEntity extends BasicNamedNode implements ActiveEntity {
-
-  /************************************************************************
-  ** Instance Variables:
-  ************************************************************************/
-
-  protected Handler handler = null;
-  protected Action  action  = null;
-
-  /************************************************************************
-  ** ActiveNode interface:
-  ************************************************************************/
-
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    action  = handler;
-  }
+public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
 
   // At most one of the following will return <code>this</code>:
 
-  public ActiveElement	 asElement() 	{ return null; }
-  public ActiveText 	 asText()	{ return null; }
-  public ActiveAttribute asAttribute() 	{ return null; }
   public ActiveEntity 	 asEntity() 	{ return this; }
-  public ActiveDocument  asDocument() 	{ return null; }
 
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
 
   /************************************************************************
   ** Entity Interface:
@@ -71,7 +39,6 @@ public class ParseTreeEntity extends BasicNamedNode implements ActiveEntity {
   protected boolean isParameterEntity = false;
   public void setIsParameterEntity(boolean value) { isParameterEntity = value; }
   public boolean getIsParameterEntity() { return isParameterEntity; }
-
 
   /************************************************************************
   ** Construction:

@@ -17,7 +17,6 @@ import crc.dom.Node;
  * @see crc.dps.Token
  * @see crc.dom.Node
  */
-
 public class ParseNodeList extends ArrayNodeList implements ActiveNodeList {
 
   /**

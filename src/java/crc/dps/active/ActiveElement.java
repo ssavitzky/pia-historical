@@ -29,7 +29,7 @@ import crc.dps.Handler;
  * @see crc.dps.Processor
  */
 
-public interface ActiveElement extends Element, ActiveNode {
+public interface ActiveElement extends ActiveNode, Element {
 
   /************************************************************************
   ** Attribute convenience functions:

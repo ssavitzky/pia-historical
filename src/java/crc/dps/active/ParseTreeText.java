@@ -29,49 +29,39 @@ import crc.dps.aux.*;
  * @see crc.dps.Context
  * @see crc.dps.Processor
  */
-public class ParseTreeText extends BasicText implements ActiveText {
+public class ParseTreeText extends ParseTreeNode implements ActiveText {
 
   /************************************************************************
   ** Instance Variables:
   ************************************************************************/
 
-  protected Handler handler = null;
-  protected Action  action  = null;
+  protected String data = "";
+  protected boolean ignorableWhitespace = false;
 
   /** flag for whether the Text is whitespace. */
   protected boolean isWhitespace = false;
 
+  /************************************************************************
+  ** Text interface:
+  ************************************************************************/
+
+  public void setIsIgnorableWhitespace(boolean isIgnorableWhitespace){ 
+    ignorableWhitespace = isIgnorableWhitespace;
+  }
+  public boolean getIsIgnorableWhitespace() { return ignorableWhitespace; }
+
+  public int getNodeType(){ return NodeType.TEXT; }
+
+  public void setData(String data) { this.data = data; }
+  public String getData() 	   { return data; }
 
   /************************************************************************
   ** ActiveNode interface:
   ************************************************************************/
 
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    // === used to call newHandler.getHandlerForToken
-    action  = handler;
-  }
-
   // Exactly one of the following will return <code>this</code>:
 
-  public ActiveElement	 asElement() 	{ return null; }
   public ActiveText 	 asText()	{ return this; }
-  public ActiveAttribute asAttribute() 	{ return null; }
-  public ActiveEntity 	 asEntity() 	{ return null; }
-  public ActiveDocument  asDocument() 	{ return null; }
-
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
 
   /************************************************************************
   ** ActiveText interface:
@@ -88,8 +78,8 @@ public class ParseTreeText extends BasicText implements ActiveText {
   public ParseTreeText() {
   }
 
-  public ParseTreeText(ParseTreeText e) {
-    super(e);
+  public ParseTreeText(ParseTreeText e, boolean copyChildren) {
+    super(e, copyChildren);
     handler = e.handler;
     action = e.action;
     isWhitespace = e.isWhitespace;
@@ -97,21 +87,20 @@ public class ParseTreeText extends BasicText implements ActiveText {
 
   /** Construct a node with given data. */
   public ParseTreeText(String data) {
-    super(data);
+    this.data = data;
     setIsWhitespace(Test.isWhitespace(data));
   }
 
   /** Construct a node with given data and handler. */
   public ParseTreeText(String data, Handler handler) {
-    super(data);
-    setIsWhitespace(Test.isWhitespace(data));
+    this(data);
     setHandler(handler);
   }
 
   /** Construct a node with given data, flags, and handler. */
   public ParseTreeText(String data, boolean isIgnorable,
 		       boolean isWhitespace, Handler handler) {
-    super(data);
+    this.data = data;
     setIsIgnorableWhitespace(isIgnorable);
     setIsWhitespace(isWhitespace);
     setHandler(handler);
@@ -120,16 +109,13 @@ public class ParseTreeText extends BasicText implements ActiveText {
   /** Construct a node with given data, flags, and handler. */
   public ParseTreeText(String data, boolean isIgnorable,
 		       boolean isWhitespace) {
-    super(data);
-    setIsIgnorableWhitespace(isIgnorable);
-    setIsWhitespace(isWhitespace);
+    this(data, isIgnorable, isWhitespace, null);
   }
 
   /** Construct a node with given data, flags, and handler. */
   public ParseTreeText(String data, boolean isIgnorable) {
-    super(data);
+    this(data);
     setIsIgnorableWhitespace(isIgnorable);
-    setIsWhitespace(Test.isWhitespace(data));
   }
 
 
@@ -177,20 +163,7 @@ public class ParseTreeText extends BasicText implements ActiveText {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreeText(this);
-  }
-
-  /** Return a deep copy of this Token.  Attributes and children are copied.
-   */
-  public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Copy.appendNode(newChild, node);
-    }
-    return node;
+    return new ParseTreeText(this, false);
   }
 
   /** Return new node corresponding to this Token, made using the given 

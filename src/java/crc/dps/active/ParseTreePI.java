@@ -23,44 +23,26 @@ import crc.dps.aux.Copy;
  * @see crc.dom.Node
  * @see crc.dps.active.ActiveNode
  */
-public class ParseTreePI extends BasicPI implements ActivePI {
+public class ParseTreePI extends ParseTreeNamed implements ActivePI {
 
   /************************************************************************
-  ** Instance Variables:
+  ** PI interface:
   ************************************************************************/
 
-  protected Handler handler = null;
-  protected Action  action  = null;
+  String data = "";
 
+  public void setData(String data) { this.data = data; }
+  public String getData() 	   { return data; }
+
+  public int getNodeType(){ return NodeType.PI; }
+  
   /************************************************************************
   ** ActiveNode interface:
   ************************************************************************/
 
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    action  = handler;
-  }
-
   // At most one of the following will return <code>this</code>:
 
-  public ActiveElement	 asElement() 	{ return null; }
-  public ActiveText 	 asText()	{ return null; }
-  public ActiveAttribute asAttribute() 	{ return null; }
-  public ActiveEntity 	 asEntity() 	{ return null; }
-  public ActiveDocument  asDocument() 	{ return null; }
-
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
+  public ActivePI	 asPI() { return this; }
 
   /************************************************************************
   ** Construction:
@@ -70,21 +52,21 @@ public class ParseTreePI extends BasicPI implements ActivePI {
   public ParseTreePI() {
   }
 
-  public ParseTreePI(ParseTreePI e) {
-    super(e);
-    handler = e.handler;
-    action = e.action;
+  public ParseTreePI(ParseTreePI e, boolean copyChildren) {
+    super(e, copyChildren);
+    setData(e.getData());
   }
 
   /** Construct a node with given data. */
   public ParseTreePI(String name, String data) {
-    super(name, data);
+    super(name);
+    setData(data);
   }
 
   /** Construct a node with given data and handler. */
   public ParseTreePI(String name, String data, Handler handler) {
-    super(name, data);
-    setHandler(handler);
+    super(name, handler);
+    setData(data);
   }
 
 
@@ -131,20 +113,7 @@ public class ParseTreePI extends BasicPI implements ActivePI {
    *	copied, but children are not.
    */
   public ActiveNode shallowCopy() {
-    return new ParseTreePI(this);
-  }
-
-  /** Return a deep copy of this Token.  Attributes and children are copied.
-   */
-  public ActiveNode deepCopy() {
-    ActiveNode node = shallowCopy();
-    for (Node child = getFirstChild();
-	 child != null;
-	 child = child.getNextSibling()) {
-      ActiveNode newChild = ((ActiveNode)child).deepCopy();
-      Copy.appendNode(newChild, node);
-    }
-    return node;
+    return new ParseTreePI(this, false);
   }
 
   /** Return new node corresponding to this Token, made using the given 

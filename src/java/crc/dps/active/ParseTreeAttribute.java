@@ -8,7 +8,6 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.DOMFactory;
 
-import crc.dom.BasicAttribute;
 import crc.dom.Attribute;
 
 import crc.dps.*;
@@ -22,7 +21,7 @@ import crc.dps.*;
  * @see crc.dom.Node
  * @see crc.dps.active.ActiveNode
  */
-public class ParseTreeAttribute extends BasicAttribute
+public class ParseTreeAttribute extends ParseTreeNamed
 	implements ActiveAttribute
 {
 
@@ -30,38 +29,31 @@ public class ParseTreeAttribute extends BasicAttribute
   ** Instance Variables:
   ************************************************************************/
 
-  protected Handler handler = null;
-  protected Action  action  = null;
+  protected boolean specified = false;
+
+  /************************************************************************
+  ** Attribute interface:
+  ************************************************************************/
+
+  public int getNodeType() { return NodeType.ATTRIBUTE; }
+
+  public NodeList getValue(){ return getChildren(); }
+
+  public void setValue(NodeList value){
+    setIsAssigned( true );
+    setSpecified(value != null);
+    super.setValue(value);
+  }
+
+  public void setSpecified(boolean specified){ this.specified = specified; }
+  public boolean getSpecified(){return specified;}
+
 
   /************************************************************************
   ** ActiveNode interface:
   ************************************************************************/
 
-  public Syntax getSyntax() 		{ return handler; }
-  public Action getAction() 		{ return action; }
-  public Handler getHandler() 		{ return handler; }
-
-  public void setAction(Action newAction) { action = newAction; }
-
-  public void setHandler(Handler newHandler) {
-    handler = newHandler;
-    action  = handler;
-  }
-
-  // At most one of the following will return <code>this</code>:
-
-  public ActiveElement	 asElement() 	{ return null; }
-  public ActiveText 	 asText()	{ return null; }
   public ActiveAttribute asAttribute() 	{ return this; }
-  public ActiveEntity 	 asEntity() 	{ return null; }
-  public ActiveDocument  asDocument() 	{ return null; }
-
-  /** Append a new child.
-   *	Can be more efficient than <code>insertBefore()</code>
-   */
-  public void addChild(ActiveNode newChild) {
-    insertAtEnd((crc.dom.AbstractNode)newChild);
-  }
 
   /************************************************************************
   ** Construction:
@@ -69,18 +61,20 @@ public class ParseTreeAttribute extends BasicAttribute
 
   /** Construct a node with all fields to be filled in later. */
   public ParseTreeAttribute() {
-    super(null, null);
+    super();
   }
 
   public ParseTreeAttribute(ParseTreeAttribute e) {
-    super((BasicAttribute)e);
-    handler = e.handler;
-    action = e.action;
+    super(e.getName(), e.getValue());
   }
 
   /** Construct a node with given data. */
   public ParseTreeAttribute(String name, NodeList value) {
     super(name, value);
+    
+    // explicitly assigned value
+    setIsAssigned( true );
+    setSpecified( value != null );
   }
 
   /** Construct a node with given data and handler. */

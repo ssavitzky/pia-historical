@@ -16,20 +16,36 @@ import crc.dom.DOMFactory;
 /**
  * Interface for parse tree Nodes. <p>
  *
- *	By convention, a class that implements Active, or an interface
- *	that extends it, has the name <code>Active<em>Xxxx</em></code>. <p>
+ *	By convention, an interface that extends <code>ActiveNode</code>
+ *	has the name <code>Active<em>Xxxx</em></code>.   Classes that
+ *	<em>implement</em> <code>ActiveNode</code> have names of the form
+ *	<code>ParseTree<em>Xxxx</em></code>.  <p>
  *
- * ===	Should add some convenience functions for navigation and construction
+ *	This interface contains strongly-typed convenience functions for
+ *	conversion, navigation, and construction that are made significantly
+ *	more efficient than the equivalent DOM functions by the fact that
+ *	they do not need to perform run-time type casting. <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
  * @see crc.dom.Node
  * @see crc.dps.Action
+ * @see crc.dps.Active
  * @see crc.dps.Context
  * @see crc.dps.Processor
  */
 
 public interface ActiveNode extends Active, Node {
+
+  /************************************************************************
+  ** Navigation:
+  ************************************************************************/
+
+  public ActiveNode getPrevActive();
+  public ActiveNode getNextActive();
+  public ActiveNode getActiveParent();
+  public ActiveNode getFirstActive();
+  public ActiveNode getLastActive();
 
   /************************************************************************
   ** Syntax:
@@ -85,7 +101,7 @@ public interface ActiveNode extends Active, Node {
   public Node createNode(DOMFactory f);
 
   /************************************************************************
-  ** Convenience Functions:
+  ** Construction Convenience Functions:
   ************************************************************************/
 
   /** Append a new child.
@@ -97,18 +113,18 @@ public interface ActiveNode extends Active, Node {
   ** Presentation:
   ************************************************************************/
 
-  /** Return the String equivalent of the Token's start tag (for an element)
+  /** Return the String equivalent of the Node's start tag (for an element)
    *	or the part that comes before the <code>data()</code>.
    */
   public String startString();
 
-  /** Return the String equivalent of the Token's content or
+  /** Return the String equivalent of the Node's content or
    *	<code>data()</code>.  Entities are substituted for characters
    *	with special significance, such as ampersand.
    */
   public String contentString();
 
-  /** Return the String equivalent of the Token's end tag (for an element)
+  /** Return the String equivalent of the Node's end tag (for an element)
    *	or the part that comes after the <code>data()</code>.
    */
   public String endString();
