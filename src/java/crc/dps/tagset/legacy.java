@@ -6,7 +6,6 @@ package crc.dps.tagset;
 
 import crc.util.*;
 import crc.dps.handle.*;
-import crc.interform.handle.*;
 
 import java.util.Enumeration;
 
