@@ -16,6 +16,17 @@ See also:
 </ul>
 
 <ol>
+
+  <li><b>Bug</b>The value sub-entity is ignored when using the define entity system attribute.
+  For example, the value "whatever" never gets written to file.: 
+  <pre>
+  &lt;define entity=pgroup system=per-group mode=create&gt;&lt;value&gt;whatever&lt;/value&gt;&lt;/define&gt;
+  &pgroup;
+  </pre><br>
+  (1999-02-23)
+  
+</li>
+
   <li> <b>Bug</b> HTML attribute names not case-insensitive. <br>
        (1998-11-17) <br>
 
