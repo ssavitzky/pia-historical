@@ -24,7 +24,7 @@ sub new{
     $main::format_options{_columns}=1;
     $main::format_options{_footnotes}=0;
     $main::format_options{_table_contents}=0;
-    $main::format_options{_font_size}=11;
+#10 is default    $main::format_options{_font_size}=11;
     $main::format_options{_type}="article";
     $main::format_options{_column_width}="7";
 $main::format_options{_logo}="/home/pia/pia/src/Agents/printer/logo.ps";
@@ -83,7 +83,7 @@ sub header{
     my $self=shift;
     
     my $string="\\documentstyle[psfig";
-    $string.="," . $$self{_font_size} . "pt";
+    $string.="," . $$self{_font_size} . "pt" if $$self{_font_size};
     $string.=",twocolumn" if $$self{_columns} == 2;
 
     $string.="]{" . $$self{_type} . "}\n";
@@ -204,6 +204,13 @@ sub latex_a{
     
 }
 
+sub latex_base{
+    my $tag=shift;
+    my $string;
+    my $url_reference=$tag->attr('href');
+    $string.="\\author{$tag}\n";
+    return($string);
+}
 sub latex_title{
     my $tag=shift;
     my $string;
@@ -294,6 +301,7 @@ sub latex_image{
  %latex_functions =
 (
 title => \&latex_title ,
+base => \&latex_base ,
  a => \&latex_a ,
  img => \&latex_image ,
  table => \&latex_table ,
@@ -303,7 +311,6 @@ td => \&latex_table_cell
 
 
  %latex_start = (
- base   => "\\author{",
  form   => "",
  input  => "",
  frame  => "",
