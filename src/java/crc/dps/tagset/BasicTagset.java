@@ -116,15 +116,15 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
     Enumeration e = t.keys();
     while (e.hasMoreElements()) {
       String tag = e.nextElement().toString();
-      AbstractHandler h = (AbstractHandler)t.at(tag);
+      Handler h = (Handler)t.at(tag);
       setHandlerForTag(tag, h);
     }
     // === entities
   }
 
   public void setParent(Tagset ts) {
-    include(ts);
     setCaseFolding(ts.caseFoldTagnames(), ts.caseFoldAttributes());
+    include(ts);
     // === defaults
   }
 
@@ -195,6 +195,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   protected Handler tagHandlerCache;
 
   public Handler getHandlerForTag(String tagname) {
+    tagname = cannonizeTagname(tagname);
     if (tagNameCache != null && tagname.equals(tagNameCache)) 
       return tagHandlerCache;
 
@@ -213,16 +214,19 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
   }
 
   public void setHandlerForTag(String tagname, Handler newHandler) {
+    tagname = cannonizeTagname(tagname);
     handlersByTag.at(tagname, newHandler);
     handlerNames.push(tagname);
     addHandler(tagname, NodeType.ELEMENT, newHandler);
   }
 
   public Handler getHandlerForAttr(String name) {
+    name = cannonizeAttribute(name);
     return (Handler) handlersByAttr.at(name);
   }
 
   public void setHandlerForAttr(String name, Handler newHandler) {
+    name = cannonizeAttribute(name);
     handlersByAttr.at(name, newHandler);
     String xname = "~attr~" + name;
     handlerNames.push(xname);
@@ -492,7 +496,7 @@ public class BasicTagset extends ParseTreeGeneric implements Tagset {
    * @return the Handler in case more setup needs to be done.
    */
   protected BasicHandler defTag(String tag, String notIn, int syntax) {
-    BasicHandler h = (BasicHandler) handlersByTag.at(tag);
+    BasicHandler h = (BasicHandler) handlersByTag.at(cannonizeTagname(tag));
     if (h == null) h = new BasicHandler(syntax);
     else if (syntax != 0) h.setSyntaxCode(syntax);
     if (notIn != null) {
