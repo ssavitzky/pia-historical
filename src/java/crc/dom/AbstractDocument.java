@@ -11,17 +11,7 @@ package crc.dom;
 
 import java.io.*;
 
-
-
-
-
-
-
-
-
-
-
-public abstract class AbstractDocument implements Document {
+public abstract class AbstractDocument extends AbstractNode implements Document {
 
   /**
    * implements DOMFactory interfaces
@@ -47,6 +37,8 @@ public abstract class AbstractDocument implements Document {
    */
   
   public abstract NodeEnumerator getElementsByTagName(String name);
+
+  public int getNodeType(){ return NodeType.DOCUMENT; }
 
 }
 
