@@ -107,15 +107,19 @@ III. Setup
 	PIA_DIR=/usr/local/src
 	USR_DIR=~/.pia
 
-    B. If you need to change the default settings of the PIA.  
- 	The defaults are contained in 
+	Also, if you are proxying through another server, please indicate the
+	server like below:
+
+	HTTP_PROXY=http://int-gw.crc.ricoh.com:80/
+
+    B. The default settings of the PIA are contained in 
 
 	  pia/Config/pia.props
 
+	When the PIA starts, it will look for the pia.props under ~./pia.
 	You can create a customizable copy in your home directory under
-	~/.pia with the command
-
-	  pia/bin/makeconfig
+	~/.pia by copying pia/Config/pia.props and modifying it using a text
+	editor.
 
 	You will also find it convenient to put the directory "pia/bin"
 	into your shell's search path.  
