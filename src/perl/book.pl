@@ -31,9 +31,81 @@ sub initialize{
     $machine->callback(\&bookmaker_callback);
 
     $$self{_machine}=$machine;
-    $self->add_link($base,1)
+    $self->add_link($base,1) if $base;
 }
 
+sub filename{
+    my($self,$file)=@_;
+    $$self{_file} = $file;
+}
+
+sub save_to_file{
+    my $self=shift;
+    return unless $$self{_file};
+    open(FILE,">$$self{_file}");
+
+    print FILE $$self{page} . " " . $$self{_base} . "\n";
+    print FILE join(" ",keys(%{$$self{_references}}));
+    print FILE "\n";
+    print FILE join(" ",values(%{$$self{_references}}));
+    print FILE "\n";
+    select(FILE);
+    my $toc=$$self{toc};
+    for(keys(%{$toc})){
+	print $_ . " ";
+	$self->print_page($$toc{$_});
+	print "\n";
+    }
+    select(STDOUT);
+    close(FILE);
+
+}
+
+
+sub read_from_file{
+    my $self=shift;
+    return unless $$self{_file};
+    open(FILE,"<$$self{_file}");
+
+    ($$self{page},$$self{_base}) = split(" ",<FILE>);
+    my(@keys)=split(" ",<FILE>);
+    my(@values)=split(" ",<FILE>);
+    my $refs=$$self{_references};
+    for(@keys){
+	$$refs{$_}=shift(@values);
+    }
+    my $toc=$$self{toc};
+    while(<FILE>){
+	my($k,@rest)=split(" ");
+	my $page={};
+	$$toc{$k}=$page;
+	while($k=shift(@rest)){
+	    last if $k eq 'links';
+	    $$page{$k}=shift(@rest);
+	}
+	if($k eq 'links') {
+	    $$page{$k}=\@rest; #Does rest get a new value above..?
+	}
+    }
+    close(FILE);
+
+}
+
+sub print_page{
+    my $self=shift;
+    my $page=shift;
+    for(keys(%{$page})){
+	next if $_ eq 'links';
+	next if $_ eq 'html';
+	print $_ ." " . $$page{$_} ." " ;
+    }
+    if(exists($$page{links})){
+	print 'links ';
+	for(keys(%{$$page{links}})){
+	    print $_ . " ";
+	}
+    }
+}
 
 sub base{
     my($self,$url)=@_;
@@ -74,7 +146,7 @@ sub bookmaker_callback{
     $old_depth=$self->depth($reference) unless $old_depth;
     $old_depth=$$self{_max_depth} unless $old_depth;
     my @new_keys;
-    my $new_key;
+    my $new_key,$new;
     print "depth is $old_depth, max is " . $$self{_max_depth} . "\n" if $main::debugging;
     print "max pages exceeded " . $$self{page} . "\n" if($$self{page}>$$self{_max_pages});
     return 1 if($$self{page}>$$self{_max_pages});
@@ -85,8 +157,8 @@ sub bookmaker_callback{
 #	    print "new: " . $url->abs->as_string . " base: " . $response->request->url->as_string ." \n";
 	    $url=$url->abs;
 	    if($url->host && $url->scheme eq 'http'){
-		$new_key=$self->add_link($url,$old_depth+1) ;
-		push(@new_keys,$new_key);
+		($new_key,$new)=$self->add_link($url,$old_depth+1) ;
+		push(@new_keys,$new_key) if $new;
 		$element->attr('book_reference',$new_key);
 	    }
 	}
@@ -107,17 +179,18 @@ sub add_link{
     my $machine=$$self{_machine};
 print "getting page $link for book\n" if $main::debugging;    
     my $references=$$self{_references};
-    return "already got" if exists $$references{$link};
+    my $isnew= ! exists $$references{$link};
     my $key=$self->reference($link);
-$self->depth($key,$depth);    
+    return ($key,$isnew) unless $isnew;
+    $self->depth($key,$depth);    
     push(@{$links},$key);
 
-    	my $req=new HTTP::Request('GET',$link);
-	my $request=TRANSACTION->new($req,$machine);
+    my $req=new HTTP::Request('GET',$link);
+    my $request=TRANSACTION->new($req,$machine);
     $$request{_book_depth}=$depth;
     $$request{_book_reference}=$key;
-	$main::main_resolver->push($request);
-    return $key;
+    $main::main_resolver->push($request);
+    return ($key,$isnew);
     
 }
 
@@ -235,21 +308,48 @@ sub  table_of_contents_table{
 }
 
 sub html{
-    my($self)=@_;
+    local($self)=@_;
 ##order matters
     my $string;
     my $html=IF::IT->new('book');
 my $page;
     my $counter=0;
+    my $reference_key;
     print "page total is " . $$self{page} ."\n";
     while($counter<$$self{page}){
 	$page=$self->page($counter);
 	print "generate html for $counter \n";
 	if ($page){
+	    $refrenece_key=$$page{reference};
+	    $base_url=$$page{url};
 	    if($$page{html}){
 		$html->push($$page{html}) ;
-	    } else {
-		$html->push( IF::Run::parse_html_file($$page{cache} . "/.content")) if $$page{cache};
+	    } elsif( $$page{cache}) {
+		my $tmphtml= IF::Run::parse_html_file($$page{cache} . "/.content") if $$page{cache};
+##add in references
+		$tmphtml->traverse(
+				   sub {
+				       my($element, $start, $depth) = @_;
+			return 1 unless $start;
+			my $tag = $element->{'_tag'};
+			if($tag eq 'title'){
+			    $element_title=$element->content_string;
+			    $element->attr('book_reference',$reference_key);
+			    
+			    return 1;
+			}
+			if($tag eq 'a' && $tag->attr('href')){
+			    my $url=$tag->attr('href');
+			    my $url=URI::URL->new($url,$base_url);
+			    $url=$url->abs;
+			    my $refkey=$self->reference($url);
+			    $tag->attr('book_reference',$refkey);
+			}
+			return 1;
+		    }, 'ignoretext');
+		
+
+		$html->push($tmphtml);
 	    }
 	   
 	}

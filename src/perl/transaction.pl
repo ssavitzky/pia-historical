@@ -276,7 +276,7 @@ sub error_response{
 
     my $response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "not found");
     $response->content_type("text/plain");    
-    my $url=$self->url()->as_string();
+    my $url=$self->url()->as_string() if(ref($self->url));
     
     print "Sending error respose for $url\n" if $main::debugging;
 

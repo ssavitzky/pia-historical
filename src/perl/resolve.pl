@@ -118,7 +118,7 @@ sub resolve {
 #TBD  tracing of request, matches, responses
 
     print "resolve: entered with $numb transactions\n" if $main::debugging;
-    while(@$queue && $count<100){
+    while(@$queue){  ##&& $count<100){
 	$count+=1;
 
 	## shift a request off the queue.

@@ -26,8 +26,10 @@ sub new{
     $main::format_options{_table_contents}=0;
 #10 is default    $main::format_options{_font_size}=11;
     $main::format_options{_type}="article";
-    $main::format_options{_column_width}="7";
+$main::format_options{_column_width}="7";
 $main::format_options{_logo}="/home/pia/pia/src/Agents/printer/logo.ps";
+$main::format_options{_paper}="a4paper";
+$main::format_options{_images}="1";
 
 sub initialize{
     my($self,$argument)=@_;
@@ -89,13 +91,16 @@ sub header{
 #    $string.="]{" . $$self{_type} . "}\n";
 #use new latex style
    my $string="\\documentclass[";
+    $string.=$main::format_options{_paper};
     $string.="," . $$self{_font_size} . "pt" if $$self{_font_size};
     $string.=",twocolumn" if $$self{_columns} == 2;
 
     $string.="]{" . $$self{_type} . "}\n";
     $string.="\\usepackage{psfig}\n";
 
-$string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
+$string.=" \\addtolength{\\textwidth}{2cm}\\addtolength{\\textheight}{3cm}";
+$string.="\\addtolength{\\topmargin}{-.75cm}";
+$string.="\\setlength{\\oddsidemargin}{-.5cm}\\setlength{\\evensidemargin}{-.5cm}";
     $string.="\\begin{document}\n"; 
 
     return $string;
@@ -105,7 +110,7 @@ $string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\
 sub footer{
     my $self=shift;
     my $string;
-    $string="\\psfig{file=" . $$self{_logo} .",height=.25in}\n" if -e $$self{_logo};
+    $string="\n\n Printed by \\psfig{file=" . $$self{_logo} .",height=.25in}\n" if -e $$self{_logo};
     $string.="\n\\end{document}\n";
     return $string;
     
@@ -284,6 +289,7 @@ sub latex_table_cell{
 }
 sub latex_image{
     $self=shift;
+    return unless $main::format_options{_images};
     my $width=$self->attr('width');
     my $height=$self->attr('height');
     my $source=$self->attr('src');

@@ -8,6 +8,9 @@
 
 package MACHINE;
 
+$main::timeout=50;  #measured in seconds...this is a global var
+##maybe should move to pia.pl  use agency/timeout2.if to double...
+
 sub new{
     my($class,$address,$port,$socket)=@_;
     my $self={};
@@ -137,8 +140,9 @@ sub get_request{
     if(!$ua) {
 	$ua = new LWP::UserAgent;
 
-	$ua->use_eval();
-
+	$ua->use_eval(1);
+	$ua->use_alarm(1);
+	$ua->timeout($main::timeout) if $main::timeout; #testing 
 ###Configuration --is proxy necessary?
 ### Should Be careful not to proxy through ourselves
 	my $proxy=$self->proxy($request->url->scheme);

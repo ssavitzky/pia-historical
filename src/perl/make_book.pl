@@ -25,14 +25,31 @@ sub make_book{
 
 }
 
-sub end_book{
 
+sub add_book{
+    my ($self,$book)=@_;
+    $bookfile=$self->option('printer_root_directory') . "book";
+    $booknum=1;
+    while(-e "$bookfile$booknum"){
+	$booknum++;
+	print "$bookfile$booknum exists\n";
+    }
+    $bookfile.=$booknum;
+    $book->filename($bookfile);
+    return $bookfile;
+}
+
+sub end_book{
+    my $self=shift;
+    $book=$$self{_current_book};
+    $book->save_to_file if $book;
 }
 
 sub current_book{
     my($self,$book)=@_;
     if ($book){
 	$self->end_book;
+	$self->add_book($book);
 	$$self{_current_book}=$book;
     }
     

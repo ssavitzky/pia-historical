@@ -30,6 +30,15 @@ sub filename_to_url{
     
 }
 
+
+sub quick_filename_to_url{
+    my($self,$directory)=@_;
+    my $spool = $self->option('spool');
+    $directory =~ /$spool(.*)/;
+    return "http://" . $1;
+    
+}
+
 ##maintain hash of directories that we know  about
 # maybe should use url as key, not  directory name
 ## also should check modified date
@@ -190,6 +199,26 @@ sub handle_request{
 	$response->header($key,$value);
     }
     close HEADER;
+
+    if(! ($self->option("check_frequency") eq 'never')){
+	$request->assert('cache_response');
+	my $date = $response->header('Last-Modified');
+	$date = $response->header('Date') unless $date;
+	$date = $response->header('Client-Date') unless $date;
+	if(!$date){
+	    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+		$atime,$mtime,$ctime,$blksize,$blocks)
+		= stat("$directory/.content");
+	    $date=HTTP::Date::time2str($mtime);
+	}
+	$request->header('If-Modified-Since',$date);
+	my $newresponse=$main::main_resolver->simple_request($request);
+	if($newresponse->code eq '200'){
+	    $resolver->push($newresponse);
+	    return 1; ##request is satisfied
+	}
+    }
+
     my $content=new FileHandle;
 #    local *CONTENT;    
 #$response->header('Version',$self->version());
