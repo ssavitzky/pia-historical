@@ -43,19 +43,26 @@ public class Os_command_output extends crc.interform.Handler {
     }
 
     String proxies = it.hasAttr("bypass")? "" : env.proxies();
+    if (! "".equals(proxies)) proxies += " ";
 
     // using pipes instead of redirection works even if "cmd" contains
     // redirection or pipes.
-    cmd = "sh -c '"+proxies+" cat /dev/null | "+cmd+"'";
 
+    cmd = proxies+"cat /dev/null | "+cmd;
     ii.message("Executing: "+cmd);
+
+    // We have to use a string array because Java doesn't parse
+    // shell commands correctly, and uses execve instead of system.
+
+    String cmdArray[] = {"/bin/sh", "-c", cmd};
 
     boolean process = it.hasAttr("process");
 
     java.io.InputStream in = null;
     String buffer = "";
+    String error  = "";
     try {
-      Process p = runtime.exec(cmd);
+      Process p = runtime.exec(cmdArray);
       in = p.getInputStream();
 
       if (process) {
@@ -68,11 +75,24 @@ public class Os_command_output extends crc.interform.Handler {
 	  if (b == -1) break;
 	  buffer += (char)b;
 	}
+	in.close();
+	in = null;
+	ii.debug("output-->"+buffer);
+
+	in = p.getErrorStream();
+	for(;;){
+	  int b = in.read();
+	  if (b == -1) break;
+	  error += (char)b;
+	}
+	in.close();
+	in = null;
+	ii.message("stderr-->"+error);
       }
     } catch (Exception e) {
-      ii.error(ia, "in command '"+cmd+"'");
+      ii.error(ia, "attempting to run '"+cmd+"' ->\n"+e.toString());
     } finally {
-      if (process) {
+      if (!process) {
 	if (in != null) try {in.close();} catch(Exception e){}
 	ii.replaceIt(buffer);
       } else {

@@ -48,6 +48,7 @@ public class Os_command extends crc.interform.Handler {
     }
 
     String proxies = it.hasAttr("bypass")? "" : env.proxies();
+    if (! "".equals(proxies)) proxies += " ";
 
     if (cmd.indexOf('>') < 0) { // redirect to /dev/null if no redirection.
       cmd = cmd + " > /dev/null";
@@ -55,13 +56,18 @@ public class Os_command extends crc.interform.Handler {
 
     // using pipes instead of redirection works even if "cmd" contains
     // redirection or pipes.
-    cmd = "sh -c '"+proxies+" cat /dev/null | "+cmd+"'";
-
+    cmd = proxies+"cat /dev/null | "+cmd;
     ii.message("Executing: "+cmd);
+
+    // We have to use a string array because Java doesn't parse
+    // shell commands correctly, and uses execve instead of system.
+
+    String cmdArray[] = {"/bin/sh", "-c", cmd};
+
     try {
-      runtime.exec(cmd);
+      runtime.exec(cmdArray);
     } catch (Exception e) {
-      ii.error(ia, "in command '"+cmd+"'");
+      ii.error(ia, "attempting to run '"+cmd+"' ->\n"+e.toString());
     }
 
     ii.deleteIt();
