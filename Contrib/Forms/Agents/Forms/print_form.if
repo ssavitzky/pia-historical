@@ -30,7 +30,7 @@ process></write>
 <if><get name=printer>
   <then>
     Printing &myformurl; on &printer; for &user;<br>
-    executing ... lpr -P&printer; &fullprintfile;.ps 
+
     <os-command> lpr -P&printer; &fullprintfile;.ps  </os-command>
   </then>
   <else>

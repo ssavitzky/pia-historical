@@ -520,7 +520,7 @@ name=AuthenticatedUser></set></else></if>
 	  <then>
 	    <write file=users/&minefile;.html><get name=mynewlist></write>
 	    <write file="users/&minefile;_complete.html" append><a href="&myf;"> &myf; </a></write>
-	    <append-form-history form=&myf;>Removed: <get name=&minefile;></append-form-history>       
+	    <append-form-history form=&myf;>Removed: <get name=minefile></append-form-history>       
 	  </then>
 	</if>
       </then> 
@@ -537,7 +537,7 @@ name=AuthenticatedUser></set></else></if>
  <actor tag=process-route desc=" processes the content as a route object for
  this context --  e.g. replaces manager and such with appropriate values">
  <set name=routeobject><route> </route></set>
-<set local name=mysteps><get index=content findall=routestep></set>
+<set local name=mysteps><dummy><get index=content findall=routestep></dummy></set>
  <set local name=mydept><user-dept user=&myuser;></set>
  <set local name=replacements><get agent name=cachedroutes key=&myuser;></set>
  <set name=replacements key=user><get name=myuser></set>
