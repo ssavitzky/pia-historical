@@ -551,6 +551,12 @@ public class FormContent extends Properties implements Content {
     StringTokenizer tokens = null;
 
     if( toSplit != null ){
+      if( toSplit.equalsIgnoreCase("?null")){
+	queryString="";
+	return;
+      }
+
+
       Pia.debug(this, "the toSplit string is-->"+ toSplit);
       queryString = toSplit;
     } else{
