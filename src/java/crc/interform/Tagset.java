@@ -41,13 +41,17 @@ public class Tagset extends Element {
 
   /** Return a Tagset with a given name.
    *	If it doesn't exist or the name is null, a new Tagset is created.
+   *	If a tagset can be loaded (i.e. as a subclass) it is locked.
    */
   public static Tagset tagset(String name) {
     if (name == null) return new Tagset();
     Tagset t = (Tagset)tagsets.at(name);
     if (t == null) { 
       t = loadTagset(name);
-      if (t != null) tagsets.at(name, t);
+      if (t != null) {
+	tagsets.at(name, t);
+	t.lock();
+      }
     }
     if (t == null) {
       t = new Tagset(name);
