@@ -30,7 +30,7 @@ import crc.pia.Agent;
 import crc.ds.Queue;
 import crc.ds.Table;
 import crc.pia.Transaction;
-import crc.ds.Queue;
+
 
 public class Resolver extends Thread {
   /**
@@ -43,11 +43,6 @@ public class Resolver extends Thread {
    * Attribute index - a collection of computational codes.
    */
   protected Table computers;
-
-  /**
-   * Attribute index - transaction queue.
-   */
-  protected Queue transactions;
 
   /**
    * Attribute index - whether to stop running
