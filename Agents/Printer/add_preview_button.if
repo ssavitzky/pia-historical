@@ -6,15 +6,44 @@
 <h1>printer initialization for <code language=perl> $current_self->name; </code></h1>
 causes preview button to be inserted (machine name hard coded TBD)
 <code language=perl>
-$current_self->option('render_method',"latex");
 my $name=$current_self->name;
 $current_self->translator('text/html',sub {
  my $request=shift;
- my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;
- print "this $request should be request!!\n" if $main::debugging;
- my $form=make_form("http://$machine/printer/preview.if",({name => 'URL',size =>
- 50, value => $request->base()->as_string()},{type => 'submit',value => 'Preview'}))->as_HTML();
-    $request->add_control($form);
+return unless ref($request);
+my $url=$request->base;
+if(ref($url)){
+$url=$url->as_string;
+}
+my $machine=$main::PIA_HOST . ":" . $main::PIA_PORT;
+my $preview=URI::URL->new("http://$machine/printer/preview.if");
+my $book=URI::URL->new("http://$machine/printer/mkbook.if");
+my $print=URI::URL->new("http://$machine/printer/print.if");
+$preview->query_form('URL'  => $url);
+$book->query_form('URL'  => $url);
+$print->query_form('URL'  => $url);
+
+ my $form=IF::IT->new('a', href => $print->as_string);
+my $img=IF::IT->new('img', src => "http://$machine/printer/printer.gif",height
+=> 27);
+$form->push($img);
+my $string=$form->as_string;
+$form=IF::IT->new('a', href => $preview->as_string);
+$img=IF::IT->new('img', src => "http://$machine/printer/preview.gif",height
+=> 27);
+$form->push($img);
+$string.=$form->as_string;
+$form=IF::IT->new('a', href => $book->as_string);
+$img=IF::IT->new('img', src => "http://$machine/printer/bookmark.gif",height
+=> 27);
+$form->push($img);
+$string.=$form->as_string;
+$form=IF::IT->new('a', href => "http://$machine/printer/home.if");
+$img=IF::IT->new('img', src => "http://$machine/logo/pia27");
+$form->push($img);
+$string.=$form->as_string;
+$form=IF::IT->new('hr');
+$string.=$form->as_string;;
+    $request->add_control($string) if ref($request);
 });
 "installed preview button";
 </code>
@@ -23,6 +52,6 @@ $current_self->translator('text/html',sub {
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Nov 13 18:58:31 1996
+Last modified: Sun Nov 24 18:10:53 1996
 <!-- hhmts end -->
 </body></html>

@@ -11,7 +11,7 @@ postscript preview
 
 my $book=$current_self->current_book;
 
-my $element=book_ps($current_self,$book);
+my $element=$current_self->book_ps($book);
 
 print "book preview created \n";
 return $element;
@@ -27,6 +27,6 @@ return $form;
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Nov 21 21:05:13 1996
+Last modified: Sun Nov 24 17:02:37 1996
 <!-- hhmts end -->
 </body></html>
