@@ -11,6 +11,16 @@ import crc.pia.Piaproperties;
 
 public class ThreadPool{
   /**
+   * name of thread group
+   */
+  public static final String TP_NAME = "Transaction group";
+
+  /**
+   * use for shutdown of all threads
+   */
+  ThreadGroup group = null;
+
+  /**
    * max number of threads
    */
   public final static String MAXTHREADS = "crc.pia.maxthreads";
@@ -57,6 +67,9 @@ public class ThreadPool{
   } 
 
   ThreadPool(){
+
+    group = new ThreadGroup( TP_NAME );
+
     //get pool properities from Pia
     this.props = Pia.instance().properties();
     maxThreads = props.getInteger(MAXTHREADS, MAXTHREADCOUNT);
