@@ -1,8 +1,13 @@
+// Shutdown.java
+// $Id$
+// COPYRIGHT 1997 Ricoh Silicon Valley.
+
 package crc.pia;
 import java.io.*;
 import crc.pia.Pia;
 
-
+/** Shut down the PIA cleanly.
+ */
 public class Shutdown implements Runnable{
 
   public void run(){
