@@ -30,6 +30,11 @@
   </if></if></if>
 </actor>
 
+<!-- Initializing entities: ====================================== -->
+<set name=tFieldNames></set>
+<set name=t-file-names></set>
+<set name=t-required-fields></set>
+
 <!-- Actors used in template data files. ========================= -->
 <actor tag=t-data quoted dscr="set value, FORMAT, and TYPE strings for NAME.
     Value is set from form if present, else from CONTENT.">
@@ -40,7 +45,7 @@
       <then><set name="&name;-format"><get element name=format></set></if>
   <if><get element name=required>
       <then><set name="&name;-required"><get element name=required></set>
-	    <set name=t-required-fields><get name=t-required-fields> &name;</set>
+	    <set name=t-required-fields>&t-required-fields; &name;</set>
   </if>
   <set name="&name;"><protect-result><get name=content></protect-result></set>
   <if><protect-result><get form name="&name;"></protect-result>
@@ -65,6 +70,8 @@
   <if><get element name=nobreak>
       <then><set name="&name;-nobreak">1</set></if>
   <set name="&name;-doc">&content;</set>
+  <if><test match=data><get name="&name;-type">
+      <then><if><expand>&content;</expand></if></if>
 </actor>
 
 <!-- Special hacks for constructing form elements ===================== -->
@@ -235,7 +242,7 @@
   <set name="&name;">&value;</set>
   <set name=tFormFields><get name=tFormFields> &name;</set>
   <input name="&name;" size=30 value="&value;"> 
-  <i><a href="&agentPath;/help.if?topic=path">[path from root]</a></i>
+  <i><a href="&agentPath;/help.if?topic=path">[path]</a></i>
 </actor>
 
 <!-- special format:  Root directory.  Name should be dRoot -->
@@ -340,23 +347,34 @@
       <get name=tFirstItems>
       <repeat list="&tFieldNames;">
 	<if><test match=hidden><get name="&li;-type"></test><then>
+		<if><expand><get name="&li;-doc"></expand></if>
 		<t-hidden name="&li;">
 	  <else><if><test match=data><get name="&li;-type"></test>
-		    <get name="&li;-format">
-	  <then></then>
+		    <get name="&li;-format"><then>
 	  <else><if><get name="&li;-cluster"><then>
 		<set name=cluster-fields><get name=cluster-fields>
-		    <t-label name="&li;">
+		    <if><get name=cluster-label>
+			<then>&nbsp;<b><t-label name="&li;"></b></if>
 		    <t-field name="&li;"> <t-break name="&li;"></set>
+		<if><get name=cluster-label><else>
+		    <set name=cluster-label><t-label name="&li;"></set></if>
 		<set name=cluster-docs><get name=cluster-docs>
 		    <expand><get name="&li;-doc"></expand></set>
-	  <else><tr><th valign=top align=right><t-label name="&li;"></th>
-		    <td><t-field name="&li;"> <t-break name="&li;">
-			<get name=cluster-fields>
-			<expand><get name="&li;-doc"></expand></td>
+	  <else><tr><th valign=top align=right>
+			<if><get name=cluster-label>
+			    <then><get name=cluster-label>
+			    <else><t-label name="&li;">
+		    </th>
+		    <td><get name=cluster-fields>
+			<if><get name=cluster-label>
+			    <then>&nbsp;<b><t-label name="&li;"></b></if>
+			<t-field name="&li;"> <t-break name="&li;">
 			<get name=cluster-docs>
+			<expand><get name="&li;-doc"></expand>
+			<set name=cluster-label></set>
 			<set name=cluster-fields></set>
 			<set name=cluster-docs></set>
+		    </td>
 	</if></if>
       </repeat>
       <get name=tLastItems>
@@ -486,8 +504,8 @@
 </actor>
 
 <!-- Reconstruct the data file.  Very contorted to preserve layout. -->
-<actor tag=t-data-file empty dscr="construct a data.inc file"><set
-local name=lt><</set><set local name=gt>></set
+<actor tag=t-data-file empty dscr="construct a data.inc file"
+><set local name=lt><</set><set local name=gt>></set
 >&lt;!-- From &tBase;/&tPath;/&tName; --&gt;
 &lt;!--   in &dBase;/&dPath;/&dName; --&gt;
 &lt;!-- AUTOMATICALLY REBUILT WHEN TEMPLATE EXPANDED!  EDIT WITH CARE! --&gt;

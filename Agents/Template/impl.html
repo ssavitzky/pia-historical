@@ -210,9 +210,8 @@ possible to separate data from formatting, putting only
        corresponding documentation string.
   <dt> <code>cluster</code>
   <dd> If present, the form element will be grouped with the next one,
-       typically in a &lt;dd&gt; or &lt;td&gt; element.  Note that in order to
-       simplify label processing, clustered elements will appear
-       <em>after</em> the following un-clustered element.
+       typically in a &lt;dd&gt; or &lt;td&gt; element.  The cluster's label
+       is that of the first item in the cluster.
   <dt> <code>help=<em>topic</em></code>
   <dd> a help topic.  This is made into a link of the form
        <code><em>[topic]</em></code> that sends the query
@@ -252,12 +251,17 @@ The following field types are defined:
   <dd> A specially-formatted item used for adding a new data item to a
        form.  
   <dt> <code>hidden</code>
-  <dd> 
+  <dd> Items with type=<code>data</code> go into the form, but are concealed
+       from the user.  The documentation string is expanded while the form is
+       being processed, just before creating the data element.  This may be
+       used for recomputing the value before presenting it to the user.
   <dt> <code>submit</code>
   <dd> 
   <dt> <code>data</code>
   <dd> Items with type=<code>data</code> are kept in the data file, but
-       do not go into the form.  Effectively, they are constants.
+       do not go into the form.  Effectively, they are constants.  A
+       documentation string, if present, is expanded <em>before</em> creating
+       the form, while the data file is being processed.
   <dt> <code>void</code>
   <dd> Items with type=<code>void</code> have their <em>value</em> displayed
        in the form in place of a form element.  Their label is italicized.
@@ -267,18 +271,19 @@ The following field types are defined:
 <h2>To Do list:</h2>
 
 <dl>
-  <dt> Replace ``t-doc'' with ``t-form''
-  <dd> 
-  <dt> Put substitution entities into Agent files
-  <dd> 
   <dt> Figure out how to make checkbox and select work right.
-  <dd> 
+  <dd> (<em>name</em>-value for src, <em>name</em>Value conditionally).  Use
+       &lt;t-value&gt; to set; optional label for select.
   <dt> Put file type (subst/copy/make) in front of file labels.
   <dd> 
   <dt> Make tDataFile, etc. consistent
   <dd> so we can have data files with arbitrary names.
   <dt> Make an index of expanded instances of each template.
   <dd> This may involve keeping a log, but Agent, at least, can find its own.
+  <dt> Allow files to be renamed
+  <dd> (<em>name</em>-dst)
+  <dt> Allow different x-<em>name</em>-beg and x-<em>name</em>-end tags.
+  <dd> 
 </dl>
 
 <hr>

@@ -1,5 +1,9 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
-<html><head>
+<html>
+<read process quiet interform file="tagset.inc"><!-- initialize tagset -->
+<t-form-setup><!-- perform setup -->
+<!-- ============================================================= -->
+<head>
 <title>Template Expansion</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
@@ -12,72 +16,32 @@
           <read interform file="subhead.inc" process>
 </if>
 <hr><!-- ============================================================= -->
+This form is used internally for expanding a template's prototype files.<p>
+<hr>
+
+<if><get name="data-file"><then><read process quiet file="&data-file;"></if>
+
+<if><get name=dDir>
+    <else><if><get name=dRoot-path>
+	  <then><set name=dDir>&dRoot-path;/&dPath;/&dName;</set>
+</if></if>
 
 <if>&urlQuery;
+<then>
+
+<h4>Expanding:</h4>
+<set name=t-expanding>1</set>
+
+<!-- With t-expanding off this just generates the file report. -->
+<read quiet process interform file="expand.inc">
 
 <else>
-<form action="&url;">
-  <table>
-    <tr><th align=right>Source File:
-	<td> <input name=src size=50>
-    <tr><th align=right>Destination:
-	<td> <input name=dst size=50>
-    <tr><th align=right>Data file:
-	<td> <input name=dat size=50>
 
-    <tr><th> Delimiters:
-	<td> Begin: <input name=beg size=2 value="|">
-	     End: <input name=end size=2 value="|">
-    <tr><th>
-	<td> <input type=checkbox name=no-includes> No included headings
-	     (faster) 
-    <tr><th>
-	<td> <input type=checkbox name=use-query> Use query (form) for
-	     entities to substitute.
-    <tr><th>
-	<td> <input type=checkbox name=debug> include debugging info.
-    <tr><th><input type=submit>
-  </table>
-</form>
+<h4>Incomplete -- needs a form for selecting the template to expand. </h4>
 
-<then>
-  <table>
-    <tr><th align=right>Source:
-	<td> <code>&FORM.src;</code>
-    <tr><th align=right>Destination:
-	<td> <code>&FORM.dst;</code>
-    <tr><th align=right>Data file:
-	<td><if><get form name=use-query>
-	        <then>Using query data. <set name=ENTS>&FORM;</set>
-	        <else><code>&FORM.dat;</code>
- 	    	  <set name=DATA><read process quiet file="&FORM.dat;"></set>
-	    	  <set name=ENTS><get name=DATA findall=dl></set>
-	    </if>
-<if><get form name=debug><then>
-    <tr><th align=right> Delimiters:
-	<td> Begin: <code>&FORM.beg;</code>
-	     End: <code>&FORM.end;</code>
-    <tr><th align=right>Entities:<td>
-    <tr><th>
-	<td><get name=ENTS>
-
-    <tr><th align=right valign=top> Results:
-	<td><file copy subst="&ENTS;" beg="&FORM.beg;" end="&FORM.end;"
-	          file="&FORM.src;" dst="&FORM.dst;">
-</then></if>
-  </table>
 </if>
 
 <hr>
-
-This form is used internally for expanding a template's prototype files.<p>
-
-	     
-	
-<hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<address><a href="http://rsv.ricoh.com/~steve/"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
-         >steve@rsv.ricoh.com</a>&gt;</address>
 </body></html>

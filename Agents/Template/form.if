@@ -2,7 +2,6 @@
 <html>
 <read process quiet interform file="tagset.inc"><!-- initialize tagset -->
 <t-form-setup><!-- perform setup -->
-
 <!-- ============================================================= -->
 <head>
 <title>&agentName; &title;</title>
@@ -19,8 +18,8 @@
 	  <then><set name=dDir>&dRoot-path;/&dPath;/&dName;</set>
 </if></if>
 
-<a href="#template">&tName</a> template ||
-<a href="#files">File report.</a><br>
+<a href="&agentName;">&agentName;</a> for <b>&tName;:</b>
+<a href="#template">Form</a>  || <a href="#files">File report.</a><br>
 
 <if><get name="debug"><then>
 <table cellpadding=0 cellspacing=0 border=0>
@@ -48,6 +47,7 @@
 </if>
 
 <get name=tName-doc>
+<p>
 
 <if><get form name="expand"><get form name="expand-c"><then>
     <if><get form name="expand-c"><t-missing-fields><then>
@@ -97,7 +97,6 @@
   <li> <a href="#data">Data dump</a>
   <li> <a href="#data-file">New Data File</a>
 </ul>
-</if>
 
 <h4><a name="form">Form Dump</a></h4>
 <dl>

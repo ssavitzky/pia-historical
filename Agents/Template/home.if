@@ -1,6 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Generic Home Page for &agentName;</title>
+<title>&agentName; Agent Home Page</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 <base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
@@ -13,7 +13,7 @@
 
 <!-- See whether there's an "about" file for this agent. -->
 <read interform file="about.inc" quiet process>
-<p>
+
 <hr>
 <h2 align=center>Template Index</h2>
 <read interform process file=t-index.inc>

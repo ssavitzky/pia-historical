@@ -39,19 +39,29 @@
 	<else>skip</else>
   </if></if></if></if>:</b></code>
   <a href="file:&srcDir;/&file;">[src]</a> <b>-&gt;</b>
-  <a href="file:&dstDir;/&file;">[dst]</a>
+  <code><if>
+    <read info=p file="&dstDir;/&file;">
+    <then><a href="file:&dstDir;/&file;">[dst]</a></then>
+    <else><a href="file:&dstDir;/&file;">[new]</a></else>
+  </if></code>
   <code>&file;</code>
 </actor>
 
 <actor tag=t-write-backup empty dscr="Write backup for FILE">
   <if><get name=t-expanding><then>
       <if><read info=p file="&dstDir;/&file;">
-          <then>
-		<file copy file="&dstDir;/&file;" dst="&dstDir;/&file;.bak>
-		<a href="&dstDir;/&file;.bak">[backup] written.</a>  </if></if>
+          <then><a href="file:&dstDir;/&file;.bak">[backup]</a>...
+		<if><read info=p file="&dstDir;/&file;.bak">
+		    <then><file remove file="&dstDir;/&file;.bak">
+			  <set local name=over>over</set>
+		    <else><set local name=over></set></if>
+		<file rename file="&dstDir;/&file;" dst="&dstDir;/&file;.bak">
+		&over;written. </if></if>
 </actor>
 
-<actor tag=t-handle-file empty dscr="Handle FILE">
+<!-- === should really allow for name-stem != label.. slightly hairy. === -->
+<!-- === requires tracking the elements, not the filenames. === -->
+<actor tag=t-handle-file empty dscr="Handle FILE with given entity NAME">
   <set local name=file><get element name=file></set>
   <if> <test match=data.inc>&file;</test><then> template data
 	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
@@ -62,7 +72,7 @@
 	<else><if><get name="x-&file;"><then>
 	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
 	      <file copy subst="&FORM;" file="&srcDir;/&file;"
-		    dst="&dstDir;/&file;">
+		    dst="&dstDir;/&file;" beg="|" end="|">
 	  <else> ... to be </if> expanded
 	  </then>
 	<else><if><get name="c-&file;"><then>
@@ -72,7 +82,9 @@
 	  </then>
 	<else><if><get name="m-&file;"><then>
 	  <if><get name=t-expanding><then><br><t-write-backup file="&file;">
-		<em>unimplemented, so can't be </em>
+	      <if><protect-result><get name="m-&file;-recipe"></protect-result>
+		  <then><expand><get name="m-&file;-recipe"></expand>
+		  <else><em>unimplemented, so can't be </em></if>
 	  <else> ... to be </if> made
 	  </then>
 	<else>
@@ -82,9 +94,7 @@
 </actor>
 
 <ol>
-  <li> <t-report-file file=data.inc>
-       <t-handle-file file=data.inc>
-  <repeat list="&t-file-names; ">
+  <repeat list="data.inc &t-file-names; ">
   <li> <t-report-file file="&li;">
        <t-handle-file file="&li;">
   </repeat>
