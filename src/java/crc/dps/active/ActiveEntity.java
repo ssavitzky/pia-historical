@@ -7,9 +7,8 @@ import crc.dom.Node;
 import crc.dom.NodeList;
 import crc.dom.Entity;
 
-import crc.dps.Action;
-import crc.dps.Syntax;
-import crc.dps.Handler;
+import crc.dps.Input;
+import crc.dps.Context;
 
 /**
  * A DOM Entity node which includes extra syntactic and semantic
@@ -30,6 +29,10 @@ public interface ActiveEntity extends Entity, ActiveNode {
 
   public NodeList getValue();
   public void setValue(NodeList value);
+
+  /** Get the node's value as an Input.
+   */
+  public Input getValueInput();
 
   public boolean getIsAssigned();
   public void setIsAssigned(boolean value);

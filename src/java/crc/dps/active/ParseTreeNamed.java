@@ -8,6 +8,9 @@ import java.io.*;
 import crc.dom.*;
 import crc.dps.Handler;
 import crc.dps.Namespace;
+import crc.dps.Input;
+import crc.dps.Context;
+import crc.dps.input.FromParseNodes;
 
 /** 
  * Abstract base class for nodes with names and values. 
@@ -32,6 +35,12 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
    */
   public NodeList getValue(){ return value/*getChildren()*/; }
 
+  /** Get the node's value as an Input. 
+   */
+  public Input getValueInput(){ 
+    return new FromParseNodes(getValue());
+  }
+
   /** Get the associated namespace, if any. */
   public Namespace asNamespace() { return names; }
 
@@ -52,7 +61,10 @@ public abstract class ParseTreeNamed extends ParseTreeNode  {
       if (newValue instanceof Namespace) {
 	names = (Namespace)newValue;
 	value = newValue;
-      } else value = new ParseNodeList(newValue);
+      } else {
+	value = new ParseNodeList(newValue);
+	names = null;
+      }
     }
     //setChildren(newValue);
   }
