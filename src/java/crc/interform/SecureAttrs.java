@@ -15,9 +15,11 @@ import crc.sgml.AttrWrap;
 
 import crc.ds.List;
 
-/** A ``secure'' SGML wrapper for an Attrs object.  It is secure in the sense
- *	that it can check the Interp and its Environment to see whether certain
- *	operations are permitted in the current context. 
+/** A ``secure'' SGML wrapper for an Attrs object.  It is secure in
+ *	the sense that it can check the Interp and its Environment to
+ *	see whether certain operations are permitted in the current
+ *	context.  Since it extends <code>crc.sgml.AttrSGML</code>, it
+ *	can be put into an <code>attrs</code> object. 
  */
 public class SecureAttrs extends AttrWrap {
 
