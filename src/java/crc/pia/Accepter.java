@@ -136,7 +136,7 @@ public class Accepter extends Thread {
     if(port == 0) port = DEFAULT_PORT;
 
 
-    System.out.println("Accepter: listening on port" + port);
+    System.out.println("Accepter: listening on port " + port);
 
     this.port = port;
     try {
