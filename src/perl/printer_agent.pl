@@ -18,21 +18,26 @@ require HTML::FormatPS;
 #$image_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
 #$ps_URL="http://internal.crc.ricoh.com/~wolff/printer/preview.gif";
 
-$printer_root_directory=  "/tmp/printer/";
-$ps_file="/tmp/printer/preview.ps";
-$image_URL="file:/tmp/printer/preview";
-$ps_URL="file:/tmp/printer/preview.ps";
-system("mkdir $printer_root_directory") unless -d $printer_root_directory;
+### setup of filenames and DOFS agent done in initialize.if
+#$printer_root_directory=  "/tmp/printer/";
+#$ps_file="/tmp/printer/preview.ps";
+#$image_URL="file:/tmp/printer/preview";
+#$ps_URL="file:/tmp/printer/preview.ps";
+
 
 sub image_file_name{
     $self=shift;
-    my $image_file="$printer_root_directory/preview";
+    my $image_file="/preview";
 
     my $num=$self->option('preview_number');
-    my $string = "$image_file$num.gif";
+    my $string = "$printer_root_directory$image_file$num.gif";
+## also set ps_file
+    $ps_file="$printer_root_directory$image_file$num.ps";
+    $image_URL="$printer_base_url$image_file$num.gif";
+    $ps_URL="$printer_base_url$image_file$num.ps";
     $num+=1;
     $self->option('preview_number',$num);
-return $string;
+    return $string;
 }
 
 sub html_latex_ps{
@@ -92,7 +97,8 @@ sub create_preview{
     print "Status is $status\n" if $main::debugging;
     my $image_url = $request->url->as_string;
     my $element=HTML::Element->new('a',href => $image_url);
-    my $img_url="file:$image_file";
+#    my $img_url="file:$image_file";
+    my $img_url=$image_URL;
     my $particle=HTML::Element->new('img', src => $img_url );
     $element->push_content($particle);
 

@@ -70,6 +70,11 @@ sub version{
     return $string;
 }
 
+sub error_message{
+    my($self,$argument)=@_;
+    print "agent " . $self->name . " Reports an error: $argument" unless $main::quiet;
+    
+}
 ############################################################################
 ###
 ### Attributes:
@@ -77,6 +82,11 @@ sub version{
 ###	hash.  They are set from the options if undefined.  This provides
 ###	a clean way to perform special processing (e.g. filename or list
 ###	expansion) on attributes at the time they are first needed.
+
+#################
+### CAUTION: this blows the correspondence between options and attributes
+###           once an attribute gets cached, it never changes
+###           should revisit after changing relevant options?
 
 sub attribute {
     ## Set or retrieve a named attribute
@@ -125,16 +135,59 @@ sub dir_attribute {
 	$value = $$self{$key};
 	if (! defined $value) {
 	    $value = $self->option($key);
-	    my $home = $ENV{'HOME'};
-	    print "substituting $home for ~ in $value\n" if $main::verbose;
-	    $value =~ s:^\~/:$home/:;
-	    if ($value !~ m:/$:) { $value .= '/'; }
-	    $$self{$key} = $value if defined $value;
+	    if (defined $value){
+		my $home = $ENV{'HOME'};
+		print "substituting $home for ~ in $value\n" if $main::verbose;
+		$value =~ s:^\~/:$home/:;
+		if ($value !~ m:/$:) { $value .= '/'; }
+		$$self{$key} = $value;
+	    }
 	}
     }
     return $value;
 }
 
+sub agent_directory{
+    ## returns a directory that we can write to
+    ##  creates 1 if necessary, starts with agent_directory,
+    ##  then if_root, USR_ROOT/$name, PIA_ROOT/$name, /tmp/$name
+
+    my($self)=@_;
+    my $directory=$self->dir_attribute(agent_directory);
+    return $directory if $directory;
+    my $root=$self->dir_attribute(if_root);
+    my  @possibilities;
+    push(@possibilities,$root) if $root;
+## not clear if we want to append agent name to if_root, for now we assume that
+##  someone else did the right thing
+    my $main=$self->name;
+    my $type=$self->type;
+
+    push(@possibilities,$main::USR_ROOT . "/$name/");
+    push(@possibilities,$main::USR_ROOT . "/$type/");
+    push(@possibilities,$main::PIA_ROOT . "/$name/");
+    push(@possibilities,$main::PIA_ROOT . "/$type/");
+    push(@possibilities, "/tmp/$name/"); # default of last resort
+
+    foreach $directory (@possibilities) {
+	if(-e $directory  || mkdir($directory,0777)){
+	    if(-d $directory && -w $directory) {
+		$directory=$self->dir_attribute(agent_directory,$directory );
+		return $directory;
+	    }
+	}
+    }
+    $self->error_message("could not find appropriate, writable directory");
+    return ;
+}
+
+sub agent_url{
+    ### returns the base url (as string) for this agent
+	###  optional path argument just for convenience-- returns full url for accessing that file
+    my($self,$path)=@_;
+    my $url=$main::PIA_URL . $self->name . "/$path";
+    return $url;
+}
 
 ############################################################################
 ###
@@ -395,6 +448,14 @@ sub create_request {
     return $request;
 }
 
+sub retrieve{
+    my($self,$request)=@_;
+    ##simple utility to grab a file or other
+    my $ua = new LWP::UserAgent;
+    $response=$ua->simple_request($request); 
+    return $response;
+}
+
 ############################################################################
 ###
 ### Find Interforms for agent:
@@ -434,9 +495,15 @@ sub find_interform {
 	## === Probably, the browser forces a trailing slash. ===
     }
 
-    my $if_path = $self->attribute(if_path);
+    my $if_path = $self->dir_attribute(if_path);
     if (! defined $if_path) {
 	## If the path isn't already defined, set it up now.
+	##
+        ##  the path puts any  defined if_root first 
+	##   (if_root/$name, if_root/$type, if_root),
+	##  then USR_ROOT (USR_ROOT/$name, USR_ROOT/$type)
+	##  then PIA_ROOT (PIA_ROOT/$name, PIA_ROOT/$type)
+	##  then USR_ROOT, then PIA_ROOT (for inheriting forms)
 
 	my $home = $main::PIA_ROOT;
 	if ($home !~ m:/$:) { $home .= "/"; }
@@ -448,9 +515,9 @@ sub find_interform {
 	    if ($root !~ m:/$:) { $root .= "/"; }
 	    if ($root =~ m:/$name/$:) { $root =~ s:/$name/$:/:; } 
 	    if ($root =~ m:/$type/$:) { $root =~ s:/$type/$:/:; } 
-	    push(@$if_path, "$root$name/$form");
-	    push(@$if_path, "$root$name/$form") if $name ne $type;
-	    push(@$if_path, "$root/$form");
+	    push(@$if_path, "$root$name/");
+	    push(@$if_path, "$root$type/") if $name ne $type;
+	    push(@$if_path, "$root");
 	}
     
 	## Then see whether the user has overridden the form.
@@ -459,18 +526,18 @@ sub find_interform {
 	$root = $main::USR_ROOT;
 	if ($root !~ m:/$:) { $root .= "/"; }
 
-	push @$if_path, ("$root/$name/$form");
-	push @$if_path, ("$root/$type/$form") if $name ne $type;
-	push @$if_path, ("$home/$name/$form");
-	push @$if_path, ("$home/$type/$form") if $name ne $type;
-	push @$if_path, ("$home/$form", "$root/$form");
+	push @$if_path, ("$root$name/");
+	push @$if_path, ("$root$type/") if $name ne $type;
+	push @$if_path, ("$home$name/");
+	push @$if_path, ("$home$type/") if $name ne $type;
+	push @$if_path, ("$root","$home");
 
-	$self->attribute($if_path);
+	$self->dir_attribute(if_path,$if_path);
     }
     
-    print "find_interform: (@$if_path)\n" if $main::debugging;
+    print "find_interform  $form: (@$if_path)\n" if $main::debugging;
 
-    foreach $file (@$if_path) { return $file if -e $file; }
+    foreach $file (@$if_path) { return "$file$form" if -e "$file$form"; }
 
     return;			#found no file
 }
@@ -612,7 +679,7 @@ sub respond_to_interform {
     print "$name parsing $file\n" if  $main::debugging;
 
     local $response;		# available for interforms.
-
+    my $string;
     if(! defined $file){
 	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
 				      "nointerform");
@@ -623,7 +690,24 @@ sub respond_to_interform {
 #TBD check for path parameters  
 	## === TBD verify extension and file type.
 
-	my $string=$self->parse_interform_file($file,$request);
+##This test is not quite correct...
+	if($request->is('interform')) {
+	    $string=$self->parse_interform_file($file,$request);
+	} else {
+	    my $new_url= newlocal URI::URL $file;
+### I don't think we need to clone the request,url should be enough
+
+	    
+	    my $new_request=$request->clone;
+	    print $self->name . " looking up $new_url\n" if $main::debugging;
+	    $new_request->url($new_url);
+	    $response=$self->retrieve($new_request);
+	    my $content=$response->content;
+	    $content =~ s/<BASE HREF[^>]*>//;
+	    $response->content($content);
+	    print $self->name . "contenttype: " . $response->content_type ."  \n" if $main::debugging;
+	}	    
+       
 	if (! defined $response) {
 	    $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
 	    $response->content_type("text/html");    

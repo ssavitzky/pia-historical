@@ -18,6 +18,10 @@ sub initialize {
     $self->match_criterion('agent_request',1);
 
     &PIA_AGENT::initialize($self);
+
+    ###get proxy information from environment
+    $self->initialize_proxy();
+    
     return $self;
 }
 
@@ -72,5 +76,62 @@ sub act_on {
     }
 }
 
+######   utility functions that provide global functionally
+###
+
+######  agency->proxy_for(url)
+###  
+###    return a string indicating the proxy to use for retrieving this request
+###    this is for standard proxy notions only, for automatic redirection
+###    or re-writes of addresses, use an appropriate agent
+
+sub  proxy_for{
+    my($self,$url)=@_;
+    my  $destination= $url->host;
+    my $protocol=$url->scheme;
+    
+
+    my $no;
+    foreach $no (@{$self->no_proxy()}) {
+	if($destination =~ /$no/) {
+	    return;
+	}
+    }
+    return $self->proxy($protocol);
+    	
+}
+### getproxy information from environment
+sub initialize_proxy{
+    my($self)=@_;
+    while(($k, $v) = each %ENV) {
+	$k = lc($k);
+	next unless $k =~ /^(.*)_proxy$/;
+	$k = $1;
+	if ($k eq 'no') {
+	     $self->no_proxy(split(/\s*,\s*/, $v));
+	    
+	}
+	else {
+	    $self->proxy($k, $v);
+	}
+    }
+}
+
+sub no_proxy{
+    my($self,@destination)=@_;
+    $$self{'no_proxies'}=[] unless exists $$self{'no_proxies'};
+    my $array=$$self{'no_proxies'};
+    push(@$array,@destination) if @destination;
+    return $array;
+}
+
+sub proxy{
+    my($self,$protocol,$destination)=@_;
+    $$self{'proxies'} = {} unless exists $$self{'proxies'};
+    my $hash=$$self{'proxies'};
+    $$hash{$protocol}=$destination if $destination;
+    return $$hash{$protocol} if $protocol;
+    return $$hash{'default'};
+}
 
 1;

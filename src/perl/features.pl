@@ -321,7 +321,7 @@ sub is_interform{
     my $url=$request->url;
  
    my $path=$url->path;
-   return $path=~/.if$/i;
+   return $path=~/\.if$/i;
  
 }
 

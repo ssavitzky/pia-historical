@@ -164,6 +164,7 @@ sub handle {
 ###
 ###	any other object with a ``handle'' method. 
 ###
+#### if we had threads we would put this in another thread...
 sub satisfy {
     my ($self, $resolver) = @_;
     my $satisfied = 0;
@@ -180,7 +181,7 @@ sub satisfy {
 	if ($self->is_response()) {
 	    $self->send_response();
 	} elsif ($self->is_request()) {
-	    $resolver->push($self->error_response());
+	    $resolver->push($self->get_request);
 	}
     }
 }
@@ -188,8 +189,8 @@ sub satisfy {
 
 ############################################################################
 ###
-### Utilities to actually respond to a transaction, or generate
-###	(return) an error response transaction.
+### Utilities to actually respond to a transaction, get a request, 
+###	or generate (return) an error response transaction.
 ###
 
 sub send_response {
@@ -204,6 +205,46 @@ sub send_response {
 	print "sending response to $machine\n" if $main::debugging;
 	return;
     }
+}
+
+sub  get_request{
+    my($self)=@_;
+
+    if ($self->is('local')) {
+	return $self->error_response;
+    }
+
+    my $ua = new LWP::UserAgent;
+
+    $ua->use_eval();
+
+###Configuration --is proxy necessary?
+### Should Be careful not to proxy through ourselves
+    my $proxy=$main::agency->proxy_for($self->url);
+    
+#### if agency returns negative number, generate error
+###    network unavailable, or denied
+
+    if ($proxy < 0) {
+	return $self->error_response("negative proxy specified: network available?");
+    }
+    print "getting request" . $self->url . " through $proxy \n" . $self->headers_as_string() . "\n" if $main::debugging;
+    
+
+    $ua->proxy($self->url->scheme,$proxy) if $proxy;
+
+    #$self->remove_header("Pragma");
+    #$self->remove_header("Accept");
+
+
+    # === should really use simple_request and handle redirect with agents.
+#    my $response=$ua->request($self); 
+    my $response=$ua->simple_request($self); 
+
+    $response=TRANSACTION->new($response);
+    $response->to_machine($self->from_machine());
+
+    return $response;	# push the response transaction
 }
 
 sub error_response{
