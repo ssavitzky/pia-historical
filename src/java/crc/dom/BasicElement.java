@@ -126,7 +126,7 @@ public class BasicElement extends AbstractNode implements Element {
    * 
    */ 
   public String toString(){
-    return startString() + "\n" + contentString() + "\n" + endString();
+    return startString() + contentString() + endString();
   }
 
 
