@@ -26,7 +26,7 @@ MF_DIR=$(PIADIR)/Config/makefiles
 MYNAME=Manuals
 MYPATH=Doc/Manuals
 
-SUBDIRS=Api Author Install InterForm User
+SUBDIRS=Api
 
 include $(MF_DIR)/file.make
 include $(MF_DIR)/subdir.make 
