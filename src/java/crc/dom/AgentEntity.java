@@ -31,6 +31,26 @@ public class AgentEntity extends TextEntity implements ExternalTextEntity{
 
 
   /**
+   * Copy constructor
+   */
+  public AgentEntity(AgentEntity ae){
+    
+    setpIsNDATA( ae.getpIsNDATA() );
+    setpIsPublic( ae.getpIsPublic() );
+    setpPublicIdentifier( ae.getpPublicIdentifier() );
+    setpSystemIdentifier( ae.getpSystemIdentifier() );
+    setName( ae.getName() );
+    setIsParameterEntity( ae.getIsParameterEntity() );
+    setIsBound( ae.getIsBound() );
+    setIsExternal( ae.getIsExternal() );
+    setValue( new ChildNodeList( ae.getValue() ));
+    setNameSpace( ae.getNameSpace() );
+
+  }
+
+
+
+  /**
    * This is a dummy function created to satify DOM interface.
    */
   public void setIsNDATA(boolean isNDATA){
@@ -89,5 +109,21 @@ public class AgentEntity extends TextEntity implements ExternalTextEntity{
     return getpSystemIdentifier();
   }
 
+  /**
+   * Set namespace
+   */
+  void setNameSpace(NamedNodeList nameSpace){
+    this.nameSpace = nameSpace;
+  }
+  
+  /**
+   * Return this name space
+   * @return this name space
+   */
+  NamedNodeList getNameSpace(){
+    return nameSpace;
+  }
+
+  protected NamedNodeList nameSpace;
 
 }
