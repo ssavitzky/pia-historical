@@ -16,7 +16,7 @@ import w3c.www.mime.MimeTypeFormatException;
 
 import crc.pia.BadMimeTypeException;
 
-class Headers {
+public class Headers {
   /**
    * HttpMessage
    */
@@ -123,25 +123,12 @@ class Headers {
     zheaders = h;
   }
 
-  Headers(){
-    zheaders = new HttpEntityMessage();
-  }
 
- /**
-  * For testing.
-  * 
-  */ 
-  public static void main(String[] args){
-    try{
-      Headers h = new Headers();
-      h.setHeader("Host", "napa.crc.ricoh.com:9999");
-      h.setContentType("text/html");
-      h.setContentLength( 555 );
-      h.setHeader("Content-Type", "image/gif");
-      System.out.println( h.toString() );
-    }catch(Exception e){
-      System.out.println( e.toString() );
-    }
+  /**
+   * This is public because we nee to test it
+   */
+  public Headers(){
+    zheaders = new HttpEntityMessage();
   }
 
 }
