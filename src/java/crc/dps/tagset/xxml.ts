@@ -30,12 +30,8 @@
 	DOM Level 1 applications) where entities are expanded automatically
 	before the document processor can see them.
   </doc>
-  <define attribute=entity required>
+  <define attribute=name required>
     <doc> Specifies the name of the entity to be retrieved.
-    </doc>
-  </define>
-  <define attribute=namespace optional>
-    <doc> Specifies the namespace from which the entity is to be retrieved.
     </doc>
   </define>
 </define>
@@ -45,12 +41,8 @@
 	<tag>select</tag> are compactness and simplicity.  These also
 	translate into a considerable increase in run-time efficiency.
   </doc>
-  <define attribute=entity required>
+  <define attribute=name required>
     <doc> Specifies the name of the entity to be set.
-    </doc>
-  </define>
-  <define attribute=namespace optional>
-    <doc> Specifies the namespace in which the entity is to be stored.
     </doc>
   </define>
 </define>
