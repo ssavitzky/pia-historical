@@ -26,12 +26,14 @@
 #	This has serious problems when you're trying to use source control.
 
 CLASSDIR= $(TOPDIR)/classes
+JAVACLASSES= /usr/local/java/lib/classes.zip
+
 DOCDIR  = $(TOPDIR)/Doc
 
 .SUFFIXES: .java .class
 
 .java.class:
-	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(CLASSPATH) -O $<
+	javac -d $(CLASSDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(CLASSPATH) -O $<
 
 all:: $(FILES:.java=.class)
 
