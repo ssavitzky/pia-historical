@@ -12,7 +12,7 @@ JAR_HOME=`dirname $PRG`/..
 JAR_BIN=$JAR_HOME/bin/jar
 export JAR_BIN
 
-exec $JAR_BIN cvf crc.zip `cat pia_class.toc`
+exec $JAR_BIN cv0f crc.zip `cat pia_class.toc`
 
 
 
