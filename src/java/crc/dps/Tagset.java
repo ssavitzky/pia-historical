@@ -119,6 +119,14 @@ public interface Tagset extends DOMFactory {
   public Parser createParser();
 
   /** Creates an ActiveElement; otherwise identical to CreateElement. 
+   *	<p>
+   *
+   *	This method is called at parse time to create a node in the parse
+   *	tree under construction.  Normally it simply returns an instance
+   *	of <code>ParseTreeElement</code>, but may return an instance of 
+   *	a subclass instead. <p>
+   *
+   * @see crc.dps.active.ParseTreeElement
    */
   public ActiveElement createActiveElement(String tagname,
 					   AttributeList attributes);
@@ -182,6 +190,12 @@ public interface Tagset extends DOMFactory {
 
   /** Convert an attribute name to the cannonical case. */
   public String cannonizeAttribute(String name);
+
+
+  /** Return the tag of the paragraph element, implicitly started
+   *	when text appears inside an element that should not contain it. 
+   */
+  public String paragraphElementTag();
 
   /** Return the Tagset's DTD.  In some implementations this may be
    *	the Tagset itself.
