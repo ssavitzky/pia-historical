@@ -19,7 +19,7 @@ package crc.dom;
  * accessible from any execution context. 
  *
  */
-public interface DOM {
+public class DOM {
 
   /**
    * Returns an object that implements the DOMFactory interface. Note that by
@@ -31,5 +31,12 @@ public interface DOM {
    * methods on the DOM itself to allow for specification of which factory object to
    * be returned. 
    */
-  DOMFactory  getFactory();
+
+  public static String BASICFACTORY                         = "basic";
+  public static String CRCFACTORY                           = "crc";
+  
+  public static DOMFactory  getFactory(){ return null; }
+  public static DOMFactory  getFactory(String whichFactory){return null; }
 };
+
+
