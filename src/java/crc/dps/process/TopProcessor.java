@@ -387,6 +387,8 @@ public class TopProcessor extends BasicProcessor implements TopContext
   }
 
   public void initializeEntities() {
+    entities = new BasicEntityTable("DOC"); // top level is called "DOC"
+
     // Extract formatted information from today's Date.
     initializeDateEntities(new Date());
 
