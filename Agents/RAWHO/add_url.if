@@ -3,6 +3,7 @@
 <title> add url to &agentName;</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
+<read file=heading.inc interform process>
 <h1> Add url to list</h1>
 <read file="new_url.inc" interform process>
 <if><get name="urlatag"> <then>
@@ -15,7 +16,7 @@
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Oct  9 17:35:53 1997
+Last modified: Mon Oct 20 19:36:32 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

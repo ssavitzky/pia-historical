@@ -1,23 +1,22 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>RAWHO</title>
+<title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <read file=heading.inc interform process>
 
-<read file=new_url.inc interform process>
+ currently the calendar object does not get saved automatically (everything
+ else does), nor does it notice when the month changes.  For now these things
+ should be done manually...(e.g. by visiting this page)
 
-<read file=new_cat.inc interform process>
+<p>
 
-<hr>
-
-<read interform process file=show_cats.inc>
-
-
+ <read interform process file=save_calendar.inc>
+ <b>Saved calendar</b>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 14:19:59 1997
+Last modified: Tue Oct 21 14:07:37 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

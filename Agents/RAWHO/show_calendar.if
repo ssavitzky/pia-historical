@@ -1,0 +1,40 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title></title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body>
+<read file=heading.inc interform process>
+(<a href="save_calendar.if">Save current calendar</a>, <a
+  href="init_calendar.if"> initialize current calendar</a>)<br>
+<p>
+ <set name=calendar><get agent name=currentcal></set>
+ <if> <get form name=month> <then>
+  <set name=calname>&FORM.month;.&FORM.year;.html</set>
+ <set name=calendar><read file="calendars/&calname;" process></set>
+ </then></if>
+ <if> <get name=calendar> <then>
+ <get name=calendar>
+ </then>
+ <else><b> No links or categories recorded for &calname;</b></else></if>
+<hr>
+<form action="&url;">
+<input type="SUBMIT" value="View"> Month:<select name="month">
+<repeat start=01 stop=12> <option>&li;</option>
+</repeat>
+</select>
+Year:<select name="year">
+<repeat start=1997 stop=1999> <option>&li;</option>
+</repeat>
+</select>
+</form>
+
+
+<!-- $Id$ --><br>
+<!-- hhmts start -->
+Last modified: Tue Oct 21 15:08:16 1997
+<!-- hhmts end -->
+<p>
+<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
+         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
+         >wolff@crc.ricoh.com</a>&gt;</address>
+</body></html>

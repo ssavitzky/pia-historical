@@ -15,14 +15,12 @@
 <if><read file=features info> <then>
 <set agent name="features"><read file=features process></set>
 </then><else>
- Feature names and possible values -- default listed first
+  Example feature names and possible values -- default listed first
 <set agent name="features"><dl>
-<dt> size </dt>
+<dt> Feature1 </dt>
 <dd> <ul><li>0 <li>100 <li>1000 <li>10000</ul> </dd>
-<dt> site type </dt>
+<dt> Feature2 </dt>
 <dd> <ul><li>.com <li>.edu <li>.org<li> .net <li>ricoh.com</ul> </dd>
-<dt> keyword type </dt>
-<dd> <ul><li>technical <li>law <li>dogs</ul> </dd>
 </dl></set>
 </else></if>
 
@@ -39,10 +37,11 @@
 <set agent name="cats"><read file=cats.html process></set>
 </then><else><set agent name="cats"><dl> </dl></set></else></if>
 
+<read interform process file=init_calendar.inc>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Oct 16 13:14:10 1997
+Last modified: Tue Oct 21 15:01:29 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

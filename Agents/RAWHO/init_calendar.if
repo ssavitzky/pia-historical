@@ -1,23 +1,18 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>RAWHO</title>
+<title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <read file=heading.inc interform process>
 
-<read file=new_url.inc interform process>
-
-<read file=new_cat.inc interform process>
-
-<hr>
-
-<read interform process file=show_cats.inc>
-
-
+This initializes the calendar for the current month.  For some reason, reading
+from file results in a non-modifiable structure...
+ <read interform process file=init_calendar.inc>
+<get agent name=currentcal>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Tue Oct 21 14:19:59 1997
+Last modified: Tue Oct 21 15:44:21 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

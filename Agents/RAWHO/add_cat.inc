@@ -1,16 +1,5 @@
-<!--  the form to add a category -->
-
-<form  action=&url; method=post copy id=addcat>
-Category name:
-<input name="catname" size=20>
-<input type=submit value="AddCategory">
-Description:<textarea name="catdesc" rows=2 cols=20></textarea>
-
-<process copy>
- <set  name=catname><get form name=catname></set>
-<!--   get features -->
-<if><get form name=catfeatures> <then>
- <set name="catfeatures"><get form name=catfeatures></set>
+<!--  add a category -->
+<if><get name=catfeatures> <then>
  </then>
  <else>
  <set name="catfeatures"><dl>
@@ -23,18 +12,18 @@ Description:<textarea name="catdesc" rows=2 cols=20></textarea>
 </if>
 
 <!-- create new  category object -->
-<set name=catobj><h1><get form name=catname> <a href=/&agentName;/edit_category.if?category=&FORM.catname;>(edit)</a></h1>
+<set name=catobj><h1><get name=catname> <a href=/&agentName;/edit_category.if?category=&catname;>(edit)</a></h1>
   <dl>
    <dt>  name </dt>
-   <dd><get form name=catname></dd>
+   <dd><get name=catname></dd>
    <dt> description  </dt>
-   <dd><get form name=catdesc>
+   <dd><get name=catdesc>
+   <dt> links </dt>
+   <dd><ul> </ul></dd>
    <dt> created </dt>
    <dd> &month; &day; &year; </dd>
    <dt> features </dt>
    <dd> <get name=catfeatures>
-   <dt> links </dt>
-   <dd><ul> </ul></dd>
   </dl>
 </set>
 
@@ -44,11 +33,12 @@ Description:<textarea name="catdesc" rows=2 cols=20></textarea>
 <read interform file=save_cat.inc process>
 
 <!-- add a pointer to the category in categories -->
- <set agent index="categories" insert=-1> <dt> <a href="/~&agentName;/categories/&catname;/index.html" catname=&catname;><get form name=catname></a></dt>
-<dd><get form name=catdesc> </dd>
+ <set agent index="categories" insert=-1> <dt> <a href="/~&agentName;/categories/&catname;/index.html" catname=&catname;><get name=catname></a></dt>
+<dd><get name=catdesc> </dd>
 </set>
 
 <!--  checkpoint of categories -->
- <write file=categories.html><get agent name=categories></write>
-</process>
-</form>
+ <write file=cats.html><get agent name=cats></write>
+
+<!-- put in calendar -->
+<set name=dummy><calendar-day cal=&AGENT.currentcal; day=&day;><a href="/&agentName;/show_category.if?catname=&catname;"><get name=catname></a><br></calendar-day></set>

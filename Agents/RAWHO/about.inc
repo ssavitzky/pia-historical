@@ -3,9 +3,11 @@
 
 <h2>About RAWHO agents</h2>
 
-``&agentName;'' agents effectively  create hierarchical organizations of documents.  They provide means for adding links, automatically suggesting  categorizations, editing the hierarchy, and maintaining annotations.<p>
+``&agentName;'' agents  create (hierarchical) organizations of documents.
+They provide means for adding links,  categories, [automatically suggesting  categorizations], editing the hierarchy, and maintaining annotations.<p>
 
- These agents often run on a server shared by several people.  They can also function as local proxy agents  (e.g. putting a quick link adder in the control string).
+ These agents often run on a server shared by several people.  
 <p>
-RAWHO stands for Ricoh Assisted Working Hierarchical Organization.
+RAWHO stands for Ricoh Assisted Working Hierarchical Organization or something
+like that.
 <!-- $Id$ -->
