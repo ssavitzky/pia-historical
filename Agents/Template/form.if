@@ -338,7 +338,7 @@
 <else><if><get name=t-form-path>
     <then><read quiet process file="&t-form-path;"></then>
 <else><if><get name="data-file">
-    <then><t-list-form></then>
+    <then><t-tabular-form></then>
 <else>
     <h2>Select a Template</h2>
     <read interform process file=t-index.inc>
