@@ -8,42 +8,32 @@
        <td colspan=2 bgcolor=silver>&nbsp;
 
   <tr>  <td width=20>&nbsp;
-    <th align=right valign=top bgcolor=silver>Release 2.0b:
+    <th align=right valign=top bgcolor=silver>Release 2.0:
     <td>
 	<a href="/PIA/README">README</a>,
-        &nbsp;<a href="/PIA/INSTALL">INSTALL</a>,
         &nbsp;<a href="/PIA/Doc/Release">/Release&nbsp;notes/</a>, 
         &nbsp;<a href="/PIA/Doc/FAQ/">/FAQs/</a>
     </td><td bgcolor=silver>&nbsp; 
   <tr>	 <td>&nbsp; 
     <th align=right valign=top bgcolor=silver>Getting Started:
     <td>
-	<a href="/PIA/Doc/intro.html">Introduction</a>, 
-	&nbsp;<a href="/PIA/Doc/Tutorial/index.html">Tutorial</a>,
-	&nbsp;<a href="/PIA/Doc/Tutorial/syllabus.html">syllabus</a>,
-	&nbsp;<a href="/PIA/Doc/Papers/BuildingNOA">Building&nbsp;NOA's</a>
+	<a href="/PIA/Doc/intro.html">Introduction</a>
     </td><td bgcolor=silver>&nbsp; 
   <tr>	 <td>&nbsp;
     <th align=right valign=top bgcolor=silver>Introductions:
     <td>
-	<a href="/PIA/Doc/pia_group.html">The PIA group</a>, 
-	&nbsp;<a href="/PIA/Doc/vision.html">Our&nbsp;Vision</a>, 
-	&nbsp;<a href="/PIA/Doc/Papers/LinuxWorld1999/">LinuxWorld1999</a>
+	<a href="http://www.RiSource.org/">The PIA group</a>
     </td> <td bgcolor=silver>&nbsp; 
   <tr>	 <td>&nbsp;
     <th align=right valign=top bgcolor=silver>
 	<a href="/PIA/Doc/Manuals/">Manuals:</a>
     <td>
-	<a href="/PIA/Doc/Manuals/User/index.html">User's</a>, &nbsp;
-	&nbsp;<a href="/PIA/Doc/Manuals/Author/index.html">Writing Agents</a>,
-	&nbsp;<a href="/PIA/Doc/Manuals/InterForm/index.html">Active&nbsp;Docs</a>, 
-	&nbsp;<a href="/PIA/Doc/Manuals/Api/index.html">Internals(API)</a>
+	<a href="/PIA/Doc/doclist.html">Documentation List</a>
     </td> <td bgcolor=silver>&nbsp; 
   <tr>	 <td>&nbsp;
     <th align=right valign=top bgcolor=silver>
 	<a href="/PIA/Doc">Other Docs:</a>
-    <td><a href="/PIA/Doc/Papers/">/Papers/</a>,
-	&nbsp;<a href="/PIA/Doc/Notes/">/Notes/</a> 
+    <td><a href="/PIA/Doc/Notes/">/Notes/</a> 
     </td> <td bgcolor=silver>&nbsp; 
   <if><test match='crc.ricoh.com'>&url;><then>
   <tr>	 <td>&nbsp;

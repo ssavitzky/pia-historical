@@ -1,62 +1,8 @@
-README: The Information Agency Beta release 2.0
+README: for Platform for Information Appliances (PIA) release 2.0
 ==================================================
 
-This is the 2.0b release of the Information Agency.
-An Information Agency is a kind of proxy web server that provides an
-environment for document processing agents.  A Personal Information Agency
-sits between you and the rest of the web world, providing a place for agents
-which can perform many kinds of tasks for you, such as:
-	   * maintain a searchable history of all documents visited
-	   * filter advertisements from documents
-	   * notify you of changes to interesting documents
-
-A Peripheral Information Agency sits between a device, such as a printer,
-and the web, allowing you to access all functions of the device through any
-web browser.  Peripheral agents can provide value added features, such as:
-	   * formatting web documents for printing on paper
-	   * searching a set of digital photographs
-	   * automated forms processing
-
-Most importantly, Information Agencies make it very easy to modify and use
-new agents using "InterForms" -- Interface Forms that are simple extensions
-to HTML. 
-
-For further information about PIA's and agent concepts, please see
-http://pia.crc.ricoh.com/, send mail to pia@crc.ricoh.com, or start your own
-Information Agency (see below) and select "Documentation" from the home
-page.
-
-
-Supported platforms
--------------------
-
-The PIA is written in Java, and should be extremely portable.  So far 
-it has been tested on Solaris and Linux with JDK 1.1.3 and JDK 1.2beta2.
-
-Quick Start
------------
-
-If you are impatient, you can run the PIA as follows:
-
-	cd <pia install directory>
-	./bin/pia
-
-Now point your browser at
-
-	http://localhost:8888/
-
-
-Where to find more information
-------------------------------
-
-see the following documentation:
-
-	INSTALL
-		How to get and install the PIA.
-
-	Doc
-		Documentation directory.  All documentation is in HTML
-		and should be readable using any Web browser.
+For information on installing the PIA, go to 
+http://www.RiSource.org/PIA/
 
 ========================================================================
 Copyright 1997 Ricoh Silicon Valley
