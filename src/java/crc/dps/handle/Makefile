@@ -46,6 +46,7 @@ PRIM_HANDLERS = \
 	tagsetHandler.java \
 	testHandler.java \
 	textHandler.java \
+	debugHandler.java \
 	urlHandler.java 
 
 ### Additional actions for StandAlone XML
@@ -142,3 +143,4 @@ tagsetHandler.class: $(HANDLER_DEPS)
 testHandler.class: $(HANDLER_DEPS)
 textHandler.class: $(HANDLER_DEPS)
 thenHandler.class: $(HANDLER_DEPS)
+debugHandler.class: $(HANDLER_DEPS)
