@@ -536,7 +536,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
     crc.pia.Pia.debug(this, "Running interform...");
     if (! respondToInterform( trans, zurl, res ) ){
-      interformErr( trans, zurl );
+      respondNotFound( trans, zurl );
       //throw new PiaRuntimeException(this, "respond",
       //			    "No InterForm file found for "+trans.url());
     }
@@ -633,12 +633,6 @@ public class GenericAgent extends AttrBase implements Agent {
   public String findInterform( URL url, boolean noDefault ){
     if( url == null ) return null;
 
-    /* === this is totally bogus!  host must be hostname, not agent name...
-    String host =  url.getHost();
-    if( host!= null && !host.equalsIgnoreCase( name() ))
-	return null;
-    === */
-
     String path = url.getFile();
     return findInterform(url.getFile(), noDefault);
   }
@@ -646,15 +640,50 @@ public class GenericAgent extends AttrBase implements Agent {
   /**
    * Send redirection to client
    */
-  protected boolean isRedirection( Transaction req, URL url ) throws FileNotFoundException,
-    MalformedURLException{
-    String originalPath = null;
+  protected boolean redirectTo( Transaction req, String path ) {
+    URL oldUrl = req.requestURL();
+
     URL redirUrl = null;
     String redirUrlString = null;
 
-    if ( url == null ) url = req.requestURL();
+    try{
+      redirUrl = new URL(oldUrl, path);
+      redirUrlString = redirUrl.toExternalForm();
+      Pia.debug(this, "The redirected url-->" + redirUrlString);
+    }catch(MalformedURLException e){
+      String msg = "Malformed URL redirecting to "+path;
+      throw new PiaRuntimeException(this, "redirectTo", msg);
+    }
 
-    String path = url.getFile();
+    String msg ="Redirecting " + oldUrl.toExternalForm()
+      + " to:" + redirUrlString; 
+    System.err.println(msg);
+    Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
+    Transaction response = new HTTPResponse( Pia.instance().thisMachine,
+					     req.fromMachine(), ct, false);
+    response.setHeader("Location", redirUrlString);
+    response.setStatus(HTTP.MOVED_PERMANENTLY);
+    response.setContentLength( msg.length() );
+    response.startThread();
+    return true;
+  }
+
+  /**
+   * Test whether an InterForm request is a redirection.
+   */
+  protected boolean isRedirection( Transaction req, URL url ) {
+    return isRedirection(req, url.getFile());
+  }
+
+  /**
+   * Test whether an InterForm request is a redirection.
+   * @return true if the request has been handled.
+   */
+  protected boolean isRedirection( Transaction req, String path ) {
+    String originalPath = null;
+    URL redirUrl = null;
+    String redirUrlString = null;
+    URL url = req.requestURL();
 
     if ( path == null ) return false;
 
@@ -670,9 +699,13 @@ public class GenericAgent extends AttrBase implements Agent {
 
     if (path.equals("/")) {
       path = "/Agency/ROOTindex.if";
-    } else if (path.equals("/" + myname)) {
+    } else if (path.equals("/" + myname)
+	       || path.equals("/" + mytype)
+	       || path.equals("/" + mytype + "/" + myname) ) {
       path += "/home.if";
-    } else if (path.equals("/" + myname + "/")) {
+    } else if (path.equals("/" + myname + "/")
+	       || path.equals("/" + mytype + "/")
+	       || path.equals("/" + mytype + "/" + myname + "/") ) {
       path += "index.if";
     }
 
@@ -682,29 +715,12 @@ public class GenericAgent extends AttrBase implements Agent {
     // check for existence
     String wholePath = findInterform( path, false );
     if( wholePath == null ){
-      throw new FileNotFoundException("File :" + path + "does not exist");
+      respondNotFound(req, path);
+    } else {
+      redirectTo(req, path);
     }
-    else{
-      try{
-	redirUrl = new URL(url, path);
-	redirUrlString = redirUrl.toExternalForm();
-	Pia.debug(this, "The redirected url-->" + redirUrlString);
-      }catch(MalformedURLException e){
-	throw e;
-      }
-
-      String msg ="The new location is :" + redirUrlString; 
-      Content ct = new ByteStreamContent( new StringBufferInputStream(msg) );
-      Transaction response = new HTTPResponse( Pia.instance().thisMachine,
-					       req.fromMachine(), ct, false);
-      response.setHeader("Location", redirUrlString);
-      response.setStatus(HTTP.MOVED_PERMANENTLY);
-      response.setContentLength( msg.length() );
-      response.startThread();
-      return true;
-    }
+    return true;
   }
-
 
 
   /**
@@ -777,8 +793,10 @@ public class GenericAgent extends AttrBase implements Agent {
 	}
 
 	if_path.push( root+myname+filesep );
-	if( myname != mytype )
-	 if_path.push( root+mytype+filesep );
+	if( myname != mytype ) {
+	  if_path.push( root+mytype+filesep+myname+filesep );
+	  if_path.push( root+mytype+filesep );
+	}
 	if_path.push( root );
       }	
 
@@ -792,13 +810,17 @@ public class GenericAgent extends AttrBase implements Agent {
       if ( !root.endsWith( filesep ) ) { root = root + filesep; }
       if_path.push( root+myname+filesep );
 
-      if ( myname != mytype )
+      if ( myname != mytype ) {
+	if_path.push( root+mytype+filesep+myname+filesep );
 	if_path.push( root+mytype+filesep );
+      }
 
       if_path.push( home+myname+filesep );
 
-      if( myname != mytype )
+      if( myname != mytype ) {
+	if_path.push( home+mytype+filesep+myname+filesep );
 	if_path.push( home+ mytype+filesep );
+      }
 
       if_path.push( root );
       if_path.push( home );
@@ -832,12 +854,32 @@ public class GenericAgent extends AttrBase implements Agent {
     return null;
 }
 
+  /** 
+   * Send an error message that includes the agent's name and type.
+   */
+  protected void sendErrorResponse( Transaction req, int code, String msg ) {
+    msg = "Agent=" + name()
+      + (! name().equals(type())? " Type=" + type() : "")
+      + "<br>\n"
+      + msg ;
+    req.errorResponse(code, msg);
+  }
+
   /**
    * Send error message for not found interform file
    */
-  private void interformErr( Transaction req, URL url){
-    String msg = "No InterForm file found for "+url.toExternalForm();
-    req.errorResponse(HTTP.NOT_FOUND, msg);
+  protected void respondNotFound( Transaction req, URL url){
+    String msg = "No InterForm file found for <code>" +
+      url.getFile() + "</code>.";
+    sendErrorResponse(req, HTTP.NOT_FOUND, msg);
+  }
+
+  /**
+   * Send error message for not found interform file
+   */
+  protected void respondNotFound( Transaction req, String path){
+    String msg = "File <code>" + path + "<code> not found.";
+    sendErrorResponse(req, HTTP.NOT_FOUND, msg);
   }
 
   /**
@@ -856,6 +898,24 @@ public class GenericAgent extends AttrBase implements Agent {
 
 
   /**
+   * Respond to a request directed at one of an agent's interforms, 
+   * with a modified path.
+   *
+   * @return false if the file cannot be found.
+   */
+  public boolean respondToInterform(Transaction request, String path,
+				    Resolver res){
+    URL url = request.requestURL();
+    try {
+      url = new URL(url, path);
+    } catch(MalformedURLException e) {
+      String msg = "malformed URL redirecting to "+path;
+      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+    }
+    return respondToInterform(request, url, res);
+  }
+
+  /**
    * Respond to a request directed at one of an agent's interforms.
    * The InterForm's url may be passed separately, since the agent may
    * need to modify the URL in the request.
@@ -863,59 +923,41 @@ public class GenericAgent extends AttrBase implements Agent {
    * @return false if the file cannot be found.
    */
   public boolean respondToInterform(Transaction request, URL url, Resolver res){
-    boolean redirection = false;
 
     if (url == null) url = request.requestURL();
-    String interformOutput = null;
 
     if( url != null )
       Pia.debug(this, "respondToInterform: url is -->" +
 		url.getFile());
     
-    try{
-      redirection = isRedirection( request, url );
-    }catch(FileNotFoundException e1){
-      return false;
-    }catch(MalformedURLException e2){
-      return false;
-    }
+    if (isRedirection( request, url )) return true;
 
-    if( redirection ) return true;
-    else{
-      String file = findInterform( url, false );
-      if( file != null )
-	Pia.debug(this, "The path of interform is -->"+file);
+    String interformOutput = null;
+    String file = findInterform( url, false );
+    if( file != null )
+      Pia.debug(this, "The path of interform is -->"+file);
       
-      if( file == null ) {    //send error response
-	return false;
-      } 
-      
-      if( file.endsWith(".if") ){
-	// If find_interform substituted .../home.if for .../ 
-	// we have to tell what follows that it's an interform.
-	request.assert("interform");
-      }
-      if( request.test("interform") ){
-	InputStream in =  Run.interformFile(this, file, request, res);
-	sendStreamResponse(request, in);
-      } else if( file.endsWith(".cgi") ){
-	// === CGI should be executed with the right stuff in the environment.
-	Runtime rt = Runtime.getRuntime();
-	try{
-	  rt.exec(file);
-	}catch(IOException e){
-	  String msg = "Can not execute :"+file;
-	  throw new PiaRuntimeException (this, "respondToInterform", msg) ;
-	}
-	/*
-	String msg = "cgi invocation unimplemented.";
-	throw new PiaRuntimeException (this, "respondToInterform", msg) ;
-	*/
-      } else {
-	crc.pia.FileAccess.retrieveFile(file, request, this);
-      }
+    if( file == null ) {    //send error response
+      respondNotFound(request, url);
       return true;
+    } 
+      
+    if( file.endsWith(".if") ){
+      // If find_interform substituted .../home.if for .../ 
+      // we have to tell what follows that it's an interform.
+      request.assert("interform");
     }
+    if( request.test("interform") ){
+      InputStream in =  Run.interformFile(this, file, request, res);
+      sendStreamResponse(request, in);
+    } else if( file.endsWith(".cgi") ){
+      // === CGI should be executed with the right stuff in the environment.
+      String msg = "cgi invocation unimplemented.";
+      throw new PiaRuntimeException (this, "respondToInterform", msg) ;
+    } else {
+      crc.pia.FileAccess.retrieveFile(file, request, this);
+    }
+    return true;
   }
   
 
