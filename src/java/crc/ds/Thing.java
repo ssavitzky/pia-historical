@@ -117,7 +117,7 @@ public class Thing implements Stuff {
     if (t.attrs != null) attrs = t.attrs.clone();
   }
 
-  public Object clone {
+  public Object clone() {
     return new Thing(this);
   }
 }
