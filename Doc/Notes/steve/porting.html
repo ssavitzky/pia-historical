@@ -10,7 +10,7 @@
 <h3>OS Alternatives:</h3>
 <ul>
   <li> VxWorks -- already in use.
-  <li> <a href="http://www.cygnus.com/ecos/">ECOS</a> -- attractive, but
+  <li> <a href="http://www.cygnus.com/ecos/">eCOS</a> -- attractive, but
        requires C++ for some components; hasn't been ported to many processors
        yet. 
 </ul>
@@ -98,6 +98,17 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
 	      supplied where needed.  If necessary, you could use a working
 	      Java PIA as a pre-processor.
        </ul>
+
+  <li> PERL<br>
+       has data structures very similar to the ones in <code>crc.ds</code>; in
+       fact the <code>ds</code> module was originally designed to make a port
+       from PERL to Java as simple as possible.  
+
+  <li> Apache<br>
+       is a well-known web server written in C, and has some marketing
+       advantages as well.  It would replace the basic web server level
+       (Acceptor, Transaction, Resolver) with its own machinery; Agents would
+       probably be mapped into modules.
 </ul>
 
 <h3>Translating Java to C</h3>
@@ -109,7 +120,8 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
        (to a <code>struct</code> of pointers to functions).
   <li> Translating a Class<br>
        (to a <code>struct</code> plus interface functions).  Every instance of
-       a class has a pointer to the class-definition structure.
+       a class has a pointer to the class-definition structure, which in turn
+       has pointers to the method functions.
   <li> Dynamic Method Dispatching<br>
        This is done by going indirect through an object's class-definition
        structure to find the appropriate function.  A good example of this can
@@ -128,7 +140,9 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
 	      simply be a procedure that outputs (probably to an Output object
 	      rather than to a stream) the result of expanding the document
 	      with the DPS.  This is essentially the same process that a
-	      parser-generator goes through.
+	      parser-generator goes through.  Provides very high performance
+	      but very little flexibility -- the document cannot be changed at
+	      run-time. 
        </ol>
 </ul>
 
@@ -144,26 +158,33 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
   <li> You will probably have to add a string datatype. 
   <li> The basic server classes: <code>crc.pia.Acceptor</code>,
        <code>crc.pia.Transaction</code>, the <code>crc.pia.Content</code>
-       interface and at least some of its implementations. 
+       interface and at least some of its implementations.  These can probably
+       be omitted if Apache is used as the server base.
   <li> The <code>crc.pia.Agent</code> interface and its implementations
-       <code>crc.pia.GenericAgent</code>, <code>crc.pia.agent.Agency</code>,
-       and <code>crc.pia.agent.Dofs</code>.
+       <code>crc.pia.GenericAgent</code>, <code>crc.pia.agent.Admin</code>,
+       and <code>crc.pia.Root</code>.  Possibly <code>crc.pia.agent.Dofs</code>.
        These are essential for actually serving pages, no matter how they are
        eventually implemented.
   <li> The DOM objects.  In embedded applications, it should be possible to
-       pre-parse all the documents and convert them to C data structures.
-  <li> The Document Processing System, in the <code>crc.dps</code> package.  
+       pre-parse all the documents and convert them to C data structures,
+       though this is not necessarily a good itea.
+  <li> The Document Processing System, in the <code>crc.dps</code> package.
+       The main loop, in <code>crc.dps.process.BasicProcessor</code>, is
+       essentially trivial.  You will also need the handlers, tagsets, and
+       some of the Input and Output implementations. 
 </ul>
 
 <h3>What can be Left Out?</h3>
 <ul>
   <li> Everything in <code>crc.interform</code> -- this is the old InterForm
        interpretor, and is completely replaced by <code>crc.dps</code>, the
-       new Document Processing System.
+       new Document Processing System.  We are in the process of removing it,
+       since it will not be part of the released code. 
   <li> Certainly, any agents (in <code>pia/Agents</code> and
        <code>crc.pia.agent</code>) that you don't need.  Probably the only
-       ones you'll need are <code>Agency</code> and <code>DOFS</code>,
-       <code>Agency</code> should be severely restricted.
+       ones you'll need are <code>Admin</code>, <code>Root</code> and
+       <code>DOFS</code>. <code>Admin</code> should be severely restricted,
+       and <code>Root</code> will probably be totally changed. 
   <li> The Resolver (in <code>crc.pia.Resolver</code>) can be left out if you
        don't want to use your device as a proxy.  A lot of other machinery
        could go away if you got rid of this -- essentially you'd be left with
@@ -176,7 +197,7 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
   <li> You could leave out the parser (<code>crc.dps.parse</code>) if you used
        pre-build data structures for the parse trees of all your documents.
        This would make your system significantly faster and reduce the amount
-       of RAM needed.
+       of RAM needed, but would leave it impossible to customize.
   <li> Logging and debugging code should be implemented using macros so that
        it can easily be removed from the production system. 
 </ul>
@@ -196,18 +217,20 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
        recent version of the interfaces is in <code>org.w3c.dom</code>; the
        entire DPS needs to be rewritten to use it.  This will probably be
        done sometime in late March, 1999.  The names of several classes and
-       methods will have to be changed.
+       methods will have to be changed.  The basic algorithms will stay
+       intact, however.
   <li> <code>crc.pia</code> needs to be re-organized to make better use of
        interfaces.  <code>crc.pia.Agent</code> is far too complicated;
-       <code>crc.pia.Transaction</code> is too complex and should be redone as
-       an interface.
+       <code>crc.pia.Transaction</code> is also too complex and should be
+       redone as an interface.
   <li> <code>crc.pia.GenericAgent</code> is far too complex; it needs to be
        split up and simplified:
        <ul>
 	 <li> The file lookup code in <code>crc.pia.GenericAgent</code>
 	      (including <code>findInterformFile</code> and so on) needs to
 	      get moved to a separate utility class.  Compare
-	      <code>crc.pia.FileAccess</code>
+	      <code>crc.pia.FileAccess</code>, which is probably where it
+	      should go.
 	 <li> The methods in <code>crc.pia.GenericAgent</code> that put
 	      together various kinds of response transaction could also go
 	      into a utility class.
@@ -216,6 +239,38 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
        </ul>
   <li> Quite a lot of test scaffolding has been left in some classes. 
 </ul>
+
+<h3>Recommended Sequence</h3>
+
+<ol>
+  <li> crc.ds.{Table, List}
+  <li> crc.dps.active.{ParseTreeNode, ParseTreeText, ParseTreeElement, ...}
+  <li> crc.dps.output.ToParseTree<br>
+       at this point you can build parse trees in memory.  Any parser can
+       construct them.
+  <li> crc.dps.input.FromParseTree
+  <li> crc.dps.output.ToExternalForm<br>
+       at this point you can traverse a parse tree and output it as a
+       character stream.
+  <li> crc.dps.handle.{BasicHandler, GenericHandler}
+  <li> crc.dps.util.{BasicNamespace, BasicEntityTable}; other classes  in util
+       as needed.  Most of them are simple.  Many are just class wrappers for
+       a lot of global functions.
+  <li> crc.dps.process.BasicProcessor<br>
+       At this point you can actually <em>process</em> documents.  You can
+       parse them offline and create initialized C data structures if you
+       like. 
+  <li> crc.dps.parse.BasicParser<br>
+       This is optional -- you only need it if you are going to process
+       documents that are represented as character strings.  If you can stick
+       with parse trees, you can leave it out.
+  <li> Handler classes for the tags you need. 
+</ol>
+
+<p> In <em>parallel</em> with this you should be prototyping the user
+    interface using a working PIA -- this will give you something you can
+    interact with and test, and will tell you <em>exactly</em> which parts of
+    the PIA you need to implement.
 
 <h2>Scheme/DSSSL Porting Considerations</h2>
 
@@ -235,7 +290,7 @@ href="http://www.cygnus.com/gnupro/">GNUPro</a>.  It may not support the SH3.
 
 
 <hr>
-<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 <address><a href="http://rsv.ricoh.com/~steve/"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
