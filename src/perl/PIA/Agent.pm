@@ -198,6 +198,18 @@ sub match_criterion {
     PIA::TFeatures::register($feature => $code) if defined $code;
     
     $value = 1 unless defined $value;
+    my $i;
+
+    ## If feature already present, only change the value
+    for ($i = 0; $i <= $#$criteria; $i += 2) {
+	if ($$criteria[$i] eq $feature) {
+	    $$criteria[$i+1] = $value;
+	    return $criteria;
+	}	
+    }
+
+    ## Not present -- add it.
+
     push (@$criteria, $feature);
     push (@$criteria, $value);
     return $criteria;
