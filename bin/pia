@@ -1,0 +1,99 @@
+#!/bin/sh
+#	$Id$
+# Pia launcher. 
+#	
+#
+# Usage: 
+#	pia [-port portnumber] [-root piadirectory] [-u userdirectory] [-p propertyfile] [-d] [-v] 
+#
+# 	portnumber    -- is the port number which the PIA use to communicate
+#	piadirectory  -- is the directory which the PIA is installed
+#       userdirectory -- is the directory where the PIA will write its data
+#       propertyfile  -- complete path of the location of the PIA's default start up properties
+#	d             -- debugging is on
+#	v             -- verbose     
+
+port ()
+{
+echo 'process port'
+PORT=1
+PORTVAL=$1
+}
+
+root ()
+{
+echo 'process root'
+ROOT=1
+ROOTVAL=$1
+}
+
+userdir ()
+{
+echo 'process userdir'
+USRDIR=1
+USRDIRVAL=$1
+}
+
+propfile ()
+{
+echo 'process propertyfile'
+PROP=1
+PROPVAL=$1
+}
+
+
+while [ -n "$(echo $1 | grep '-')" ]; do
+	case $1 in
+		-port ) port $2
+			shift ;;
+		-root ) root $2
+			shift ;;
+		-u ) 	userdir $2
+			shift ;;
+		-p )	propfile $2
+			shift ;;
+		-d )	echo 'debug on'
+			DEBUGON=1 ;;
+		-v )	echo 'verbose on'
+			VERBOSE=1 ;;
+		* ) 	exit 'usage: pia [-port portnumber] [-root piadirectory] [-u userdirectory] [-p propertyfile] [-d] [-v] '
+			exit 1
+	esac
+	shift 
+done
+
+
+COMMAND=pia_wrapper
+
+if [ -n "$PORT" ] ; then
+COMMAND="$COMMAND -port $PORTVAL"
+fi
+
+if [ -n "$ROOT" ] ; then
+COMMAND="$COMMAND -root $ROOTVAL"
+fi
+
+if [ -n "$USRDIR" ] ; then
+COMMAND="$COMMAND -u $USRDIRVAL"
+fi
+
+if [ -n "$PROP" ] ; then
+COMMAND="$COMMAND -p $PROPVAL"
+fi
+
+if [ -n "$DEBUGON" ] ; then
+COMMAND="$COMMAND -d"
+fi
+
+if [ -n "$VERBOSE" ] ; then
+COMMAND="$COMMAND -v"
+fi
+
+echo $COMMAND
+
+
+
+
+
+
+
