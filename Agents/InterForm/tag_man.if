@@ -7,7 +7,7 @@
 
 <hr><!-- Standard header for if_demo files -->
 &lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 &lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
 <hr>
  
@@ -95,7 +95,7 @@ and design notes) is indented, like this.
 
 The formatted description looks like an HTML start tag; the name of the actor
 is a link to the examples for that actor in <a
-href="/if_demo/demo.if">/if_demo/demo.if/if_demo/demo.if</a>.  The attributes
+href="/InterForm/demo.if">/InterForm/demo.if</a>.  The attributes
 in this tag are those that would be used to define the actor being described.
 This is followed by a brief text description in which the names of attributes
 in an <em>invocation</em> of the actor are presented in boldface.  The special
@@ -280,7 +280,7 @@ browsers and HTML parsers choke on markup inside attributes.<p>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Mon Jan 13 16:53:35 1997
+Last modified: Wed Mar 12 10:53:26 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

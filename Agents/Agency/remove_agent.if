@@ -14,7 +14,7 @@
 
 <hr>
 <h2> Agent removal form</h2>
-<form action="/agency/remove_agent.if" method="POST">
+<form action="/Agency/remove_agent.if" method="POST">
 Name:<select name="agent">
         <repeat list="&agentNames;" ><option>&li;</option></repeat>
      </select>
@@ -24,6 +24,6 @@ Name:<select name="agent">
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Tue Feb  4 16:44:29 1997
+Last modified: Wed Mar 12 10:53:38 1997
 <!-- hhmts end -->
 </body></html>

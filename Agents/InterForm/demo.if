@@ -7,7 +7,7 @@
 
 <hr><!-- Standard header for if_demo files -->
 &lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 &lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
 <hr>
  

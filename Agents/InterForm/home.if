@@ -7,7 +7,7 @@
 
 <hr><!-- Standard header for if_demo files -->
 &lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 &lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
 <hr>
  
@@ -20,9 +20,9 @@
   <li> <a href=/&agentName;/options.if>view/change options</a>
   <li> <a href=/&agentName;/demo.if>demo page</a>
   <li> <a href=/&agentName;/test.if>test page</a>
-  <li> <a href=/agency/debug.if>toggle debugging</a> (currently 
+  <li> <a href=/Agency/debug.if>toggle debugging</a> (currently 
        <code language="perl"> $main::debugging? "on" : "off"; </code> );
-  <li> <a href="/PIA/src/Agents/&agentName;/">Source directory (DOFS)</a>
+  <li> <a href="/PIA/Agents/&agentName;/">Source directory (DOFS)</a>
 </ul>
 
 <h2>About This Agent:</h2>
@@ -35,7 +35,7 @@ formatter/interpretor.<p>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Nov 27 10:30:01 1996
+Last modified: Wed Mar 12 10:55:52 1997
 <!-- hhmts end -->
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"

@@ -7,7 +7,7 @@
 
 <hr><!-- Standard header for if_demo files -->
 &lt;<b>URL:</b> <a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/src/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
 &lt;<a href="file:&filePath;"><b>file:</b> &filePath;</a>&gt;
 <hr>
  
@@ -18,7 +18,7 @@
 
 <hr>
 
-<a href="/agency">Agency home page</a>
+<a href="/Agency">Agency home page</a>
 <b>URL:</b> http://&piaHOST;:&piaPORT;
 <b>User:</b> &piaUSER;<br>
 
@@ -27,7 +27,7 @@
 
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Nov 20 13:27:15 1996
+Last modified: Wed Mar 12 10:53:27 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

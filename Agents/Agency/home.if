@@ -9,7 +9,7 @@
     <then> the </then>
     <else> &piaUSER;'s</else></if>
 <if><agent-running name=Logo>
-    <then><img src="/logo/pia32" align=top 
+    <then><img src="/Logo/pia32" align=top 
                height=32 width=60 alt=PIA></then>
     <else> PIA
            <img src="http://&piaHOST;:&piaPORT;/PIA/Doc/Graphics/sm_pent.gif"

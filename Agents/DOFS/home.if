@@ -29,7 +29,7 @@
            <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
        </repeat>
   <li> Install a new DOFS:
-       <form action="/agency/install_agent.if" method="POST">
+       <form action="/Agency/install_agent.if" method="POST">
            <input name="type" value="dofs" type=hidden>
            name:<input name="agent" value="" size=10> 
            root:<input name="root" value="" size=30>
@@ -47,7 +47,7 @@
        </table></form>
 </ul>
 <hr>
-<a href="/agency">PIA</a> | <a href="/">agents</a>
+<a href="/Agency/">PIA</a> | <a href="/">Agents</a>
 <hr>
 
 <h2>About Document-Oriented File Systems:</h2>
@@ -59,7 +59,7 @@ means an incompetent agent.  Take your pick.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Dec 19 17:42:03 1996
+Last modified: Wed Mar 12 10:53:37 1997
 <!-- hhmts end -->
 <br>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

@@ -8,7 +8,7 @@
     <then> the </then>
     <else> &piaUSER;'s</else></if>
 <if><agent-running name=Logo>
-    <then><img src="/logo/pia32?height=32&type=pia&bw=1" align=top
+    <then><img src="/Logo/pia32?height=32&type=pia&bw=1" align=top
                height=32 width=60 alt=PIA></then>
     <else> PIA
            <img src="http://&piaHOST;:&piaPORT;/PIA/Doc/Graphics/sm_pent.gif"
@@ -42,7 +42,7 @@ on &piaHOST;
 
 <h3>Index of Running Agents</h3>
 <if><agent-running name=logo>
-    <then><img src="/logo/pia120?bw=1" align=right
+    <then><img src="/Logo/pia120?bw=1" align=right
                height=120 width=222></then></if>
 
 <pre><i><pad align=right width=15>Index</pad>	Home</i>
@@ -53,7 +53,7 @@ on &piaHOST;
 
 
 <hr>
-<a href="/Agency//home.if">Agency agent</a>
+<a href="/Agency/home.if">Agency agent</a>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
 <b>User:</b> &piaUSER;
