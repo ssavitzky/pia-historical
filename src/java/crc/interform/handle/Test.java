@@ -18,7 +18,7 @@ import crc.gnu.regexp.RegExp;
  * <dl>
  * <dt>Syntax:<dd>
  *	&lt;test [iftrue="value"] [iffalse="value"] [not] [text|link]
- *	      [zero|positive|negative|null| match="pattern" [exact] [case] ]
+ *	      [zero|positive|negative|null|match="pattern" [exact] [case]]&gt;
  * <dt>Dscr:<dd>
  *	Test CONTENT; return null or IFFALSE if false, else '1' or
  *	IFTRUE.  <dt>Tests:<dd> default (non-whitespace), ZERO, POSITIVE,
@@ -30,7 +30,7 @@ public class Test extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<test [iftrue=\"value\"] [iffalse=\"value\"] [not] [text|link]\n" +
-    "[zero|positive|negative|null| match=\"pattern\" [exact] [case] ]\n" +
+    "[zero|positive|negative|null|match=\"pattern\" [exact] [case]]&gt;\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
