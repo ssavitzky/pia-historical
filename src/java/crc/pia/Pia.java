@@ -2,13 +2,6 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
- /**
-  * Pia contains the Agency's main program, and serves as a repository
-  *	for the system's global information.  Most initialization is done
-  *	by the auxiliary class Setup.
-  *
-  *	@see crc.pia.Setup
-  */
 
 package crc.pia;
 
@@ -35,11 +28,28 @@ import crc.pia.Transaction;
 import crc.pia.agent.AgentInstallException;
 
 import crc.ds.Table;
+import crc.ds.Tabular;
 import crc.ds.List;
 
 import crc.pia.Configuration;
 
-public class Pia {
+ /**
+  * Pia contains the Agency's main program, and serves as a repository
+  *	for the system's global information.  Most initialization is done
+  *	by the auxiliary class Setup.
+  *
+  * <p> At the moment, the Tabular interface is simply delegated to the 
+  *	<code>properties</code> attribute.  This will change eventually.
+  *
+  * @version $Id$
+  * @see crc.pia.Setup
+  */
+public class Pia implements Tabular {
+
+  /************************************************************************
+  ** String constants:
+  ************************************************************************/
+
   /**
    * The tail of a property name (the prefix of which is protocol),
    * that indicates a proxy.  The value of the property should be the URL to 
@@ -222,6 +232,11 @@ public class Pia {
    */
   protected Agency agency;
 
+  /** 
+   *  the verbosity level.
+   */
+  protected static int verbosity = 0;
+
 
   /************************************************************************
   ** Access to Components:
@@ -343,12 +358,12 @@ public class Pia {
  
   /** @return the debug flag */
   public static boolean debug() {
-    return Pia.instance().debug;
+    return debug;
   }
 
   /** @return the verbose flag */
   public static boolean verbose() {
-    return Pia.instance().verbose;
+    return verbose;
   }
 
   /**
@@ -412,6 +427,25 @@ public class Pia {
   public List noProxies() {
     return noProxies;
   } 
+
+  /************************************************************************
+  ** Tabular interface:
+  ************************************************************************/
+
+  /** Access an individual item by name. */
+  public Object get(String key) {
+    return properties.get(key);
+  }
+
+  /** Replace an individual named item with value <em>v</em>. */
+  public void put(String key, Object v) {
+    properties.put(key, v);
+  }
+
+  /** Return an enumeration of all the  keys. */
+  public Enumeration keys() {
+    return properties.keys();
+  }
 
 
   /************************************************************************
@@ -614,8 +648,9 @@ public class Pia {
 	String scheme = propName.substring(0, propName.indexOf(PROXY_AUTH_ENC));
 	String auth = properties.getProperty(scheme + PROXY_AUTH);
 	if (auth != null) {
-	  byte bytes[] = new byte[auth.length()] ;
-	  auth.getBytes(0, bytes.length, bytes, 0) ;
+	  // The following line replaces one that used the now-deprecated
+	  // getBytes(int, int, byte[], int).  Hopefully it will still work.
+	  byte bytes[] = auth.getBytes() ;
 	  auth = crc.util.Utilities.encodeBase64(bytes);
 	  System.err.println("*** Please edit the your pia.props file"
 			     + " to remove a security hole: ***");
