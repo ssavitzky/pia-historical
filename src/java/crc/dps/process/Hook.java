@@ -30,11 +30,11 @@ import crc.pia.Resolver;
  * @author steve@rsv.ricoh.com
  *
  * @see crc.pia
- * @see crc.dps.TopProcessor
+ * @see crc.dps.process.TopProcessor
  * @see crc.dps.Processor
  * @see crc.dps.Context */
 
-public class Hook extends AnyDocument {
+public class Hook extends TopProcessor {
 
   /************************************************************************
   ** Variables:
@@ -183,18 +183,3 @@ public class Hook extends AnyDocument {
 
 }
 
-/* === entity initialization from crc.interform.Run
-
-
-
-
-      // === shouldn't have to convert these to text.
-      Tokens anames = new Tokens(resolver.agentNames(), " ").sortAscending();
-      define("agentNames", anames);
-    }
-
-    define("entityNames", "");
-    Tokens enames = new Tokens(entities.keys(), " ").sortAscending();
-    define("entityNames", enames);
-
-*/

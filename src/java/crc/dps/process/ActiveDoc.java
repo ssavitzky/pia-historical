@@ -30,11 +30,11 @@ import crc.pia.Resolver;
  * @author steve@rsv.ricoh.com
  *
  * @see crc.pia
- * @see crc.dps.TopProcessor
+ * @see crc.dps.process.TopProcessor
  * @see crc.dps.Processor
  * @see crc.dps.Context */
 
-public class ActiveDoc extends AnyDocument {
+public class ActiveDoc extends TopProcessor {
 
   /************************************************************************
   ** Variables:
