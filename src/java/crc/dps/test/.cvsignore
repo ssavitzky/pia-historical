@@ -1,2 +1,3 @@
 *.out *.diff *.log *.log.* *.tmp*
+foobar
 t0.*
