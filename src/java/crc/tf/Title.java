@@ -23,7 +23,7 @@ import crc.util.regexp.RegExp;
 
 public final class Title implements UnaryFunctor{
   private String getPage(){
-      in = new DataInputStream( trans.getContentObj().source() );
+      in = new DataInputStream( trans.contentObj().source() );
       String line;
       try{
 	StringBuffer buffer = new StringBuffer("");
@@ -44,10 +44,10 @@ public final class Title implements UnaryFunctor{
 
       if(!trans.isResponse()) return null;
 
-      String url = trans.getRequestURL();
+      String url = trans.requestURL();
       if( !url ) return null;
 
-      String type = trans.getContentType();
+      String type = trans.contentType();
       if( !type ) return null;
 
       String ltype = type.toLowerCase();

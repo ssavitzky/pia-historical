@@ -29,7 +29,7 @@ public final class IsFileRequest implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      String scheme = trans.getProtocol();
+      String scheme = trans.protocol();
       if( scheme ){
 	String lscheme = scheme.toLowerCase();
 	if( lscheme.indexOf("file") != -1 )

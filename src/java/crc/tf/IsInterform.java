@@ -30,7 +30,7 @@ public final class IsInterForm implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      URL url = trans.getRequestURL();
+      URL url = trans.requestURL();
       String path = url.getFile();
       String lpath = path.toLowerCase();
       if( path.endsWith(".if") )

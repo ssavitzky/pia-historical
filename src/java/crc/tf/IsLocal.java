@@ -29,12 +29,12 @@ public final class IsLocal implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      String host = trans.getHost();
+      String host = trans.host();
       if( host ){
 	String lhost = host.toLowerCase();
 	if( lhost.startsWith("agency") || lhost == "" )
 	  return new Boolean( true );
-	String mhost = Pia.getInstance().getHost().toLowerCase();
+	String mhost = Pia.instance().host().toLowerCase();
 	if( mhost.startsWith(lhost) )
 	  return new Boolean( true );
 	if( lhost.indexOf("localhost") != -1 )

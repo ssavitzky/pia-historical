@@ -29,7 +29,7 @@ public final class IsClientNetscape implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      String agent = trans.getHeader("User-Agent");
+      String agent = trans.header("User-Agent");
       if( agent ){
 	String lagent = agent.toLowerCase();
 	if( lagent.indexOf("netscape") != -1 )

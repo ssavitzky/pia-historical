@@ -21,7 +21,7 @@ public class Registry{
    * Given a featurName, returns the corresponding feature calculator.
    * Create one if none existed.
    */
-  public static Object getCalculatorFor( String featureName ) throws UnknownNameException{
+  public static Object calculatorFor( String featureName ) throws UnknownNameException{
     Object calc;
 
     calc = calcTable.get( featureName );

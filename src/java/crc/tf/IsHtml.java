@@ -29,7 +29,7 @@ public final class IsHtml implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      String s = trans.getContentType();
+      String s = trans.contentType();
       if( s ){
 	String ls = s.toLowerCase();
 	if( ls.startsWith("text/html") )

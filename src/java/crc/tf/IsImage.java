@@ -29,7 +29,7 @@ public final class IsImage implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      String zimage = trans.getContentType();
+      String zimage = trans.contentType();
       if( zimage ){
 	String lzimage = zimage.toLowerCase();
 	if( lzimage.startsWith("image") )
