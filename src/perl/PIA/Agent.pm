@@ -44,8 +44,11 @@ sub initialize {
     my $type=$self->option('type');
     $self->type($type) if defined $type && $type ne $name;
 
+    $self->option('name', $name);
+    $self->option('type', $self->type);
+
     ## Issue a request for the initialization document.
-    
+
     my $url="/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->submit($request);
@@ -311,9 +314,15 @@ sub max {
 
 
 # need to add functions for multiple values and comments
+### === options_form is probably obsolete now. === ###
 sub options_form{
     my($self, $url, $label)=@_;
-    $label ="change_options" unless defined $label;
+
+    ## Return a form containing the current values of the options.
+    ##	  The arguments are the destination InterForm and the label 
+    ##	  for the "submit" button.
+
+    $label ="Change Options" unless defined $label;
     my $e;
     my $form = IF::IT->new('form', method=>"POST", action=>$url);
     my $t = IF::IT->new('table');
@@ -324,19 +333,19 @@ sub options_form{
     foreach $key ($self->options()) {
 	my $values=$self->option($key);
 	$e = IF::IT->new('tr');
-	$e->push(IF::IT->new('td')->push("$key: "));
+	$e->push(IF::IT->new('th', 'align' => 'right', $key));
 	$e->push(IF::IT->new('td')
 		 ->push(IF::IT->new('input',
 				    'name'=>$key, 'value'=>$values,
 				    'size'=>max(30, length($values)))));
-	$e->push(IF::IT->new('br'));
 	$e->push("\n");
 	$t->push($e);
+	$t->push(IF::IT->new('p')); # Netscape does bad things with <br>
     }
     $e = IF::IT->new('tr');
-    $e->push(IF::IT->new('td')->push(" "));
-    $e->push(IF::IT->new('td')
+    $e->push(IF::IT->new('th')
 	     ->push(IF::IT->new('input', 'type'=>'submit', 'value'=>$label)));
+    $e->push(IF::IT->new('td')->push(" "));
     $t->push($e);
 
     return $form;
