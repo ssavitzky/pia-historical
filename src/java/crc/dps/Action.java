@@ -121,11 +121,9 @@ public interface Action {
    */
   public String convertToString(ActiveNode n);
 
-  /** Converts the Token to a String according to the given syntax. <p>
+  /** Converts the Node to a String according to the given syntax. <p>
    *
-   *	Note that the <code>syntax</code> code has a different meaning
-   *	than it does in the Token itself: <em>in all cases</em> a Node
-   *	is converted to a String with:
+   *  The string corresponding to a node is:
    *	<pre>
    *	     convertToString(t, -1) + 
    *	     convertToString(t,  0) +
