@@ -71,7 +71,6 @@ sub read_chunk{
 }
 
 
-
 sub send_response{
     my($self, $trans, $resolver)=@_;
 
@@ -91,7 +90,8 @@ sub send_response{
     my $string="HTTP/1.0 " . $reply->code . " " . $reply->message . "\n";
     print $string  if $main::debugging;
     my ($control, $content);
-    $control=join(" ",$trans->controls) if $reply->content_type =~ /text/;
+    $control=join(" ",$trans->controls) 
+	if $reply->content_type =~ /text\/html/i;
 
     if ($control) {
 	### === should treat content as a stream unless we have to ===
@@ -141,6 +141,8 @@ sub proxy {
     
 }
 
+$user_agent_id;			# cache for library's user agent ID string.
+
 sub get_request {
     my($self, $trans, $resolver)=@_;
 
@@ -149,9 +151,11 @@ sub get_request {
 
     if(!$ua) {
 	$ua = new LWP::UserAgent;
+	$user_agent_id=$ua->agent;
 
 	$ua->use_eval(1);
 	$ua->use_alarm(1);
+	$ua->env_proxy();
 	$ua->timeout($main::timeout) if $main::timeout; #testing 
 ###Configuration --is proxy necessary?
 ### Should Be careful not to proxy through ourselves
@@ -166,19 +170,31 @@ sub get_request {
 	print "getting request" . $trans->url . " through $proxy \n" . 
 	    $trans->request->headers_as_string() . "\n" if $main::debugging;
 
-	$ua->proxy($trans->url->scheme,$proxy) if $proxy;
+	#$ua->proxy($trans->url->scheme,$proxy) if $proxy;
     }
 
     ## Set request content if we're posting.
 
     my $content = $trans->content;
-    $trans->request->content($content) if $content;
+    if ($content) {
+	$trans->request->content($content) unless $trans->request->content; 
+	print "Sending request with content '$content'\n" unless $main::quiet;
+	print "content_length doesn't match\n" unless 
+	    $trans->request->content_length == length $content;
+	print $trans->request->url->as_string . "\n" unless $main::quiet;
+	print $trans->request->headers_as_string . "\n" . $trans->request->content . "\n" unless $main::quiet;
+    }
+    $ua->agent($trans->request->user_agent . ' PIA/1.0 ' . $user_agent_id);
 
     ## Actually make the request.
     ##	  We _must_ use simple_request and pass the results, whatever they
     ##	  are, to the browser.  Otherwise it never finds out about redirects.
 
     my $response=$ua->simple_request($trans->request); 
+    if ($content && ! $main::quiet) {
+	print "Response: \n" . $response->headers_as_string; 
+    }
+
     return $trans->respond_with($response);
 }
 
