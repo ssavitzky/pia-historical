@@ -1,5 +1,4 @@
 <!-- Read by generic home.if --			 -*-html-helper-*- -->
-<!-- Copyright 1997 Ricoh Silicon Valley -->
 
 <h2>About Spy agents</h2>
 
@@ -11,4 +10,4 @@ document. <p>
 By tongue-slightly-in-cheek convention, Spy agents are named after well-known
 espionage agents or agencies.
 
-<!-- $Id$ -->
+<inc-footer cvsid="$Id$">
