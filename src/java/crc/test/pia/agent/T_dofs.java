@@ -37,8 +37,8 @@ import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
 
-import crc.gnu.regexp.RegExp;
-import crc.gnu.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import w3c.www.http.HTTP;
