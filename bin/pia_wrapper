@@ -96,13 +96,14 @@ done
 
 # The pia class library.
 PIA_CLASSES=${PIA_CLASSES-$PIA_DIR/lib/java/crc.zip}
+REGEXP_CLASSES=${REGEXP_CLASSES-/pia1/ext/java}
 
 # where zjigsaw lives, ya
 JIGSAW_HOME=${JIGSAW_HOME-$PIA_DIR/lib/java}
 JIGSAW_CLASSES=${JIGSAW_CLASSES-$JIGSAW_HOME/jigsaw.zip}
 
 [ -z "$CLASSPATH" ] || CLASSPATH=":$CLASSPATH"
-CLASSPATH=$PIA_CLASSES:$JIGSAW_CLASSES$CLASSPATH
+CLASSPATH=$PIA_CLASSES:$JIGSAW_CLASSES:$REGEXP_CLASSES$CLASSPATH
 
 # The pia source directory.  (Later we will test for their existance)
 PIA_SRC=${PIA_SRC-$PIA_DIR/src}
