@@ -58,8 +58,16 @@
 	<a href="http://cdrw:8001/CDRW/publish_photos.if">Create photo CD</a>
 	<br>
   </table>
-</table>
+  
 
+</table>
+<p>
+<set name=checked><read file="checkout"></set>
+<if><get name=checked><then>
+       Camera is <a href="checkout.if">checked out</a> to <get name=checked>
+      </then><else>
+        Please <a href="checkout.if"> Check-Out the camera</a>
+      </else></if>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
