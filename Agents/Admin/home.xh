@@ -51,6 +51,33 @@ you get a generic <em><a href="index">index</a></em> page.
   <li> <a href="/&AGENT:name;/help">Online Help</a>
 </ul>
 </table>
+<hr>
+<h2><a name="naming">Naming Conventions:</a></h2>
+
+<p> An Agent name without a final slash is redirected to the Agent's
+``home page'' (usually <code>home.xh</code>).  With a final
+slash you will always go to a more-or-less generic index page.  A name of
+the form <a href="/&agentName;~">/&name;~</a> (i.e. appending a tilde to the
+Agent's name) will take you to the Agent's ``home page.''  In the 1-line index
+above, this link is 
+represented by the ``<code>~/</code>'' in front of the DOFS agent's name.  The
+generic index is linked from the ``<code>/</code>'' <em>after</em> the name.
+
+<dl>
+  <dt> <a href="/AGENT:&name;">/&AGENT:name;</a>
+  <dd> Usually, the &name; agent's home page;, except that some agents may
+       redirect this (for example, to their data directory).
+  <dt> <a href="/&AGENT:name;~">/&AGENT:name;~</a>
+  <dd> The &name; agent's home page.
+  <dt> <a href="/&AGENT:name;~/">/&name;~/</a>
+  <dd> The &name; agent's ``generic'' index page, usually not very interesting.
+  <dt> <a href="/~&AGENT:name;">/~&AGENT:name;</a>
+  <dd> The home page of the &name; agent's data directory, (typically
+       <code>index.html</code>) or a generic directory listing.
+  <dt> <a href="/~&AGENT:name;/">/~&name;/</a>
+  <dd> A generic listing of the &name; agent's data directory.
+</dl>
+
 
 <footer cvsid='$Id$'>
 </body></html>

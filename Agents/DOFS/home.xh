@@ -84,8 +84,9 @@ This is the home page for the
 <p> A directory name without a final slash is redirected to the directory's
 ``home page'' (usually <code>index.html</code>) if there is one.  With a final
 slash the DOFS agent will always present you with a generic index.  A name of
-the form <a href="/&agentType;/&agentName;">/&agentType;/&name;</a> will take
-you to the Agent's home page.  In the 1-line index above, this link is
+the form <a href="/&agentName;~">/&name;~</a> (i.e. appending a tilde to the
+Agent's name) will take you to the Agent's ``home page.''  In the 1-line index
+above, this link is 
 represented by the ``<code>~/</code>'' in front of the DOFS agent's name.  The
 generic index is linked from the ``<code>/</code>'' <em>after</em> the name.
 
@@ -94,9 +95,9 @@ generic index is linked from the ``<code>/</code>'' <em>after</em> the name.
   <dd> The DOFS agent's home page.
   <dt> <a href="/&agentType;/">/&agentType;/</a>
   <dd> The DOFS agent's generic index.
-  <dt> <a href="/&agent;/&name;">/&agentType;/&name;</a>
+  <dt> <a href="/&name;~">/&name;~</a>
   <dd> The &name; agent's home page, giving its options.
-  <dt> <a href="/&agentType;/&name;/">/&agentType;/&name;/</a>
+  <dt> <a href="/&name;~/">/&agentType;/&name;/</a>
   <dd> The &name; agent's index page, usually not very interesting.
   <dt> <a href="/&name;">/&name;</a>
   <dd> The &name; agent's top-level directory, or <code>index.html</code> in
