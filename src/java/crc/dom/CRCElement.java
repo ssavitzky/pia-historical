@@ -20,7 +20,6 @@ public class CRCElement extends BasicElement implements Element {
     setNext( null );
     setTagName( "" );
     setAttributes( null );
-    children = null;
   }
 
   public CRCElement(Node myParent){
@@ -32,7 +31,6 @@ public class CRCElement extends BasicElement implements Element {
     setNext( null );
     setTagName( "" );
     setAttributes( null );
-    children = null;
   }
 
   /**
