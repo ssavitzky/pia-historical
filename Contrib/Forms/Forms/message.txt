@@ -1,16 +1,19 @@
 Subject:  Pending forms
 
+<a href=http://forms.crc.ricoh.com:8000/Forms/home.if> Forms </a>
+
 Hello, 
 This message is to inform you that your electronic signature has been
-requested by one or more forms. For links to the forms that require your
-signature, go to http://forms.crc.ricoh.com:8000/Forms/users.if and click on your
-username.
+requested on one or more forms. For links to the forms that require your
+signature, go to http://forms.crc.ricoh.com:8000/Forms/users.if
 
 Questions and comments should be mailed to kevin@crc.ricoh.com or
 wolff@crc.ricoh.com.
 
 Thank you.
 
-(Users are notified twice a day when they have pending forms.  Eventually
-the frequency will be under individual user control.  Thank you for your
-patience during the upgrade to the new forms processing system.)
+(No further notifications will be sent until after you have visited the
+forms server and signed a form.)
+
+(Notification for a group will be sent only to the first member listed in the
+group.)
