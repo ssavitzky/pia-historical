@@ -28,11 +28,15 @@ sub html2latex{
     $GWtempdir = shift;
 
     $GWtempdir = "/tmp/URLS" unless $GWtempdir;
+    $GWtempdir =~ s:/$::;
     print "using temporary directory $GWtempdir"  if $main::debugging;
     system("mkdir $GWtempdir") unless -d $GWtempdir;
     $GWfile = "URLGOT";
     $GWF ="$GWtempdir/$GWfile";
 
+    my $spooldir = $psfile;
+    $spooldir =~ s:/[^/]*$::;
+    system("mkdir $spooldir") unless -d $spooldir;
 
     system("rm -f $GWtempdir/*");
 
