@@ -28,28 +28,25 @@ export JAVA_BIN
 #where pia lives, ya
 PIA_HOME="${PIA_HOME-$HOME/pia}"
 export PIA_HOME
-PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+
+if [ -f $PIA_HOME/lib/java/crc.zip ] ; then
+    PIA_CLASSES=${PIA_CLASSES-$PIA_HOME/lib/java/crc.zip}
+else
+    PIA_CLASSES=$PIA_HOME/src/lib/java/classes
+fi
 
 #where zjigsaw lives, ya
 if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
-    JIGSAW_HOME=${JIGSAW_HOME-$PIA_HOME/lib/java/jigsaw.zip}
+    JIGSAW_HOME=${JIGSAW_HOME-$PIA_HOME/lib/java}
 else
     JIGSAW_HOME="${JIGSAW_HOME-usr/local/Jigsaw}"
 fi
 export JIGSAW_HOME
+
 if [ -f $PIA_HOME/lib/java/jigsaw.zip ] ; then
     JIGSAW_CLASSES=${JIGSAW_CLASSES-$PIA_HOME/lib/java/jigsaw.zip}
 else
     JIGSAW_CLASSES=$JIGSAW_HOME/src/classes
-fi
-
-#where jgl lives, ya
-JGL_HOME="${JGL_HOME-usr/local}"
-export JGL_HOME
-if [ -f $PIA_HOME/lib/java/jgl1.1.zip ] ; then
-    JGL_CLASSES=${JGL_CLASSES-$PIA_HOME/lib/java/jgl1.1.zip}
-else
-    JGL_CLASSES=$JGL_HOME/jgl_1_1
 fi
 
 if [ -z "$1" ] ; then
@@ -71,11 +68,13 @@ fi
 
 CLASSPATH="${CLASSPATH-.}"
 if [ -z "${CLASSPATH}" ] ; then
-    CLASSPATH="$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$JGL_CLASSES:$PIA_CLASSES"
+    CLASSPATH="$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$PIA_CLASSES"
 else
-    CLASSPATH="$CLASSPATH:$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$JGL_CLASSES:$PIA_CLASSES"
+    CLASSPATH="$CLASSPATH:$J_HOME/classes:$J_HOME/lib/classes.zip:$JIGSAW_CLASSES:$PIA_CLASSES"
 fi
 export CLASSPATH
+
 [ -z "$VERBOSE" ] || echo $CLASSPATH
 [ -z "$VERBOSE" ] || echo "$JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*"
 exec $JAVA_BIN $PIA_BIN -p $PIA_CONFIGFILE $*
+
