@@ -736,7 +736,7 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
       else{
 	if ( obj instanceof Boolean  ){
 	  Boolean result = (Boolean) obj;
-	  if( result.booleanValue() )
+	  if( result.booleanValue() == true )
 	    satisfied = true;
 	}
       }
