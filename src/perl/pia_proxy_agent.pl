@@ -18,20 +18,20 @@ sub initialize {
 #handles are done by super class-- things like processing interform
 
 # here  we translate proxy requests into responses
-sub  new_requests{
-    my($self,$request)=@_;
+sub  act_on {
+    my($self, $request, $resolver)=@_;
 
     print "redirecting request to " if  $main::debugging;
     print $request->url() . "\n" if  $main::debugging;
-    my @responses;
-    
+
+    ## If it's actually making the request at this point, it shouldn't be. 
+
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($request); 
     $response=TRANSACTION->new($response);
     $response->to_machine($request->from_machine());
-    push(@responses,$response);
-    
-    return @responses;
+
+    $request->push($response);	# push the response transaction
 }
 
 1;

@@ -23,14 +23,18 @@ sub initialize {
 
 # here  we translate requests by generators...
 sub  new_requests{
-    my($self,$request)=@_;
+    my($self, $request, $resolver)=@_;
     my @responses;
     my @generators=$self->generators($request);
  
     foreach $generator (@generators){
 	push(@responses,&{$generator}($self,$request)) if $generator;
     }
-    return @responses;
+    
+    my $response;
+    foreach $response (@responses) {
+	$request->push($response);
+    }
 }
 
 sub generators{

@@ -6,6 +6,8 @@ package PIA_AGENT;
 use HTML::Parse;
 use HTML::FormatPS;
 use HTML::Element;
+use HTML::AsSubs;		# defines element constructor functions.
+
 
 sub new {
     my($class,$name) = @_;
@@ -102,25 +104,32 @@ sub matches{
 
 ############################################################################
 ###
-### Handle requests:
+### Handle transactions:
 ###
 
-sub  new_requests{
-    my($self,$request)=@_;
+###### agent -> act_on($transaction, $resolver)
+###
+###	Called by the Resolver to act on a transaction that this agent
+###	has matched.
+###
+sub act_on {
+    my($self, $transaction, $resolver)=@_;
 
-    ## Return a set of new requests for this transaction.
-    ##    Called by resolver after an agent matches.
-    ##    subclasses should override if they actually generate requests.
+    ## Act on a transaction that we have matched.
 
-    return ();
+    print "Agent $self, name= " . $self->name() . " -> act_on\n";
+
+    return 0;
 }
 
+###### agent -> handle($transaction, $resolver)
+###
+###	Handle a request directed AT an agent.  The default is to use an
+###	interform; subclasses or instances should override this or install
+###	methods if different behavior is required.
+###
 sub handle{
-    my($self,$request)=@_;
-
-    ## Handle a request directed AT an agent.  The default is to use an
-    ## interform; subclasses or instances should override this or install
-    ## methods if different behavior is required.
+    my($self, $request, $resolver)=@_;
 
     my $response;
     my $file=$self->find_interform($request->url);
@@ -128,12 +137,12 @@ sub handle{
     if(! defined $file){
 	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
 				      "nointerform");
-	$response->content("no file found");
-	
+	$response->content("no InterForm file found");
+	## === should really just return 0 ===
     } else {
 #TBD check for path parameters    
 	my $string=$self->parse_interform_file($file,$request);
-#air if file not found    
+
 	$response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
 	$response->content_type("text/html");    
 	$response->header('Version',$self->version());
@@ -144,7 +153,9 @@ sub handle{
     $response=TRANSACTION->new($response,
 			       $main::this_machine,
 			       $request->from_machine());
-    return $response;
+
+    $resolver->push($response);
+    return 1;
 }
 
 sub find_interform {
@@ -402,8 +413,12 @@ sub create_request {
 
 #this is  a callback for html traverse
 #TBD change for multi-threads
-local $current_self;
-local $current_request;
+local $agent;			# The agent that owns the interform
+local $request;			# The request being handled
+#local $response;		# The response being constructed.
+
+local $current_self;		# old name for $agent
+local $current_request;		# old name for $request
 
 
 sub execute_interform{
@@ -435,7 +450,7 @@ sub execute_interform{
 	    }
 	    push(@new_elements,$code_status) if $code_status;
 	}
-	my $parent=$element->parent;
+	my $parent=$element->parent();
 	$parent->pos($element);
 	while($code=shift(@new_elements)){
 	    if (ref($code)) {
@@ -453,9 +468,12 @@ sub execute_interform{
 
  # remember to delete parse tree otherwise memory leak occurs
 sub run_interform{
-    my ($self,$html,$request)=@_;
-    $current_request=$request;
-    $current_self=$self;
+    my ($self,$html,$req)=@_;
+    $agent = $self;
+    $request = $req;
+
+    $current_request=$req;
+    $current_self=$self;	# old name
     
     # execute any perl code
     my $status=$html->traverse(\&execute_interform,1);

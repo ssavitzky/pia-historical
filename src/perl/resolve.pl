@@ -1,45 +1,59 @@
- # class to resolve transactions with agents
+###### class RESOLVE
+###	$Id$
+###
+###	A resolver (i.e. an instance of class RESOLVE) acts like a queue of
+###	transaction objects.  A resolver also has a list of agents which have
+###	registered their interest.  For each transaction in the list, the
+###	resolver attempts to match its features against every agent, and each
+###	agent that matches  is given the chance to act_on the transaction.  In
+###	general agent->act_on will either push some new transactions, register
+###	a handler agent, or both.
 
-# a resolve object acts like an array where the elements are transactions
+###	After each agent has had its chance to act_on the transaction, any
+###	registered handlers are called, after which the transaction is
+###	discarded. 
+
 package RESOLVE;
 
 ######################################################################
- # utility functions for creating self and internal variables
+###
+### utility functions for creating self and internal variables
+###
 sub new {
     my($class) = @_;
     my $self = {};
     my $agents={};
-    my $stack=[];
+    my $queue=[];
     my $computers={};
     
     bless $self,$class;
     $$self{agents}=$agents;
-    $$self{stack}=$stack;
+    $$self{queue}=$queue;
     $$self{computers}=$computers;
     return $self;
 }
 
-sub stack{
+sub queue{
     my($self)=@_;
-    return $$self{stack};
+    return $$self{queue};
     
 }
 
 sub shift{
     my($self)=@_;
-    return shift(@{$self->stack()});
+    return shift(@{$self->queue()});
 }
 sub unshift{
     my($self,$argument)=@_;
-    return unshift(@{$self->stack()},$argument);
+    return unshift(@{$self->queue()},$argument);
 }
 sub push{
     my($self,$argument)=@_;
-    return push(@{$self->stack()},$argument);
+    return push(@{$self->queue()},$argument);
 }
 sub pop{
     my($self)=@_;
-    return pop(@{$self->stack()});
+    return pop(@{$self->queue()});
 }
 
 ############################################################
@@ -99,8 +113,8 @@ sub compute_features{
 	print "  -> " . $values{$feature} . "\n" if $main::debugging;
     }
     return \%values;
-    
 }
+
 sub _feature_computers{
     my($self,$agent)=@_;
     my $computers=$$self{computers};
@@ -112,8 +126,8 @@ sub _feature_computers{
 	    #should check for clobber here
     }
     return $hash;
-        
 }
+
 sub feature_computers{
     my($self)=@_;
     
@@ -124,8 +138,6 @@ sub feature_computers{
     }
     
     return $$self{computers};
-
-				     
 }
 
 ############################################################################
@@ -133,169 +145,89 @@ sub feature_computers{
 ### resolve
 ###
 ###	This is the resolver's main loop.  It starts with one or more
-###	incoming transactions that have been pushed onto its stack, and
+###	incoming transactions that have been pushed onto its queue, and
 ###	loops until they're all taken care of.
 ###
 
 sub resolve {
     my($self)=@_;
     my $count=0;
-    my $stack=$self->stack();
+    my $queue=$self->queue();
+    my $numb=@$queue;
     my @garbage;
-#temporary hack variable to determine if response has been sent
-#TBD link requests and responses then test requests for response...
-    my $sent_response=0;
-    
-#be careful stack may change in other threads while we are here
+   
+#be careful: queue may change in other threads while we are here
 #TBD  tracing of request, matches, responses
 
-    while(@$stack && $count<100){
+    print "resolve: entered with $numb transactions\n" if $main::debugging;
+    while(@$queue && $count<100){
 	$count+=1;
 
-	## Pop a request off the stack.
+	## shift a request off the queue.
 
-	my $request=shift @$stack;
-	my $numb=@$stack;
-	my $u=$request->url;
-	print "handling request $count ($numb left): $u\n" if $main::debugging;
+	my $transaction=shift @$queue;
+	$numb=@$queue;
+	my $u=$transaction->url;
+	print "resolve: trans. $count ($numb left): $u\n" if $main::debugging;
 
-	## Look for a match.  
-	##    Matching agents typically add new transactions.
-	##    In addition, one might be the target of the request.
+	## Look for matches.
+	##    Matching agents have their act_on method called with both the
+	##    transaction and the resolver as arguments; they can either push
+	##    transactions onto the resolver, push handlers onto the
+	##    transaction, or directly modify the transaction.
 
-	my $handler = $self->match($request,$stack);
-	if (ref($handler)) {
-	    print "running agent handler.\n" if $main::debugging;
-	    my $status=$self->run($handler,$request);
-	} else {
-	    my $additions = $handler;
-	    print "$additions transactions added.  " if $main::debugging;
-	    if ($request->is_response()) {
-		send_response($request);
-		$sent_response = 1;
-	    } 
-	    if ($request->is_request() && ! $additions && ! $sent_response) {
-		## not found error if additions are 0;TBD
-		print "pushing error_response\n" if $main::debugging;
-		push(@$stack,$self->error_response($request));
-	    }
-	}
-	push(@garbage,$request);
+	$self->match($transaction);
+
+	## Tell the transaction to go satisfy itself.  
+	##    It does this by calling each of the handlers that matched agents
+	##    have pushed onto its queue, and looking for a true response.
+
+	$transaction->satisfy($self);
+
+	push(@garbage,$transaction);
     }
+    print "resolve finished after $count transactions\n" if $main::debugging;
+
     # === should take out the garbage
 }
 
 
-###### RESOLVE->run($agent, $request, $context)
-###
-### 	Run $agent's handle method on the $request
-###
-sub run {
-    my($self,$agent,$request,$context)=@_;
-    local $resolver = $self;
-    my $response=$agent->handle($request);
-
-    my $type = ref($response);
-    my $name = $agent->name;
-    print "agent $name returnobject $type\n" if $main::debugging;
-    
-#    push(@$context,$response) if ref($response);
-    $self->push($response) if ref($response);
-    return $response;
-    
-}
-
-###### RESOLVE->match $transaction, $stack)
+###### resolver->match $transaction, \@handlers)
 ###
 ###	Match the current transaction against all the agents.
 ###	All are allowed to modify the transaction and add new ones.
+###	Responses are pushed onto the @handlers array.
+###
+###	Returns the number of handlers and/or transactions added.
 ##
 ### === we'll change in future to make efficient and use context
 ###
 sub match {
-    my($self,$transaction,$stack)=@_;
-
-    ## Find an agent that matches the given transaction.
-    ##    Returns either the number of new transactions added,
-    ##    or a reference to an agent that wants to handle the request.
-
-    my $additions=0;
-#these could be done at push time TBD
+    my($self,$transaction)=@_;
+    my $matches = 0;
+    ## Find all agents that match the given transaction.
+    ##    Returns either the number of matches.
 
     ## Compute features of the transaction.
 
     my $features=$self->compute_features($transaction);
 
     ## Loop through all the agents looking for matches.
-    ##    Every agent that matches is allowed to add new requests via its
-    ##    new_requests method, which can also modify the transaction.
+    ##    Every agent that matches is allowed to push new requests onto the
+    ##    resolver, or to modify the transaction directly.
+
     print "matching:" if $main::debugging;
     foreach $agent ($self->agents()){
 	if ($agent->matches($features)) {
-	    my @requests = $agent->new_requests($transaction);
-	    push(@$stack,@requests);
-	    my $new_requests = @requests;
-	    $additions += $new_requests;
-	    print($agent->name," added $new_requests\n") if $main::debugging;
+	    print "About to call handler for $agent\n" if $main::debugging;
+	    $agent->act_on($transaction, $self);
+	    ++ $matches;
 	}
     }
-
-    ## Now look for an agent to which the request is directed,
-    ##    (as opposed to one merely interested) 
-    ##    === this should really be done using an agent! ===
-
-    print "looking for agent\n" if $main::debugging;
-    
-    if (&FEATURES::is_agent_request($transaction)) {
-	my $url=$transaction->url;
-	return $additions unless $url;
-
-	my $path=$url->path;
-	$path =~ m:^/(\w+)/*:i;
-	my $name=$1;
-	my $agent=$self->agent($name);
-	print "found agent $name in $path\n" if $main::debugging;
-	print ref($agent) if $main::debugging;
-	
-	return $agent if defined $agent;
-    }
-
-    return $additions;
-    
+    print "... $matches agents matched\n" if $main::debugging;
+    return $matches;
 }
 
-############################################################################
-###
-### utility functions to send a normal or error response if no agent does.
-###
-
-sub send_response{
-    my($reply)=@_;
-    my $machine=$reply->to_machine();
-
-    if (ref($machine)) {
-	print "sending response.\n" if $main::debugging;
-	my $status=$machine->send_response($reply) if ref($machine);
-	return $status;
-    } else {
-	print "sending response to $machine\n" if $main::debugging;
-	return;
-    }
-}
-
-sub error_response{
-    my($self,$argument)=@_;
-    my $response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "not found");
-    $response->content_type("text/plain");    
-    my $url=$argument->url()->as_string();
-    
-    $response->content("could not find $url\n");
-
-    $response=TRANSACTION->new($response,
-			       $main::this_machine,
-			       $argument->from_machine());
-    return $response;
-}
 
 
 1;

@@ -23,16 +23,14 @@ sub initialize {
 #handles are done by super class-- things like processing interform
 
 # here  we translate response
-sub  new_requests{
+sub  act_on {
     print "translate request \n" if $main::debugging;
-    my($self,$request)=@_;
+    my($self, $request, $resolver)=@_;
     my $type=$request->content_type();
     my $translator=$self->translator($type);
     my $code=ref($translator);
     print "translator is $code\n"  if $main::debugging;
     &{$translator}($request) if ref($translator) eq 'CODE';
-#usually nothing to return    
-    return ();
 }
 
 sub translator{

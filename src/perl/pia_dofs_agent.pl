@@ -17,10 +17,9 @@ push(@ISA,PIA_AGENT);
 
 #TBD figure  out proper way to specify machine
 
-sub  new_requests{
-    my($self,$request)=@_;
+sub  act_on {
+    my($self, $request, $resolver)=@_;
     my  $url=$request->url();
-    my @responses;
     my $name=$self->name;
     print "DOFS generating  new requests for $url" if $main::debugging;
     
@@ -51,9 +50,8 @@ sub  new_requests{
     $response->{'_content'} =~ s/<BASE HREF=\"[\S]*\">//;
 #    $response->{'_content'} =~ s/<BASE/<a/;
     print "baseis <BASE HREF=$base> \n"  if $main::debugging;
-    push(@responses,$response);
-    
-    return @responses;
+
+    $transaction->push($response);	# push the response transaction
 }
 
 sub url_to_filename{

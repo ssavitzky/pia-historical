@@ -1,11 +1,26 @@
+###### class PIA_AGENCY
+###	$Id$
+###
+###	This is the class for the ``agency'' agent; i.e. the one that
+###	handles requests directed at agents.  It slso owns the resolver, 
+###	which may not be a good idea.
+###
+
 package PIA_AGENCY;
 
 push(@ISA,PIA_AGENT);
 
-# this is the agent that handles requests of the form http://agency/
-# or /agency/ ...
 
-# an agency is just an agent that can install other agents and can have its own resolver
+sub initialize {
+    my $self=shift;
+    
+    $self->match_criterion('request',1,\&FEATURES::is_request);
+    $self->match_criterion('agent_request',1,\&FEATURES::is_agent_request);
+
+    &PIA_AGENT::initialize($self);
+    return $self;
+}
+
 sub resolver{
     my($self,$resolve)=@_;
     $$self{resolver}=$resolve if defined $resolve;
@@ -28,6 +43,36 @@ sub un_install_agent{
 }
 
 
+###### agency -> act_on($transaction, $resolver)
+###
+###	Act on a transaction that we have matched.  
+###	Since the Agency matches all requests to agents, this means
+###	that we need to find the agent that should handle this request
+###	and push it onto the transaction.
+###
+sub act_on {
+    my($self, $transaction, $resolver) = @_;
+
+    print "Agency->act_on\n" if $main::debugging;
+    if (&FEATURES::is_agent_request($transaction)) {
+	my $url=$transaction->url;
+	return unless $url;
+
+	print "  Acting on agency request for $url\n" if $main::debugging;
+
+	my $path=$url->path;
+	$path =~ m:^/(\w+)/*:i;
+	my $name=$1;
+	my $agent=$resolver->agent($name);
+	print "  no agent in $path\n" if ! defined $agent && $main::debugging;
+	next if not defined $agent;
+
+	my $type = ref($agent);
+	print "  found agent $name type $type in $path\n" if $main::debugging;
+	
+	$transaction->push($agent);
+    }
+}
 
 
 1;

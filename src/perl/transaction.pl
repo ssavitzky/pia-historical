@@ -4,6 +4,11 @@
 ###	Transactions generalize the HTTP classes Request and Response.
 ###	They are used in the rule-based resolver, which associates 
 ###	transactions with the interested agents.
+###
+###	A transaction has a queue of ``handlers'', which are called
+###	(from the $transaction->satisfy() method) after all agents
+###	have acted on it.  At least one must return true, otherwise
+###	the transaction will ``satisfy'' itself.
 
 package TRANSACTION;
 
@@ -19,6 +24,8 @@ sub new {
     bless $request,$class;
     $request->is_request(1) if $old eq 'HTTP::Request';
     $request->is_response(1) if $old eq 'HTTP::Response';
+
+    $$self{queue} = [];
 
     print "Making transaction from $old\n" if $main::debugging;
 
@@ -58,6 +65,111 @@ sub is_request{
     $$self{_request_Boolean}=$argument if defined $argument;
     return $$self{_request_Boolean};
 }
+
+### Queue handlers.
+
+sub queue{
+    my($self)=@_;
+    $$self{queue} = [] if !defined $$self{queue};
+    return $$self{queue};
+}
+
+sub shift{
+    my($self)=@_;
+    return shift(@{$self->queue()});
+}
+sub unshift{
+    my($self,$argument)=@_;
+    return unshift(@{$self->queue()},$argument);
+}
+sub push{
+    my($self,$argument)=@_;
+    return push(@{$self->queue()},$argument);
+}
+sub pop{
+    my($self)=@_;
+    return pop(@{$self->queue()});
+}
+
+###### $transaction->handle($request, $resolver)
+###
+###	A transaction can handle a request by pushing itself
+###	onto the given resolver.  This allows agents to push
+###	responses onto a *transaction* to be handled.  We return
+###	success, indicating that the request has been satisfied.
+###
+sub handle {
+    my ($self, $request, $resolver) = @_;
+
+    $resolver -> push($self);
+    return 1;
+}
+
+
+###### $transaction->satisfy($resolver)
+###
+###	Calls $agent->handle($self, $resolver) for every agent in its
+###	queue.  (If the agent is not a reference, it is taken as a
+###	boolean result; this allows an ``act-on'' agent to mark the
+###	transaction as satisfied by pushing a 1 onto it.
+###
+sub satisfy {
+    my ($self, $resolver) = @_;
+    my $satisfied = 0;
+
+    foreach $agent (@{$self->queue()}) {
+	if (ref($agent)) {
+	    $satisfied = 1 if $agent->handle($self, $resolver);
+	} else {
+	    $satisfied = 1 if $agent;
+	}
+    }
+
+    if (! $satisfied) {
+	if ($self->is_response()) {
+	    $self->send_response();
+	} elsif ($self->is_request()) {
+	    print "pushing error_response\n" if $main::debugging;
+	    $resolver->push($self->error_response());
+	}
+    }
+}
+
+
+############################################################################
+###
+### Utilities to actually respond to a transaction, or generate
+###	(return) an error response transaction.
+###
+
+sub send_response {
+    my($reply)=@_;
+    my $machine=$reply->to_machine();
+
+    if (ref($machine)) {
+	print "sending response.\n" if $main::debugging;
+	my $status=$machine->send_response($reply) if ref($machine);
+	return $status;
+    } else {
+	print "sending response to $machine\n" if $main::debugging;
+	return;
+    }
+}
+
+sub error_response{
+    my($self)=@_;
+    my $response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND, "not found");
+    $response->content_type("text/plain");    
+    my $url=$self->url()->as_string();
+    
+    $response->content("Agency could not find $url\n");
+
+    $response=TRANSACTION->new($response,
+			       $main::this_machine,
+			       $argument->from_machine());
+    return $response;
+}
+
 
 ###### transaction->read_content($type)
 ###
