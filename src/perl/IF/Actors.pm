@@ -171,7 +171,7 @@ sub actor_handle {
 define_actor('get', 'active' => 1, 'content' => 'name',
 	     _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
-optionally in PIA, ENV, AGENT, ELEMENT, or ENTITY context.");
+optionally in PIA, ENV, AGENT, FORM, ELEMENT, or ENTITY context.");
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
@@ -188,6 +188,9 @@ sub get_handle {
 	$ii->replace_it($status);
     } elsif ($it->attr('env')) {
 	$ii->replace_it($ENV{$name});
+    } elsif ($it->attr('form')) {
+	my $hash = IF::Run::request()->parameters;
+	$ii->replace_it($$hash{$name});
     } elsif ($it->attr('agent')) {
 	local $agent = IF::Run::agent();
 	$ii->replace_it($agent->option($name)) if defined $agent;
@@ -507,6 +510,33 @@ sub sort_handle {
 
 ### <text>content</text>
 
+define_actor('text', 'active' => 1, 'parsed' => 1, 
+	     _handle => \&text_handle,
+	     'dscr' => "eliminate markup from CONTENT.");
+
+sub text_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $text = $it->content_text;
+    $ii->replace_it($text);
+}
+
+
+### <trim>content</trim>
+
+define_actor('trim', 'active' => 1, 'parsed' => 1, 
+	     _handle => \&trim_handle,
+	     'dscr' => "eliminate leading and trailing whitespace
+from CONTENT.");
+
+sub trim_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $text = remove_spaces($it);
+    $ii->replace_it(IF::IT->new()->push($text));
+}
+
+
 ### 
 ### <pad width=N align=[left|right|center] [spaces]>string</pad>
 ###	If the "spaces" attribute is present, only the spaces are 
@@ -516,8 +546,8 @@ sub sort_handle {
 
 define_actor('pad', 'active' => 1, 'parsed' => 1, 
 	     _handle => \&pad_handle,
-	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment.
-Optionally just generate the SPACES");
+	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment
+(left/center/right).  Optionally just generate the SPACES.  Ignores markup.");
 
 sub pad_handle {
     my ($self, $it, $ii) = @_;
@@ -654,7 +684,7 @@ sub agent_running_handle {
     my ($self, $it, $ii) = @_;
 
     my $name = $it->attr('name');
-    $name = $it->content_string unless defined $name;
+    $name = $it->content_text unless defined $name;
 
     my $a = IF::Run::resolver()->agent($name);
     if (ref $a) {
@@ -705,12 +735,31 @@ Returns the agent's name." );
 sub agent_install_handle {
     my ($self, $it, $ii) = @_;
 
-    #my $options = get_hash($it, 'options'); # === broken ===
+    ## urlQuery is undefined because installation is normally a POST
+    #my $options = get_hash($it, 'options'); # === broken: urlQuery undef. ===
     my $options = IF::Run::request()->parameters;
 
     my $agent = IF::Run::agent(); # had better be agency
     $agent = $agent->install($options);
     my $name = ref $agent ? $agent->name : '';
+    $ii->replace_it($name);
+}
+
+### <agent-remove>name</agent-remove>
+
+define_actor('agent-remove', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'name', _handle => \&agent_remove_handle,
+	     'dscr' => "Remove (uninstall) an agent." );
+
+sub agent_remove_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    $name = $it->content_text unless defined $name;
+
+    my $agent = IF::Run::agent(); # had better be agency
+
+    $agent->un_install_agent($name) if defined $name;
     $ii->replace_it($name);
 }
 

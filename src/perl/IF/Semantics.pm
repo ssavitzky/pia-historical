@@ -23,22 +23,69 @@ use URI::URL;
 
 #############################################################################
 ###
-### Attributes:
+### Strings:
 ###
-###	These routines are used primarily for analyzing attributes.
+###	These routines are used primarily for analyzing the values of 
+###	attributes, or content consisting of a single string.
 ###
 
 sub split_list {
     my ($in) = @_;
 
-    
+    ## If $in is a string, or a token whose content is a string,
+    ##	  split it on whitespace
+
+    $in = singleton_string($in);
+    return unless defined $in;
+
+    $in =~ s/\n/ /s;
+    return \(split $in);
 }
 
 sub split_query {
+    my ($in) = @_;
 
+    ## If $in is a string, or a token whose content is a string,
+    ##	  split it as a query string.
+
+    $in = singleton_string($in);
+    return unless defined $in;
+    return [] unless $in =~ /\=/s;
+
+    $in =~ s/^[\n\s]*//s;
+    $in =~ s/[\n\s]*$//s;
+    $in =~ s/\s*=\s*/=/g;
+
+    my @out = ();
+    $in = 'http://foo/bar?'.$in unless $in =~ /\?/;
+    print "$in\n";
+    my $u = url($in);
+    my @tmp = $u->query_form;
+    my ($a, $v);
+    while (($a, $v) = splice(@tmp, 0, 2)) {
+	push(@out, [$a, $v]);
+    }
+    return \@out;
 }
 
+sub singleton_string {
+    my ($in) = @_;
 
+    ## If $in is a string or a token whose content is a string,
+    ##	 return the string; otherwise return undefined;
+
+    return $in unless ref $in;
+
+    if (ref $in ne 'ARRAY') {
+	$in = $in->content;
+    }
+    return $in unless ref $in;
+    if (ref $in eq 'ARRAY' && @$in == 1 && !ref($$in[0])) {
+	return $$in[0];
+    }
+    return;
+}
+    
 #############################################################################
 ###
 ### Tags:
@@ -221,27 +268,21 @@ sub list_pairs {
 
     my ($x, @out);
 
-    if (! ref $in) {
-	$in = 'http://foo/?'.$in unless $in =~ /\?/;
-	my $u = url($in);
-	my @tmp = $u->query_form;
-	my ($a, $v);
-	while (($a, $v) = splice(@tmp, 0, 2)) {
-	    push(@out, [$a, $v]);
-	}
-    } else {
-	$in = remove_spaces($in);
-	if (@$in == 1 && ref($in->[0]) 
-	    && is_one_of($in->[0]->tag, qw(dl ul dl table))) {
-	    $in = remove_spaces($in->[0]->content);
-	}
-	my $x;
-	for $x ($in) {
-	    if (ref($x) && $x->tag eq 'li') {
-		push(@out, $x->content);
-	    } else {
-		push(@out, $x);
-	    }
+    $in = remove_spaces($in);
+
+    $x = split_query($in);
+    return $x if defined $x;
+
+    if (@$in == 1 && ref($in->[0]) 
+	&& is_one_of($in->[0]->tag, qw(dl ul dl table))) {
+	$in = remove_spaces($in->[0]->content);
+    }
+    my $x;
+    for $x ($in) {
+	if (ref($x) && ref($x) ne 'ARRAY' && $x->tag eq 'li') {
+	    push(@out, $x->content);
+	} else {
+	    push(@out, $x);
 	}
     }
     return \@out;

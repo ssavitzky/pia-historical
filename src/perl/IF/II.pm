@@ -513,7 +513,6 @@ sub next_input {
     
     $input->[1] = $pc;
     push @$in_stack, $input;
-    $self->expand_entities($out) unless ref($out);
     return $out;
 }
 
@@ -559,9 +558,10 @@ sub push_into {
 sub expand_attrs {
     my ($self, $it) = @_;
 
-    ## Expand entities in the attributes of an empty tag
+    ## Expand entities in the attributes of a tag 
+    ##	  or in a content string.
 
-    return $it unless ref($it);
+    return $self->expand_entities($it) unless ref($it);
     my $expanded = 0;
     my $attrs = [];
     my $list = $it->attr_names;
@@ -911,8 +911,8 @@ sub resolve {
 		$it = $self->push_into($it);
 		$incomplete = 1;
 	    } else {
-		## Complete token which is either empty or quoted
-		$it = $self->expand_attrs($it) if ref($it) && ! $self->quoting;
+		## Complete token which is either empty, a string, or quoted
+		$it = $self->expand_attrs($it) if ! $self->quoting;
 		$incomplete = 0;
 	    }
 	} until ($it);
