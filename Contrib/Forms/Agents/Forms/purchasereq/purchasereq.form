@@ -45,7 +45,7 @@ Contact Information:<formvariable name=contact textarea=1 rows=3 cols=60> </form
 Special Instructions:<formvariable name=comments textarea=1 rows=4 cols=60> </formvariable>
 <p>
 Related Material: (Enter URL of <a
-href=fill_out_form.if?formtype=kiansho>Kiansho</a> for fixed asses greater
+href=fill_out_form.if?formtype=kiansho>Kiansho</a> for fixed assets greater
 than $1000 or expenses greater than $10,000)<references> </references>
 
 
