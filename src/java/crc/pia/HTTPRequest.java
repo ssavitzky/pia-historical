@@ -373,8 +373,8 @@ public class  HTTPRequest extends Transaction {
     if( queryString()!= null && mymethod.equalsIgnoreCase( "GET" ) ){
       fc.setParameters( queryString() );
     }else {
-      if( mymethod.equalsIgnoreCase( "POST" ) )
-	fc.setParameters(null);
+      //      if( mymethod.equalsIgnoreCase( "POST" )  )
+      //	fc.setParameters(null);
     }
 
   }
