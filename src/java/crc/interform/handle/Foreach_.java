@@ -47,11 +47,12 @@ public class Foreach_ extends crc.interform.Handler {
 	  || name.equals("entity")) continue;
       t.addAttr(name, itt.attrValueAt(i));
     }
+    t.incomplete((byte)1);
+    ii.deleteIt();
 
     ii.pushInput(Element.endTagFor(it.tag()));
     ii.pushForeach(it.content(), entity, list);
     ii.pushInput(t); 
-    ii.deleteIt();
   }
 }
 
