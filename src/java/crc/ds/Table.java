@@ -123,6 +123,11 @@ public class Table extends Hashtable implements Stuff {
     append(e);
   }
 
+  public Table(Enumeration e, boolean lowercase) {
+    this();
+    append(e, lowercase);
+  }
+
   /************************************************************************
   ** Copying:
   ************************************************************************/
@@ -151,6 +156,18 @@ public class Table extends Hashtable implements Stuff {
     while (e.hasMoreElements()) {
       Object v = e.nextElement();
       put(v.toString(), v);
+    }
+  }
+
+  /** Append an Enumeration, optionally lowercasing the keys. */
+  public void append(Enumeration e, boolean lowercase) {
+    if (!lowercase) {
+      append(e);
+      return;
+    }
+    while (e.hasMoreElements()) {
+      Object v = e.nextElement();
+      put(v.toString().toLowerCase(), v);
     }
   }
 
