@@ -343,7 +343,9 @@ public class CurrentActive implements Cursor {
     if (p != null || aNode.hasChildren()) {
       // === The following chokes on an attribute with an unspecified value!
       // System.err.println("about to copy " + aNode.getClass().getName());
-      aNode = Copy.copyNodeAsActive(aNode);
+      ActiveNode n = (ActiveNode)aNode;
+      aNode = n.shallowCopy();
+      //aNode = Copy.copyNodeAsActive(aNode);
     }
     appendNode(aNode, active);
     descend();
