@@ -230,8 +230,10 @@ element</alist>
 
 <adscr>-foreach-</adscr>
 
+<demo><ol foreach list="a b c"><li> &li;</ol></demo>
+<demo><em foreach list="a b c"> &li;</em></demo>
 <dl>
-  <dt> <demo><ol foreach list="a b c"><li> &li;</ol></demo>
+  <dt> 
   <dd> when foreach is an <em>attribute</em> the entire matching element
        is returned, with the content repeated.
 </dl>
