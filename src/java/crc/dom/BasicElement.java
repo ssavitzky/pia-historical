@@ -11,20 +11,24 @@
 package crc.dom;
 
 import java.io.*;
-import w3c.dom.Element;
-import w3c.dom.AttributeList;
-import w3c.dom.Attribute;
-import w3c.dom.NodeEnumerator;
-import w3c.dom.Node;
-import w3c.dom.NodeList;
-
 
 public class BasicElement extends AbstractNode implements Element {
+  public BasicElement(){
+    setParent( null );
+    setPrevious( null );
+    setNext( null );
+    setTagName( "" );
+    setAttributes( null );
+    children = null;
+  }
 
   public BasicElement(Node myParent){
-    setParent( myParent );
-    setLeftSibling( null );
-    setRightSibling( null );
+    if( myParent != null )
+      setParent( (AbstractNode)myParent );
+    else
+      setParent( null );
+    setPrevious( null );
+    setNext( null );
     setTagName( "" );
     setAttributes( null );
     children = null;
@@ -33,7 +37,7 @@ public class BasicElement extends AbstractNode implements Element {
   /**
    * implementing Element methods
    */
-  public int getNodeType() { return AbstractNode.NodeType.ELEMENT; }
+  public int getNodeType() { return NodeType.ELEMENT; }
 
   public void setTagName(String tagName){}
   public String getTagName(){ return tagName; }
@@ -52,10 +56,6 @@ public class BasicElement extends AbstractNode implements Element {
   /* attribute list */
   protected AttributeList attrList;
 
-  /**
-   * The child collection
-   */
-  protected NodeList children;
 }
 
 
