@@ -4,7 +4,7 @@
 package crc.dom;
 
 
-public class TextEntity extends AbstractEntity{
+public abstract class TextEntity extends AbstractEntity{
   /**
    * Set the entity's content.  For a null string,
    * value is set to a blank BasicText.
@@ -20,8 +20,19 @@ public class TextEntity extends AbstractEntity{
       }catch(Exception e){
       }
     }
+    setIsBound( true );
   }
   
+  /**
+   * Deep copy.
+   */
+  public Object clone(){
+    TextEntity n = (TextEntity)super.clone();
+    n.setValue( new ChildNodeList( getValue() ));
+    return n;
+  }
+
+
   /**
    * Return this entity content
    * @return this entity content
@@ -60,18 +71,19 @@ public class TextEntity extends AbstractEntity{
   /**
    * Set the entity's value.
    */
-  protected void setValue(NodeList value){
+  public void setValue(NodeList value){
     if( value == null )
       setNullValue();
     else
-      this.value = value; 
+      this.value = value;
+    setIsBound( true );
   }
 
   /**
    * Return entity value
    * @return entity value.
    */
-  protected NodeList getValue(){
+  public NodeList getValue(){
     return value;
   }
 
