@@ -48,10 +48,12 @@ agent></dummy></set>
 <repeat list="&icons;" entity=i><option>&i;</option></repeat>
 </select></td>
 <td><input name="position&c;" value="&k;" type=hidden>
-<show-department dept=&k;> <br>
-<a href="edit_map.if?dept=&k;">Show on map</a></td>
+<show-department dept=&k;> </td>
 <td>
-<textarea name="directions&c;" rows=3 cols=30><get name="directions" agent key=&k;></textarea>
+<textarea name="directions&c;" rows=3 cols=30><get name="directions" agent
+key=&k;></textarea>
+<br>
+<a href="edit_map.if?dept=&k;">Edit map</a>
 </td>
 
  </tr>

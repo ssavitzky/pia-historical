@@ -87,7 +87,7 @@ entity=el><if><test match=&attr;><get name=el attr=name></test>
  <else><img src=/~&agentName;/icons/default.gif> </else></if>
 </actor>
 
-<actor tag="mark-image" desc="adds a marker to image" empty>
+<actor tag="mark-image" empty desc="adds a marker to image" empty>
 <set local name=myimage><get element name=image></set>
 <set local name=myx><get element name=x></set>
 <set local name=myy><get element name=y></set>
@@ -95,7 +95,15 @@ entity=el><if><test match=&attr;><get name=el attr=name></test>
 <set name=prefix>&usrDIR;/&agentName;/</set>
 <set name=marker>&prefix;/marker.pnm</set>
 <set name="output">&prefix;/maps/&mydept;.gif</set>
-<os-command-output> anytopnm &prefix;/&image; | pnmpaste &marker; &myx; &myy; | ppmtogif > &output; </os-command-output>
+  <write file=&prefix;/maps/&mydept;.mapinfo>
+  Map create &date;
+  anytopnm &prefix;/&myimage; | pnmpaste &marker; &myx; &myy; | ppmtogif > &output;
+  </write>
+<if><read info file=&output;>
+  <then><file remove name=&output;>
+    </then>
+</if>
+<os-command-output> anytopnm &prefix;/&myimage; | pnmpaste &marker; &myx; &myy; | ppmtogif > &output; </os-command-output>
 </actor>
 
 

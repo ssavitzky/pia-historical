@@ -24,12 +24,21 @@ have different plans for different floors.  Floor plan images can be uploaded
 by shared disks, by email, file upload, or retrieved from an arbitrary URL, or scanned in,...
 
 
+
 <if><get name="setdept" form>
  <then><set name=dept><get form name=setdept></set>
+ <set name=tmp><subst match=".*\?" result=""><get name=dept></subst></set>
+ <set name=dept><subst match="\?&tmp; " result=""><get name=dept> </subst></set>
+ <set name=x><subst match=",.* " result=""><get name=tmp> </subst></set>
+ <set name=y><subst match=".*," result=""><get name=tmp></subst></set>
+dept: &dept;<br>
+x: &x; <br>
+y: &y; <br>
+
 <hr>
-<mark-image image=&imagefile; x=&FORM.x; y=&FORM.y;
- dept=&FORM.setdept;>
-Result: <img src=/~&agentName;/maps/&FORM.setdept;.gif> (This system requires
+<mark-image image=&imagefile; x=&x; y=&y;
+ dept=&dept;>
+Result: <img src=/~&agentName;/maps/&dept;.gif> (This system requires
  an upgrade to properly handle image maps.) </then> 
  <else> <set name=dept><get form name=dept></set></else></if>
 
