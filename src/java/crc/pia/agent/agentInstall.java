@@ -24,8 +24,8 @@ public class agentInstall extends crc.dps.handle.GenericHandler {
     }
 
     // === buggy -- should get form from content === 
-    if (content != null) 
-      notify(in, aContext, "Bug: agent options in content not implemented.");
+    //if (content != null) 
+    //  notify(in, aContext, "Bug: agent options in content not implemented.");
 
     crc.pia.Transaction trans = env.getTransaction();
     crc.pia.Transaction req = trans.requestTran();
