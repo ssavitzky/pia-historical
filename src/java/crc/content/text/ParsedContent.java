@@ -11,6 +11,7 @@ import crc.interform.Tagset;
 import crc.interform.Actor;
 import crc.interform.Handler;  // where is best place to create insertion handler?
 import crc.sgml.Tokens;
+import crc.sgml.SGML;
 
 
 import java.io.Reader;
@@ -135,11 +136,10 @@ public class ParsedContent extends  GenericContent{
     exitState(START);
     enterState(READING);
   }
-				
-
+	
 
   /************************************************************
-  ** process output -- return number of characters with
+  ** process output -- return number of characters sent to sink
   ************************************************************/
   protected int processOutput() throws IOException {
     // returns -1 because only need to call  once
@@ -172,6 +172,21 @@ public class ParsedContent extends  GenericContent{
   }
 
   /************************************************************
+  ** treat as parse tree instead of stream
+  ************************************************************/
+  public SGML getParseTree(){
+     buildParseTree();
+    return  parseTree;
+  }
+
+  protected void buildParseTree(){
+    streaming = false;
+    enterState(PARSING);
+    parseTree = env.parse(source,tagset);
+    exitState(PARSING);
+  }
+
+  /************************************************************
   ** editing / tagset functions
   ************************************************************/
   protected void initializeTagset(){
@@ -182,6 +197,13 @@ public class ParsedContent extends  GenericContent{
     }
   }
 
+  /**
+   * set a tagset as the one to use
+   */
+
+ public void  setTagset(Tagset t){
+   tagset = t;
+  }
   /**
    * override add method for actors. where is meaningless...
    * actor added to tagset
