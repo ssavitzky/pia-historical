@@ -11,7 +11,7 @@ import crc.dps.NodeType;
 import java.io.PrintStream;
 
 /**
- * An Output filter that passes only Text nodes <p>
+ * An Output filter that passes only Text (and Entity) nodes <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -24,7 +24,8 @@ public class FilterText extends Proxy {
   ************************************************************************/
 
   public void putNode(Node aNode) { 
-    if (target != null && aNode.getNodeType() == NodeType.TEXT)
+    if (target != null && (aNode.getNodeType() == NodeType.TEXT
+			   || aNode.getNodeType() == NodeType.ENTITY))
       target.putNode(aNode);
   }
   public void startNode(Node aNode) { 
