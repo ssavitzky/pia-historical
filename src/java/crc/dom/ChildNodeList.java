@@ -10,11 +10,25 @@ import java.io.*;
  * This list expands a children collection through the start node.
  */
 
-public class ChildNodeList implements NodeList {
+public class ChildNodeList implements NodeList{
 
   public ChildNodeList(AbstractNode parentNode){
     parent = parentNode;
   }
+
+  public ChildNodeList(NodeList list)
+  {
+    if( list == null ) return;
+    if( list instanceof ChildNodeList ){
+      AbstractNode p = ((ChildNodeList)list).getParent();
+      if( p != null )
+	parent = (AbstractNode)p.clone();
+      else
+	parent = null;
+    }else
+      initialize( list );
+  }
+
 
   public NodeEnumerator getEnumerator(){ return new ChildNodeListEnumerator( this ); }
 
@@ -22,6 +36,9 @@ public class ChildNodeList implements NodeList {
        throws NoSuchNodeException
   {
     long i = 0;
+    if (parent == null)
+      throw new NoSuchNodeException("ChildNodeList is empty.");
+
     Node n = parent.getFirstChild();
     long howmany = getLength();
 
@@ -44,6 +61,8 @@ public class ChildNodeList implements NodeList {
    */
   public long getLength()
   {
+    if( parent == null ) return 0;
+
     Node ptr = parent.getFirstChild();
     long count = 1;
     while( ptr != null ){
@@ -53,6 +72,13 @@ public class ChildNodeList implements NodeList {
     return count;
   }
 
+
+  protected void initialize(NodeList list)
+  {
+    //punt
+  }
+
+  protected AbstractNode getParent(){ return parent; }
 
   /**
    * Header node where previous points to start and next points to last.
