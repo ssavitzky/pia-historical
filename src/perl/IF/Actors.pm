@@ -18,6 +18,7 @@ package IF::Actors; ###### Standard actors for InterForms
 
 
 use IF::Semantics;
+use PIA::Utilities;
 
 #############################################################################
 ###
@@ -379,12 +380,7 @@ sub protect_handle {
     my ($self, $it, $ii) = @_;
 
     if ($it->attr('markup')) {
-	my $text = $it->content_string;
-	#$text =~ s/[&<>]/$protected_chars{$1}/g;
-	$text =~ s/\&/\&amp;/g;
-	$text =~ s/\</\&lt;/g;
-	$text =~ s/\>/\&gt;/g;
-	$ii->replace_it($text);
+	$ii->replace_it(protect_markup($it->content_string));
     } else {
 	$ii->replace_it($it->content);
     }

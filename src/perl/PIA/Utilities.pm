@@ -5,7 +5,7 @@ package PIA::Utilities; ###### Utilities for the PIA
 use Exporter;
 @ISA = qw(Exporter);
 
-@EXPORT = qw(writeTo appendTo readFrom asHTML make_form make_list
+@EXPORT = qw(writeTo appendTo readFrom protect_markup make_form make_list
 	     run_init_file submit);
 
 
@@ -116,7 +116,7 @@ sub run_init_file {
 ### Conversion Utilities:
 ###
 
-sub asHTML {
+sub protect_markup {
     my $s = shift;
 
     ##	convert $string to HTML by properly escaping &, <, and >.
