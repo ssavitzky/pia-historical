@@ -1100,6 +1100,13 @@ example).
          	 become the children of their containers.
          </note>
        </define>
+  <li> <define element=unique parent=select empty handler>
+         <doc> Removes duplicate text nodes from the selected set.
+         </doc>
+         <note author=pgage> Probably doesn't work.
+         </note>
+       </define>
+
 </ul>
 
 <h2>Expansion Control Elements</h2>
