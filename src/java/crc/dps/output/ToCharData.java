@@ -1,4 +1,4 @@
-////// ToString.java: Token output Stream to String
+////// ToCharData.java: Token output Stream to Character data
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -13,23 +13,23 @@ import crc.dps.active.ActiveEntity;
 import java.util.NoSuchElementException;
 
 /**
- * Output a Token stream to a String <em>in external form</em>. <p>
+ * Output a Token stream to a String in <em>internal</em> form. <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
  * @see crc.dps.Output
- * @see crc.dps.output.ToCharData
+ * @see crc.dps.output.ToString
  */
 
-public class ToString extends ToExternalForm {
+public class ToCharData extends ToExternalForm {
 
   /************************************************************************
   ** State:
   ************************************************************************/
 
   protected String destination = "";
-  protected boolean expandEntities = false;
-  protected EntityTable entityTable = null;
+  protected boolean expandEntities = true;
+  protected EntityTable entityTable = TextUtil.getCharacterEntities();
 
   public final String getString() { return destination; }
 
@@ -52,6 +52,8 @@ public class ToString extends ToExternalForm {
       NodeList value = entityTable.getValue(e.getName());
       if (value != null) write(value.toString());
       else write(aNode.toString());
+    } else if (aNode.getNodeType() == NodeType.TEXT) {
+      write(((Text)aNode).getData());
     } else {
       write(aNode.toString());
     }
@@ -62,10 +64,10 @@ public class ToString extends ToExternalForm {
   ************************************************************************/
 
   /** Construct an Output. */
-  public ToString() {}
+  public ToCharData() {}
 
   /** Construct an Output, specifying an entity table for expansion. */
-  public ToString(EntityTable ents) {
+  public ToCharData(EntityTable ents) {
     entityTable = ents;
     expandEntities = true;
   }

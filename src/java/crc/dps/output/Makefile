@@ -21,6 +21,7 @@ TO_NODES = \
 
 TO_TEXT = \
 	ToExternalForm.java \
+	ToCharData.java \
 	ToHTTPClient.java \
 	ToString.java \
 	ToWriter.java 
