@@ -15,7 +15,7 @@ import crc.sgml.Element;
 
 import java.util.Enumeration;
 import java.lang.Integer;
-
+import java.io.Writer;
 
 /**
  * A List (sequence) of SGML Token's.  
@@ -166,11 +166,13 @@ public class Tokens extends List implements SGML {
     return toString();
   }
 
-  /** The result of appending some SGML tokens.  Same as this if isList(). */
+  /** The result of appending some SGML tokens.  Same as this if isList(). 
+   * 	Text of any kind is merged with an existing TextBuffer, and lists
+   *	have their contents appended. */
   public SGML append(SGML sgml) {
     if (sgml == null) return this;
     if (sgml.isList()) {
-      sgml.appendContentTo(this);
+      if (sgml.content() != null) sgml.content().appendTo(this);
     } else if (sgml.isText() && nItems() > 0
 	       && itemAt(nItems()-1) instanceof TextBuffer) {
       itemAt(nItems()-1).appendText(sgml.toText());
@@ -211,15 +213,19 @@ public class Tokens extends List implements SGML {
   }
 
   /** Append this as text. */
-  public void appendTextTo(SGML t) {
+  public void writeOn(Writer w) {
     for (int i = 0; i < nItems(); ++i) {
-      if (itemSeparator != null && i != 0) t.append(itemSeparator);
-      itemAt(i).appendTextTo(t);
+      if (itemSeparator != null && i != 0) {
+	try {
+	  w.write(itemSeparator);
+	} catch (java.io.IOException e) {}
+      }
+      itemAt(i).writeOn(w);
     }
   }
 
-  /** Append contents to a Tokens list. */
-  public void appendContentTo(Tokens list) {
+  /** Append to a Tokens list. */
+  public void appendTo(Tokens list) {
     for (int i = 0; i < nItems(); ++i) {
       list.append(itemAt(i));
     }

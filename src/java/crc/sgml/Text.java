@@ -4,6 +4,9 @@
 
 package crc.sgml;
 
+import java.io.Writer;
+import java.io.StringWriter;
+
 import crc.ds.Index;
 
 /**
@@ -129,16 +132,6 @@ public class Text extends Token {
     return this;
   }
 
-  /** Append this as text. */
-  public void appendTextTo(SGML t) {
-    t.append(this);
-  }
-
-  /** Append contents to a Tokens list. */
-  public void appendContentTo(Tokens list) {
-    list.append(this);
-  }
-
   /** Return the numeric value of the Text.  Anything that isn't a number
    *	gets returned as 0.0; no exceptions are thrown. */
   public double numValue() {
@@ -149,6 +142,12 @@ public class Text extends Token {
     } catch (Exception e) {
       return 0.0;
     }
+  }
+
+  public void writeOn(Writer w) {
+    try {
+      w.write(toString());
+    } catch (java.io.IOException e) {}
   }
 
   /************************************************************************

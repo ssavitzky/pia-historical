@@ -4,6 +4,9 @@
 
 package crc.sgml;
 
+import java.io.Writer;
+import java.io.StringWriter;
+
 import crc.ds.Index;
 
 /**
@@ -40,16 +43,6 @@ public class TextWrap extends Text {
   /** The result of appending some text.  Same as this if isText(). */
   public SGML appendText(Text t) {
     return append(t.toString());
-  }
-
-  /** Append this as text. */
-  public void appendTextTo(SGML t) {
-    t.append(this);
-  }
-
-  /** Append contents to a Tokens list. */
-  public void appendContentTo(Tokens list) {
-    list.append(this);
   }
 
 

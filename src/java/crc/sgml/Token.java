@@ -8,6 +8,7 @@ import crc.ds.List;
 import crc.ds.Table;
 import crc.ds.Index;
 
+import java.io.Writer;
 
 /**
  * The representation of an SGML <em>element</em> or text.  Each Token
@@ -176,11 +177,6 @@ public class Token implements SGML {
     return append(v);
   }
 
-  /** Append contents to a Tokens list. */
-  public void appendContentTo(Tokens list) {
-    list.addItem(this);
-  }
-
   /************************************************************************
   ** Conversion to Tokens:
   ************************************************************************/
@@ -226,8 +222,10 @@ public class Token implements SGML {
     return "1";
   }
 
-  public void appendTextTo(SGML t) {
-    t.append(toText());
+  public void writeOn(Writer w) {
+    try {
+      w.write(toString());
+    } catch (java.io.IOException e) {}
   }
 
   /************************************************************************

@@ -9,9 +9,9 @@ import crc.ds.Index;
 /**
  * Interface for SGML tokens and collections of tokens.<p>
  *
- * <strong>Note:</strong> SGML objects are not immutable, so we must not 
- * 	define an implementation of <code>equals</code> that compares 
- * 	SGML's on content. <p>
+ * <strong>Note:</strong> SGML objects are not immutable, so we <em>must 
+ * 	not</em> define an implementation of <code>equals</code> that 
+ * 	compares SGML's on content. <p>
  *
  * === All implementations of <code>crc.sgml.SGML</code> should
  *      support <code>compareTo</code> and <code>compareIgnoreCase</code>
@@ -19,11 +19,15 @@ import crc.ds.Index;
  */
 public interface SGML extends java.lang.Cloneable, java.io.Serializable {
 
+  /************************************************************************
+  ** Predicates:
+  ************************************************************************/
+
   /** Return true if the object is an individual SGML token. */
   boolean isToken();
 
   /** Return true if the object is an individual SGML element.  This is
-   *	<em>only</em> true if the object is a member of class Token.
+   *	<em>only</em> true if the object is a member of class Element.
    */
   boolean isElement();
 
@@ -40,6 +44,10 @@ public interface SGML extends java.lang.Cloneable, java.io.Serializable {
    * 	singleton list containing a Text. */
   boolean isText();
 
+  /************************************************************************
+  ** Syntax:
+  ************************************************************************/
+
   /** Parser state:  0 for a complete element, 1 for a start tag, -1
    *	for an end tag.  */
   byte incomplete();
@@ -51,8 +59,16 @@ public interface SGML extends java.lang.Cloneable, java.io.Serializable {
    *	"" if istext(), and "&amp;" if instanceof Entity. */
   String tag();
 
+  /************************************************************************
+  ** Conversion:
+  ************************************************************************/
+
   /** Convert the entire object to text */
   Text toText();
+
+  /************************************************************************
+  ** Content Operations:
+  ************************************************************************/
 
   /** Convert to a single token if it's a singleton list. */
   public SGML simplify();
@@ -78,22 +94,17 @@ public interface SGML extends java.lang.Cloneable, java.io.Serializable {
   /** The result of appending a string. */
   SGML append(String s);
 
-  /** Append this as text.  Note that the destination need <em>not</em>
-   * 	be pure text; it could be a list or a token.  */
-  void appendTextTo(SGML sgml);
-
-  /** Append content to a Tokens list. */
-  void appendContentTo(Tokens list);
+  /************************************************************************
+  ** Attribute Operations:
+  ************************************************************************/
 
   /** Retrieve an attribute by name.  Semantics vary by SGML type*/
   SGML attr(String name);
-
 
   /** Retrieve a complex attribute given an index (e.g. foo.bar.1-3) 
        semantics vary by type */
   SGML attr(Index path);
   
-
   /** Set an attribute by name. Semantics may vary by SGML type*/
   void attr(String name, SGML value);
 
@@ -103,7 +114,15 @@ public interface SGML extends java.lang.Cloneable, java.io.Serializable {
   /** Test whether an attribute exists. */
   boolean hasAttr(String name);
 
+  /************************************************************************
+  ** I/O and Conversion:
+  ************************************************************************/
+
   /** Convert to a number (double, being the most general form available). */
   double numValue();
 
+  /** Append to a Writer (character stream).  */
+  void writeOn(java.io.Writer w);
+
 }
+

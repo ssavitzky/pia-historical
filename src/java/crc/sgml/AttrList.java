@@ -4,6 +4,9 @@
 
 package crc.sgml;
 
+import java.io.Writer;
+import java.io.StringWriter;
+
 import crc.ds.List;
 import crc.ds.Table;
 
@@ -182,25 +185,25 @@ public class AttrList extends Tokens {
 
 
   public Text toText() {
-    Text t = new Text();
-    appendTextTo(t);
-    return t;
+    return new Text(toString());
   }
 
   public String toString() {
-    return toText().toString();
+    StringWriter w = new StringWriter();
+    writeOn(w);
+    return w.toString();
   }
 
-  public void appendTextTo(SGML t) {
+  public void writeOn(Writer w) {
     /* Format-dependent */
     for (int i = 0; i < nItems(); ++i) {
-      if (itemStart != null) t.append(itemStart);
-      t.append(nameAt(i));
+      if (itemStart != null) w.write(itemStart);
+      w.write(nameAt(i));
       if (itemAt(i) != null && itemAt(i) != Token.empty) {
-	if (itemSep != null) t.append(itemSep);
-	t.append(itemAt(i));
+	if (itemSep != null) w.write(itemSep);
+	itemAt(i).writeOn(w);
       }
-      if (itemEnd != null) t.append(itemEnd);
+      if (itemEnd != null) w.write(itemEnd);
     }
   }
 

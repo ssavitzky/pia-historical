@@ -4,6 +4,9 @@
 
 package crc.sgml;
 
+import java.io.Writer;
+import java.io.StringWriter;
+
 import crc.sgml.Util;
 
 import crc.ds.List;
@@ -147,20 +150,22 @@ public SGML attr(Index  path)
     return this;
   }
 
-  /** Append this as text.  Note that the destination need <em>not</em>
-   * 	be pure text; it could be a list or a token.  */
-  public void appendTextTo(SGML sgml) {
-    sgml.appendText(toText());
-  }
-
-  /** Append content to a Tokens list. */
-  public void appendContentTo(Tokens list) {
-    content().appendContentTo(list);
-  }
-
   /** Convert to a number (double, being the most general form available). */
   public double numValue() {
     return nAttrs();
+  }
+
+  public void writeOn(Writer w) {
+    java.util.Enumeration keys = attrs();
+    try {
+      while (keys.hasMoreElements()) {
+	String key = keys.nextElement().toString();
+	w.write(key + "=");
+	w.write(java.net.URLEncoder.encode(attr(key).toString()));
+	if (keys.hasMoreElements()) w.write('&');
+      }
+    } catch (java.io.IOException e) {
+    }
   }
 
   /************************************************************************

@@ -4,6 +4,9 @@
 
 package crc.sgml;
 
+import java.io.Writer;
+import java.io.StringWriter;
+
 import java.util.Enumeration;
 
 import crc.ds.List;
@@ -369,11 +372,6 @@ public SGML attr(Index name)
     return this;
   }
 
-  /** Append contents to a Tokens list. */
-  public void appendContentTo(Tokens list) {
-    if (content != null) list.append((SGML)content);
-  }
-
   /** Append an item, wrapping it in a suitable tag if this is a list. */
   public void appendListItem(SGML sgml, String tag) {
     String t1 = sgml.tag();
@@ -579,7 +577,7 @@ public SGML attr(Index name)
     if (tag == null || tag.equals("") || specialFormat) {
       return null;
     } else {
-      Text t = new Text("<" + tag);
+      Text t = new TextBuffer("<" + tag);
       for (int i = 0; i < nAttrs(); ++i) {
 	t.append(" ");
 	t.append(attrNameAt(i));
@@ -589,7 +587,7 @@ public SGML attr(Index name)
 	  // === Should be more discriminating about quoting ===
 	  // === on the other hand some browsers are confused by ' ===
 	  // === should also entity-encode <&>
-	  v.appendTextTo(t);
+	  t.append(v.toString());
 	  t.append("\"");
 	}
       }
@@ -607,20 +605,52 @@ public SGML attr(Index name)
     }
   }
 
+  /** Write an SGML start tag for the given Element. */
+  public void writeStartOn(Writer w) {
+    if (tag == null || tag.equals("") || specialFormat) {
+      return;
+    } else try {
+      w.write("<" + tag);
+      for (int i = 0; i < nAttrs(); ++i) {
+	w.write(" ");
+	w.write(attrNameAt(i));
+	SGML v = attrValueAt(i);
+	if (v != null && v != Token.empty && !(v.isList() && v.isEmpty())) {
+	  w.write("=\"");
+	  // === Should be more discriminating about quoting ===
+	  // === on the other hand some browsers are confused by ' ===
+	  // === should also entity-encode <&>
+	  v.writeOn(w);
+	  w.write("\"");
+	}
+      }
+      w.write(">");
+    } catch (java.io.IOException e) {}
+  }
+
+  /** Return an SGML end tag for the given Element. */
+  public void writeEndOn(Writer w) {
+    if (tag == null || tag.equals("") || specialFormat) {
+      return;
+    } else try {
+      w.write("</" + tag + ">");
+    } catch (java.io.IOException e) {}
+  }
+
   public Text toText() {
-    Text t = new TextBuffer();
-    appendTextTo(t);
-    return t;
+    return new Text(toString());
   }
 
   public String toString() {
-    return toText().toString();
+    StringWriter w = new StringWriter();
+    writeOn(w);
+    return w.toString();
   }
 
-  public void appendTextTo(SGML t) {
+  public void writeOn(Writer w) {
     if (incomplete >= 0 && tag != null && !tag.equals("") && !specialFormat)
-      t.append(startTag());
-    if (content != null && incomplete == 0) {//content.appendTextTo(t);
+      writeStartOn(w);
+    if (content != null && incomplete == 0) {
       for (int i = 0; i < nItems(); ++i) {
 	
              SGML newIt=itemAt(i);
@@ -628,16 +658,14 @@ public SGML attr(Index name)
              if(newIt == this) {
 	       crc.pia.Pia.debug("LOOP in parse tree detected: mytag" + tag() +" element number " + i);
 	     } else {
-	       newIt.appendTextTo(t);
+	       newIt.writeOn(w);
 	     }
       }
-      
     }
-    
 	      
     if (incomplete <= 0 && hasEndTag() && 
 	tag != null && !tag.equals("") && !specialFormat)       
-      t.append(endTag());
+      writeEndOn(w);
   }
 
   /************************************************************************
