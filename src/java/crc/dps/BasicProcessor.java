@@ -62,6 +62,7 @@ public class BasicProcessor extends ParseStack implements Processor {
 	// Empty element: pop the frame and treat as an end tag.
 	if (t.isEmptyElement()) {
 	  token = t; 
+	  debug("empty");
 	  processEnd();
 	}
       } else if (token.isEndTag()) {		// End tag
@@ -82,7 +83,7 @@ public class BasicProcessor extends ParseStack implements Processor {
   protected boolean anyResults;
 
   public Token putResult(Node aNode) {
-    debug((parsing && node == null)? " dropped parse " : "ok");
+    debug((parsing && node == null)? " dropped parse " : "put");
     if (aNode == null) return null;
     if (parsing) appendNode(aNode);
     if (passing) passOutput(new BasicToken(aNode));
@@ -93,7 +94,7 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   /** Internal hack to simplify processEnd */
   protected final Token putResult(Node aNode, Token aToken) {
-    debug((parsing && node == null)? " dropped parse " : "ok");
+    debug((parsing && node == null)? " dropped parse " : "put");
     if (aNode == null) return null;
     if (parsing) appendNode(aNode);
     if (passing) passOutput(aToken);
@@ -118,29 +119,38 @@ public class BasicProcessor extends ParseStack implements Processor {
   /** The processing associated with a start tag. */
   protected final void processStart() {
     Handler handler;
-    debug("<" + token.getTagName() + ">", depth);
+    debug("<" + token.getTagName()
+	  + (token.isEmptyElement()? "/" : "") + ">", depth);
+
     /* Here's where it gets tricky.
      *	We want to end up with parseStack.token being the current
      *	token (which we will pop when we see the end tag).  But
      *	we have to save all the other variables before calling the
      *	handler.
      */
+    debug(passing? " pas" : " ^pas");
+    debug(parsing? " par" : " ^par");
+    debug(expanding? " exp" : " ^exp");
     pushToken(token, token.getTagName());
     if (expanding) {
       handler = token.getHandler();
       if (handler != null) {
 	node = handler.startAction(token, this);
-	debug(" handled ");
+	debug(" handled " + ((node == null)? "null " : "node "));
       } else {
 	node = token.createNode(this.getHandlers());
 	debug(" default ");
       } 
+      debug(passing? " pas" : " ^pas");
+      debug(parsing? " par" : " ^par");
+      debug(expanding? " exp" : " ^exp");
     } else if (parsing) { 
       node = token; 
     } else {
       node = null;
     }
     if (passing && !token.isEmptyElement()) {
+      debug("passed ");
       if (node == null || node == token) {
 	passOutput(token);
       } else {
@@ -154,8 +164,6 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   /** The processing associated with an end tag or empty element */
   protected final void processEnd() {
-    debug("</" + token.getTagName()
-	  + (token.implicitEnd()? " i" : "") +">", depth-1);
     // remember whether we were passing the contents ,
     // and the new Node we constructed.
     boolean werePassing = passing;
@@ -164,20 +172,24 @@ public class BasicProcessor extends ParseStack implements Processor {
     if (getElement() != null) {
       oldToken.setTagName(getElement().getTagName());
     }
-    Handler handler;
+
     // then pop the parse stack, call the handler, and append the node.
     popParseStack();
+
+    token.setImplicitEnd(oldToken.implicitEnd());
+
+    debug("<"
+	  + (token.isEmptyElement()? "" : "/") + token.getTagName()
+	  + (token.implicitEnd()? " i" : "") +">", depth-1);
+
     // the handler we want is the one from the start tag on the stack.
     // It should still be there in <code>token</code>.
     if (!token.isEmptyElement()) {
       oldToken.setEndTag();
     }
-    if (oldToken.implicitEnd()) {
-      token.setImplicitEnd(true);
-    }
     if (parsing && newNode == null) { debug(" null result "); }
     if (expanding) {
-      handler = token.getHandler();
+      Handler handler = token.getHandler();
       if (handler != null) {
 	token = handler.endAction(token, this, newNode);
 	debug(" handled ");

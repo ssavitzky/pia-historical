@@ -32,7 +32,6 @@ import java.io.IOException;
  * @version $Id$
  * @author steve@rsv.ricoh.com 
  * @see crc.dps.Parser
-
  */
 
 public class BasicParser extends AbstractParser {
@@ -49,25 +48,29 @@ public class BasicParser extends AbstractParser {
    *	Correctly handles <code>&amp;<i>ident</i>=</code>, which is not
    *	an entity reference but part of a query string.
    *
-   *	@return false if the next available character does not belong in
+   * @param strict if <code>true</code>, <em>require</em> a semicolon.
+   * @return false if the next available character does not belong in
    *	an entity name.
    */
-  boolean getEntity() throws IOException {
-    if (last != '&') return false;
+  boolean getEntity(boolean strict) throws IOException {
+    if (last != entityStart) return false;
     last = 0;
     if (!eatIdent()) {
-      buf.append("&"); 
+      buf.append(entityStart); 
       return false;
     }
     if (last == '=') {
-      buf.append("&" + ident + "=");
-      last = 0;
+      buf.append(entityStart); buf.append(ident);
+      return false;
+    } else if (strict && last != entityEnd) {
+      buf.append(entityStart); buf.append(ident);
       return false;
     }
+
     next = new BasicToken(NodeType.ENTITY); // === probably wants to use tagset
     next.setName(ident);
-    if (last == ';') next.setHasClosingDelimiter(true);
-    if (last == ';') last = 0;
+    if (last == entityEnd) next.setHasClosingDelimiter(true);
+    if (last == entityEnd) last = 0;
     return true;
   }
 
@@ -87,7 +90,7 @@ public class BasicParser extends AbstractParser {
 	    list.append(createTextToken(buf.toString()));
 	  break;
 	}
-	if (last == '&' && getEntity()) {
+	if (last == '&' && getEntity(strictEntities)) {
 	  list.append(next);
 	}
       }
@@ -118,7 +121,7 @@ public class BasicParser extends AbstractParser {
 	  }
 	  if (last == quote) break;
 	} else break;
-	if (getEntity()) {
+	if (getEntity(strictEntities)) {
 	  list.append(next);
 	}
       }
@@ -140,7 +143,7 @@ public class BasicParser extends AbstractParser {
 	    buf.setLength(0);
 	  }
 	} else break;
-	if (getEntity()) {
+	if (getEntity(strictEntities)) {
 	  list.append(next);
 	} else break;
       }
@@ -191,6 +194,12 @@ public class BasicParser extends AbstractParser {
       if (last != '>') return false;
 
       // Look the token up in the Tagset.
+      crc.dps.Handler h = it.getHandler();
+      if (h != null) {		// Dispatching on attrs may be needed.
+	it.setHandler(h);	// calls h.getHandlerForToken again.
+      }
+
+      // === Check for content entity and element handling ===
 
       // Done.  Clean up the buffer and return the new tag in next.
       buf.setLength(tagStart);
@@ -258,7 +267,7 @@ public class BasicParser extends AbstractParser {
   Token getText() throws IOException {
 
     while (eatText()) {
-      if ((last == '&' && getEntity()) ||
+      if ((last == '&' && getEntity(strictEntities)) ||
 	  (last == '<' && getTag()) ||
 	  (last < 0)) break;
     }

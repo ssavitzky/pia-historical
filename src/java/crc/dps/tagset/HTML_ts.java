@@ -4,14 +4,7 @@
 
 package crc.dps.tagset;
 
-import java.util.Enumeration;
-
-
-import crc.dps.handle.BasicHandler;
-import crc.dps.handle.GenericHandler;
-
-import crc.ds.Table;
-import crc.ds.List;
+import crc.dps.Tagset;
 
 /**
  * A Tagset initialized to parse for HTML. <p>
@@ -50,41 +43,47 @@ public class HTML_ts extends BasicTagset {
   static String notInParagraph 	= "h1 h2 h3 h4 h5 h6 pre textarea";
   static String notInList 	= "h1 h2 h3 h4 h5 h6";
 
-  public initializeHTML(boolean emptyParagraphTags) {
+  public void initializeHTML(boolean emptyParagraphTags) {
     emptyP = emptyParagraphTags;
 
     if (emptyP) emptyTags += " p";
-    defEmpty(emptyTags);
+    defTags(emptyTags, null, EMPTY);
 
-    defTags(listTags, notInList);
-    defTags("dd dt", "dd dt");
-    defTags("li", "li");
-    defTags("option", "option textarea input");
-    defTags("textarea select", formTags);
-    defTags(tableRowTags, tableRowTags);
-    defTags("tr", tableTags);
-    defTags("p", phraseTags + " p " + notInParagraph);
-    if (! emptyP) defTags(notInParagraph, "p");
+    defTags(listTags, notInList, NORMAL);
+    defTags("dd dt", "dd dt", NORMAL);
+    defTags("li", "li", NORMAL);
+    defTags("option", "option textarea input", NORMAL);
+    defTags("textarea select", formTags, NORMAL);
+    defTags(tableRowTags, tableRowTags, NORMAL);
+    defTags("tr", tableTags, NORMAL);
+    defTags("p", phraseTags + " p " + notInParagraph, 0);
+    if (! emptyP) defTags(notInParagraph, "p", 0);
 
     // defined actors to create data structures
     // === defActors(dataTags, "parsed", true);
-    
+  }    
 
   /************************************************************************
   ** Construction:
   ************************************************************************/
 
-  public html() {
+  public HTML_ts() {
+    super("HTML");
     initializeHTML(true);
   }
 
-  public BasicTagset(Tagset previousContext) {
-    super(previousContext);
-    initialize();
+  public HTML_ts(String name, boolean emptyParagraphTags) {
+    super(name);
+    initializeHTML(emptyParagraphTags);
   }
 
-  public BasicTagset(DOMFactory f) {
+  public HTML_ts(Tagset previousContext) {
+    super(previousContext);
+    initializeHTML(true);
+  }
+
+  public HTML_ts(crc.dom.DOMFactory f) {
     super(f);
-    initialize();
+    initializeHTML(true);
   }
 }

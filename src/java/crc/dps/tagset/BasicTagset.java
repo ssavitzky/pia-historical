@@ -18,18 +18,25 @@ import crc.dps.Tagset;
 import crc.dps.Token;
 import crc.dps.Handler;
 import crc.dps.Parser;
-import crc.dps.Processor;
+import crc.dps.Context;
 import crc.dps.BasicToken;
 import crc.dps.Util;
 
 import crc.dps.handle.BasicHandler;
+import crc.dps.handle.GenericHandler;
+
+import crc.util.NameUtils;
 
 import crc.ds.Table;
 import crc.ds.List;
 
 /**
- * The basic implementation for a Tagset -- a lookup table for Handlers.
- *	<p>
+ * The basic implementation for a Tagset -- a lookup table for Handlers. <p>
+ *
+ *	In addition to the basic interface implementation, this class
+ *	includes a number of constants and convenience functions useful
+ *	when initializing a Tagset.  These are usually called from the 
+ *	constructor. <p>
  *
  *	BasicTagset extends BasicElement, and so can be treated as a
  *	Node.  This means that it is easily stored in and retrieved from
@@ -38,7 +45,7 @@ import crc.ds.List;
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
- * @see crc.dps.Processor
+ * @see crc.dps.Context
  * @see crc.dps.Token
  * @see crc.dps.Input 
  * @see crc.dom.Node */
@@ -63,6 +70,24 @@ public class BasicTagset extends BasicElement implements Tagset {
   protected int  MIN_TYPE = -2;
   protected Handler handlersByType[] = new Handler[MAX_TYPE - MIN_TYPE];
 
+  protected boolean locked = false;
+
+  /** Syntax for an empty element. */
+  public final static int EMPTY   = -1;
+  /** Syntax for a normal element.  The contents are expanded. */
+  public final static int NORMAL  =  1;
+  /** Syntax for a quoted element:  contents are parsed but not expanded. */
+  public final static int QUOTED  =  2;
+
+  /** Syntax flag (to be or'ed in) to suppress expansion. */
+  public final static int NO_EXPAND	= 2;
+  /** Syntax flag (to be or'ed in) to suppress parsing of entities. */
+  public final static int NO_ENTITIES	= 4;
+  /** Syntax flag (to be or'ed in) to suppress parsing of elements. */
+  public final static int NO_ELEMENTS	= 8;
+
+  /** Syntax for a literal: elements and entities are not recognized. */
+  public final static int LITERAL =  NO_ENTITIES | NO_ELEMENTS | NO_EXPAND;
 
   /************************************************************************
   ** DOM Factory:
@@ -136,7 +161,7 @@ public class BasicTagset extends BasicElement implements Tagset {
       return tagHandlerCache;
 
     tagNameCache = tagname;
-    tagHandlerCache = (Handler) handlersByTag.at(tagName);
+    tagHandlerCache = (Handler) handlersByTag.at(tagname);
     if (tagHandlerCache != null) return tagHandlerCache;
     else if (context != null) {
       tagHandlerCache = context.getHandlerForTag(tagname);
@@ -150,8 +175,8 @@ public class BasicTagset extends BasicElement implements Tagset {
   }
 
   public void setHandlerForTag(String tagname, Handler newHandler) {
-    handlersByTag.at(tagName, newHandler);
-    handlerNames.push(tagName);
+    handlersByTag.at(tagname, newHandler);
+    handlerNames.push(tagname);
   }
 
   /** Called during parsing to return a suitable Handler for a new Text
@@ -192,6 +217,10 @@ public class BasicTagset extends BasicElement implements Tagset {
     handlersByType[nodeType - MIN_TYPE] = newHandler;
   }
 
+  public boolean isLocked() { return locked; }
+
+  public void setIsLocked(boolean value) { locked = value; }
+
 
   /************************************************************************
   ** Parsing Operations:
@@ -208,26 +237,13 @@ public class BasicTagset extends BasicElement implements Tagset {
     return p;
   }
 
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before an end tag.
-   * @param t the Token for which the nesting is being checked.
-   * @param p the Parser.
-   * @return the number of elements that need to be ended before
-   * 	<code>t</code> can be ended.
-   */
-  public int checkEndNesting(Token t, Processor p) {
+  /** === does not appear to be needed === */
+  public int checkEndNesting(Token t, Context c) {
     return 0;			// ===
   }
 
-  /** Called during parsing to check for the presence of an implicit 
-   *	end tag before a start tag or complete element.
-   *
-   * @param t the Token for which the nesting is being checked.
-   * @param p the Parser.
-   * @return the number of elements that need to be ended before
-   * 	<code>t</code> can be started.
-   */
-  public int checkElementNesting(Token t, Processor p) {
+  /** === does not appear to be needed === */
+  public int checkElementNesting(Token t, Context c) {
     // === checkElementNesting needs to use t's handler.  It's a start
     //	   tag from this tagset, so it should have one.
 
@@ -339,28 +355,121 @@ public class BasicTagset extends BasicElement implements Tagset {
   }
 
   /************************************************************************
-  ** Construction:
+  ** Initialization:
   ************************************************************************/
+
+  /** Define a tag for a non-active element.
+   *
+   *	This assumes that all element handlers are subclasses of BasicHandler. 
+   *	It's a safe assumption as long as <code>defTags</code> is used to
+   *	initialize the entire table. <p>
+   *
+   * @param tag the name of the Element to define
+   * @param notIn a String of blank-separated tag names representing the
+   *	elements that will be ended if the tag being defined is found
+   *	inside them.
+   * @param syntax 1 for ordinary elements, -1 for empty elements.
+   * @return the Handler in case more setup needs to be done.
+   */
+  protected BasicHandler defTag(String tag, String notIn, int syntax) {
+    BasicHandler h = (BasicHandler) handlersByTag.at(tag);
+    boolean parseEnts = syntax > 0 && (syntax & NO_ENTITIES) == 0;
+    boolean parseElts = syntax > 0 && (syntax & NO_ELEMENTS) == 0;
+    if (h == null) h = new BasicHandler(syntax, parseElts, parseEnts);
+    if (notIn != null) {
+      Enumeration nt = new java.util.StringTokenizer(notIn);
+      while (nt.hasMoreElements()) {
+	h.setImplicitlyEnds(nt.nextElement().toString());
+      }
+    }
+    setHandlerForTag(tag, h);
+    return h;
+  }
+
+  /** Define a tag with a named handler class.
+   *
+   *	This assumes that all element handlers are subclasses of BasicHandler. 
+   *	It's a safe assumption as long as <code>defTags</code> is used to
+   *	initialize the entire table. <p>
+   *
+   * @param tag the name of the Element to define
+   * @param notIn a String of blank-separated tag names representing the
+   *	elements that will be ended if the tag being defined is found
+   *	inside them.
+   * @param syntax 1 for ordinary elements, -1 for empty elements.
+   * @param cname the name of the handler's class.  If <code>null</code>,
+   *	the tag is used.  GenericHandler is used if the specified class 
+   *	does not exist.
+   * @return the Handler in case more setup needs to be done.
+   */
+  protected GenericHandler defTag(String tag, String notIn, int syntax,
+				  String cname) {
+    GenericHandler h = null;
+    boolean parseEnts = syntax > 0 && (syntax & NO_ENTITIES) == 0;
+    boolean parseElts = syntax > 0 && (syntax & NO_ELEMENTS) == 0;
+    boolean expand    = syntax > 0 && (syntax & NO_EXPAND)   == 0;
+    try {
+      String name = (cname == null)? tag : cname;
+      Class c = NameUtils.loadClass(name, "crc.dps.handle.");
+      if (c == null) {
+	c = NameUtils.loadClass(name+"Handler", "crc.dps.handle.");
+      }
+      if (c != null) h = (GenericHandler)c.newInstance();
+      h.setElementSyntax(syntax);
+      h.setParseEntitiesInContent(parseEnts);
+      h.setParseElementsInContent(parseElts);
+    } catch (Exception e) { 
+    }
+    if (h == null) {
+      h = new GenericHandler(syntax, parseElts, parseEnts);
+      if (expand) h.setExpandContent(true);
+    }
+    if (notIn != null) {
+      Enumeration nt = new java.util.StringTokenizer(notIn);
+      while (nt.hasMoreElements()) {
+	h.setImplicitlyEnds(nt.nextElement().toString());
+      }
+    }
+    setHandlerForTag(tag, h);
+    return h;
+  }
 
   /** Define a set of syntax tags with a specified implicitlyEnds table.
    *	If the tags are already defined (e.g. they are actors or empty),
-   *	simply append to the implicitlyEnds table.
+   *	simply append to the implicitlyEnds table. <p>
    *
    *	This assumes that all element handlers are subclasses of BasicHandler. 
+   *	It's a safe assumption as long as <code>defTags</code> is used to
+   *	initialize the entire table. <p>
+   *
+   * @param tags a String of blank-separated tag names.
+   * @param notIn a String of blank-separated tag names representing the
+   *	elements that will be ended if the tag being defined is found
+   *	inside them.
+   * @param syntax 1 for ordinary elements, -1 for empty elements.
    */
-  protected void defTags(String tags, String notIn) {
+  protected void defTags(String tags, String notIn, int syntax) {
     Enumeration e  = new java.util.StringTokenizer(tags);
     while (e.hasMoreElements()) {
       String tag = e.nextElement().toString();
-      BasicHandler h = (BasicHandler) handlersByTag.at(tag);
-      if (h == null) h = new BasicHandler();
-      if (notIn != null) {
-	Enumeration nt = new java.util.StringTokenizer(notIn);
-	while (nt.hasMoreElements()) {
-	  h.setImplicitlyEnds(nt.nextElement().toString());
-	}
-      }
-      setHandlerForTag(tag, h);
+      defTag(tag, notIn, syntax);
+    }
+  }
+
+  /** Define a set of active tags with a specified syntax.  The tag names
+   *	are mapped into handler class names.
+   *
+   * @param tags a String of blank-separated tag names.
+   * @param notIn a String of blank-separated tag names representing the
+   *	elements that will be ended if the tag being defined is found
+   *	inside them.
+   * @param syntax 11 for ordinary elements, -1 for empty elements.
+   */
+  protected void defActive(String tags, String notIn, int syntax) {
+    Enumeration e  = new java.util.StringTokenizer(tags);
+    while (e.hasMoreElements()) {
+      String tag = e.nextElement().toString();
+      defTag(tag, notIn, syntax, (String)null);
     }
   }
 
@@ -370,6 +479,11 @@ public class BasicTagset extends BasicElement implements Tagset {
 
   public BasicTagset() {
     factory = new BasicDOMFactory();
+  }
+
+  public BasicTagset(String name) {
+    factory = new BasicDOMFactory();
+    // set name attribute of element.
   }
 
   public BasicTagset(Tagset previousContext) {

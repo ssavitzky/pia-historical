@@ -5,10 +5,13 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.NodeEnumerator;
+import crc.dom.ArrayNodeList;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
 import crc.dom.AttributeList;
+import crc.dom.Attribute;
 import crc.dom.Text;
 import crc.dom.Comment;
 import crc.dom.PI;
@@ -49,10 +52,8 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   /** Values are -1 for start tag, 1 for end tag, 0 for whole node. */
   protected int syntax = 0;
 
-  protected boolean isEmpty = false;
-  protected boolean hasEmptyDelim = false;
+  /** flag for presence of closing semicolon on an Entity. */
   protected boolean hasClosingDelim = true;
-  protected boolean implicitEnd = false;
 
   protected int nodeType;
 
@@ -157,23 +158,14 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     return nodeType == NodeType.ELEMENT;
   }
 
-  public boolean isEmptyElement() { return isEmpty; }
-  public void setIsEmptyElement(boolean value) { isEmpty = value; }
+  public boolean isEmptyElement() { return isEmptyElement; }
+  public void setIsEmptyElement(boolean value) { isEmptyElement = value; }
 
   public boolean hasEmptyDelimiter() { return hasEmptyDelim; }
   public void setHasEmptyDelimiter(boolean value) { hasEmptyDelim = value; }
 
   public boolean hasClosingDelimiter() { return hasClosingDelim; }
   public void setHasClosingDelimiter(boolean value) { hasClosingDelim = value; }
-
-  /** Returns true if the Token corresponds to an Element which has content
-   *	but no end tag, or to an end tag that was omitted from the input or 
-   *	that should perhaps be omitted from the output.
-   */
-  public boolean implicitEnd() 		   { return implicitEnd; }
-
-  /** Sets the internal flag corresponding to implicitEnd. */
-  public void setImplicitEnd(boolean flag) { implicitEnd = flag; }
 
   /************************************************************************
   ** Overrides:
@@ -239,10 +231,10 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(int nodeType, String name, String data, Handler handler) {
     this.nodeType = nodeType;
-    this.handler = handler;
-    if (handler != null && handler.isEmptyElement(this)) isEmpty = true;
+    if (handler != null && handler.isEmptyElement(this)) isEmptyElement = true;
     setName(name);
     setData(data);
+    setHandler(handler);
   }
 
   /** Construct a BasicToken with a given nodeType, data, and Handler. 
@@ -251,8 +243,8 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(int nodeType, String data, Handler handler) {
     this.nodeType = nodeType;
-    this.handler = handler;
     setData(data);
+    setHandler(handler);
   }
 
   /** Construct a TEXT BasicToken with given data. 
@@ -268,8 +260,8 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(String data, Handler handler) {
     this.nodeType = NodeType.TEXT;
-    this.handler = handler;
     setData(data);
+    setHandler(handler);
   }
 
   /** Construct a TEXT BasicToken with given data and ignorableWhitespace flag. 
@@ -277,7 +269,6 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(String data, boolean ignorableWhitespace) {
     this.nodeType = NodeType.TEXT;
-    this.handler = handler;
     isIgnorableWhitespace = ignorableWhitespace;
     setData(data);
   }
@@ -322,6 +313,10 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 
   /** Construct an ELEMENT BasicToken from an original node and syntax. */
   public BasicToken(Node node, int syntax) {
+    this(node, syntax, (EntityTable)null);
+  }
+
+  public BasicToken(Node node, int syntax, EntityTable ents) {
     originalNode = node;
     this.syntax = syntax;
     nodeType = node.getNodeType();
@@ -329,7 +324,24 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     case NodeType.ELEMENT: 
       crc.dom.Element e = (crc.dom.Element)node;
       setTagName(e.getTagName());
-      if (syntax <= 0) setAttributes( e.getAttributes() );
+      if (syntax <= 0) {
+	if (ents == null) setAttributes( e.getAttributes() );
+	else {
+	  crc.dom.AttributeList attrs = e.getAttributes();
+	  if (attrs != null) for (long i = 0; i < attrs.getLength(); ++i) try {
+	    Attribute attr = (Attribute)attrs.item( i );
+	    setAttribute(attr.getName(),
+			 expandEntities(attr.getValue(), ents));
+	  } catch (crc.dom.NoSuchNodeException ex){}
+ 
+	}
+      }
+      if (e instanceof BasicElement) {
+	BasicElement be = (BasicElement)e;
+	setHasEmptyDelimiter(be.hasEmptyDelimiter());
+	setIsEmptyElement(be.isEmptyElement());
+	setImplicitEnd(be.implicitEnd());
+      }
       break;
 
     case NodeType.TEXT:
@@ -374,6 +386,28 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       setAttributes( new crc.dom.AttrList( t.getAttributes() ) );
   }
 
+  /** Construct a BasicToken from an original Token, expanding entities
+   *	in the attribute list.  Children are copied.  */
+  public BasicToken(Token t, EntityTable ents) {
+    originalNode	  = t.getOriginalNode();
+    syntax 		  = t.getSyntax();
+    nodeType 		  = t.getNodeType();
+    tagName 		  = t.getTagName();
+    data 		  = t.getData();
+    name 		  = t.getName();
+    isWhitespace 	  = t.getIsWhitespace();
+    isIgnorableWhitespace = t.getIsIgnorableWhitespace();
+
+    handler		  = t.getHandler();
+
+    crc.dom.AttributeList attrs = t.getAttributes();
+    if (attrs != null) for (long i = 0; i < attrs.getLength(); ++i) try {
+      Attribute attr = (Attribute)attrs.item( i );
+      setAttribute(attr.getName(), expandEntities(attr.getValue(), ents));
+    } catch (crc.dom.NoSuchNodeException ex){}
+  }
+
+
   /** Construct a BasicToken from an original Node or Token.
    *  @param original the original Node
    *  @param copyIfToken if <code>true</code>, <code>original</code> is
@@ -386,6 +420,74 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
       return new BasicToken(original);
     }
   }
+
+
+  /** Construct a BasicToken from an original Node or Token, expanding entities.
+   *  @param original the original Node
+   *  @param entity table.
+   */
+  public static Token createToken(Node original, EntityTable ents) {
+    if (original instanceof Token) {
+      return new BasicToken((Token) original, ents);
+    } else {
+      return new BasicToken(original, 0, ents);
+    }
+  }
+
+  protected static NodeList expandEntities(NodeList nl, ArrayNodeList aList,
+					   Node aParent, EntityTable ents) {
+    NodeEnumerator e = nl.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      expandEntities(node, aList, aParent, ents);
+    }
+    return nl;
+  }
+
+  protected static NodeList expandEntities(NodeList nl, EntityTable ents) {
+    ArrayNodeList nnl = new ArrayNodeList();
+    if (nl == null) return nnl;
+    NodeEnumerator e = nl.getEnumerator();
+    for (Node node = e.getFirst(); node != null; node = e.getNext()) {
+      expandEntities(node, nnl, null, ents);
+    }
+    return nnl;
+  }
+
+  /** Expand entities in aNode and append the result to either aList or
+   *	aParent */ 
+  protected static void expandEntities(Node aNode, ArrayNodeList aList,
+				       Node aParent, EntityTable ents) {
+
+    switch (aNode.getNodeType()) {
+    case NodeType.ELEMENT:
+      Element elt = (Element)aNode;
+      Token ne = new BasicToken(elt, 0, ents);
+      expandEntities(elt.getChildren(), null, ne, ents);
+      if (aList != null)   aList.append(ne);
+      if (aParent != null) Util.appendNode(ne, aParent);
+      return;
+
+    case NodeType.NODELIST:
+      if (aNode.hasChildren())
+	expandEntities(aNode.getChildren(), aList, aParent, ents);
+      return;
+
+    case NodeType.ENTITY:
+      crc.dom.Entity ent = (crc.dom.Entity)aNode;
+      NodeList v = (ents == null)? null 
+	: ents.getValueForEntity(ent.getName(), false);
+      if (v != null) expandEntities(v, aList, aParent, ents);
+      // if unbound, fall through to copy...
+
+    default:
+      Node nn = createToken(aNode, true);
+      if (aNode.hasChildren())
+	expandEntities(aNode.getChildren(), null, nn, ents);
+      if (aList != null)   aList.append(nn);
+      if (aParent != null) Util.appendNode(nn, aParent);
+    }
+  }
+
 
   /************************************************************************
   ** Presentation:
@@ -407,7 +509,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public String startString() {
     switch (nodeType) {
     case NodeType.ELEMENT:
-      String s = "<" +(tagName == null ? "" : tagName);
+      String s = "<" + (tagName == null ? "" : tagName);
       crc.dom.AttributeList attrs = getAttributes();
       if (attrs != null && attrs.getLength() > 0) {
 	s += " " + attrs.toString();
@@ -465,7 +567,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public String endString() {
     switch (nodeType) {
     case NodeType.ELEMENT:
-      if (implicitEnd()) return "";
+      if (implicitEnd() || isEmptyElement()) return "";
       else return "</" + (tagName == null ? "" : tagName) + ">";
 
     case NodeType.TEXT:
@@ -546,7 +648,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     if (isStartTag()) return this;
     else if (! isElement()) return null;
     else {
-      return new BasicToken(getTagName(), -1, getAttributes(), getHandler());
+      return new BasicToken(this, -1);
     }
   }
 
@@ -570,7 +672,14 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public Node createNode(DOMFactory f) {
     switch (getNodeType()) {
     case NodeType.ELEMENT:
-      return f.createElement(getTagName(), getAttributes()); 
+      Element e = f.createElement(getTagName(), getAttributes()); 
+      if (e instanceof BasicElement) {
+	BasicElement be = (BasicElement)e;
+	be.setHasEmptyDelimiter(hasEmptyDelimiter());
+	be.setIsEmptyElement(isEmptyElement());
+	be.setImplicitEnd(implicitEnd());
+      }
+      return e;
     case NodeType.TEXT:
       return f.createTextNode(getData());
     case NodeType.COMMENT:

@@ -88,6 +88,15 @@ public interface Tagset extends DOMFactory {
 
   public void setHandlerForType(int nodeType, Handler newHandler);
 
+  /** Test whether the Tagset is ``locked.''
+   *
+   *	A locked Tagset must be extended by creating a new Tagset with
+   *	the locked Tagset as its context.
+   */
+  public boolean isLocked();
+
+  /** Change the lock status. */
+  public void setIsLocked(boolean value);
 
   /************************************************************************
   ** Parsing Operations:
@@ -103,24 +112,25 @@ public interface Tagset extends DOMFactory {
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before an end tag.
    *
-   * @param t the Token for which this is the handler, and for which the
-   *	nesting is being checked.
-   * @param p the Parser.
-   * @return the number of elements that need to be ended before
-   * 	<code>t</code> can be ended.
+   * @param t the Token for which the nesting is being checked.  It is safe 
+   *	for the Tagset to assume that the Token's handler came from the
+   *	Tagset being called.
+   * @param c the Context (parse stack) to check.
+   * @return a lower bound on the number of elements that need to be ended
+   * 	 before <code>t</code> can be ended.  
    */
-  public int checkEndNesting(Token t, Processor p);
+  public int checkEndNesting(Token t, Context c);
 
   /** Called during parsing to check for the presence of an implicit 
    *	end tag before a start tag or complete element.
    *
    * @param t the Token for which this is the handler, and for which the
    *	nesting is being checked.
-   * @param p the Parser.
-   * @return the number of elements that need to be ended before
-   * 	<code>t</code> can be started.
+   * @param c the Context (parse stack) to check.
+   * @return a lower bound on the number of elements that need to be ended
+   * 	 before <code>t</code> can be started.
    */
-  public int checkElementNesting(Token t, Processor p);
+  public int checkElementNesting(Token t, Context c);
 
 
   /** Called during parsing to return a suitable start tag Token for the

@@ -5,6 +5,7 @@
 package crc.dps;
 import crc.dom.Node;
 import crc.dom.NodeList;
+import crc.dom.Attribute;
 import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
@@ -88,6 +89,30 @@ public interface Token extends Element, Text {
 
   /** Sets the Token's name. */
   public void setName(String name);
+
+  /************************************************************************
+  ** Attribute convenience functions:
+  ************************************************************************/
+
+  /** Convenience function: get an Attribute by name. */
+  public Attribute getAttribute(String name);
+
+  /** Convenience function: get an Attribute by name and return its value. */
+  public NodeList getAttributeValue(String name);
+
+  /** Convenience function: get an Attribute by name and return its value
+   *	as a String.
+   */
+  public String getAttributeString(String name);
+
+  /** Convenience function: Set an attribute's value to a NodeList. */
+  public void setAttribute(String name, NodeList value);
+
+  /** Convenience function: Set an attribute's value to a Node. */
+  public void setAttribute(String name, Node value);
+
+  /** Convenience function: Set an attribute's value to a String. */
+  public void setAttribute(String name, String value);
 
   /************************************************************************
   ** Syntax:  DTD entry:

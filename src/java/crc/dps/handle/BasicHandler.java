@@ -56,9 +56,9 @@ public class BasicHandler extends AbstractHandler {
 
   /** If the handler corresponds to an Element, this determines its syntax.
    *	<dl compact>
-   *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown: look at the Token.
-   *	    <dt>  1 <dd> known to be empty.
+   *	    <dt> &gt;0 <dd> known to be non-empty.
+   *	    <dt> =0 <dd> unknown
+   *	    <dt> &lt;0 <dd> known to be empty.
    *	</dl>
    */
   protected int elementSyntax = 0;
@@ -67,12 +67,22 @@ public class BasicHandler extends AbstractHandler {
    *
    * @return
    *	<dl compact>
-   *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown
-   *	    <dt>  1 <dd> known to be empty.
+   *	    <dt> &gt;0 <dd> known to be non-empty.
+   *	    <dt> =0 <dd> unknown
+   *	    <dt> &lt;0 <dd> known to be empty.
    *	</dl>
    */
   public int getElementSyntax() { return elementSyntax; }
+
+  /** Set what the Handler knows about a Token's syntax.
+   *
+   * @param value 
+   *	<dl compact>
+   *	    <dt> &gt;0 <dd> known to be non-empty.
+   *	    <dt> =0 <dd> unknown
+   *	    <dt> &lt;0 <dd> known to be empty.
+   *	</dl>
+   */
   public void setElementSyntax(int value) { elementSyntax = value; }
   
   /** Called to determine whether the given Token (for which this is
@@ -89,7 +99,7 @@ public class BasicHandler extends AbstractHandler {
    * @see crc.dps.Tagset
    */
   public boolean isEmptyElement(Token t) {
-    if (elementSyntax != 0) return elementSyntax > 0;
+    if (elementSyntax != 0) return elementSyntax < 0;
     else return t.hasEmptyDelimiter();
   }
 
@@ -97,6 +107,7 @@ public class BasicHandler extends AbstractHandler {
    *	The default action is to return <code>this</code>.
    */
   public Handler getHandlerForToken(Token t) {
+    if (isEmptyElement(t)) { t.setIsEmptyElement(true); }
     return this;
   }
 
@@ -106,6 +117,9 @@ public class BasicHandler extends AbstractHandler {
   /** If <code>true</code>, Entity references are recognized in content. */
   protected boolean parseEntitiesInContent = true;
 
+  /** If <code>true</code>, Entity references are recognized in content. */
+  public boolean parseEntitiesInContent() { return parseEntitiesInContent; }
+
   /** If <code>true</code>, Element tags are recognized in content. */
   public boolean parseElementsInContent() { return parseElementsInContent; }
 
@@ -113,6 +127,20 @@ public class BasicHandler extends AbstractHandler {
   public void setParseEntitiesInContent(boolean value) {
     parseEntitiesInContent = value;
   }
+
+  /** If <code>true</code>, Element tags are recognized in content. */
+  public void setParseElementsInContent(boolean value) {
+    parseElementsInContent = value;
+  }
+
+  /** Set both parsing flags. */
+  public BasicHandler setParseFlags(boolean parseEntities, 
+				    boolean parseElements) {
+    parseEntitiesInContent = parseEntities;
+    parseElementsInContent = parseElements;
+    return this;
+  }
+    
 
   /** Set of elements inside which this tag is not permitted. */
   Table implicitlyEnds = null;
@@ -194,7 +222,7 @@ public class BasicHandler extends AbstractHandler {
    * @see #getElementSyntax
    */
   public BasicHandler(boolean empty, boolean parseElts, boolean parseEnts) {
-    elementSyntax = empty? 1 : -1;
+    elementSyntax = empty? -1 : 1;
     parseElementsInContent = parseElts;
     parseEntitiesInContent = parseEnts;
   }

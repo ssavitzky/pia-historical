@@ -20,13 +20,11 @@ The DPS has several ways of looking at a document:
   <li> As a program, which ``expands'' (evaluates) to a document.
 </ul>
 
-An InterForm is a document viewed as a program which expands into a character
-stream. <p>
-
-The easy way to implement an InterForm would be to use the
-<code>toString</code> method on <code>Node</code>.  Active nodes would simply
-expand appropriately by overriding the <code>toString</code> method, and
-everything would be cool.  <p>
+An InterForm could be viewed as an active document (program) which expands
+into a character stream.  The easy way to implement an InterForm under this
+view would be to use the <code>toString</code> method on <code>Node</code>.
+Active nodes would simply expand appropriately by overriding the
+<code>toString</code> method, and everything would be cool.  <p>
 
 There are several problems with this:
 <ol>
@@ -45,8 +43,172 @@ There are several problems with this:
        different ways (e.g. expanding it or pretty-printing it).
 </ol>
 
+Instead, we prefer to view an InterForm as a ParseTree Document composed of
+Nodes (some of) which implement the ActiveNode interface.  <em>Active</em>
+nodes simply expand into more nodes (specifically,
+<code><em>node</em>.expand(<em>context</em>)</code> yields a NodeList).
 
-<h2>Implementation</h2>
+
+<h3>Local Transformations</h3>
+
+Active nodes in the DPS all have the characteristic that they implement
+<em>local</em> functions:  at most they will be replaced by a NodeList.<p>
+
+If it can be determined at parse time that an node contains no children
+with side effects, all the children of that node can be expanded in
+parallel. <p> 
+
+In any case, a document in which all active nodes are local can be processed
+in a single depth-first, left-to-right traversal. 
+
+
+<h2>Implementation: New</h2>
+
+The fundamental implementation is to <em>traverse</em> an active document
+(ParseTree) using a <code>ParseTreeIterator</code> (<code>Input</code>).  This
+is similar to the DOM's <code>TreeIterator</code> <em>except:</em>
+
+<ul>
+  <li> It may be unidirectional, implementing only the navigation operations
+       <ul>
+	 <li> <code>toNextSibling</code>
+	 <li> <code>toParent</code> -- unlike a TreeIterator, a
+	      ParseTreeIterator actually has <em>two</em> possible
+	      ``positions'' relative to a Node:  before it and after it.
+	 <li> <code>toFirstChild</code>
+	 <li> <code>toFirstAttribute</code> (?)
+       </ul>
+  <li> Rather than directly returning the next Node, it is possible to
+       <em>query</em> it to determine its node type, string data, and
+       whether it has children or attributes.
+  <li> The following all return implementations of ActiveNode:
+       <ul>
+	 <li> <code>getNode</code> -- a reference to the actual current node
+	      in the parse tree.  It is possible that not all of its children
+	      will be present.
+	 <li> <code>getTree</code> -- a reference to the same object as
+	      getNode, except that it is guaranteed that all of its children
+	      are present. 
+	 <li> <code>getNewNode</code> -- a reference to a Node equivalent to
+	      the one returned by getNode except that it is guaranteed to be a
+	      clean copy, with no children.  A parser, as opposed to a
+	      traverser, is free to return getNode().
+       </ul>
+</ul>
+
+Similarly, the output is constructed by means of a
+<code>DocumentBuilder</code> (<code>Output</code>).  This combines traversal
+with construction, so that it is possible to add a node to the document under
+construction, then go on to add its children. <p>
+
+This means that Output needs <code>startNode</code> and <code>endNode</code>
+as well as <code>nextNode</code> (which should be renamed
+<code>putNode</code>). <p>
+
+Note that a Parser requires its own stack in order to handle
+<code>toNextSibling</code> and <code>toParent</code> when unprocessed children
+remain.  This stack, though, can just be a simple List of pending tags.<p>
+
+
+
+<h3>Algorithms:</h3>
+
+The basic main loop, without evaluation, is:
+<ol>
+  <li> Get a Node (input.toNextSibling)
+  <li> Children?
+       <dl>
+	 <dt> yes:
+	 <dd> output.startNode
+	      <ol>
+		<li> input.toFirstChild
+		<li> (handle children)
+		<li> input.toParent
+	      </ol>
+	      output.endNode
+	 <dt> no:
+	 <dd> output.putNode
+       </dl>
+</ol>
+
+This can be done iteratively by just keeping track of nesting depth, although
+it's probably simpler to do it recursively.<p>
+
+If the input is a complete parse tree and the output doesn't need a clean
+copy, it would be possible to short-circuit to <code>putNode</code> in both
+cases.  But usually the output would just recurse through the children anyway!
+So it's not necessary.<p>
+
+The basic main loop for evaluation is:
+<ol>
+  <li> Get a Node
+  <li> Children?
+       <dl>
+	 <dt> yes:
+	 <dd> push Context / startAction
+	      <ol>
+		<li> input.toFirstChild
+		<li> (handle children)
+		<li> input.toParent
+	      </ol>
+	      pop Context / endAction
+	 <dt> no:
+	 <dd> nodeAction (default: put)
+       </dl>
+</ol>
+
+If the endAction routine is going to need a parsed or expanded tree at this
+point (and it usually will), all <code>startAction</code> has to do is create
+an appropriate document fragment as output.  The neat thing is that it could
+even be a StringBufferOutput if what it needs is the content as a String.<p>
+
+There's a bit of a question whether one wants to do this recursively or
+iteratively.  In this case, though, it's clear that one has to make a new
+Context for the children in any case, so the only question is whether one
+calls <code>newContext.run</code> or just pushes the context and keeps on
+going.<p>
+
+If a parse tree is needed, and it's going to be either expanded or discarded
+(for example the content of a &lt;then&gt; or &lt;else&gt;), it would be
+possible (and highly desirable) to avoid copying it.  This will require
+additional thought, but it suggests that &lt;if&gt;'s startAction may need to
+retain control instead of setting flags and returning back to the main
+loop.  If we're using recursion to handle the children it's trivial. <p>
+
+We can simplify this if <code>nodeAction</code> <em>calls</em>
+<code>startAction</code>.  This gives us the recursive version trivially, and
+simplifies short-circuiting.  Since the Context is pushed and popped inside
+<code>nodeAction</code>, it's easy to avoid doing it.<p>
+
+
+
+<h3>Additional notes:</h3>
+
+Some advantages over the old approach:
+
+<ul>
+  <li> We no longer need ``syntax'' in <code>Token</code>; we just do the
+       right thing on the way up the tree. 
+  <li> We no longer need a ``passing'' flag, either:  we're always just
+       passing nodes to an Output. 
+  <li> All of the different places where one does expansions or iterates over
+       children (Util, Token, etc.) go away.  There may still be places where
+       we want this, but it's basically a matter of creating a suitable
+       Context and turning it loose.
+</ul>
+
+
+
+It will be very useful for ActiveNode itself to know whether or not it's
+``new''; this may be as simple as checking for existance of a parent, which
+will work for everything except Document.  A further complication is that
+either the Processor has to inform its input when there's a change of Tagset,
+or the Parser has to keep checking.  Uck.  Best to have a different parser
+(InterFormParser) for this.  Note that it's always ok to add tags to the
+document-level tagset. <p>
+
+
+<h2>Implementation: Old</h2>
 
 The fundamental implementation technique is to <em>traverse</em> the parse
 tree, resulting in a stream of <code>Token</code> nodes.  A Token contains a

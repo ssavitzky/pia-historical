@@ -125,6 +125,18 @@ public abstract class AbstractParser extends AbstractInputFrame
     for (i = 0; i < s.length(); ++i) notAttr.set(s.charAt(i));
   }
 
+  /************************************************************************
+  ** SGML flags:
+  ************************************************************************/
+
+  /** If <code>true</code>, entities must be terminated by ';' */
+  protected boolean strictEntities = true;
+
+  /** The character that starts an entity (default '<code>&amp;</code>'). */
+  protected char entityStart = '&';
+
+  /** The character that ends an entity (default '<code>;</code>'). */
+  protected char entityEnd = ';';
 
 
   /************************************************************************

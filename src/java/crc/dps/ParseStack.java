@@ -276,8 +276,12 @@ public class ParseStack extends StackFrame implements Context {
     localEntities = null;
   }
 
+  /** A new context is constructed which is suitable for accumulating 
+   *	partial results in an expansion.  Consequently it is set up for
+   *	expanding, parsing, and <em>not</em> passing.
+   */
   public Context newContext(Node aNode, String aTagName) {
-    return new ParseStack(this, aNode, aTagName);
+    return new ParseStack(this, aNode, aTagName, true);
   }
 
   /** Push a Token onto the parse stack. */
@@ -409,6 +413,27 @@ public class ParseStack extends StackFrame implements Context {
     parsing 		= s.parsing;
     expanding		= s.expanding;
     passing 		= s.passing;
+
+    entities 		= s.entities;
+    localEntities	= null;
+    entityContext 	= (s.localEntities == null)? s : s.entityContext;
+
+    handlers 		= s.handlers;
+    localHandlers	= null;
+    handlerContext 	= (s.localHandlers == null)? s : s.handlerContext;
+    parseStack 		= s;
+    depth		= s.depth + 1;
+  }
+
+  /** Create a new ParseStack node linked to the given one, suitable for
+   *	use during expansion.  */
+  public ParseStack(ParseStack s, Node aNode, String aTagName, boolean parse) {
+    node 		= aNode;
+    token 		= null;
+    tagName		= aTagName;
+    parsing 		= parse;
+    expanding		= true;
+    passing 		= false;
 
     entities 		= s.entities;
     localEntities	= null;

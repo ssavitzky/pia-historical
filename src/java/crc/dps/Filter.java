@@ -6,6 +6,7 @@ package crc.dps;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -18,7 +19,8 @@ import crc.dps.Parser;
 import crc.dps.Input;
 import crc.dps.Processor;
 import crc.dps.BasicProcessor;
-
+import crc.dps.Tagset;
+import crc.dps.Util;
 
 /**
  * Interpret an input stream or file as an InterForm.  
@@ -77,21 +79,36 @@ public class Filter {
 
     /* Initialize and run the interpretor */
 
-    // === Must get the tagset at this point and ask _it_ for the Parser.
-    // === Eventually tagsets need to be in a NamedNodeList; for now
-    // === just load the class.
+    /* Start by getting a Tagset. */
 
-    Parser p = new crc.dps.parse.BasicParser(in, null);
-    // p.debug = debug;
+    Tagset ts = Util.getTagset(tsname);
+    if (ts == null) {
+      System.err.println("Unable to load Tagset " + tsname);
+      System.exit(-1);
+    }
 
-    OutputStreamWriter outw = new OutputStreamWriter(out);
+    if (debug) {
+      System.err.print("Tags defined in Tagset(" + tsname + "): ");
+      java.util.Enumeration names = ts.elementNames();
+      while (names.hasMoreElements()) {
+	System.err.print(" " + names.nextElement().toString());
+      }
+    }
+    
+    /* Ask the Tagset for an appropriate parser, and set its Reader. */
+    Parser p = ts.createParser();
+    p.setReader(new InputStreamReader(in));
+
+    /* Finally, create a Processor and set it up. */
     BasicProcessor ii = new BasicProcessor();
+    ii.setHandlers(ts);
     ii.pushProcessorInput(p);
-    ii.setOutput(new crc.dps.output.ToWriter(outw));
+    ii.setOutput(new crc.dps.output.ToWriter(new OutputStreamWriter(out)));
     ii.setExpanding(true);
 
     if (parsing) {
       ii.setParsing(true);
+      ii.setPassing(false);
       ii.setNode(new BasicToken("ParseTree", 0));
     } else {
       ii.setPassing(true);
@@ -99,10 +116,11 @@ public class Filter {
     //if (entities) new Environment(infile).use(ii);
     if (debug) ii.setDebug();
 
+    /* Run the Processor. */
     ii.run();
 
     if (parsing) { 
-      System.err.println("=====================\n");
+      System.err.println("\n\n========= parse tree: ==========\n");
       System.err.println(ii.getNode());
     }
   }

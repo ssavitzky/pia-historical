@@ -44,9 +44,9 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
 
   /** The default start action is simply to create a Node and return it. */
   public Node startAction(Token t, Processor p) {
-    p.setExpanding(expandContent());
-    if (! p.isParsing()) p.setParsing(parseContent());
-    p.setPassing(passElement());
+    //p.setExpanding(expandContent());
+    //if (! p.isParsing()) p.setParsing(parseContent());
+    //p.setPassing(passElement() && p.isPassing());
     return createNode(t, p);
   }
 

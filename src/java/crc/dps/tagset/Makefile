@@ -23,16 +23,14 @@ PIA_ACTORS= \
 
 
 TAGSETS = \
-	HTML_ts.java
-
-UNDEFINED_TAGSETS = \
+	HTML_ts.java \
 	Basic_ts.java \
 	StandAlone_ts.java \
 	Standard_ts.java
 
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
 
-FILES = $(BASE_CLASSES) # $(TAGSETS)
+FILES = $(BASE_CLASSES) $(TAGSETS)
 
 TAGSET_DOCS =  \
 	Basic-tagset.html  \
@@ -66,3 +64,9 @@ clean::
 actor-doc:	$(TAGSET_DOCS)
 	cp $(TAGSET_DOCS) $(TSDOCDIR)
 
+
+Basic_ts.class: BasicTagset.java
+HTML_ts.class: BasicTagset.java
+Basic_ts.class: BasicTagset.java HTML_ts.java
+StandAlone_ts.class: BasicTagset.java HTML_ts.java
+Standard_ts.class: BasicTagset.java HTML_ts.java

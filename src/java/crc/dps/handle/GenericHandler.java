@@ -119,13 +119,13 @@ public class GenericHandler extends BasicHandler {
     // set p.setExpanding, etc. flags from instance vbls.
     p.setExpanding(expandContent);
     if (! p.isParsing()) p.setParsing(parseContent);
-    p.setPassing(passElement);
+    p.setPassing(passElement && p.isPassing());
     return createNode(t, p);
   }
 
   /** This assumes that the Token is an Element. */
   public Token endAction(Token t, Processor p, Node n) {
-    return computeResult(t, p, (Element)n);
+    return computeResult(t, p, (BasicElement)n);
   }
 
   /** Since we know that the Token is an element, we know that it's
@@ -156,29 +156,26 @@ public class GenericHandler extends BasicHandler {
       if (t.hasChildren())
 	Util.copyAsTokens(t.getChildren(), node);      
     }
-    return computeResult(t, c, (Element)node);
+    return computeResult(t, c, (BasicElement)node);
   }
 
   /** Compute a result, given the unexpanded Token and the constructed
-   *	Element.  If the Token does not expand content, the element
+   *	Element.  If the Token does not parse its content, the element
    *	will be null and the Token will be a parse tree.
    */
-  public Token computeResult(Token t, Context c, Element elt) {
+  public Token computeResult(Token t, Context c, BasicElement elt) {
     // === check for children here...
     return c.putResult(elt);
   }
 
   /** Returns a new, clean Node corresponding to the given Token.
-   *	The new Node is suitable for incorporating into a new
-   *	document. <p>
-   *
-   *	Note that this is not used when creating a parse tree of an
-   *	existing document -- such a parse tree is made out of Token
-   *	objects, which preserves the syntactic and semantic
-   *	information (e.g. handlers).
+   *	Since this is a handler for an active tag, we will usually
+   *	want to create a Token here. <p>
    */
   public Node createNode(Token t, Context c) {
-    return Util.expandAttrs(this, c.getHandlers(), c.getEntities());
+    // === in most cases we will want createNode to return a Token.
+    return new crc.dps.BasicToken(t, c.getEntities());
+    // return Util.expandAttrs(t, c.getHandlers(), c.getEntities());
   }
 
   /** Returns a new, clean Node corresponding to the given Token,
@@ -206,5 +203,42 @@ public class GenericHandler extends BasicHandler {
   ** Documentation Operations:
   ************************************************************************/
 
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public GenericHandler() {}
+
+  /** Construct a GenericHandler for a passive element. 
+   *
+   * @param syntax 
+   *	<dl compact>
+   *	    <dt> -1 <dd> known to be empty.
+   *	    <dt>  0 <dd> unknown
+   *	    <dt>  1 <dd> known to be non-empty.
+   *	</dl>
+   * @param parseElts if <code>true</code> (default), recognize elements in
+   *	the content.
+   * @param parseEnts if <code>true</code> (default), recognize entities in
+   *	the content.
+   * @see #getElementSyntax
+   */
+  public GenericHandler(int syntax, boolean parseElts, boolean parseEnts) {
+    super(syntax, parseElts, parseEnts);
+  }
+  /** Construct a GenericHandler for a passive element. 
+   *
+   * @param empty     if <code>true</code>, the element has no content
+   *	and expects no end tag.  If <code>false</code>, the element
+   *	<em>must</em> have an end tag.
+   * @param parseElts if <code>true</code> (default), recognize elements in
+   *	the content.
+   * @param parseEnts if <code>true</code> (default), recognize entities in
+   *	the content.
+   * @see #getElementSyntax
+   */
+  public GenericHandler(boolean empty, boolean parseElts, boolean parseEnts) {
+    super(empty, parseElts, parseEnts);
+  }
 
 }
