@@ -136,20 +136,16 @@ public class Agency extends GenericAgent {
       String lpath = path.toLowerCase();
     
     String name = name();
-    if( lpath.startsWith("/") ){
-	StreamParser sp = new StreamParser( new StringBufferInputStream(lpath) );
-	try{
-	  Object o = sp.nextToken();  // first "/"
-	  o = sp.nextToken();         
-	  if( o instanceof String ){
-	    name = (String)o;         // \w+ equivalent
-	  }
-	}catch(IOException e1){
-	  e.printStackTrace();
-	}catch(NoSuchElementException e2){
-	  
-	}
-    }// if
+    RegExp re = new RegExp("^/\\w+/*");
+    MachInfo mi = re.match(lpath);
+    if( mi ){
+      int begin = lpath.indexOf("/");
+      int end   = lpath.indexOf("/");
+      if( end == -1 )
+	name = lpath.substring( begin+1 );
+      else
+	name = lpath.substring( begin+1, end );
+    }
 
     Agent agent = Pia.instance().resolver().agent( name );
     if( ! agent ){
