@@ -72,9 +72,6 @@ last period character.  The defined extensions are:
      <code>text/html</code> 
   <dt> .xx 
   <dd> ``eXtended-XML'' -- resulting in a MIME type appropriate for XML.
-  <dt> .xm 
-  <dd> ``eXtended-MIME -- the MIME type (optionally, the whole HTML header) is
-       in the document. [currently unimplemented]
   <dt> .lif
   <dd> ``legacy'' InterForm processed with the new DPS using a tagset largely
        compatible with the old interpretor.  Since the legacy tagset is
@@ -100,17 +97,18 @@ database tables.   This makes it easy to take parts of documents and use them
 as data, something most existing systems are not very good at.<p>
 
 In general, all data in an InterForm is in the form of SGML
-``<dfn>elements</dfn>.''  An element is either a string of characters, or
-a compound object consisting of a <em>start tag</em> and <em>end tag</em>
+``<dfn>content</dfn>'', consisting of ordinary ``<dfn>text</dfn>,''
+``<dfn>entities</dfn>,'' and ``<dfn>elements</dfn>.''  An element is a
+compound object consisting of a <em>start tag</em> and <em>end tag</em>
 enclosing some <em>content</em> elements between them.  The element may also
 have some named <dfn>attributes</dfn>; attributes and their associated values
 appear in the element's start tag.<p>
 
-Strings of ordinary characters are called <dfn>text</dfn>; tags and entities
-are called <dfn>markup</dfn>.  Some operations let you operate only on text or
-markup.  Markup can be added (for example, by converting a sequence of words
-into a list), or removed.<p>
-
+Elements are also referred to as <dfn>markup</dfn>.  Some operations let you
+operate only on text or markup.  Markup can be added (for example, by
+converting a sequence of words into a list), or removed.  (Entities are
+neither text nor markup; they are actually ``containers'' that may contain
+any kind of content.<p>
 
 <h3>Entities</h3>
 
@@ -122,27 +120,30 @@ used as ``iteration variables''--you can repeat a piece of text for every item
 in a list, with the <code>&amp;li;</code> entity replaced by each list item in
 turn.<p>
 
-<h3>Actions</h3>
+<h3>Actions and Tagsets</h3>
 
 Finally, ``<dfn>actions</dfn>'' can be associated with ``active'' elements.
 Whenever such an element appears in a document, a corresponding piece of
-InterForm code called its ``<dfn>action</dfn>'' is expanded, with entities
-bound to the element's attributes and content.  An active element is sometimes
-called an ``<dfn>actor</dfn>.''<p>
+InterForm code called its ``<dfn>action</dfn>'' is ``<dfn>expanded</dfn>,''
+with locally-defined entities bound to the element's attributes and content.
+An active element is sometimes called an ``<dfn>actor</dfn>'' in older
+documentation. <p>
 
 A collection of entities and elements designed to work together in an active
 document is called a ``<dfn>tagset</dfn>,'' largely for historical reasons
 (MetaHTML also uses ``tagset'' in this sense.)  A tagset is essentially an
-extension of the SGML and XML <dfn>Document Type Definition</dfn> (DTD),
+extension of an SGML or XML <dfn>Document Type Definition</dfn> (DTD),
 although tagsets are usually defined using an XML-based notation which is
 easier to parse and to extend. <p>
 
-The PIA defines a <a href="#standard_tagset">standard tagset</a> for use in
-InterForms.  Some agents may define special tagsets to be loaded alongside the
-standard one.  Completely different tagsets can also be defined for different
-kinds of document processing:  parsing HTML, formatting, even translating SGML
-documents with other document types <em>into</em> HTML.<p>
+The PIA defines a ``standard tagset'' for use in InterForms.  Some agents may
+define special tagsets as extensions to the standard one.  Completely
+different tagsets can also be defined for different kinds of document
+processing: parsing HTML, formatting, even translating SGML documents with
+other document types <em>into</em> HTML.<p>
 
+Complete documentation for the tagsets can be found <a
+href="#tagsets">below.</a> 
 
 <hr>
 <h2><a name="interp">The InterForm Interpretor</a></h2>
@@ -179,28 +180,41 @@ Consortium</a>'s <a href="http://www.w3.org/DOM/">Document Object Model</a>.
 <p>
 
 The InterForm DPS is not exactly typical.  Instead of actually building a
-parse tree, the Parser looks like a tree <em>traverser</em> -- a ``device''
-that can be commanded to travel to the next node in a tree, or up or down a
-level.  It can provide information about the current node or any of its direct
-ancestors, but not about the <em>children</em> of any node.  This means that
-the DPS can process documents that are too large to fit in the computer's
-memory all at once.<p>
+parse tree, the Parser looks like a tree <em>traverser</em> -- an object that
+marks a position in a tree, and can be commanded to travel to the next node in
+a tree, or up or down a level.  It can provide information about the current
+node or any of its direct ancestors, but not about the <em>children</em> of
+the current node -- these can only be inspected by moving the traverser down a
+level.  This means that the DPS can process documents that are too large to
+fit in the computer's memory all at once.<p>
 
 The DPS ``<dfn>Processor</dfn>'' takes nodes from an ``<dfn>Input</dfn>''
-source (typically a Parser) and performs the action associated with each node
+object (typically a Parser) and performs the action associated with each node
 it encounters.  The default, if no action is specified, is to simply copy the
 node to the Processor's ``<dfn>Output</dfn>'', performing any specified
-actions in its children along the way.
+processing on its children along the way.
 
-The Output is essentially a <em>constructor</em> for parse trees, except that
-instead of constructing an actual data structure it might instead convert
+The Output is essentially a tree <em>constructor</em> for parse trees, except
+that instead of constructing an actual data structure it might instead convert
 nodes back into characters and send them to an output stream, usually attached
 to a user's Web browser.<p>
+
+Because of the way processing is done, almost all operations on a document are
+essentially ``local'' -- expanding an active element has no effect on anything
+<em>outside</em> that element; it will simply replace it with a (possibly
+empty) sequence of content nodes. <p>
+
+The only exception to this locality rule comes about because of the
+&lt;define&gt; and &lt;set&gt; elements; these permit entities and active
+elements to be defined (and redefined), and so can have an effect on
+expansions that occur later in the document.  This can make active documents
+hard to read, so &lt;define&gt; and &lt;set&gt; should be used very
+sparingly other than at the very beginning of a document.  <p>
 
 
 <h3>Terminology</h3>
 
-Replacing an element, attribute, or entity with new data is called
+Replacing an active element or entity with new data is called
 ``<dfn>expanding</dfn>'' it, because it often (not always) gets bigger as a
 result.<p>
 
@@ -601,14 +615,20 @@ The following tagsets are currently predefined:
        definition files.
   <li> <a href="Tagset/basic.html">basic</a><br>
        The definitions of the ``primitive'' tags -- the ones that <em>all</em>
-       tagsets use.
+       tagsets use, and that are implemented using Java ``handlers'' rather
+       than being defined in terms of other tags.
   <li> <a href="Tagset/standalone.html">standalone</a><br>
-       The tagset intended for stand-alone XML processing. 
+       The tagset intended for stand-alone XML processing.  It adds a
+       comparatively small number of tags to
+       <a href="Tagset/basic.html">basic</a> that are defined in terms of
+       other tags. 
   <li> <a href="Tagset/standard.html">standard</a><br>
-       The tagset used in the PIA for HTML processing. 
-  <li> <a href="Tagset/Standard-tagset.html">Standard</a><br>
+       The tagset used in the PIA for HTML processing, containing all the tags
+       defined in both <a href="Tagset/standalone.html">standalone</a> and
+       HTML. 
+  <li> <a href="Tagset/Standard-tagset.html">Standard</a> <b>(obsolete)</b><br>
        The ``legacy'' (old) tagset used for expanding agent InterForms in the
-       PIA. 
+       PIA.  
 </ol>
 
 These documents are derived automatically from the tagsets themselves, so
@@ -617,61 +637,21 @@ is at least complete and up-to-date.  Several other, special-purpose tagsets
 are also defined; a complete set of documentation can be found in the <a
 href="Tagset">Tagset/</a> subdirectory.  <p>
 
-<strong>This following is obsolete.  Tagset manuals can be found in
-the <a href="Tagset">Tagset/</a> subdirectory.</strong>
-
-A more detailed set of documents on the Standard Tagset exists in this
-directory: 
-<dl>
-  <dt> <a href="tag_man.html">Standard Tagset Manual</a>
-  <dd> A reasonably complete manual for the actors in the Standard Tagset.
-  <dt> <a href="examples.html">Standard Tagset Examples</a>
-  <dd> A corresponding set of examples.  
-</dl>
-
-These are essentially snapshots of the following active documents, which are
-available if you are viewing this manual through a PIA.
+Also, the following active documents are available if you are viewing this
+manual through a PIA:
 
 <dl>
-  <dt> <a href="/Agency/actors.if">/Agency/actors.if</a>
-  <dd> <em>Complete</em> listing of defined actors
-  <dt> <a href="/Agency/entities.if">/Agency/entities.if</a>
+  <dt> <a href="/Agency/entities.if">/Agency/entities</a>
   <dd> <em>Complete</em> listing of defined entities
+  <dt> <a href="/Agency/actors.if">/Agency/actors</a> <b>(obsolete)</b>
+  <dd> <em>Complete</em> listing of defined (legacy) actors.
   <dt> <a href="/InterForm/tag_man.if">/InterForm/tag_man.if</a>
+       <b>(obsolete)</b>
   <dd> the manual for the Standard Tagset (somewhat incomplete).
   <dt> <a href="/InterForm/demo.if">/InterForm/demo.if</a>
+       <b>(obsolete)</b>
   <dd> A set of corresponding code examples.
 </dl>
-
-<h3>Standard Tagset</h3>
-
-The <b>Standard</b> tagset is used in the PIA for processing agent
-InterForms. <p>
-
-
-<h3>StandAlone</h3>
-
-The <b>StandAlone</b> tagset consists of the subset of the <b>Standard</b>
-tagset that does not require a PIA.  It is used when the InterForm Interpretor
-is operating as a filter or CGI rather than as a part of the PIA.  It contains
-no tags for accessing the PIA, but <em>does</em> contain the &lt;read&gt; and
-&lt;write&gt; tags for accessing external files and web pages, and the
-&lt;get.env&gt; tag for accessing the operating-system environment. <p>
-
-<h3>Basic</h3>
-
-The <b>Basic</b> tagset consists of the subset of the <b>Standard</b> tagset
-that operates entirely within the InterForm file being processed.  It contains
-no actors that access the PIA, external files, or external URL's.<p>
-
-
-<h3>HTML</h3>
-
-The <b>HTML</b> tagset consists of exactly those tags and entities required
-to parse HTML.  No processing is done.  This tagset is usually augmented with
-tags that perform specific processing tasks such as extracting links,
-submitting or updating forms, or formatting.  It is the base from which the
-<b>Basic</b>, <b>StandAlone</b>, and <b>Standard</b> tagsets are derived.<p>
 
 
 <hr>
@@ -694,12 +674,19 @@ The command-line options are:
   <dd> print a help string.
   <dt> <code>-o <em>filename</em></code>
   <dd> specify output file
+  <dt> <code>-p</code>
+  <dd> Build a parse tree (which is output as a serialized Java object)
   <dt> <code>-t <em>tagset-name</em></code>
   <dd> specify tagset (default <code>standard</code>).
+  <dt> <code>-s</code>
+  <dd> silent.  Non-fatal error messages suppressed.
+  <dt> <code>-q</code>
+  <dd> quiet.  Warnings and informational messages are suppressed.
   <dt> <code>-v</code>
-  <dd> verbose messages
+  <dd> verbose.  Additional informational messages are output.
   <dt> <code>-d</code>
-  <dd> debugging
+  <dd> debugging.  Information is output which may be of use for debugging the
+       interpretor. 
 </dl>
 
 The CGI version of the InterForm interpretor is:
