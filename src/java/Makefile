@@ -15,6 +15,8 @@ PACKAGES= \
 
 PIAPACKAGENAMES= \
 	crc.content crc.content.text \
+	crc.dom \
+	crc.dps crc.dps.handle crc.dps.input crc.dps.output \
 	crc.ds \
 	crc.gnu.regexp \
 	crc.interform crc.interform.handle \
