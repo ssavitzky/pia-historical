@@ -54,8 +54,10 @@ public class Dofs extends GenericAgent {
   public void respond(Transaction request, Resolver res) throws PiaRuntimeException{
     Transaction reply = null;
     String replyString = null;
+    crc.pia.Pia.instance().debug(this, "Inside Dofs respond...");
 
     if( !request.isRequest() ) return;
+    crc.pia.Pia.instance().debug(this, "After tesing is request...");
 
     URL url = request.requestURL();
     if( url == null )
@@ -64,6 +66,9 @@ public class Dofs extends GenericAgent {
     String path   = url.getFile().toLowerCase();
     String myname = name().toLowerCase();
     String mytype = type().toLowerCase();
+    crc.pia.Pia.instance().debug(this, "path-->"+path);
+    crc.pia.Pia.instance().debug(this, "myname-->"+myname);
+    crc.pia.Pia.instance().debug(this, "mytype-->"+mytype);
 
     /*
       Examine the path to see what we have:
@@ -76,58 +81,75 @@ public class Dofs extends GenericAgent {
     Agent agnt = this;
 
     if( !myname.equals(mytype) && path.startsWith("/"+myname+"/")){
+      crc.pia.Pia.instance().debug(this, "Inside starts with `/myname/'...");
       try{
 	retrieveFile( url, request );
       }catch(PiaRuntimeException e){
 	throw e;
       }
-    }else if( !myname.equals(mytype) && path.startsWith("/"+myname) && path.endsWith("/"+myname)){
-      path = "/"+myname+"/home.if";
     }else {
-      /* http://napa:7777/dofs/doc/foobar.if */
-      RegExp re = null;
-      MatchInfo mi = null;
-      try{
-	re = new RegExp("^/" + mytype + "/([^/]+)" + "/");
-	mi = re.match( path );
-      }catch(Exception e ){;}
-
-
-      if(mi!=null){
-	String search = "/" + mytype + "/";
+      if( !myname.equals(mytype) && path.startsWith("/"+myname) && path.endsWith("/"+myname)){
+	crc.pia.Pia.instance().debug(this, "Inside `/myname/'...");
+	path = "/"+myname+"/home.if";
+      }else {
+	// http://napa:7777/dofs/doc/foobar.if
+	RegExp re = null;
+	MatchInfo mi = null;
 	try{
-	  re = new RegExp("[^/]+/");
-	  mi = re.match( path.substring( search.length() ));
-	}catch(Exception e){;}
-
-	String match = mi.matchString();
-
-	// get name only
-	String name = null;
-	if(mytype.equals( myname ))
-	  name = myname;
-	else
-	  name  = match.substring(0, match.length() -1);
+	  re = new RegExp("^/" + mytype + "/([^/]+)" + "/");
+	  mi = re.match( path );
+	}catch(Exception e ){;}
 	
-	Agent zAgnt = res.agent( name );
-	if( zAgnt != null ){
-	  agnt = zAgnt;
-	  path = path.substring( ("/"+mytype).length() );
+	
+	if(mi!=null){
+	  String search = "/" + mytype + "/";
+	  try{
+	    re = new RegExp("[^/]+/");
+	    mi = re.match( path.substring( search.length() ));
+	  }catch(Exception e){;}
+	  
+	  String match = mi.matchString();
+	  
+	  // get name only
+	  String name = null;
+	  if(mytype.equals( myname ))
+	    name = myname;
+	  else
+	    name  = match.substring(0, match.length() -1);
+	  
+	  Agent zAgnt = res.agent( name );
+	  if( zAgnt != null ){
+	    agnt = zAgnt;
+	    path = path.substring( ("/"+mytype).length() );
+	    crc.pia.Pia.instance().debug(this, "The path for type-->"+path);
+	  }
 	}
       }
       if( agnt != null ){
-	replyString = agnt.respondToInterform( request, path, res );
-	InputStream in = null;
+	crc.pia.Pia.instance().debug(this, "Running interform...");
+	URL myurl = null;
 
-	if( replyString!= null )
-	  in = new StringBufferInputStream( replyString );
-	ByteStreamContent c = new ByteStreamContent( in );
+	try{
+	  myurl = new URL(url.getProtocol(), myname, url.getPort(), path);
+	}catch(MalformedURLException e){}
+
+	replyString = agnt.respondToInterform( request, myurl, res );
+	InputStream in = null;
 	
-        new HTTPResponse( request, c );
+	if( replyString == null )
+	  throw new PiaRuntimeException(this, "respond", "No InterForm file found for "+url.toExternalForm());
+	else{
+	  if( replyString!= null )
+	    in = new StringBufferInputStream( replyString );
+	  ByteStreamContent c = new ByteStreamContent( in );
+	  
+	  new HTTPResponse( request, c );
+	}
       }
     }
-  }
 
+  }
+    
   /**
    * name and type needs to be set after this
    */
