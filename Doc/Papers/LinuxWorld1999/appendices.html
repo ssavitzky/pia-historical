@@ -53,6 +53,37 @@
 </table>
 </slide>
 
+<hr><set name=subCaption>Questions and Answers</set>
+<slide><h2>What About XSL?</h2>
+<ul>
+  <li> We started this project before XSL came on the scene
+  <li> On the other hand, it wouldn't be hard to implement XSL as a tagset
+  <li> But you can't embed XSL formatting commands in a regular XML document,
+       the way we can with DPS.
+</ul>
+</slide>
+
+<slide><h2>What about DSSSL?</h2>
+<ul>
+  <li> Here we just didn't look hard enough at alternatives -- we might never
+       have invented the DPS if we'd started with DSSSL.
+  <li> On the other hand, it's not meant for embedding in documents, and uses
+       what to some is an obscure syntax.
+  <li> On the third hand, we think that a DSSSL <em>implementation</em> of the
+       DPS would be a good idea, and we're hoping somebody does it.
+</ul>
+</slide>
+
+<slide><h2>What about XML Namespaces?</h2>
+<ul>
+  <li> Another case of our design preceeding the spec.
+  <li> On the other hand, we're already starting to implement tag namespaces,
+       because they're incredibly useful.
+  <li> We <em>already</em> support namespaces for entities, but use them a
+       little differently. 
+</ul>
+</slide>
+
 
 <hr>
 <set name=label>TOC</set>
