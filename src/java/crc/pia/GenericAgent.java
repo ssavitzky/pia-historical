@@ -115,10 +115,8 @@ public class GenericAgent extends AttrBase implements Agent {
     if( DEBUG )
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode.  No interform request is put onto the resolver.");
     else{
-      /*
       url = "/" + n + "/" + "initialize.if";
-      createRequest("GET", url );
-      */
+      createRequest("GET", url, null );
     }
 
   }
@@ -651,7 +649,7 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public String findInterform( String path, boolean noDefault ){
     if ( path == null ) return null;
-
+    Pia.instance().debug(this, "  path on entry -->"+ path);
     // === path, name, and typed were all getting lowercased.  Wrong!
 
     String myname = name();
@@ -679,10 +677,10 @@ public class GenericAgent extends AttrBase implements Agent {
     /* Remove a leading /type or /name or /type/name from the path. */
 
     if (path.startsWith("/" + mytype + "/")) 
-      path = path.substring(mytype.length() + 1);
+      path = path.substring(mytype.length() + 2);
     
     if (path.startsWith("/" + myname + "/")) 
-      path = path.substring(myname.length() + 1);
+      path = path.substring(myname.length() + 2);
     
 
     List if_path = dirAttribute( "if_path" );
@@ -776,6 +774,8 @@ public class GenericAgent extends AttrBase implements Agent {
     while( e.hasMoreElements() ){
       String zpath = (String)e.nextElement();
       String wholepath = zpath + path;
+      Pia.instance().debug(this, "  zpath -->"+ zpath);
+      Pia.instance().debug(this, "  path  -->"+ path);
       Pia.instance().debug(this, "  Trying -->"+ wholepath);
       f = new File( wholepath );
       if( f.exists() ) return wholepath;
