@@ -70,7 +70,7 @@ attr=name></text></repeat></set>
  <file name=&routefile; dst=&routefile;.bak rename></file>
  <!-- process route changes -->
  <set name=newroute><route> </route></set>
- <set name=steps><get name=route findall=routestep></set>
+ <set name=steps><dummy><get name=route findall=routestep></dummy></set>
 <!-- process deletes -->
  <repeat list=&steps; entity=step>
  <set name=rid><get index=step.routeid.Text></set>
@@ -78,7 +78,7 @@ attr=name></text></repeat></set>
  <set name="newroute" insert=-1><get name=step></set>
  </else></if></repeat>
 
- <set name=steps><get name=newroute findall=routestep></set>
+ <set name=steps><dummy><get name=newroute findall=routestep><dummy></set>
  <repeat list=&steps; entity=step>
  <set name=rid><get index=step.routeid.Text></set>
  <set index=step.routeuser insert=0 replace><get form name=user&rid;></set>
@@ -117,7 +117,7 @@ attr=name></text></repeat></set>
 
 <h2>Route for &form; Form</h2>	    
  <input name="form" value=&form; type=hidden>
- <set name=steps><get name=route findall=routestep></set>
+ <set name=steps><dummy><get name=route findall=routestep></dummy></set>
  <table border=1>
  <TR><TH>Step
      <TH>Delete?

@@ -674,7 +674,7 @@ of TAG in OBJECT, ENTITY will be bound to each instance">
      
 <actor tag=my-test desc="compare VALUE to CONTENT using comparison">
       <set name=val2 local><get element name=value></set>
-      <set name=val1 local>&content;</set>
+      <set name=val1 local><subst match="\$|\," result="">&content;</subst></set>
  <if> <test match="equalTo" exact><get element name=comparison></test> <then>
       <test match=&val2;>&val1;</test></then>
       <else>

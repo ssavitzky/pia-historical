@@ -28,7 +28,7 @@ Contact Information:<formvariable name=contact textarea=1 rows=3 cols=60> </form
  <TD><formvariable name="qty&num;"> </formvariable>
  <TD><formvariable name="amount&num;"> </formvariable>
 <formprotect livalue=&num;><protect> 
-  <set name=othertotals><sum digits=2><product><get name=amount&li;> <get
+  <set name=othertotals><sum digits=2><product><subst match="\$|\," result=""><get name=amount&li;></subst> <get
   name=qty&li;> </product> <get name=othertotals></sum></set>
  </protect> </formprotect>
 </TR>
@@ -44,6 +44,8 @@ Contact Information:<formvariable name=contact textarea=1 rows=3 cols=60> </form
 <p>
 Special Instructions:<formvariable name=comments textarea=1 rows=4 cols=60> </formvariable>
 <p>
-Related Material: (<a href=fill_out_form.if?formtype=kiansho>Kiansho</a> required for items greater than $10,000)<references> </references>
+Related Material: (Enter URL of <a
+href=fill_out_form.if?formtype=kiansho>Kiansho</a> for fixed asses greater
+than $1000 or expenses greater than $10,000)<references> </references>
 
 

@@ -13,8 +13,7 @@ Name: <b><formvariable name=name options=users> </formvariable> </b>
   <TD><formvariable name=dd&li;> </formvariable>
   <TD><formvariable name=miles&li;> 0 </formvariable>
 
-  <TD><formprotect livalue=&li;><protect> <set name=atotal><product digits=2>
-  <get name=miles&li;><get name=autorate></product></set>
+  <TD><formprotect livalue=&li;><protect> <set name=atotal><product digits=2>  <subst match="\$|\," result=""><get name=miles&li;></subst> <get name=autorate></product></set>
   <set name=autototals><sum digits=2><get name=atotal> <get name=autototals></sum></set> <get name=atotal></protect> </formprotect></TD>
   </TR>
 </repeat>
@@ -36,7 +35,7 @@ Name: <b><formvariable name=name options=users> </formvariable> </b>
   <TD><formvariable name="rate&li;"> </formvariable></TD>
   <TD><formvariable name="nights&li;"> </formvariable></TD>
   <TD><formprotect livalue=&li;><protect><set name=htotal><product digits=2>
-  <get name=rate&li;> <get name=nights&li;></product></set>
+  <subst match="\$|\," result=""><get name=rate&li;></subst> <get name=nights&li;></product></set>
   <set name=hoteltotals><sum digits=2><get name=htotal> <get name=hoteltotals></sum></set> <get name=htotal></protect> </formprotect>
   </TD>
   </TR>
@@ -88,7 +87,7 @@ Name: <b><formvariable name=name options=users> </formvariable> </b>
   <TD><formvariable name="purpose&li;"> </formvariable>
   <TD><formvariable name="cost&li;"> </formvariable>
   <formprotect livalue=&li;><protect> 
-  <set name=mealstotals><sum digits=2><get name=cost&li;> <get name=mealstotals></sum></set>
+  <set name=mealstotals><sum digits=2><subst match="\$|\," result=""><get name=cost&li;></subst> <get name=mealstotals></sum></set>
   </protect> </formprotect>
 
   </TR>
@@ -114,7 +113,7 @@ Name: <b><formvariable name=name options=users> </formvariable> </b>
   <TD><formvariable name="acctcode&li;" computed=true> </formvariable>
   <TD><formvariable name="amount&li;"> </formvariable>     
   <formprotect livalue=&li;><protect> 
-  <set name=othertotals><sum digits=2><get name=amount&li;> <get
+  <set name=othertotals><sum digits=2><subst match="\$|\," result=""><get name=amount&li;></subst> <get
   name=othertotals></sum></set>
   <set name=accttype><get name=account&li;></set>
   <set name=acctcode&li;><get name=accountcodes key=&accttype;></set>
