@@ -1,0 +1,24 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>&AGENT:name; Index</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<header show-date=yes>Index Page</header>
+<sub-head page=index>
+  <tr><th align=right>criteria: &nbsp; <td>&AGENT:criteria; </sub-head>
+
+<hr>
+<nav-bar/>
+<hr>
+<agent-index/>
+<hr>
+<dl>
+  <dt> Note:
+  <dd> This page does not have an option for removing the
+       <a href="/&AGENT:name;">&AGENT:name;</a> agent.  It is required for the
+       proper functioning of this <if><test exact match=pia>&piaUSER;</test>
+       <then>appliance<else>Personal Information Agency</if>.
+</dl>
+
+<footer cvsid="$Id$">
+</body></html>
+
