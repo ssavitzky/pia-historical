@@ -16,6 +16,15 @@
        <a name="installation.html">installation notes</a>
 </dl>
 
+<if><tagset-exists name=Form-agent-actors>
+    <then>Re-reading:
+    <else>Reading: 
+</if> <code><a href="tagset.inc">tagset.inc</a></code>...
+
+<read process quiet interform file=tagset.inc>
+
+<!-- setDefault pause time -->
+ <set agent  name=slidepause>10</set>
 <h2>Banner for bottom of each page:</h2>
 
 <set agent name="banner"><table align=center>

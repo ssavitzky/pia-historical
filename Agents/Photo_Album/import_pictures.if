@@ -1,0 +1,116 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>  import pictures</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<set entity name=title>  import pictures</set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+
+
+<if> <get name=src form> <then>
+ <set name=srcurls><urls><url base=&FORM.url;><get form name=src></url></urls></set> 
+ <set name=depth><get name=depth form></set>
+ <if><get name=depth> <then></then> <else><set name=depth>1</set></else> </if>
+
+<set name=dir>&year;/&month;/&day;</set>
+ <if> <read file=&dir; info directory> <then><set name=dir>&year;/&month;/&day;.&hour;.&minute;.&second;</set></then> <else></else> </if>
+
+
+<set name="description">
+<photoscaption>
+<photosauthor><get tran name=AuthenticatedUser></photosauthor>
+<photossrc>&FORM.src;</photossrc>
+<photosdirectory>&dir;</photosdirectory>
+<photosdate>&date;</photosdate>
+<photos>
+</photos>
+</photoscaption>
+</set>
+<set name=photos><get index=description.photos></set>
+
+<!-- the following will work better when read_href returns content type -- for
+now uses file extensions -->
+
+ <repeat start=1 stop=&depth; entity=d>
+ <set name=newurls><urls> </urls></set>
+
+<repeat list=&srcurls; entity=srcurl>
+ <set name=mybase><get name=srcurl attr=base></set>
+ <set name=page><read href=&srcurl.Text; process base=&mybase;></set>
+
+<set name=newbase><full-url base=&mybase; url=&srcurl.Text;></set>
+
+
+<set name=refs><get name=page findall=a></set>
+<get name=refs size> a tags found in &srcurl.Text;
+<repeat list=&refs; entity=aref>
+
+
+<if><test match="\.jpg$|\.gif$"><get name=aref attr=href></test> <then>
+ <set name=aurl><get name=aref attr=href></set>
+ <set name=aimg><img src=&aurl; alt=&aref.Text;></set>
+  <if><get index=aref.img> <then> 
+   <get-image  destination=&dir; captions=&photos; base=&newbase; img=&aimg;
+   thumbnail=&aref.img;>
+ <!-- remove thumb img from further consideration -->
+ <set name=aref insert=0 replace> </set>
+ <set name=aref insert=1 replace> </set>
+
+    </then>
+    <else>
+    <get-image destination=&dir; captions=&photos; base=&newbase; img=&aimg;>
+   </else>
+  </if>
+ </then>
+ <else>
+ <set name=newurls insert=-1><url base=&newbase;><get name=aref
+ attr=href></url></set>
+</else> </if>
+</else>
+</if>
+</repeat>
+
+
+ <set name=imgs><dummy><get name=page findall=img></dummy></set>
+<get name=imgs size> img tags found in &srcurl.Text;
+
+<if><test  positive><get name=imgs size> </test> <then>
+ <repeat list=&imgs; entity=img>  
+ <get-image destination=&dir; captions=&photos; base=&newbase; img=&img;>
+ </repeat>
+</then> <else></else> </if>
+
+
+</repeat>
+ <set name=srcurls><get name=newurls></set>
+ </repeat>
+
+<write file=&dir;/photocaptions.xml><get name=description></write>
+<p>
+<a href=show_roll.if?roll=&dir;> Click here to view a table of these
+images</a>
+<p>
+<write append file=".catalog">&dir;
+</write>
+<hr>
+
+</then> <else>
+<h2>Enter a URL to  import pictures from </h2>
+<form action="&url;" method=post>
+URL:<input type="URL" name="src" size="40">
+<br>
+Depth:<select name="depth">
+<repeat start=1 stop=10> <option>&li; </option> </repeat>
+</select>
+<br>
+<input type="SUBMIT" value="GrabImages"> (May take some time.)
+</form>
+
+</else> </if>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

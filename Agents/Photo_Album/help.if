@@ -7,14 +7,16 @@
 <read interform file="heading.inc" process>
 
 <h3>Functions</h3>
-<ul>
-  <li><a href="/Photos/latest.if/">Latest photos</a>
-  <li><a href="/Photos/">All photos</a>
-  <li><a href="/&agentName;/slide_show.if">Slideshows</a>
-  <li><a href="/&agentName;/catalog.if">Catalog</a>
-         <li><a href="http://cdrw/CDRW/publish_photos.if">Create CD</a>
-  <li><a href="/&agentName;/installation.html">Installation Instructions</a>
-</ul>
+<dl>
+  <dt><a href="latest.if">Latest photos</a>
+  <dd> A link to the latest photos off-loaded from the digital camera.
+  <dt><a href="catalog.if"> Catalog</a>
+  <dd> a listing of all the "rolls" of photos
+  <dt><a href="/&agentName;/slide_show.if">Slideshows</a>
+  <dd>  provides a slide show of a set of pphotos (requires client-pull)
+  <dt><a href="/&agentName;/installation.html">Installation Instructions</a>
+  <dd>  for creating a stand-alone photo album
+</dl>
 <hr>
 <if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
 <p>

@@ -2,19 +2,21 @@
 <html><head>
 <title>Catalog of Pictures</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
-<base href="http://&piaHOST;:&piaPORT;/Photos/"></base>
+
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Catalog</set>
 <read interform file="heading.inc" process>
 
 <table  border=1>
-<TR><TH><TH>Title<TH>Captions created<TR><read file="&AGENT.masterlist;"></table>
+<TR><TH><TH>Title<TH>Captions created</TR>
+<read file="&AGENT.masterlist;">
+</table>
 
 <hr>
-<h3>Photos without captions</h3>
+<h3>All Rolls</h3>
 <set entity name="entries"><read file=".catalog"></set>
 <ul foreach list=&entries;>
-<li> <a href="/Photos/&li;/">&li;</a>
+<li> <a href="show_roll.if?roll=&li;">&li;</a>
 </ul>
 
 <hr><get agent name="banner">

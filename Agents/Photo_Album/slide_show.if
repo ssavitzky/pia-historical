@@ -5,14 +5,20 @@
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Slide Show Setup</set>
 <read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
 
-<if><test><get form name="directory"></test><then><set agent
-name="slides"><read directory file="&FORM.directory;" match="\.jpg$"></set>
- <set agent name="slide_directory"><get form name="directory"></set>
-<set agent name="next_slide">1</set>
-<if><test><get agent name="slide_pause"></test><then> </then><else><set agent
-name="slide_pause">10</set></else></if>
-<a href="show_slide.if">Start show of &FORM.directory;</a>
+<if><test><get form name="directory"></test><then>
+ <set name=capfile>&FORM.directory;/photocaptions.xml</set>
+ <if> <read info file=&capfile;>  <else>
+<write file=&capfile;><create-photo-captions directory=&FORM.directory;></write>
+ </else> </if>
+ <if> <get form name=pause> <then> <set name=slidepause agent><get form name=pause></set></then> <else></else> </if>
+<form action="show_slide.if">
+<input name="capfile" value="&capfile;" type=hidden>
+<input name="slide" value="1" type=hidden>
+<input type="SUBMIT" value="Begin Slide Show"> of roll &FORM.directory;
+</form>
+
 <br><hr>OR
 </then></if>
 <h3>choose directory</h3>
@@ -20,6 +26,7 @@ name="slide_pause">10</set></else></if>
 <form method=POST action="slide_show.if">
 <select name=directory foreach list="&directories;">
 <option>&li;</option></select>
+Pause between slides: <input type="INT" name="pause" value=&AGENT.slidepause;>
 <input type=submit value="ShowSlides">
 </form>
 

@@ -18,10 +18,10 @@
   <table cellspacing=0 BORDER=0>
     <tr><td align=right width=170><br>
 
-  <if><agent-running name="Photos"><then>
+  <if><get name=latest><then>
     <TR><TD align=right width=170>
     <td><a href="/&agentName;/latest.if">
-          <img src="/Photos/&latest;/r0100001.small.gif"
+          <img src="/~&agentName;/&latest;/r0100001.small.gif"
                height=32 width=32 border=0 alt="Photo Album"></a>
 	<a href="/&agentName;/latest.if">Newest Photos</a><br>
   </then></if>
@@ -30,13 +30,13 @@
             <!-- icons lined up to the left of the PIA -->
         <a href="/&agentName;/catalog.if">
           <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-	<a href="/&agentName;/catalog.if">Captioned Photos</a><br>
+	<a href="/&agentName;/catalog.if">Photos Catalog</a><br>
 
     <TR><TD align=right>
 	<td>
         <a href="/&agentName;/catalog.if">
           <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-	<a href="/Photos/">All Photos</a><br>
+	<a href="import_pictures.if">Import Pictures (from web) </a><br>
 
     <TR><TD align=right>
 	<td>
@@ -49,14 +49,15 @@
 	    <a href="/&agentName;/help.if">
               <img src="/Photo_Album/help.gif"  height=32 width=63 border=0></a>
 	    <a href="/&agentName;/help.if">Help</a><br>
-
+<if><get agent name=CDwriter><then>
     <tr><td align=right>
 	<td>
-        <a href="http://cdrw:8001/CDRW/publish_photos.if">
+        <a href="&AGENT.CDwriter;">
           <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
 	<!-- should test for CD-R/RW -->
-	<a href="http://cdrw:8001/CDRW/publish_photos.if">Create photo CD</a>
+	<a href="&AGENT.CDwriter;">Create photo CD</a>
 	<br>
+</tr></then></if>
   </table>
   
 

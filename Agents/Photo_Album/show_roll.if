@@ -1,0 +1,50 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+ <if> <get name=roll form> <then> <set name=roll><get name=roll form></set></then> <else><set name=roll><read file=".latest"></set></else> </if>
+<title>Showing Roll &roll;</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name=title>Roll &roll;</set>
+<read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
+<read process quiet interform file=tagset.inc>
+
+ <if><read file=&roll;/photocaptions.xml>  <else>
+<write file=&roll;/photocaptions.xml><create-photo-captions directory=&roll;></write>
+ </else> </if>
+
+
+ <set name=photos><read file=&roll;/photocaptions.xml process></set>
+ <if> <get name=photos> <then>
+
+<h3>Pictures roll dated &photos.photosdate; </h3>
+
+
+<form action="add_captions.if" method=post>
+<input name="capfile" type="hidden" value=&roll;/photocaptions.xml>
+ <if><get index=photos.photostitle.Text>
+ <then><set name=mytitle><get index=photos.photostitle.Text></set></then>
+ <else><set name=mytitle>Photos by <get index=photos.photosauthor.Text></set></else> </if>
+<input name="captitle" value=&mytitle;>
+<create-photo-table cols=6 photos=&photos.photos;>
+<input type="SUBMIT" value="Add Captions">
+</form>
+Click<a href="show_slide.if?capfile=&roll;/photocaptions.xml"> here to
+view these as a slide show</a> or 
+<a href=ftp://&piaHOST;/&roll;.tar.gz> here to download this roll using FTP</a>
+<hr>
+</then> <else>
+<h2>No photos found </h2>
+Select another roll from the list below.
+ <set name=rolls><list-rolls></set>
+ <repeat list=&rolls>
+ <a href=show_roll.if?roll=&li;><get name=li></a>
+ </repeat>
+</else> </if>
+
+<hr><get agent name="banner">
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
+

@@ -5,26 +5,29 @@
 </head><body>
 <set entity name=title> DC-2 Check-out</set>
 <read interform file="heading.inc" process>
+<tagset-load name=Photo-agent-actors>
 
 <p>
 Please select user name and specify return date to check out the camera.
  <form action="&url;" copy>
- <set name=users><read
- href="http://internal.crc.ricoh.com/~kevin/directories/CRC_dir.html"
- findall="b"></set> (<code>Users retrieved from http://internal.crc.ricoh.com/~kevin/directories/CRC_dir.html</code>)<br>
-User: <select name="user"><repeat list=&users;><option>&li;</option></repeat>
-<option>unknown</option>
+ <br>
+User: <users-dialogue><br>
+Returning on:
+<date-dialogue prefix=return>
 
- </select><br>
-Returning on:<input type="DATE" name="returndate" size="6">
-<input type="SUBMIT" value="Checkout Camera">
- <process copy>
- <write file=checkout>&FORM.user;
- checked out on &date; returning on &FORM.returndate;</write>
+<process copy>
+<write file=checkout>
+<checkout>
+ <checkoutuser>&FORM.user;</checkoutuser>
+ <checkoutstartdate>&date;</checkoutstartdate>
+ <checkoutreturndate>&FORM.returnmonth; &FORM.returnday;</checkoutreturndate>
+</checkout>
+</write>
+<set-current-user user=&FORM.user;>
 <br>
 Thanks for registering.  When you return, remove the PC card from the camera
 and insert into the PhotoAlbum box.  Your photos will be automatically added
-to the web and the camera will be checked in.  (Before leaving, check to make sure card
+to the web under your name.  (Before leaving, check to make sure card
 is currently in the camera.)
  </process>
 </form>
@@ -35,7 +38,8 @@ is currently in the camera.)
 <form action="&url;" copy>
  <input type="SUBMIT" value="Check-IN Camera">
  <process copy>
- <write file=checkout></write>
+
+<write file=checkout></write>
 <br>
 Thanks for returning the camera.  To transfer images to the digital photo album, remove the PC card from the camera
 and insert into the PhotoAlbum box.  Your photos will be automatically added
