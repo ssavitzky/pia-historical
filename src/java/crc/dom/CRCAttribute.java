@@ -28,9 +28,19 @@ public class CRCAttribute extends BasicAttribute implements Attribute {
     return n;
   }
 
+
   /* Accessor and mutator for attribute node definition */
-  public Node getAttrModel(){ return attrModel; }
-  public void setAttrModel(Node m){}
+  public AttributeDefinition getAttrModel(){ return attrModel; }
+  public void setAttrModel(AttributeDefinition m){
+    if ( m == null ) return;
+    // value is not expicitly set; set value base on 
+    // default if any
+    if( !getIsAssigned() ){
+      NodeList dv = m.getDefaultValue();
+      if( dv != null )
+	value = dv;
+    }
+  }
 
 
   /* reference to attribute model node create in document DTD */
