@@ -44,6 +44,22 @@ You can get additional installation forms from:
        <input type="submit" value="Install">
        name: <input name="agent" value="History">
        </form>
+       
+  <dt> CIA agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="cia">
+       </form>
+  <dt> FBI agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="fbi">
+       </form>
+  <dt> InterForm Demo agent
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="InterForm">
+       </form>
 </dl>
 
 <h3>And Document-Oriented File Systems</h3>
@@ -70,30 +86,20 @@ You can get additional installation forms from:
 <h3>Optional Agents</h3>
 
 <blockquote><em>
-  You will probably want to customize this section.
+  You will probably want to customize this section.  Enable agents by changing
+  "xform" tags to "form".
 </em></blockquote>
 <dl>
-  <dt> Thumbnail
-  <dd> <form action="/Agency/install_agent.if" method="POST">
-       <input type="submit" value="Install">
-       name:<input name="agent" value="Thumbnail">
-       type:<input name="type" value="Graphics">
-       </form>
-
   <dt> Printer Agent
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <xform action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install"><br>
        name:<input name="agent" value="Printer"><br>
        option:<input name="render_method" value="latex"><br>
        option:<input name="thumbsize" value="20"><br> 
-       </form>
+       </xform>
 </dl>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
 <b>$Id$</b>
-<address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
-         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@crc.ricoh.com"
-         >steve@crc.ricoh.com</a>&gt;</address>
-
 </body></html>
