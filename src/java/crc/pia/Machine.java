@@ -70,8 +70,6 @@ class zTimeout implements UnaryFunctor{
 
 
 public class Machine {
-  public boolean DEBUG = false;
-  public boolean DEBUGPROXY = false;
   /**
    * Attribute index - client hostName
    */
@@ -129,10 +127,8 @@ public class Machine {
 	inputStream = socket.getInputStream();
 	return inputStream;
       }catch(IOException e){
-	if( DEBUG )
-	  System.out.println("Exception while getting socket input stream." );
-	else
-	  Pia.instance().errLog( this, "Exception while getting socket input stream." );
+	Pia.debug( this, "Exception while getting socket input stream." );
+	Pia.errLog( this, "Exception while getting socket input stream." );
 	throw new IOException( e.getMessage() );
       }
     else
@@ -152,10 +148,8 @@ public class Machine {
 	outputStream = socket.getOutputStream();
 	return outputStream;
       }catch(IOException e){
-	if( DEBUG )
-	  System.out.println("Exception while getting socket output stream." );
-	else
-	  Pia.instance().errLog( this, "Exception while getting socket output stream." );
+	  Pia.debug(this, "Exception while getting socket output stream." );
+	  Pia.errLog( this, "Exception while getting socket output stream." );
 	throw new IOException( e.getMessage() );
       }    
     else
@@ -172,10 +166,9 @@ public class Machine {
       if( inputStream != null ) inputStream.close();
       if( outputStream != null ) outputStream.close();
     }catch(IOException e) {
-      if( DEBUG )
-	System.out.println("Exception while closing socket streams." );
-      else
-	Pia.instance().errLog( this, "Exception while closing socket streams." );
+
+	Pia.debug( this, "Exception while closing socket streams." );
+	Pia.errLog( this, "Exception while closing socket streams." );
     }
   }
 
@@ -206,7 +199,7 @@ public class Machine {
       
 	isTextHtml = true;
 
-	Pia.instance().debug(this, "Sucking controls...");
+	Pia.debug(this, "Sucking controls...");
 	List c = reply.controls();
 	if( c != null ){
 	  ctrlStrings = new StringBuffer();
@@ -230,13 +223,13 @@ public class Machine {
       }
       
       // dump header
-      Pia.instance().debug(this, "Transmitting firstline and header...");
+      Pia.debug(this, "Transmitting firstline and header...");
      
       shipOutput( out, outputString, false );
 
-      Pia.instance().debug(this, outputString);
+      Pia.debug(this, outputString);
       String headers = reply.headersAsString(); 
-      Pia.instance().debug(this, headers);
+      Pia.debug(this, headers);
 
       shipOutput( out, headers, false );
       
@@ -259,30 +252,30 @@ public class Machine {
       }
       
       if( ctrlStrings != null ){
-	Pia.instance().debug(this, "Transmitting control strings...");
+	Pia.debug(this, "Transmitting control strings...");
 	shipOutput( out, contentString, true );
       }
       else if( contentString != null && isTextHtml ){
-	Pia.instance().debug(this, "Transmitting text/html content...");
-	// Pia.instance().debug(this, contentString );
+	Pia.debug(this, "Transmitting text/html content...");
+	// Pia.debug(this, contentString );
 	shipOutput( out, contentString, true );
       }else if( plainContent != null ){
-	Pia.instance().debug(this, "Transmitting images content...");
+	Pia.debug(this, "Transmitting images content...");
 	sendImageContent( out, plainContent );
       }
       
-      Pia.instance().debug(this, "Flushing...");
+      Pia.debug(this, "Flushing...");
       out.flush();
       closeConnection();
       
     } catch (PiaRuntimeException e){
-      Pia.instance().debug(this, "Client closed connection...");
+      Pia.debug(this, "Client closed connection...");
       String msg = "Client closed connection...\n";
       closeConnection();
       throw new PiaRuntimeException (this, "sendResponse", msg) ;
 
     }catch(IOException e2){
-      Pia.instance().debug(this, "Client close connection...");
+      Pia.debug(this, "Client close connection...");
       String msg = "Client close connection...\n";
       closeConnection();
       throw new PiaRuntimeException (this, "sendResponse", msg) ;
@@ -303,7 +296,7 @@ public class Machine {
 	  out.write( '\n' );
       }catch(IOException e){
 
-	Pia.instance().debug(this, e.getClass().getName());
+	Pia.debug(this, e.getClass().getName());
 	String msg = "Can not write...\n";
 	throw new PiaRuntimeException (this, "shipOutput", msg) ;
       }
@@ -329,10 +322,10 @@ public class Machine {
 	bytesRead = c.read( buffer, 0, 1024 );
 	if( bytesRead == -1 ) break;
 	out.write( buffer, 0, bytesRead );
-	Pia.instance().debug(this, "the write length is---->"+Integer.toString(bytesRead));
+	Pia.debug(this, "the write length is---->"+Integer.toString(bytesRead));
       }
     }catch(IOException e){
-      Pia.instance().debug(this, e.getClass().getName());
+      Pia.debug(this, e.getClass().getName());
       String msg = "Can not write...\n";
       throw new PiaRuntimeException (this
 				     , "sendImageContent"
@@ -352,7 +345,7 @@ public class Machine {
 	if( bytesRead == -1 ) break;
 	  data.append( buffer, 0, bytesRead );
       }
-      Pia.instance().debug("the read length is---->"+Integer.toString(data.length()));
+      Pia.debug("the read length is---->"+Integer.toString(data.length()));
       return data.getByteCopy(); 
     }catch(IOException e2){
       throw e2;
@@ -370,7 +363,7 @@ public class Machine {
     int zport = 80;
     String zhost;
 
-    Pia.instance().debug(this, "Getting data through proxy request");
+    Pia.debug(this, "Getting data through proxy request");
     int p        = url.getPort();
     zport        = (p == -1) ? 80 : p;
     zhost        = url.getHost();
@@ -466,13 +459,9 @@ public class Machine {
     if(p==null){
       String mainproxy;
 
-      if( DEBUGPROXY )
-	p = "http://int-gw.crc.ricoh.com:80/";
-      else{
-	mainproxy= Pia.instance().agency().proxyFor(hostName, scheme);	
-	if ( mainproxy!= null )
-	  p = mainproxy;
-      }
+      mainproxy= Pia.instance().agency().proxyFor(hostName, scheme);	
+      if ( mainproxy!= null )
+	p = mainproxy;
     }
 
 
@@ -485,7 +474,7 @@ public class Machine {
 	throw e;
       }
     }
-
+    
     return null;
 
   }
@@ -528,157 +517,9 @@ public class Machine {
   }
 
 
-  private static void test1( String filename, boolean proxy ){
-    System.out.println("This test make use of a server that returns a text/html page.");
-    System.out.println("The server is in the test directory and it runs with default port =6666.");
-    System.out.println("The file get_machine.txt contains a request for the page.");
-    System.out.println("If proxy is true, request is tested thru a proxy.  In the setProxy method, there is a line w/ p=http://..., you should substitute appropriate proxy address for your machine.");
-    System.out.println("If proxy is false, java's URL is used to get the page.");
-
-    try{
-      InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
-      machine1.DEBUG = true;
-      if( proxy )
-	machine1.DEBUGPROXY = true;
-      machine1.setInputStream( in );
-      
-      boolean debug = true;
-      Transaction trans1 = new HTTPRequest( machine1, debug );
-      Thread thread1 = new Thread( trans1 );
-      thread1.start();
-
-      while( true ){
-	sleep( 1000 );
-	if( !thread1.isAlive() )
-	  break;
-      }
-
-      machine1.getRequest( trans1, Pia.instance().resolver() );
-      System.exit(0);
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-  }
-
-  private static void test2(String filename){
-    try{
-      System.out.println("Testing response w/ from and to machines as arguments.");
-      System.out.println("From machine gets its data from response.txt file.");
-      
-      InputStream in = new FileInputStream (filename);
-      Machine machine1 = new Machine();
-      machine1.DEBUG = true;
-      machine1.setInputStream( in );
-      
-      Machine machine2 = new Machine();
-      machine2.DEBUG = true;
-      machine2.setOutputStream( System.out );
-      
-      boolean debug = true;
-      Transaction trans1 = new HTTPResponse( machine1, machine2, debug );
-      Thread thread1 = new Thread( trans1 );
-      thread1.start();
-      
-      while( true ){
-	sleep( 1000 );
-	if( !thread1.isAlive() )
-	  break;
-      }
-
-      trans1.addControl( "major" );
-      trans1.addControl( "tom" );
-      Resolver res = null;
-      machine2.sendResponse( trans1, res );
-      System.exit( 0 );
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-  }
-
-
-  private static void printusage(){
-    System.out.println("Needs to know what kind of test");
-    System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -proxy get_machine.txt");
-    System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -noproxy get_machine.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.Machine -2 response.txt");
-  }
-
-
-  /**
-   * For testing.
-   * 
-   */ 
-  public static void main(String[] args){
-    if( args.length == 0 ){
-      printusage();
-      System.exit( 1 );
-    }
-    if(args.length == 2){
-      if( args[0].equals ("-2") && args[1] != null )
-	test2( args[1] );
-    }else
-    
-    if (args.length == 3 ){
-      if( args[0].equals ("-1") && (args[1].equals ("-proxy") || args[1].equals ("-noproxy")) && args[2] != null )
-	if( args[1].equals ("-proxy"))
-	  test1( args[2], true );
-	else
-	  test1( args[2], false );
-      else{
-	printusage();
-	System.exit( 1 );
-      }
-    }
-    
-  }
 }
 
-  /**
-   * For testing only, ya
-   */
-  class Server extends Thread {
-    public final static int DEFAULT_PORT = 6789;
-    protected int port;
-    protected ServerSocket listen_socket;
-    
-    // Exit with an error message, when an exception occurs.
-    public static void fail(Exception e, String msg) {
-      System.err.println(msg + ": " +  e);
-      System.exit(1);
-    }
-    
-    // Create a ServerSocket to listen for connections on;  start the thread.
-    public Server(int port) {
-        if (port == 0) port = DEFAULT_PORT;
-        this.port = port;
-        try { listen_socket = new ServerSocket(port); }
-        catch (IOException e) { fail(e, "Exception creating server socket"); }
-        System.out.println("Server: listening on port " + port);
-        this.start();
-    }
-    
-    // The body of the server thread.  Loop forever, listening for and
-    // accepting connections from clients.  For each connection, 
-    // create a Connection object to handle communication through the
-    // new Socket.
-    public void run() {
-        try {
-            while(true) {
-	      Socket client_socket = listen_socket.accept();
-	      /*
-	      InetAddress iaddr = client_socket.getInetAddress();
-	      String hostName = iaddr.getHostName();
-	      Machine machine =  new Machine(hostName, port, client_socket);
-	      machine.test1();
-	      */
-            }
-        }
-        catch (IOException e) { 
-            fail(e, "Exception while listening for connections");
-        }
-    }
-  }
+
 
 
 
