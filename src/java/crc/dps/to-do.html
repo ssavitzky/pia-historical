@@ -50,6 +50,13 @@ Input: &lt;test sorted&gt;bats ants toads&lt;/test&gt;
 Result: 1 
         </pre>
 	(1998-10-19)<br>
+
+	<li> <b>Bug</b> Pad only pads on the right (align left).  For example:
+<pre>
+Input: &lt;pre&gt;&lt;text pad align=center width=80&gt;cat&lt;/text&gt;&lt;/pre&gt;
+Results: &lt;pre&gt;cat                                                                             &lt;/pre&gt;
+</pre>
+(1998-11-11)<br>
   <li> <b>Impr</b> Prevent infinite loops.  Here's one way to create one:
 	<pre>
 &lt;repeat foreach entity=x&gt;a b c d e f g&gt;&lt;repeat&gt;&lt;for&gt;&lt;start&gt;2&lt;/start&gt;&lt;stop&gt;5&lt;/stop&gt;&x;&lt;/for&gt;&lt;/repeat&gt;&lt;/repeat&gt;
