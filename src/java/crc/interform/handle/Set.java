@@ -10,9 +10,6 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<set name="name" [copy]
@@ -31,9 +28,9 @@ public class Set extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     if (it.hasAttr("pia")) dispatch("set.pia", ia, it, ii);
     else if (it.hasAttr("agent")) dispatch("set.agent", ia, it, ii);
-    //else if (it.hasAttr("form")) dispatch("set.form", ia, it, ii);
+    else if (it.hasAttr("form")) dispatch("set.form", ia, it, ii);
     else if (it.hasAttr("trans")) dispatch("set.trans", ia, it, ii);
-    //else if (it.hasAttr("env")) dispatch("set.env", ia, it, ii);
+    else if (it.hasAttr("env")) dispatch("set.env", ia, it, ii);
     else {
       /* The following are all in the Basic tagset,
        *     so it's cheaper not to dispatch on them.

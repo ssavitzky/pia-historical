@@ -11,9 +11,6 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<set.env name="name" [copy]>...</set.env>

@@ -10,7 +10,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
+import crc.sgml.Element;
 import crc.sgml.Tokens;
 import crc.sgml.Text;
 
@@ -32,7 +32,7 @@ import java.util.Date;
 /** Handler class for &lt;read-file&gt tag */
 public class Read_file extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getFileName(it.toToken(), ii, false);
+    String name = Util.getFileName(it, ii, false);
     if (name == null) {
       ii.error(ia, "Must have non-null name or file attribute.");
       ii.deleteIt();
@@ -104,18 +104,18 @@ public class Read_file extends crc.interform.Handler {
       String itag = (tag != null && tag.equals("dl"))? "dt" : "li";
 
       if (it.hasAttr("links")) {
-	Token t = new Token(tag);
+	Element t = new Element(tag);
 	for (int i = 0; i < names.nItems(); ++i) {
-	  Token link = new Token("a");
+	  Element link = new Element("a");
 	  link.addItem(names.itemAt(i));
 	  t.attr("href", "file:" + file+names.itemAt(i).toString());
 	}
 	result = t;
       } else if (tag != null) {
-	Token t = new Token(tag);
+	Element t = new Element(tag);
 	result = t;
 	for (int i = 0; i < names.nItems(); ++i) 
-	  t.addItem(new Token(itag).addItem(names.itemAt(i)));
+	  t.addItem(new Element(itag).addItem(names.itemAt(i)));
       } else {
 	result = Text.join(" ", names);
       }

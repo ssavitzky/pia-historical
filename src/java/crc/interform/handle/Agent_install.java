@@ -11,9 +11,6 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<agent-install name=ident [type=ident]>...</agent-install>
@@ -33,8 +30,7 @@ public class Agent_install extends crc.interform.Handler {
 
     try {
       crc.pia.agent.Agency agency = (crc.pia.agent.Agency) env.agent;
-      // agency.install(run.transaction.parameters()); 
-      ii.unimplemented(ia); // === needs Transaction.parameters
+      agency.install(env.transaction.getParameters()); 
     } catch (Exception e) {
       ii.error(ia, "only works in the Agency agent");
     }
@@ -43,25 +39,3 @@ public class Agent_install extends crc.interform.Handler {
   }
 }
 
-/* ====================================================================
-
-### <agent-install name='n' type='t'>
-
-define_actor('agent-install', 'content' => 'options',
-	     'dscr' => "Installs an agent with given OPTIONS (content).
-Returns the agent's name." );
-
-sub agent_install_handle {
-    my ($self, $it, $ii) = @_;
-
-    ## urlQuery is undefined because installation is normally a POST
-    #my $options = get_hash($it, 'options'); # === broken: urlQuery undef. ===
-    my $options = IF::Run::request()->parameters;
-
-    my $agent = IF::Run::agent(); # had better be agency
-    $agent = $agent->install($options);
-    my $name = ref $agent ? $agent->name : '';
-    $ii->replace_it($name);
-}
-
-*/

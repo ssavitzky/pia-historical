@@ -11,6 +11,7 @@ import crc.interform.Util;
 
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
+import crc.sgml.Text;
 
 /* Syntax:
  *	<difference>n1 n2 ... </difference>
@@ -28,7 +29,7 @@ public class Difference extends crc.interform.Handler {
     while (list.nItems() > 0) {
       result -= Util.numValue((SGML)list.shift());
     }    
-    ii.replaceIt(new crc.sgml.Text(java.lang.Double.toString(result)));
+    ii.replaceIt(new Text(java.lang.Double.toString(result)));
   }
 }
 

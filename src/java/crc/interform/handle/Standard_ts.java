@@ -25,7 +25,7 @@ public class Standard_ts extends StandAlone_ts {
   + " agent-set-criterion pia-exit get.agent get.form get.pia get.trans";
 
   static String parsedActors = "agent-set-criteria agent-set-options" 
-  + " submit-forms trans-control set.agent set.pia set.trans"; 
+  + " submit-forms trans-control set.agent set.form set.pia set.trans"; 
 
   public Standard_ts() {
     super("Standard", true);

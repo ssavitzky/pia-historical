@@ -8,17 +8,17 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
+import crc.interform.Run;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
+
+import crc.pia.Transaction;
 
 /* Syntax:
- *	<set.trans name="name" [copy] [feature]>...</set.trans>
+ *	<set.trans name="name" [copy] [feature|header]>...</set.trans>
  * Dscr:
- *	Set NAME to CONTENT in a transaction.  Optionally set a FEATURE.
- *	Optionally COPY content as result.
+ *	Set NAME to CONTENT in a transaction.  Optionally set a FEATURE
+ *	or HEADER.  Optionally COPY content as result.
  */
 
 /** Handler class for &lt;set.trans&gt tag */
@@ -28,7 +28,17 @@ public class Set_trans extends crc.interform.Handler {
     if (ii.missing(ia, "name", name)) return;
     SGML value = it.content().simplify();
 
-    ii.unimplemented(ia);
+    Run env = Run.environment(ii);
+    Transaction trans = env.transaction;
+
+    if (it.hasAttr("request")) trans = trans.requestTran();
+    if (it.hasAttr("feature")) {
+      trans.assert(name, value);
+    } else if (it.hasAttr("headers")) {
+      trans.setHeader(name, value.toString());
+    } else {
+      trans.attr(name, value);
+    }
 
     if (it.hasAttr("copy")) {
       ii.replaceIt(value);

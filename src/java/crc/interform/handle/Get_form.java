@@ -11,9 +11,7 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
+import crc.sgml.Element;
 
 import crc.ds.Table;
 
@@ -36,7 +34,7 @@ public class Get_form extends crc.interform.Handler {
       return;
     } else if (name == null || "".equals(name)) {
       // return the whole form
-      ii.replaceIt(new Token("dl", form)); 
+      ii.replaceIt(new Element("dl", form)); 
     }
     ii.replaceIt(Util.toSGML(form.at(name)));
   }

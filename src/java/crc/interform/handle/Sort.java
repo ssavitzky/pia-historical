@@ -10,9 +10,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<sort [case][text][numeric][reverse]>item, ...</sort>

@@ -1,4 +1,4 @@
-////// Set_pia.java:  Handler for <set.pia>
+////// Set_form.java:  Handler for <set.form>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -13,21 +13,22 @@ import crc.interform.Run;
 import crc.sgml.SGML;
 
 /* Syntax:
- *	<set.pia name="name" [copy]>...</set.pia>
+ *	<set.form name="name" [copy]>...</set.form>
  * Dscr:
- *	set NAME to CONTENT in the pia global properties. 
+ *	set NAME to CONTENT in the form table. 
  *	Optionally COPY content as result.
  */
 
-/** Handler class for &lt;set.pia&gt tag */
-public class Set_pia extends crc.interform.Handler {
+/** Handler class for &lt;set.form&gt tag */
+public class Set_form extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
     if (ii.missing(ia, "name", name)) return;
 
     SGML value = it.content().simplify();
 
-    crc.pia.Pia.instance().properties().put(name, value.toString());
+    ii.unimplemented(ia);
+    //crc.pia.Pia.instance().properties().put(name, value.toString());
     // === almost certainly hae to run something to notify about prop. chg.
 
     if (it.hasAttr("copy")) {

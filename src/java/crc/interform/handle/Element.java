@@ -8,7 +8,6 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.sgml.SGML;
-import crc.sgml.Token;
 
 
 /* Syntax:
@@ -21,8 +20,7 @@ import crc.sgml.Token;
 /** Handler class for &lt;element&gt tag */
 public class Element extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    Token t = it.toToken();
-    ii.tagset().define(new Actor(t, t.attrString("syntax")));
+    ii.tagset().define(new Actor(it, it.attrString("syntax")));
     ii.deleteIt();
   }
 

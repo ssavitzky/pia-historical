@@ -10,10 +10,9 @@ import crc.interform.Interp;
 import crc.interform.Util;
 import crc.interform.Run;
 
+import crc.pia.Transaction;
+
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<get-trans [name="name"]>
@@ -29,24 +28,15 @@ public class Get_trans extends crc.interform.Handler {
     if (ii.missing(ia, "name", name)) return;
     SGML result = null;
     Run env = Run.environment(ii);
-    crc.pia.Transaction trans = env.transaction;
+    Transaction trans = env.transaction;
 
-    ii.unimplemented(ia);
+    if (it.hasAttr("request")) trans = trans.requestTran();
+    if (it.hasAttr("feature")) {
+      ii.replaceIt(Util.toSGML(trans.getFeature(name)));
+    } else if (it.hasAttr("headers")) {
+      ii.replaceIt(trans.header(name));
+    } else {
+      ii.replaceIt(env.transaction.attr(name));
+    }
   }
 }
-
-/* ============================================================
-
-        if ($it->attr('feature')) {
-	    $result = ($trans->get_feature($name)) if defined $trans;
-	} elsif ($it->attr('headers')) {
-	    if ($it->attr('request')) {
-		$result = $trans->is_request? $trans->request->headers_as_string
-		    : $trans->response_to->request->headers_as_string;
-	    } else {
-	        $result = $trans->message->headers_as_string;
-	    }
-	} else {
-	    $result = ($trans->attr($name)) if defined $trans;
-	}
-*/

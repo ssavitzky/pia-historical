@@ -8,7 +8,7 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.sgml.SGML;
-import crc.sgml.Token;
+import crc.sgml.Element;
 import crc.sgml.Tokens;
 
 /* Syntax:
@@ -23,7 +23,7 @@ public class Actor_names extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
     if (it.hasAttr("tag")) {
-      ii.replaceIt(new Token(it.attrString("tag"),
+      ii.replaceIt(new Element(it.attrString("tag"),
 			     ii.tagset().actorNames()));
     } else {
       ii.replaceIt(new Tokens(ii.tagset().actorNames().elements(), " "));

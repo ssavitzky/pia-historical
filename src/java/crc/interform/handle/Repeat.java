@@ -10,9 +10,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<repeat list="..." [entity="name"]>...</repeat>

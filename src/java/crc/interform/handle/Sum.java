@@ -10,8 +10,6 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Text;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
 
 /* Syntax:
@@ -30,7 +28,7 @@ public class Sum extends crc.interform.Handler {
     while (list.nItems() > 0) {
       result += Util.numValue((SGML)list.shift());
     }    
-    ii.replaceIt(new Text(java.lang.Double.toString(result)));
+    ii.replaceIt(java.lang.Double.toString(result));
   }
 }
 

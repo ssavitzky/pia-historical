@@ -23,7 +23,7 @@ import crc.sgml.SGML;
 /** Handler class for &lt;actor&gt tag. */
 public class Actor extends crc.interform.Handler {
   public void handle(crc.interform.Actor ia, SGML it, Interp ii) {
-    ii.tagset().define(new crc.interform.Actor(it.toToken()));
+    ii.tagset().define(new crc.interform.Actor(it));
     ii.deleteIt();
   }
   /** Return an instance of the corresponding actor, for bootstrapping. */

@@ -11,8 +11,7 @@ import crc.interform.Util;
 import crc.interform.Run;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
+import crc.sgml.Element;
 import crc.sgml.Text;
 
 /* Syntax:
@@ -36,7 +35,7 @@ public class Agent_home extends crc.interform.Handler {
     }
     String home = (type.equals(name))? name : type + "/" + name;
     if (link) {
-      Token t = new Token("a");
+      Element t = new Element("a");
       t.attr("href", home+"/home.if");
       t.append(home);
       ii.replaceIt(t);

@@ -10,9 +10,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<if><test>condition</test><then>...</then><else>...</else></if>
@@ -38,7 +36,7 @@ public class If extends crc.interform.Handler {
 	else if (! "!".equals(t) && ! "!--".equals(t)) list.append(s);
     } else {
 	String ss = s.toString().trim();
-	if (ss != null && ! "".equals(ss)) list.append(new Text(ss));
+	if (ss != null && ! "".equals(ss)) list.append(ss);
       }
     }
 

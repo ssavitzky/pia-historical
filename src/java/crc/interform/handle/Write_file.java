@@ -10,9 +10,6 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
-import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 import java.io.File;
 
@@ -31,7 +28,7 @@ import java.io.File;
 /** Handler class for &lt;write.file&gt tag. */
 public class Write_file extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getFileName(it.toToken(), ii, true);
+    String name = Util.getFileName(it, ii, true);
     if (name == null) {
       ii.error(ia, "Must have non-null name or file attribute.");
       ii.deleteIt();

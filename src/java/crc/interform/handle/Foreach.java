@@ -10,9 +10,8 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
+import crc.sgml.Element;
 import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<... foreach list="list" [entity=ident]>element</>
@@ -27,8 +26,8 @@ public class Foreach extends crc.interform.Handler {
     String entity = Util.getString(it, "entity", "li");
 
     // re-push "it" with empty content and no foreach or list attr.
-    Token t = new Token(it.tag());
-    Token itt = it.toToken();
+    Element t = new Element(it.tag());
+    Element itt = Element.valueOf(it);
     for (int i = 0; i < itt.nAttrs(); ++i) {
       String name = itt.attrNameAt(i);
       if (name.equals("list") || name.equals("foreach")
@@ -36,7 +35,7 @@ public class Foreach extends crc.interform.Handler {
       t.addAttr(name, itt.attrValueAt(i));
     }
 
-    ii.pushInput(Token.endTagFor(it.tag()));
+    ii.pushInput(Element.endTagFor(it.tag()));
     ii.pushForeach(it.content(), entity, list);
     ii.hoistParseFlags();
     ii.stackToken(t);

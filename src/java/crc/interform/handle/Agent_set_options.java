@@ -10,9 +10,7 @@ import crc.interform.Interp;
 import crc.interform.Util;
 
 import crc.sgml.SGML;
-import crc.sgml.Token;
 import crc.sgml.Tokens;
-import crc.sgml.Text;
 
 /* Syntax:
  *	<agent-set-options [name="agent-name"]>options</agent-set-options>
