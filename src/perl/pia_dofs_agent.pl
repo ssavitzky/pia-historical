@@ -169,6 +169,7 @@ sub retrieve_directory {
     $response->header('Content-Type',   'text/html');
     $response->header('Content-Length', length $html);
     $response->content($html);
+    $response->request($request->clone);
     #return $request->collect_once($arg, $response, $html);
     return $response;
 }
