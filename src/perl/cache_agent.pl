@@ -79,7 +79,7 @@ sub handle_response{
 
     return unless $response->code eq '200';
     my $request=$response->request;
-    return unless $request;
+    return unless ref($request) eq 'TRANSACTION';
     my $url=$request->url;
     return unless $url;
     my $directory=$self->url_to_filename($url);

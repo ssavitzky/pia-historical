@@ -20,7 +20,7 @@ sub make_icon{
     return $self->make_icon_unknown($transaction,$width,$height);
 }
 sub make_icon_unknown{
-    my($self,$transaction,$width,$height)=@_;
+    my($self,$transaction,$width,$height,$error_message)=@_;
     local @position=(0,0);
     # create a new image
     local    $im = new GD::Image($width,$height);
@@ -31,7 +31,9 @@ sub make_icon_unknown{
     local    $blue = $im->colorAllocate(0,0,255);
         # make the background transparent and interlaced
         $im->transparent($white);
-	$im->string(gdTinyFont,$position[0],$position[1],"?????",$black);
+	$im->string(gdTinyFont,$position[0],$position[1],"ERROR",$black);
+	$im->string(gdTinyFont,$position[0],$position[30],"unkown type",$black);
+	$im->string(gdTinyFont,$position[0],$position[50],$error_message,$black);
     return $im->gif;
     
 }
@@ -138,12 +140,28 @@ sub machine_callback{
     my $request=$newresponse->request;
     my $destination=$$request{_thumbnail_requestor}; #hack for now
     my $image=$self->make_icon($newresponse);
-    my $response=HTTP::Response->new(&HTTP::Status::RC_OK,"OK"); 
-$response=TRANSACTION->new($response,$self->machine,$destination);
-    $response->content_length(length($image));
-    $response->content_type('image/gif');
-    $response->content($image);
-    $response->request($request);
+    if(! ref($image) ){
+	#my $url=$request->url if ref($request);
+	#$url=$url->as_string if ref($url);
+	$image=$self->make_icon_unknown($newresponse,$self->option(width),$self->option(height),$newresponse->code);	
+    }
+	
+    my $response;
+#    if(ref($image)){
+	$response=HTTP::Response->new(&HTTP::Status::RC_OK,"OK"); 
+	
+	$response=TRANSACTION->new($response,$self->machine,$destination);
+	$response->content_length(length($image));
+	$response->content_type('image/gif');
+	$response->content($image);
+	$response->request($request);
+# #    } else {
+# 	$response=HTTP::Response->new(&HTTP::Status::RC_INTERNAL_SERVER_ERROR,"giffailed"); 
+	
+# 	$response=TRANSACTION->new($response,$self->machine,$destination);
+# 	$response->request($request);
+#     }
+
     $main::main_resolver->push($response);
     
     return $response;

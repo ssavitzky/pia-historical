@@ -1,15 +1,10 @@
 <html> <head>
-<title></title>
-</head>
+<title> Printer agent book maker</title>
+</head><body>
+<h1><img src="http://&piaHOST;:&piaPORT;/PIA/src/Agents/printer/printer.gif"
+align=center>`&agentName;' Book maker; </h1>
 
-<body>
-<h1> Book maker for <code language="perl">
-my $name=$agent->name;
-my $element=HTML::Element->new('a',href => "/$name/home.if");
-$element->push_content("$name");
-return $element;
-</code></h1>
- Make book starting at <code language=perl> 
+ Making book starting at <code language=perl> 
 my %form_parameters=%{$current_request->parameters()};
 my $name=$current_self->name;
 my $form=make_form("/$name/mkbook.if",({name => 'URL',size => 50,value =>
@@ -33,6 +28,6 @@ return $current_self->make_book($url) if $url;
 <hr>
 <address><a href="http://sages.com/~wolff/wolff.html">Greg Wolff </a> <a href=mailto:wolff@sages.com>wolff@sages.com</a></address>
 <!-- hhmts start -->
-Last modified: Mon Nov 11 11:07:42 1996
+Last modified: Thu Nov 21 21:01:49 1996
 <!-- hhmts end -->
 </body> </html>

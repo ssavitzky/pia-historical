@@ -14,14 +14,37 @@ sub new{
     my( $class,$self,$argument)=@_;
     $self={} unless $self;
     bless $self,$class;
+    $self->initialize;
+    
     return $self;
     
 }
 
 
+    $main::format_options{_columns}=1;
+    $main::format_options{_footnotes}=0;
+    $main::format_options{_table_contents}=0;
+    $main::format_options{_font_size}=11;
+    $main::format_options{_type}="article";
+    $main::format_options{_column_width}="7";
+$main::format_options{_logo}="/home/pia/pia/src/Agents/printer/logo.ps";
+
+sub initialize{
+    my($self,$argument)=@_;
+    for(keys(%main::format_options)){
+	$$self{$_}=$main::format_options{$_};
+    }
+#domargins...
+}
 #return latex string
 sub format{
     my($self,$html)=@_;
+
+    ##setup locals for various things
+    local $footnotes=$$self{_footnotes};
+    local $tableofcontents=$$self{_table_contents};
+    
+
     if(ref($html) eq "BOOK"){
 	return $self->format_book($html);
     }
@@ -57,17 +80,27 @@ sub preprocess{
     #do images here,referencesandlinks
 }
 sub header{
+    my $self=shift;
+    
+    my $string="\\documentstyle[psfig";
+    $string.="," . $$self{_font_size} . "pt";
+    $string.=",twocolumn" if $$self{_columns} == 2;
 
-    my $string="\\documentstyle[psfig,11pt,twocolumn]{article}\n";
+    $string.="]{" . $$self{_type} . "}\n";
 $string.=" \\addtolength{\\textwidth}{3.5cm}\\addtolength{\\textheight}{4.2cm}\\addtolength{\\topmargin}{-1.5cm}\\setlength{\\oddsidemargin}{-.75cm}\\setlength{\\evensidemargin}{-.75cm}";
     $string.="\\begin{document}\n"; 
+
     return $string;
 
 }
 
 sub footer{
-
-return "\n\\end{document}\n";
+    my $self=shift;
+    my $string;
+    $string="\\psfig{file=" . $$self{_logo} ."}\n" if -e $$self{_logo};
+    $string.="\n\\end{document}\n";
+    return $string;
+    
 
 }
 
@@ -164,7 +197,7 @@ sub latex_a{
 	my $count=$footnote{$url};
 	$count=$footnotecounter++ unless $count;
 	$footnote{$url}=$count;
-#	$string.= "\\footnotemark[$count]";
+	$string.= "\\footnotemark[$count]" if $footnotes;
     }
     
     return $string;
@@ -178,9 +211,11 @@ sub latex_title{
     my $book_reference=$tag->attr('book_reference');
     if($book_reference > 1){
 	$string="\\section{" . $string . "}\n \\label{" . $book_reference . "}";
+
     }else {
 	$string="\\title{" . $string . "}\n";
 	$string.="\\maketitle \n";
+	$string.="\\tableofcontents \n" if $tableofcontents;
     }
     return $string;
 	
@@ -190,12 +225,19 @@ sub latex_table{
 #count max number of columns
     my $max=0;
     my (@rows)=@{$tag->content};
+    my $colcount;
     for(@rows){
-
-	my(@columns)=@{$_->content} if ref($_);
-	print "columns =".$#columns ."\n";
+	$colcount = 0;
+	if( ref($_)){
+	    for(@{$_->content}){
+		if(ref($_) eq "IF::IT" && $_->tag eq 'td'){
+		    $colcount++;
+		}
+	    }
+	}
+	print "columns =" . $colcount ."\n";
 	
-	$max=$#columns if $max<$#columns;
+	$max=$colcount if $max<$colcount;
     }
     my $border="";
     $border="|" if $tag->attr('border');
@@ -204,7 +246,7 @@ sub latex_table{
     $character = "l" if $align eq 'left';
     $character = "r" if $align eq 'right';
     my $tab=$border;
-    for($count=0,$count<$max,$count++){
+    for($count=0;$count<$max;$count++){
 	$tab.=$character . $border;
     }
     
@@ -233,7 +275,7 @@ sub latex_image{
 	$alternate="[IMAGE]" unless $alternate;
 	return $alternate;
     }
-    my $column_width=$main::latex_column_width;
+    my $column_width=$main::format_options{_column_width};
     
     if($width > $column_width*72){
 	$string.=",width=" . $column_width . "in" ;
@@ -270,7 +312,7 @@ td => \&latex_table_cell
  h1 => "\\section{",
  h2 => "\\subsection{",
  h3 => "\\subsection{",
- h4 => "{\\LARGE ",
+ h4 => "{\\subsubsection{",
  h5 => "{\\large ",
  h6 => "{\\bold ",
  p => "\n\n",

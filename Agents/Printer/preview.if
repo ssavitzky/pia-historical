@@ -1,9 +1,9 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title></title>
+<title> PIA printer agent preview</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>Preview page for Printer `<a href="home.if">&agentName;</a>' on &piaHOST
+<h1><img src="/logo/pia24">`<a href="home.if">&agentName;</a>' on &piaHOST
 </h1>
 You are Previewing <code language=perl>
 my $url= ${$current_request->parameters()}{URL};
@@ -12,23 +12,13 @@ return $element;
 </code>
 
 <br>
-<code language=perl>
-my %form_parameters=%{$current_request->parameters()};
-my $name=$current_self->name;
-my @zform;
-
-push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
-push(@zform, {name => 'thumbsize',type => 'hidden',value => 30});
-push(@zform, {type => 'submit',value => 'SmallThumbnails'});
-
-push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
-push(@zform, {name => 'render_method',type => 'hidden',value => 'normal'});
-push(@zform, {type => 'submit',value => 'NoLinks/Images'});
-
-my $form=make_form("/$name/preview.if",@zform);
-
-return $form;
-</code>
+<table>
+<tr><TD><a href=toc.if>Table of contents</a>
+<TD><a href=twocolumn.if>2 column</a>
+<TD><a href=onecolumn.if>1 column</a>
+<TD><a href=footnotes.if>footnotes</a>
+</table>
+<br>
 
 <hr>
 <!parse any form params>
@@ -36,6 +26,7 @@ return $form;
 my %form_parameters=%{$current_request->parameters()};
 $current_self->option('thumbsize',$form_parameters{thumbsize}) if exists $form_parameters{thumbsize};
 $current_self->option('render_method',$form_parameters{render_method}) if exists $form_parameters{render_method};
+
 </code>
 
 <code language=perl>
@@ -57,10 +48,27 @@ my $form=make_form("/$name/print.if",({name => 'URL',size => 50,value =>
 $form_parameters{URL}},{name => 'spoolfile', type => 'hidden', value => $current_self->ps_file_name},{type => 'submit',value => 'Print'}));
 return $form;
 </code>
+<code language=perl>
+my %form_parameters=%{$current_request->parameters()};
+my $name=$current_self->name;
+my @zform;
+
+push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
+push(@zform, {name => 'thumbsize',type => 'hidden',value => 30});
+push(@zform, {type => 'submit',value => 'SmallThumbnails'});
+
+push(@zform, {name => 'URL',type => 'hidden',value =>$form_parameters{URL}});
+push(@zform, {name => 'render_method',type => 'hidden',value => 'normal'});
+push(@zform, {type => 'submit',value => 'NoLinks/Images'});
+
+my $form=make_form("/$name/preview.if",@zform);
+
+return $form;
+</code>
 
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Nov 20 20:34:42 1996
+Last modified: Thu Nov 21 21:02:50 1996
 <!-- hhmts end -->
 </body></html>

@@ -1,0 +1,16 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>  PIA printer agent set columns</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+</head><body>
+<h1>`<a href="home.if">&agentName;</a>' on &piaHOST</h1>
+<code language=perl>
+$main::format_options{_table_contents}= !$main::format_options{_table_contents};
+return "table of contents format set to" . $main::format_options{_table_contents};
+</code>
+<hr>
+<address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
+<!-- hhmts start -->
+Last modified: Thu Nov 21 20:44:43 1996
+<!-- hhmts end -->
+</body></html>

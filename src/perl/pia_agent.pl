@@ -654,7 +654,25 @@ sub retrieve {
 ##should be using proxy...
 ## user agent should remain in existence
     my $ua = $self->user_agent;
+    my $response;
+##should use cache
+    if($cache){
+	my @res;
+	my $status=$cache->handle($request,\@res);
+	if( $status){
+	    $response=shift(@res) ;
+	    if($file) {
+		open(OUT,">$file");
+		print OUT $response->content;
+		CLOSE OUT;
+	    }
+	    return $response;
+	    
+	}
+    }
+    
     $response=$ua->simple_request($request,$file); 
+
     return $response;
 }
 

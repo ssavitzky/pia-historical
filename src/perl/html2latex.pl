@@ -179,7 +179,7 @@ sub html2latex{
 	if($statimg) {
 	    system("cp $DEFAULTIMG $imagefileps");
 	}
-	$element->attr('psfile',$imagefileps);
+	$element->attr('psfile',$imagefileps) unless $statimg;
 	my $width=$element->attr('width');
 	$width=$1 unless $width;
 	my $height=$element->attr('height');
