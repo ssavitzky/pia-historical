@@ -1,0 +1,57 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>MB3: presentation</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+ <if> <get form name=p> <then> <set name=presentation>&FORM.p;</set></then> <else><set name=presentation>NoName</set></else></if>
+<set entity name=title>&presentation;  Links</set>
+<read interform file="heading.inc" process>
+<read interform file="subhead.inc" process>
+<hr>
+<h2 align=center> Links  for &presentation; </h2>
+ <if> <get agent  name=urls key=&presentation;>
+ <then> <set name=urllist><get agent  name=urls
+	key=&presentation;></set></then>
+ <else><set name=urllist><ul> </ul></set><set name=nolinks>true</set>
+  <set agent name=urls key=&presentation;><get name=urllist></set></else>
+</if>
+ <if> <get form name=newurl> <then><set name=nolinks></set>
+  <set name=urllist insert=-1><a href="&FORM.newurl;">&FORM.desc;</a></set>
+   <write file="urls"><get agent name=urls></write>
+ </then>
+ </if>
+
+
+ <if><get name=nolinks><then> No Links specified for &presentation;</then><else>
+<table align=center border=1>
+ <repeat list=&urllist;> <tr> <TD align=left> <get name=li> </tr></repeat>
+ </table>
+<table align=center>
+ <tr>
+ <TH> <a href="bundle_presentation.if?p=&presentation;&d=&myday;">View All on One
+      page</a> (for printing).
+</table>
+ </else></if>
+ <hr>
+
+ <h3> Add Link to this presentation</h3>
+<form method=POST action="&url;">
+<input name="p"  value="&presentation;"  type=hidden>
+ <input name="d"  value="&myday;"  type=hidden>
+<!-- You will need to edit this, possibly with another template... -->
+
+  <table>
+    <tr><th valign=top align=left>URL
+	<td><input name=newurl value="http://" size=40>
+    <tr><th valign=top align=left>Description
+	<td><input name=desc  size=35>
+
+    <tr><th valign=top align=right><input type=submit value="AddUrl">
+  </table>
+
+</form>
+
+<hr>
+<if>on<then><expand><get agent name=navbar></expand></if>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>

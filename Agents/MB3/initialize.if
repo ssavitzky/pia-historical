@@ -3,7 +3,7 @@
 <title>Initialize the &agentName; agent</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
 </head><body>
-<h1>Initialize the &agentName; agent</h1>
+<h1>Initialize the <a href=/&agentName;/home.if>&agentName; agent</a></h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
 <set name=criteria></set>
@@ -13,59 +13,52 @@
 </if>
 
 <set agent hook name="navbar"><protect><a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
-<a href="/Template/home.if">Template</a>:
-	  <a href="/Template/">index</a>
-	  <a href="/Template/help.if">help</a>
-	  <a href="/Template/options.if">options</a>
+&agentName; <a href="/&agentName;/home.if">home</a>:
+	  <a href="/&agentName;/">index</a>
+	  <a href="/&agentName;/help.if">help</a>
+	  <a href="/&agentName;/options.if">options</a>
 
 <hr></protect></set>
 
-<set agent hook name="controls"><protect><!-- from History agent: -->
-<set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-[<a href="&pia;/History" target="_top">Hist</a>
- <a href="&pia;/~History/" target="_top">*</a>/<a
-    href="&pia;/~History/&year;/" target="_top">&year;</a>/<a
-    href="&pia;/~History/&year;/&month;/" target="_top">&month;</a>/<a
-    href="&pia;/~History/&year;/&month;/&day;.html" target="_top">&day;</a>
- <a href="&pia;/~History/last.html" target="_top">&time;</a>]</protect></set>
 
-<set agent hook name="act-on"><protect><it>
-   <set entity name=ct><get trans headers name=Content-Type></set>
-   <set entity name=fn>&year;/&month;/&day;.html</set>
-   <write directory file="&year;"></write>
-   <write directory file="&year;/&month;"></write>
-   <if><get trans feature name="html">
-       <then><set entity name=title><get trans feature name=title></set>
-	     <write append trim line file="&fn;">
-	 	&time; <a href="&url;">&url; : &title;</a><br>
-	     </write>
-             <write trim line file="last.link">
-		 <a href="&url;">&url; : &title;</a>
-	     </write>
-             <write file="last.html">&date; &time; <a href="&url;">&url; : &title;</a>
-<dl>
-  <dt> <b>Link:</b>
-  <dd> <protect-result markup><a href="&url;">&url; : &title;</a></protect-result>
-  <dt> <b>Reply Header</b>
-  <dd> <pre><get trans headers></pre>
-  <dt> <b>Request Header</b>
-  <dd> <pre><get trans request headers></pre>
-</dl>
-</write>
-       </then>
-       <else><write trim line append file="&fn;">
-		&time; --&ct;- <a href="&url;">&url;</a><br>
-	     </write></else>
-    </if>
-</it></protect></set>
+<!--  rebuild calendar -->
+<set agent name=currentmonth> <calendar month=&month; year=&year;></set>
+<set name=d>0</set>
+<repeat start=2 stop=7 entity=r>
+<repeat start=1 stop=8 entity=c>
+<set name=d><get agent name=currentmonth row=&r; col=&c;></set>
+<if><get index="d.b.text"><then>
+<set index=d.b insert=-1><a href="view_day.if?d=&d.b.text;"><img src="/Agency/Icons/dot-blue.gif"
+			     height=10 width=10 alt="*"></a></set></then></if>
+</repeat>
+</repeat>
 
-<dl>
-  <dt> <b>Note:</b>
-  <dd> The history agent adds items to the history database (makes sense,
-       doesn't it).  It does <em>not</em> put anything on pages returned to
-       the user's browser; that's up to the <a href="/cia">CIA</a> agent.
-</dl>
+<!-- insert any old items -->
+ <if> <read info file="currentmonth">
+  <then> <set name=cm><read file="currentmonth"
+	 process findall=td></set>
+<set name=cells><get name=cm findall=td></set>
+ <repeat list=&cells;>
+Cell: <get name=li tree>
+<if><get index=li.a> <then>
+  <repeat list=&li.a; entity=f>
+  <calendar-day cal=&AGENT.currentmonth; day=&li.b.Text;>&f;</calendar-day>
+  </repeat>
+ </then></if></repeat>
 
+ </then>
+</if>
+
+ <if> <read info file="currentevents">
+  <then> <set agent name=events><read file="currentevents"
+	 process></set></then>
+  <else><set agent name=events><dl> </dl></set></else></if>
+
+ <if> <read info file="urls">
+  <then> <set agent name=urls><read file="urls"
+	 process></set></then>
+  <else><set agent name=urls><dl> </dl></set></else></if>
+ 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

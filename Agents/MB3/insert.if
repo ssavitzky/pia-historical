@@ -1,0 +1,27 @@
+<!-- Read by MB3 home.if  -*-html-helper-*- -->
+<!-- show presentations for today -->
+
+
+ <if> <get name=myday> <then></then>
+      <else><if> <get form name=d> <then><set name=myday>&FORM.d;</set></then>
+            <else><set name=myday>&day;</set></else></if>
+      </else></if>
+<set name=daydesc><if><test match=&day;> &myday; </test>
+ <then>today</then><else>&month;/&myday;/&year;</else></if></set>
+
+<set name=mylist> <get agent name=events key=&myday;></set>
+ <if> <get name=mylist> <then>
+ <table border=1>
+<caption> Events for <get name=daydesc></caption>
+<TR><TH> Name<TH>Start<TH>Description</tr>
+
+ <get name=mylist>
+ </table>
+ </then>
+ <else>No events scheduled for <get name=daydesc>.</else></if>
+<br>
+ <a href="view_day.if?d=&myday;">Add Event</a>
+
+
+<!-- Copyright © 1998 Ricoh Silicon Valley -->
+<!-- $Id$ -->

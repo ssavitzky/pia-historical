@@ -12,6 +12,8 @@
     <else><read interform file="subhead.inc" process>
 </if>
 <hr>
+<get agent name=currentmonth>
+
 <if>on<then><expand><get agent name=navbar></expand></if>
 
 <!-- See whether there's an "about" file for this agent. -->

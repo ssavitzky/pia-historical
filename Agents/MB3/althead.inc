@@ -8,7 +8,7 @@
 <table cellspacing=0 cellpadding=0 border=0>
 
 <tr>
-  <th width=150><!-- may have to be edited if icons are used. -->
+  <td width=150><!-- may have to be edited if icons are used. -->
     <read quiet interform file="insert.if" process>
   <td>
     <table cellspacing=0 cellpadding=0 border=0>

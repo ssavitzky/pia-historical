@@ -8,7 +8,7 @@
 <table cellspacing=0 cellpadding=0 border=0>
 
 <tr>
-  <th width=170>
+  <td width=170>
     <read quiet interform file="insert.if" process>
   <td>
     <table cellspacing=0 cellpadding=0 border=0>
@@ -34,13 +34,13 @@
     <tr><th><td><a href="options.if">Options</a>
 	    	<a href="initialize.if">[re-initialize]</a></then>
 </if>
-    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <tr><th><td><a href="http://internal/cgi-bin/people/CRC/WebEvent/WebEvent">CRC calendar</a>
+	        
     <tr><th align=right>
 		<if><test match=form.if>&fileName;</test>
 		    <then><img src="/Agency/Icons/dot-blue.gif"
 			     height=20 width=20 alt="*"></if>
-	    <td><a href="sample.if">Sample Form</a>
+	    <td><a href="view_day.if">View Day</a>
     <tr><th><td><a href="doc.html">Documentation</a>
     <if>&subs;<then>
     <tr><th align=right>

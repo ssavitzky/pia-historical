@@ -1,0 +1,51 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>MB3: Daily Agenda</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+ <if> <get form name=d> <then> <set name=myday>&FORM.d;</set></then> <else><set name=myday>&day;</set></else></if>
+<set entity name=title>Agenda &month;/&myday;/&year;</set>
+<read interform file="heading.inc" process>
+<read interform file="subhead.inc" process>
+<hr>
+<if>on<then><expand><get agent name=navbar></expand></if>
+
+
+<h3>Add event for MB3</h3>
+<form method=POST action="&url;" process copy>
+
+<process copy>
+ <if> <get form name=theurl> <then> <set name=thisurl>&FORM.theurl;</set></then><else><set name=thisurl>/&agentName;/view_presentation.if?p=&FORM.myname;&d=&myday;</set></else></if>
+ <set agent name=events key=&myday; insert=-1><tr>
+   <td><get form name=myname></dd>
+   <td><get form name=start></dd>
+   <td> <a href="&thisurl;"><get form name=desc></a></dd>
+ </tr></set>
+
+  <calendar-day cal=&AGENT.currentmonth; day=&myday;> <a href="&thisurl;"><get form name=myname></a></calendar-day>
+  <write file="currentevents"><get agent name=events></write>
+   <write file="currentmonth"><get agent name=currentmonth></write>
+</process>
+
+<!-- You will need to edit this, possibly with another template... -->
+
+  <table>
+    <tr><th valign=top align=left> Day
+        <th valign=top align=left> Start time
+        <th valign=top align=center> Name
+        <th valign=top align=center> Description
+<tr>
+<td><input size=3 name="d" value=&myday;>
+<td><input name=start value="&time;" size=6>
+	<td><input name=myname value="NoName" size=12>
+	<td><textarea name=desc> Review</textarea>
+
+
+    <tr><th valign=top align=right><input type=submit value="AddEvent">
+  </table>
+</form>
+
+<hr>
+<if>on<then><expand><get agent name=navbar></expand></if>
+<b>Copyright © 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
