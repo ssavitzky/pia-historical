@@ -20,7 +20,7 @@ import java.util.Enumeration;
  *
  *	Name=value bindings are represented using the Attribute interface,
  *	since that has all the necessary properties.  
- *	=== we  may change it later into EntityBinding or some such. === <p>
+ *	=== Eventually we should use a NamedNodeList of Entity nodes === <p>
  *
  *	Note that this interface says little about the implementation.
  *	It is expected, however, that any practical implementation of
@@ -61,11 +61,11 @@ public interface EntityTable {
   /** Return the value for a given name.  Performs recursive lookup in the
    *	context if necessary.
    */
-  public NodeList getValueForEntity(String name, boolean local);
+  public NodeList getEntityValue(String name, boolean local);
 
   /** Set the value for a given name.
    */
-  public void setValueForEntity(String name, NodeList value, boolean local);
+  public void setEntityValue(String name, NodeList value, boolean local);
 
   /** Look up a name and get a (local) binding. */
   public Attribute getBinding(String name);
