@@ -950,7 +950,7 @@ sub agent_control_handle {
     my $response = IF::Run::request();
 
     $response -> add_control($text);
-    print "add_control($text)\n";
+    print "add_control($text)\n" if $main::debugging;
 
     $ii->delete_it;
 }
