@@ -590,6 +590,7 @@ public class Pia{
     port            = properties.getInteger(PIA_PORT, port);
     reqTimeout      = properties.getInteger(PIA_REQTIMEOUT, 60000);
     loggerClassName = properties.getProperty(PIA_LOGGER, loggerClassName);
+    docurl          = properties.getProperty(PIA_DOCURL, docurl);
 
     // i. e. agency.crc.pia.proxy_http=foobar 
     // get keys from properties
@@ -710,6 +711,10 @@ public class Pia{
     }catch(IOException e){
       errSys( e, "Can not create Accepter" );
     }
+
+    String docdir = docUrl();
+    if( docdir != null )
+      System.out.println( "The documentation directory is :" + docdir );
 
   }
 
