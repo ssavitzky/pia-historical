@@ -123,7 +123,7 @@
   <tr> <th bgcolor=lightblue colspan=3 valign=top align=left>&nbsp;
   <tr> <th bgcolor=lightblue>&nbsp;
        <th bgcolor=white>
-	    A single language for content and behavior
+	    Single representation for content and behavior
        <th bgcolor=lightblue>&nbsp;
   <tr> <th bgcolor=lightblue colspan=3 align=right> &nbsp;
 </table>
@@ -136,7 +136,7 @@
 
 
 <hr><set name=subCaption>Three examples</set>
-<slide><h2>For example: Form Server</h2>
+<slide><h2>Example 1: form server</h2>
 <img src="Images/formspage.gif" align=left><br>
 Used for <em>all</em> forms at Ricoh Silicon Valley.
 <p>
@@ -146,65 +146,68 @@ Used for <em>all</em> forms at Ricoh Silicon Valley.
 
 
 
-<slide><h2>For example: music grabber</h2>
+<slide><h2>Example 2: batch downloader</h2>
 <img src="Images/mp3pages.gif" align=right>
-New songs from <code>mp3.com</code> are listed with checkboxes for
-downloading, and links for instant play.
+Adds checkboxes to links for batch download.
+<p>
+Operates as a client.
 </slide>
 
 
-<slide><h2>For example: browser's companion</h2>
+<slide><h2>Example 3: browser's companion</h2>
 <img src="Images/historypage.gif" align=right>
-``Toolbar'' with history information at the top of every page.
+<strong>History shared across machines.</strong>
 <p>
-Shows useful links<br>
-
+Proxy inserts ``toolbar'' on every page<br>
+<code>
 <a href='http://gelion.crc.ricoh.com:8888/' target='_top'><img src='http://gelion.crc.ricoh.com:8888/Icon/pent24.gif' height='24' width='24' border='0'></a>
-<!--  Generic Toolbarcontrols:  -->
-
 <a href='http://gelion.crc.ricoh.com:8888/~/' target='_top'>[~]</a>
 <a href='http://gelion.crc.ricoh.com:8888/Toolbar/remote/hide?hide=true' target='_top'>[X]</a>
-<a href='http://gelion.crc.ricoh.com:8888/Toolbar/remote/help?topic=toolbar' target='_top'>[help]</a>
+<a href='http://gelion.crc.ricoh.com:8888/Toolbar/remote/help?topic=toolbar'
+target='_top'>[help]</a>
+</code>
 <p>
 
-Plus a complete history:<br>
-
-<!--  from History agent:  -->
-
+<code>
 [<a href='http://gelion.crc.ricoh.com:8888/History' target='_top'>Hist</a>
  <a href='http://gelion.crc.ricoh.com:8888/~History/' target='_top'>*</a>/<a href='http://gelion.crc.ricoh.com:8888/~History/1999/' target='_top'>1999</a>/<a href='http://gelion.crc.ricoh.com:8888/~History/1999/03/' target='_top'>03</a>/<a href='http://gelion.crc.ricoh.com:8888/~History/1999/03/02.html' target='_top'>02</a>
  <a href='http://gelion.crc.ricoh.com:8888/~History/last.html' target='_top'>09:33</a>]
-<!--  making this a link is actually useful: it gets you out of a frame.  -->
-<a href='http://www.starport.com/' target='_top'>&lt;URL:http://www.starport.com/&gt;</a><br>
-
-
+</code>
 </slide>
 
+<slide><h2>Same platform, different uses</h2>
+<p>&nbsp;
+<ul>
+  <li> Different operations on web documents
+       <ol>
+	 <li> Server (forms)
+	 <li> Client (downloader)
+	 <li> Proxy (toolbar)
+       </ol>
+  <li> All developed
+       <ul>
+	 <li> on the same platform
+	 <li> without programming
+       </ul>
+</ul>
+</slide>
 
+<hr><set name=subCaption>Goals</set>
 <slide><h2>Goals:</h2>
 <p>&nbsp;
 <p> <strong>The goals of the PIA project are:</strong>
 <ol>
   <li> to make it easy to develop document-processing applications
-  <li> <strong>by providing a single language for content and processing</strong>
+  <li> <strong>by providing a single representation for content, layout, and
+       processing</strong> 
   <li> to give authors and users more power over their documents
 </ol>
-
-<dl>
-  <dt>  <strong>We want to start building a <em>community</em></strong>
-  <dd> of users, information designers, and programmers
-  <dd> working together on a shared, standards-based, open platform.
-</dl>
 </slide>
 
-<hr><set name=subCaption>Documents and the Web</set>
+<hr><set name=subCaption>Documents and the web</set>
 <slide><h2>What do people do with documents?</h2>
 <ul>
-  <li> <strong>Fill out and process forms</strong>
-       <ul>
-	 <li> checks, purchase requests, approvals
-	 <li> <em>Sometimes ``processing'' = signing.</em>
-       </ul>
+  <li> Fill out and process forms
   <li> Create and sign legal documents
   <li> Edit and publish manuscripts
   <li> Memos: send, recieve, copy, file, ...
@@ -224,12 +227,12 @@ Plus a complete history:<br>
 </slide>
 
 
-<slide><h2>Documents: From Paper to the Web</h2>
+<slide><h2>Documents: From paper to the web</h2>
 <p>&nbsp;
 <ul>
   <li> <strong>Before computers, documents were ink on paper</strong>
        <ul>
-	 <li> All these things were easy
+	 <li> All these things were <strong>easy</strong>
        </ul>
   <li> <strong>Computers changed things: documents became <em>data</em></strong>
        <ul>
@@ -239,12 +242,13 @@ Plus a complete history:<br>
        </ul>
   <li><strong>The Web changed things again.</strong>
        <ul>
-	 <li> HTML is a <em>shared language</em>
+	 <li> HTML is a <em>shared representation</em>
+	 <li> But processing still requires programming
        </ul>
 
        <p>
 
-  <li> <strong>But processing still requires applications.</strong>
+  <li> <strong>Information designers don't have control over processing</strong>
 </ul>
 </slide>
 
@@ -265,8 +269,8 @@ Plus a complete history:<br>
        </ul>
 </dl>
 <dl>
-  <dt> Because our language <em>extends</em> HTML and XML,
-  <dd> <strong>it ought to be open, too.</strong>
+  <dt> Because PIA <em>extends</em> HTML and XML,
+  <dd> <strong>It has to be open, too</strong>
 </dl>
 <dl>
   <dt> Besides,
@@ -365,38 +369,38 @@ Plus a complete history:<br>
 <slide><h2>Cool things to do with it</h2>
 Personal/Developer tools:
 <ul>
-  <li> <b><a href="appendices.slides.html#assistant">Webmaster's
-       Assistant</a></b> 
-  <li> <b>Open-Source project management package</b>
+  <li> Web-site management package 
   <li> Templates for forms and agents
+  <li> Calendar, phonebook, etc.
 </ul>
 Small office/workgroup applications:
 <ul>
-  <li> <b>Complete small-office forms package</b>
+  <li> Complete small-office forms package
   <li> Accounting package
-  <li> <b>Scheduling and project management</b>
+  <li> Scheduling and project management
 </ul>
 </slide>
 
 <slide><h2>Cool things to do <em>to</em> it</h2>
 Infrastructure: <em>(strictly for hackers)</em>
 <ul>
-  <li> <b>Re-write the PIA in &lt;<em>your favorite language</em>&gt;</b>
+  <li> Re-write the PIA in &lt;<em>your favorite language</em>&gt;
        <ul>
-	 <li> Squeak / Guile / Python / DSSSL? / ...
+	 <li> Squeak / Scheme / Python / DSSSL? / ...
 	 <li> Revive the <a href="/PIA/src/perl/">Perl</a> version
 	 <li> <b>Port to C</b> speed, portability, embedding
        </ul>
-  <li> <b>Integrate with Apache</b> (mod_pia)
+  <li> Integrate with Apache (mod_pia)
   <li> Integrate with standard XML/SGML parsers
        <ul>
 	 <li> Easy, since it uses the DOM.
        </ul>
-  <li> <b>totally change the tag language</b>
+  <li> totally change the tag language
        <ul>
 	 <li> translate to French, perhaps?
        </ul>
 </ul>
+<em>we can go into these later...</em>
 </slide>
 
 <slide><h2>Our Vision</h2>
@@ -489,11 +493,13 @@ Infrastructure: <em>(strictly for hackers)</em>
 <slide><h2>Additional information.</h2>
 
 <ul>
+  <li> <a href="appendices.slides.html#TOC">Appendices</a>
+  <li> <a href="appendices.slides.html#QA">Questions &amp; answers</a>
+
+  <p>
   <li> <a href="history.slides.html#0">An Alternative History of Documents</a>
   <li> <a href="who-what.slides.html#0">Users and Uses</a>
   <li> <a href="oss-bkgnd.slides.html#0">Open Source Background Info</a>
-  <li> <a href="appendices.slides.html#0">Appendices</a>
-  <li> <a href="appendices.slides.html#QA">Questions &amp; answers</a>
        <p>
   <li> Our web site <a href="http://www.RiSource.org/">www.RiSource.org/pia</a>
 </ul>
