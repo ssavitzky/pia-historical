@@ -53,11 +53,10 @@ public class BasicHandler extends AbstractHandler {
   /** This sort of action has no choice but to do the whole job.
    */
   public void action(Input in, Context aContext, Output out) {
-    Node n = in.getNode();
     if (in.hasActiveChildren() || in.hasActiveAttributes()) {
       aContext.subProcess(in, out).expandCurrentNode();
     } else {
-      Copy.copyNode(n, in, out);
+      Copy.copyNode(in.getNode(), in, out);
     }
   }
 
