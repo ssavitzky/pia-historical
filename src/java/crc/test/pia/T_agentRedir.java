@@ -41,7 +41,6 @@ import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
-import w3c.www.http.HTTP;
 import crc.pia.agent.Dofs;
 import crc.pia.agent.Agency;
 import crc.pia.ThreadPool;
