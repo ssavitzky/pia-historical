@@ -314,6 +314,9 @@ public class Machine {
        throws PiaRuntimeException{
     byte[] bytestring = null;
 
+    if( s == null )
+      return;
+
     bytestring = getBytes( s );
     try{
       if( bytestring != null )
