@@ -31,14 +31,15 @@ import java.io.InputStreamReader;
 // using here to avoid double buffering of
 
 import sun.io.CharToByteConverter;
-import sun.io.ConversionBufferFullException;/**
+import sun.io.ConversionBufferFullException;
 
+/**
  * Content wrapper for streams of text.
- * default for text/....  mime type.
- * Uses character reader / writer internally.
- * Incoming streams are converted to character readers, output written to
- * byte array after conversion (similar to OutputStreamWriter).
- * Manipulations can be done to character buffer.
+ * 	default for text/....  mime type.
+ * 	Uses character reader / writer internally.
+ * 	Incoming streams are converted to character readers, output written to
+ * 	byte array after conversion (similar to OutputStreamWriter).
+ * 	Manipulations can be done to character buffer.
  */
 
 public class Default extends StreamingContent {

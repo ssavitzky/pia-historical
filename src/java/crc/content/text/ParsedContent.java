@@ -23,17 +23,18 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 /**
- * Parsed content gets run through a parser on the fly.
- * Although it is usually text, the operations are very differently
- * implemented via tagsets.
+ * Parsed content gets run through a parser (the old InterForm processor) 
+ *	on the fly.  This basically works, except that nobody has ever made 
+ *	insertions work.  It should be done by redefining &lt;body&gt;.
+ *
+ * @see crc.interform
  */
 public class ParsedContent extends  GenericContent{
 
   /**
-   * source and sink variables  --
+   * source (sink is defined in GenericContent)
    */
   Reader source;
-  OutputStream sink; // really this should be a Writer
 
   /**
    * the object which contains the interpreter, entities, etc.
