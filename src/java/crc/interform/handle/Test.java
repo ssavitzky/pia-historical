@@ -69,6 +69,8 @@ public class Test extends crc.interform.Handler {
       result = ! test.isEmpty();
     } 
 
+    if (it.hasAttr("not")) result = ! result;
+
     if (result) {
       ii.replaceIt(it.hasAttr("iftrue")? it.attr("iftrue") : new Text("1"));
     } else {

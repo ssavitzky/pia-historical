@@ -55,6 +55,8 @@ public class Sorted extends crc.interform.Handler {
       }
     }
 
+    if (it.hasAttr("not")) result = ! result;
+
     if (result) {
       ii.replaceIt(it.hasAttr("iftrue")? it.attr("iftrue") : new Text("1"));
     } else {
