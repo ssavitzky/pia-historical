@@ -29,7 +29,13 @@ public final class IsClNets implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+      String agent = trans.getHeader("User-Agent");
+      if( agent ){
+	String lagent = agent.toLowerCase();
+	if( lagent.indexOf("netscape") != -1 )
+	  return new Boolean( true );
+      }
+      return new Boolean( false );
     }
 }
 
