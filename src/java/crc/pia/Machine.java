@@ -19,7 +19,7 @@ public class Machine {
   /**
    * Attribute index - client address
    */
-  protected InetAddress address;
+  protected String address;
 
   /**
    * Attribute index - port
@@ -49,15 +49,31 @@ public class Machine {
   /**
    * Return inputStream
    */
-  public InputStream getInputStream(){
-    return inputStream;
+  public InputStream getInputStream() throws IOException{
+    if( socket )
+      try
+      {
+	inputStream = socket.getInputStream();
+	return inputStream;
+      }catch(IOException e){
+      }    
+      errLog( this, "Exception while getting socket input stream." );
+      throw new IOException( e.getMessage() );
   }
 
   /**
    * Return outputStream
    */
-  public OutputStream getOutputStream(){
-    return outputStream;
+  public OutputStream getOutputStream() throws IOException{
+    if( socket )
+      try
+      {
+	outputStream = socket.getOutputStream();
+	return outputStream;
+      }catch(IOException e){
+      }    
+      errLog( this, "Exception while getting socket output stream." );
+      throw new IOException( e.getMessage() );
   }
 
  /**
@@ -82,42 +98,62 @@ public class Machine {
     PrintStream out;
     StringBuffer ctrlStrings = new StringBuffer();
     String content;
-    StringBuffer finalContent;
+    String plainContent;
 
     out = new PrintStream( outputStream );
 
     String message = reply.getStatusMsg();
     String outputString = "HTTP/1.0 " + reply.getStatusCode() + " " + message + "\n";
 
-    if( reply.contentType().indexOf("/text/") != -1 ){
-      int limit = reply.controls().size();
-      String[] c = reply.controls();
-      for( int i = 0; i < limit; i++ ){
-	ctrlString.append( c[i] + " " );
+    String type = reply.getContentType();
+    if( type && type.toLowerCase().indexOf("/text/html") != -1 ){
+      
+      Thing[] c = reply.getControls();
+      if( c ){
+	for( int i = 0; i < c.length; i++ ){
+	  Object o = c[i];
+	  if( o instanceof String )
+	    ctrlString.append( (String)o + " " );
+	}
       }
+
     }
 
     if( ctrlString.length() > 0 ){
-      if( reply.contentLength() != -1 )
-	reply.setContentLength( reply.contentLength() + ctrlString.length() );
-      content = reply.getContent();
+      if( reply.getContentLength() != -1 )
+	reply.setContentLength( reply.getContentLength() + ctrlString.length() );
+      plainContent = content = reply.getContentObj().source();
     }
     
     out.println( outputString );
-    out.println( reply.headersAsString() );
+    out.println( reply.getHeadersAsString() );
     out.println( "\n" );
 
-    /*
-    if( ctrlString && content.indexOf("<body[^>]*>"){ //match <body and 0 or more anything except >
-      //finalContent = substitute( s/(\<body[^>]*\>)/$1$control/is );  do some magic
+    if( ctrlString && content ){
+      String bodyandMore = null ;
+      int lastPos;
+ 
+      String c = content.toLowerCase();
+      int pos = c.indexOf("<body");
+      if( pos != -1 ) 
+	bodyandMore = c.substring( pos+"<body".length() );
+
+      if( bodyandMore && (lastPos = bodyandMore.indexOf(">")) != -1 ){ // found "<body" and ">"
+	StringBuffer sb = new StringBuffer( content );
+	sb.insert(lastPos+1, ctrlString); 
+	content = new String(sb);
+      }
+    }
+
     }else if (ctrlString){
       out.println( ctrlString );
     }
-    */
+
     if( ctrlString )
        out.println( content );
     else
-       out.println( reply.getContent() );
+    if( plainContent )
+       out.println( plainContent );
     closeConnection();
   }
 
@@ -162,11 +198,9 @@ public class Machine {
       proxy = proxystring;
 
     if(!proxy){
-      /*
-	String mainproxy= $main::agency->proxy_for($$self{address},$scheme);	
+	String mainproxy= Pia.getAgency().proxyFor(address, scheme);	
 	if ( mainproxy )
 	  proxy = mainproxy;
-	  */
     }
     return proxy;
   }
@@ -175,19 +209,10 @@ public class Machine {
    * Constructor 
    * @returns nothing. 
    */ 
-  public Machine( InetAddress address, int port, Socket socket ) throws IOException {
+  public Machine( String address, int port, Socket socket ){
     this.address = address;
     this.port = port;
     this.socket = socket ;
-    if( socket )
-      try
-      {
-	inputStream = socket.getInputStream();
-	outputStream = socket.getOutputStream(); 
-      }catch(IOException e){
-	errLog( this, "Exception while getting socket streams." );
-	throw new IOException( e.getMessage() );
-      }    
   }
 
 }
