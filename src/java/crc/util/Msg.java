@@ -45,7 +45,7 @@ public class Msg extends Severity implements Message {
 
   protected boolean noNewline = false;
   public boolean noNewline() { return noNewline; }
-  public void setNoNewline( boolean value );
+  public void setNoNewline( boolean value ) { noNewLine = value; }
 
   /************************************************************************
   ** Basic message reporting:
