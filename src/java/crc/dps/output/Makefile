@@ -43,18 +43,18 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-AbstractOutput.class: ../Output.java ../aux/CurrentNode.java
-ActiveOutput.class: ../Output.java ../aux/CurrentActive.java
+AbstractOutput.class: ../Output.java ../util/CurrentNode.java
+ActiveOutput.class: ../Output.java ../util/CurrentActive.java
 
-ToAttributeList.class: ../Output.java ../aux/CurrentActive.java \
+ToAttributeList.class: ../Output.java ../util/CurrentActive.java \
 	ActiveOutput.java
-ToNodeList.class: ../Output.java ../aux/CurrentActive.java \
+ToNodeList.class: ../Output.java ../util/CurrentActive.java \
 	ActiveOutput.java
-ToParseTree.class: ../Output.java ../aux/CurrentActive.java \
+ToParseTree.class: ../Output.java ../util/CurrentActive.java \
 	ActiveOutput.java
 
-ToString.class: ../Output.java ../aux/CursorStack.java
-ToWriter.class: ../Output.java ../aux/CursorStack.java
+ToString.class: ../Output.java ../util/CursorStack.java
+ToWriter.class: ../Output.java ../util/CursorStack.java
 
 DiscardOutput.class: ../Output.java
 Proxy.class: ../Output.java

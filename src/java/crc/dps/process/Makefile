@@ -17,6 +17,7 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-BasicProcessor.class: ../Processor.java ../Context.java ../aux/ContextStack.java
+BasicProcessor.class: ../Processor.java ../Context.java \
+	../util/ContextStack.java
 TopProcessor.class: BasicProcessor.java ../TopContext.java \
-	../Processor.java ../Context.java ../aux/ContextStack.java
+	../Processor.java ../Context.java ../util/ContextStack.java

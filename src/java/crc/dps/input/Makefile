@@ -22,7 +22,7 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-AbstractInput.class: ../Input.java ../aux/CurrentNode.java
-ActiveInput.class: ../Input.java ../aux/CurrentActive.java
-FromParseTree.class:  ../Input.java ../aux/CurrentActive.java ActiveInput.java
-FromParseNodes.class:  ../Input.java ../aux/CurrentActive.java ActiveInput.java
+AbstractInput.class: ../Input.java ../util/CurrentNode.java
+ActiveInput.class: ../Input.java ../util/CurrentActive.java
+FromParseTree.class:  ../Input.java ../util/CurrentActive.java ActiveInput.java
+FromParseNodes.class:  ../Input.java ../util/CurrentActive.java ActiveInput.java
