@@ -51,7 +51,7 @@ on &piaHOST;
 <pre><i><pad align=right width=15>Index</pad>	Home</i>
 <repeat list="&agentNames;"
        ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
-       >	<agent-home link>&li;</agent-home>
+       >	<agent-home link name="&li;">
 </repeat></pre>
 
 
