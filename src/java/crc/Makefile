@@ -12,6 +12,13 @@ PACKAGES = \
 	tf \
 	util
 
+PACKAGENAMES = \
+	crc.ds \
+	crc.interform crc.interform.handle \
+	crc.pia crc.pia.actor \
+	crc.tf \
+	crc.util
+
 # mail, mime
 
 include $(TOPDIR)/makefiles/package.make
