@@ -45,7 +45,7 @@
   <tr>
     <th valign=top align=right><b>Agents:</b>
     <td valign=top> <repeat list="&agentNames;" entity="foo">
-      <a href="/&foo;/home.if">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
    </repeat><br>
 
   </table>
