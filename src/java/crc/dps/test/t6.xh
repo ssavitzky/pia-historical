@@ -1,0 +1,208 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>t6.xh</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>InterForm test file t3.if</h1>
+<foo date="&date;"></foo>
+&date;
+<h2>Test &lt;if&gt; operation</h2>
+
+<if>test
+    <then>if true is working</then>
+    <else>if true is FAILING.</else>
+</if>
+<if>test<then>if true is working</then><else>if true is FAILING.</else></if>
+`<test>test</test>' should be `1'
+<if>&date;
+    <then>if date is working</then>
+    <else>if date is FAILING: &date;</else>
+</if>
+<if><br>
+    <then>if element is working</then>
+    <else>if element is FAILING</else>
+</if>
+<if>
+    <then>if false is FAILING</then>
+    <else>if false is working</else>
+</if>
+<if><!--  -->
+    <then>if comment is FAILING</then>
+    <else>if comment is working</else>
+</if>
+<if>&undefined;
+    <then>if undefined is FAILING</then>
+    <else>if undefined is working</else>
+</if>
+<if><then>if empty is FAILING</then>
+    <else>if empty is working</else>
+</if>
+
+<if>test
+    <then>if true <if>test<then>true is working TT</then>
+	                  <else>true is FAILING TF</else></if></then>
+    <else>if true <if>test<then>true is FAILING FT</then>
+	                  <else>true is FAILING FF</else></if></else>
+</if>
+<if>test
+    <then>if true <if>    <then>false is FAILING TT</then>
+	                  <else>false is working TF</else></if></then>
+    <else>if true <if>    <then>false is FAILING FT</then>
+	                  <else>false is FAILING FF</else></if></else>
+</if>
+<if>    
+    <then>if false <if>test<then>true is FAILING TT</then>
+	                   <else>true is FAILING TF</else></if></then>
+    <else>if false <if>test<then>true is working FT</then>
+	                   <else>true is FAILING FF</else></if></else>
+</if>
+<if>
+    <then>if false <if>    <then>false is FAILING TT</then>
+	                   <else>false is FAILING TF</else></if></then>
+    <else>if false <if>    <then>false is FAILING FT</then>
+	                   <else>false is working FF</else></if></else>
+</if>
+
+
+<h2>Test &lt;test&gt;</h2>
+
+should be '': '<test></test>' (completely empty)
+should be '': '<test> </test>' (space)
+should be '1': '<test> not blanks </test>' ( not blanks )
+should be '': '<test text> </test>' text( )
+should be '': '<test text> <br> </test>' text( <br> )
+should be '': '<test text> <em> </em> </test>' text( <em> </em> )
+should be '1': '<test text> not blanks </test>' text( not blanks )
+should be '1': '<test text> <em>nb</em> </test>' text( <em>nb</em> )
+
+should be '1': '<test numeric> 0 </test>' numeric( 0 )
+should be '': '<test numeric>  </test>' numeric(  )
+should be '': '<test numeric> xxx </test>' numeric( xxx )
+should be '1': '<test numeric> 100 </test>' numeric( 100 )
+should be '1': '<test numeric> -100 </test>' numeric( -100 )
+should be '1': '<test zero>  </test>' zero(  )
+should be '1': '<test zero> 0 </test>' zero( 0 )
+should be '': '<test zero> xxx </test>' zero( xxx )
+should be '': '<test zero> 100 </test>' zero( 100 )
+should be '': '<test zero> -100 </test>' zero( -100 )
+should be '': '<test positive> 0 </test>' positive( 0 )
+should be '1': '<test positive> 100 </test>' positive( 100 )
+should be '': '<test positive> -100 </test>' positive( -100 )
+should be '': '<test negative> 0 </test>' negative( 0 )
+should be '': '<test negative> 100 </test>' negative( 100 )
+should be '1': '<test negative> -100 </test>' negative( -100 )
+
+should be '': '<test match="foo"> test match something  </test>' match
+should be '1': '<test match="foo"> test match foo something  </test>' match
+should be '': '<test exact match="foo"> test match foo something  </test>' exact
+should be '1': '<test exact match="foo">foo</test>' exact
+should be '1': '<test match=foo>this FOO stuff</test>' case-insens
+should be '': '<test case match=foo>this FOO stuff</test>' case-sens
+should be '1': '<test case match=FOO>this FOO stuff</test>' case-sens
+
+should be '1': '<test null></test>' null(completely empty)
+should be '': '<test null> </test>' null(space)
+should be '': '<test null> not blanks </test>' null( not blanks )
+
+<h2>Test &lt;subst&gt;</h2>
+
+should be 'this did work': '<subst match=may result=did>this may work</subst>'
+should be 'this did nothing': '<subst match=may result=did>this did nothing</subst>'
+
+<h2>Test problems with expansion inside quoted sections</h2>
+<blockquote>
+ should be 'xxyyzz': '<if>1<then>xx<protect>yy</protect>zz</then></if>'
+ should be 'xxzz': '<if>1<then>xx<protect></protect>zz</then></if>'
+ should be 'aabbcc': '<define element=xx><action>bb</define>aa<xx></xx>cc'
+ should be 'aabb': '<define element=xxx><action></define>aaa<xxx></xxx>bbb'
+ should be 'xxxyyy<i>zzz</i><i>zzz</i>': '<if>1<then>xxx<define element=baz empty
+	><action><i>zzz</i></define>yyy<baz></then></if><br><baz>'
+ should be 'xxxyyyzzz': '<if>1<then>xxx<actor
+ tag=bug><action>zzz</define>yyy<bug></then></if><br> <bug></bug>'
+ should be 'xxxyyyzzz' 'xxx<define element=bat empty><action>zzz</define>yyy<bat>'
+ should be 'xxxyyy..': '<if>1<then>xxx<define element=bar empty
+	><action></define>yyy</then></if><br><bar>..'
+ should be 'xxxyyy!!..!!': '<if>1<then>xxx<define element=bog empty
+	><action>!!</define>yyy</then></if><br><bog>..<bog>'
+ should be 'xxxyyy': '<define element=zzz empty>xxx</define><zzz>yyy'
+</blockquote>
+<baz><bug></bug>
+should be 6 <if>1<then><sum>1 <sum>2 3</sum></sum></if>
+
+<h2>Test arithmetic</h2>
+
+should be 6: <numeric sum>1 2 3</numeric> sum
+should be 6: <numeric sum><ul><li>1 <li> 2<li>3</ul></numeric> sum of list items
+
+should be 6: <numeric product>1 2 3</numeric> product
+should be 6: <numeric product><ul><li>1 <li> 2<li>3</ul></numeric> product of list items
+
+should be 6: <numeric difference> 8 2</numeric> difference
+should be 6: <numeric quotient>12 2</numeric> quotient
+
+<h2>Test set, get entities</h2>
+
+foo set to "value of foo": <set name=foo>value of foo</set>
+get: "<get name=foo>"
+entity: "&foo;"
+fox defined as "value of fox": <define entity=fox><value>value of fox</define>
+get: "<get name=fox>"
+entity: "&fox;"
+<!-- need to use test here to keep variable stuff out of output: -->
+date: <test exact match="&date"><get name=date></test>
+fileName: "&fileName;" should be "t3.if"
+filePath: "&filePath;" should be "./t3.if"
+
+<h2>Test loops</h2>
+
+Simple: Should be 'a b c': '<repeat list="a b c">&li; </repeat>'<br> 
+&amp;li; outside repeat: &li;<br>
+Empty: '<repeat list="">&li; </repeat>'<br>
+Nested: should be 'a x y b x y c x y ': '<repeat
+     list="a b c">&li; <repeat list="x y">&li; </repeat></repeat>'<br>
+value of entity at end: '&li;'
+
+<h2>Test Select</h2>
+
+<select><from>xx <em>yy</em></from><name>em</name></select>
+<select><from>xx <em>yy</em></from><child>2</child></select>
+
+
+<h2>Parsed entities</h2>
+
+set bar: <set name=bar>foo</set>
+bar: should be 'foo': '&bar;'
+<!-- at one point, entity values were getting appended to: -->
+Should be 1: '<test>&bar;</test>'
+Should be 'foo': '&bar;'
+Should be 1: '<test>xxx&bar;</test>'
+Should be 'foo': '&bar;'
+Should be 1: '<test>&bar;yyy</test>'
+Should be 'foo': '&bar;'
+
+Entity used as list for repeat; expanded in attribute:
+<set name=names>foo bar baz</set>
+<repeat list=&names;>&li; <foo bar=&li;>...</foo>
+</repeat>
+
+
+<h2>Text processing</h2>
+
+<add-markup>THIS is a _test_ *of* add="markup"</add-markup>
+
+<h2>Actor information</h2>
+
+attrs: <actor-attrs name=get><br>
+syntax: <actor-syntax name=get><br>
+dscr: <actor-dscr name=get><br>
+...  <add-markup><actor-dscr name=get></add-markup>
+
+attrs: <actor-attrs name=set><br>
+syntax: <actor-syntax name=set><br>
+dscr: <actor-dscr name=set><br>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<!-- the following conditional keeps the id out of the results --><if>
+<then><b>$Id$</b><br></then></if>
+</body></html>

@@ -10,16 +10,17 @@ FILES = \
 	t2.html \
 	t3.if \
 	t4.if \
-	t5.if
+	t5.if \
+	t6.xh
 
-.SUFFIXES: .txt .html .if .out .ok .diff .run
+.SUFFIXES: .txt .html .if .xh .xx .out .ok .diff .run
 
 DEBUG =
 CLASS = crc.dps.Filter
 RUN   =	$(BINDIR)/pia_wrapper
 
 .txt.out:
-	$(RUN) $(CLASS) $(DEBUG) -t Bootstrap $< > $@ 2>$*.log
+	$(RUN) $(CLASS) $(DEBUG) -t basic $< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 .html.out:
@@ -28,12 +29,20 @@ RUN   =	$(BINDIR)/pia_wrapper
 
 # ./$< is used to make fileName and filePath different.
 .if.out:
-	$(RUN) $(CLASS) $(DEBUG) -t StandAlone ./$< > $@ 2>$*.log
+	$(RUN) $(CLASS) $(DEBUG) -t legacy ./$< > $@ 2>$*.log
+	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
+
+.xh.out:
+	$(RUN) $(CLASS) $(DEBUG) -t standard ./$< > $@ 2>$*.log
+	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
+
+.xx.out:
+	$(RUN) $(CLASS) $(DEBUG) -t standalone ./$< > $@ 2>$*.log
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 # make foo.run runs the tests with output on STDOUT.
 .txt.run:
-	$(RUN) $(CLASS) $(DEBUG) -t Bootstrap $<  2>$*.log \
+	$(RUN) $(CLASS) $(DEBUG) -t basic $<  2>$*.log \
 	| tee $*.out
 
 .html.run:
@@ -42,7 +51,15 @@ RUN   =	$(BINDIR)/pia_wrapper
 
 # ./$< is used to make fileName and filePath different.
 .if.run:
-	$(RUN) $(CLASS) $(DEBUG) -t StandAlone ./$< 2>$*.log \
+	$(RUN) $(CLASS) $(DEBUG) -t legacy ./$< 2>$*.log \
+	| tee $*.out
+
+.xh.run:
+	$(RUN) $(CLASS) $(DEBUG) -t standard ./$< 2>$*.log \
+	| tee $*.out
+
+.xx.run:
+	$(RUN) $(CLASS) $(DEBUG) -t standalone ./$< 2>$*.log \
 	| tee $*.out
 
 
