@@ -33,12 +33,38 @@ VERSION_ID = $(VENDOR_TAG)$(RELEASE)_$(MAJOR)_$(MINOR)$(SUFFIX)
 VERSION    = $(VENDOR_TAG)$(RELEASE).$(MAJOR).$(MINOR)$(SUFFIX)
 
 
+/*** Subdirectories ***/
+all::	bin lib
+	@echo "subdirs made"
+
+bin:
+	mkdir bin
+
+lib:
+	mkdir lib
+
+/*** Symbolic Links ***/
+all::	Agents lib bin lib/perl bin/pia
+	@echo "symlinks made"
+
+Agents: src/Agents
+	ln -s src/Agents .
+
+lib/perl: 
+	test -d lib/perl || (cd lib; ln -s ../src/lib/perl .)
+
+bin/pia:
+	(cd bin; ln -s ../src/Agencies/perl_small/pia.pl pia)
+
+
 /*** Standard Imake stuff ***/
 
 SUBDIRS 	=  Doc /* pub src */
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
+
+
 /* Common cvs operations */
 
 cvs_tag::
