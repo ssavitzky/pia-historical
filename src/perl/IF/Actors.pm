@@ -204,7 +204,7 @@ sub actor_handle {
 
 define_actor('get', 'content' => 'name', _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
-optionally in PIA, ENV, AGENT, FORM, ELEMENT, or ENTITY context.");
+optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.");
 
 ### === EXPAND/PROTECT ?===
 
@@ -230,6 +230,13 @@ sub get_handle {
     } elsif ($it->attr('agent')) {
 	local $agent = IF::Run::agent();
 	$ii->replace_it($agent->option($name)) if defined $agent;
+    } elsif ($it->attr('trans')) {
+	local $trans = IF::Run::transaction();
+        if ($it->attr('feature')) {
+	    $ii->replace_it($trans->test($name)) if defined $trans;
+	} else {
+	    $ii->replace_it($trans->attr($name)) if defined $trans;
+	}
     } elsif ($it->attr('entity')) {
 	$ii->replace_it($ii->entities->{$name});
     } elsif ($it->attr('element')) {
@@ -244,8 +251,9 @@ sub get_handle {
 
 define_actor('set', 'content' => 'value', _handle => \&set_handle,
 	     'dscr' => "set NAME to VALUE, 
-optionally in PIA, AGENT, ACTOR, ELEMENT, or ENTITY context.   
+optionally in PIA, AGENT, ACTOR, ELEMENT, TRANSaction, or ENTITY context.   
 ELEMENT and ENTITY may define a LOCAL binding.  ELEMENT may have a TAG.  
+TRANSaction item may be FEATURE.
 Optionally COPY new or PREVIOUS value.");
 
 ### === COPY / COPY PREVIOUS ===
@@ -272,6 +280,13 @@ sub set_handle {
             $value = IF::IT->new()->push($it->content);
         }
 	$agent->option($name, $value) if defined $agent;
+    } elsif ($it->attr('trans')) {
+	local $trans = IF::Run::transaction();
+        if ($it->attr('feature')) {
+	    $trans->assert($name, $value) if defined $trans;
+	} else {
+	    $trans->attr($name, $value) if defined $trans;
+	}
     } elsif ($it->attr('local')) {
 	$ii->defvar($name, $value);
     } elsif ($it->attr('entity')) {
@@ -700,6 +715,8 @@ sub add_markup_handle {
 
 ### <split [separator="string" | pattern="pattern"]>text</split>
 
+### <join [separator="string"] [pairs [pair-separator="string"]]>list</split>
+
 ### <subst match="pattern" result="pattern">text</subst>
 
 
@@ -762,6 +779,115 @@ sub actor_attrs_handle {
 	$dscr .= "='$v'" unless ($v == 1 || $v eq $a);
     }
     $ii->replace_it($dscr);
+}
+
+###### I/O:
+
+### <read [file="name" | href="url"] [base="path"] [tagset="name"]
+###	   [protect [markup]]>
+
+define_actor('read', 'empty' => 1, _handle => \&read_handle,
+	     'dscr' => "Input from FILE or HREF, with optional BASE path.
+FILE may be looked up as an INTERFORM. 
+Optionally PROCESS with optional TAGSET.  Optionally RESOLVE in pia.");
+
+sub read_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $file = $it->attr('file');
+    my $href = $it->attr('href');
+    my $base = $it->attr('base');
+
+    my $content;
+
+    if ($file && ! $href) {		# File
+	if ($it->attr('interform')) {
+	    $file = IF::Run::agent()->find_interform($file);
+	    $base = '';
+	}
+	if ($file =~ /^~/) {
+	    $file =~ s/^~//;
+	    $base = $ENV{'HOME'};
+	} elsif ($file =~ /^\//) {
+	    $base = '';
+	} elsif ($base eq '') {
+	    $base = IF::Run::agent()->agent_directory;
+	}
+	if ($base ne '' && $base !~ /\/$/) {
+	    $base .= '/';
+	}
+	### === test for existance; directories ===
+	$content = readFrom("$base$file");
+    } elsif ($href && ! $file) { 	# Href
+
+    } elsif ($href) {
+	print "InterForm error: both HREF and FILE specified\n";
+    } else {
+	print "InterForm error: neither HREF nor FILE specified\n";
+    }
+
+    if ($it->attr('process')) {
+	print "=== can't process input yet ===\n";
+    }
+    $ii->replace_it($content);
+}
+
+### <write [file="name" | href="url"] [base="path"] [tagset="name"]
+###	    [append] [copy [protect [markup]]] >content</output>
+
+define_actor('write', 'content' => 'value', _handle => \&write_handle,
+	     'dscr' => "Output CONTENT to FILE or HREF, with optional BASE 
+path.  FILE may be looked up as an INTERFORM.  
+Optionally APPEND or POST.  Optionally COPY.");
+
+sub write_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $file = $it->attr('file');
+    my $href = $it->attr('href');
+    my $base = $it->attr('base');
+
+    my $text = $it->attr('text');
+    my $content = $text? $it->content_text : $it->content_string;
+
+    if ($file && ! $href) {	# File
+	my $append = $it->attr('append');
+
+	if ($it->attr('interform')) {
+	    $base = IF::Run::agent()->agent_if_root();
+	}
+	if ($file =~ /^~/) {
+	    $file =~ s/^~//;
+	    $base = $ENV{'HOME'};
+	} elsif ($file =~ /^\//) {
+	    $base = '';
+	} elsif ($base eq '') {
+	    $base = IF::Run::agent()->agent_directory;
+	}
+	if ($base ne '' && $base !~ /\/$/) {
+	    $base .= '/';
+	}
+
+	### === test for existance, writability; directories ===
+	if ($append) {
+	    appendTo("$base$file", $content);
+	} else {
+	    writeTo("$base$file", $content);
+	}
+    } elsif ($href && ! $file) {	# Href
+	my $post = $it->attr('post');
+
+    } elsif ($href) {
+	print "InterForm error: both HREF and FILE specified\n";
+    } else {
+	print "InterForm error: neither HREF nor FILE specified\n";
+    }
+
+    if ($it->attr('copy')) {
+	$ii->replace_it($it->content);
+    } else {
+	$ii->delete_it;
+    }
 }
 
 
@@ -878,6 +1004,101 @@ sub agent_options_handle {
 }
 
 
+### <agent-set-criteria>query_string</agent-set-criteria>
+
+if (0) { #=== buggy!
+define_actor('agent-set-criteria', 'unsafe' => 1,
+	     'content' => 'criteria', _handle => \&agent_set_criteria_handle,
+	     'dscr' => "Sets CRITERIA for agent NAME" );
+}
+sub agent_set_criteria_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $criteria = get_list($it, 'criteria');
+    my $name = $it->attr('name');
+    my $agent;
+
+    if ($name) {
+	$agent = IF::Run::resolver()->agent($name);
+    } else {
+	$agent = IF::Run::agent();
+	$name = $agent->name;
+    }
+
+    $agent->criteria($criteria); # === almost certainly wrong ===
+    $ii->delete_it();
+}
+
+define_actor('agent-set-criterion', 'empty' => 1, 'unsafe' => 1, 
+	     _handle => \&agent_set_criterion_handle,
+	     'dscr' => "set match criterion NAME to VALUE (default 1), 
+optionally in AGENT.");
+
+sub agent_set_criterion_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $aname = $it->attr('agent');
+    my $agent;
+
+    if ($aname) {
+	$agent = IF::Run::resolver()->agent($aname);
+    } else {
+	$agent = IF::Run::agent();
+	$aname = $agent->name;
+    }
+
+    my $name = $it->attr('name');
+    my $value = $it->attr('value');
+    $value = 1 unless defined $value;
+    $agent->match_criterion($name, $value);
+    $ii->delete_it();
+}
+
+### <agent-criteria>
+
+define_actor('agent-criteria', 'empty' => 1,  'unsafe' => 1,
+	     _handle => \&agent_criteria_handle,
+	     'dscr' => "Returns list of match criteria for agent NAME" );
+
+sub agent_criteria_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    my $agent;
+
+    if ($name) {
+	$agent = IF::Run::resolver()->agent($name);
+    } else {
+	$agent = IF::Run::agent();
+	$name = $agent->name;
+    }
+
+    $ii->replace_it(criteria_to_list($agent->criteria));
+}
+
+sub criteria_to_list {
+    my ($criteria) = @_;
+
+    my $list = IF::IT->new('dl');
+    my $i;
+
+    for ($i = 0; $i <= $#$criteria; $i++) {
+	my $c = $$criteria[$i];
+	if (! ref $c) {
+	    $list->push(IF::IT->new('dt', $c));
+	    local $v = $$criteria[++$i];
+	    if (! ref $v) {
+		$list->push(IF::IT->new('dd', $v));
+	    } else {
+		$list->push(IF::IT->new('dd', $v));
+	    }
+	} elsif (ref($c) eq 'ARRAY') {
+	    $list->push(IF::IT->new('dt', criteria_to_list($c)));
+	}
+    }
+    return $list;
+}    
+
 ### <agent-install name='n' type='t'>
 
 define_actor('agent-install', 
@@ -936,10 +1157,12 @@ sub agent_list_handle {
     $ii->replace_it(join(' ', @list));
 }
 
-define_actor('agent-control', _handle => \&agent_control_handle,
+### Transaction
+
+define_actor('trans-control', _handle => \&trans_control_handle,
 	     'dscr' => "Add a control to the current response." );
 
-sub agent_control_handle {
+sub trans_control_handle {
     my ($self, $it, $ii) = @_;
 
     my $text = $it->content_string;
