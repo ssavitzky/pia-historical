@@ -11,7 +11,7 @@
 Note that we only need these inside the PIA.
 
 <h3>Submit</h3>
-<define element=submit handler=legacy:submit-forms >
+<define element=submit handler=legacy:submit-forms ><!-- never worked -->
   <doc>
   </doc>
   <define attribute= optional>
@@ -55,6 +55,11 @@ Note that we only need these inside the PIA.
    </define>
 </define>
 
+<define element=user-message handler=legacy:user-message>
+  <doc> Output a message to the user.
+  </doc>
+</define>
+
 
 <h2>Page Components</h2>
 
@@ -95,12 +100,12 @@ Note that we only need these inside the PIA.
 	(e.g, a blue dot) on lines that contain links to several
 	different pages.
   <doc>
-  <define attribute=page>
+  <define attribute=page required>
     <doc> the base name of the current page, matched against the
 	  <code>pages</code> attribute.
     </doc>
   </define>
-  <define attribute=pages>
+  <define attribute=pages required>
     <doc> space-separated names of the pages represented on this line.
     </doc>
   </define>
@@ -117,6 +122,10 @@ Note that we only need these inside the PIA.
 	title, and ends up assigned to the entity <code>title</code>.  This
 	element also initializes some common entities.
   </doc>
+  <define attribute=show-date optional>
+    <doc> If present, show the date underneath the title.
+    </doc>
+  </define>
   <action>
 <if><get name=content><then><set name=title>&content;</set></if>
 <set name=agentNames><text sort case>&agentNames;</set>
@@ -141,6 +150,10 @@ Note that we only need these inside the PIA.
     <th align=left colspan=2><if><get entity name=title>
 	<then><get entity name=title></then>
 	<else>&fileName;</else></if></th></tr>
+<if>&attributes:show-date;<then>
+<tr nowrap nobr>
+    <td colspan=2><td>&dayName;, &year;-&month;-&day;, &time;:&second;</tr>
+</if>
 </table>
   </action>
 </define>
