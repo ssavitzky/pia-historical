@@ -6,9 +6,9 @@ PACKAGE="crc"
 TOPDIR=../..
 
 PACKAGES = \
-	pia \
 	ds \
-	ii \
+	interform \
+	pia \
 	tf \
 	util
 
