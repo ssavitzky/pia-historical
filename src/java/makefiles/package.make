@@ -29,7 +29,7 @@
 CLASSDIR= $(TOPDIR)/classes
 PIADIR  = $(TOPDIR)/../../..
 DOCDIR  = $(TOPDIR)/Doc
-ADOCDIR = $(PIADIR)/Doc/Manuals/Internal/JavaDoc
+ADOCDIR = $(PIADIR)/Doc/Manuals/Api/JavaDoc
 LIBDIR  = $(TOPDIR)/../../../lib/java
 BINDIR  = $(TOPDIR)/../../../bin
 
@@ -39,6 +39,7 @@ LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/regexp.zip
  #JAVACLASSES= /usr/local/src/www/java-SDK/jdk1.1.1/lib/classes.zip
 #sun 1.0.2 location
 JAVACLASSES= /usr/local/src/www/java-SDK/java/lib/classes.zip
+JAVASOURCE=  /usr/local/src/www/java-SDK/jdk1.1.1/src
 
 all::
 	for p in `ls -d $(PACKAGES)`; do \
@@ -46,9 +47,17 @@ all::
 		(cd $$p; make TOPDIR=../$(TOPDIR) VPATH=$(VPATH)/$$p); \
 	done
 
+JAVADOC_CMD = javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) -sourcepath $(CLASSDIR)$(CLASSPATH):$(JAVASOURCE)
+
 # non-recursive doc.
 alldoc::
-	javadoc -d $(ADOCDIR) -classpath $(CLASSDIR):$(JAVACLASSES):$(LIBCLASSES):$(CLASSPATH) $(PACKAGENAMES)
+	-$(JAVADOC_CMD) $(PACKAGENAMES)
+
+piadoc::
+	-$(JAVADOC_CMD) $(PIAPACKAGENAMES)
+
+sundoc::
+	-$(JAVADOC_CMD) $(SUNPACKAGENAMES)
 
 # Recursive doc -- generates all the class files but damages the indexes
 doc::
