@@ -14,6 +14,7 @@ PACKAGES= \
 ###	We need these because javadoc does _not_ operate recursively.
 
 PIAPACKAGENAMES= \
+	crc.content crc.content.text \
 	crc.ds \
 	crc.gnu.regexp \
 	crc.interform crc.interform.handle \
@@ -30,14 +31,15 @@ PIAPACKAGENAMES= \
 SUNPACKAGENAMES= \
 	java.lang \
 	java.io \
-	java.util \
-	java.net
+	java.net \
+	java.text \
+	java.util
 
 MISCPACKAGENAMES= \
 	w3c.www.http \
 	w3c.www.mime
 
-PACKAGENAMES= $(PIAPACKAGENAMES) $(SUNPACKAGENAMES)
+PACKAGENAMES= $(PIAPACKAGENAMES) $(MISCPACKAGENAMES) $(SUNPACKAGENAMES)
 
 
 # makefiles/file.make defines PIADIR, LIBDIR, BINDIR, DOCDIR
