@@ -22,7 +22,9 @@ CONTENTS:
 	A. Starting the Program
 	B. Using the PIA
 
-    V. Peripheral Agencies
+    V. Questions, problems, or comments:
+	
+    VI. Peripheral Agencies
 
 ========================================================================
 
@@ -144,7 +146,18 @@ IV. Running the PIA
 
 
 ========================================================================
-V. Peripheral Agencies
+
+
+V. Questions, problems, or comments:
+
+    A. Before filing a bug report, please check the known bugs at:
+	http://foobar/release/0.9/KnowBugs.html
+
+    B. Other questions or comments can be sent to piacrcbug@crc.ricoh.com
+
+
+========================================================================
+VI. Peripheral Agencies
 
 	If an Agency is started by the special user pia, it configures
 	itself as a ``Peripheral Interface Agency,'' on the assumption
