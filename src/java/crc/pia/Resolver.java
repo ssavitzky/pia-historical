@@ -27,10 +27,11 @@ import java.io.FileOutputStream;
 import java.net.URL;
 
 import crc.pia.Agent;
-import crc.ds.Queue;
-import crc.ds.Table;
 import crc.pia.Transaction;
 
+import crc.ds.Queue;
+import crc.ds.Table;
+import crc.ds.List;
 
 public class Resolver extends Thread {
   /**
@@ -183,7 +184,7 @@ public class Resolver extends Thread {
   }
 
   /**
-   * Return agent according to name
+   * Find agent by name
    * @return agent according to name
    */
   public Agent agent( String name ){
@@ -193,6 +194,44 @@ public class Resolver extends Thread {
     else
       return null;
   }
+
+  /** 
+   * Find agent addressed by a pathname.
+   */
+  public Agent agentFromPath(String path) {
+
+    /* Empty path is handled by Agency. */
+
+    if (path == null || path.equals("/") || path.equals("")) {
+      return agent("Agency");
+    }
+
+    /* Now check for either /name/ or /type/name */
+
+    if (path.startsWith("/")) path = path.substring(1);
+    List pathList = new List(new java.util.StringTokenizer(path, "/"));
+
+    Agent a = null;
+
+    if (pathList.nItems() > 1) {
+      String name = pathList.at(1).toString();
+      String type = pathList.at(0).toString();
+      Pia.debug(this, "Looking for agent :" + name);
+      a = agent(name);
+      if (a == null || !type.equals(a.type())) {
+	Pia.debug(this, "Looking for agent :" + name);
+	a = agent(type);
+      }
+    } else {
+      String name = pathList.at(0).toString();
+      a = agent(name);
+    }
+    return a;
+  }
+
+  /************************************************************************
+  ** Control:
+  ************************************************************************/
 
   /**
    * stop thread 
