@@ -73,6 +73,26 @@ public class TextUtil {
     return out.getList();
   }
 
+  /** Return an Association between a node and its text content. */
+  public static Association getTextAssociation(ActiveNode n) {
+    return Association.associate(n, getTextString(n));
+  }
+
+  /** Return a list of text Associations.  Splits text nodes containing
+   *	whitespace, but associates non-text markup with its concatenated text
+   *	content.  Most useful for sorting nodes lexically.
+   */
+  public static Enumeration getTextList(NodeList nl) {
+    List l = new List();
+    Enumeration items = ListUtil.getListItems(nl);
+    while (items.hasMoreElements()) {
+      Association a = getTextAssociation((ActiveNode)items.nextElement());
+      if (a != null) l.push(a);
+    }
+    return l.elements();
+  }
+
+
   /************************************************************************
   ** Trimming and padding:
   ************************************************************************/
