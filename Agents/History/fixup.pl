@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+### 	$Id$
+###	Copyright 1997 Ricoh Silicon Valley
+
 ### fixup.pl -- move yymmdd.html to yyyy/mm/dd.html
 ###             in $HOME/.pia/History 
 ### === should really take the directory to hack on the command line ===
