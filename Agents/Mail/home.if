@@ -15,7 +15,11 @@
 </repeat>
 </select>
 Year:<select name="year">
-<repeat start=1997 stop=1999> <option>&li;</option>
+<repeat start=1997 stop=1999>
+<if><equal numeric>1998 &li;</equal>
+  <then><option selected>&li;</option></then>
+  <else><option>&li;</option></else>
+</if>
 </repeat>
 </select>
 </form>
