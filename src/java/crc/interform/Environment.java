@@ -39,7 +39,7 @@ import crc.ds.Table;
  *	including filename lookup, that differ depending on whether the
  *	interpretor is operating stand-alone or inside a PIA.<p>
  *
- * @see crc.interform.Filter for standalone operation.  */
+ * @see crc.interform.Filter  */
 public class Environment {
 
   /************************************************************************

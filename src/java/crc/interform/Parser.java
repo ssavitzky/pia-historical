@@ -64,7 +64,7 @@ import java.util.BitSet;
  *	and ``ordinary'' outside of tags, so the StreamTokenizer would
  *	simply add an extra layer of overhead for very little effect. <p>
  *
- *	@see http:/PIA/src/perl/IFParser.pm <p>
+ *	@see http:/PIA/src/perl/IFParser.pm
  */
 public class Parser extends Input {
 
