@@ -9,6 +9,7 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
 import crc.ds.Index;
+import crc.ds.List;
 
 import crc.sgml.SGML;
 import crc.sgml.TableElement;
@@ -17,6 +18,7 @@ import crc.sgml.AttrSGML;
 import crc.sgml.Tokens;
 
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 /** Handler class for &lt;get&gt tag 
  * <dl>
@@ -24,16 +26,28 @@ import java.util.Enumeration;
  *	&lt;get [name="name"] 
  *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
  *	     | [file="filename"|href="url"|[file|href] name="string" ] 
- *           [attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values  ]&gt;
+ *           [attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=tag ]&gt;
  * <dt>Dscr:<dd>
- *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
- *	ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
- *      Default is to start with the local entity table and move up the
- *      stack until name is found.  Returns "" if name does not exist in
- *      specified context.  Elements of complex data structures can be accessed
- *      using a dotted notation "foo.bar" returns the bar element of foo.
- *	If FILE or HREF specified, functions as &lt;read&gt;.
+ Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
+ * ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
+ * Default is to start with the local entity table and move up the
+ * stack until name is found.  Returns \"\" if name does not exist in
+ * specified context.  Elements of complex data structures can be accessed
+ * using a dotted notation \"foo.bar\" returns the bar elements of foo.
+ * If FILE or HREF specified, functions as <read>.
+ * The last set of attributes applies to the retrieved SGML object.
+ * SIZE returns number of elements retrieved.
+ * ATTR returns the value of the named attribute (can be tag). 
+ * FINDALL returns a list of all the objects within the SGML object which
+ * a tag equal to FTAG. 
+ * KEY(s)/VALUES and ROW(s) COL(s) have
+ *  meanings only when the specified SGML object is a DL or Table respectively.
+ * If the retrieval specifies more than one SGML object, these attributes apply
+ *  to all of the retrieved objects and a list will be returned
  *  </dl>
+ * subclasses are used to retrieve objects in the  AGENT FORM TRANS contexts.  
+ * PIA and ENV are handled by separate classes and do not return SGML objects
+ * (hence  cannot be used with the special attributes).
  */
 public class Get extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
@@ -41,7 +55,7 @@ public class Get extends crc.interform.Handler {
     "<get [name=\"name\"] \n" +
     "[pia|agent|form|trans|env|element[tag=tag]|local|global\n" +
     "| [file=\"filename\"|href=\"url\"|[file|href] name=\"string\" ] >\n" +
-    "[attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values  ]\n" +
+    "[attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=ftag  ]\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -50,15 +64,16 @@ public class Get extends crc.interform.Handler {
     "Default is to start with the local entity table and move up the\n" +
      "stack until name is found.  Returns \"\" if name does not exist in\n" +
      "specified context.  Elements of complex data structures can be accessed\n" +
-     "using a dotted notation \"foo.bar\" returns the bar element of foo.\n" +
-    "Default is the generic lookup that includes paths.\n" +
+     "using a dotted notation \"foo.bar\" returns the bar elements of foo.\n" +
     "If FILE or HREF specified, functions as <read>.\n" +
   "The last set of attributes applies to the retrieved SGML object.\n" +
   "SIZE returns number of elements retrieved.\n" +
-  "ATTR returns the value of the named attribute (can be tag).\n" +  
+  "ATTR returns the value of the named attribute (can be tag).\n" + 
+   "FINDALL returns a list of all the objects within the SGML object which \n"+
+   "a tag equal to FTAG.\n" + 
   "KEY(s)/VALUES and ROW(s) COL(s) have\n" +
   " meanings only when the specified SGML object is a DL or Table respectively.\n" +
-  "If the retrieval returns more than one SGML object, these attributes apply\n" +
+  "If the retrieval specifies more than one SGML object, these attributes apply\n" +
   " to all of the retrieved objects and a list will be returned\n" +
 "";
  
@@ -79,6 +94,8 @@ public class Get extends crc.interform.Handler {
       String name = Util.getString(it, "name", null);
       if (ii.missing(ia, "name", name)) return;
 
+      //For these gets, index converting is done by the ii get* methods
+
       SGML result = null;
 
       if (it.hasAttr("element")) {
@@ -98,40 +115,95 @@ public class Get extends crc.interform.Handler {
       //result may be a token or tokens
       //if possible make a single token
 
-
-      if( result != null ){
-	result = result.simplify();
-	if(it.hasAttr("size")){
-	  Tokens  content = result.content();
-	  int size = (content == null)? 0: content.nItems();
-	  result = crc.sgml.Util.toSGML(String.valueOf(size));
-	} else {
-	  if(result  instanceof Tokens){
-	    // repeat for all items
-	    Enumeration e = ((Tokens) result).elements();
-	    result = new Tokens();
-	    result.append(getQueryResults((SGML) e.nextElement(), it));
-	  } else {
-	    result =  getQueryResults(result, it);
-	  }
-	}
-      }
-
-
+      result = processResult(result,it);
       ii.replaceIt(result);
     }
   }
 
+  /************************************************************
+  ** utility functions
+  ************************************************************/
+
+  protected Index getIndex(SGML it){
+    String name = Util.getString(it, "name", null);
+    if(name == null || "".equals(name)) return null;
+    return new Index(name);
+  }
+  
+  /**
+   * use the index interface to find value
+   */
+
+  protected SGML getValue(SGML  context,Index i){
+    if(i == null) return context;
+    if(i.size()>0){
+      try{
+	return i.lookup(context);
+      } catch(Exception e){
+	// if lookup fails assume value is null
+	return null;
+      }
+    }
+    return  context;
+  }
+  
+
+
+  protected SGML getValue(SGML  context,SGML it){
+    Index i = getIndex(it);
+    return  getValue( context,i);
+  }
 
   void debug (Object o,  String s){
     //    System.out.println(s);
     crc.pia.Pia.debug(o,s);
   }
 
+
+  /**
+   * return true if we recognize any of the attributes
+   */
+  public boolean isComplex(SGML it){
+     return (it.hasAttr("findall") ||
+	     it.hasAttr("size") ||
+	     it.hasAttr("keys") ||
+	     it.hasAttr("attr") ||
+	     it.hasAttr("row") ||
+	     it.hasAttr("col"));
+  }
+
       /************************************************************
       ** check for any special attributes of request
       ** processing done here could eventually include database interface
       ************************************************************/
+
+  /**
+   * if process result given the attributes of the request
+   */
+
+  protected SGML processResult(SGML result, SGML it) {
+    if( result == null) return result;
+    
+    result = result.simplify();
+    if(it.hasAttr("size")){
+      Tokens  content = result.content();
+      int size = (content == null)? 0: content.nItems();
+      result = crc.sgml.Util.toSGML(String.valueOf(size));
+    } else {
+      if(result  instanceof Tokens){
+	// repeat for all items
+	Enumeration e = ((Tokens) result).elements();
+	result = new Tokens();
+	while(e.hasMoreElements()){
+	  result.append(getQueryResults((SGML) e.nextElement(), it));
+	}
+      } else {
+	result =  getQueryResults(result, it);
+      }
+    }
+    return result;
+  }
+
   /**
    *   process the attributes of a get request and return the corresponding
    * data. @param context is the SGML object to do the lookup on
@@ -141,6 +213,10 @@ public class Get extends crc.interform.Handler {
     //context should always be a Token
     if(context == null) return context;
     debug(this, "getting "+ request + " in " + context.getClass().getName());
+
+    // take attributes in order -- return after processing first matching attribute
+
+    // attr case
     if(request.hasAttr("attr")){
       String s =Util.getString( request, "attr", "");
       if(s.equalsIgnoreCase("tag")){// return the tag of context
@@ -148,6 +224,8 @@ public class Get extends crc.interform.Handler {
       }
       return context.attr(s);
     }
+
+    // key case
     if(request.hasAttr("key")){
       if(context instanceof AttrSGML)
 	return context.attr(Util.getString( request, "key", ""));
@@ -161,6 +239,7 @@ public class Get extends crc.interform.Handler {
        return null;
     }
 
+    // keys case
     if(request.hasAttr("keys")){
       if(context instanceof AttrSGML){
 	AttrSGML a= (AttrSGML) context;
@@ -176,6 +255,7 @@ public class Get extends crc.interform.Handler {
       return null;
     }
     
+    // values case
     if(request.hasAttr("values")){
       if(context instanceof AttrSGML){
 	SGML result = new Tokens();
@@ -196,6 +276,7 @@ public class Get extends crc.interform.Handler {
        return null;
     }
 
+    // rows/cols case
     // check for row / columns of table
     if(context instanceof TableElement){
       TableElement table=(TableElement) context;
@@ -238,6 +319,35 @@ public class Get extends crc.interform.Handler {
 	debug(this," getting table " + rowstart +"-"+rowend+","+ colstart + "-"+ colend);
 	return  table.getTable(rowstart,rowend,colstart,colend);
       }
+    }
+
+    // traversal case
+    if(request.hasAttr("findAll")){
+       String tag = Util.getString(request,"findAll","");
+        debug( this, "Finding all "+ tag);
+      // descend context looking for tokens with this tag -- default is text
+       List stack = new List();
+       stack.push(context);
+       Hashtable visited = new Hashtable();
+       Tokens  result = new Tokens();
+       while(!stack.isEmpty()){
+	 SGML  item = (SGML) stack.shift();
+	 if(tag.equalsIgnoreCase(item.tag())){
+	    result.push(item);
+	 }
+	 Tokens rest = item.content();
+	 if( rest != null){
+	   Enumeration e = rest.elements();
+	   while(e.hasMoreElements()){
+	     Object o = e.nextElement();//really SGML
+	     if(! visited.containsKey(o)){
+	       visited.put(o, item);
+	       stack.push(o);
+	     }
+	   }
+	 }
+       }
+       return result;
     }
     // default is to return context
      return context;
