@@ -8,6 +8,7 @@ TOPDIR=../..
 PACKAGES =
 
 FILES = \
+	BasicDOM.java \
 	NodeWrapper.java \
 	LinkedList.java \
 	LinkedNodeListEnumerator.java \
