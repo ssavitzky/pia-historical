@@ -1,18 +1,19 @@
 ###### Class PIA_AGENT::DOFS -- Document-Oriented File System agent 
 ###	$Id$
 ###
+###	The DOFS agent provides access to local files through the
+###	Agency.  (It will eventually be possible to overlay multiple
+###	directories, supply local annotations, and to access URL's as
+###	well.) 
+
 package PIA_AGENT::DOFS;
 
 push(@ISA,PIA_AGENT);
 
-# this  agent maintains file systems
-# 4 example instantiations of DOFS answer request for local files
-# but they also do much more, for example caching, local annotations, etc.
-
 sub initialize{
     my $self=shift;
 
-    ## Overridden so we can set type.
+    ## Overridden so we can set $type.
 
     my $name=$self->name;
     my $type='dofs';
@@ -157,6 +158,7 @@ sub retrieve_directory {
 		    "</HEAD>\n<BODY>",
 		    $head || "<H1>Directory listing of $base</H1>",
 		    "<h3>local path: $path</h3>",
+		    "<h3>DOFS path: $base</h3>",
 		    "<UL>", @urls, "</UL>",
 		    "</BODY>\n</HTML>\n");
 
