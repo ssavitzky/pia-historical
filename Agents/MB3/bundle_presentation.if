@@ -2,19 +2,32 @@
 <html><head>
 <title>Bundled presentation</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
- <if> <get form name=p> <then> <set name=presentation>&FORM.p;</set></then> <else><set name=presentation>&presentation; Presentation</set></else></if>
-<set entity name=title></set>
+<tagset-load name=MB3-actors>
+ <if> <get form name=eid> <then>
+      <set name=event><retrieve-event id=&FORM.eid; file=&FORM.file;> </set>
+      </then>
+      <else><b> Error, no event specified</b></else></if>
+<set entity name=title><get index=event.eventtitle></set>
 <read interform file="heading.inc" process>
-<read interform file="subhead.inc" process>
-<br> The pages of the &presentation; presentation are included below for your
-     viewing and printing convenience.
+<!-- read interform file="subhead.inc" process -->
+<!-- set query separator -->
+<set name=sep>&</set>
+<br> The pages of the <get index=event.eventtitle> presentation are included below for your
+     viewing and printing convenience.  (Printer button goes here -- use
+     browser print function for now.)
 <hr>
-<set name=urllist><get agent  name=urls	key=&presentation;></set>
-<repeat list=&urllist;>
- <set name=u> <get name=li attr=href></set>
- <b><get name=u></b><br>
- <read href=&u; process>
+<if> <get index=event.slides>  <then>
+ <repeat list=&event.slides; entity=sl>
+ <get name=sl>
  <hr>
 </repeat>
+</then></if>
+
+
+<!-- should follow and retrieve links -->
+
+<!-- repeat list=&urllist; -->
+ 
+<!-- /repeat --> 
 
 </body></html>

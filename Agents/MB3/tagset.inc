@@ -82,7 +82,7 @@
 
  <set name=myfile>events&AGENT.fseparator;&myyear;&AGENT.fseparator;&mymonth;&AGENT.fseparator;&myday;</set>
  <if> <read file=&myfile; info> <then> <read file=&myfile; process></then> </if>
-
+<!-- should check for leading 0 in day -->
 </actor>
 
  <!-- load options and from content into agent name space -->

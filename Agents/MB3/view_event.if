@@ -1,6 +1,7 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>MB3: Event</title>
+<set name=sep>&</set>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <tagset-load name=MB3-actors>
  <if> <get form name=eid> <then>
@@ -16,41 +17,62 @@
 
 <if> <get index=event.slides>  <then>
  <if> <get name=slide form> <then> <set name=slidenum>&FORM.slide;</set></then> <else><set name=slidenum>0</set></else> </if>
+<set name=nextslide><sum digits=0> &slidenum; 1 </sum></set>
+<set name=prevslide><difference digits=0> &slidenum; 1 </difference></set>
 
- <center>
-  Slides:
+<br>
+<a name="slide">
+<set name=fsize>2</set><set name=fface>times</set>
+<set name=slidebar><table align=center width=100% border=1>
+<tr><th align=left><font face=&fface; size=&fsize;>
+<a href=add_slide.if?file=&FORM.file;&sep;eid=&FORM.eid;>Slides:</a></font></th>
+<td><font face=&fface; size=&fsize;><a href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid>Top</a></font></td>
+ <td align=center><if><test positive> <get name=prevslide> </test>
+  <then><font face=&fface; size=&fsize;><a
+   href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;&sep;slide=&prevslide;#slide>Prev</a></font></then> </if></td>
+
   <repeat list=&event.slides; entity=slide>
    <set name=snum><get name=slide attr=number></set>
    <if><test match=&slidenum; exact><get name=snum></test> <then> <set
-   name=myslide>&slide;</set><strong>&snum;</strong></then> <else><a
-   href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;&sep;slide=&snum;>&snum;</a> | </else> </if>
+   name=myslide>&slide;</set><td align=center><strong>&snum;</strong></td></then> <else><td align=center><font face=&fface; size=&fsize;><a
+   href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;&sep;slide=&snum;#slide>&snum;</a></font></td> </else> </if>
   </repeat>
- <a href=add_slide.if?file=&FORM.file;&sep;eid=&FORM.eid;> Add slide </a>
- </center>
- 
+
+<td align=left>
+<if><test negative> <difference> &snum; <get name=nextslide></difference> </test>
+  <else><font face=&fface; size=&fsize;><a
+   href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;&sep;slide=&nextslide;#slide>Next</a><font></else> </if></td>
+
+</tr>
+</table></set>
+ <get name=slidebar>
  </then></if>
-<hr>
+
 <if> <get name=myslide> <then>
- 
 
  <get name=myslide>
 
+<br>
+<p>
+ <get name=slidebar>
+<p>
  </then> <else>
  <center>
- <h2><get index=event.eventtitle></h2> <br>
+ <h2><a href=view_event.if?file=&FORM.file;&sep;eid=&FORM.eid;&sep;slide=1#slide><get index=event.eventtitle></a></h2> <br>
  Presented by: <strong><get index=event.eventauthor></strong><br>
  on:  <get index=event.date.month> <get index=event.date.day> <get index=event.date.year><br>
  <strong><get index=event.eventdescription></strong>
  </center>
-
- </else></if>
  <hr>
  <p>
  
 
   <a href=add_slide.if?file=&FORM.file;&sep;eid=&FORM.eid;> Add slide </a>
 
+ </else></if>
 
+<p>
+<p>
 
 <!-- update URL if any -->
  <if> <get name=newurl form> <then>
@@ -85,7 +107,7 @@
       
  <!-- main presentation links -->
 
-      <table border=1 align=center>
+      <table align=center>
       <caption>References </caption>
 <tr><th>Web Pages </th> <th> <a href=view_event_help.if>Local files </a> </th>
        <if><agent-running name=History> <then><th> <a href=view_event_help.if>History </a> </th></then> </if> </tr>
@@ -120,7 +142,9 @@
 
 
 <hr>
-      <a href="bundle_presentation.if?event=&event.eventid;">Print presentation
+      <a
+      href="bundle_presentation.if?eid=&FORM.eid;&sep;file=&FORM.file;">Full
+      presentation (for printing)
       </a>||<if>on<then><expand><get agent name=navbar></expand></if>
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

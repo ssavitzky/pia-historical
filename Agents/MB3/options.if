@@ -46,7 +46,7 @@ New options have been loaded and stored.
 </form>
 
 <hr>
-To and new options, edit the file <code>&usrDIR;/&agentName;/options.dat</code>
+To add new options, edit the file <code>&usrDIR;/&agentName;/options.dat</code>
 
 
 <hr>
