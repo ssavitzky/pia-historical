@@ -36,8 +36,8 @@
     <table cellspacing=0 cellpadding=0 border=0>
       <tr><th>
 	<if><read info interform file="/Agency/insert.if">
-	    <then><read interform file="/Agency/insert.if" process></then>
-	</if><br></tr>
+            <then><read interform file="/Agency/insert.if" process></then>
+        </if><br></tr>
     </table>
   <td valign=top>
     <table cellspacing=0 cellpadding=0 border=0 valign=top>

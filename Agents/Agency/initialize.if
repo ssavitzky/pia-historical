@@ -3,7 +3,7 @@
 <title>Initialize Agency</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>The Agency Initialization interform</h1>
+<h1>The Agency Initialization InterForm</h1>
 
 This form gets requested by the agency at start-up.  It looks for a <a
 href=START-UP.html>START-UP.html</a> file and submits each of the forms
@@ -15,12 +15,15 @@ It is also possible to override <em>this</em> file with your own version, in
 code into it.
 <hr>
 
+
 <if><agent-running name="PIA">
-    <then>Already initialized; nothing to do.</then>
+    <then>Already initialized; nothing to do.
+	<user-message>Agency already initialized.</user-message>
+    </then>
     <else>
 	<user-message>Initializing &agentName; from &filePath;</user-message>
 	<user-message>Loading startup file <read interform info=path
-	file="/Agency/START-UP.html"></user-message> 
+		file="/Agency/START-UP.html"></user-message> 
 	<!-- Define an actor to handle forms -->
 	<actor name=form tag=form handle="submit_forms"></actor>
 	<read file="/Agency/START-UP.html" interform process skip>
