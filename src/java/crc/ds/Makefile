@@ -6,6 +6,9 @@ PACKAGE=crc.ds
 TOPDIR=../../..
 
 FILES = \
+	Criteria.java \
+	Criterion.java \
+	ValueCriterion.java \
 	Features.java \
 	List.java \
 	Queue.java \
@@ -18,8 +21,18 @@ FILES = \
 
 include $(TOPDIR)/makefiles/file.make
 
+### Dependencies
+
 List.class: Stuff.java
 
 Table.class: Stuff.java
 
 Thing.class: Stuff.java
+
+Queue.class: List.java
+
+Criteria.class: Criteria.java Criterion.java
+
+Criterion.class: Criterion.java ValueCriterion.java
+
+ValueCriterion.class: ValueCriterion.java Criterion.java
