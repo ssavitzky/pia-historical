@@ -466,21 +466,11 @@ public class FormContent extends Properties implements Content{
    */
   public void setParameters(String toSplit){
     StringTokenizer tokens = null;
-    String token = null;
-    String[] pairs = null;
-    int count;
-    int i = 0;
-    int pos;
 
-    Pia.debug(this, "processing...");
     if( toSplit != null ){
       Pia.debug(this, "the toSplit string is-->"+ toSplit);
-
-      tokens = new StringTokenizer( toSplit,"&" );
-
       queryString = toSplit;
-    }
-    else{
+    } else{
       String zcontent = toString();
 
       Pia.debug(this, "the content is below:");
@@ -488,33 +478,20 @@ public class FormContent extends Properties implements Content{
       if( zcontent == null ) return;
 
       queryString  = zcontent;
-
-      tokens = new StringTokenizer(zcontent,"&");
-
     }
-    if(tokens==null) return;
-
-    count = tokens.countTokens();
-    if( count > 0 )
-      pairs = new String[ count ];
-    else return;
+    tokens = new StringTokenizer(queryString, "&");
 
     while ( tokens.hasMoreElements() ){
-      token = tokens.nextToken();
-      pairs[i++] = token;
-    }
-    i = 0;
-    String param = null;
-    Object value = null;
-
-    for(; i < pairs.length; i++){
-      String s = pairs[i];
+      String s = tokens.nextToken();
 
       Pia.debug(this, "a pair-->"+ s);
 
-      pos = s.indexOf('=');
+      String param = null;
+      Object value = null;
+
+      int pos = s.indexOf('=');
       if( pos == -1 ){
-	String eparam = s.trim();
+	String eparam = s.trim().toLowerCase();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
 	Pia.debug(this, "a param1-->"+ param);
@@ -523,7 +500,7 @@ public class FormContent extends Properties implements Content{
 	Pia.debug(this, "a val1-->"+ value);
       }else{
 	String p = s.substring(0, pos);
-	String eparam = p.trim();
+	String eparam = p.trim().toLowerCase();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
 	Pia.debug(this, "a param2-->"+ param);
