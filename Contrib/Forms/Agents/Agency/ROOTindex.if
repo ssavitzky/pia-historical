@@ -3,7 +3,7 @@
 <title>RSV FORMS</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
-<center><a href="http://&piaHOST;:&piaPORT;/Forms/forms.if"><img src="http://&piaHOST;:&piaPORT;/Forms/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/Forms/users.if"><img src="http://&piaHOST;:&piaPORT;/Forms/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/Forms/reports.if"><img src="http://&piaHOST;:&piaPORT;/Forms/reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="http://&piaHOST;:&piaPORT;/Forms/feedbackbutton.gif"></a></center><p>
+<center><a href="http://&piaHOST;:&piaPORT;/Forms/forms.if"><img src="http://&piaHOST;:&piaPORT;/Forms/formsbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/Forms/users.if"><img src="http://&piaHOST;:&piaPORT;/Forms/userbutton.gif"></a><a href="http://&piaHOST;:&piaPORT;/Forms/reports.if"><img src="http://&piaHOST;:&piaPORT;/Forms/reportsbutton.gif"></a><a href="/Forms/feedback/feedback.if"><img src="http://&piaHOST;:&piaPORT;/Forms/feedbackbutton.gif"></a></center><p>
 
 <h1>RSV FORMS</h1>
 Almost all RSV forms are now available via the web.
@@ -28,7 +28,7 @@ headaches or inconveniences this system may cause for you.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Thu Sep 11 13:38:04 1997
+Last modified: Tue Sep 16 00:17:54 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
