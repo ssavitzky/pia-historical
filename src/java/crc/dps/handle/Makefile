@@ -24,6 +24,7 @@ BASIC_ACTORS = \
 	repeatHandler.java \
 	setHandler.java \
 	substHandler.java \
+	tagsetHandler.java \
 	testHandler.java \
 	thenHandler.java
 
@@ -80,6 +81,17 @@ fixup:
 
 unfix:
 	for f in *.java ; do if [ -f $$f.bak ]; then mv -f $$f.bak $$f; fi ; done
+
+###
+### make class tag=XXX
+###
+
+class: 
+	@( [ -f $(tag)Handler.java ] \
+	  && echo "$(tag)Handler.java already exists" ) || \
+	( sed -e 's/Typical/$(tag)/g' < TypicalHandler.java \
+	| sed -e 's/typical/$(tag)/g' > $(tag)Handler.java \
+	; echo $(tag)Handler.java constructed. )
 
 ### Dependencies:
 
