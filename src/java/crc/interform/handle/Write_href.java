@@ -9,7 +9,16 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
 
+import crc.pia.Agent;
+import crc.pia.agent.AgentMachine;
+
 import crc.sgml.SGML;
+import java.net.URL;
+
+import crc.interform.Run;
+
+import crc.content.text.StringContent;
+import crc.pia.HTTPRequest;
 
 
 /** Handler class for &lt;write.href&gt tag. 
@@ -22,13 +31,14 @@ import crc.sgml.SGML;
  *	Optionally POST.  Optionally TRIM
  *	leading and trailing whitespace. Optionally end LINE.
  *	Optionally COPY content to InterForm.
+ *      Should provide  options for handling results codes.. currently does not
  *  </dl>
  */
 public class Write_href extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<write.href href=\"url\" [post] [base=\"path\"] [trim] [line]\n" +
-    "[copy [protect [markup]]] >content</write.href>\n" +
+    "<write.href href=\"url\" [method=post] [base=\"path\"] [trim] \n" +
+    "[copy] >content</write.href>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -39,14 +49,51 @@ public class Write_href extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String url = it.attrString("href");
-    if (url == null || "".equals(url)) url = it.attrString("name");
-    if (url == null || "".equals(url)) {
-      ii.error(ia, "must have non-null name or href attribute");
+    String href = it.attrString("href");
+    if (href == null || "".equals(href)) {
+      ii.error(ia, "must have non-null href attribute");
       return;
     }
+    // href must be fully qualified or supplied base
+    if(it.hasAttr("base")){
+      String base = Util.getString(it, "base", null);
+      try{
+	href = new URL(new URL(base),href).toString();
+      } catch ( Exception e){
+	//  could not generate absolute url
+      }
+    }
 
-    ii.unimplemented(ia);
+    String method;
+    
+    if(it.hasAttr("method")){
+      method = it.attr("method").toString();  // should verify get / head
+    } else{
+      method = "PUT";
+    }
+
+
+    /**  get the agent
+     */
+    Run env = Run.environment(ii);
+    Agent agent =env.agent;
+    AgentMachine m = new AgentMachine(agent);
+
+    String initString = "HTTP/1.0 "+ method +" "+ href;
+
+    String s = (it.hasAttr("trim")) ? crc.sgml.Util.trimSpaces(it.content()).toString() : it.content().toString();
+    StringContent c = new StringContent(s);
+    // create a request and go get it    
+    HTTPRequest  request = new HTTPRequest(m,c,false);
+    request.protocolInitializationString = initString;
+    request.setHeader("Version", agent.version());
+    request.setContentType( "text/html" );
+    request.setContentLength(s.length() );
+
+    request.setMethod( method );
+    request.setRequestURL( href );
+
+    request.startThread();
 
     if (it.hasAttr("copy")) {
       ii.replaceIt(it.content());
@@ -55,59 +102,3 @@ public class Write_href extends crc.interform.Handler {
     }
   }
 }
-
-/* ====================================================================
-    if ($file && ! $href) {	# File
-	my $append = $it->attr('append');
-	my $dir = $it->attr('directory');
-
-	if ($it->attr('interform')) {
-	    $base = IF::Run::agent()->agent_if_root();
-	}
-	if ($file =~ /^~/) {
-	    $file =~ s/^~//;
-	    $base = $ENV{'HOME'};
-	} elsif ($file =~ /^\//) {
-	    $base = '';
-	} elsif ($base eq '') {
-	    $base = IF::Run::agent()->agent_directory;
-	}
-	$base =~ s:/$:: if $base;
-	if ($base ne '' && ! -d $base) {
-	    if (! mkdir($base, 0777)) {
-		my $err = "InterForm error: can't create directory $base\n";
-		print $err;
-		$ii->replace_it($err);
-		return;
-	    }
-	}
-
-	my $fn = $base? "$base/$file" : $file;
-	$fn =~ s://:/:g;
-	$fn =~ s:/$::;
-
-	if ($file eq '.') {
-	    # nothing to do; just make sure the base directory exists.
-	} elsif ($append) {
-	    appendTo($fn, $content);
-	} else {
-	    writeTo($fn, $content);
-	}
-    } elsif ($href && ! $file) {	# Href (PUT or POST)
-	my $post = $it->attr('post');
-
-    } elsif ($href) {
-	my $err = "InterForm error: both HREF and FILE specified\n";
-	print $err;
-	$ii->replace_it($err);
-	return;
-    } else {
-	my $err = "InterForm error: neither HREF nor FILE specified\n";
-	print $err;
-	$ii->replace_it($err);
-	return;
-    }
-
-}
-
-*/
