@@ -5,10 +5,112 @@
 </head><body>
 <h1>PIA Installation Manual</h1>
 
+<blockquote><em>
+  This manual describes how to install a Personal Information Agency.
+</em></blockquote>
+
+<h2>Obtaining the Files</h2>
+
+<blockquote><em>
+  Of course, at the moment anyone reading this is at CRC, and the files are
+  already installed in <a href="file:/pia1/pia/"><code>/pia1/pia/</code></a>.
+</em></blockquote>
+
+<dl>
+  <dt> From Inside Ricoh:
+  <dd> Telnet or dial in to CRC, and FTP the compressed sources from
+       <a href="file:/pia1/pia/pia.tar.gz"
+       ><code>/pia1/pia/pia.tar.gz</code></a>.
+  <dt> From Outside Ricoh: 
+  <dd> <em>(After the product is released, you will be able to)</em> Obtain a
+       copy of the public files from
+       <a href="ftp://pia.ricoh.com/pub/pia"
+       ><code>ftp://pia.ricoh.com/pub/pia</code></a>, or browse to the
+       public Agency at 
+       <a href="http://pia.ricoh.com/"><code>http://pia.ricoh.com/</code></a>.
+</dl>
+
+<h3>Also Needed</h3>
+
+You will need PERL version 5.002 or newer, and recent versions of
+the <code>libwww-perl-5</code> and <code>Net-FTP</code> module libraries.
+These can be obtained from any CPAN mirror.<p>
+
+You also need an operating system that supports sockets and long filenames, at
+least until we get a Windows 3.1 version working.  We recommend Linux.<p>
+
+Unpacking the files requires <code>tar</code> and <code>gunzip</code> (or GNU
+<code>tar</code>).<p>
+
+
+<h2>Installing the Files</h2>
+
+<h3>At Your Site</h3>
+
+The files are supplied in the form of a <code>gzip</code>'ed <code>tar</code>
+file.  Set your working directory to wherever you want the parent directory to
+be, and do
+
+<listing>
+  gunzip pia.tar.gz
+  tar xf pia.tar
+</listing>
+
+<h3>In Your Home Directory</h3>
+
+If you are planning to do <em>work</em> on the Agency, you should check out a
+working copy into your home directory using CVS.  Assuming that the CVS
+repository is in the usual place, <a
+href="file:/pia1/CvsRoot/"><code>/pia1/CvsRoot/</code></a>, use the following 
+sequence of commands:
+
+<listing>
+    cd ~
+    setenv CVSROOT /pia1/CvsRoot
+    cvs checkout pia
+</listing>
+
+(If you're using <code>bash</code>, use
+<listing>
+export CVSROOT=/pia1/CvsRoot
+</listing>
+instead of the <code>setenv</code>).
+<p>
+
+You now have a working copy of the PIA.  If all you wanted was the source
+code, you can check out <code>pia/src</code> instead of <code>pia</code>.
+<p>
+
+
+<h2>Setup</h2>
+
+You will need a subdirectory of your home directory called
+"<code>.pia</code>".  Outside of CRC, you should also have an environment
+variable <code>PIA_DIR</code> which contains a path to the top of the PIA
+source tree (...<code>/pia/src</code>).  The executable,
+<code>.../pia/src/Agencies/perl_small/pia.pl</code>, assumes that PERL is in
+/usr/local/bin, so you may have to either edit <code>pia.pl</code>or make a
+symbolic link.  The PIA will look in your home directory,
+<code>/pia1</code>, and <code>/usr/local/src</code> for a directory called
+<code>pia</code>. 
+<p>
+
+<blockquote><em>
+  === This is a lie: it doesn't look in /usr/local or /usr/local/src yet. <p>
+  === PIA_DIR should be .../pia, not .../pia/src.<p>
+</em></blockquote>
+
+You will probably find it convenient to make a symbolic link 
+called <code>pia</code> in <em>/usr/local/bin</em> or wherever you keep your
+personal binaries.<p>
+
+That's it.  Now see <a href="../User/">the User's Manual</a> to get
+started.<p> 
+
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Sep  4 09:49:54 1996
+Last modified: Thu Sep  5 09:04:55 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"

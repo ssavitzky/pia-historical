@@ -5,10 +5,57 @@
 </head><body>
 <h1>PIA Internals Manual</h1>
 
+<blockquote><em>
+  This will eventually be a an internals manual.  For now,
+  though, it's mostly just a stub.
+</em></blockquote>
+
+
+<h2>Classes</h2>
+
+
+<h2>Modules</h2>
+
+
+<h2>The Resolver Algorithm</h2>
+
+Given a resolver R:
+
+<ol>
+  <li> Input:<br>
+       Check for incoming messages.  For each message M:
+       <ol>
+	 <li> Push M onto R's queue Q.
+       </ol>
+  <li> Next Transaction:<br>
+       Shift the next transaction T from Q
+  <li> Resolution:<br>
+       For each agent A:
+       <ol>
+	 <li> match A's <code>criteria</code> against T's
+	      <code>features</code>. 
+	 <li> If A and T match, call A's <code>act_on</code> method with T and
+	      R. 
+       </ol>
+  <li> Satisfaction:<br>
+       For each object S on T's <code>satisfiers</code> queue:
+       <ol>
+	 <li> call S's <code>handle</code> method with T and R.
+       </ol>
+  <li> Finishing:<br>
+       If no S returned <code>true</code>,
+       <ol>
+	 <li> if T is a request, push an error response onto Q.
+	 <li> if T is a response, forward it to its requestor.
+       </ol>
+  <li> repeat from step 1.
+</ol>
+
+
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Sep  4 09:48:50 1996
+Last modified: Thu Sep  5 10:48:44 1996
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
