@@ -45,7 +45,8 @@ public class Element extends Token implements Attrs {
   protected byte incomplete = 0;
 
   /** Syntax flag: 0 if an end tag is optional, 1 if an end tag is
-   *	always required, and -1 if an end tag is implicit. */
+   *	always required, and -1 if an end tag is implicit.  A value of 
+   *	-2 indicates an obligatory empty element. */
   protected byte endTagRequired = 0;
 
   /** Content. */
@@ -82,8 +83,14 @@ public class Element extends Token implements Attrs {
     incomplete = i;
   }
 
+  /** Mark the element as empty. */
+  public void setEmpty() {
+    endTagRequired = -2;
+  }
+
   /** Syntax flag: 0 if an end tag is optional, 1 if an end tag is
-   *	always required, and -1 if an end tag is implicit. */
+   *	always required, and -1 if an end tag is implicit.  -2 indicates
+   *	an obligatory empty element. */
   public byte endTagRequired() {
     return endTagRequired;
   }

@@ -539,6 +539,10 @@ public class Parser extends Input {
 	  debug(" "+a);
 	  if (getValue()) it.addAttr(a, next);
 	  else		  it.addAttr(a, Token.empty);
+	} else if (last == '/') {
+	  // XML-style empty-tag indicator.
+	  it.setEmpty();
+	  last = 0;
 	} else break;
       }
       if (last != '>') return false;
