@@ -254,11 +254,17 @@ sub list_items {
     } else {
 	$in = remove_spaces($in);
 	if (@$in == 1 && ref($in->[0]) 
-	    && ($in->[0]->tag =~ /^[ou]l$/)) {
+	    && ($in->[0]->tag =~ /^[oud]l$/)) { # dl returns keys
 	    $in = remove_spaces($in->[0]->content);
 	}
+#
+#	if (@$in == 1 && ref($in->[0]) 
+ #	    && ($in->[0]->tag =~ /^dl$/)) { # returns associative list
+ #	    return list_pairs($in);
+ #	}
+
 	for $x (@$in) {
-	    if (ref($x) && $x->tag eq 'li') {
+	    if (ref($x) && $x->tag =~ /^(li|dt)$/) {
 		push(@out, $x->content_token);
 	    } else {
 		push(@out, $x);
@@ -296,8 +302,10 @@ sub list_pairs {
 	$in = remove_spaces($in->[0]->content);
     }
     my $x;
+				# this seems incomplete
+				# ... added temporary hack for non li
     for $x ($in) {
-	if (ref($x) && ref($x) ne 'ARRAY' && $x->tag eq 'li') {
+	if (ref($x) && ref($x) ne 'ARRAY' && $x->tag =~ /^(li|dt|dd|tr|th)$/) {
 	    push(@out, $x->content);
 	} else {
 	    push(@out, $x);

@@ -225,6 +225,9 @@ sub submit_forms_handle {
 ###	pia	pia (PERL) context
 ###	agent	attributes of the current PIA agent
 ###	
+###	Variables can also be accessed as entities:
+###	e.g. &AGENT.Foo.bar;
+###	
 
 ### === <get file="name"> should map to read
 

@@ -304,6 +304,9 @@ sub use_tagset {
 
  # returns an array of tokens, references to hashes/ arrays, or atomic structure
 ##  note array values in variables should be references
+
+## most of the function in the following hacks should be moved to
+# the respective classes (e.g. lookup key)
 sub  get_value_internal{
     my($self,$hash,$key)=@_;
 				# keys should already be parsed
@@ -328,18 +331,27 @@ sub  get_value_internal{
 	$content=$hash->content if ref($hash) eq 'IF::IT';
 	if (defined $content) {
 	    my $dd;
-	     while(@$content) {
-		 $dt = shift(@$content);
+	    my @content = @$content;
+
+	     while(@content) {
+		 $dt = shift(@content);
+#		 print "DT is" . $dt->tag ." \n" if ref($dt);
 		 if (ref($dt) && $dt->tag  eq  'dt') {
 		     my $dd=$dt->content_text;
 		     if($key eq '*' || $key =~ /^\s*$dd\s*$/){
-			 while(@$content){
-			     $dd=shift(@$content);
+			 while(@content){
+			     $dd=shift(@content);
+			     next unless ref($dd);
+			     
 			     if( $dd->tag  eq  'dd'){
-				 push(@result,@$dd->content) ;
+				 push(@result,@{$dd->content}) ;
 				 last;
 			     }
-			     last if $dd->tag  eq  'dt';
+			     if ($dd->tag  eq  'dt'){
+				 unshift(@content,$dd);
+				 last;
+			     }
+			    
 			 }
 		     }
 		 }
@@ -376,7 +388,7 @@ print "getting variable $variable !\n" if $main::debugging;
     my @keys=$self->parse_variable_name($variable);
     my $space=shift @keys;
      return unless exists $self->entities->{$space};
- print " getting verbal and $space keys" . join(" ",@keys) ." \n";
+
     my @hashes;
 
     my @result;
@@ -389,8 +401,7 @@ print "getting variable $variable !\n" if $main::debugging;
 	while(@hashes){
 	    push(@result,$self->get_value_internal(shift @hashes, $key));
 	}
- print  "$key returned " ;
- print @result;
+
     }
 				# tidyup result here
     return $self->convert_array_to_token(@result);
@@ -403,10 +414,10 @@ sub convert_array_to_token{
     my @copy;
     foreach $value (@_){
 	my $type=ref($value);
-	print $type . "\n";
+
 	if($type){
-	    print "package type not responds to attr? " unless $ {$type}{attr};
-	    print "\n";
+#	    print "package type not responds to attr? " unless $ {$type}{attr};
+
     
 				# deal with known types first
 	    if($type eq 'IF::IT' || $type eq 'DS::Tokens'){
@@ -478,10 +489,13 @@ sub getvar {
 
 sub set_variable_value{
     my($self,$variable,$value)=@_;
+
 #this get real tricky
+#first retrieve normally except final key...
+
     my @keys=$self->parse_variable_name($variable);
     my $space=shift @keys;
-    print "setting " . join(" ",@keys) . "in $space\n";
+#    print "setting " . join(" ",@keys) . "in $space\n";
     return unless exists $self->entities->{$space};
     my @hashes;
     my @result;
@@ -498,13 +512,35 @@ sub set_variable_value{
 	    push(@result,$self->get_value_internal(shift @hashes, $key));
 	}
     }
+
+ # if value is single token in tokens, just use it, not whole array
+#  should use remove_spaces in semantics
+    if(ref($value) eq 'DS::Tokens'){
+	$value=IF::Semantics::remove_spaces($value);
+# 	my @values;
+# 	foreach $token (@$value){
+# 	    if(ref($token)){
+# 		push(@values,$token);
+# 	    }else{
+# 		push(@values,$token) if $token =~ /\S/;	# lose garbage
+# 	    }
+#           }
+	if(@$value == 1){		# more than one element?
+	    $value=shift(@$value);
+	}
+    }
+		
+	
+
 #anything that is a hash gets this new value
     foreach $hash (@result){
-	if(my $type=ref($hash)){ 
-	    if ($type eq 'IF::IT') {
+	my $type=ref($hash);
+	if($type){ 
+#	    print "type is $type\n";
+	    if ($type eq 'IF::IT' || $type eq 'DS::Tokens') {
 # tokens act as description lists
-		$hash->push(IF::IT->new('dt'),$lastkey);
-		$hash->push(IF::IT->new('dd'),$value);
+		$hash->push(IF::IT->new('dt',$lastkey));
+		$hash->push(IF::IT->new('dd',$value));
 	    }else{		# treat everythingelse as hash
 				# possibly convert value to hash?
 		$$hash{$lastkey}=$value;
