@@ -1,0 +1,5 @@
+pid=$(ps -OP | grep '[0-9] perl ./server.pl' | cut -d' ' -f1)
+echo $pid
+kill $pid
+echo "kill is completed"
+
