@@ -104,8 +104,8 @@ $ahead = "<a href=";
 $atrail = "</a>";
 $imghead = "<img src=";
 $imgtrail = ">";
-$jpg["jpg"] = 1;
-$jpg["jpeg"] = 1;
+$jpg{"jpg"} = 1;
+$jpg{"jpeg"} = 1;
 
 $jpegs=join(" ",@jpegs);
 
