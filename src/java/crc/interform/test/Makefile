@@ -7,7 +7,8 @@ TOPDIR=../../../..
 
 FILES = \
 	t1.txt \
-	t2.html
+	t2.html \
+	t3.if
 
 .SUFFIXES: .txt .html .if .out .ok .diff
 
