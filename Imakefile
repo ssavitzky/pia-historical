@@ -86,7 +86,6 @@ check::
  */
 SRCDIR=src/java/crc
 CLASSDIR=src/java
-LIBDIR=lib/java
 
 cvs.tar::
 	find $(SUBDIRS) -name CVS -print | tar -cT - -f cvs.tar
