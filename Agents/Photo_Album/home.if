@@ -2,7 +2,7 @@
 <html><head>
 <title>Digital Photo Album </title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
-</head><body bgcolor="#ffffff" link="#ff0000">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
 <set entity  name=latest><read file=".latest"></set>
 <table align=center cellspacing=0 cellpadding=0 border=0>
@@ -28,37 +28,38 @@
         <if><agent-running name="Photos">
         <then><img src="/Photos/&latest;/r0100001.small.gif"
                    height=32 width=32 border=0></then></if></a>
-    <xtd><a href="/&agentName;/latest.if">Newest Photos</a>
+    <a href="/&agentName;/latest.if">Newest Photos</a>
 <TR><th rowspan=3>
         <img src="/Photo_Album/rdc2esmall.gif" width=144 height=99 border=0>
-    <TD align=right><td>
+    <TD align=right><td><!-- move td to after the icon to get the -->
+                        <!-- icons lined up to the left of the PIA -->
         <a href="/&agentName;/catalog.if">
         <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <xtd><a href="/&agentName;/catalog.if">Captioned Photos</a>
+    <a href="/&agentName;/catalog.if">Captioned Photos</a>
 
 <TR><TD align=right><td>
         <a href="/&agentName;/catalog.if">
         <img src="/Photo_Album/album.gif"  height=32 width=32 border=0></a>
-    <TxD><a href="/Photos/">All Photos</a>
+    <a href="/Photos/">All Photos</a>
 
 <TR>
     <TD align=right><td>
         <a href="/&agentName;/slide_show.if">
         <img src="/Photo_Album/slides.gif"  height=32 width=32 border=0></a>
-    <xtd><a href="/&agentName;/slide_show.if">Slideshows</a>
+    <a href="/&agentName;/slide_show.if">Slideshows</a>
 
 <tr><th>
     <TD align=right><td>
         <a href="/&agentName;/help.if">
         <img src="/Photo_Album/help.gif"  height=32 width=32 border=0></a>
-    <xtd><a href="/&agentName;/help.if">Help</a>
+    <a href="/&agentName;/help.if">Help</a>
 
 <tr><th>
     <td align=right><td>
         <a href="http://cdrw/CDRW/publish_photos.if">
         <img src="/Agency/Icons/cd.gif" height=32 width=32 border=0></a>
     <!-- should test for CD-R/RW -->
-    <xTD><a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
+    <a href="http://cdrw/CDRW/publish_photos.if">Create photo CD</a>
 </table>  
 <p>
 <hr>
