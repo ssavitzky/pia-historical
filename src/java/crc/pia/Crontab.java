@@ -5,10 +5,11 @@ package crc.pia;
 
 /** Registry for timed operations.
  *	The Crontab gets its name from the Unix <code>crontab</code> table,
- *	and has similar capabilities.
+ *	and has similar capabilities.  Entries are made in the Crontab
+ *	by the &lt;submit-forms&gt; actor.<p>
  *
- *	=== Crontab and CrontabEntry should descend from Element for 
- *	=== easy printability.
+ *  A Crontab is associated with each Agent that needs one.  That means that
+ *	an Agent's Crontab will be checkpointed along with it.<p>
  */
 
 import crc.pia.Transaction;
@@ -25,15 +26,21 @@ import java.io.Serializable;
 
 public class Crontab extends Element implements Serializable {
 
+  /** The last time the crontab was run, as given by
+   *	System.currentTimeMillis().
+   */ 
+  public long lastTime = 0;
+
   /************************************************************************
   ** Registry:
   ************************************************************************/
 
 
   public void addRequest(CrontabEntry entry) {
-
+    addItem(entry);
   }
 
+  /** Remove the earliest entry that matches the one given. */
   public void removeRequest(CrontabEntry entry) {
 
   }
@@ -64,10 +71,34 @@ public class Crontab extends Element implements Serializable {
    * Make any requests that have come due since the last time.
    *	Each request is only submitted once, no matter how many times
    *	it may have matched the current time (for example, requests to
-   *	be submitted every minute will only run once when the PIA comes
-   *	up after being down for an hour).
+   *	be submitted every minute will run at most once when the PIA comes
+   *	up after being down for an hour).  It is possible that requests
+   *	that come due while the PIA is down will not get run at all. <p>
+   *
+   *	The repeat count of each request is decremented; any request that
+   *	``expires'' with a repeat count of zero is removed.<p>
    */
-  public void handleRequests(Agent agent) {
-    
+  public void handleRequests(Agent agent, long time) {
+    long previousTime = lastTime;
+    lastTime = time;
+
+    /* Loop through the items.  Start at the end and work down to prevent
+     *	getting confused when an expired entry is removed. */
+
+    for (int i = nItems(); --i >= 0; ) {
+      CrontabEntry entry = (CrontabEntry)itemAt(i);
+      if (entry.handleRequest(previousTime, lastTime)
+	  && entry.expired()) content().remove(entry);
+    }
   }
+
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
+
+  public Crontab() {
+    super("crontab");		// crontab tag.
+  }
+
 }

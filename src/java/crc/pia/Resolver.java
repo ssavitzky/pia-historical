@@ -10,18 +10,24 @@
  * resolver attempts to match its features against every agent, and each
  * agent that matches  is given the chance to actOn the transaction.  In
  * general agent.actOn will either push some new transactions, register
- * a handler agent, or both.
+ * a handler agent, or both.<p>
  *
  * After each agent has had its chance to act_on the transaction, any
  * registered handlers are called, after which the transaction is
- * discarded. 
+ * discarded. <p>
+ *
+ * Each time around its loop, the Resolver also checks the time.
+ * Approximately once per minute, it polls each Agent in its registry
+ * to see whether it has any Crontab entries to run. <p>
  */
 
 package crc.pia;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Enumeration;
 import java.io.IOException;
+
+import java.util.Enumeration;
+import java.util.Date;
 
 import java.net.URL;
 
@@ -48,6 +54,20 @@ public class Resolver extends Thread {
    * Attribute index - whether to stop running
    */
   protected boolean finish = false;
+
+  /**
+   * Time of last Crontab check. 
+   */
+  protected long cronTime = 0;
+
+  /** 
+   * Interval between Crontab checks in milliseconds.  Must be less than one
+   *	minute to avoid missing a ``once-per-minute'' entry.
+   */
+  protected static long cronDELAY = 15000;
+
+  /** Constant: one minute. */
+  public static final long MINUTE = 60000;
   
   /************************************************************************
   ** Transaction Queue:
@@ -231,6 +251,26 @@ public class Resolver extends Thread {
     return a;
   }
 
+  /** Run through the agentCollection and tell each Agent to run its
+   *	associated Crontab. */
+  public void runCrontabs() {
+
+    /* Ensure that this check and last check fall into different 1-minute
+     *	buckets as measured since EPOCH. */
+
+    long thisTime = System.currentTimeMillis();
+    if (thisTime / MINUTE <= cronTime / MINUTE) return;
+
+    cronTime = thisTime;
+    Pia.debug("Running crontabs at cronTime=" + cronTime);
+    Enumeration agents = agents();
+    while (agents.hasMoreElements()) {
+      Agent a = (Agent)agents.nextElement();
+      a.handleTimedRequests(cronTime);
+    }
+
+  }
+
   /************************************************************************
   ** Control:
   ************************************************************************/
@@ -322,6 +362,9 @@ public class Resolver extends Thread {
 	Pia.debug(this, "Transaction resolves");
 	tran.resolved();      
       }
+
+      if (System.currentTimeMillis() > cronTime + cronDELAY) 
+	runCrontabs();
       
     }
     Pia.debug(this, "RUN thread EXITED");

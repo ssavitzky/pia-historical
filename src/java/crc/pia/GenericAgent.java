@@ -276,9 +276,9 @@ public class GenericAgent extends AttrBase implements Agent {
   /** 
    * Handle timed requests.
    */
-  public void handleTimedRequests() {
+  public void handleTimedRequests(long time) {
     if (crontab != null) {
-      crontab.handleRequests(this);
+      crontab.handleRequests(this, time);
     }
   }
 

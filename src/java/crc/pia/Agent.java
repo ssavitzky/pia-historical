@@ -237,7 +237,7 @@ public interface Agent extends Attrs, Registered {
   /** 
    * Handle timed requests.
    */
-  public void handleTimedRequests();
+  public void handleTimedRequests(long time);
 
   /** 
    * Send an error message that includes the agent's name and type.

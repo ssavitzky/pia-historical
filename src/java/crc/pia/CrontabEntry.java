@@ -13,13 +13,21 @@ import crc.pia.Agent;
 import crc.pia.Resolver;
 
 import crc.ds.Registered;
+import crc.ds.List;
 
 import crc.sgml.SGML;
+import crc.sgml.Element;
 import crc.sgml.Attrs;
+import crc.sgml.Util;
 
 import java.io.Serializable;
 
-public class CrontabEntry implements Serializable {
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.text.DateFormat;
+
+public class CrontabEntry extends Element implements Serializable {
 
   /************************************************************************
   ** Request Data:
@@ -73,7 +81,9 @@ public class CrontabEntry implements Serializable {
   ** Creating and Submitting Requests:
   ************************************************************************/
 
-  public CrontabEntry() {}
+  public CrontabEntry() {
+    super("crontab-entry");
+  }
 
   /**
    * Construct a Crontab entry.
@@ -111,9 +121,25 @@ public class CrontabEntry implements Serializable {
       repeat = -1;
     }
 
-    // === until not supported yet ===
+    if (itt.hasAttr("until")) {
+      List until = Util.split(itt.attrString("until"), '-');
+      untilMonth = untilEntry(until, 0);
+      untilDay   = untilEntry(until, 1);
+      untilHour  = untilEntry(until, 2);
+    }
   }
 
+  /** Convert a list item to an ``until'' value.  Null items, missing items,
+   *	and asterisks are converted to -1, the wildcard value. */
+  private int untilEntry(List until, int index) {
+    String s = (until.nItems() <= index)? "*" : until.at(index).toString();
+    if ("".equals(s) || "*".equals(s)) return -1;
+    else try {
+      return Integer.valueOf(s).intValue();
+    } catch (Exception e) {
+      return -1;
+    }
+  }
 
   private int entry(SGML itt, String attr) {
     if (itt.hasAttr(attr)) {
@@ -135,9 +161,100 @@ public class CrontabEntry implements Serializable {
   }
 
 
-  /** Submit the timed request.
+  /** Submit the timed request.  Decrement the repeat count if positive.
+   *	@return true as a convenience for handleRequest.
+   *	@see #handleRequest
    */
-  public void submitRequest() {
+  public boolean submitRequest() {
+    Pia.verbose("Submitting CrontabEntry " + method + " " + url);
     agent.createRequest(method, url, content);
+    if (repeat > 0) {
+      if (--repeat == 0) {
+	Pia.verbose("--Maximal repeat count reached.");
+      } 
+    }
+    return true;
+  }
+
+  /** Perform all processing necessary for the given times.  Because
+   *	of the way we are called, it is safe to assume that
+   *	<code>previousTime</code> and <code>nextTime</code> fall into
+   *	different 1-minute intervals measured from time=0 (i.e. they
+   *	differ when divided by 60,000 -- 1 minute in milliseconds).
+   *	It is <em>not</em> safe to assume that they are anywhere close
+   *	to one minute apart.
+   *
+   *	@param previousTime the last time this crontab was processed.
+   *	@param thisTime the current time.
+   *	@return true if a request was made <em>or</em> if the entry has 
+   *	 expired.
+   */
+  public boolean handleRequest(long previousTime, long thisTime) {
+
+    if (repeat == 0) return true;
+
+    // First determine the _current_ minute, hour, day, month, year,
+    // and weekday.
+
+    Date date = new Date(thisTime);
+    Calendar today = new GregorianCalendar();
+
+    int y 	  = today.get(Calendar.YEAR);
+    int m	  = today.get(Calendar.MONTH) + 1;
+    int d	  = today.get(Calendar.DAY_OF_MONTH);
+    int h	  = today.get(Calendar.HOUR_OF_DAY);
+    int min	  = today.get(Calendar.MINUTE);
+    int wd	  = (today.get(Calendar.DAY_OF_WEEK)- Calendar.SUNDAY + 7) % 7;
+    // We want Sunday = 0.  This handles any reasonable value of SUNDAY;
+    
+    // Check the expiration date. 
+    if (checkExpired(min, h, d, m, y, wd)) {
+      Pia.verbose("Expired CrontabEntry " + method + " " + url);
+      repeat = 0;
+      return true;
+    }
+
+    // Now check for match.
+    if (checkMatch(min, h, d, m, y, wd)) {
+      return submitRequest();
+    }
+
+    return false;
+  }
+
+  /** Test whether the entry has expired.  
+   *	@return true if <code>repeat == 0</code>.
+   */
+  public boolean expired() {
+    return repeat == 0;
+  }
+
+  /** Test whether the entry matches the current date and time. */
+  public boolean checkMatch(int min, int h, int d, int m, int y, int wd) {
+    if ((minute < 0 || minute == min) && (hour    < 0 || hour    == h) &&
+	(day    < 0 || day    == d)   && (month   < 0 || month   == m) &&
+	(year   < 0 || year   == y)   && (weekday < 0 || weekday == wd)   )
+	return true;
+    else
+      return false;
+  }
+
+  /** Test whether the entry has passed its expiration date. */
+  public boolean checkExpired(int min, int h, int d, int m, int y, int wd) {
+
+    // There's probably a better way using a Calendar.
+
+    if (untilHour < 0 && untilDay < 0 && untilMonth < 0) return false;
+
+    //System.err.println("h=" + h + " d=" + d + " m="+m);
+    //System.err.println("uh="+untilHour+" ud="+untilDay+" um="+untilMonth);
+
+    if (untilMonth  > 0 && untilMonth  < m) return true;
+    if ((untilMonth < 0 || untilMonth == m) &&
+	(untilDay  >= 0 && untilDay    < d)   ) return true;
+    if ((untilMonth < 0 || untilMonth == m) && 
+	(untilDay   < 0 || untilDay   == d) && untilHour < h) return true;
+
+    return false;
   }
 }
