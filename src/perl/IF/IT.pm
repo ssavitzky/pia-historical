@@ -291,13 +291,16 @@ sub endtag {
 ### Syntax:
 ###
 ###	...
-###
+###	It's not clear what to do when we see an end tag for something
+###	that shouldn't need it.  We really need to get the full SGML
+###	parser running.
 
 @empty_tags = (	
 	       '!', '!--', '?', 
-	       'img', 'hr', 'br',
-	       'li', 'dt', 'dd', 'link',endt
+	       'img', 'hr', 'br', 'p',
+	       'li', 'dt', 'dd', 'link',
 	       );
+
 
 %empty_elements = {};
 foreach $e (@empty_tags) {
