@@ -13,6 +13,9 @@ sub initialize {
 #need factory for translators
     my $translators={};
     $$self{translators}=$translators;
+
+
+    &PIA_AGENT::initialize($self);
     
     return $self;
 }

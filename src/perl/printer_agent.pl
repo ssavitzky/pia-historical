@@ -20,10 +20,20 @@ require HTML::FormatPS;
 
 $printer_root_directory=  "/tmp/printer/";
 $ps_file="/tmp/printer/preview.ps";
-$image_file="/tmp/printer/preview.gif";
-$image_URL="file:/tmp/printer/preview.gif";
+$image_URL="file:/tmp/printer/preview";
 $ps_URL="file:/tmp/printer/preview.ps";
+system("mkdir $printer_root_directory") unless -d $printer_root_directory;
 
+sub image_file_name{
+    $self=shift;
+    my $image_file="$printer_root_directory/preview";
+
+    my $num=$self->option('preview_number');
+    my $string = "$image_file$num.gif";
+    $num+=1;
+    $self->option('preview_number',$num);
+return $string;
+}
 
 sub html_latex_ps{
 
@@ -33,7 +43,7 @@ sub html_latex_ps{
     my $request=shift;
     my $docId=shift;
     my $status=html2latex($response->content,$ps_file,$request->url,$docId);
-    print "2latex status is $status \n" if $main::debugging;
+    print "latex status is $status \n" if $main::debugging;
 }
 
 sub html_ps{
@@ -69,9 +79,11 @@ return $response;
 }
 
 sub create_preview{
+    my $self=shift;
     my $request=shift;
     my $response=create_postscript($request);
-    
+    my $image_file=image_file_name($self);
+
 #    my $cmd="cat /dev/null | gs -sOutputFile=$image_file -sDEVICE=gif8 -r72 -dNOPAUSE -q $ps_file";
     my $cmd="cat /dev/null | gs -sOutputFile=- -sDEVICE=ppm -r72 -dNOPAUSE -q $ps_file |ppmquant 256 | ppmtogif > $image_file";
 #    print $cmd;
@@ -79,15 +91,13 @@ sub create_preview{
     #shouldgetstatushere & check for multiple pages...put %d in output filename
     print "Status is $status\n" if $main::debugging;
     my $image_url = $request->url->as_string;
-    
-    my $string="<a href=$image_url> <img src=";
-    $string.=$image_URL;
-    $string.="></a>";
-#replace content with image url
-#TBD create new response rather than usurp preview
-    $response->content($string);
-    
-    return $response;
+    my $element=HTML::Element->new('a',href => $image_url);
+    my $img_url="file:$image_file";
+    my $particle=HTML::Element->new('img', src => $img_url );
+    $element->push_content($particle);
+
+#This returns the postscript    return $response;
+    return $element;#an html element which is linked to preview image
 }
 
 

@@ -8,6 +8,7 @@ unshift(@INC,"/usr/bin");
 
 
 $GWtempdir = "/tmp/URLS";
+system("mkdir $GWtempdir") unless -d $GWtempdir;
 
 $timeout = undef;
 #$UNJPEG = "/color/bin/unjpeg -R ";
@@ -36,7 +37,6 @@ system("rm -f $GWtempdir/*");
      $imagenum = 1;		# 
      @hrefs = split(/<IMG/i,$page);
     $n = $[;
-    my $agent=new LWP::UserAgent;
     while (++$n <= $#hrefs) {
 	 # parse and get absolute url
 	$hrefs[$n] =~ m|src\s*=\s*"?([^">]*)|i ;
@@ -49,7 +49,8 @@ my $url = new URI::URL ($1,$base_url);
       $imagefile = "$GWtempdir/htmlIMG.$imagenum.gif";
       $imagefileps = "$GWtempdir/htmlIMG.$imagenum.ps"; # 
 
-    $response=$agent->request($request,$imagefile);
+    my $ua=new LWP::UserAgent;
+    my $response=$ua->request($request,$imagefile);
 #print $response->as_string;
 #      open(IMAGEF,">$imagefile");				# 
 #      print IMAGEF $page ;
