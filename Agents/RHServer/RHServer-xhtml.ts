@@ -12,12 +12,12 @@
 		them by name; i.e. returns their name attribute.
 	</doc>
 	<action>
-		<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
-			<repeat list=&selected;>
-				<OPTION><select><from>&li;</from><name recursive>rhconcept-name</name><content>
-				</select>
+		<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
+			<repeat list=&list;>
+				<OPTION><extract><from>&li;</from><name recursive>rhconcept-name</name><content>
+				</extract>
 			</repeat>
-		</select>
+		</extract>
 	</action>
 </define>
 
@@ -26,13 +26,13 @@
 	</doc>
 	<define attribute=name required></define>
 	<action>
-		<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
-			<repeat> <foreach entity=x>&selected;></foreach>
-				<select><from>&x;</from><name recursive>rhconcept-name</name><content>
-					<if><test match=&attributes:name;>&selected;</test><then>
+		<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
+			<repeat> <foreach entity=x>&list;></foreach>
+				<extract><from>&x;</from><name recursive>rhconcept-name</name><content>
+					<if><test match=&attributes:name;>&list;</test><then>
 						&x;
 					</if>
-				</select>
+				</extract>
 			</repeat>
 	</action>
 </define>
@@ -48,8 +48,8 @@
 			<get-concept-by-name name=&attributes:name;>
 			</get-concept-by-name>
 		</set>
-		<select><from>&cpt;</from><name recursive>&attributes:field;</name><content>
-		</select>
+		<extract><from>&cpt;</from><name recursive>&attributes:field;</name><content>
+		</extract>
 	</action>
 </define>
 
@@ -64,10 +64,10 @@
 			<get-concept-by-name name=&attributes:concept;>
 			</get-concept-by-name>
 		</set>
-		<select><from>&cpt;</from><name recursive>rhconcept-phraselist</name>
-			<repeat><foreach entity=x> &selected;></foreach>
-				<select><from>&x;</from><name recursive>rhconcept-phrase</name><content>
-				</select>
+		<extract><from>&cpt;</from><name recursive>rhconcept-phraselist</name>
+			<repeat><foreach entity=x> &list;></foreach>
+				<extract><from>&x;</from><name recursive>rhconcept-phrase</name><content>
+				</extract>
 			</repeat>
 	</action>
 </define>
@@ -83,17 +83,17 @@
 			<get-concept-by-name name=&attributes:concept;>
 			</get-concept-by-name>
 		</set>
-		<select><from>&cpt;</from><name recursive>rhconcept-group</name>
-			<repeat><foreach entity=x>&selected;</foreach>
-				<set name=gname><select>&x;<content></select></set>
+		<extract><from>&cpt;</from><name recursive>rhconcept-group</name>
+			<repeat><foreach entity=x>&list;</foreach>
+				<set name=gname><extract>&x;<content></extract></set>
 				<if><test match=&attributes:group;>&gname;</test><then>
-					<select>&x;
-						<remove>&selected;</remove>
-					</select>
+					<extract>&x;
+						<remove>&list;</remove>
+					</extract>
 			
 				</if>
 			</repeat>
-		</select>
+		</extract>
 	</action>
 </define>
 
@@ -108,10 +108,10 @@
 			<get-concept-by-name name=&attributes:concept;>
 			</get-concept-by-name>
 		</set>
-		<select><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
-			<repeat><foreach entity=x> &selected;></foreach>
-				<select><from>&x;</from><name recursive>rhconcept-group</name><content>
-				</select>
+		<extract><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
+			<repeat><foreach entity=x> &list;></foreach>
+				<extract><from>&x;</from><name recursive>rhconcept-group</name><content>
+				</extract>
 			</repeat>
 	</action>
 </define>
@@ -122,12 +122,12 @@
 		a menu op;tion format.
 	</doc>
 	<action>
-	<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name><content>
-		<unique>&selected;</unique>
-		<repeat><foreach entity=x>&selected;</foreach>
+	<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name><content>
+		<unique>&list;</unique>
+		<repeat><foreach entity=x>&list;</foreach>
 			<OPTION>&x;
 		</repeat>
-	</select>
+	</extract>
 	</action>
 </define>
 
@@ -138,13 +138,13 @@
 	</doc>
 	<define attribute=group required></define>
 	<action>
-		<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name><content>
-			<repeat><foreach entity=x>&selected;</foreach>
+		<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name><content>
+			<repeat><foreach entity=x>&list;</foreach>
 				<if><test match=&attributes:group;>&x;</test><then>
 					&x;
 				</if>
 			</repeat>
-		</select>
+		</extract>
 
 	</action>
 </define>
@@ -157,16 +157,16 @@
 	</doc>
 	<define attribute=group required></define>
 	<action>
-		<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name>
-			<repeat><foreach entity=x>&selected;</foreach>
-				<set name=gname><select>&x;<content></select></set>
+		<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept-group</name>
+			<repeat><foreach entity=x>&list;</foreach>
+				<set name=gname><extract>&x;<content></extract></set>
 				<if><test match=&attributes:group;>&gname;</test><then>
-					<select>&x;
-						<remove>&selected;</remove>
-					</select>
+					<extract>&x;
+						<remove>&list;</remove>
+					</extract>
 				</if>
 			</repeat>
-		</select>
+		</extract>
 	</action>
 </define>
 
@@ -178,23 +178,23 @@
 	<define attribute=group required></define>
 	<action>
 		<set name=cpt>
-			<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
-			</select>
+			<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept</name>
+			</extract>
 		</set>
-		<select>
+		<extract>
 			<repeat><foreach entity=x>&cpt;</foreach>
 				<!-- Find group by name within individual concept x -->
-				<select><from>&x;</from><name recursive>rhconcept-group</name><content>
-					<repeat><foreach entity=y>&selected;</foreach>
+				<extract><from>&x;</from><name recursive>rhconcept-group</name><content>
+					<repeat><foreach entity=y>&list;</foreach>
 						<!-- If group matches name, return the concept name -->
 						<if><test match=&y;>&attributes:group;</test><then>
-							<OPTION><select><from>&x;</from><name recursive>rhconcept-name</name><content></OPTION>
-							</select>
+							<OPTION><extract><from>&x;</from><name recursive>rhconcept-name</name><content></OPTION>
+							</extract>
 						</if>
 					</repeat>
-				</select>
+				</extract>
 			</repeat>
-		</select>
+		</extract>
 	</action>
 </define>
 
@@ -209,15 +209,15 @@
 	<define attribute=entity required></define>
 		<action>
 		<set name="num">0</set>
-			<select><from>&attributes:entity;</from> #TEXT </select>
-				<repeat> <foreach entity=x>&selected;</foreach>
+			<extract><from>&attributes:entity;</from> #TEXT </extract>
+				<repeat> <foreach entity=x>&list;</foreach>
 					<for><start>0</start><stop>9</stop></for>
 						<set name=num>&n;</set>
 				</repeat>
 			<repeat start=0 stop=&num;>
-				<select><from>&attributes:entity;</from>
+				<extract><from>&attributes:entity;</from>
 					<child>&n;</child> 
-				</select>
+				</extract>
 			</repeat>
 		</action>
 	</define>
@@ -230,11 +230,11 @@
 	</doc>
 	<define attribute=path required></define>
 	<action>
-	<select><from>&AGENT:all-concepts;</from><name recursive>rhconcept-phrase</name>
-		<repeat list=&selected;>
+	<extract><from>&AGENT:all-concepts;</from><name recursive>rhconcept-phrase</name>
+		<repeat list=&list;>
 			<OPTION><text split sep=" "><extract-content entity=&li;></extract-content></text>
 		</repeat>
-	</select>
+	</extract>
 
 	</action>
 </define>
@@ -352,10 +352,10 @@
 			<get-concept-by-name name=&attributes:concept;>
 			</get-concept-by-name>
 		</set>
-		<select><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
+		<extract><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
 			<child>-1</child>
 				<append><protect markup><rhconcept-group>&attributes:group;</rhconcept-group></protect></append>
-		</select>
+		</extract>
 	</action>
 </define>
 

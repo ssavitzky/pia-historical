@@ -24,9 +24,10 @@
 <TD>
 <!-- Add list of groups -->
 <SELECT NAME="gmenu" SIZE=10>
-<select><from><group-list /> </from>
-	<get-all-groups></get-all-groups>
-</select>
+<extract><from><group-list /> </from>
+	 <get-all-groups></get-all-groups>
+</extract>
+</SELECT>
 
 </TD>
 </TR>

@@ -32,7 +32,7 @@
 		action start and end tags.  In the action code, the 
 		current contents of the global variable AGENT:links 
 		is selected. This means that the current list of links 
-		is captured in variable "selected".  Using the repeat 
+		is captured in variable "list".  Using the repeat 
 		tag, we iterate through the list of links. At 
 		each iteration, we use the test tag to see whether 
 		the list member for that iteration matches against the 
@@ -40,29 +40,29 @@
 		we return the list member, otherwise do nothing. 
 	</doc>
 	<action>
-	<select>&AGENT:links;<content>
-		<repeat list="&selected;">
+	<extract>&AGENT:links;<content>
+		<repeat list="&list;">
 			<if><test match=&attributes:link;>&li;</test><then>
 				&li;
 			</then>
 			</if>
 	</repeat>
-	</select>
+	</extract>
 	</action>
 </define>
 
 <define element=appendlink>
-  <doc>
-	appendlink is self-contained and consequently needs no arguments.
-	Like <checklink> this element is selecting the contents of AGENT:links
-	as the selected set of links. Note that the contents of AGENT:links
-	is being expanded within an unordered list environment. Then, for each 
-	checkbox button on the agent editing page, it checks to see whether it 
-	has been selected. If so, it calls checklink to see if it is already 
-	on the list. If checklink returns that link, nothing further needs to 
-	be done. If the link is not already on the list, a list item is created 
-	for that link and it is added to the unordered list of links. Each 
-	checkbox is checked in exactly the same manner. 
+  <doc> appendlink is self-contained and consequently needs no arguments.
+	Like &lt;checklink&gt; this element is extracting the contents of
+	AGENT:links as the extracted set of links. Note that the contents of
+	AGENT:links is being expanded within an unordered list
+	environment. Then, for each checkbox button on the agent editing page,
+	it checks to see whether it has been selected. If so, it calls
+	checklink to see if it is already on the list. If checklink returns
+	that link, nothing further needs to be done. If the link is not
+	already on the list, a list item is created for that link and it is
+	added to the unordered list of links. Each checkbox is checked in
+	exactly the same manner.
 
   </doc>		
   <action>
@@ -77,7 +77,7 @@
 	<set name=hisURL><a href="/History">History</a></set>
 
 	<ul>
-	<select>&AGENT:links; <content></select>
+	<extract>&AGENT:links; <content></extract>
 		<if>&FORM:wea;<then>
 			<if><checklink link=&weaURL;></checklink>
 			<else>
@@ -127,7 +127,7 @@
 
        		First, a connection is made to the named url, which 
 		is set to the local variable doc. Next, a recursive 
-		select is done to retrieve all nodes that are anchors 
+		extract is done to retrieve all nodes that are anchors 
 		within the page. The list of anchors is captured in 
 		the local variable selanchors. The main processing 
 		loop iterates through the list of anchors from Yahoo, 
@@ -142,9 +142,9 @@
 	<action>
 		<set name=doc><connect src=&attributes:url; result=content />
 			</set>
-		<set name=selanchors><select>
+		<set name=selanchors><extract>
 			<from>&doc;<content></from><name recursive>a</name>
-			</select></set>
+			</extract></set>
 
 		<ul>
 		<repeat><foreach entity=x>&selanchors;</foreach>

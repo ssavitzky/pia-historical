@@ -173,46 +173,46 @@ value of entity at end: '&li;'
 
 <h2>Test Select</h2>
 
-em: <select><from>xx <em>yy</em></from><name>em</name></select>
-em: <select><from><i>xx <em>yy</em></i></from><child>2</child></select>
-em: <select><from>xx <em>yy</em> zz</from>1</select>
-em: <select><from>xx <em>yy</em> zz</from>-2</select>
+em: <extract><from>xx <em>yy</em></from><name>em</name></extract>
+em: <extract><from><i>xx <em>yy</em></i></from><child>2</child></extract>
+em: <extract><from>xx <em>yy</em> zz</from>1</extract>
+em: <extract><from>xx <em>yy</em> zz</from>-2</extract>
 
 <repeat stop=10> <numeric remainder>&n; 2</numeric></repeat>
-numbers: <select><from><repeat stop=10> &n; </repeat></from></select>
+numbers: <extract><from><repeat stop=10> &n; </repeat></from></extract>
 Even numbers:
-<select><repeat stop=10> &n; </repeat><!-- this should be ignored -->
-	<repeat list="&selected;"> <numeric remainder>&li; 2</select>
-<select><repeat stop=10> &n; </repeat>
-	<repeat list="&selected;"> &li;:<test zero><numeric remainder>&li;
-	2</select>
+<extract><repeat stop=10> &n; </repeat><!-- this should be ignored -->
+	<repeat list="&list;"> <numeric remainder>&li; 2</extract>
+<extract><repeat stop=10> &n; </repeat>
+	<repeat list="&list;"> &li;:<test zero><numeric remainder>&li;
+	2</extract>
 Even numbers:
-<select><repeat stop=10> &n; </repeat>
-	<repeat list="&selected;"><if><test zero><numeric remainder>&li;
-	2</numeric></test><then>&li;, </then></if></select>
-<select sep=" "><repeat stop=10> &n; </repeat>
-	<repeat list="&selected;"><logical and><test zero><numeric remainder>&li;
-	2</numeric></test>&li;</select>
+<extract><repeat stop=10> &n; </repeat>
+	<repeat list="&list;"><if><test zero><numeric remainder>&li;
+	2</numeric></test><then>&li;, </then></if></extract>
+<extract sep=" "><repeat stop=10> &n; </repeat>
+	<repeat list="&list;"><logical and><test zero><numeric remainder>&li;
+	2</numeric></test>&li;</extract>
 <repeat stop=10 entity=li><logical and><test zero><numeric remainder>&li;
 	2</numeric></test>&li;</repeat>
 <if><test zero>1</test><then>xx</then></if> <test zero>1</test>
 <if><test zero>0</test><then>xx</then></if>
 
-empty: <select><from><repeat stop=10>&n; </repeat></from><name>em</name></select>
-xxx: <select><from>xxx <em>xx yy zz</em> zzz</from>0</select>
-yy: <select><from>xxx <em>xx yy zz</em> zzz</from><child>1</child></select>
-yy: <select><from>xxx <em>xx yy zz</em> zzz</from>em 1</select>
-yy: <select><from>xxx <em>xx yy zz</em> zzz</from><child>-1</child></select>
-yy, zz, : <select sep=", "><from>xxx <em>xx yy zz</em> zzz</from><child>1 -1</child></select>
-xxx, zzz, : <select sep=", "><from>xxx <em>xx yy zz</em> zzz</from>
-			     #text</select>
-em: <select><from><i> xx <em>xx yy zz</em> zzz</i></from>
-	    <child>em</child></select>
-em: <select><from><i> xx <em>xx yy zz</em> zzz</i></from>
-	    <child></child></select>
-em: <select><from>xx <em>yy</em> zz</from><child>0</child><parent></select>
+empty: <extract><from><repeat stop=10>&n; </repeat></from><name>em</name></extract>
+xxx: <extract><from>xxx <em>xx yy zz</em> zzz</from>0</extract>
+yy: <extract><from>xxx <em>xx yy zz</em> zzz</from><child>1</child></extract>
+yy: <extract><from>xxx <em>xx yy zz</em> zzz</from>em 1</extract>
+yy: <extract><from>xxx <em>xx yy zz</em> zzz</from><child>-1</child></extract>
+yy, zz, : <extract sep=", "><from>xxx <em>xx yy zz</em> zzz</from><child>1 -1</child></extract>
+xxx, zzz, : <extract sep=", "><from>xxx <em>xx yy zz</em> zzz</from>
+			     #text</extract>
+em: <extract><from><i> xx <em>xx yy zz</em> zzz</i></from>
+	    <child>em</child></extract>
+em: <extract><from><i> xx <em>xx yy zz</em> zzz</i></from>
+	    <child></child></extract>
+em: <extract><from>xx <em>yy</em> zz</from><child>0</child><parent></extract>
 
-<h3>Recursive select</h3>
+<h3>Recursive extract</h3>
 
 <set name=foo>
 <ol>
@@ -224,12 +224,12 @@ em: <select><from>xx <em>yy</em> zz</from><child>0</child><parent></select>
 </ol>
 </set>
 
-<protect>&foo;  <select>&foo;<name recursive>li</select></protect>
+<protect>&foo;  <extract>&foo;<name recursive>li</extract></protect>
 
-name rec: <select>&foo;<name recursive>li</select>
-name all: <select>&foo;<name all>li</select>
-key rec: <select>&foo;<key recursive sep=",">bar</select>
-key all: <select>&foo;<key all sep=",">bar</select>
+name rec: <extract>&foo;<name recursive>li</extract>
+name all: <extract>&foo;<name all>li</extract>
+key rec: <extract>&foo;<key recursive sep=",">bar</extract>
+key all: <extract>&foo;<key all sep=",">bar</extract>
 
 <h2>Parsed entities</h2>
 

@@ -254,11 +254,11 @@ Note that we only need these inside the PIA.
 <hr>
 <nav-bar/>
 <hr>
-<set name=myear><subst match="/.* " result=", "><select>
-    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
-    </select> </set>
+<set name=myear><subst match="/.* " result=", "><extract>
+    &attributes;<name>cvsid<eval/><text split>&list;</text> 3
+    </extract> </set>
 <b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
-<em><select>&attributes;<name>cvsid<eval/></em>
+<em><extract>&attributes;<name>cvsid<eval/></extract></em>
   </action>
 </define>
 
@@ -272,11 +272,11 @@ Note that we only need these inside the PIA.
   </define>
   <action>
 <hr>
-<set name=myear><subst match="/.* " result=", "><select>
-    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
-    </select> </set>
+<set name=myear><subst match="/.* " result=", "><extract>
+    &attributes;<name>cvsid<eval/><text split>&list;</text> 3
+    </extract> </set>
 <b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
-<em><select>&attributes;<name>cvsid<eval/></em>
+<em><extract>&attributes;<name>cvsid<eval/></em>
   </action>
 </define>
 
@@ -288,13 +288,13 @@ Note that we only need these inside the PIA.
     </doc>
   </define>
   <action>
-<set name=myear><subst match="/.* " result=", "><select>
-    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
-    </select> </set>
-<set name=incfn><select>&attributes;<name>cvsid<eval/>
-    <text split>&selected;</text> 1
-    </select><select>&attributes;<name>cvsid<eval/>
-    <text split>&selected;</text> 2</select></set>
+<set name=myear><subst match="/.* " result=", "><extract>
+    &attributes;<name>cvsid<eval/><text split>&list;</text> 3
+    </extract> </set>
+<set name=incfn><extract>&attributes;<name>cvsid<eval/>
+    <text split>&list;</text> 1
+    </extract><extract>&attributes;<name>cvsid<eval/>
+    <text split>&list;</text> 2</extract></set>
 <h6 align=right>&incfn; &copy; &myear; Ricoh Silicon Valley<h6>
   </action>
 </define>

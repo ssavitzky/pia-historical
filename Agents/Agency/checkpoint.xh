@@ -28,7 +28,7 @@
 <if><get name=FORM:all>
     <then><code><agent-save file="checkpoint.dat" list="&agentNames;"/></code>
 	  written.<br>
-	  <set name=agentNames><select sep=' '>&agentNames;</select></set>
+	  <set name=agentNames><extract sep=' '>&agentNames;</extract></set>
 	  <user-message>Saved &agentNames; in checkpoint.dat</user-message>
 	  Saved &agentNames; in <code>checkpoint.dat</code>
     </then>

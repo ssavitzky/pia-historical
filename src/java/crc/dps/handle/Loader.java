@@ -43,6 +43,7 @@ public class Loader {
     /**/defHandle("value", new valueHandler());
     defHandle("connect", new connectHandler());
     defHandle("expand", new expandHandler());
+    defHandle("extract", new extractHandler());
     defHandle("hide", new hideHandler());
     defHandle("if", new ifHandler());
     /**/defHandle("else", new elseHandler());
@@ -55,7 +56,6 @@ public class Loader {
     defHandle("parse", new parseHandler());
     defHandle("protect", new protectHandler());
     defHandle("repeat", new repeatHandler());
-    defHandle("select", new selectHandler());
     defHandle("set", new setHandler());
     defHandle("status", new statusHandler());
     defHandle("subst", new substHandler());

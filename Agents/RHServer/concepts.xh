@@ -26,7 +26,6 @@
 <!-- Add list of concepts -->
 <SELECT NAME="cmenu" SIZE=10>
 	<concepts path="/RHServer/simple.xml"></concepts>
-</select>
 </SELECT>
 </TD>
 <TD>

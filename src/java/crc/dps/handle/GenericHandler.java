@@ -101,9 +101,9 @@ public class GenericHandler extends BasicHandler {
    *
    * <p> It is provided as a separate method in case the normal three-argument
    *	 action routine is overridden, and we need the normal functionality in
-   *	 a subclass.  <code>selectHandler</code> is a good example.
+   *	 a subclass.  <code>extractHandler</code> is a good example.
    *
-   * @see crc.dps.handle.selectHandler
+   * @see crc.dps.handle.extractHandler
    */
   protected final void defaultAction(Input in, Context aContext, Output out) {
     ActiveAttrList atts = Expand.getExpandedAttrs(in, aContext);

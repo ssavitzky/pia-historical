@@ -16,7 +16,7 @@
 
 <blockquote><em>
   These are convenience functions that mainly substitute for an entity
-  references or <tag>select</tag>.  The main differences are that they are
+  references or <tag>extract</tag>.  The main differences are that they are
   more efficient, and are not limited to identifier syntax.  This allows
   names that are not entities to be kept in the same namespace as
   entities.
@@ -38,7 +38,7 @@
 
 <define element=set handler >
   <doc> The main advantages of <tag>set</tag> over the equivalent
-	<tag>select</tag> are compactness and simplicity.  These also
+	<tag>extract</tag> are compactness and simplicity.  These also
 	translate into a considerable increase in run-time efficiency.
   </doc>
   <define attribute=name required>

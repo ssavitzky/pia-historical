@@ -4,10 +4,10 @@
 <!-- Processed with /View/view.xh -->
 <!-- Processed with /View/slides.xh -->
 <set name=doc><include src="&URL;" tagset="&FORM:tagset;" /></set>
-<select><from>&doc;</from>
-        <name recursive>head</name>
-	<append children><base href="&URL;">
-</select>
+<extract><from>&doc;</from>
+         <name recursive>head</name>
+	 <append children><base href="&URL;">
+</extract>
 
 &doc;
 

@@ -16,8 +16,8 @@ import crc.dps.util.*;
 /**
  * Handler for &lt;set&gt;  <p>
  *
- *	This is an approximation to the legacy &gt;set&gt;; it lacks many
- *	of the old extraction modifiers, which have moved to &lt;select&gt;. <p>
+ * <p>	This is an approximation to the legacy &gt;set&gt;; it lacks many
+ *	of the old extraction modifiers, which have moved to &lt;extract&gt;.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com

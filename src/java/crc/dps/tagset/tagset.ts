@@ -349,7 +349,7 @@
   </note>
   <note author=steve>
 	Eventually we must make it possible to ``include'' one tagset
-	inside another by using <tag>select</tag>.
+	inside another by using <tag>extract</tag>.
   </note>
 
   <define attribute=context optional>

@@ -380,7 +380,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
   </note>
   <note author=steve>
 	Eventually we must make it possible to ``include'' one tagset
-	inside another by using <tag>select</tag>.
+	inside another by using <tag>extract</tag>.
   </note>
 
   <define attribute=name required />
@@ -760,79 +760,79 @@ example).
 <h2>Document Structure Elements</h2>
 
 <blockquote><em>
-  Document structure elements select Nodes or sets of Nodes from a parse tree,
+  Document structure elements extract Nodes or sets of Nodes from a parse tree,
   and perform structural modifications on trees.  Note that the tree being
   operated on need not be part of the document being processed; it might be a
   Namespace or the value of an entity.  
 </em></blockquote>
 
-<h3>Select and its components</h3>
-<define element=select handler>
-  <doc> Select, and optionally replace, a set of nodes.  Sub-elements in the
+<h3>Extract and its components</h3>
+<define element=extract handler>
+  <doc> Extract, and optionally replace, a set of nodes.  Sub-elements in the
 	content are processed in order of occurrence.  At any time in this
 	sequence of operations, there is a <em>current set</em> of nodes that
-	have been selected.  This set is accessible as the value of the entity
-	<code>&amp;select:selected;</code>.
+	have been extracted.  This set is accessible as the value of the entity
+	<code>&amp;extract:list;</code>.
 
 	<p>The current set of nodes is initially empty unless the
-	<tag>select</tag> is enclosed in some outer <tag>select</tag>, in
-	which case it is that select's current set.<!-- unimplemented -->
+	<tag>extract</tag> is enclosed in some outer <tag>extract</tag>, in
+	which case it is that extract's current set.<!-- unimplemented -->
 
-	<p>Each stage in the selection process results in ``selecting'' some
+	<p>Each stage in the extraction process results in ``extracting'' some
 	set of nodes (possibly a subset of the current set, but also possibly
 	some or all of their children, siblings, etc.) and replacing the
-	current set of nodes with the set of selected nodes.  This is done by
+	current set of nodes with the set of extracted nodes.  This is done by
 	simply expanding each sub-element and using its expansion as the next
 	current set.  If the current set ever becomes empty, the process
 	terminates. 
 
-	<p>The result of expanding a select is the current set of nodes
-	selected at the end of the expansion.
+	<p>The result of expanding a extract is the current set of nodes
+	extracted at the end of the expansion.
 
-	<p>The <tag>select</tag> operation is intended to have a superset of
+	<p>The <tag>extract</tag> operation is intended to have a superset of
 	the power of <a href="http://www.w3.org/TR/WD-xptr">XPointer</a>
 	expressions.
   </doc>
   <define attribute=sep optional>
-    <doc> Separator to use between selected items in the output.  Default is
+    <doc> Separator to use between extracted items in the output.  Default is
 	  whitespace. 
     </doc>
   </define>
   <define attribute=all optional><!-- unimplemented -->
-    <doc> Modifies the operation of <tag>select</tag> so that each stage in
-	  the selection process uses the same current set of nodes, and
-	  appends selected nodes to the output instead of replacing the
+    <doc> Modifies the operation of <tag>extract</tag> so that each stage in
+	  the extraction process uses the same current set of nodes, and
+	  appends extracted nodes to the output instead of replacing the
 	  current set with them.	
     </doc>
   </define>
 </define>
 
-<h4>Sub-elements of <tag>select</tag>: Starting Points</h4>
+<h4>Sub-elements of <tag>extract</tag>: Starting Points</h4>
 <ul>
-  <li> <define element=from parent=select handler>
+  <li> <define element=from parent=extract handler>
          <doc> Contains a sequence of nodes which serves as the for the
-	       selection, or in other words from which the selection is made.
+	       extraction, or in other words from which the extraction is made.
 	       Text nodes are split on whitespace.
          </doc>
        </define>
        
-  <li> <define element=in parent=select handler>
+  <li> <define element=in parent=extract handler>
          <doc> Elements in the content are simply added to the initial
-	       selection, as in <tag>from</tag>.  Text is split into
+	       extraction, as in <tag>from</tag>.  Text is split into
 	       identifiers which are looked up as entities, and the
-	       corresponding entity bindings are selected.  This permits their
+	       corresponding entity bindings are extracted.  This permits their
 	       names and values to be manipulated.
          </doc>
        </define>
        
-  <li> <define element=id parent=select text handler>
+  <li> <define element=id parent=extract text handler>
          <doc> Contains an identifier.  The element with the given
 	       <code>name</code> or <code>id</code> attribute (it is supposed
-	       to be unique) is selected.
+	       to be unique) is extracted.
 
        	       <p>If the <tag>id</tag> element is the first element in the
-	       <tag>select</tag>, the element with the given ID in the entire
-	       input document is <em>(supposed to be)</em> selected.
+	       <tag>extract</tag>, the element with the given ID in the entire
+	       input document is <em>(supposed to be)</em> extracted.
 	       <b><em>This feature is currently unimplemented!</em></b>
          </doc>
          <define attribute=case optional>
@@ -853,13 +853,13 @@ example).
        </define>
 </ul>
 
-<h4>Sub-elements of <tag>select</tag>: Selection</h4>
+<h4>Sub-elements of <tag>extract</tag>: Extraction</h4>
 <ul>
-  <li> <code>text</code> can occur inside a <tag>select</tag> element.  Text
+  <li> <code>text</code> can occur inside a <tag>extract</tag> element.  Text
        is split on whitespace and interpreted as follows:
        <doc>
        <ul>
-	 <li> If the text is a number <em>N</em>, it selects the
+	 <li> If the text is a number <em>N</em>, it extracts the
 	      <em>N<sup>th</sup></em> node in the current set.  The first node
 	      is zero, and negative numbers are counted from the last node.
 
@@ -876,19 +876,19 @@ example).
        </ul>
 
        Text items are applied <em>sequentially</em>, so that, for example,
-       <code>... li -1</code> selects the last &lt;li&gt; element in the
+       <code>... li -1</code> extracts the last &lt;li&gt; element in the
        current set.
        </doc>
        
-  <li> <define element=name parent=select text handler>
+  <li> <define element=name parent=extract text handler>
          <doc> Contains a name (identifier).  All nodes in the current set
-	       that have the given name are selected.  Attributes and entities
+	       that have the given name are extracted.  Attributes and entities
 	       are matched by name; elements are matched by their tagname.
 	       Text and comments are ignored.  If the name starts with a
 	       pound sign (<code>#</code>) it represents a node type.
 
        	       <p> If the content is empty, the name of each node in the
-		   selection becomes selected.
+		   extraction becomes extracted.
          </doc>
          <define attribute=case optional>
            <doc> A false value (<code>no</code>, <code>false</code>,
@@ -901,19 +901,19 @@ example).
          <define attribute=recursive optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Note that if a node (e.g. a
-		 list) is selected, its content will not be further examined.
+		 list) is extracted, its content will not be further examined.
            </doc>
          </define>
          <define attribute=all optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Unlike <code>recursive</code>,
-		 content even of selected nodes will be further examined; this
-		 will result in selecting <em>all</em> elements with the
+		 content even of extracted nodes will be further examined; this
+		 will result in extracting <em>all</em> elements with the
 		 matching tag.
            </doc>
          </define>
        </define>
-  <li> <define element=key parent=select text handler>
+  <li> <define element=key parent=extract text handler>
          <doc> Contains a ``key'' (string) which is matched against nodes in
 	       the current set.  Attributes and entities are matched by name;
 	       elements are matched by the text in their content.  Text nodes
@@ -933,19 +933,19 @@ example).
          <define attribute=recursive optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Note that if a node (e.g. a
-		 list) is selected, its content will not be further examined.
+		 list) is extracted, its content will not be further examined.
            </doc>
          </define>
          <define attribute=all optional>
            <doc> Causes the matching to descend recursively into the children
 		 (content) of the current set.  Unlike <code>recursive</code>,
-		 content even of selected nodes will be further examined; this
-		 will result in selecting <em>all</em> elements with the
+		 content even of extracted nodes will be further examined; this
+		 will result in extracting <em>all</em> elements with the
 		 matching tag.
            </doc>
          </define>
        </define>
-  <li> <define element=match parent=select handler>
+  <li> <define element=match parent=extract handler>
          <doc> Contains a <em>regular expression</em> which is matched against
 	       nodes in the current set.  Attributes and entities are matched
 	       by name; elements and text are converted to strings.
@@ -958,19 +958,19 @@ example).
            </doc>
          </define>
        </define>
-  <li> <define element=child parent=select handler>
+  <li> <define element=child parent=extract handler>
          <doc> The content is a list of strings that are treated like the text
-	       items in <tag>select</tag>.  Each designated item is selected
+	       items in <tag>extract</tag>.  Each designated item is extracted
 	       from the children of each node in the current set.  Thus,
-	       <tag>child</tag>0 -1<tag>/child</tag> selects the first and
+	       <tag>child</tag>0 -1<tag>/child</tag> extracts the first and
 	       last children of each node in the current set.
 
        	       <p>Note that <tag>child</tag> only contains text terms, with
-       	       none of the sub-elements permitted in <tag>select</tag>.  This
+       	       none of the sub-elements permitted in <tag>extract</tag>.  This
        	       is to allow the text terms to be computed (for example,
        	       computing a name or index), which is more useful.  The more
        	       general operation can be done using an embedded
-       	       <tag>select&nbsp;all</tag>.  
+       	       <tag>extract&nbsp;all</tag>.  
          </doc>
          <note author=steve> XPointer uses
            <code>child(<em>n, tag, attr, value</em>)</code> <em>n</em> can be
@@ -979,30 +979,30 @@ example).
            <code>string</code>, and <code>span</code>.
          </note>
        </define>
-  <li> <define element=attr parent=select handler>
-         <doc> Contains an attribute name; selects the named attribute of each
+  <li> <define element=attr parent=extract handler>
+         <doc> Contains an attribute name; extracts the named attribute of each
 	       Element in the current set, and every Attribute node in the
 	       current set matching the given name.
          </doc>
          <define attribute=case optional>
          </define>
        </define>
-  <li> <define element=nodes parent=select handler>
+  <li> <define element=nodes parent=extract handler>
          <doc> The content is a list of strings that are treated like the text
-	       items in <tag>select</tag>.  Each designated item is selected
+	       items in <tag>extract</tag>.  Each designated item is extracted
 	       from the current set.  Thus, <tag>nodes</tag>0
-	       -1<tag>/nodes</tag> selects the first and last nodes in the
+	       -1<tag>/nodes</tag> extracts the first and last nodes in the
 	       current set.
          </doc>
        </define>
-  <li> <undefine element=xptr parent=select handler><!-- unimplemented -->
-         <doc> Contains an XPointer expression and selects the corresponding
+  <li> <undefine element=xptr parent=extract handler><!-- unimplemented -->
+         <doc> Contains an XPointer expression and extracts the corresponding
 	       nodes. See <a
 	       href="http://www.w3.org/TR/WD-xptr">www.w3.org/TR/WD-xptr</a>
          </doc>
        </undefine>
-  <li> <define element=eval parent=select empty handler>
-         <doc> Evaluates each selected node, i.e. replaces it by its value.
+  <li> <define element=eval parent=extract empty handler>
+         <doc> Evaluates each extracted node, i.e. replaces it by its value.
 	       (We use <code>eval</code> for this because <code>value</code>
 	       is already defined with a different syntax.)  Text and passive
 	       markup evaluate to themselves.
@@ -1011,21 +1011,21 @@ example).
        	       how to find their corresponding values.
          </doc>
        </define>
-  <li> <define element=content parent=select empty handler>
-         <doc> Replaces each selected node with its content.
+  <li> <define element=content parent=extract empty handler>
+         <doc> Replaces each extracted node with its content.
          </doc>
        </define>
-  <li> <define element=parent parent=select empty handler>
-         <doc> Selects the parent of each node in the current set.
+  <li> <define element=parent parent=extract empty handler>
+         <doc> Extracts the parent of each node in the current set.
          </doc>
        </define>
-  <li> <define element=next parent=select empty handler>
-         <doc> Selects the next node after each node in the current set.
+  <li> <define element=next parent=extract empty handler>
+         <doc> Extracts the next node after each node in the current set.
 	       Ignorable whitespace is skipped.
          </doc>
        </define>
-  <li> <define element=prev parent=select empty handler>
-         <doc>Selects the node previous to each node in the current set.
+  <li> <define element=prev parent=extract empty handler>
+         <doc>Extracts the node previous to each node in the current set.
 	       Ignorable whitespace is skipped.
          </doc>
        </define>
@@ -1034,28 +1034,28 @@ example).
 <note author=steve>
   Wanted:
   <ul>
-    <li> A way of selecting on the basis of an arbitrary test.
+    <li> A way of extracting on the basis of an arbitrary test.
 	 <tag>repeat</tag> might do for that, too, but it's clumsy.
-	 Possibly &lt;select-each&gt;
+	 Possibly &lt;extract-each&gt;
 
-    <li> A way of performing <em>multiple</em> selections, i.e. selecting
-	 everything that matches A <em>or</em> B, or of selecting the first
-	 three children of each node.  Possibly &lt;select-all&gt;
+    <li> A way of performing <em>multiple</em> extractions, i.e. extracting
+	 everything that matches A <em>or</em> B, or of extracting the first
+	 three children of each node.  Possibly &lt;extract-all&gt;
   </ul>
 </note>
 
-<h4>Sub-elements of <tag>select</tag>: Replacement</h4>
+<h4>Sub-elements of <tag>extract</tag>: Replacement</h4>
 <ul>
-  <li> <define element=replace parent=select handler>
+  <li> <define element=replace parent=extract handler>
          <doc> Contains a list of nodes.  The default action is for the entire
-	       list to replace the current content of each selected element,
-	       and the value of each selected entity or attribute.  (In most
-	       cases only one node will be selected.)
+	       list to replace the current content of each extracted element,
+	       and the value of each extracted entity or attribute.  (In most
+	       cases only one node will be extracted.)
          </doc>
          <define attribute=name optional>
            <doc> The content of the <tag>replace</tag> element replaces the
-		 value of the named attribute of each selected element, and
-		 the value of each selected attribute or entity with a
+		 value of the named attribute of each extracted element, and
+		 the value of each extracted attribute or entity with a
 		 matching name.
 
              <p> <b>Note</b> that there is no way to change the <em>name</em>
@@ -1071,17 +1071,17 @@ example).
          <undefine attribute=each optional><!-- unimplemented -->
            <doc> The content of the <tag>replace</tag> element is split into a
 		 list of nodes, each of which replaces a corresponding
-		 selected item.
+		 extracted item.
            </doc>
          </undefine>
        </define>
-  <li> <define element=append parent=select handler>
-         <doc> Appends the contents to the list of selected nodes.  The
-	       content nodes become the right siblings of the last selected
+  <li> <define element=append parent=extract handler>
+         <doc> Appends the contents to the list of extracted nodes.  The
+	       content nodes become the right siblings of the last extracted
 	       node. 
          </doc>
          <define attribute=children optional>
-           <doc> appends to the children (content) of <em>each</em> selected
+           <doc> appends to the children (content) of <em>each</em> extracted
 		 node. 
            </doc>
          </define>
@@ -1091,8 +1091,8 @@ example).
          	 become the children of their containers.
          </note>
        </define>
-  <li> <define element=remove parent=select empty handler>
-         <doc> Removes each selected node from its parent.
+  <li> <define element=remove parent=extract empty handler>
+         <doc> Removes each extracted node from its parent.
          </doc>
          <note author=steve> This will not work for most cases in the current
          	 system; it will become possible only after named nodes become
@@ -1100,8 +1100,8 @@ example).
          	 become the children of their containers.
          </note>
        </define>
-  <li> <define element=unique parent=select empty handler>
-         <doc> Removes duplicate text nodes from the selected set.
+  <li> <define element=unique parent=extract empty handler>
+         <doc> Removes duplicate text nodes from the extracted set.
          </doc>
          <note author=pgage> Probably doesn't work.
          </note>
@@ -1325,7 +1325,7 @@ example).
 	  separator is inserted and the items are simply jammed together, but
 	  remain separate nodes.  This is usually a bad idea unless the
 	  <tag>text</tag> element is enclosed in something else, like a
-	  <tag>foreach</tag> or <tag>select</tag>.
+	  <tag>foreach</tag> or <tag>extract</tag>.
     </doc>
   </define>
   <define attribute=split handler optional>
@@ -1704,7 +1704,7 @@ example).
   <doc> Corresponds to a standard set of e-mail headers consisting of
 	<code><em>name</em>: <em>value</em></code> pairs.  Each pair in its
 	content is a separate <tag>header</tag> element.  Lines can be
-	selected using the <tag>id</tag> sub-element of <tag>select</tag>.
+	extracted using the <tag>id</tag> sub-element of <tag>extract</tag>.
 
 	<p>This is an active element.  If the content is initially a text node
 	in <code><em>name</em>: <em>value</em><b>\n</b></code> format, it will

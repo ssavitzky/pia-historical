@@ -5,82 +5,82 @@
 <header>
 </head>
 
-<h2>Select Handler Demo</h2>
+<h2>Extract Handler Demo</h2>
  
-The select handler provides a method of traversing the document parse tree.  Select 
+The extract handler provides a method of traversing the document parse tree.  Extract 
 makes it possible to extract individual nodes or subtrees in order to perform
 some sort of transformation or special processing on these portions of a document.
-The <a name="sel_demo">select handler demo</a> shows how to use some of the features of
-select:  <a href="#sel_text">selecting by node type</a>, <a href="#sel_child">selecting a child node</a>,
-<a href="#sel_all">selecting all nodes</a>, and <a href="#sel_ent">using the &selected entity</a>.
+The <a name="sel_demo">extract handler demo</a> shows how to use some of the features of
+extract:  <a href="#sel_text">extracting by node type</a>, <a href="#sel_child">extracting a child node</a>,
+<a href="#sel_all">extracting all nodes</a>, and <a href="#sel_ent">using the &list entity</a>.
 
 
 <hr>
-<a name="sel_text"><h3> Select a Text Node </h3></a>
+<a name="sel_text"><h3> Extract a Text Node </h3></a>
 <b> Description:</b> Returns all nodes of type "text" from the parse tree.  
 In the following example, there is a single text node.
 <p>
-<b> Input:      </b>&lt;select&gt;&lt;from&gt;Single text node&lt;/from&gt; #text &lt;/select&gt;
+<b> Input:      </b>&lt;extract&gt;&lt;from&gt;Single text node&lt;/from&gt; #text &lt;/extract&gt;
 <p>
-<b> Result:     </b><select><from>Single text node</from> #text </select>
+<b> Result:     </b><extract><from>Single text node</from> #text </extract>
 <hr>
 
-<a name="sel_septext"><h3> Select Text Nodes and Add Separator </h3></a>
+<a name="sel_septext"><h3> Extract Text Nodes and Add Separator </h3></a>
 <b> Description:</b> Returns all text nodes from the parse tree.  In the following example, a 
 separator has been added to separate the nodes when printed out.  This example
 returns the two text nodes: text1 and text2.  It does not return the text from the marked up
 node bold1.
 <p>
-<b> Input: </b>&lt;select sep=", "&gt;&lt;from&gt;text1 &lt;b&gt;bold1&lt;/b&gt; text2 &lt;/from&gt; #text &lt;/select&gt;
+<b> Input: </b>&lt;extract sep=", "&gt;&lt;from&gt;text1 &lt;b&gt;bold1&lt;/b&gt; text2 &lt;/from&gt; #text &lt;/extract&gt;
 <p>
-<b> Result:     </b><select sep=", "><from>text1 <b>bold1</b> text2 </from> #text </select>
+<b> Result:     </b><extract sep=", "><from>text1 <b>bold1</b> text2 </from> #text </extract>
 <hr>
 
-<a name="sel_child"><h3> Select a Child Node</h3></a>
-<b> Description:</b> This example shows a different ways of selecting a child node from the 
-document parse tree.  The first example selects a child by specifying its position in the tree;
+<a name="sel_child"><h3> Extract a Child Node</h3></a>
+<b> Description:</b> This example shows a different ways of extracting a child node from the 
+document parse tree.  The first example extracts a child by specifying its position in the tree;
 the second example specifies the element type.
 <p>
-<b> Input:  </b>&lt;select from&gt;&lt;i&gt;&lt;b&gt;bold1&lt;/b&gt;&lt;strong&gt;strong1&lt;/strong&gt;&lt;/i&gt;&lt;/from&gt;&lt;child&gt;0&lt;/child&gt;&lt;/select&gt;
+<b> Input:  </b>&lt;extract from&gt;&lt;i&gt;&lt;b&gt;bold1&lt;/b&gt;&lt;strong&gt;strong1&lt;/strong&gt;&lt;/i&gt;&lt;/from&gt;&lt;child&gt;0&lt;/child&gt;&lt;/extract&gt;
 <p>
-<b> Result: </b><select from><i><b>bold1</b><strong>strong1</strong></i></from><child>0</child></select>
+<b> Result: </b><extract from><i><b>bold1</b><strong>strong1</strong></i></from><child>0</child></extract>
 <p>
-<b> Input: </b>&lt;select from&gt;&lt;i&gt;&lt;b&gt;bold1&lt;/b&gt;&lt;strong&gt;strong1&lt;/strong&gt;&lt;/i&gt;&lt;/from&gt;&lt;child&gt;b&lt;/child&gt;&lt;/select&gt;
+<b> Input: </b>&lt;extract from&gt;&lt;i&gt;&lt;b&gt;bold1&lt;/b&gt;&lt;strong&gt;strong1&lt;/strong&gt;&lt;/i&gt;&lt;/from&gt;&lt;child&gt;b&lt;/child&gt;&lt;/extract&gt;
 <p>
-<b> Result: </b><select from><i><b>bold1</b><strong>strong1</strong></i></from><child>b</child></select>
+<b> Result: </b><extract from><i><b>bold1</b><strong>strong1</strong></i></from><child>b</child></extract>
 <p>
 <hr>
 
-<a name="sel_all"><h3> Select All Nodes </h3></a>
-<b> Description:</b>Use the "all" node type.  As the name suggests, it selects all nodes, regardless
+<a name="sel_all"><h3> Extract All Nodes </h3></a>
+<b> Description:</b>Use the "all" node type.  As the name suggests, it extracts all nodes, regardless
 of type. 
 <p>
-<b> Input: </b> &lt;select from&gt;&lt;body&gt;&lt;i&gt;italic1 &lt;/i&gt;&lt;b&gt;bold1 &lt;/b&gt;&lt;strong&gt;strong1 &lt;/strong&gt; plain1 &lt;/body&gt;&lt;/from&gt;#all&lt;/select&gt;
+<b> Input: </b> &lt;extract from&gt;&lt;body&gt;&lt;i&gt;italic1 &lt;/i&gt;&lt;b&gt;bold1 &lt;/b&gt;&lt;strong&gt;strong1 &lt;/strong&gt; plain1 &lt;/body&gt;&lt;/from&gt;#all&lt;/extract&gt;
 <p>
-<b> Result:  </b><select from><body><i>italic1 </i><b>bold1 </b><strong>strong1 </strong> plain1 </body></from>#all</select>
+<b> Result:  </b><extract from><body><i>italic1 </i><b>bold1 </b><strong>strong1 </strong> plain1 </body></from>#all</extract>
 <p>
 <hr>
 
-<a name="sel_ent"><h3> Using the &selected Entity</h3></a> <b>
-Description:</b>When a "select" is expanded, it implicitly defines a
+<a name="sel_ent"><h3> Using the &list Entity</h3></a> <b>
+Description:</b>When a "extract" is expanded, it implicitly defines a
 local namespace containing a number of entities.  An example of the
-use of one of these: &selected is given below.  In this example, a
+use of one of these: &list is given below.  In this example, a
 list of space-separated words is formatted into a numbered list. Input
 is a string containing a series of whitespace-separated words.  This is
-passed to select and becomes the selected set.  Next, repeat is used
-to loop over the selected set and format each word into a list
+passed to extract and becomes the extracted set.  Next, repeat is used
+to loop over the extracted set and format each word into a list
 variable. 
 <p> 
 <b> Input: </b> 
 <pre> 
 &lt;ol&gt;
-   &lt;select&gt;&lt;from&gt;apples oranges pears plums&lt;/from&gt;
-      &lt;repeat&gt;&lt;foreach&gt;&selected;&lt;/foreach&gt;&lt;li&gt;&li;&lt;/repeat&gt;
-   &lt;/select&gt;
+   &lt;extract&gt;&lt;from&gt;apples oranges pears plums&lt;/from&gt;
+      &lt;repeat&gt;&lt;foreach&gt;&list;&lt;/foreach&gt;&lt;li&gt;&li;&lt;/repeat&gt;
+   &lt;/extract&gt;
 &lt;/ol&gt;
 </pre>
 <p>
-<b> Result:  </b><ol><select><from>apples oranges pears plums</from><repeat><foreach>&selected;</foreach><li>&li;</repeat></select></ol>
+<b> Result:  </b><ol><extract><from>apples oranges pears plums</from><repeat><foreach>&list;</foreach><li>&li;</repeat></extract></ol>
 <p>
 <p>
 

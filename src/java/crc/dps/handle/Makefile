@@ -25,6 +25,7 @@ PRIM_HANDLERS = \
 	  valueHandler.java \
 	connectHandler.java \
 	expandHandler.java \
+	extractHandler.java \
 	headersHandler.java \
 	hideHandler.java \
 	ifHandler.java \
@@ -40,7 +41,6 @@ PRIM_HANDLERS = \
 	protectHandler.java \
 	queryHandler.java \
 	repeatHandler.java \
-	selectHandler.java \
 	statusHandler.java \
 	substHandler.java \
 	tagsetHandler.java \

@@ -20,9 +20,9 @@
 <hr>
 
 <repeat list="view slides source">
-  <select><from><include tagset=HTML src="&li;.xh"></from>
-	  <name recursive>form</name>
-  </select>
+  <extract><from><include tagset=HTML src="&li;.xh"></from>
+	   <name recursive>form</name>
+  </extract>
 </repeat>
 
 <p>

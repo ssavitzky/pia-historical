@@ -214,11 +214,11 @@
     <else>Personal Information Agency</else></if><br>
 <b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;
 <hr>
-<set name=myear><subst match="/.* " result=", "><select>
-    &attributes;<name>cvsid<eval/><text split>&selected;</text> 3
-    </select> </set>
+<set name=myear><subst match="/.* " result=", "><extract>
+    &attributes;<name>cvsid<eval/><text split>&list;</text> 3
+    </extract> </set>
 <b>Copyright &copy; &myear; Ricoh Silicon Valley</b><br>
-<em><select>&attributes;<name>cvsid<eval/></em>
+<em><extract>&attributes;<name>cvsid<eval/></extract></em>
 
   </action>
 </define>

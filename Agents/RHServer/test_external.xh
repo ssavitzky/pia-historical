@@ -10,15 +10,15 @@
 	<define attribute=entity required></define>
 		<action>
 		<set name="num">0</set>
-			<select><from>&attributes:entity;</from> #TEXT </select>
-				<repeat> <foreach entity=x>&selected;</foreach>
+			<extract><from>&attributes:entity;</from> #TEXT </extract>
+				<repeat> <foreach entity=x>&list;</foreach>
 					<for><start>0</start><stop>19</stop></for>
 						<set name=num>&n;</set>
 				</repeat>
 			<repeat start=0 stop=&num;>
-				<select><from>&attributes:entity;</from>
+				<extract><from>&attributes:entity;</from>
 					<child>&n;</child> 
-				</select>
+				</extract>
 			</repeat>
 		</action>
 	</define>
@@ -31,11 +31,11 @@
 	</doc>
 	<define attribute=entity required></define>
 		<action>
-		<select><from>&attributes:entity;</from><name recursive>rhconcept-phrase</name>
-			<repeat list=&selected;>
+		<extract><from>&attributes:entity;</from><name recursive>rhconcept-phrase</name>
+			<repeat list=&list;>
 				&li;
 			</repeat>
-		</select>
+		</extract>
 		</action>
 	</define>
 </define>
@@ -50,11 +50,11 @@
 	<define attribute=path required></define>
 	<action>
 	<set name=consrc><connect src=&attributes:path; entity=rhcon></connect></set>
-	<select><from>&rhcon;</from><name recursive>rhconcept-phrase</name>
-		<repeat list=&selected;>
+	<extract><from>&rhcon;</from><name recursive>rhconcept-phrase</name>
+		<repeat list=&list;>
 			<text split sep=" "><extract-content entity=&li;></extract-content></text>
 		</repeat>
-	</select>
+	</extract>
 	</action>
 </define>
 

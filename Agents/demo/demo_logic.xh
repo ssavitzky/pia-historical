@@ -113,19 +113,22 @@ test is returned.
 
 <h3> A More Complicated Example</h3>
 
-<b>Description: </b> The following gives a more complicated example of how to use the 
-logical handler in conjunction with other handlers.  In this example, the repeat handler is
-used to generate a list of numbers.  The select handler turns the list into the selected
-set.  The logical handler, in conjunction with the numeric remainder attribute, operates on
-the set of numbers to generate a list of even numbers.
+<b>Description: </b> The following gives a more complicated example of how to
+use the logical handler in conjunction with other handlers.  In this example,
+the repeat handler is used to generate a list of numbers.  The select handler
+turns the list into the selected set.  The logical handler, in conjunction
+with the numeric remainder attribute, operates on the set of numbers to
+generate a list of even numbers.
+
+<p> <b>Input: </b>
+&lt;extract&gt;&lt;repeat
+stop=10&gt; &n; &lt;/repeat&gt;
+	&lt;repeat list="&list;"&gt;&lt;if&gt;&lt;test zero&gt;&lt;numeric remainder&gt;&li; 2
+	&lt;/numeric&gt;&lt;/test&gt;&lt;then&gt;&li;, &lt;/then&gt;&lt;/if&gt;&lt;/extract&gt;
 <p>
-<b>Input: </b> &lt;select&gt;&lt;repeat stop=10&gt; &n; &lt;/repeat&gt;
-	&lt;repeat list="&selected;"&gt;&lt;if&gt;&lt;test zero&gt;&lt;numeric remainder&gt;&li; 2
-	&lt;/numeric&gt;&lt;/test&gt;&lt;then&gt;&li;, &lt;/then&gt;&lt;/if&gt;&lt;/select&gt;
-<p>
-<b>Result: </b> <select><repeat stop=10> &n; </repeat>
-	<repeat list="&selected;"><if><test zero><numeric remainder>&li; 2
-	</numeric></test><then>&li;, </then></if></select>
+<b>Result: </b> <extract><repeat stop=10> &n; </repeat>
+	<repeat list="&list;"><if><test zero><numeric remainder>&li; 2
+	</numeric></test><then>&li;, </then></if></extract>
 
 <p>
 
