@@ -209,12 +209,13 @@ public class Get extends crc.interform.Handler {
    * return true if we recognize any of the attributes
    */
   public boolean isComplex(SGML it){
-     return (it.hasAttr("findall") ||
+     return (it.hasAttr("index") ||
+	     it.hasAttr("findall") ||
 	     it.hasAttr("size") ||
 	     it.hasAttr("keys") ||
 	     it.hasAttr("attr") ||
-	     it.hasAttr("row") ||
-	     it.hasAttr("col"));
+	     it.hasAttr("row") || it.hasAttr("rows") ||
+	     it.hasAttr("col") || it.hasAttr("cols"));
   }
 
       /************************************************************
