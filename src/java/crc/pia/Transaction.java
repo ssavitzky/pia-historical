@@ -303,7 +303,7 @@ public class Transaction extends Thing{
   /**
    * @return requested transaction
    */
-  public Transaction requestTran(){
+  public Transaction getRequestTran(){
     if( requestTran )
       return requestTran;
     else
