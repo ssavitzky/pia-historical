@@ -1,6 +1,7 @@
 // Transaction.java
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
+
 package crc.pia;
 import java.util.Enumeration;
 import java.net.URL;
@@ -17,11 +18,7 @@ import crc.ds.Queue;
 import crc.ds.Table;
 import crc.ds.Tabular;
 import crc.ds.List;
-import crc.ds.UnaryFunctor;
 import crc.ds.Criteria;
-
-import crc.sgml.SGML;
-import crc.sgml.AttrBase;
 
 import crc.pia.Machine;
 import crc.pia.Content;
@@ -184,10 +181,7 @@ public abstract class Transaction
    * @returns the value of a header field, or null if not known. 
    */
   public String header(String name){
-    String res = null;
-    if( headers() != null )
-      res = headers().header( name );
-    return res;
+    return (headers() != null)? headers().header(name) : null;
   }
 
   /** 
@@ -201,17 +195,14 @@ public abstract class Transaction
    * Returns all header information as string.
    * @returns all header information as string.
    */
-   public String headersAsString(){
-     String res = null;
-     if( headers() != null )
-       res = headers().toString();
-     return res;
-   }
+  public String headersAsString(){
+    return (headers() != null)? headers().toString() : null;
+  }
 
- /**
+  /**
    * the initial protocol string -- everything before the header.
    */
- public String protocolInitializationString;
+  public String protocolInitializationString;
 
   /**
    * @returns the initial protocol string (e.g. everything before the header)
@@ -334,34 +325,31 @@ public abstract class Transaction
     }
   }
 
-    /**
-     * Set this reply status code.
-     * This will also set the reply reason, to the default HTTP/1.1 reason
-     * phrase.
-     * @param status The status code for this reply.
-     */
+  /**
+   * Set this reply status code.
+   * This will also set the reply reason, to the default HTTP/1.1 reason
+   * phrase.
+   * @param status The status code for this reply.
+   */
+  public void setStatus(int status) {
+    return;
+  }
 
-    public void setStatus(int status) {
-	return;
-    }
+  /**
+   * Get the reason phrase for this reply.
+   * @return A String encoded reason phrase.
+   */
+  public String reason() {
+    return null;
+  }
 
-    /**
-     * Get the reason phrase for this reply.
-     * @return A String encoded reason phrase.
-     */
-
-    public String reason() {
-	return null;
-    }
-
-    /**
-     * Set the reason phrase of this reply.
-     * @param reason The reason phrase for this reply.
-     */
-
-    public void setReason(String reason) {
-	return;
-    }
+  /**
+   * Set the reason phrase of this reply.
+   * @param reason The reason phrase for this reply.
+   */
+  public void setReason(String reason) {
+    return;
+  }
 
 
   /**
@@ -880,11 +868,11 @@ public abstract class Transaction
   public void satisfy(Resolver resolver) {
     Object obj;
     boolean satisfied = false;
+    Enumeration e = handlers.queue();
 
     Pia.debug(this, "Satisfaction ?");
     
-    Enumeration e = handlers.queue();
-    while( e.hasMoreElements() ){
+    while( e.hasMoreElements() ){ // stop when satisfied? not clear!
       obj = e.nextElement();
       if( obj instanceof Transaction ){
 	Transaction tran = (Transaction)obj;
