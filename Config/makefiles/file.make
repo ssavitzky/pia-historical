@@ -33,7 +33,7 @@ clean::
 	@echo "Cleaning in" $(MYNAME)
 	rm -f *~ *.bak *.log *.o *.obj
 
-setup::
+setup:: HEADER.html
 	@echo "Setup in" $(MYNAME)
 	@echo "     You will probably need to edit the Makefile"
 
@@ -54,6 +54,6 @@ HEADER.html:
 	echo "  <dd> "							>> $@
 	echo "</dl>"							>> $@
 	echo "<hr>"							>> $@
-	echo "<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>"	>> $@
+	echo "<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>"	>> $@
 	echo "<b>$$"Id"$$</b>"						>> $@
 	echo "<a name=\"files\"><hr></a>"				>> $@

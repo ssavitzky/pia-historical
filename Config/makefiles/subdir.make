@@ -53,7 +53,7 @@ setup::
 setupSub: 
 	echo   '### Makefile for' $(MYPATH) 			 > Makefile
 	echo   '#	$$Id$$	'				>> Makefile
-	echo   '# 	COPYRIGHT 1997, Ricoh Silicon Valley' 	>> Makefile
+	echo   '# 	COPYRIGHT 1998, Ricoh Silicon Valley' 	>> Makefile
 	echo   ' '						>> Makefile
 	echo   'PIADIR=$(PIADIR)'				>> Makefile
 	echo   'MF_DIR=$$(PIADIR)/Config/makefiles'		>> Makefile
