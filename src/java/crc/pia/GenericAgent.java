@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
+import java.io.FileReader;
 import java.io.IOException;
 
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,8 @@ import crc.ds.Registered;
 import crc.dps.Tagset;
 import crc.dps.tagset.Loader;
 import crc.dps.process.ActiveDoc;
+
+import crc.dom.NodeList;
 
 import crc.sgml.SGML;
 import crc.util.NullOutputStream;
@@ -96,7 +99,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
   /** Suffix appended to the agent's name to get to its 'index InterForm' */
   public String indexPathSuffix = "index";
 
-  /** If true, run the request for <code>initialize.if</code> through the 
+  /** If true, run the request for <code>initialize.??</code> through the 
    *	Resolver.  Otherwise, run the interpretor over it directly.
    */
   public static boolean RESOLVE_INITIALIZE = false;
@@ -182,8 +185,51 @@ public class GenericAgent implements Agent, Registered, Serializable {
   /**
    * Default content type for form submissions
    */
-  protected final static String DefaultFormSubmissionContentType = "application/x-www-form-urlencoded";
+  protected final static String DefaultFormSubmissionContentType
+    = "application/x-www-form-urlencoded";
 
+
+  /************************************************************************
+  ** Tagsets:
+  ************************************************************************/
+
+  /** Shared XHTML tagset for the PIA. 
+   *	=== wouldn't have to be transient if timestamps worked. ===
+   */
+  protected transient static Tagset piaXHTMLtagset = null;
+
+  /** The Tagsets being used by this agent. */
+  protected transient Table tagsets = null;
+
+  /** Load a tagset for this agent.  
+   */
+  public Tagset loadTagset(ActiveDoc proc, String name) {
+    Tagset ts = null;
+    if (piaXHTMLtagset != null && tagsets != null) {
+      ts = (Tagset) tagsets.at(name);
+      if (ts != null) return ts;
+    }
+
+    if (piaXHTMLtagset == null) {
+      piaXHTMLtagset = proc.loadTagset("pia-xhtml");
+      if (piaXHTMLtagset == null) piaXHTMLtagset = proc.loadTagset("xhtml");
+    }
+
+    ts  = proc.loadTagset(type()+"-" + name);
+    if (ts == null && name.equals("xhtml")) ts = piaXHTMLtagset;
+    if (ts == null) ts = proc.loadTagset("pia-" + name);
+    if (ts == null) ts = proc.loadTagset(name);
+
+    if (tagsets == null) tagsets = new Table();
+    if (ts != null) tagsets.at(name, ts);
+    return ts;
+  }
+
+  /** Make sure that the tagset gets fetched again. */
+  public void invalidateTagset() { tagsets = null; }
+
+  /** Make sure that all tagsets get fetched again. */
+  public void invalidateAllTagsets() { piaXHTMLtagset = null; tagsets = null; }
 
   /************************************************************************
   ** Initialization:
@@ -200,14 +246,15 @@ public class GenericAgent implements Agent, Registered, Serializable {
 
     String n = name();
     String t = type();
-    String url = "/" + n + "/" + "initialize";
-    Transaction request;
-
-    if( t != null && !n.equalsIgnoreCase( t ) ) 
-      type( t );
-
     put("name", n);
-    put("type", type());
+    put("type", t);
+
+    String url = "/" + n + "/" + "initialize";
+    if (! n.equals(t)) url = "/" + t + url;
+
+    // Fake a request for the initialization file. 
+    //    We might not need it, in which case this is a waste.
+    Transaction req = makeRequest(machine(), "GET", url, (String)null, null);
 
     if( DEBUG ) {
       System.out.println("[GenericAgent]-->"+"Hi, I am in debugging mode." +
@@ -215,24 +262,45 @@ public class GenericAgent implements Agent, Registered, Serializable {
       return;
     }
 
-    if (RESOLVE_INITIALIZE) {
-      createRequest("GET", url, null, null );
-    } else {
-      /* Run the initialization in the current thread to ensure that 
-       * agents are initialized in the correct order and that no requests
-       * are made on partially-initialized agents.
-       */
-      String fn = findInterform("initialize");
-      if (fn != null) try {
-	Run.interformSkipFile(this, fn,
-			      makeRequest(machine(), "GET", url, (String)null, 
-					  DefaultFormSubmissionContentType),
-			      Pia.instance().resolver());
-      } catch (Exception e) {
-	System.err.println(e.toString());
-	e.printStackTrace();
-	System.err.println("PIA recovering.");
+    ActiveDoc   proc = null;
+    Resolver    res = Pia.instance().resolver();
+
+    // Force tagsets to load if necessary. 
+    if (piaXHTMLtagset == null || findInterform(name()+"-xhtml") != null) {
+      System.err.println(name() + " Loading tagset(s).");
+      proc = makeDPSProcessor(req, res);
+    }
+
+    /* Run the initialization in the current thread to ensure that 
+     * agents are initialized in the correct order and that no requests
+     * are made on partially-initialized agents.
+     */
+    String    fn = findInterform("initialize");
+    if (fn != null) try {
+      if (RESOLVE_INITIALIZE) {	
+	// We can force initialization to use the resolver if necessary.
+	createRequest("GET", url, null, null );
+      } else if (fn.endsWith(".if")) { 
+	// Run a legacy initialization file.
+	Run.interformSkipFile(this, fn, req, res);
+      } else {
+	// Run an XHTML initialization file.
+	if (proc == null) {
+	  // make a new processor if we haven't done so already
+	  proc = makeDPSProcessor(req, res);
+	}
+	crc.dps.Parser p = proc.getTagset().createParser();
+	p.setReader(new FileReader(fn));
+	proc.setOutput(new crc.dps.output.DiscardOutput());
+	proc.setInput(p);
+	proc.define("filePath", fn);
+	proc.run();
       }
+    } catch (Exception e) {
+      System.err.println("Exception while initializing " + name());
+      System.err.println(e.toString());
+      e.printStackTrace();
+      System.err.println("PIA recovering; " + name() + " incomplete.");
     }
     initialized = true;
   }
@@ -321,7 +389,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
   public Transaction makeRequest(Machine m, String method, String url, 
 				 String queryString, String contentType) {
     InputContent c;
-
+    if (contentType == null) contentType = DefaultFormSubmissionContentType;
     if (contentType.startsWith("multipart/form-data")) {
       crc.pia.Pia.debug(this,"Making new MultipartFormContent");
 
@@ -342,6 +410,8 @@ public class GenericAgent implements Agent, Registered, Serializable {
   /** Make a new request Transaction on this agent. */
   public Transaction makeRequest(Machine m, String method, String url, 
 				 InputContent content, String contentType) {
+    if (contentType == null) contentType = DefaultFormSubmissionContentType;
+
     Pia.debug(this, "makeRequest -->"+method+" "+url);
     Pia.debug(this, "Content type "+contentType);
 
@@ -713,9 +783,11 @@ public class GenericAgent implements Agent, Registered, Serializable {
     else if (actOnHook instanceof SGML) {
       Pia.debug(this, name()+".actOnHook", "="+actOnHook.toString());
       Run.interformHook(this, (SGML)actOnHook, name()+".act-on", ts, res);
-    } else {
+    } else if (actOnHook instanceof NodeList) {
       Pia.debug(this, name()+".actOnHook", "= DPS:"+actOnHook.toString());
-      // run DPS hook!
+      runDPSHook((NodeList)actOnHook, ts, res); 
+    } else {
+      Pia.debug(this, name()+".actOnHook", "=???"+actOnHook.toString());
     }
   }
 
@@ -724,19 +796,55 @@ public class GenericAgent implements Agent, Registered, Serializable {
    * Requests directly _to_ an agent are handled by its Machine;
    * the "handle" method is used only by agents like "cache" that
    * may want to intercept a transaction meant for somewhere else.
+   *
+   * <p> === DPS hooks are untested and probably won't work without
+   *	     additional primitives. 
    */
   public boolean handle(Transaction ts, Resolver res) {
     if (handleHook == null)  return false;
     else if (handleHook instanceof SGML) {
       Pia.debug(this, name()+".handleHook", "="+handleHook.toString());
-      Run.interformHook(this, (SGML)handleHook, name()+".act-on", ts, res);
+      Run.interformHook(this, (SGML)handleHook, name()+".handle", ts, res);
+      return true;
+    } else if (handleHook instanceof NodeList) {
+      Pia.debug(this, name()+".handleHook", "= DPS: "+handleHook.toString());
+      runDPSHook((NodeList)handleHook, ts, res); 
       return true;
     } else {
-      Pia.debug(this, name()+".handleHook", "= DPS: "+handleHook.toString());
+      Pia.debug(this, name()+".handleHook", "= ???: "+handleHook.toString());
       return false;      // run DPS hook!
     }
   }
 
+
+  /**
+   * Respond to a transaction with a stream of HTML generated using the DPS.
+   */
+  public void runDPSHook (NodeList hook, Transaction trans, Resolver res ) {
+    if (hook == null || hook.getLength() == 0) return;
+    ActiveDoc proc = makeDPSProcessor(trans, res);
+    proc.setInput(new crc.dps.input.FromParseNodes(hook));
+    proc.setOutput(new crc.dps.output.DiscardOutput());
+    proc.run();
+  }
+
+  protected ActiveDoc makeDPSProcessor(Transaction trans, Resolver res) {
+    Transaction req  = trans.requestTran();
+    Transaction resp = trans.isResponse()? trans : null;
+
+    // === This should be a Hook instead of an ActiveDoc ===
+    // === it only works with the xhtml tagset
+    ActiveDoc proc = new ActiveDoc(this, req, resp, res);
+    Tagset ts = loadTagset(proc, "xhtml");
+
+    if (ts == null) {
+      // sendErrorResponse(trans, 500, "cannot load tagset " +tsn);
+      return null;
+    }
+
+    proc.setTagset(ts);
+    return proc;
+  }
 
   /**
    * Respond to a direct request.
@@ -752,7 +860,7 @@ public class GenericAgent implements Agent, Registered, Serializable {
   }
 
   /************************************************************************
-  ** Attribute interface: 
+  ** Tabular interface: 
   ************************************************************************/
 
   /** Return the number of defined. */
@@ -761,8 +869,16 @@ public class GenericAgent implements Agent, Registered, Serializable {
   }
 
   /** Retrieve an attribute by name.  Returns null if no such
-   *	attribute exists. */
+   *	attribute exists. Accepts attributes in other agents. */
   public synchronized Object get(String name) {
+    int i = name.indexOf(":");
+    if (i > 0) {
+      String aname = name.substring(0, i);
+      name = name.substring(i+1);
+      Agent a = Pia.instance().resolver().agent(aname);
+      return (a == null)? null : a.get(name);
+    }
+
     if (name.equals("criteria")) {
 	return (criteria() == null)? "" : criteria().toString();
     }
@@ -1157,16 +1273,14 @@ public class GenericAgent implements Agent, Registered, Serializable {
   }
 
   /**
-   * Respond to a transaction with a stream of HTML.
+   * Respond to a transaction with a stream of HTML generated using the DPS.
    */
   public void sendProcessedResponse ( String file, String path, 
 				      Transaction trans, Resolver res ) {
     Transaction response = new HTTPResponse( trans, false );
     String tsn = tagsetName(file);
     ActiveDoc proc = new ActiveDoc(this, trans, response, res);
-    Tagset ts  = proc.loadTagset(type()+"-" + tsn);
-    if (ts == null) ts = proc.loadTagset("pia-" + tsn);
-    if (ts == null) ts = proc.loadTagset(tsn);
+    Tagset ts  = loadTagset(proc, tsn);
 
     if (ts == null) {
       sendErrorResponse(trans, 500, "cannot load tagset " +tsn);
