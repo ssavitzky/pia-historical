@@ -1,0 +1,74 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Projects</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>Projects</h1>
+
+<p> This is Steve Savitzky's personal list of things that ``it would be nice
+    if'' somebody <em>else</em> could do.
+
+<h2>Ports</h2>
+
+<p> These are covered in more detail in <a
+    href="porting.html"><code>porting</code></a>.
+
+<h3>C</h3>
+
+<p> The server portion of a C port could be built on top of Apache.  Certainly
+    the DPS could easily be made into a module.  Adding Agent functionality to
+    Apache would be somewhat harder. 
+
+<p> In any case, an Apache ``<code>modDPS</code>'' would be a worthwhile thing
+    to have. 
+
+<h3>Scheme/Guile/DSSSL</h3>
+
+<p> The standard SGML style language DSSSL is basically a set of functions
+    built on top of Scheme.  SGML parsers exist, obviously.  A DSSSL version
+    of the DPS should be trivial.
+
+<h2>Parsers</h2>
+
+<p> Most SGML parsers in the ``real world'' operate in ``push'' mode -- they
+    call an action routine whenever a tag or text node is encountered.  The
+    PIA, in contrast, operates in ``pull'' mode, requesting nodes from the
+    parser.
+
+<p> In order to interface a standard parser to the PIA (which would be a good
+    idea for many reasons) one would have to do one of the following:
+
+<ul>
+  <li> generate a complete parse tree (as a DOM Document) and traverse it with
+       an Input.  Trivial, but requires the entire document to be in memory.
+
+  <li> use two threads, with a queue holding nodes that have not yet been
+       traversed by the DPS.
+
+  <li> Revise the DPS to operate entirely in push mode.  The old Interform
+       interpretor could do this; it involves building partial parse trees for
+       the content of active tags.
+</ul>
+
+
+<h2>Alternate Document Representations</h2>
+
+<h3>Object Database</h3>
+
+<p> By putting DOM objects in an ODBMS, one could totally replace the
+    filesystem.  One would, of course, still need a parser for incoming HTML.
+
+<h3>CORBA DOM</h3>
+
+<p> Assuming a CORBA-compatible DOM implementation existed (since it's defined
+    in IDL it probably wouldn't be hard), one could use it for document
+    storage.
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
