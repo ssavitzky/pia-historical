@@ -264,6 +264,7 @@ public class Machine {
       out.println( contentString );
     }else if( plainContent != null ){
       Pia.instance().debug(this, "Transmitting images content...");
+      /*
       byte[] zbytes = plainContent.toBytes();
 
       if( zbytes != null )
@@ -271,6 +272,8 @@ public class Machine {
 
       if( zbytes!= null )
 	out.write( zbytes, 0, zbytes.length );
+	*/
+      sendImageContent( out, plainContent );
     }
 
 
@@ -278,6 +281,21 @@ public class Machine {
     out.flush();
     closeConnection();
   }
+
+  private void sendImageContent(OutputStream out, Content c){
+     byte[]buffer = new byte[1024];
+    int bytesRead;
+    
+    try{
+      while(true){
+	bytesRead = c.read( buffer, 0, 1024 );
+	if( bytesRead == -1 ) break;
+	out.write( buffer, 0, bytesRead );
+	Pia.instance().debug(this, "the write length is---->"+Integer.toString(bytesRead));
+      }
+    }catch(Exception e){}
+}
+
 
   private byte[] suckData( InputStream input )throws IOException{
     byte[]buffer = new byte[1024];
