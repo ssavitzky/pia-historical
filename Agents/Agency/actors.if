@@ -16,7 +16,8 @@ Manual</a>, <a href="/InterForm">InterForm Demo Agent</a>
        <else><a href="/Agency/installers.if#InterForm"><em>install
        needed!</em></a></else></if>
 <hr>
- 
+
+<set name=actorNames><actor-names></set>
 <dl foreach list="&actorNames;">
   <dt> &lt;<strong><a href="&IFman;#&li;">&li;</a></strong><actor-attrs name="&li;">&gt;
   <dd> <add-markup><actor-dscr name="&li;"></add-markup>
