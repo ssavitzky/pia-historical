@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=standard parent=HTML include=basic recursive>
+<tagset name=standard parent=HTML include=standalone recursive>
 
 <h1>Standard Tagset</h1>
 
