@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML EXPERIMENTAL 970324//EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 5.5/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="processing.css">
+<TITLE> 1.0  How Agents Interact with the Resolver</TITLE></HEAD>
+<BODY BGCOLOR="#ffffff">
+<DIV>
+<H2 CLASS="Heading1">
+<A NAME="pgfId=928480">
+ </A>
+How Agents Interact with the Resolver</H2>
+<P CLASS="Body">
+It is important to understand how resolver works when you want to create a proxy agent.  A proxy agent is an agent that works behind the scenes to examine a document request, a document response, or both with a view to transforming the document in some way.  So, the key items of interest for an agent are: how do I make sure I have the right kind of document, how do I get at its content, and how do I make sure that the transformation is done at the right time?</P>
+<P CLASS="Body">
+
+These are the two main opportunities for an agent to interact with the <code>resolver</code>:  during the initial document request, or when the response to that request is received.  Most agents are interested in intercepting the response; it is then that an actual document is being returned.  Usually, an agent will be performing some kind of processing on the document content.  When a request is made, the only information that is available to an agent is the url of the document being requested.</P>
+<P CLASS="Body">
+
+Two examples of proxy agents are:</P>
+<UL>
+<LI>
+The History agent, which adds each url to a history database and optionally adds it to the toolbar on your current browser page.</LI>
+<LI>
+The Cache agent, which intercepts both requests and responses.  When receiving a request for a document the Cache agent first checks to see whether a document with that url is available in the cache.  If it is, the document is retrieved from the cache; otherwise, it is retrieved from the source specified in the request.  </LI>
+
+On receiving the actual document, the Cache agent intercepts the response to check whether the document came from the cache or from elsewhere.  If it came from a source other than the cache, the response method caches the document, by writing it out to file in the cache directory and adds an entry to the hashtable that keeps track of cached documents.  The document is then displayed in the browser.</P>
+</UL>
+<P CLASS="Body">
+<A NAME="pgfId=928487">
+ </A>
+The diagram below shows how pia algorithm works.</P>
+<P CLASS="Body">
+<IMG SRC="resolve_xv.gif">
+ 
+</P>
+</DIV>
+<DIV>
+<H3 CLASS="Heading2">
+<A NAME="pgfId=928489">
+ </A>
+Processing Description</H3>
+<P CLASS="Body">
+When the PIA starts up, it creates the <code>resolver</code> and registers all agents listed in the <code>START-UP.html</code> file.  As other agents are installed, they will also be registered with the <code>resolver</code>; consequently, the <code>resolver</code> always knows about all available agents.</P>
+<P CLASS="Body">
+<A NAME="pgfId=928491">
+ </A>
+As the first step in the processing cycle, an object called the <code>Accepter</code> accepts a request and creates a <code>Machine</code> object and a <Code>Transaction</Code> object. The machine keeps track of where the request came from, which will also be the place where the ultimate response will be coming back to. The <code>Transaction</code> object represents http requests and responses.</P>
+<P CLASS="Body">
+<A NAME="pgfId=928492">
+ </A>
+Once the <code>Transaction</code> is created it is pushed on to the <code>Resolver</code> stack. The <code>Resolver</code> does its work inside a thread, and each <Code>Transaction</Code> also starts up its own thread.  Within its thread, the <code>Resolver</code> is taking <code>Transaction</code>s off an internal stack.  For each <code>Transaction</code>, the <code>Resolver</code> goes through its list of registered agents and looks at each agent's criteria to determine whether there is a match.  If an agent's features match, the agent's actOn method is called and the <code>Resolver</code> notifies the <code>Transaction</code> that it should resolve itself.</P>
+<P CLASS="Body">
+<A NAME="pgfId=928493">
+ </A>
+Meanwhile, the <code>Transaction</code> also has its own thread.  Within its thread, the <code>Transaction</code> goes through its handlers, and for each handler, calls its handle method.  At least one must return true, otherwise the <code>Transaction</code> will satisfy itself by sending its content to the stream defined by its &quot;toMachine&quot;.  So, where do these handlers come from?  </P>
+<UL>
+<LI>
+When the <code>Resolver</code> examines a request <code>Transaction</code>, if the request includes an agent's name, the <code>Resolver</code> places the agent on the <code>Transaction</code>'s list of handlers.</LI>
+<LI>
+An agent can place itself on the <code>Transaction</code>'s list of handlers.  For example the Cache agent pushes itself onto its <code>Transaction</code>'s handler list so that when the actual document is received in the form of a response, the agent can decide whether to cache it or not.  Basically, the  agent adds itself to a handler list so that further processing can occur when the document contents have been retrieved.</LI>
+</UL>
+<P CLASS="Body">
+<A NAME="pgfId=928496">
+ </A>
+A <code>Transaction</code> could have any number of handlers, but in practice, is usually has zero or one.  For each handler it returns true and the <code>Transaction</code> exits, or is satisfied.  In instances where there are no handlers or no handlers that return true, the <code>defaultHandle</code> method is called.  By default, this method generates a response, which is to send the content to the machine from which the request originated.  In effect, it tells the destination machine to handle the request.  If an agent handles the request, it creates the response and sets itself as the originating machine.
+</DIV>
+<DIV>
+<H3 CLASS="Heading2">
+<A NAME="pgfId=928497">
+ </A>
+Agent Methods that Interact with the <code>Resolver</code></H3>
+
+The following methods enable the agent to tap into the <code>Resolver</code> algorithm.</P>
+<DIV>
+<H4 CLASS="Heading3">
+<A NAME="pgfId=928499">
+ </A>
+<code>initialize</code> Method</H4>
+
+This method sets the criteria that will be matched against in the <code>Resolver</code>.  The <code>static Criterion.toMatch</code> method is used to specify the features to match against.  For example, an agent that wants to intercept all pages that are of type html will use the <code>Criterion.toMatch(&quot;IsHtml&quot;, true)</code>.  A number of criteria can be specified in this manner; however, it should be noted that these will be and'ed together, so it is important that they do not cancel each other out.  </P>
+
+A list of available features to match on are located in the <code>pia/src/java/crc/tf</code> subdirectory.  They are <code>UnaryFunctor</code> subclasses that work essentially as function pointers would in C++.  It is straightforward to extend this collection of classes as the need arises.  Standard features to match against are either the <code>IsRequest</code> or <code>IsResponse</code> feature, depending on which part of the processing cycle you wish to intercept.</P>
+</DIV>
+<DIV>
+<H4 CLASS="Heading3">
+<A NAME="pgfId=928502">
+ </A>
+<code>actOn</code> Method</H4>
+
+The <code>actOn</code> method is used when an agent needs to modify the <code>Transaction</code>--typically by modifying the <code>Transaction</code>'s <code>Content</code> object.  This <code>Content</code> object contains the document input and output stream.  It is this data that can be transformed in some way, and replaced in the <Code>Transaction</Code> or added to a new <Code>Transaction</Code>.  The newly transformed content will then be displayed in the browser.</P>
+<P CLASS="Body">
+<A NAME="pgfId=928504">
+ </A>
+In the Cache agent, the <code>actOn</code> method is used to handle both requests and responses.  If the <Code>Transaction</Code> is a request for a document, the Cache agent checks the cache.  If the document is in the cache, it returns the cached version.  Otherwise the document is passed on for normal processing.</P>
+
+When the <Code>Transaction</Code> is a response, the <code>actOn</code> method adds a tap to the data stream. The tap for this agent, creates a <code>FileOutputStream</code> for writing the data to file (in order to cache it).  The agent <code>addTap</code> method gets the <code>contentObject</code> from the <code>Transaction</code> (an object of type <code>Content</code>) and adds the tap to this object with the <code>FileOutputStream</code> as an argument.  When the <code>contentNotifyWhen</code> method is called, the Cache agent's <code>updateContent</code> method is called.  This writes the document to the <code>FileOutputStream</code> and also makes an entry in a hashtable linking the cached document file to the document url.</P>
+</DIV>
+<DIV>
+<H4 CLASS="Heading3">
+<A NAME="pgfId=928506">
+ </A>
+<code>handle</code> Method</H4>
+
+The handle method is used to handle a <code>Transaction</code> that has already been matched by an <code>actOn</code> method.  For example the <code>actOn</code> method may have intercepted a document request and done some preliminary processing in anticipation of doing further processing on the document content when a document response is received.  The <code>actOn</code> method will have placed the agent on the <code>Transaction</code>'s handler queue so that its handle method can be called.  For example, the Cache agent sets a flag in the request <code>actOn</code> method to indicate whether the data can be read from the cache rather from the actual URL.  It uses the <code>handle</code> method to read a cached document from file and creates a new content object from the file data rather than from the source specified by the user.</P>
+</DIV>
+<DIV>
+<H4 CLASS="Heading3">
+<A NAME="pgfId=928508">
+ </A>
+<code>respond</code> Method</H4>
+
+This method is used to respond to a request that has been made directly to an agent.  The agent uses the <code>respond</code> method to create the <code>Transaction</code> that responds to that request.  For example, in the Camera agent, the respond method intercepts a request for a camera image. The method checks whether the URL includes a gif extension.  If it does, it creates a response <Code>Transaction</Code>, reads the camera image data from file, and sets the <code>Content</code> object to the image data, and starts the processing thread.</P>
+<P CLASS="Body">
+<A NAME="pgfId=928510">
+ </A>
+&nbsp;</P>
+
+</DIV>
+</DIV>
+</DIV>
+</BODY>
+</HTML>
+
+
+
+
