@@ -98,17 +98,23 @@ Username: <form-variable name=name options=users> </form-variable>
 
 
 <set entity name=accountlist><read file="account_types.dat"></set>
+<set entity name=accountcodes><read file="acct_codes.dat" process></set>     
+     
      <table border=1 align=center>
  <caption>Other Expenses </caption>
-<TR><TH>  Description<TH> Type<TH> Amount</TR>
+<TR><TH>  Description<TH> Type <TH> Acct # <TH> Amount</TR>
 
 <repeat start=1 stop=10>
 <TR>
  <TD><form-variable name="description&li;"> </form-variable>
  <TD><form-variable name="account&li;" options=&accountlist;> </form-variable>
- <TD><form-variable name="amount&li;"> </form-variable>
+ <TD><form-variable name="acctcode&li;" computed=true> </form-variable>
+ <TD><form-variable name="amount&li;"> </form-variable>     
 <form-protect livalue=&li;><protect> 
-  <set name=othertotals><sum digits=2><get name=amount&li;> <get name=othertotals></sum></set>
+  <set name=othertotals><sum digits=2><get name=amount&li;> <get
+  name=othertotals></sum></set>
+<set name=accttype><get name=account&li;></set>
+<set name=acctcode&li;><get name=accountcodes key=&accttype;></set>
  </protect> </form-protect>
 
 </TR>

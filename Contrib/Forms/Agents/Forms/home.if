@@ -28,7 +28,7 @@ Fill out: <select name="formtype">
   <option>&li;</option>
  </repeat>
 </select>
-<input type="SUBMIT" value="Form">:
+<input type="SUBMIT" value="Form">
 
 </form>
  <a href="forms.if">List of Forms</a>
