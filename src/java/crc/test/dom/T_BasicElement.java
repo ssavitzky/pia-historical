@@ -68,7 +68,7 @@ public class T_BasicElement{
       printChildNodeList( ne );
 
       Report.debug("Printing children...");
-      be.printChildren("");
+      Report.debug(be.contentString());
       Report.debug("End printing children.");
 
       NodeEnumerator ce = be.getElementsByTagName( "foobar" );
@@ -79,10 +79,10 @@ public class T_BasicElement{
       BasicElement copyEle = new BasicElement( be );
       copyEle.setTagName("Clone Parent");
       Report.debug("Here is the new list.");
-      copyEle.printChildren( "" );
+      Report.debug(copyEle.toString());
 
       Report.debug("Here is the original list.");
-      be.printChildren( "" );
+      Report.debug(be.toString());
 
 
 
@@ -142,13 +142,42 @@ public class T_BasicElement{
   * 
   */ 
   private static void test2( String foobar ){
+   NodeEnumerator ne = null;
+
+    BasicElement be = new BasicElement();
+    be.setTagName( "html" );
+
+    Element t2 = new BasicElement();
+    t2.setTagName( "item2" );
+
+    Attribute attr = new BasicAttribute( t2 );
+    attr.setName("size");
+    t2.setAttribute( attr );
+
+    Element t1 = new BasicElement();
+    t1.setTagName( "foobar" );
+
+    Element foobar2 = new BasicElement();
+    foobar2.setTagName( "foobar" );
+
+
+    try{
+      Report.debug( "appending..." );
+      // appending
+      be.insertBefore( t2, null  );
+
+      // insert at start
+      be.insertBefore( t1, t2 );
+
+      // appending
+      t1.insertBefore( foobar2, null  );
+
+      Report.debug( be.toString() );
+
+    }catch(NotMyChildException e){
+      Report.debug(e.toString());
+    }
   }
- 
-
-
-
-
-
 }
 
 
