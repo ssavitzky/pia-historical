@@ -4,7 +4,8 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
 <h1>Home page</a> for printer <code language="perl"> return $current_self->name; </code> </h1>
-You have reached the web printer home page.    You may preview a URL:
+You have reached the web printer home page.    To preview a document, enter
+the URL and click "Preview":
 <code language=perl>
 my $url=$current_request->header(Referer);
 my $name=$current_self->name;
@@ -12,8 +13,9 @@ my $form=make_form("/$name/preview.if",({name => 'URL',size =>
  50, value => $url},{type => 'submit',value => 'Preview'}));
 return $form;
 </code>
-
- or <ul>
+<p>
+From this page, you may:
+  <ul>
    <li> change printer <a href=options.if> options</a>
    <li> see the current <a
  href=status.if> status </a>
@@ -28,6 +30,6 @@ return $form;
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jul 24 13:41:24 1996
+Last modified: Wed Sep 11 16:35:59 1996
 <!-- hhmts end -->
 </body></html>

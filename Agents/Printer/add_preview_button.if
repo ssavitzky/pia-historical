@@ -10,10 +10,12 @@ $current_self->option('render_method',"latex");
 my $name=$current_self->name;
 $current_self->translator('text/html',sub {
  my $request=shift;
- my $machine="ookami:7777";
+ my $machine=$main::PIA_HOST;
+ $machine.=":";
+ $machine.=$main::PIA_PORT;
 print "this $request should be request!!\n";
  my $content=$request->content;
- my $form=make_form("http://$machine/ps3/preview.if",({name => 'URL',size =>
+ my $form=make_form("http://$machine/printer/preview.if",({name => 'URL',size =>
  50, value => $request->base()->as_string()},{type => 'submit',value => 'Preview'}))->as_HTML();
 $content =~ s/body>/body> $form/ig;
     $request->content($content);
@@ -25,6 +27,6 @@ $content =~ s/body>/body> $form/ig;
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Jul 17 19:36:39 1996
+Last modified: Thu Sep 19 15:43:31 1996
 <!-- hhmts end -->
 </body></html>
