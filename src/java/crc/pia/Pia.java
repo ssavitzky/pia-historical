@@ -14,11 +14,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import java.util.Properties;
-import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import crc.util.regexp.RegExp;
+import gnu.regexp.RegExp;
 
 import crc.pia.PiaInitException;
 import crc.pia.Machine;
@@ -28,6 +27,8 @@ import crc.pia.Logger;
 import crc.pia.Transaction;
 import crc.pia.agent.AgentInstallException;
 
+import crc.ds.Table;
+import crc.ds.List;
  /**
   * Pia stores all of the information relevant to the creation of an 
   * angency.
@@ -122,8 +123,8 @@ public class Pia{
   private boolean debugToFile= false;
   
 
-  private Hashtable proxies           = new Hashtable();
-  private String[]  noProxies        = null;
+  private Table proxies           = new Table();
+  private List  noProxies        = null;
 
   private String piaAgentsStr    = null;
   private File   piaAgentsDir    = null;
@@ -309,14 +310,14 @@ public class Pia{
   /**
    * @return the proxy string
    */
-  public Hashtable proxies(){
+  public Table proxies(){
     return proxies;
   } 
 
   /**
    * @return the no proxy schemes
    */
-  public String[] noProxies(){
+  public List noProxies(){
     return noProxies;
   } 
 
@@ -505,12 +506,10 @@ public class Pia{
     if( noproxies != null ){
       StringTokenizer parser = new StringTokenizer(noproxies, ",");
       try{
-	int i = 0;
-	int count = parser.countTokens();
-	noProxies = new String[count];
+	noProxies = new List();
 	while(parser.hasMoreTokens()) {
 	  String v = parser.nextToken().trim();
-	  noProxies[i++]=v;
+	  noProxies.push( v );
 	}
       }catch(NoSuchElementException ex) {
       }
@@ -640,7 +639,7 @@ public class Pia{
     
     
     debug(this, "\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-    Hashtable ht = new Hashtable();
+    Table ht = new Table();
     ht.put("agent", "popart");
     ht.put("type", "dofs");
     ht.put("root", "~/");
@@ -673,8 +672,16 @@ public class Pia{
   }
 
   protected void cleanup(boolean restart){
-    resolver.shutdown();
+    debug(this, "Shutting down accepter...");
     accepter.shutdown();
+
+    /*
+    debug(this, "Shutting down threads...");
+    threadPool().stop();
+
+    debug(this, "Shutting down resolver...");
+    resolver.shutdown();
+
     // Finally close the log
     if ( logger != null )
       logger.shutdown() ;
@@ -694,6 +701,8 @@ public class Pia{
 	ex.printStackTrace() ;
       }
     }
+    */
+
   }
   
   public void shutdown(boolean restart){
@@ -828,6 +837,7 @@ public class Pia{
   return piaprops;
 }
 
+
   public static void main(String[] args){
         Integer cmdport      = null ;
 	String  cmdroot      = null ;
@@ -835,6 +845,7 @@ public class Pia{
 	String  cmdprop      = null ;
 	Boolean cmddebugging = null ;
 	Boolean cmdverbose   = null ;
+
 
     // Parse command line options:
 	for (int i = 0 ; i < args.length ; i++) {
@@ -905,6 +916,8 @@ public class Pia{
 	  piaprops.put(PIA_DEBUG, "true" );
 	if( cmdverbose != null )
 	  piaprops.put(PIA_VERBOSE, "true" );
+
+
 	
 	try
 	  {
@@ -914,6 +927,8 @@ public class Pia{
 	    piaAgency.initialize(piaprops);
 	    piaAgency.piaFileMapping = piaAgency.loadFileMapping( whereFileMap );
 	    piaAgency.createPiaAgency();
+
+	    //new Thread( new Shutdown() ).start();
 	  }catch(Exception e){
 	    System.out.println ("===> Initialization failed, aborting !") ;
 	    e.printStackTrace () ;
@@ -922,6 +937,7 @@ public class Pia{
   }
 
 }
+
 
 
 
