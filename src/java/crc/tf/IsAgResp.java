@@ -51,6 +51,7 @@ public final class IsAgResp implements UnaryFunctor{
 	if( request.is("agent_request") )
 	  return new Boolean( true );
       }
+      return new Boolean( false );
 	
     }
 }
