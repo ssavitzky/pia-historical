@@ -44,7 +44,7 @@ Attrs.class: Attrs.java SGML.java
 Element.class: Token.java Tokens.java SGML.java \
 	../ds/List.java ../ds/Table.java
 
-Element.class: Token.java SGML.java
+Element.class: Token.java Text.java SGML.java
 
 SGML.class: SGML.java Attrs.java
 

@@ -577,7 +577,7 @@ public SGML attr(Index name)
     if (tag == null || tag.equals("") || specialFormat) {
       return null;
     } else {
-      Text t = new TextBuffer("<" + tag);
+      TextBuffer t = new TextBuffer("<" + tag);
       for (int i = 0; i < nAttrs(); ++i) {
 	t.append(" ");
 	t.append(attrNameAt(i));
@@ -592,7 +592,7 @@ public SGML attr(Index name)
 	}
       }
       t.append(">");
-      return t;
+      return t.toText();
     }
   }
 
