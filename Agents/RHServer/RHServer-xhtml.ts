@@ -188,7 +188,7 @@
 					<repeat><foreach entity=y>&selected;</foreach>
 						<!-- If group matches name, return the concept name -->
 						<if><test match=&y;>&attributes:group;</test><then>
-							<OPTION><select><from>&x;</from><name recursive>rhconcept-name</name><content>
+							<OPTION><select><from>&x;</from><name recursive>rhconcept-name</name><content></OPTION>
 							</select>
 						</if>
 					</repeat>
@@ -339,6 +339,47 @@
   </table>
 </table>
   </action>
+</define>
+
+<define element=add-concept-group>
+	<doc>Given a concept name, and a group name,
+		 adds this group to the concept
+	</doc>
+	<define attribute=concept required></define>
+	<define attribute=group required></define>
+	<action>
+		<set name=cpt>
+			<get-concept-by-name name=&attributes:concept;>
+			</get-concept-by-name>
+		</set>
+		<select><from>&cpt;</from><name recursive>rhconcept-grouplist</name>
+			<child>-1</child>
+				<append><protect markup><rhconcept-group>&attributes:group;</rhconcept-group></protect></append>
+		</select>
+	</action>
+</define>
+
+<define element=save-group-name>
+	<doc>Saves the group name to a file.  Need to have
+		this name persist across transactions.  There must
+		be a better way...
+	</doc>
+	<define attribute=name required></define>
+	<action>
+		<connect src="persist.out" method=put>
+			&attributes:name;
+		</connect>
+	</action>
+</define>
+
+<define element=get-group-name>
+	<doc>Gets the group name saved to file.
+	</doc>
+	<define attribute=name required></define>
+	<action>
+		<connect src="persist.out" entity=AGENT:groupName>
+		</connect>
+	</action>
 </define>
 
 
