@@ -167,9 +167,15 @@ public class Run  extends Environment {
 
 	ent("transAgentName", aname);
 	ent("transAgentType", atype); 
+	if (aname.equals(atype)) {
+	  ent("transAgentPath", "/"+aname);
+	} else {
+	  ent("transAgentPath", "/"+atype+"/"+aname);
+	}
       } else {
 	ent("transAgentName", Token.empty);
 	ent("transAgentType", Token.empty);
+	ent("transAgentPath", Token.empty);
       }
 
       crc.pia.Pia pia = crc.pia.Pia.instance();
@@ -189,6 +195,11 @@ public class Run  extends Environment {
 
     ent("agentName", agent.name());
     ent("agentType", agent.type());
+    if (agent.name().equals(agent.type())) {
+      ent("agentPath", "/"+agent.name());
+    } else {
+      ent("agentPath", "/"+agent.type()+"/"+agent.name());
+    }
 
     ent("entityNames", "");
     Tokens enames = new Tokens(entities.keys(), " ").sortAscending();
