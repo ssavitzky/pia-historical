@@ -190,7 +190,7 @@ public class ContentFactory extends ContentHandler
 	Pia.debug(this, "Loading is successfull");
 
       }catch(Exception e){
-	e.printStackTrace();
+	if (Pia.debug()) e.printStackTrace();
 	c = makeContentFromDef( mimeType );
       }
       finally{
