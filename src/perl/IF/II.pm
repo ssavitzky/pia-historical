@@ -294,11 +294,174 @@ sub use_tagset {
 ###	is used to access them.  Attributes in the current tag can be used 
 ###	to provide private scope.
 
+###      variable names look like "scope.name.key1.key2...keyN"
+###      internally, these are represented as hashes or description lists
+###       each key moves 1 level down the hash tree
+###      ranges can be specified by "start-end" or "start,second,third", 
+###      or wildcards "*"
+###      variable values should eventually be tokens
+
+
+ # returns an array of tokens, references to hashes/ arrays, or atomic structure
+##  note array values in variables should be references
+sub  get_value_internal{
+    my($self,$hash,$key)=@_;
+				# keys should already be parsed
+    my @result;
+				#  hash might be an object that is blessed
+				# as something else... treat special cases first
+
+    return unless ref($hash);
+    
+    if(ref($hash) eq 'ARRAY'){
+	#checkfor numbers
+	$key=~ s/-/../;
+	if($key eq '*'){
+	    push(@result,@$hash);
+	}else{
+	    push(@result,$$hash[$key]);
+	}
+    } elsif(ref($hash) eq 'IF::IT' || ref($hash) eq 'DS::Tokens'){
+	# what to do for non description list?
+
+	my $content = $hash;
+	$content=$hash->content if ref($hash) eq 'IF::IT';
+	if (defined $content) {
+	    my $dd;
+	     while(@$content) {
+		 $dt = shift(@$content);
+		 if (ref($dt) && $dt->tag  eq  'dt') {
+		     my $dd=$dt->content_text;
+		     if($key eq '*' || $key =~ /^\s*$dd\s*$/){
+			 while(@$content){
+			     $dd=shift(@$content);
+			     if( $dd->tag  eq  'dd'){
+				 push(@result,@$dd->content) ;
+				 last;
+			     }
+			     last if $dd->tag  eq  'dt';
+			 }
+		     }
+		 }
+	     }
+	}
+    } else {
+	##unknown reference type...
+	 ##  if( ref($hash) eq 'HASH'){
+	if( exists $$hash{$key}){
+	    push(@result,$$hash{$key}) ;
+	} else {
+	    # checkfor wildcards
+	    if($key =~ /\*/){
+		foreach $value (values %$hash){
+		    push(@result, $value);
+		}
+	    }
+	}
+    }
+
+    return  @result;
+}
+
+ # parse a variable name, return an array of keys
+sub  parse_variable_name{
+    my($self,$name)=@_;
+    return split(/\./, $name);
+        
+}
+
+sub get_variable_value{
+    my($self,$variable)=@_;
+print "getting variable $variable !\n" if $main::debugging;
+    my @keys=$self->parse_variable_name($variable);
+    my $space=shift @keys;
+     return unless exists $self->entities->{$space};
+ print " getting verbal and $space keys" . join(" ",@keys) ." \n";
+    my @hashes;
+
+    my @result;
+    push(@result,$self->entities->{$space});
+    
+    foreach $key (@keys){
+	push(@hashes,@result);
+	splice(@result,0);	# remove intermediate results
+	
+	while(@hashes){
+	    push(@result,$self->get_value_internal(shift @hashes, $key));
+	}
+ print  "$key returned " ;
+ print @result;
+    }
+				# tidyup result here
+    return $self->convert_array_to_token(@result);
+        
+}
+
+#turn hashes into dl tokens,  lists into ul, single text unchanged
+sub convert_array_to_token{
+    my($self)=shift;
+    my @copy;
+    foreach $value (@_){
+	my $type=ref($value);
+	print $type . "\n";
+	if($type){
+	    print "package type not responds to attr? " unless $ {$type}{attr};
+	    print "\n";
+    
+				# deal with known types first
+	    if($type eq 'IF::IT' || $type eq 'DS::Tokens'){
+				# donothing
+	    }elsif($type eq 'ARRAY'){
+		$value=$self->convert_array_to_token(@$value);
+	    }elsif($type eq 'HASH'){
+		$value=$self->convert_hash_to_token($value);
+	    }else{
+# generic  in object
+ # we should put in a check for weather the object has appropriate token creation methods 
+		$value=$self->convert_object_to_token($value);
+				
+	    }}
+	push(@copy,$value);
+    }
+#only one item, then return it
+return shift(@copy) unless $#copy > 0;
+    #make token for array
+    return IF::IT->new('ol', @copy);
+}
+
+#create a description list
+sub convert_hash_to_token{
+    my($self,$hash)=@_;
+    my $token=IF::IT->new('dl');
+    foreach $key (keys %$hash){
+	$token->push(IF::IT->new('dt',$key));
+	$token->push(IF::IT->new('dd',$self->convert_array_to_token($$hash{$key})));
+    }
+    return $token;
+    
+}
+
+#create a description list
+sub convert_object_to_token{
+    my($self,$hash)=@_;
+    my $token=IF::IT->new('ul');
+    foreach $key (keys %$hash){
+	$token->push(IF::IT->new('li',$key));
+ #	$token->push(IF::IT->new('dd',$self->convert_array_to_token($$hash{$key})));
+    }
+    return $token;
+    
+}
+
 sub getvar {
     my ($self, $v) = @_;
 
     ## Retrieve the value of a variable.  Look up the stack if
     ##	  necessary. 
+
+## if v is in dotted notation "AGENT.foo.bar" do special processing lookup
+    return $self->get_variable_value($v) if $v =~ /\./;
+    
 
     my $level = 0;
     my $context;
@@ -312,11 +475,54 @@ sub getvar {
     return;
 }
 
+
+sub set_variable_value{
+    my($self,$variable,$value)=@_;
+#this get real tricky
+    my @keys=$self->parse_variable_name($variable);
+    my $space=shift @keys;
+    print "setting " . join(" ",@keys) . "in $space\n";
+    return unless exists $self->entities->{$space};
+    my @hashes;
+    my @result;
+    push(@result,$self->entities->{$space});
+    
+    my $lastkey=pop(@keys);
+    return unless $lastkey;
+
+    foreach $key (@keys){
+	push(@hashes,@result);
+	splice(@result,0);	# remove intermediate results
+	
+	while(@hashes){
+	    push(@result,$self->get_value_internal(shift @hashes, $key));
+	}
+    }
+#anything that is a hash gets this new value
+    foreach $hash (@result){
+	if(my $type=ref($hash)){ 
+	    if ($type eq 'IF::IT') {
+# tokens act as description lists
+		$hash->push(IF::IT->new('dt'),$lastkey);
+		$hash->push(IF::IT->new('dd'),$value);
+	    }else{		# treat everythingelse as hash
+				# possibly convert value to hash?
+		$$hash{$lastkey}=$value;
+	    }
+	}
+    }
+}
+
+
+
 sub setvar {
     my ($self, $v, $value) = @_;
 
     ## Set the value of a variable.  Look up the stack to find the
     ##	  current binding, and change it.
+
+## if v is in dotted notation "AGENT.foo.bar" do special processing lookup
+    return $self->set_variable_value($v,$value) if $v =~ /\./;
 
     my $level = 0;
     my $context;

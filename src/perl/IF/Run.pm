@@ -273,6 +273,22 @@ sub if_entities {
 
     $ents->{'agentName'} 	= $agent->name;
     $ents->{'agentType'} 	= $agent->type;
+
+###These are complex data structures for variable references like "agent.packages.foo" 
+### perl let's us get away with passing around these references and
+###  modifying them... not great programming practice, but useful for experimentation
+### See the get_variable_...  functions in II
+## uppercase these to distinguish
+    $ents->{'AGENT'} 	=  $agent; # access to agent attr/val pairs--dangerous!
+    $ents->{'ENV'}      = \%ENV; #  environment variables
+    $ents->{'FORM'}      =  $request->parameters; # form parameters hash
+
+##  headers... really violating encapsulation...
+    $ents->{'HEADERS'}      =  $transaction->{_headers}->{_header};
+
+##more name spaces?  Transaction, feature, etc.?
+
+
     $ents;
 }
 
