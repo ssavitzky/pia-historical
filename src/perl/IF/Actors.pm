@@ -875,7 +875,23 @@ sub add_markup_handle {
 ### <join [separator="string"] [pairs [pair-separator="string"]]>list</split>
 
 ### <subst match="pattern" result="pattern">text</subst>
+### global by default
+define_actor('subst', 'dscr' => "substitute pattern in text");
 
+sub subst_handle{
+    my ($self, $it, $ii) = @_;
+
+    my $match = $it->attr('match');
+    return unless defined $match;
+    my $pattern = $it->attr('result');
+    my $string = $it->content_string;
+    if($string =~ s/$match/$pattern/g){
+	$ii->replace_it($string);
+	return;
+    }
+    $ii->replace_it('');
+		    
+}
 
 ###### InterForm Actors:
 
