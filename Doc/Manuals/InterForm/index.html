@@ -21,8 +21,8 @@
   <li> <a href="../Author/index.html">Agent Author's Manual</a>
   <li> <a href="/if_demo/home.if">InterForm Demonstration Agent</a> (from PIA
        only) 
-  <li> <a href="/agency/entities.if">Entities</a> (from PIA only)
-  <li> <a href="/agency/actors.if">Actors</a> (from PIA only)
+  <li> <a href="/Agency/entities.if">Entities</a> (from PIA only)
+  <li> <a href="/Agency/actors.if">Actors</a> (from PIA only)
 </ul>
 
 <h3>Contents:</h3>
@@ -236,6 +236,30 @@ has to be done by the interpretor in figuring out which action to take.<p>
 
 <h3>Entities</h3>
 
+An entity reference consists of the character ``<code>&amp;</code>''
+(ampersand) followed by a name, followed by the character ``<code>;</code>''
+(semicolon).  The semicolon can be omitted if the name of the entity is
+followed by a character that is not permitted in a name, but it is good
+practice to include it anyway.  Case is <em>significant</em> in entity names.
+<p>
+
+An entity name may consist of several sub-names separated by
+``<code>.</code>'' (period).  These sub-names form a path (similar to a file
+path) through a sequence of ``namespaces'' (which may be Agents, &lt;table&gt;
+or &lt;dl&gt; elements, forms, and so on).  If no namespace is given, the
+interpretor will search through any locally-defined entities (for example, the
+list element entity defined by the &lt;repeat&gt; tag) and the top-level
+entity table associated with the InterForm being interpreted.  This is
+pre-loaded with a number of useful entities:<p>
+
+===<p>
+
+A complete list can be obtained from the PIA via the <a
+href="/Agency/entities.if">/Agency/entities.if</a> InterForm.<p>
+
+
+The following namespaces are defined:
+
 ===<p>
 
 
@@ -387,7 +411,7 @@ files.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Sat Feb  1 20:34:00 1997
+Last modified: Tue Apr  8 10:09:22 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
