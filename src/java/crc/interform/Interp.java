@@ -243,7 +243,6 @@ public class Interp extends State {
     return getEntityInternal(names,(SGML)bindings.at(name));
   }
 
-  
   /** Get the value of a named variable (entity) with path lookup.
    *	Dynamic scoping is used, with an optional variable (entity) table
    *	in each State stack frame.  If no local variable is found, the 
@@ -311,7 +310,6 @@ public class Interp extends State {
     setEntityInternal(name,names,value,variables);
   }
 
-
   /** Set the value of a named global variable (entity).
    */
   public final void setGlobal(String name, SGML value) {
@@ -321,9 +319,10 @@ public class Interp extends State {
   }
 
   /** Sets the value of a.b.c in given table (This should be top level, eg. 
-      entities or variables.)  New SGMLattr created as needed
+   *      entities or variables.)  New SGMLattr created as needed
    */  
-  private final void setEntityInternal(String name, List names, SGML value, Table context) {
+  private final void setEntityInternal(String name, List names,
+				       SGML value, Table context) {
     if(names.isEmpty()){
       context.at(name,value);
       return;
@@ -366,7 +365,6 @@ public class Interp extends State {
     setEntityInternal(newName,names,value,newContext);
   }
   
-
 
   /** Get the value of a named attribute.  Looks up the context tree until
    *	it finds one, or if tag is specified, an element with that tag.
@@ -573,9 +571,10 @@ public class Interp extends State {
    *	``interested'' actor, <em>name</em>: for every actor pushed
    *	as a handler, and <em>name</em>! for every handler called.<p>
    */
-  public final void resolve(SGML token) {
+  public final void resolve(SGML token, boolean once) {
     Actor syntax;
 
+    if (token != null) once = true;
     /* Get the next incoming token and make it current. */
     it = (token == null)? nextInput() : token;
 
@@ -705,12 +704,10 @@ public class Interp extends State {
 	  pushToken(it);
 	}
 	if (passing) { passToken(it); debug("passed\n"); }
+	if (once) return;
       } else {
 	debug("deleted\n");
       }
-
-      /* Get another token, unless called to resolve a single token. */
-      if (token != null) return;
     }
 
     if (token == null) {
@@ -765,7 +762,7 @@ public class Interp extends State {
   /** Run the interpretor until it completes.  Return the output.
    */
   public Tokens run() {
-    resolve(null);
+    resolve(null, false);
     flush();
     return output;
   }
@@ -773,7 +770,14 @@ public class Interp extends State {
   /** Flush the interpretor's input queue, running it to completion.
    */
   public void flush() {
-    resolve(Element.endTagFor(null));
+    resolve(Element.endTagFor(null), false);
+  }
+
+  /** Run the interpretor for a single step.  Return the output.
+   */
+  public Tokens step() {
+    resolve(null, true);
+    return output;
   }
 
 
@@ -783,7 +787,7 @@ public class Interp extends State {
 
   /** Pass a token or tree to the output. */
   final void passToken(SGML it) {
-    if (output == null) return;
+    if (output == null) return;	// skipping.
     if (! streaming) {		// Not streaming: just pass the tree
       output.append(it);
     } else {
@@ -953,6 +957,14 @@ public class Interp extends State {
     setStreaming();
     return this;
   }
+
+  /** Discard output. */
+  public Interp toNull() {
+    output = null;
+    setSkipping();
+    return this;
+  }
+
 
   /************************************************************************
   ** Error Messages:
