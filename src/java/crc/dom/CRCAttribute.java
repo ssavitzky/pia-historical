@@ -18,7 +18,15 @@ public class CRCAttribute extends BasicAttribute implements Attribute {
     attrModel = null;
   }
 
-  public int getNodeType() { return NodeType.ATTRIBUTE; }
+  public Object clone(){
+    CRCAttribute n = (CRCAttribute)super.clone();
+    n.setName( getName() );
+    setValue( new ChildNodeList( getValue() ));
+    n.copyChildren( this );
+    n.setSpecified( getSpecified() );
+    n.setAttrModel( getAttrModel() );
+    return n;
+  }
 
   /* Accessor and mutator for attribute node definition */
   public Node getAttrModel(){ return attrModel; }

@@ -17,6 +17,12 @@ public class NodeWrapper extends AbstractNode{
     foreignNode = n;
   }
 
+  public Object clone(){
+    NodeWrapper n = (NodeWrapper)super.clone();
+    n.foreignNode = foreignNode;
+    return n;
+  }
+
   /**
    * implements DOMFactory interfaces
    */
