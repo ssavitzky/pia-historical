@@ -47,6 +47,8 @@ public class Environment {
   public Table		entities = null;
   public Interp		interpretor = null;
 
+  public boolean	debug = false;
+
   /************************************************************************
   ** Constructors:
   ************************************************************************/
@@ -67,6 +69,7 @@ public class Environment {
     if (entities == null) initEntities();
     if (entities != null) ii.entities = entities;
     interpretor = ii;
+    if (debug) ii.debug = debug;
   }
 
   /************************************************************************
@@ -100,6 +103,7 @@ public class Environment {
       String dd   = pad(date.getDate(), 2);
       String hh	  = pad(date.getHours(), 2);
       String min  = pad(date.getMinutes(), 2);
+      int wday	  = /* date.getWeekday()) */ Util.getWeekday(date);
 
       ent("second",	pad(date.getSeconds(), 2));
       ent("minute",	min);
@@ -107,8 +111,8 @@ public class Environment {
       ent("day",	dd);
       ent("month",	mm);
       ent("year",	yyyy);
-      // === ent("weekday",	date.getWeekday());
-      // === ent("dayName",	dayNames[$wday]);
+      ent("weekday",	pad(wday, 1));
+      ent("dayName",	dayNames.at(wday));
       ent("monthName",	monthNames.at(date.getMonth()));
       //ent("yearday",	date.getYday);
       ent("date",	yyyy+mm+dd);
@@ -175,10 +179,6 @@ public class Environment {
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
     ii.from(p).toStream(out);
     use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
     ii.run();
   }
 
@@ -191,10 +191,6 @@ public class Environment {
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(), false);
     ii.from(p).toText();
     use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
     return ii.run().toString();
   }
 
@@ -226,7 +222,6 @@ public class Environment {
     ii.pushInto(code);
     ii.setSkipping();
     use(ii);
-
     ii.run();
   }
 
@@ -235,10 +230,6 @@ public class Environment {
     Interp ii = new Interp(Tagset.tagset(tsname), initEntities(),true);
     ii.from(p).toTokens();
     use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
     return ii.run();
   }
 
