@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.StringBufferInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.OutputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -508,10 +509,20 @@ public class GenericAgent extends AttrBase implements Agent {
   * agents can ask content objects to notify them of state changes.
   * this is the callback method for that notification.
   * @see Content notifyWhen
+  * AgentMachines also use this as the default callback for sending a response.
+  * 
   */
 
   public void updateContent(Content c, String state, Object arg)
   {
+    Pia.debug(this,"updating content object" + c.toString()+" state "+ state, " argument "+arg);
+    if(arg instanceof AgentMachine){
+      // write content to a null stream for side effects
+       try{
+	 c.writeTo( new NullOutputStream());
+       } catch(Exception e){}
+      return;
+    }
     // do something based on state of content
   }
   
@@ -1080,9 +1091,17 @@ public class GenericAgent extends AttrBase implements Agent {
 
 }
 
-
-
-
+class NullOutputStream extends OutputStream{
+  public void write(byte[] b){
+    // do nothing -- bits onto floor
+  }
+  public void write(int b){
+    // do nothing -- bits onto floor
+  }
+  public void write(byte[] b, int i, int j){
+    // do nothing -- bits onto floor
+  }
+}
 
 
 
