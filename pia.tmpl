@@ -199,6 +199,7 @@ NamedTargetSubdirs(docs,dirs,"documenting",NullParameter,docs)
 /* .fm (frame5) to ps    ../pia_temp.fm holds printer settings
  * can go to file or printer...
  */
+.fm.ps:
 	echo "Open $<" >> .tmp ;echo "Open ../pia_temp.fm" >> .tmp; \
  echo "Print $< ../pia_temp.fm" >> .tmp ; fmbatch .tmp ; rm .tmp
 
