@@ -23,9 +23,6 @@
 package crc.ds;
 
 import java.util.Hashtable;
-import java.util.Vector;
-import crc.pia.Transaction;
-import crc.pia.Agent;
 
 import crc.ds.HasFeatures;
 import crc.ds.Criterion;
