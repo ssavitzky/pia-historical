@@ -1,6 +1,11 @@
 %%macro to print code under a section of tex
 %% use like   encode{11}{text labeled 11}
 %% where 11 is the code (any number) and text is arbitrary latex stuff
+
+%%this puts encoding in footnote and underlines text
+%%comment out for barcode and comment in below...
+\def\encode#1#2{\underline{#2}\footnotemark[#1] }
+
 \newlength{\gwboxwidth}
 \newlength{\gwcodeboxwidth}
 %\def\encode#1#2{\mbox{\mbox{#2}\settowidth{\gwboxwidth}{#2}\hspace{-\gwboxwidth}\dimen1=\gwboxwidth \divide\dimen1 by18 \makebox[\gwboxwidth]{\bcode{\dimen1}{#1}}} %
@@ -13,8 +18,9 @@
 \def\minwid{1.5mm}
 \newsavebox{\mytextbox}
 \newsavebox{\mycodesbox}
-\def\encode#1#2{\mbox{\sbox{\mytextbox}{#2}\settowidth{\gwboxwidth}{#2}\dimen1=\gwboxwidth \divide\dimen1 by18 \ifdim\dimen1<\minwid \dimen1=\minwid \fi \sbox{\mycodesbox}{\bcode{\dimen1}{#1}}\settowidth{\gwcodeboxwidth}{\bcode{\dimen1}{#1}}\dimen1=\gwboxwidth \ifdim\dimen1<\gwcodeboxwidth \dimen1=\gwcodeboxwidth \fi  \makebox[\dimen1]{\usebox{\mytextbox}}\hspace{-\dimen1}\makebox[\dimen1]{\usebox{\mycodesbox}} } %
-}
+%%uncomment following line to get barcodes
+%\def\encode#1#2{\mbox{\sbox{\mytextbox}{#2}\settowidth{\gwboxwidth}{#2}\dimen1=\gwboxwidth \divide\dimen1 by18 \ifdim\dimen1<\minwid \dimen1=\minwid \fi \sbox{\mycodesbox}{\bcode{\dimen1}{#1}}\settowidth{\gwcodeboxwidth}{\bcode{\dimen1}{#1}}\dimen1=\gwboxwidth \ifdim\dimen1<\gwcodeboxwidth \dimen1=\gwcodeboxwidth \fi  \makebox[\dimen1]{\usebox{\mytextbox}}\hspace{-\dimen1}\makebox[\dimen1]{\usebox{\mycodesbox}} } % and uncomment next line!!!!!!!!!!!!!!!!!!!
+%}
 
 \def\bcode#1#2{\startcode{#1}\writecode{#1}{#2}\endcode{#1}} %1 is width 2 is #
 %\def\startcode#1{\hspace{\minwid}\codebox{#1}\hspace{#1}\hspace{#1}\codebox{#1}}
