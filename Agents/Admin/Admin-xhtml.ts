@@ -1,11 +1,11 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=Agency-xhtml parent=pia-xhtml recursive>
+<tagset name=Admin-xhtml parent=pia-xhtml recursive>
 
-<h1>Agency-XHTML Tagset</h1>
+<h1>Admin-XHTML Tagset</h1>
 
-<doc> This tagset is local to the Agency agent.  It is worth noting that the
-      Agency agent also handles pages in the ``root'' directory, with no
-      agent; these are kept in the <code>Agency/ROOT</code> directory,
+<doc> This tagset is local to the Admin agent.  It is worth noting that the
+      Admin agent also handles pages in the ``root'' directory, with no
+      agent; these are kept in the <code>Admin/ROOT</code> directory,
 </doc>
 
 <h2>Legacy operations</h2>
@@ -73,19 +73,19 @@
 
 <define entity=A100>
   <doc> Large pentagonal A, which serves as an identifying logo for the 
-	Agency agent.
+	Admin agent.
   </doc>
   <value><img src="Logo/A100.gif" height=100 width=111 
-		alt="AGENCY"></value>
+		alt="ADMIN"></value>
 </define>
 <!-- these two aren't being picked up from pia-xhtml; check namespace stuff
      in TopProcessor and BasicTagset. -->
 <define entity=blank-170x1>
-  <value><img src="/Agency/Icons/white170x1.gif" width=170 height=1
+  <value><img src="/Icon/white170x1.gif" width=170 height=1
 		alt=" "></value>
 </define>
 <define entity=blue-dot>
-  <value><img src="/Agency/Icons/dot-blue.gif"
+  <value><img src="/Icon/dot-blue.gif"
 		height=20 width=20 alt="*"></value>
 </define>
 
@@ -160,16 +160,16 @@
 	<td> <xa href="checkpoint" page="&attributes:page;">checkpoint</xa> /
 	     <xa href="restore" page="&attributes:page;">restore</xa> state
 	     <if><test exact match='pia'>&piaUSER;</test>
-	         <then><a href="/Agency/shutdown">shut down</a> appliance<br>
+	         <then><a href="shutdown">shut down</a> appliance<br>
 	     </if>
     <tr><th valign=top align=right>
 	     <xopt page="&attributes:page;"
 		   pages="agents installers remove-agent">&blue-dot;</xopt>
 	     &nbsp;
 	<td valign=top>
-	    <xa href="/Agency/list-agents" page="&attributes:page;">list</xa> / 
-	    <xa href="/Agency/installers" page="&attributes:page;">install</xa> / 
- 	    <xa href="/Agency/remove-agent" page="&attributes:page;">remove</xa>
+	    <xa href="list-agents" page="&attributes:page;">list</xa> / 
+	    <xa href="installers" page="&attributes:page;">install</xa> / 
+ 	    <xa href="remove-agent" page="&attributes:page;">remove</xa>
 	     agents<br>
     <tr><th valign=top align=right>Files: &nbsp;
 	<td><a href="/PIA/Doc/"><b>Docs</b></a>
@@ -194,7 +194,7 @@
 	want to put after the standard start.
   </doc>
   <action>
-<a href="/">PIA</a> || <a href="/Agency">&AGENT:name;</a>:
+<a href="/">PIA</a> || <a href="/&AGENT:name;">&AGENT:name;</a>:
 <a href="/&AGENT:name;/">index</a>
 <a href="/&AGENT:name;/agents">agents</a>
   </action>
