@@ -1,9 +1,12 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Using Spies</title>
+<title>Using &agentType; Agents</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
-</head><body bgcolor="#ffffff">
-<h1>Using Spies</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+<set entity name=title>Using  &agentType; Agents</set>
+<read interform file="heading.inc" process><p>
 
 Once a <a href="&agentType;">&agentType;</a> agent is installed it requires
 little attention; it will simply look ``over your shoulder'' at some subset of
@@ -36,20 +39,23 @@ The banner normally also refers to the following items in the <a
 href="/History">History</a> agent's data directory:
 
 <dl>
-  <dt> [ <a href="/My/History">Hist:</a> 
-  <dd> <a href="/My/History">/My/History</a> -- the history directory
-  <dt> <a href="/My/History/&year;">&year;</a> /
-  <dd> <a href="/My/History/&year;">/My/History/&year;</a> --
+  <dt> [ <a href="/History">Hist:</a> 
+  <dd> <a href="/History">/History</a> -- the History agent's home page
+  <dt> <a href="/~History">*</a> 
+  <dd> <a href="/~History">/~History</a> -- the History agent's data
+       directory. 
+  <dt> <a href="/~History/&year;">&year;</a> /
+  <dd> <a href="/~History/&year;">/~History/&year;</a> --
        the history for the current year
-  <dt> <a href="/My/History/&year;/&month;">&month;</a> /
-  <dd> <a href="/My/History/&year;/&month;">/My/History/&year;/&month;</a> --
+  <dt> <a href="/~History/&year;/&month;">&month;</a> /
+  <dd> <a href="/~History/&year;/&month;">/~History/&year;/&month;</a> --
        the history for the current month
-  <dt> <a href="/My/History/&year;/&month;/&day;.html">&day;</a>
-  <dd> <a href="/My/History/&year;/&month;/&day;.html">
-       /My/History/&year;/&month;/&day;.html</a> --
+  <dt> <a href="/~History/&year;/&month;/&day;.html">&day;</a>
+  <dd> <a href="/~History/&year;/&month;/&day;.html">
+       /~History/&year;/&month;/&day;.html</a> --
        the history for today
-  <dt> <a href="/My/History/last.html">&hour;:&minute;</a>] --
-  <dd> <a href="/My/History/last.html">/My/History/last.html</a>
+  <dt> <a href="/~History/last.html">&hour;:&minute;</a>] --
+  <dd> <a href="/~History/last.html">/~History/last.html</a>
 </dl>
 
 

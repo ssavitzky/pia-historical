@@ -1,9 +1,13 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
-<title>Writing &amp; Customizing Spies</title>
+<title>Writing &amp; Customizing &agentType; Agents</title>
 <link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body bgcolor="#ffffff">
-<h1>Writing &amp; Customizing Spies</h1>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+<set entity name=title>Writing &amp; Customizing &agentType; Agents</set>
+<read interform file="heading.inc" process><p>
 
 <h2>Customizing a &agentType; Agent</h2>
 
@@ -49,6 +53,15 @@ this that you will want to customize.  Consult the <a
 href="/PIA/Doc/Manuals/InterForm">InterForm Programming Manual</a> for
 detailed information on what you can do here.  In many cases all you will want
 to do is add a link.<p>
+
+Notice that the History portion of the banner is obtained from the <a
+href="/History">History</a> agent itself, using the code fragment:
+<pre><protect markup>
+<expand><get agent=History name=controls></expand>
+</protect></pre>
+This has the desirable effects of giving the History agent's controls a
+uniform look and feel, and of not inserting <em>anything</em> if the History
+agent isn't running.<p>
 
 For examples of customized &agentType; agents, see <a
 href="/PIA/Contrib/rsv.ricoh.com/steve/my/Agents">

@@ -9,15 +9,17 @@
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
 <tr><th><td> <a href="index.if">Index Page</a>
-<tr><th align=right><a href="home.if">&agentName;</a>: <td> Home Page
+<tr><th align=right><img src="/Agency/Icons/dot-blue.gif" 
+		         height=20 width=20 alt="*">
+    <td> <strong>Home Page</strong>
+<tr><th><td> <a href="options.if">Options</a>
+	     <a href="/&agentName;/initialize.if">[re-initialize]</a>
+<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
+	     <a href="/My/Agents/&agentName;/">(Customized)</a>
 <tr><th><td> <a href="/My/History">/My/History</a> /
 		<a href="/My/History/&year;">&year;</a> /
 		<a href="/My/History/&year;/&month;">&month;</a> /
 		<a href="/My/History/&year;/&month;/&day;.html">&day;</a>
-<tr><th><td> <a href="/&agentName;/initialize.if">[re-initialize]</a>
-<tr><th><td> <a href="options.if">Options</a>
-<tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
-	     <a href="/My/Agents/&agentName;/">(Customized)</a>
 </table>
 
 <if><agent-running name=History>
@@ -34,10 +36,10 @@
 <hr>
 <a href="/Agency">PIA</a> | <a href="/">agents</a> | <a href="/cia">CIA</a> |
 <a href="/fbi">FBI</a> | <a href="/History">History</a> |
-<a href="/My/History/">/My/History</a>
-		<a href="/My/History/&year;">&year;</a> /
-		<a href="/My/History/&year;/&month;">&month;</a> /
-		<a href="/My/History/&year/&month;/&day;.html">&day;</a>
+<a href="/~History/">/~History</a>
+		<a href="/~History/&year;">&year;</a> /
+		<a href="/~History/&year;/&month;">&month;</a> /
+		<a href="/~History/&year/&month;/&day;.html">&day;</a>
 <hr>
 
 The <code>&agentName;</code> agent puts information into the history database,
@@ -45,11 +47,34 @@ which is located in <a href="/My/history">/My/history</a>.  The <a
 href="/cia/">cia</a> and <a href="/fbi/">fbi</a> agents put a small control
 bar at the top of each page that refers to the history database.<p>
 
+The History control bar looks like this:<br>
+<dl>
+  <dt> <expand><get agent=History name=controls></expand>
+  <dd> 
+       <dl compact>
+	 <dt> Hist
+	 <dd> -&gt; <a href="/History">/History</a>, the History Agent's home
+	      page  
+	 <dt> *
+	 <dd> -&gt; <a href="/~History">/~History</a>, the History Agent's
+	      data directory.
+	 <dt> &year; / &month; /
+	 <dd> -&gt; the directories for this year and month.
+	 <dt> &day;
+	 <dd> -&gt; <a href="/~History/&year;/&month;/&day;.html"
+	      >/~History/&year;/&month;/&day;.html</a>, the history file for
+	      today. 
+	 <dt> &time;
+	 <dd> -&gt; <a href="/~History/last.html">/~History/last.html</a>, the
+	      headers and other information for the most-recently-viewed page.
+       </dl>
+</dl>
+
+<h3>Files:</h3>
 <ul>
-  <li>History Agent: <a href="/History">/History</a>
-  <li>History directory: <a href="/My/History">/My/History</a>
-  <li>Page info: <a href="/My/History/last.html">/My/History/last.html</a>
-  <li>Last link: <a  href="/My/History/last.link">/My/History/last.link</a>
+  <li>History directory: <a href="/~History">/~History</a>
+  <li>Page info: <a href="/~History/last.html">/~History/last.html</a>
+  <li>Last link: <a  href="/~History/last.link">/~History/last.link</a>
 </ul>
 
 The ``last link'' file is particularly useful; the following Emacs code lets
@@ -62,6 +87,9 @@ you define a key that inserts a link to the last page you visited:
   (interactive)
   (insert-file-contents "~/.pia/History/last.link") )
 </pre></blockquote>
+
+(Windows users will have to change the file in the last line to
+ <code>&usrDIR;/History/last.link</code>).
 
 <h3>Directory Format</h3>
 

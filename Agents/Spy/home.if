@@ -25,8 +25,9 @@
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
            </repeat>
-    <tr><th><td> <a href="using.if">Using Spies</a>
-    <tr><th><td> <a href="writing.if">Writing &amp; Customizing Spies</a>
+    <tr><th><td> <a href="using.if">Using  &agentType; Agents</a>
+    <tr><th><td> <a href="writing.if">Writing &amp; Customizing
+		    		      &agentType; Agents</a>
   </table>
 </table>
 <hr>
@@ -43,7 +44,7 @@
 
 <if><agent-running name=History>
   <then><a href="/History/home.if">History</a> agent also installed.
-        Good.  </then>
+        Good.  That means we can use the history controls. </then>
   <else>Most &agentType; agents make links to the history agent's data, and
 	are not nearly as useful without it.
         See the <a href="/Agency/installers.if#History">installation page</a>
