@@ -20,7 +20,6 @@
 package crc.pia;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.Hashtable;
 import java.util.Enumeration;
 import java.io.IOException;
 import java.io.FileOutputStream;
@@ -28,8 +27,9 @@ import java.io.FileOutputStream;
 import java.net.URL;
 
 import crc.pia.Agent;
+import crc.ds.Queue;
+import crc.ds.Table;
 import crc.pia.Transaction;
-
 import crc.ds.Queue;
 
 public class Resolver extends Thread {
@@ -37,12 +37,17 @@ public class Resolver extends Thread {
    * Attribute index - a collection of agents currently running.
    */
 
-  protected  Hashtable agentCollection;
+  protected  Table agentCollection;
 
   /**
    * Attribute index - a collection of computational codes.
    */
-  protected Hashtable computers;
+  protected Table computers;
+
+  /**
+   * Attribute index - transaction queue.
+   */
+  protected Queue transactions;
 
   /**
    * Attribute index - whether to stop running
@@ -116,9 +121,10 @@ public class Resolver extends Thread {
   }
 
   /**
-   * Get agent collection in a hashtable
+   * Get agent collection in a Table
+   *
    */
-  protected Hashtable agent(){
+  protected Table agent(){
     return agentCollection;
   }
 
@@ -357,8 +363,8 @@ public class Resolver extends Thread {
   ************************************************************************/
 
   public Resolver(){
-    agentCollection = new Hashtable();
-    computers       = new Hashtable();
+    agentCollection = new Table();
+    computers       = new Table();
     transactions    = new Queue();
     this.start();
   }
