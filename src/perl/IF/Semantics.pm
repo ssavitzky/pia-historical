@@ -178,12 +178,15 @@ sub analyze {
 
     if (ref($in) eq 'ARRAY') {
 	$out = {};
-    } else {
+    } elsif (ref($in)) {
 	$out = $in;
 	$in = $in->content;
+    } else {
+	$out = {};
+	$in = [ $in ];
     }
 
-    print "Analzying\n" if  $main::debugging>1;
+    print "Analzying [@$in]\n" if  $main::debugging>1;
     for $x (@$tags) {
 	$tags{$x} = 1;
     }
