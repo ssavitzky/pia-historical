@@ -1,0 +1,35 @@
+<!doctype html system "html.dtd">
+<html><head>
+<title>Initialize the FBI</title>
+</head><body>
+<h1>Initialize the FBI</h1>
+
+<user-message>Initializing &agentName; from &filePath;</user-message>
+<set name=AGENT:criteria>response agent-response html</set>
+<set name=AGENT:act-on><protect><if><get agent name=hidden><else>
+<trans-control>
+<set entity name=pia>http://&piaHOST;:&piaPORT;</set>
+<a href="&pia;/" target="_top"><img src="&pia;/Icon/pia24.gif"
+			 height=24 width=43 border=0></a>
+<expand>&AGENT:Toolbar:controls;</expand>
+<expand><get name=AGENT:History:controls></expand>
+( <if><test not exact match="&transAgentType;">&transAgentName;</test>
+    <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
+          <a href="&pia;/&transAgentType;/"> / </a></then>
+</if>
+<a href="&pia;/&transAgentName;">&transAgentName;</a>
+<a href="&pia;/&transAgentName;/"> / </a> )
+<a href="/PIA/Agents/&urlPath;">&urlPath;</a>
+<hr>
+</trans-control></if>
+</protect></set>
+
+<dl>
+  <dt> Criteria:
+  <dd> &AGENT:criteria;
+  <dt> Act-on:
+  <dd> <pre><protect markup result>&AGENT:act-on;</protect></pre>
+</dl>
+
+<footer cvsid="$Id$">
+</body></html>
