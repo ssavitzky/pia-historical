@@ -52,8 +52,14 @@ public class Index {
   }
 
   public static void setIndexValue(Context c, String index, NodeList value) {
-    // === wrong. 
-    c.setEntityValue(index, value, false);
+    int i = index.indexOf(':');
+    if (i == index.length() -1) {
+      setValue(c, index.substring(0, i), null, value);
+    } else if (i >= 0) {
+      setValue(c, index.substring(0, i), index.substring(i+1), value);
+    } else {
+      c.setEntityValue(index, value, false);
+    }
   }
 
   /** Get a value using a name and namespace. 

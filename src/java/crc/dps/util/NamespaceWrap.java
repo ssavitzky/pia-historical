@@ -11,6 +11,7 @@ import crc.dom.AttributeList;
 
 import crc.dps.active.*;
 import crc.dps.*;
+import crc.dps.Namespace;
 
 import java.util.Enumeration;
 
@@ -152,6 +153,8 @@ public class NamespaceWrap extends ParseTreeGeneric implements Namespace {
   public boolean containsNamespaces() {
     return namespaceItems > 0;
   }
+
+  public Namespace asNamespace() { return this; }
 
   public String getName()		{ return name; }
   public void setName(String n) 	{ name = n; }
