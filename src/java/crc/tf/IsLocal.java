@@ -17,7 +17,7 @@
    *	they may have to be recomputed if the transaction is modified.
    *
    */
-package crc.pia;
+package crc.tf;
 
 import crc.pia.ds.UnaryFunctor;
 
@@ -34,7 +34,7 @@ public final class IsLocal implements UnaryFunctor{
 	String lhost = host.toLowerCase();
 	if( lhost.startsWith("agency") || lhost == "" )
 	  return new Boolean( true );
-	String mhost = pia.instance.getHost().toLowerCase();
+	String mhost = Pia.instance.getHost().toLowerCase();
 	if( mhost.startsWith(lhost) )
 	  return new Boolean( true );
 	if( lhost.indexOf("localhost") != -1 )
