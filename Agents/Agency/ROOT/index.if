@@ -1,0 +1,114 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+  <title>&piaUSER;'s Agency on &piaHOST;</title>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set name=piaURL>http://&piaHOST;:&piaPORT;/</set>
+<table cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48 alt="R I C O H"></a></th>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a></th></tr>
+<tr height=2><td colspan=3 nowrap nobr
+    ><img src="/Agency/Icons/rule.gif" height=6 width=469></td></tr>
+<!--img src="/Agency/Icons/blackline425.gif" height=2 width=425-->
+<tr nowrap nobr><th align=left valign=top><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/ricoh-silicon-valley.gif" alt="RICOH SILICON VALLEY"
+	border=0 width=170 height=21 align=top></a>
+    <th valign=top align=right width=170>
+	    <if><test exact match='pia'>&piaUSER;</test>
+		<then></then>
+		<else><a href="/My/">&piaUSER;'s</a> </else></if></th>
+	<th align=left valign=top>
+	<if><test exact match='pia'>&piaUSER;</test>
+	    <then>An Information Appliance</then>
+	    <else>Personal Information Agency</else>
+	</if><br>
+	 &lt;<a href="&piaURL;">&piaURL;</a>&gt;
+        </th>
+<tr><th><br>
+</table>
+
+<table cellspacing=0 cellpadding=0 border=0>
+<tr>
+  <th width=170>
+    <table cellspacing=0 cellpadding=0 border=0>
+      <tr><th>
+	<if><read info interform file="/Agency/insert.if">
+            <then><read interform file="/Agency/insert.if" process></then>
+        </if><br></tr>
+    </table>
+  <td valign=top>
+    <table cellspacing=0 cellpadding=0 border=0 valign=top>
+    <tr>
+      <th valign=top align=right>
+    <tr>
+      <th valign=top align=right>
+      <td valign=top> &dayName;, &year; &monthName; &day;, &time;:&second;<br>
+    <tr><th valign=top align=right width=170>
+	    <a href="/Agency/home.if"><b>Agency:</b></a>
+	<td valign=top>
+	    <a href="/Agency/agents.if">list</a> /
+	    <a href="/Agency/installers.if">install</a> / 
+	    <a href="/Agency/remove_agent.if">remove</a>
+	    agents.<br>
+	    <if><test exact match='pia'>&piaUSER;</test>
+	      <then><a href="/Agency/shutdown.if">shut down</a> appliance<br></if>
+    <tr><if><test exact match='pia'>&piaUSER;</test>
+      <then>
+	<th valign=top align=right><b>Agent:</b>
+	<td valign=top>
+	    <if><agent-running name="Photo_Album"><then>
+		<a href="/Photo_Album/home.if">Photo Album</a></then>
+	    <else><if><agent-running name="CDRW"><then>
+		<a href="/CDRW/home.if">CDRW</a></then>
+	    <else><if><agent-running name="Printer"><then>
+		<a href="/Printer/home.if">Printer</a></then>
+	    <else>???</if></if></if></then>
+      <else>
+	<th valign=top align=right><b>Files:</b>
+	<td valign=top> <a href="/PIA/Agents/">Agents</a>
+	    <a href="/My/Agents/">(custom)</a>
+	    <a href="/PIA/Doc/">Doc</a>
+	    <a href="/PIA/src/">src</a>
+      </if><br></tr>
+    <if><agent-running name=History><then>
+    <tr>
+	<th valign=top align=right><b>History:</b>
+	<td valign=top> <a href="/History">Agent</a>
+	    [<a href="/My/History">All</a> | 
+	     <a href="/My/History/&year;/">&year;</a>/<a
+		href="/My/History/&year;/&month;/">&month;</a>/<a
+		href="/My/History/&year;/&month;/&day;.html">&day;</a>]
+	    <br></then>
+    </if>
+    <tr><th><br>
+  </table>
+</table>
+<p>
+<hr>
+<table>
+  <tr><td align=left width=340>
+    <pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
+<repeat list="&agentNames;"
+	   ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
+	   >	<agent-home link name="&li;">
+</repeat></pre>
+
+    <td valign=center align=left>
+        <img src="Logo/pia120.gif" height=120 width=235>
+</table>
+<hr>
+<b>URL:</b>
+&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
+<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
