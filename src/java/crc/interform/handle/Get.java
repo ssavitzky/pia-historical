@@ -13,6 +13,7 @@ import crc.ds.List;
 
 import crc.sgml.SGML;
 import crc.sgml.TableElement;
+import crc.sgml.Element;
 import crc.sgml.DescriptionList;
 import crc.sgml.AttrSGML;
 import crc.sgml.Tokens;
@@ -26,7 +27,7 @@ import java.util.Hashtable;
  *	&lt;get [name="name" | index="index"] 
  *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
  *	     | [file="filename"|href="url"|[file|href] name="string" ] 
- *           [attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=tag ]&gt;
+ *           [attr=attr | size | tree | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=tag findfirst=tag ]&gt;
  * <dt>Dscr:<dd>
  Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
  * ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
@@ -56,7 +57,7 @@ public class Get extends crc.interform.Handler {
     "<get [name=\"name\" | index=\"index\"] \n" +
     "[pia|agent|form|trans|env|element[tag=tag]|local|global\n" +
     "| [file=\"filename\"|href=\"url\"|[file|href] name=\"string\" ] >\n" +
-    "[attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=ftag  ]\n" +
+    "[attr=attr | size | tree | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=ftag |findfirst=ftag  ]\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -79,6 +80,13 @@ public class Get extends crc.interform.Handler {
   "If the retrieval specifies more than one SGML object, these attributes apply\n" +
   " to all of the retrieved objects and a list will be returned\n" +
 "";
+
+  /**
+   * the list of attributes we recognize
+   */
+
+  public static String[]  modifiers = {"index","findall","findfirst","size","tree","keys","key","attr","row","rows","col","cols" };
+
  
   /** Handle for &lt;get&gt.  The dispatching really should be in 
    *	actOn; we're faking it for now. === */
@@ -209,13 +217,11 @@ public class Get extends crc.interform.Handler {
    * return true if we recognize any of the attributes
    */
   public boolean isComplex(SGML it){
-     return (it.hasAttr("index") ||
-	     it.hasAttr("findall") ||
-	     it.hasAttr("size") ||
-	     it.hasAttr("keys") ||	     it.hasAttr("key") ||
-	     it.hasAttr("attr") ||
-	     it.hasAttr("row") || it.hasAttr("rows") ||
-	     it.hasAttr("col") || it.hasAttr("cols"));
+    for(int i=0;i<modifiers.length;i++){
+       if(it.hasAttr(modifiers[i]))
+	   return true;
+    }
+    return false;
   }
 
       /************************************************************
@@ -235,6 +241,10 @@ public class Get extends crc.interform.Handler {
       Tokens  content = result.content();
       int size = (content == null)? 0: content.nItems();
       result = crc.sgml.Util.toSGML(String.valueOf(size));
+    } else if(it.hasAttr("tree")){
+      String  tree = Util.getSGMLTree( result, "");
+      result =  new crc.sgml.Element("pre");
+      result.append(tree);
     } else {
       if(result  instanceof Tokens){
 	// repeat for all items
@@ -375,8 +385,9 @@ public class Get extends crc.interform.Handler {
     }
 
     // traversal case
-    if(request.hasAttr("findAll")){
-       String tag = Util.getString(request,"findAll","");
+    if(request.hasAttr("findAll") || request.hasAttr("findfirst") ){
+      boolean findfirst = request.hasAttr("findfirst");
+       String tag = (findfirst) ? Util.getString(request,"findfirst","") : Util.getString(request,"findAll","");
         debug( this, "Finding all "+ tag);
       // descend context looking for tokens with this tag -- default is text
        List stack = new List();
@@ -387,6 +398,7 @@ public class Get extends crc.interform.Handler {
 	 SGML  item = (SGML) stack.shift();
 	 if(tag.equalsIgnoreCase(item.tag())){
 	    result.push(item);
+	    if(findfirst) return result;
 	 }
 	 Tokens rest = item.content();
 	 if( rest != null){
