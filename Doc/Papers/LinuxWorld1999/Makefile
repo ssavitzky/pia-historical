@@ -46,6 +46,9 @@ SLIDES = $(FILES:.html=.slides.html)
 
 all:: $(SLIDES)
 
+lw99.pr.html: lw99.html technical.html pslides.ts
+	process -t pslides lw99.html > $@
+
 *.slides.html: config.inc
 
 lw99.slides.html: technical.html

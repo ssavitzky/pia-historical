@@ -151,6 +151,7 @@
   <if>&DOC:prev;<else><set name=DOC:prev> </set></if>
   <if>&DOC:slidelist;<else><set name=DOC:slidelist> </set></if>
 </hide>
+<hr>
 <table width="100%" cellspacing=0 cellpadding=5 border=0>
 <tr><th bgcolor="&ulBg;" fgcolor="&ulFg;" align=center
        ><a name="&slide;">&slide;</a></td>
@@ -220,15 +221,15 @@
 	text ``Start here'', linked to the top of the first slide.  
   </doc>
 <action>
-<h1>&content;</h1>
 <hide><!-- first time through we initialize the variables -->
+<h1>&content;</h1>
   <set name=DOC:subCaption>&content;</set>
   <if>&DOC:slide;<else><set name=DOC:slide>0</set></if>
   <if>&DOC:next;<else><set name=DOC:next><numeric sum>1 &slide;</set></if>
   <if>&DOC:prev;<else><set name=DOC:prev> </set></if>
   <if>&DOC:slidelist;<else><set name=DOC:slidelist> </set></if>
 </hide>
-<p> <start>Start here</start>
+
 </define>
      
 <define element=h2><action><set name=DOC:caption>&content;</set></define>
