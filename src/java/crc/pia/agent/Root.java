@@ -97,6 +97,9 @@ public class Root extends GenericAgent {
     String path = url.getFile();
     Pia.debug(this, "actOn..." + path);
 
+    // Forbid paths containing .. (a little extreme, but it works)
+    if (path.indexOf("..") >= 0) return;
+
     // Ask the resolver for the correct agent.  
     Agent agent = res.agentFromPath(path);
 
