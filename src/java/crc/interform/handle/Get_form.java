@@ -18,14 +18,9 @@ import crc.sgml.AttrTable;
 import crc.ds.Table;
 import crc.ds.Index;
 
-/** Handler class for &lt;get-form&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get.form [name="name"]&gt;
- * <dt>Dscr:<dd>
- *	Get value of NAME, in the FORM context.  
- *	With no name, returns entire form. 
- *  </dl>
+/** Handler class for &lt;get.form&gt tag 
+ *  <p> See <a href="../../InterForm/tag_man.html#get.form">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get_form extends Get {
   public String syntax() { return syntaxStr; }

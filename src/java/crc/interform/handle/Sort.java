@@ -14,13 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;sort&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;sort [case][text][numeric][reverse]&gt;item, ...&lt;/sort&gt;
- * <dt>Dscr:<dd>
- *	Sort items in CONTENT.  Optionally 
- *	CASE (sensitive), TEXT, NUMERIC, REVERSE.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#sort">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Sort extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

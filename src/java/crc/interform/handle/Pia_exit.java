@@ -16,13 +16,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;pia-exit&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;pia-exit [status=N]&gt;message&lt;/pia-exit&gt;
- * <dt>Dscr:<dd>
- *	Exit from the pia, after printing CONTENT.  Optional STATUS 
- *	(default 1).
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#pia-exit">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Pia_exit extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -13,12 +13,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;get.env&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get.env [name="name"]&gt;
- * <dt>Dscr:<dd>
- *	Get value of NAME from the ENVironment.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#get.env">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get_env extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

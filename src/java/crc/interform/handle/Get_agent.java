@@ -16,12 +16,8 @@ import crc.sgml.SGML;
 import crc.ds.Index;
 
 /** Handler class for &lt;get-agent&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get-agent [agent="agent-name"] name="name"&gt;
- * <dt>Dscr:<dd>
- *	Get value of NAME, in the AGENT context (i.e. as an option).
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#get.agent">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get_agent extends Get {
   public String syntax() { return syntaxStr; }

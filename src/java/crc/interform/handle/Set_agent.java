@@ -17,13 +17,8 @@ import crc.ds.Index;
 import crc.sgml.Tokens;
 
 /** Handler class for &lt;set.agent&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;set.agent name="name" [hook] [copy]&gt;...&lt;/set.agent&gt;
- * <dt>Dscr:<dd>
- *	set NAME to CONTENT in AGENT.  May set a HOOK (parsed InterForm) 
- *	or string value.  Optionally COPY content as result.  
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#set.agent">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Set_agent extends Set {
   public String syntax() { return syntaxStr; }

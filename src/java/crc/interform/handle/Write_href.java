@@ -22,17 +22,8 @@ import crc.pia.HTTPRequest;
 
 
 /** Handler class for &lt;write.href&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;write.href href="url" [post] [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] &gt;content&lt;/write.href&gt;
- * <dt>Dscr:<dd>
- *	Output CONTENT to HREF, with optional BASE path. 
- *	Optionally POST.  Optionally TRIM
- *	leading and trailing whitespace. Optionally end LINE.
- *	Optionally COPY content to InterForm.
- *      Should provide  options for handling results codes.. currently does not
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#write.href">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Write_href extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

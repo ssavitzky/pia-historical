@@ -22,34 +22,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 /** Handler class for &lt;get&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get [name="name" | index="index"] 
- *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
- *	     | [file="filename"|href="url"|[file|href] name="string" ] 
- *           [attr=attr | size | tree | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=tag findfirst=tag ]&gt;
- * <dt>Dscr:<dd>
- Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
- * ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
- * Default is to start with the local entity table and move up the
- * stack until name is found.  Returns \"\" if name does not exist in
- * specified context.  Elements of complex data structures can be accessed
- * using an INDEX -- dotted notation \"foo.bar\" returns the bar elements of
- * foo.  While \"foo.bar-3-5\"  returns the 3rd, 4th, and 5th bar  elements.
- * If FILE or HREF specified, functions as <read>.
- * The last set of attributes applies to the retrieved SGML object.
- * SIZE returns number of elements retrieved.
- * ATTR returns the value of the named attribute (can be tag). 
- * FINDALL returns a list of all the objects within the SGML object which
- * a tag equal to FTAG. 
- * KEY(s)/VALUES and ROW(s) COL(s) have
- *  meanings only when the specified SGML object is a DL or Table respectively.
- * If the retrieval specifies more than one SGML object, these attributes apply
- *  to all of the retrieved objects and a list will be returned
- *  </dl>
- * subclasses are used to retrieve objects in the  AGENT FORM TRANS contexts.  
- * PIA and ENV are handled by separate classes and do not return SGML objects
- * (hence  cannot be used with the special attributes).
+ *  <p> See <a href="../../InterForm/tag_man.html#get">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -7,13 +7,13 @@ import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.sgml.SGML;
 
-/** Note: 
- *	There is special hackery in this file because there the class
- *	crc.interform.Tagset exists, so we can't just import it.  */
-
-/** Handler class for &lt;tagset&gt tag.  */
-
-
+/** Handler class for &lt;tagset&gt; 
+ *  <p> See <a href="../../InterForm/tag_man.html#tagset">Manual
+ *	Entry</a> for syntax and description.
+ * Note: 
+ *	There is special hackery in this file because the class
+ *	crc.interform.Tagset exists, so we can't just import it.
+ */
 public class Tagset extends crc.interform.Handler {
   public void handle(crc.interform.Actor ia, SGML it, Interp ii) {
 // Does this do anything? --GJW 7/3/97

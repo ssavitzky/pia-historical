@@ -14,12 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;sum&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;sum&gt;n1 n2 ... &lt;/sum&gt;
- * <dt>Dscr:<dd>
- *	Return sum of numbers in CONTENT.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#sum">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Sum extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

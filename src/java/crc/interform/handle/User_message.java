@@ -11,12 +11,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;user-message&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;user-message&gt;content&lt;/user-message&gt;
- * <dt>Dscr:<dd>
- *	Display CONTENT as a message to the user.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#user-message">Manual
+ *	Entry</a> for syntax and description.
  */
 public class User_message extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -14,14 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;pad&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;pad width=N [align=[left|right|center]] [spaces]&gt;...&lt;/pad&gt;
- * <dt>Dscr:<dd>
- *	Pad CONTENT to a given WIDTH with given ALIGNment
- *	(left/center/right).  Optionally just generate the SPACES.  
- *	Ignores markup.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#pad">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Pad extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

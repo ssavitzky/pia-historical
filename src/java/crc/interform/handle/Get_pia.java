@@ -13,13 +13,9 @@ import crc.interform.Run;
 import crc.sgml.SGML;
 
 
-/** Handler class for &lt;get-pia&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get.pia [name="name"]&gt;
- * <dt>Dscr:<dd>
- *	Get value of NAME, in the PIA context (i.e. as a pia property).
- *  </dl>
+/** Handler class for &lt;get.pia&gt tag 
+ *  <p> See <a href="../../InterForm/tag_man.html#get.pia">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get_pia extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

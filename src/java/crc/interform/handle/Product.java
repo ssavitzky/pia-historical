@@ -14,12 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;product&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;product&gt;n1 n2 ... &lt;/product&gt;
- * <dt>Dscr:<dd>
- *	Return product of numbers in CONTENT
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#product">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Product extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

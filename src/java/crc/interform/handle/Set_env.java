@@ -14,13 +14,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;set.env&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;set.env name="name" [copy]&gt;...&lt;/set.env&gt;
- * <dt>Dscr:<dd>
- *	set NAME to CONTENT in the environment (system properties). 
- *	Optionally COPY content as result.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#set.env">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Set_env extends Set {
   public String syntax() { return syntaxStr; }

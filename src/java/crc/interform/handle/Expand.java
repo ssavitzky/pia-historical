@@ -13,13 +13,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;expand&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;expand [skip | protect [markup]]&gt;content&lt;/expand&gt;
- * <dt>Dscr:<dd>
- *	Expand CONTENT, then either re-expand, SKIP, or PROTECT it.
- *	Optionally protect MARKUP as well.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#expand">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Expand extends Protect {
   public String syntax() { return syntaxStr; }

@@ -23,25 +23,8 @@ import crc.ds.Index;
 import java.util.Enumeration;
 
 /** Handler class for &lt;set&gt tag 
- * this description is out of date please update from syntax
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;set [name="name" | index=index] [copy] [attr=attr | insert=where [replace] ]
- *	     [ pia | agent | trans [feature] | env 
- *  	     | [element [tag=ident] | [global | local] ]&gt;...&lt;/set&gt;
- * <dt>Dscr:<dd>
- *	set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, 
- *	ENVironment, ELEMENT, or ENTITY context.  Entity may be
- *	a LOCAL or GLOBAL binding.   Default is to replace the lowest 
- *      current binding or create a global binding if none exists.
- *      INDEX may be a path, e.g. \"foo.bar\" sets the bar item of foo.
- *      Intermediate objects on the path are created if they don't exist.
- *      If WHERE is \"-1\" then the CONTENT will get appended to the specified object.
- *      ELEMENT may have a TAG.  TRANSaction item
- *	may be FEATURE.   
- *	Optionally COPY content as result.
- *  </dl>
- * Subclasses are used to set items in the PIA AGENT TRANS ENV  contexts.
+ *  <p> See <a href="../../InterForm/tag_man.html#set">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Set extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -16,13 +16,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;os-command-output&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;os-command-output [bypass]&gt;command&lt;/os-command-output&gt;
- * <dt>Dscr:<dd>
- *	Execute CONTENT as an operating system command 
- *	and capture its output.  Optionally BYPASS proxies.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#os-command-output">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Os_command_output extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -16,13 +16,8 @@ import crc.pia.Transaction;
 import crc.ds.Index;
 
 /** Handler class for &lt;set.trans&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;set.trans name="name" [copy] [feature|header]&gt;...&lt;/set.trans&gt;
- * <dt>Dscr:<dd>
- *	Set NAME to CONTENT in a transaction.  Optionally set a FEATURE
- *	or HEADER.  Optionally COPY content as result.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#set.trans">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Set_trans extends Set {
   public String syntax() { return syntaxStr; }

@@ -14,13 +14,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;set.pia&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;set.pia name="name" [copy]&gt;...&lt;/set.pia&gt;
- * <dt>Dscr:<dd>
- *	set NAME to CONTENT in the pia global properties. 
- *	Optionally COPY content as result.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#set.pia">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Set_pia extends Set {
   public String syntax() { return syntaxStr; }

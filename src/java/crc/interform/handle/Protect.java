@@ -14,13 +14,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;protect&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;protect [markup]&gt;content&lt;/protect&gt;
- * <dt>Dscr:<dd>
- *	Protect CONTENT from expansion.  Optionally protect
- *	MARKUP by converting special characters to entities.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#protect">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Protect extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

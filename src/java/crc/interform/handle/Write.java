@@ -12,9 +12,9 @@ import crc.interform.Util;
 import crc.sgml.SGML;
 
 
-/** Handler class for &lt;write&gt tag.  Dispatches to write-file or
- *	write.href as needed. 
- * <dl> </dl>
+/** Handler class for &lt;write&gt tag.  
+ *  <p> See <a href="../../InterForm/tag_man.html#write">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Write extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

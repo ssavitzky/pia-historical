@@ -16,16 +16,8 @@ import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
 
 /** Handler class for &lt;test&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;test [iftrue="value"] [iffalse="value"] [not] [text|link]
- *	      [zero|positive|negative|null|markup|match="pattern" [exact] [case]]&gt;
- * <dt>Dscr:<dd>
- *	Test CONTENT; return null or IFFALSE if false, else '1' or
- *	IFTRUE.  <dt>Tests:<dd> default (non-whitespace), ZERO, POSITIVE,
- *	NEGATIVE, NULL, (contains) MARKUP, MATCH='pattern'.  <dt>Modifiers:<dd> NOT,
- *	 CASE (sensitive), TEXT, LINK, EXACT (match).
- * </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#test">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Test extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -16,13 +16,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;get-trans&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;get-trans [name="name"]&gt;
- * <dt>Dscr:<dd>
- *	Get value of NAME, in the TRANSaction context.  Optionally get
- *	HEADERS (optionally from REQUEST) or a FEATURE.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#get-trans">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Get_trans extends Get {
   public String syntax() { return syntaxStr; }

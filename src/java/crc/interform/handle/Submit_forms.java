@@ -19,23 +19,8 @@ import crc.pia.Agent;
 import java.util.Enumeration;
 
 /** Handler class for &lt;submit-forms&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;submit-forms [hour=hh] [minute=mm] [day=dd]
- *		      [month=["name"|mm]] [weekday=["name"|n]]
- *		      [repeat=count] [until=mm-dd-hh]&gt;
- *	   &lt;a href="query"&gt;...&lt;/a&gt;|...form...&lt;/submit-forms&gt;
- * <dt>Dscr:<dd>
- *	Submit a form or link ELEMENT or every form (not links) in CONTENT.  
- *	Optionally submit at HOUR, MINUTE, DAY, MONTH, WEEKDAY. 
- *	Optionally REPEAT=N times (missing hour, day, month, weekday 
- *	are wildcards).  
- *	Optionally UNTIL=MM-DD-HH time when submissions are halted.
- *	Use options interform of agent to delete repeating entries.
- * <dt>Note:<dd>
- *	The following InterForm code makes &lt;form&gt; <dt>active:<dd>
- *		&lt;actor name=form handle="submit_forms"&gt;&lt;/actor&gt;
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#submit-forms">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Submit_forms extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

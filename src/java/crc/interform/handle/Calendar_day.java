@@ -1,4 +1,4 @@
-////// Calendar.java:  Handler for <os-command>
+////// Calendar.java:  Handler for <calendar-day>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -26,13 +26,9 @@ import java.lang.Process;
 import java.lang.Runtime;
 
 
-/** Handler class for &lt;os-command&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;calendar-day cal=&calendar day=[1-31]&gt;content;/calendar-day&gt;
- * <dt>Dscr:<dd>
- *	Insert content into table indicated by the day
- *  </dl>
+/** Handler class for &lt;calendar-day&gt tag 
+ *  <p> See <a href="../../InterForm/tag_man.html#calendar-day">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Calendar_day extends crc.interform.Handler {
   // Calendar related 

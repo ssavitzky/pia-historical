@@ -11,12 +11,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;text&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;text&gt;content&lt;/text&gt;
- * <dt>Dscr:<dd>
- *	Eliminate markup from CONTENT.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#text">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Text extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -21,21 +21,9 @@ import crc.gnu.regexp.RegExp;
 import crc.gnu.regexp.MatchInfo;
 
 
-/** Handler class for &lt;read-file&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;read.file file="name" [interform [agent="agentName"]] [quiet]
- *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
- *	      [base="path"] [process [tagset="name"] skip] &gt;
- * <dt>Dscr:<dd>
- *	Input from FILE, with optional BASE path.  FILE may be looked
- *	up as an INTERFORM in current or other AGENT.  Optionally read
- *	only INFO or HEAD.  For DIRECTORY, read names or LINKS, and
- *	return TAG or ul.  DIRECTORY can read ALL names or those that
- *	MATCH; default is all but backups.  Optionally PROCESS with
- *	optional TAGSET and optionally SKIP results.  Optionally be
- *	QUIET if file does not exist.
- *  </dl>
+/** Handler class for &lt;read.file&gt tag 
+ *  <p> See <a href="../../InterForm/tag_man.html#read.file">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Read_file extends Get {
   public String syntax() { return syntaxStr; }

@@ -13,13 +13,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;tagset-include&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;tagset-include name=tagset-name&gt;
- * <dt>Dscr:<dd>
- *	Include (merge) an InterForm tagset called NAME 
- *	into the current tagset.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#tagset-include">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Tagset_include extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

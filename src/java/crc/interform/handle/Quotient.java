@@ -14,12 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;quotient&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;quotient&gt;n1 n2 ... &lt;/quotient&gt;
- * <dt>Dscr:<dd>
- *	Return difference (n1/n2/...) of numbers in CONTENT.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#quotient">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Quotient extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

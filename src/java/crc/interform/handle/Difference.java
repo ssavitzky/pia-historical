@@ -15,12 +15,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;difference&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;difference&gt;n1 n2 ... &lt;/difference&gt;
- * <dt>Dscr:<dd>
- *	Return difference of numbers in CONTENT
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#difference">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Difference extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

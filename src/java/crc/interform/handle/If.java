@@ -14,12 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;if&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;if&gt;&lt;test&gt;condition&lt;/test&gt;&lt;then&gt;...&lt;/then&gt;&lt;else&gt;...&lt;/else&gt;&lt;/if&gt;
- * <dt>Dscr:<dd>
- *	If TEST non-null, expand THEN, else ELSE.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#if">Manual
+ *	Entry</a> for syntax and description.
  */
 public class If extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

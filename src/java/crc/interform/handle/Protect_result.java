@@ -15,18 +15,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;protect-result&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;protect-result [markup]&gt;content&lt;/protect-result&gt;
- * <dt>Dscr:<dd>
- *	Expand CONTENT and protect the result from further expansion.
- *	Optionally protect MARKUP by converting special characters to
- *	entities.
- * <dt>Note:<dd>
- *	The only reason for having &lt;protect&gt; and
- *	&lt;protect-result&gt; in separate classes is so each can have
- *	its own syntax description.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#protect-result">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Protect_result extends Protect {
   public String syntax() { return syntaxStr; }

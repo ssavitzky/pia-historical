@@ -1,4 +1,4 @@
-////// Calendar.java:  Handler for <os-command>
+////// Calendar.java:  Handler for <calendar>
 //	$Id$
 //	Copyright 1997, Ricoh California Research Center.
 
@@ -26,12 +26,8 @@ import java.lang.Runtime;
 
 
 /** Handler class for &lt;calendar&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;calendar month="month" year="year"&gt;
- * <dt>Dscr:<dd>
- *	Return a calendar table
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#calendar">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Calendar extends crc.interform.Handler {
   // Calendar related 

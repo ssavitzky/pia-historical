@@ -15,18 +15,8 @@ import java.io.File;
 
 
 /** Handler class for &lt;write.file&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;write.file file="name" [interform] [append]
- *	       [base="path"] [trim] [line]
- *	       [copy [protect [markup]]] &gt;content&lt;/write.file&gt;
- * <dt>Dscr:<dd>
- *	Output CONTENT to FILE, with optional BASE path.  FILE
- *	may be looked up as an INTERFORM.  BASE directory is created
- *	if necessary.  Optionally APPEND.  Optionally TRIM
- *	leading and trailing whitespace. Optionally end LINE.
- *	Optionally COPY content to InterForm.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#write.file">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Write_file extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

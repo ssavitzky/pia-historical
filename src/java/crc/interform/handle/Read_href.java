@@ -31,16 +31,9 @@ import java.net.URL;
 import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
 
-/** Handler class for &lt;read-href&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;read.href href="url" [method="get|head"] [query="query-string"]
- *	              [base="path"] [process [tagset="name"]][wait="time"]&gt;
- * <dt>Dscr:<dd>
- *	Input from HREF, with optional BASE path.  
- *	Optionally PROCESS with optional TAGSET.
- *	Use GET (default) or HEAD HTTP method.
- *  </dl>
+/** Handler class for &lt;read.href&gt tag 
+ *  <p> See <a href="../../InterForm/tag_man.html#read.href">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Read_href extends Get {
   public String syntax() { return syntaxStr; }

@@ -13,13 +13,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;trim&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;trim [all]&gt;content&lt;/trim&gt;
- * <dt>Dscr:<dd>
- *	Eliminate leading and trailing (optionally ALL) whitespace 
- *	from CONTENT.  Whitespace inside markup is not affected.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#trim">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Trim extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -15,15 +15,9 @@ import crc.sgml.TableElement;
 import crc.sgml.Tokens;
 
 
-/** Handler class for &lt;dl&gt; 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;dl&gt;
- * <dt>Dscr:<dd>
- *	Tables become indexable data structures (transparently).
- *      if &amp;foo; is a table, then &amp;foo.bar; returns the row or column associated with
- *      th bar (if any).
- *  </dl>
+/** Handler class for &lt;table&gt; 
+ *  <p> See <a href="../../InterForm/tag_man.html#table">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Table extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

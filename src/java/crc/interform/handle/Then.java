@@ -14,12 +14,8 @@ import crc.sgml.Text;
 
 
 /** Handler class for &lt;then&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;then&gt;content&lt;/then&gt;
- * <dt>Dscr:<dd>
- *	Quote content; pass whole tag.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#then">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Then extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

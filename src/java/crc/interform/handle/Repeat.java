@@ -14,14 +14,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;repeat&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;repeat list="..." | start=start stop=stop [entity="name"]&gt;...&lt;/repeat&gt;
- * <dt>Dscr:<dd>
- *	Repeat CONTENT with ENTITY (default &amp;amp;li;) in LIST.
- *      START=1 and STOP=5 will automatically create a list from 1 to 5.
- *	Return the repeated CONTENT.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#repeat">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Repeat extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

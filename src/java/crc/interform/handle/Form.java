@@ -15,16 +15,8 @@ import crc.sgml.Element;
 import crc.sgml.Token;
 
 /** Handler class for &lt;form&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;form [submit] [copy] [if-processed="repl"]&gt;
- *	  ...  &lt;process&gt;...&lt;/process&gt;&lt;/form&gt;
- * <dt>Dscr:<dd>
- *	HTML &lt;form&gt; tag.  Process or COPY content if submitted,
- *	and contains &lt;process&gt; element.  Optional ID. Optionally SUBMIT.
- *	If processed, replace with value of IF-PROCESSED if present.
- *	Increment &amp;forms; entity when finished.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#form">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Form extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

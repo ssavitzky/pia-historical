@@ -19,14 +19,8 @@ import crc.sgml.Element;
 import crc.ds.Table;
 
 /** Handler class for &lt;process&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;process [tagset=tsname] [copy] [anyway]&gt;content&lt;/process&gt;
- * <dt>Dscr:<dd>
- *	Process CONTENT with optional TAGSET, then either skip or COPY 
- *	the result.  Inside form, only process if submitted or ANYWAY,
- *	else expand to ident field.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#process">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Process extends Handler {
   public String syntax() { return syntaxStr; }

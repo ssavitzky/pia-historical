@@ -12,13 +12,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;element&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;element tag=ident [empty] [not-inside="list of tags"]&gt;
- * <dt>Dscr:<dd>
- *	Define the syntax for an SGML element.  Optionally EMPTY.
- *	Optionally NOT-INSIDE a list of tags which it implicitly ends.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#element">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Element extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

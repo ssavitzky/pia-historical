@@ -16,14 +16,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;dl&gt; 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;dl&gt;
- * <dt>Dscr:<dd>
- *	Description  lists become indexable data structures (transparently).
- *      if &amp;foo; is a dl, then &amp;foo.bar; returns the dd associated with
- *      dt bar (if any).
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#dl">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Dl extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

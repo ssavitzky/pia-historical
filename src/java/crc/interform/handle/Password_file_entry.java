@@ -19,13 +19,8 @@ import java.io.IOException;
 import misc.Jcrypt;
 
 /** Handler class for &lt;password-file-entry&gt tag. 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;password-file-entry user=ident password="string" [file="fn"]&gt;
- *	additional-content&lt;/password-file-entry&gt;
- * <dt>Dscr:<dd>
- *	Make password file entry for USER with given PASSWORD
- * </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#password-file-entry">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Password_file_entry extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

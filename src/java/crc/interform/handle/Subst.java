@@ -16,12 +16,8 @@ import crc.gnu.regexp.RegExp;
 
 
 /** Handler class for &lt;subst&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;subst match="pattern" result="string"&gt;text&lt;/subst&gt;
- * <dt>Dscr:<dd>
- *	Substitute RESULT string for MATCH pattern in CONTENT.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#subst">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Subst extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

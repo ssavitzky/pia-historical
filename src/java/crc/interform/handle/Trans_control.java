@@ -14,12 +14,8 @@ import crc.sgml.SGML;
 
 
 /** Handler class for &lt;trans-control&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;trans-control&gt;...&lt;/trans-control&gt;
- * <dt>Dscr:<dd>
- *	Add CONTENT as a control to the current response transaction.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#trans-control">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Trans_control extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -17,12 +17,8 @@ import crc.ds.List;
 import crc.ds.Association;
 
 /** Handler class for &lt;sorted&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;sorted [case][text][numeric][reverse]&gt;item, ...&lt;/sorted&gt;
- * <dt>Dscr:<dd>
- *	Test whether items in CONTENT are sorted.  Optionally 
- *	CASE (sensitive), TEXT, NUMERIC, REVERSE.
+ *  <p> See <a href="../../InterForm/tag_man.html#sorted">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Sorted extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

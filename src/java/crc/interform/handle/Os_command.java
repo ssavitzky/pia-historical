@@ -16,14 +16,8 @@ import java.lang.Runtime;
 
 
 /** Handler class for &lt;os-command&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;os-command [bypass]&gt;command&lt;/os-command&gt;
- * <dt>Dscr:<dd>
- *	Execute CONTENT as an operating system command 
- *	in the background with proxies set to PIA.  
- *	Optionally BYPASS proxies.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#os-command">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Os_command extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -15,13 +15,8 @@ import crc.sgml.Tokens;
 
 
 /** Handler class for &lt;... foreach list=...&gt 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;... foreach list="list" [entity=ident]&gt;element&lt;/&gt;
- * <dt>Dscr:<dd>
- *	Repeat CONTENT for each ENTITY (default &amp;amp;li;) in LIST.
- *	Return the ENTITY.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#-foreach-">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Foreach_ extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }

@@ -18,14 +18,8 @@ import crc.ds.List;
 import crc.ds.Association;
 
 /** Handler class for &lt;equal&gt tag 
- * <dl>
- * <dt>Syntax:<dd>
- *	&lt;equal [not] [case] [text] [numeric]&gt;list...&lt;/equal&gt;
- * <dt>Dscr:<dd>
- *	Test list items in CONTENT for equality; 
- *	return null or IFFALSE if false, else '1' or IFTRUE. 
- *	<dt>Modifiers:<dd> NOT, CASE (sensitive), TEXT, NUMERIC.
- *  </dl>
+ *  <p> See <a href="../../InterForm/tag_man.html#equal">Manual
+ *	Entry</a> for syntax and description.
  */
 public class Equal extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
