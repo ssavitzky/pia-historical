@@ -43,6 +43,7 @@ import crc.pia.Athread;
 import crc.tf.UnknownNameException;
 
 public abstract class Transaction implements Runnable{ // implements Runnable added by Greg
+  public boolean DEBUG = false;
   /**
    * Attribute index - execution thread
    */
@@ -196,6 +197,14 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
    */
   public String protocolInitializationString(){
     return protocolInitializationString;
+  }
+
+  /**
+   * @set the content object
+   */
+  public void setContentObj( Content source ){
+    if( source != null )
+      contentObj = source;
   }
 
   /**
@@ -768,6 +777,9 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     if(contentObj ==  null) initializeContent();
 
     Pia.instance().debug(this, "Got a body...");
+    // incase body needs to update header about content length
+    if( headersObj!= null && contentObj != null )
+      contentObj.setHeaders( headersObj );
 
     // now we are ready to be resolved
     resolver.push(this);
@@ -778,6 +790,13 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     while(!resolved){
       //contentobject returns false when object is complete
       //if(!contentObj.processInput(fromMachine)) 
+
+      Pia.instance().debug(this, "Waiting to be resolved");
+
+      long delay = 1000;
+      try{
+	Thread.currentThread().sleep(delay);
+      }catch(InterruptedException ex){;}
 
       /*
       if(!contentObj.processInput()) {
@@ -802,13 +821,20 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
     
   }
 
-  protected void startThread(){
+  public void startThread(){
     
     ThreadPool tp = Pia.instance().threadPool();
     Athread zthread = tp.checkOut();
     executionThread = zthread;
     if( zthread != null ) zthread.execute( this );
 
+  }
+
+  /**
+   * for debugging only
+   */
+  public Thread myThread(){
+    return executionThread.zthread;
   }
 
 } 

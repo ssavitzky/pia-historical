@@ -83,6 +83,7 @@ public class Resolver extends Thread{
    * returns the number of elements
    */  
   public int push( Object obj ){
+    Pia.instance().debug(this, "Resolver push get called");
     return transactions.push( obj );
   }
 
@@ -224,54 +225,50 @@ public class Resolver extends Thread{
     int numb = size();
     Transaction tran;
     String urlString;
+    long delay = 1000;
     URL url;
 
     // Main loop.  
     //	 Entered with some transactions in the input queue.
     //	 Returns total number of transactions processed.
     while( !finish ){
-    while ( size() > 0 ){
-      tran = (Transaction) pop();
-      url = tran.requestURL();
-      urlString = url.getFile();
-      Pia.instance().debug(this, "Remaining number of transaction " + Integer.toString( size() ) );
-      if( urlString != null )
-	Pia.instance().debug(this, "URL :" + urlString );
 
-      /*
-      Look for matches.
-      Matching agents have their act_on method called with both the
-      transaction and the resolver as arguments; they can either push
-      transactions onto the resolver, push satisfiers onto the
-      transaction, or directly modify the transaction.
-      */
-      Pia.instance().debug(this, "Before match making...");
-      match( tran );
-      Pia.instance().debug(this, "After match making...");
+      if( size() == 0 ){
+	try{
+	  Thread.currentThread().sleep(delay);
+	}catch(InterruptedException ex){;}
+      }
+      else{
+	tran = (Transaction) pop();
 
-      /*
-      Tell the transaction to go satisfy itself.  
-      It does this by calling each of the handlers that matched agents
-      have pushed onto its queue, and looking for a true response.
-      */
+	Pia.instance().debug(this, "Remaining number of transaction " + Integer.toString( size() ) );
 
-      // do indirectly by notifying transaction that it is resolved,
-      // the transaction thread becomes responsible for running satisfy
-      Pia.instance().debug(this, "Transaction please resolve");
-      tran.resolved();      
-    }
-
-    /*
-    try{
-      long delay = (long)(Math.random() * 10000.0);
-      Thread.currentThread().sleep(delay);
-    }catch(InterruptedException ex){
-    }
-    */
-
+	/*
+	  Look for matches.
+	  Matching agents have their act_on method called with both the
+	  transaction and the resolver as arguments; they can either push
+	  transactions onto the resolver, push satisfiers onto the
+	  transaction, or directly modify the transaction.
+	  */
+	Pia.instance().debug(this, "Before match making...");
+	match( tran );
+	Pia.instance().debug(this, "After match making...");
+	
+	/*
+	  Tell the transaction to go satisfy itself.  
+	  It does this by calling each of the handlers that matched agents
+	  have pushed onto its queue, and looking for a true response.
+	  */
+	
+	// do indirectly by notifying transaction that it is resolved,
+	// the transaction thread becomes responsible for running satisfy
+	Pia.instance().debug(this, "Transaction please resolve");
+	tran.resolved();      
+      }
+      
     }
     cleanup(false);
-   
+    
   }
 
   /**
