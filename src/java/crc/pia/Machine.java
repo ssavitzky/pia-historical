@@ -554,10 +554,8 @@ public class Machine {
 	  break;
       }
 
-      //Resolver res = new Resolver();
-      Resolver res = null;
-      machine1.getRequest( trans1, res );
-      System.exit( 0 );
+      machine1.getRequest( trans1, Pia.instance().resolver() );
+      System.exit(0);
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
@@ -603,7 +601,7 @@ public class Machine {
     System.out.println("Needs to know what kind of test");
     System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -proxy get_machine.txt");
     System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -noproxy get_machine.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.HTTPRequest -2 response.txt");
+    System.out.println("For test 2, here is the command --> java crc.pia.Machine -2 response.txt");
   }
 
 
