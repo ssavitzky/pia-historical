@@ -92,14 +92,14 @@ public class FormContent extends Properties implements Content{
     if( hlen == totalRead ) return -1;
 
     int len = hlen - totalRead;
-    Pia.instance().debug( this, "content len..." + Integer.toString( len ) );
+    Pia.debug( this, "content len..." + Integer.toString( len ) );
 
     if( len > 0 ){
       byte[]buffer = new byte[ len ];
       try{
 
 	howmany = body.read( buffer, 0, len );
-	Pia.instance().debug( this, "amt read..." + Integer.toString( len ) );
+	Pia.debug( this, "amt read..." + Integer.toString( len ) );
 
 	totalRead += howmany;
 	numberOfBytes += howmany;
@@ -329,7 +329,7 @@ public class FormContent extends Properties implements Content{
   }
 
   public FormContent(String s){
-    Pia.instance().debug( this, "string constructor..." + s );
+    Pia.debug( this, "string constructor..." + s );
     if( s != null ){
       setParameters(s);
     }
@@ -378,7 +378,7 @@ public class FormContent extends Properties implements Content{
     int len = 1024;
     HttpBuffer data = new HttpBuffer();
 
-    Pia.instance().debug(this, "sucking from source is processing...");
+    Pia.debug(this, "sucking from source is processing...");
 
     try{
 
@@ -388,14 +388,14 @@ public class FormContent extends Properties implements Content{
 
 	if(bytesRead == -1) break;
 
-	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
-	Pia.instance().debug(this, new String(buffer,0,0,bytesRead));
+	Pia.debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
+	Pia.debug(this, new String(buffer,0,0,bytesRead));
 
 
 	data.append( buffer, 0, bytesRead );
       }
 
-      Pia.instance().debug(this, "data length is: " + Integer.toString( data.length() ) );
+      Pia.debug(this, "data length is: " + Integer.toString( data.length() ) );
       if( data.length() == 0 ){
 	return null;
       }
@@ -427,8 +427,8 @@ public class FormContent extends Properties implements Content{
     int len = hlen;
     if( len <=0 ) return null;
 
-    Pia.instance().debug(this, "toString is processing...");
-    Pia.instance().debug(this, "content length is =" + Integer.toString( len ));
+    Pia.debug(this, "toString is processing...");
+    Pia.debug(this, "content length is =" + Integer.toString( len ));
 
     try{
 
@@ -440,13 +440,13 @@ public class FormContent extends Properties implements Content{
 
 	len -= bytesRead;
 
-	Pia.instance().debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
-	Pia.instance().debug(this, new String(buffer,0,0,buffer.length));
+	Pia.debug(this, "amt read is: " +  Integer.toString( bytesRead ) );
+	Pia.debug(this, new String(buffer,0,0,buffer.length));
 
 	data.append( buffer, 0, bytesRead );
       }
 
-      Pia.instance().debug(this, "data length is: " + Integer.toString( data.length() ) );
+      Pia.debug(this, "data length is: " + Integer.toString( data.length() ) );
       if( data.length() == 0 ){
 	return null;
       }
@@ -471,9 +471,9 @@ public class FormContent extends Properties implements Content{
     int i = 0;
     int pos;
 
-    Pia.instance().debug(this, "processing...");
+    Pia.debug(this, "processing...");
     if( toSplit != null ){
-      Pia.instance().debug(this, "the toSplit string is-->"+ toSplit);
+      Pia.debug(this, "the toSplit string is-->"+ toSplit);
 
       tokens = new StringTokenizer( toSplit,"&" );
 
@@ -482,8 +482,8 @@ public class FormContent extends Properties implements Content{
     else{
       String zcontent = toString();
 
-      Pia.instance().debug(this, "the content is below:");
-      Pia.instance().debug(this, zcontent);
+      Pia.debug(this, "the content is below:");
+      Pia.debug(this, zcontent);
       if( zcontent == null ) return;
 
       queryString  = zcontent;
@@ -509,30 +509,29 @@ public class FormContent extends Properties implements Content{
     for(; i < pairs.length; i++){
       String s = pairs[i];
 
-      Pia.instance().debug(this, "a pair-->"+ s);
+      Pia.debug(this, "a pair-->"+ s);
 
       pos = s.indexOf('=');
       if( pos == -1 ){
 	String eparam = s.trim();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
-	Pia.instance().debug(this, "a param1-->"+ param);
+	Pia.debug(this, "a param1-->"+ param);
 
-	//value = crc.sgml.Token.empty;
-	value = "";
-	Pia.instance().debug(this, "a val1-->"+ value);
+	value = crc.sgml.Token.empty;
+	Pia.debug(this, "a val1-->"+ value);
       }else{
 	String p = s.substring(0, pos);
 	String eparam = p.trim();
 	paramKeys.addElement( eparam );
 	param = Utilities.unescape( eparam );
-	Pia.instance().debug(this, "a param2-->"+ param);
+	Pia.debug(this, "a param2-->"+ param);
 	
 	String v = s.substring( pos+1 );
 	String evalue = v.trim();
 	paramKeys.addElement( evalue );
 	value = Utilities.unescape( evalue );
-	Pia.instance().debug(this, "a val2-->"+ value);
+	Pia.debug(this, "a val2-->"+ value);
       }
       put(param, value);
     }
@@ -558,20 +557,9 @@ public class FormContent extends Properties implements Content{
    * @return original query string
    */
   public String queryString(){
-    Pia.instance().debug(this , "queryString" );
+    Pia.debug(this , "queryString" );
     // Thus, someone must have called setParameters(...) on HTTPRequest
     return queryString;
-
-    
-    /*
-    if( queryString != null )
-      return queryString;
-    else {
-      //last shot
-      setParameters( null );
-      return queryString;
-    }
-    */
   }
 
   /**
@@ -586,7 +574,7 @@ public class FormContent extends Properties implements Content{
   /**
    * for testing only
    */
-  protected OutputStream printParametersOn(OutputStream out){
+  public OutputStream printParametersOn(OutputStream out){
     PrintStream ps = new PrintStream( out );
     Enumeration e = propertyNames();
     Object o;
@@ -605,113 +593,6 @@ public class FormContent extends Properties implements Content{
     }
     return out;
   }
-
-  private static void printusage(){
-    System.out.println("Needs to know what kind of test");
-    System.out.println("For test 1, here is the command --> java crc.pia.FormContent -1 postno1line.txt");
-    System.out.println("For test 2, here is the command --> java crc.pia.FormContent -2 postno1line.txt");
-    System.out.println("For test 3, here is the command --> java crc.pia.FormContent -3 postbody.txt");
-  }
-
-
- public static void main(String[] args){
-
-    if( args.length == 0 ){
-      printusage();
-      System.exit( 1 );
-    }
-
-    if (args.length == 2 ){
-      if( args[0].equals ("-1") && args[1] != null )
-	test1( args[1] );
-      else if( args[0].equals ("-2") && args[1] != null )
-	test2( args[1] );
-      else if( args[0].equals ("-3") && args[1] != null )
-	test3( args[1] );
-      else{
-	printusage();
-	System.exit( 1 );
-      }
-    }
-
-  }
-
-
-  /**
-  * For testing.
-  * 
-  */ 
-  private static void test1(String filename){
-
-    HeaderFactory hf = new HeaderFactory();
-
-    try{
-      InputStream in = (new BufferedInputStream
-			(new FileInputStream (filename)));
-    
-      Headers h = hf.createHeader( in );
-      FormContent c = new FormContent( in );
-      c.setHeaders( h );
-
-      c.setParameters( null );
-      c.printParametersOn( System.out );
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-    System.exit( 0 );
-  }
-
-
- 
-  /**
-  * For testing.
-  * 
-  */ 
-  private static void test2(String filename){
-    System.out.println( "in test2" );
-    HeaderFactory hf = new HeaderFactory();
-
-    try{
-      InputStream in = (new BufferedInputStream
-			(new FileInputStream (filename)));
-    
-      Headers h = hf.createHeader( in );
-      FormContent c = new FormContent( in );
-      c.setHeaders( h );
-
-      boolean done = false;
-      while( !done ){
-	if( !c.processInput() )
-	  done = true;
-      }
-
-      c.setParameters( null );
-      c.printParametersOn( System.out );
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-    System.exit( 0 );
-  }
- 
-  
- /**
-  * For testing.
-  * 
-  */ 
-  private static void test3(String filename){
-
-    try{
-      String s = Utilities.readStringFrom( filename );
-      
-      FormContent c = new FormContent( s );
-      c.printParametersOn( System.out );
-    }catch(Exception e ){
-      System.out.println( e.toString() );
-    }
-    System.exit( 0 );
-  }
- 
- 
 
 }
 
