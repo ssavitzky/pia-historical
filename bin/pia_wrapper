@@ -28,6 +28,7 @@ export JAVA_BIN
 
 JAVA_BIN_DIR=`dirname $JAVA_BIN`
 J_HOME=$JAVA_BIN_DIR/..
+[ -d $J_HOME ] && J_HOME=`(cd $J_HOME && pwd)`
 
 if [ -z "$JAVA_HOME" ] ; then
     export JAVA_HOME
@@ -64,6 +65,7 @@ fi
 #	The most likely candidate is the parent directory of $0.
 
 PIA_DIR="${PIA_DIR-$MY_BIN_DIR/..}"
+[ -d $PIA_DIR ] && PIA_DIR=`(cd $PIA_DIR && pwd)`
 export PIA_DIR
 
 #The user's .pia directory:
@@ -74,7 +76,11 @@ export USR_DIR
 
 ENV="PIA_DIR=$PIA_DIR HOME=$HOME USER=$USER"
 
-[ -z "$DISPLAY" ] || ENV="$ENV DISPLAY=$DISPLAY"
+for key in DISPLAY http_proxy ftp_proxy wais_proxy gopher_proxy no_proxy
+do
+    v=`eval echo \$"$key"`
+    [ -z "$v" ] || ENV="$ENV $key=$v"
+done
 
 ### Build a CLASSPATH.
 
