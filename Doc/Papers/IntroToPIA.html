@@ -4,21 +4,60 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
 <abstract>
-The PIA framework provides the infrastructure for rapidly creating and maintaining value added
-services in a network environment.   Example services include simple hot-list ("favorites") management, high-quality printing of Web
-documents, and workflow/document management systems. Oftentimes these services
- integrate information for multiple sources, operate on the information, and
- provid the results to a user or community.  Thus they lie between the servers
- and clients of the traditional network computing paradigms.
-Recognizing  that such systems are not supported by current tools, we created
-a platform for building and running these intermediary services.  The services
-are characterized as "information appliances", hence the name of the
-framework: Platform for Information Appliances.
-
-
+The PIA framework can provide a long-term competitive advantage to
+Ricoh by reducing the time to market and the life-cycle costs across
+the range of next generation office machines known as "Information
+Appliances." 
 This document summarizes the features of the PIA framework and provides a guide
 to the more detailed documentation.
 </abstract>
+
+The PIA framework provides the infrastructure for rapidly creating and maintaining value added
+services in a network environment.   Example services include high-quality printing of Web
+documents, forms processing, and document management systems. 
+These services may be bundled into a hardware product called a 
+Network Office Appliance, such as the File Management Appliance or the
+Memory Multifunction Machine (prototypes currently being developed by
+groups within Ricoh) or appear as more general "Information Appliances."
+
+<p>
+
+These systems differ from traditional applications in several ways.
+Most importantly, they perform  both server functions (providing data
+to clients) and client functions (retrieving data from other servers).
+For example, a File Management Appliance takes documents from several
+sources (scanners, copiers, Web servers, PC's, etc.)and provides an
+easy-to-use interface to find, use, and publish those documents.
+  They represent a new kind of "middleware" that lies
+  between traditional servers and clients.  To be successful, they
+  require a robust computational engine on which to run and the
+  knowledge about how to integrate and process information to meet
+  customer needs.   The ability to create, maintain, and deploy
+  this knowledge will become the key factor for successful office machines.
+
+<p>
+
+Our Platform for Information Appliances (PIA) seeks to provide both
+a standardized computational engine and a reusable design for the
+knowledge components. this design separates the knowledge into task
+specific modules  called "Agents."   Alternatively known as
+"Mediators" or "Facilitators" these agents embody the  knowledge
+needed to take information from various sources and use it to meet
+customer needs.  These agents run on a computational engine called
+the "Information Agency" which provides all of the client and server
+functions shared among agents and across products.
+
+<p>
+ In addition to the Java based reference implementation of the
+ information agency, the framework includes  example agents, substantial documentation, style guidelines,
+ templates and tools for developing agents.
+By adopting a common framework, developers ensure the reusability,
+interoperability, and maintainability of their efforts.  This reduces
+development time and cuts life-cycle costs.  Additionally the PIA
+framework enables customizations to meet particular customer needs
+which would be difficult or impossible to provide using alternative approaches. 
+
+
 
 <a href=AboutThisDoc.html  include=&tagset;>About this Document </a>
 
@@ -37,7 +76,7 @@ to the more detailed documentation.
 <hr>
 <!-- $Id$ --><br>
 <!-- hhmts start -->
-Last modified: Wed Apr  8 17:41:19 1998
+Last modified: Tue Apr 14 18:20:27 1998
 <!-- hhmts end -->
 <p>
 <address><a href="http://rsv.ricoh.com/people/wolff/wolff.html"
