@@ -70,6 +70,7 @@ public class ThreadPool{
 
   public synchronized void notifyDone(Athread e){
     e.status = e.C_IDLE;
+    e.zthread = null;
   }
 
 
