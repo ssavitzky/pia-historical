@@ -10,7 +10,6 @@ sub initialize {
     return $self;
 }
 
-
 ############################################################################
 
 sub act_on {
@@ -40,6 +39,8 @@ sub  handle {
     }
 
     my $ua = new LWP::UserAgent;
+    $ua->use_eval();
+    $ua->env_proxy();
 
     # === should really use simple_request and handle redirect with agents.
     my $response=$ua->request($request); 
