@@ -9,11 +9,12 @@ FILES = \
 	t1.txt \
 	t2.html \
 	t3.if \
-	t4.if
+	t4.if \
+	t5.if
 
 .SUFFIXES: .txt .html .if .out .ok .diff .run
 
-DEBUG=-d
+DEBUG=
 CLASS=crc.interform.Filter
 
 .txt.out:
