@@ -74,7 +74,7 @@ export USR_DIR
 
 ### Build an environment string:
 
-ENV="PIA_DIR=$PIA_DIR HOME=$HOME USER=$USER"
+ENV="PIA_DIR=$PIA_DIR USR_DIR=$USR_DIR HOME=$HOME USER=$USER"
 
 for key in DISPLAY http_proxy ftp_proxy wais_proxy gopher_proxy no_proxy
 do
