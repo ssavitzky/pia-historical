@@ -83,13 +83,14 @@ public class FormContent extends Properties implements Content{
   /**
    * read into buffer
    */
-  private int pullContent() throws IOException{
+  private synchronized int pullContent() throws IOException{
     int howmany = -1;
     byte[]buffer = new byte[1024];
 
-    if( body.available() != 0 ){
+    //if( body.available() != 0 ){
       try{
-	howmany = body.read( buffer, numberOfBytes, 1024 );
+	//howmany = body.read( buffer, numberOfBytes, 1024 );
+	howmany = body.read( buffer, 0, 1024 );
 	if( howmany == -1 ){
 	  setContentLength( totalRead );
 	  return -1;
@@ -101,8 +102,8 @@ public class FormContent extends Properties implements Content{
       }catch(IOException e){
 	throw e;
       }
-    }
-    return howmany;
+      //}
+      //return howmany;
   }
 
   /**
@@ -185,7 +186,7 @@ public class FormContent extends Properties implements Content{
   /**
    * read from buffer
    */
-  private int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
+  private synchronized int getFromReadBuf(byte[] buffer, int offset, int amtToRead) throws IOException{
     int limit = 0;
     int len   = -1;
 
@@ -233,13 +234,13 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, 0, buffer.length );
       else{
-	if( body.available() != 0 ){
+	//if( body.available() != 0 ){
 	  len = body.read( buffer );
 	  if( len != -1 )
 	    totalRead += len;
 	  else
 	    setContentLength( totalRead );
-	}
+	  //}
       }
       return len;
     }catch(IOException e){
@@ -273,13 +274,13 @@ public class FormContent extends Properties implements Content{
       if( available() > 0 )
 	len = getFromReadBuf( buffer, offset, buffer.length );
       else{
-	if( body.available() != 0 ){
+	//if( body.available() != 0 ){
 	  len = body.read( buffer, offset, length );
 	  if( len != -1 )
 	    totalRead += len;
 	  else
 	    setContentLength( totalRead );
-	}
+	  //}
       }
       return len;
     }catch(IOException e){
