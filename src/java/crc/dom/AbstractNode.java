@@ -115,6 +115,20 @@ public abstract class AbstractNode implements Node, Cloneable {
       return removeChild((AbstractNode)oldChild);
   }
 
+  public Object clone(){
+    try{
+      AbstractNode n = (AbstractNode)super.clone();
+      n.parent = null;
+      n.leftSibling = null;
+      n.rightSibling = null;
+      n.head = null;
+      n.tail = null;
+      return n;
+    }catch(CloneNotSupportedException e){
+      return null;
+    }
+  }
+
   /**************************************
    * protected functions
    */
@@ -164,6 +178,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    * Append child to end.  Move tail
    */
   protected void append( AbstractNode newChild ){
+    Report.debug("Appending...");
     AbstractNode last = tail;
     
     newChild.setPrevious( last );
@@ -290,6 +305,35 @@ public abstract class AbstractNode implements Node, Cloneable {
     return oldChild;
   }
 
+  protected void copyChildren(Node nodeB){
+    Report.debug("Copying children...");
+    AbstractNode child = null;
+    Node elem = null;
+
+    if( nodeB.hasChildren() ){
+      NodeEnumerator enum = nodeB.getChildren().getEnumerator();
+
+      elem = enum.getFirst();
+	  
+      while( elem != null ) {
+
+	if( elem instanceof AbstractNode ){
+	  child = (AbstractNode)elem;
+	  AbstractNode clone = (AbstractNode)child.clone();
+	  try{
+	    insertBefore( clone, null );
+	  }catch(NotMyChildException e){
+	    Report.debug(e.toString());
+	  }
+	}
+
+	//copyChildren( clone, child );
+	elem = enum.getNext();
+      }
+    }
+
+    
+  }
 
   protected void printChildren(){
     Node n = getFirstChild();
