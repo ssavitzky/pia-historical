@@ -1,0 +1,88 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0"><TEXT>
+<html><head>
+<title>Prototype Home Page</title>
+</head>
+
+<body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<!-- =================================================================== -->
+<!-- header is an element that puts the standard agent header at the top
+<!-- of the page.  This includes the PIA logo, that lets you navigate back to 
+<!-- the Agency home page. This tag is part of the predefined pia-xhtml tagset.
+<!-- =================================================================== -->
+<header>Home Page</header>
+
+<form action="/Swifty/edit_page" method="POST">
+
+<!-- =================================================================== -->
+<!-- Put in a default name in the heading.  AGENT:fname is an entity that
+<!-- is defined in the agent namespace; it is set to the variable entered by
+<!-- the user.
+<!-- =================================================================== -->
+
+<h1><font color="#FF0000"> Home Page for &AGENT:fname; </font></h1>
+
+<!-- =================================================================== -->
+<!-- Use a table to layout an image column and a links column
+<!-- =================================================================== -->
+
+<TABLE BORDER=0 CELLSPACING=5 CELLPADDING=2 COLS=2 WIDTH="66%" HEIGHT="33%" NOSAVE >
+<TR>
+<!-- Add column headers -->
+<TD><b><u><font size=+2>Photo Album</font></u></b></TD>
+<TD><b><u><font size=+2>Daily Distractions</font></u></b></TD>
+</TR>
+
+<!-- Add an image for some decoration -->
+<TR>
+<TD><IMG SRC="images/jelly.jpg" HEIGHT=130 WIDTH=100></TD>
+
+<!-- =================================================================== -->
+<!-- Display links, if there are any.  AGENT:links is an entity that is
+<!-- set to the list of URLs selected by the user.
+<!-- =================================================================== -->
+<TD>
+	&AGENT:links;
+</TD>
+</TR>
+
+<TR>
+<!-- Add column headers -->
+<TD> </TD>
+<TD><b><u><font size=+2>Yahoo News</font></u></b></TD>
+</TR>
+
+<TR>
+<TD> <!  Blank cell>
+
+<!-- =================================================================== -->
+<!-- Display results of connection to Yahoo.  AGENT:ynews is an entity
+<!-- that is set to the result returned from a connection to the Yahoo
+<!-- home page.
+<!-- =================================================================== -->
+<TD>
+	&AGENT:ynews;
+</TD>
+</TR>
+
+</TABLE>
+<p>
+<hr>
+<p>
+<!-- =================================================================== -->
+<!-- Add an edit button
+<!-- =================================================================== -->
+
+<input type="submit" value="Edit"> 
+</form>
+<!-- =================================================================== -->
+<!-- footer is an element, like header, that is a member of the
+<!-- pia-xhtml tagset. It provides the navigation bar at the bottom of 
+<!-- the page, along with a copyright notice.
+<!-- =================================================================== -->
+<footer />
+<p>
+<A HREF="file:&piaDIR;/Agents/Swifty/home.xh" TARGET=_blank>View source code</A>
+
+</BODY>
+</HTML>
