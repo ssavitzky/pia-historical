@@ -11,12 +11,15 @@ HANDLERS = \
 	BasicHandler.java \
 	EntityHandler.java \
 	GenericHandler.java \
+	IgnorableHandler.java \
 	LegacyHandler.java \
+	SkippableHandler.java \
 	TextHandler.java \
 	TypicalHandler.java
 
 ### The effect of these actors is entirely confined to the current document
 BASIC_ACTORS = \
+	defineHandler.java \
 	elseHandler.java \
 	elsfHandler.java \
 	getHandler.java \
