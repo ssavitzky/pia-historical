@@ -1,5 +1,5 @@
 <!doctype tagset system "tagset.dtd">
-<tagset name=slides parent=xhtml recursive>
+<tagset name=slides parent=HTML include=xxml recursive>
 <doc>
 <p> This tagset is used for generating ``slide'' presentations from ordinary
     HTML documents.  The original document contains &lt;slide&gt; elements,
@@ -140,13 +140,14 @@
      
 <define element=h2><action><set name=DOC:caption>&content;</set></define>
 	  
-<define element=toc><action>
+<define element=toc><action><!-- table of contents: -->
 <set name=label>TOC</set>
-<slide>
-<get name=content>
+<slide><!-- not working: tagset doesn't seem to be properly recursive. -->
+<h2>&content;</h2>
 <ol>
   &slidelist;
 </ol>
+</slide></action>
 </define>
 
 <em>$Id$</em>
