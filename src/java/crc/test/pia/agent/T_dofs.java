@@ -32,7 +32,7 @@ import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 import crc.pia.HTTPResponse;
 import crc.pia.Content;
-import crc.pia.ByteStreamContent;
+import crc.content.ByteStreamContent;
 import crc.ds.Features;
 import crc.ds.Table;
 import crc.ds.List;
@@ -62,14 +62,14 @@ public class T_dofs{
     Agency pentagon = new Agency("pentagon", "agency");
 
     System.out.println("\n\nDumping options -- name , type");
-    System.out.println("Option for name: "+ pentagon.optionAsString("name"));
-    System.out.println("Option for type: "+pentagon.optionAsString("type"));
+    System.out.println("Option for name: "+ pentagon.attr("name"));
+    System.out.println("Option for type: "+pentagon.attr("type"));
     System.out.println("Version " + pentagon.version());
     String path = null;
     System.out.println("Agent url: " + pentagon.agentUrl( path ));
-    pentagon.option("agent_directory", "~/pia/pentagon");
+    pentagon.attr("agent_directory", "~/pia/pentagon");
     System.out.println("Agent directory: " + pentagon.agentDirectory());
-    pentagon.option("agent_file", "~/pia/pentagon/foobar.txt");
+    pentagon.attr("agent_file", "~/pia/pentagon/foobar.txt");
     List files = pentagon.fileAttribute("agent_file");
     System.out.println("Agent file: " + (String)files.at(0));
 

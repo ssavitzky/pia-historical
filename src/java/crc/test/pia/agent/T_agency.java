@@ -62,14 +62,14 @@ public class T_agency {
     Agency pentagon = new Agency("pentagon", "agency");
 
     System.out.println("\n\nDumping options -- name , type");
-    System.out.println("Option for name: "+ pentagon.optionAsString("name"));
-    System.out.println("Option for type: "+pentagon.optionAsString("type"));
+    System.out.println("Option for name: "+ pentagon.attr("name"));
+    System.out.println("Option for type: "+pentagon.attr("type"));
     System.out.println("Version " + pentagon.version());
     String path = null;
     System.out.println("Agent url: " + pentagon.agentUrl( path ));
-    pentagon.option("agent_directory", "~/pia/pentagon");
+    pentagon.attr("agent_directory", "~/pia/pentagon");
     System.out.println("Agent directory: " + pentagon.agentDirectory());
-    pentagon.option("agent_file", "~/pia/pentagon/foobar.txt");
+    pentagon.attr("agent_file", "~/pia/pentagon/foobar.txt");
     List files = pentagon.fileAttribute("agent_file");
     System.out.println("Agent file: " + (String)files.at(0));
 
@@ -101,9 +101,9 @@ public class T_agency {
 
       trans1.assert("IsAgentRequest", new Boolean( true ) );
       pentagon.actOn( trans1, Pia.instance().resolver() );
-      pentagon.option("if_root", "~/pia/pentagon");
+      pentagon.attr("if_root", "~/pia/pentagon");
       // looking for an home.if in ~/pia/pentagon
-      System.out.println("Find interform: " + pentagon.findInterform( trans1.requestURL(), false ));
+      //not working      System.out.println("Find interform: " + pentagon.findInterform( trans1.requestURL().path ));
       System.exit( 0 );
       /*
       System.out.println("\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
