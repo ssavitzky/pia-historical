@@ -14,31 +14,109 @@
 
 <if><get name="data-file"><then><read process quiet file="&data-file;"></if>
 
-<if><get name=tFormat>
-    <then> <expand>&tFormat;</expand></then>
+<if><get name=dDir>
+    <else><if><get name=dRoot-path>
+	  <then><set name=dDir>&dRoot-path;/&dPath;/&dName;</set>
+</if></if>
 
-<else><if>&t-form-path;
+<a href="#template">&tName</a> template ||
+<a href="#files">File report.</a><br>
+
+<if><get name="debug"><then>
+<table cellpadding=0 cellspacing=0 border=0>
+<tr><th>
+<a href="#debug">Debugging Info:</a>
+<td>(
+ <a href="#files">Files</a>,
+ <a href="#form">Form dump</a>,
+ <a href="#data">Data dump</a>,
+ <a href="#data-file">Data file</a>
+)
+<tr><th> Data file:
+    <td> <a href="file:&data-file;"><get name=data-file></a>
+<tr><th> Target dir:
+    <td> <a href="file:&dDir;"><get name=dDir></a>
+<tr><th>
+    <td> <b>root:</b> <get name=dRoot> (<get name=dRoot-path>)
+	 <b>path:</b> <get name=dPath>
+</table>
+</if>
+<hr>
+
+<if><get name=tName-label><then>
+    <h3 align=center><a name="template">&tName-label;</a></h3>
+</if>
+
+<get name=tName-doc>
+
+<if><get form name="expand"><get form name="expand-c"><then>
+    <if><get form name="expand-c"><t-missing-fields><then>
+	<h4>Continuing:</h4>
+        <if><t-missing-fields><then>
+	  <dl>
+	    <dt> The following fields need values:
+	    <dd><repeat list="&t-missing-fields;">
+	         <t-field-link name="&li;"></repeat>
+	  </dl>
+	</if>
+    <else>
+	<h4>Expanding:</h4>
+	<set name=t-expanding>1</set>
+    </if>
+</if>
+
+<if><get form name="extend"><then>
+    <h4>Extending:</h4>
+</if>
+
+<if><get name="t-expanding">
+    <then>
+<else><if><get name=tFormat>
+    <then> <expand>&tFormat;</expand></then>
+<else><if><get name=t-form-path>
     <then><read quiet process file="&t-form-path;"></then>
 <else><if><get name="data-file">
     <then><t-tabular-form></then>
 <else>
     <h2>Select a Template</h2>
     <read interform process file=t-index.inc>
-</if></if></if>
+</if></if></if></if>
+
+<hr>
+<h3><a name="files">Files</a></h3>
+
+<!-- With t-expanding off this just generates the file report. -->
+<read quiet process interform file="expand.inc">
+
 
 <if><get name="debug"><then>
 <hr>
-<h3>Debugging Information:</h3>
-<h4>form</h4>
- &FORM;
-<h4>Field names:</h4>
- &tFieldNames;
-<h4>Data File</h4>
+<h3><a name="debug">Debugging Information:</a></h3>
+<ul>
+  <li> <a href="#form">Form dump</a>
+  <li> <a href="#data">Data dump</a>
+  <li> <a href="#data-file">New Data File</a>
+</ul>
+</if>
+
+<h4><a name="form">Form Dump</a></h4>
+<dl>
+  <dt> Fields: 
+  <dd> &tFieldNames;
+
+  <repeat list="&FORM.KEYS;">
+  <dt> &li;
+  <dd> <protect-result markup><get form name="&li;"></protect-result>
+  </repeat>
+</dl>
+
+<h4><a name="data">Data Dump</a></h4>
+<t-data-dump>
+
+<h4><a name="data-file">New Data File</a></h4>
 <strong>path:</strong> <code>&dDir;/&dDataFile;.inc</code>
 <pre><protect-result markup><t-data-file></protect-result></pre>
-</if>
-<h4>Data</h4>
-<t-data-dump>
+
 </if>
 <hr><!-- ============================================================= -->
 <a href="/">PIA</a> || <a href="/Agency">Agency</a> ||

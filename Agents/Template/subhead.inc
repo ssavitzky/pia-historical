@@ -6,6 +6,7 @@
 </if>
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
 <table cellspacing=0 cellpadding=0 border=0>
+
 <tr>
   <th width=170>
     <read quiet interform file="insert.if" process>
@@ -15,15 +16,31 @@
 	                   width=170 height=1></th>
         <td><br>
     <tr><th align=right>
-	    <td> <a href="home.if">Home</a>
-    		 <a href="index.if">Index</a>
-    		 <a href="help.if">Help</a>
+		<if><test match=home.if>&fileName;</test>
+		    <test match=index.if>&fileName;</test>
+		    <test match=help.if>&fileName;</test>
+		    <then><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*"></if>
+	    <td><if><test match=home.if>&fileName;</test>
+		    <then><b href="home.if">Home</b>
+		    <else><a href="home.if">Home</a></if>
+    		<if><test match=index.if>&fileName;</test>
+		    <then><b href="index.if">Index</b>
+		    <else><a href="index.if">Index</a></if>
+    		<if><test match=help.if>&fileName;</test>
+		    <then><b href="help.if">Help</b>
+		    <else><a href="help.if">Help</a></if>
 <if><read info interform file="initialize.if"><then>
     <tr><th><td><a href="options.if">Options</a>
 	    	<a href="initialize.if">[re-initialize]</a></then>
 </if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+    <tr><th align=right>
+		<if><test match=form.if>&fileName;</test>
+		    <then><img src="/Agency/Icons/dot-blue.gif"
+			     height=20 width=20 alt="*"></if>
+	    <td><a href="form.if">Template Form</a>
     <tr><th><td><a href="usage.html">Using Templates</a>
     <tr><th><td><a href="impl.html">Implementing templates</a>
     <if>&subs;<then>
