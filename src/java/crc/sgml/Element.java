@@ -4,6 +4,8 @@
 
 package crc.sgml;
 
+import java.util.Enumeration;
+
 import crc.ds.List;
 import crc.ds.Table;
 
@@ -357,12 +359,15 @@ public class Element extends Token implements Attrs {
     if (content != null) append(new Text(content));
   }
 
-  public Element (String tag, List content) {
+  public Element (String tag, Enumeration values) {
     this(tag);
-    java.util.Enumeration values = content.elements();
     while (values.hasMoreElements()) {
       append(new Element("li", Util.toSGML(values.nextElement())));
     }
+  }
+
+  public Element (String tag, List content) {
+    this(tag, content.elements());
   }
 
   public Element(String tag, Table tbl) {
