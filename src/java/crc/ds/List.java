@@ -222,6 +222,10 @@ public class List implements Stuff {
   public List() {
   }
 
+  public List(int size) {
+    items = new Vector(size);
+  }
+
   public List(List l) {
     for (int i = 0; i < l.nItems(); ++i) push(l.at(i));
   }
