@@ -92,10 +92,10 @@ crfixbat::
 	cd $(PIABINDIR); cp piajdk.bat piajdk.bak; cp_ascii < piajdk.bak > piajdk.bat
 	cd $(PIABINDIR); cp autorun.inf autorun.bak; cp_ascii < autorun.bak > autorun.inf
 	cd $(PIABINDIR); rm -f *.bak
-	cp README README.bak; cp_ascii < README.bak > README
-	cp INSTALL INSTALL.bak; cp_ascii < INSTALL.bak > INSTALL
+	cp README README.bak; cp_ascii < README.bak > README.txt
+	cp INSTALL INSTALL.bak; cp_ascii < INSTALL.bak > INSTALL.txt
 	rm README.bak INSTALL.bak
-	cd $(DOCRELEASE); cp readme readme.bak; cp_ascii < readme.bak > readme; rm readme.bak
+	cd $(DOCRELEASE); cp readme readme.bak; cp_ascii < readme.bak > readme.txt; rm readme.bak
 
 
 ### Binary release
@@ -133,7 +133,7 @@ pia_bin_src: 	rm_bin_tar rm_pia_tar prep_rel crfixbat cp_build_noa pia_bin.toc p
 
 pia_cdrom::	pia_bin_src
 	cp pia_bin.tgz $(CDROMDIR); cp pia_src.tgz $(CDROMDIR)
-	cp Doc/Release/readme $(CDROMDIR)
+	cp Doc/Release/readme.txt $(CDROMDIR)
 	cp bin/autorun.inf $(CDROMDIR)
 
 
