@@ -1,0 +1,37 @@
+%%macro to print code under a section of tex
+%% use like   encode{11}{text labeled 11}
+%% where 11 is the code (any number) and text is arbitrary latex stuff
+\newlength{\gwboxwidth}
+\newlength{\gwcodeboxwidth}
+%\def\encode#1#2{\mbox{\mbox{#2}\settowidth{\gwboxwidth}{#2}\hspace{-\gwboxwidth}\dimen1=\gwboxwidth \divide\dimen1 by18 \makebox[\gwboxwidth]{\bcode{\dimen1}{#1}}} %
+	%%%%The above assumes that the code is a fixed width---fixed below
+
+
+\def\cd{1.0mm}
+\def\htcd{1.3mm}
+\def\spcd{0.7mm}
+\def\minwid{1.5mm}
+\newsavebox{\mytextbox}
+\newsavebox{\mycodesbox}
+\def\encode#1#2{\mbox{\sbox{\mytextbox}{#2}\settowidth{\gwboxwidth}{#2}\dimen1=\gwboxwidth \divide\dimen1 by18 \ifdim\dimen1<\minwid \dimen1=\minwid \fi \sbox{\mycodesbox}{\bcode{\dimen1}{#1}}\settowidth{\gwcodeboxwidth}{\bcode{\dimen1}{#1}}\dimen1=\gwboxwidth \ifdim\dimen1<\gwcodeboxwidth \dimen1=\gwcodeboxwidth \fi  \makebox[\dimen1]{\usebox{\mytextbox}}\hspace{-\dimen1}\makebox[\dimen1]{\usebox{\mycodesbox}} } %
+}
+
+\def\bcode#1#2{\startcode{#1}\writecode{#1}{#2}\endcode{#1}} %1 is width 2 is #
+%\def\startcode#1{\hspace{\minwid}\codebox{#1}\hspace{#1}\hspace{#1}\codebox{#1}}
+%%new code uses smaller white space
+\def\startcode#1{\hspace{\minwid}\codebox{#1}\hspace{#1}\codebox{#1}}
+\def\endcode#1{\hspace{#1}\codebox{#1}\codebox{#1}\hspace{\minwid}}
+\def\codebox#1{\rule[-\htcd]{#1}{\cd}}
+\newcount\codenum
+
+\def\writecode#1#2{\dimen2=#1 \dimen3=#1 \divide\dimen3 by2 \dimen3=\spcd%
+%	\ifnum\dimen3>\spcd \dimen3=\spcd \fi
+	\codenum=#2 \writerecurse} 
+\def\writerecurse{{\count0=\codenum \divide\codenum by10 \count2=\codenum %
+	\ifnum\codenum>0 \writerecurse \fi %print bigger first
+	\multiply\count2 by-10 \advance\count0 by\count2 %
+	\dimen0=\dimen2 \multiply\dimen0 by\count0 %
+	\ifnum \dimen0=0 \dimen0=\dimen2 \divide\dimen0 by4 \fi %get 0
+	\hspace{\dimen3}\codebox{\dimen0}}}
+
+\newenvironment{preform}{\setlength{\parskip}{0mm}\addtolength{\textwidth}{3in}\setlength{\oddsidemargin}{0mm}\setlength{\evensidemargin}{0mm}\setlength{\rightmargin}{0mm}\hsize=6.8in\small\tt\obeylines}{}
