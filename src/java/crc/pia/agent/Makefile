@@ -1,3 +1,7 @@
+###### pia/agent/Makefile:	Agent handlers and related classes
+#	$Id$
+#	Copyright 1997, Ricoh California Research Center
+
 PACKAGE=crc.pia.agent
 TOPDIR=../../..
 

@@ -29,12 +29,6 @@ name="slide_pause">10</set></else></if>
 <if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
 <p>
 </then></if>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
-<!-- hhmts start -->
-Last modified: Wed Jul  9 17:57:06 1997
-<!-- hhmts end -->
-<p>
-<address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
-         >Greg Wolff</a> &lt;<a href="mailto:wolff@crc.ricoh.com"
-         >wolff@crc.ricoh.com</a>&gt;</address>
 </body></html>
