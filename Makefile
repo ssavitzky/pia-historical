@@ -56,18 +56,23 @@ cd_rom:		$(CD_ROM_SRC_DIR) $(CD_ROM_DEST_DIR) version_id
 SRCDIR=src/java/crc
 CLASSDIR=src/java
 PIALIBDIR=lib/java
+PIABINDIR=bin
 INTERFORM=Doc/Manuals/InterForm
+DOCRELEASE=Doc/Release
+CDROMDIR=../cdrom
 
 cvs.tar::
 	find $(SUBDIRS) -name CVS -print | tar -cT - -f cvs.tar
 
 ### Prepare release
 
-rm_bin_tar:: 
-	 rm -f pia_bin.tar.gz
+rm_bin_tar::
+	 rm -f pia_bin.toc 
+	 rm -f pia_bin.tgz
 	 rm -f $(PIALIBDIR)/crc.zip
 rm_pia_tar::
-	rm -f pia.tar.gz
+	rm -f pia.toc
+	rm -f pia.tgz
 	rm -f $(PIALIBDIR)/crc.zip
 
 prep_rel::
@@ -76,32 +81,71 @@ prep_rel::
 	cd $(CLASSDIR);make crc.zip; make alldoc
 	cd $(CLASSDIR);rm -fr java
 
+### add crln
+crfixbat:: 
+	cd $(PIABINDIR); cp pia.bat pia.bak; cp_ascii < pia.bak > pia.bat
+	cd $(PIABINDIR); cp piajdk.bat piajdk.bak; cp_ascii < piajdk.bak > piajdk.bat
+	cd $(PIABINDIR); cp autorun.inf autorun.bak; cp_ascii < autorun.bak > autorun.inf
+	cp README README.bak; cp_ascii < README.bak > README
+	cp INSTALL INSTALL.bak; cp_ascii < INSTALL.bak > INSTALL
+	cd $(DOCRELEASE); cp readme readme.bak; cp_ascii < readme.bak > readme
+
+
 ### Binary release
 
-pia_bin.toc:: rm_bin_tar prep_rel
+pia_bin.toc:: rm_bin_tar prep_rel crfixbat
 	cd ..; find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
 	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
 	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
 	    | grep -v src/app/webfax | grep -v src/tex \
+	    | grep -v pia.tgz | grep -v pia.toc \
 	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
 
 pia_bin.tar:	pia_bin.toc
-	cd ..; $(TAR) cfT pia/pia_bin.tar pia/pia_bin.toc ;  /bin/gzip pia/pia_bin.tar
+	cd ..; $(TAR) cfT pia/pia_bin pia/pia_bin.toc ;  /bin/gzip -S .tgz pia/pia_bin
 
 ### Source release
 
-pia.toc:: rm_pia_tar prep_rel
+pia.toc:: rm_pia_tar prep_rel crfixbat
 	cd ..;	find pia \! -type d -print \
 	    | grep -v CVS | grep -v InternalDoc \
 	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
 	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
 	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
 	    | grep -v src/app/webfax | grep -v src/tex \
+	    | grep -v pia_bin.tgz | grep -v pia_bin.toc \
 	    | grep -v Doc/Slides > pia/pia.toc 
 
 pia.tar:	pia.toc
-	cd ..; $(TAR) cfT pia/pia.tar pia/pia.toc ;	/bin/gzip pia/pia.tar
+	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src
 
+### Binary and source release
+pia_bin_src.toc:: rm_bin_tar rm_pia_tar prep_rel crfixbat
+	cd ..; find pia \! -type d -print \
+	    | grep -v CVS | grep -v InternalDoc \
+	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
+	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
+	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
+	    | grep -v src/app/webfax | grep -v src/tex \
+	    | grep -v pia.tgz | grep -v pia.toc \
+	    | grep -v Doc/Slides | grep -v src > pia/pia_bin.toc 
+	cd ..;	find pia \! -type d -print \
+	    | grep -v CVS | grep -v InternalDoc \
+	    | grep -v Agents/Printer | grep -v Agents/RAWHO \
+	    | grep -v Contrib/Forms | grep -v src/Agents/fax \
+	    | grep -v src/Agents/im3 | grep -v src/Agents/thumbnail \
+	    | grep -v src/app/webfax | grep -v src/tex \
+	    | grep -v pia_bin.tgz | grep -v pia_bin.toc \
+	    | grep -v Doc/Slides > pia/pia.toc 
+
+pia_bin_src: 	pia_bin_src.toc
+	cd ..; $(TAR) cfT pia/pia_bin pia/pia_bin.toc ;  /bin/gzip -S .tgz pia/pia_bin
+	cd ..; $(TAR) cfT pia/pia_src pia/pia.toc ;	/bin/gzip -S .tgz pia/pia_src
+
+pia_cdrom::	pia_bin_src
+	cp pia_bin.tgz $(CDROMDIR); cp pia_src.tgz $(CDROMDIR)
+	cp Doc/Release/readme $(CDROMDIR)
+	cp bin/autorun.inf $(CDROMDIR)
 
