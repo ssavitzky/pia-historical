@@ -151,6 +151,13 @@ public class TableElement extends crc.sgml.Element {
     if(name.isExpression()){
       return attrExpression(name);
     }
+
+    // if data not computed yet,
+    // buildTable(); NEEDS more Work
+
+    if(data == null) return super.attr(name); // usually null
+    
+
     int rows[],cols[];
     
     if(name.isRange()){
@@ -209,6 +216,9 @@ public class TableElement extends crc.sgml.Element {
 	cols[0] =r.intValue();
       }
     }
+
+    crc.pia.Pia.debug(this,"Getting table items wanted:" + rows.length +"rows " + cols.length  + "columns of data --size of data " + nRows + "x" + nCols);
+    
     
       //now should have rows[],cols[]      
       if(rows.length == 1 && cols.length == 1){

@@ -34,16 +34,36 @@ public class  DescriptionList extends crc.sgml.Element {
     
     // check for dt tag with name
     Enumeration elements = content.elements();
-    while(elements.hasMoreElements()){
-      SGML mytag = (SGML) elements.nextElement();
+    SGML myElement;
+    
+    SGML myNext = null;
+    int results = 0;
+    Tokens myresult = new Tokens();
+    
+    while(myNext != null || elements.hasMoreElements()){
+      myElement = (myNext == null) ? (SGML) elements.nextElement() : myNext;
+       
+       // clear the look ahead variable
+       myNext=null;
+       
    // tag equals dt and content equals name -- what operator appropriate?
-      if(mytag.tag().equals("dt") && mytag.contentString().equals(name)){
-	result = (SGML) elements.nextElement(); //could just return
-      }
+      if(myElement.tag().equals("dt") && myElement.contentString().trim().equals(name))
+        while(elements.hasMoreElements()) {
+	 myNext = (SGML) elements.nextElement(); 
+	 if(myNext.tag().equals("dt")) break;
+	 if(myNext.tag().equals("dd")){
+	   myresult.append( (SGML)myNext.content());
+	   results++;
+	 }
+	}
     }
+
+    if(results==1) result = Util.removeSpaces(myresult).itemAt(0);
+    if(results>1) result = myresult;
     
     return result;
   }
+  
 
  SGML attrExpression(Index expression)
   {
