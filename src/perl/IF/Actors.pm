@@ -414,10 +414,6 @@ define_actor('pia-agent-home', 'active' => 1, 'parsed' => 1,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
 
-define_actor('pia-agent-home-', 'active' => 1, 'parsed' => 1, 
-	     'content' => 'name', _handle => \&pia_agent_home_handle,
-	     'dscr' => "legacy version" );
-
 sub pia_agent_home_handle {
     my ($self, $it, $ii) = @_;
 
@@ -426,6 +422,7 @@ sub pia_agent_home_handle {
     my $link = $it->attr('link');
 
     my $a = IF::Run::resolver()->agent($name);
+    return unless ref $a;
     my $type = $a->type;
     my $home = ($type ne $name)? "$type/$name" : "$name";
 
