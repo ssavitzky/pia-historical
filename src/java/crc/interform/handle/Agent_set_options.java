@@ -8,6 +8,7 @@ import crc.interform.Actor;
 import crc.interform.Handler;
 import crc.interform.Interp;
 import crc.interform.Util;
+import crc.interform.Run;
 
 import crc.sgml.SGML;
 import crc.sgml.Tokens;
@@ -32,45 +33,17 @@ public class Agent_set_options extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    String name = Util.getString(it, "agent",
+				 Util.getString(it, "name",
+						Run.getAgentName(ii)));
+    if (ii.missing(ia, "name or agent attribute", name)) return;
 
-    ii.unimplemented(ia);
+    Run env = Run.environment(ii);
+    crc.pia.Agent a = env.getAgent(name);
+
+    a.addAttrs(Util.getPairs(it, ii, true));
+
+    ii.deleteIt();
   }
 }
 
-/* ====================================================================
-### <agent-set-options>query_string</agent-set-options>
-
-define_actor('agent-set-options', 'unsafe' => 1, 'content' => 'options', 
-	     'dscr' => "Sets OPTIONS for agent NAME" );
-
-sub agent_set_options_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $options;# = get_hash($it, 'options');
-    $options = IF::Run::request()->parameters unless ref $options;
-    my $name = $it->attr('name');
-    my $agent;
-
-    if ($name) {
-	$agent = IF::Run::resolver()->agent($name);
-    } else {
-	$agent = IF::Run::agent();
-	$name = $agent->name;
-    }
-
-    my $i = 0;
-    if ($options) {
-	foreach $key (keys(%{$options})){
-	    print("  setting $key = ",$$option{$key},"\n") if  $main::debugging;
-	    $agent->option($key, $$options{$key});
-	    ++$i;
-	}
-    }
-    if ($i) {
-	$ii->replace_it("$i");
-    } else {
-	$ii->delete_it();
-    }
-}
-
-*/
