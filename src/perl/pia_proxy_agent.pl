@@ -6,9 +6,7 @@ push(@ISA,PIA_AGENT);
 
 sub initialize {
     my $self = shift;
-    $self->match_criterion('is_request',1,\&FEATURES::is_request);
-    $self->match_criterion('proxy_request',1,\&FEATURES::is_proxy_request);
-    $self->match_criterion('agency_request',0,\&FEATURES::is_agency_request);
+    $self->match_criterion('proxy_request',1);
     return $self;
 }
 
@@ -30,7 +28,7 @@ sub  handle {
 
     ## Handle (satisfy) the request.
 
-    if (FEATURES::is_agency_request($request)) {
+    if ($request->is('agent_request')) {
 	return $self->PIA_AGENT::handle($request, $resolver);
     }
 

@@ -19,27 +19,31 @@ push(@ISA,HTTP::Message);
 
 ###take request or response and make transaction
 sub new {
-    my($class,$request,$from,$to)=@_;
-    my $old=ref($request);
-    bless $request,$class;
-    $request->is_request(1) if $old eq 'HTTP::Request';
-    $request->is_response(1) if $old eq 'HTTP::Response';
+    my($class, $self, $from, $to)=@_;
+    my $old=ref($self);
+    bless $self, $class;
+    $self->is_request(1) if $old eq 'HTTP::Request';
+    $self->is_response(1) if $old eq 'HTTP::Response';
 
     $$self{queue} = [];
 
-    print "Making transaction from $old\n" if $main::debugging;
+    print "Making transaction $self from $old\n" if $main::debugging;
 
-    $request->from_machine($from);
-    $request->to_machine($to);
-    my $type=$request->method;
-    my $code = $request->code;
+    $self->from_machine($from);
+    $self->to_machine($to);
+    my $type=$self->method;
+    my $code = $self->code;
     print "  type is $type\n"  if defined($type) && $main::debugging;    
     print "  code is $code\n"  if defined($code) && $main::debugging;    
-    if(($type eq "POST" || $type eq "PUT") && $request->is_request()){
-	$request->read_content($type);
-	$request->compute_form_parameters() if $type eq 'POST';
+    if(($type eq "POST" || $type eq "PUT") && $self->is_request()){
+	$self->read_content($type);
+	$self->compute_form_parameters() if $type eq 'POST';
     }
-    return $request;
+
+    ## Initialize features and compute a few that we already know.
+
+    new FEATURES $self;  # automatically points $self at it.
+    return $self;
 }
 
 ### Access to components
@@ -66,6 +70,39 @@ sub is_request{
     my($self,$argument)=@_;
     $$self{_request_Boolean}=$argument if defined $argument;
     return $$self{_request_Boolean};
+}
+
+### Features
+
+sub features {
+    my($self, $features) = @_;
+    $$self{_features} = $features if defined $features;
+    return $$self{_features};
+}
+
+sub is {
+    my ($self, $feature) = @_;
+    return $self->features->test($feature, $self);
+}
+
+sub compute {
+    my ($self, $feature) = @_;
+    return $self->features->compute($feature, $self);
+}
+
+sub assert {
+    my ($self, $feature, $value) = @_;
+    $self->features->assert($feature, $value);
+}
+
+sub deny {
+    my ($self, $feature) = @_;
+    $self->features->deny($feature);
+}
+
+sub has {
+    my ($self, $feature) = @_;
+    $self->features->has($feature);
 }
 
 ### Queue handlers.

@@ -64,8 +64,6 @@ sub register_agent{
     my $name=$agent->name();
     $self->agent($name,$agent);
     
-    $self->_feature_computers($agent);
-    
     return $agent;
         
 }
@@ -99,46 +97,6 @@ sub agent_names{
     
 }
 
-############################################################
-# compute features of a transaction for matching
-
-sub compute_features{
-    my($self,$request)=@_;
-    my $features=$self->feature_computers();
-    my %values;
-    print "computing features in $features\n" if $main::debugging;
-    foreach $feature (keys %$features){
-	print "  computing $feature" if $main::debugging;
-	$values{$feature}=&{$$features{$feature}}($request);
-	print "  -> " . $values{$feature} . "\n" if $main::debugging;
-    }
-    return \%values;
-}
-
-sub _feature_computers{
-    my($self,$agent)=@_;
-    my $computers=$$self{computers};
-    my $hash=$agent->criterion_computation();
-    print "registering computers for $agent\n" if $main::debugging;
-    while (($key,$value)=each %$hash){
-	print "registering feature $key $value\n" if $main::debugging;
-	$$computers{$key}=$value;
-	    #should check for clobber here
-    }
-    return $hash;
-}
-
-sub feature_computers{
-    my($self)=@_;
-    
-    if(!exists $$self{computers}){
-	foreach $agent ($self->agents()){
-	    $self->_feature_computers($agent);
-	}
-    }
-    
-    return $$self{computers};
-}
 
 ############################################################################
 ###
@@ -208,17 +166,13 @@ sub match {
     ## Find all agents that match the given transaction.
     ##    Returns either the number of matches.
 
-    ## Compute features of the transaction.
-
-    my $features=$self->compute_features($transaction);
-
     ## Loop through all the agents looking for matches.
     ##    Every agent that matches is allowed to push new requests onto the
     ##    resolver, or to modify the transaction directly.
 
     print "matching:" if $main::debugging;
     foreach $agent ($self->agents()){
-	if ($agent->matches($features)) {
+	if ($agent->matches($transaction)) {
 	    print "About to call $agent -> act_on\n" if $main::debugging;
 	    $agent->act_on($transaction, $self);
 	    ++ $matches;

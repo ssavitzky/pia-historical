@@ -12,21 +12,22 @@ use HTML::FormatPS;
 use HTML::Element;
 use HTML::AsSubs;		# defines element constructor functions.
 				# very useful for interforms.
-
-
 sub new {
-    my($class,$name) = @_;
+    my($class, $name, $type) = @_;
     my $self = {};
     my $options={};
-    my $criterion={};
-    my $computation={};
+    my $criteria=[];		# a list (not a hash) of name => value pairs.
         
     bless $self,$class;
-    $self->name($name) if defined $name;
-    $self->type($name) if defined $name;
     $$self{'options'}=$options;
-    $$self{'criterion'}=$criterion;
-    $$self{computation}=$computation;
+    $$self{'criteria'}=$criteria;
+
+    $self->name($name) if defined $name;
+    if (defined $type) {
+	$self->type($type);
+    } else {
+	$self->type($name) if defined $name;
+    }
     
     $self->initialize;
     return $self;
@@ -62,23 +63,93 @@ sub version{
     $$self{version}=$argument if defined $argument;
     return $$self{version} if exists $$self{version};
     my $string="PIA/";
-    $string.=$self->name;
+    my $type = $self->type;
+    my $name = $self->name;
+    $string .= "$type/" if $type ne $name;
+    $string .= $name;
     return $string;
-    
 }
+
+sub criteria {
+    my ($self, $arg) = @_;
+    $$self{'criteria'} = $arg if defined $arg;
+    return $$self{'criteria'};
+}
+
+############################################################################
+###
+### Attributes:
+###	Attributes are stored as instance variables in the object's
+###	hash.  They are set from the options if undefined.  This provides
+###	a very clean way to perform special processing (e.g. filename or
+###	list expansion) on attributes at the time they are first needed.
+
+sub attribute {
+    ## Set or retrieve a named attribute
+    my ($self, $key, $value) = @_;
+    if (defined $value) {
+	$$self{$key} = $value;
+    } else {
+	$value = $$self{$key};
+	if (! defined $value) {
+	    $value = $self->option($key);
+	    $$self{$key} = $value if defined $value;
+	}
+    }
+    return $value;
+}
+
+sub file_attribute {
+    ## Set or retrieve a file attribute.
+    ##	  Performs ~ expansion on the filename.
+    my ($self, $key, $value) = @_;
+
+    if (defined $value) {
+	$$self{$key} = $value;
+    } else {
+	$value = $$self{$key};
+	if (! defined $value) {
+	    $value = $self->option($key);
+	    my $home = $ENV{'HOME'};
+	    print "substituting $home for ~ in $value\n" if $main::verbose;
+	    $value =~ s:^\~/:$home/:;
+	    $$self{$key} = $value if defined $value;
+	}
+    }
+    return $value;
+}
+
+sub dir_attribute {
+    ## Set or retrieve a directory attribute.
+    ##	  Performs ~ expansion on the filename
+    ##    Makes sure that it ends in a '/' character.
+    my ($self, $key, $value) = @_;
+
+    if (defined $value) {
+	$$self{$key} = $value;
+    } else {
+	$value = $$self{$key};
+	if (! defined $value) {
+	    $value = $self->option($key);
+	    my $home = $ENV{'HOME'};
+	    print "substituting $home for ~ in $value\n" if $main::verbose;
+	    $value =~ s:^\~/:$home/:;
+	    if ($value !~ m:/$:) { $value .= '/'; }
+	    $$self{$key} = $value if defined $value;
+	}
+    }
+    return $value;
+}
+
 
 ############################################################################
 ###
 ### Matching Requests:
 ###
-### agents maintain a list of features and code that computes Boolean
-### features.  resolve uses mask on features to determine which agents get
-### which transactions. agent can add new requests to stack or modify
-### this request, another function gets called to actually handle a request
+###	Agents maintain a list of feature names and expected values;
+###	the features themselves are maintained by a FEATURES object
+###	attached to each transaction.
 ###
-
-# agents should not assume every transaction they get matches their
-# desired feature set
 
 sub match_criterion {
     my($self,$feature,$value,$code)=@_;
@@ -88,31 +159,25 @@ sub match_criterion {
     ##    $value is 0,1 (exact match--for don't care, omit the feature)
     ##    $code is perl function takes transaction as argument returns Boolean
 
-    my $criterion=$$self{criterion};
-    $self->criterion_computation($feature,$code) if defined $code;
+    my $criteria=$self->criteria();
+    FEATURES::register($feature => $code) if defined $code;
     
-    $$criterion{$feature}=$value if defined $value;
-    return $criterion;
+    $value = 1 unless defined $value;
+    push (@$criteria, $feature);
+    push (@$criteria, $value);
+    return $criteria;
 }
 
-sub criterion_computation{
-    my($self,$feature,$code)=@_;
-    my $computation=$$self{computation};
-    $$computation{$feature}=$code if defined $code;
-    return $computation;
-}
+sub matches {
+    my($self, $transaction)=@_;
 
-#this should be in resolve
-sub matches{
-    my($self,$values)=@_;
-    my $criterion=$self->match_criterion();
-    print " " . $self->name . "?" if  $main::debugging;
-    foreach $key (keys %$criterion){
-	return 0 unless $$values{$key}==$$criterion{$key};
-	print " $key" if $main::debugging;
-    }
-    print " matched.\n" if  $main::debugging;
-    return 1;
+    ## Match the agent's criteria against the transaction's features. 
+    ##    There's really no reason for this to be here except that some
+    ##	  agent might want to get clever about what it matches.
+
+    my $criteria=$self->criteria();
+    print " " . $self->name . "(@$criteria)?" if  $main::debugging;
+    return $transaction->features->matches($criteria);
 }
 
 ############################################################################
@@ -123,15 +188,14 @@ sub matches{
 ###### agent -> act_on($transaction, $resolver)
 ###
 ###	Called by the Resolver to act on a transaction that this agent
-###	has matched.
+###	has matched.  It is acceptable for an agent to leave this alone 
+###	if it only responds to direct requests.
 ###
 sub act_on {
     my($self, $transaction, $resolver)=@_;
 
-    ## Act on a transaction that we have matched.
-    ## SUBCLASSES MUST OVERRIDE 
-    print "Agent " . $self->name() . " $self::act_on NOT OVERRIDDEN\n"
-	if ! $main::quiet;
+    ## Default is to do nothing.  
+    ##   OK for agents that only respond to direct requests.
 
     return 0;
 }
@@ -155,97 +219,7 @@ sub handle{
 
 ############################################################################
 ###
-### Find Interforms for agent:
-###
-
-sub find_interform {
-    my($self,$url) = @_;
-
-    ## Find an interform, using a simple search path and a crude kind
-    ## of inheritance.  Allow for the fact that the user may be trying
-    ## to override the interform by putting it in $USR_ROOT/$name/.
-
-    ## The search path used is:
-    ##		option(root)/name : option(root)
-    ##		USR_ROOT/name : PIA_ROOT/name : USR_ROOT : PIA_ROOT
-
-    ## === We should really compute the path once and cache it. ===
-
-    return unless $url;
-    my $path = ref($url) ? $url->path() : $url;
-    my $name = $self->name;
-    my $type = $self->type;
-    my $form;
-
-    ## Find interform name in URL.
-
-    if ($path =~ m:$name/(.*)$:) {
-	$form = $1 || "index.if";	# ... default to index.if
-    } elsif ($path =~ m:$name$:) {
-	$form = $1 || "home.if";	# ... default to home.if
-    } elsif ($path =~ m:^/$:) {
-	$form = 'ROOTindex.if';		# root's index.
-    } elsif ($path eq '') {
-	$form = 'ROOThome.if';		# root's home page.
-	## === for some reason this is never accessed:        ===
-	## === Probably, the browser forces a trailing slash. ===
-    }
-
-    my $home = $main::PIA_ROOT;
-    if ($home !~ m:/$:) { $home .= "/"; }
-
-    my $root = $self->option(root);
-
-    ## Ensure that the root directory ends in a slash, and does *not*
-    ## contain the agent's name (i.e. it's really the root and not the
-    ## agent's home directory).
-    ## === this is kludgy; the agent should have a path ===
-    if ($root !~ m:/$:) { $root .= "/"; }
-    if ($root =~ m:/$name/$:) { $root =~ s:/$name/$:/:; } 
-    if ($root =~ m:/$type/$:) { $root =~ s:/$type/$:/:; } 
-    my $file = "$root$name/$form";
-
-    print "find_interform: home = $home; root = $root\n" if $main::debugging;
-
-    ## First see whether the init file has overridden the root.
-    if ($root ne $home) {
-	return $file if -e $file;
-	## check for inheritance along that path, too.  This also
-	## handles (though not very well) the case where the user has
-	## renamed the agent in question.
-	$file="$root$form";
-	return $file if -e $file;
-    }
-
-    ## Then see whether the user has overridden the form.
-    $root = $main::USR_ROOT;
-    $file = "$root/$name/$form";
-    return $file if -e $file;
-
-    ## Then check the original in the PIA's home (source) tree
-    $file = "$home/$name/$form";
-    return $file if -e $file;
-
-    ## ... and if that doesn't work, try inheritance.
-
-    $file = "$root/$type/$form";
-    return $file if -e $file;
-
-    $file = "$home/$type/$form";
-    return $file if -e $file;
-
-    $file = "$root/$form";
-    return $file if -e $file;
-
-    $file = "$home/$form";
-    return $file if -e $file;
-
-    return;			#found no file
-}
-
-############################################################################
-###
-### utility functions for changing, viewing options:
+### Options:
 ###
 
 sub options {
@@ -281,28 +255,34 @@ sub max {
     return ($x >= $y)? $x : $y;
 }
 
+
 # need to add functions for multiple values and comments
 sub options_form{
     my($self,$url, $label)=@_;
     $label ="change_options" unless defined $label;
-    my $string;
-    my $element=HTML::Element->new( 'form', method => "POST", action => $url);
-    $element->push_content("\n"); # === I think this is helpful. ===
+    my $string, $e;
+    my $form = HTML::Element->new( 'form', method=>"POST", action=>$url);
+    my $t = HTML::Element->new('table');
+    $form->push_content($t);
+    # $e = $form;
 
-    my %attributes,$particle;
-    foreach $key ($self->options()){
+    my %attributes;
+    foreach $key ($self->options()) {
 	my $values=$self->option($key);
-	$particle=input({'name'=>$key, 'value'=>$values,
-			 'size'=>max(30, length($values))});
-	$element->push_content("$key :");
-	$element->push_content($particle);
-	$element->push_content(br());
-	$element->push_content("\n"); # === I think this is helpful. ===
+	$e = HTML::Element->new('tr');
+	$e->push_content(td("$key: "));
+	$e->push_content(td(input({'name'=>$key, 'value'=>$values,
+				'size'=>max(30, length($values))})));
+	$e->push_content(br);
+	$e->push_content("\n");
+	$t->push_content($e);
     }
-    $particle=input({'type'=>submit, 'value'=>$label});
-    $element->push_content($particle);
-    return $element;
-    
+    $e = HTML::Element->new('tr');
+    $e->push_content(td(" "));
+    $e->push_content(td(input({'type'=>submit, 'value'=>$label})));
+    $t->push_content($e);
+
+    return $form;
 }
 
 sub  parse_options{
@@ -316,14 +296,16 @@ sub  parse_options{
 }
 
 sub option{
+    ## Set or retrieve an option.
+    ##	  Subclasses should override this to perform magic on some options.
+    ##	  For example, expanding ~ in filenames or creating list values.
+
     my($self,$key,$value)=@_;
     my $options=$$self{'options'};
     $$options{$key}=$value if defined $value;
 #    my $v = $$options{$key};    print "option($key $value) -> $v\n";
     return $$options{$key};
-    
 }
-
 
 ############################################################################
 ###
@@ -425,6 +407,87 @@ sub create_request {
 }
 
 ############################################################################
+###
+### Find Interforms for agent:
+###
+
+sub find_interform {
+    my($self, $url, $noDefaults) = @_;
+
+    ## Find an interform, using a simple search path and a crude kind
+    ## of inheritance.  Allow for the fact that the user may be trying
+    ## to override the interform by putting it in $USR_ROOT/$name/.
+
+    ## The search path used is:
+    ##		option(root)/name : option(root)
+    ##		USR_ROOT/name : PIA_ROOT/name : USR_ROOT : PIA_ROOT
+
+    ## === We should really compute the path once and cache it. ===
+
+    return unless $url;
+    my $path = ref($url) ? $url->path() : $url;
+    my $name = $self->name;
+    my $type = $self->type;
+    my $form;
+
+    ## Find interform name in URL.
+
+    if ($noDefaults) {		# are we doing defaults?
+	## no
+    } elsif ($path =~ m:$name/(.*)$:) {
+	$form = $1 || "index.if";	# default to index.if
+    } elsif ($path =~ m:$name$:) {
+	$form = "home.if";		# default to home.if
+    } elsif ($path =~ m:^/$:) {
+	$form = 'ROOTindex.if';		# root's index.
+    } elsif ($path eq '') {
+	$form = 'ROOThome.if';		# root's home page.
+	## === for some reason this is never accessed:        ===
+	## === Probably, the browser forces a trailing slash. ===
+    }
+
+    my $if_path = $self->attribute(if_path);
+    if (! defined $if_path) {
+	## If the path isn't already defined, set it up now.
+
+	my $home = $main::PIA_ROOT;
+	if ($home !~ m:/$:) { $home .= "/"; }
+
+	my $root = $self->dir_attribute(if_root);
+	if (defined $root) {
+	    ## Handle a user-defined root first:
+
+	    if ($root !~ m:/$:) { $root .= "/"; }
+	    if ($root =~ m:/$name/$:) { $root =~ s:/$name/$:/:; } 
+	    if ($root =~ m:/$type/$:) { $root =~ s:/$type/$:/:; } 
+	    push(@$if_path, "$root$name/$form");
+	    push(@$if_path, "$root$name/$form") if $name ne $type;
+	    push(@$if_path, "$root/$form");
+	}
+    
+	## Then see whether the user has overridden the form.
+	##    It's possible that one of these will be a duplicate.
+	##    That slows us down, but not much.
+	$root = $main::USR_ROOT;
+	if ($root !~ m:/$:) { $root .= "/"; }
+
+	push @$if_path, ("$root/$name/$form");
+	push @$if_path, ("$root/$type/$form") if $name ne $type;
+	push @$if_path, ("$home/$name/$form");
+	push @$if_path, ("$home/$type/$form") if $name ne $type;
+	push @$if_path, ("$home/$form", "$root/$form");
+
+	$self->attribute($if_path);
+    }
+    
+    print "find_interform: (@$if_path)\n" if $main::debugging;
+
+    foreach $file (@$if_path) { return $file if -e $file; }
+
+    return;			#found no file
+}
+
+############################################################################
 ############################################################################
 ###
 ### interform processing:
@@ -446,8 +509,10 @@ local $current_request;		# old name for $request
 sub execute_interform{
     my $element=shift;
     my $start=shift;
-    return 1 unless $start; #only do it once
-    return 1 unless  lc($element->tag) eq "code";
+    return 1 unless $start;	# only do it once, when entering a node.
+
+    my $tag = lc($element->tag);
+    return 1 unless  ($tag eq "code" || $tag eq "eval");
 
     ## At this point we have a code element.  Branch on language attribute.
     my $code_status;
@@ -477,7 +542,8 @@ sub execute_interform{
 	while($code=shift(@new_elements)){
 	    if (ref($code)) {
 		$parent->insert_element($code);
-	    }else{
+		$element->tag('output'); # === kludge because pos broken ===
+	    } else {
 		push(@$code_array,$code);
 	    }
 	}
@@ -491,20 +557,23 @@ sub execute_interform{
  # remember to delete parse tree otherwise memory leak occurs
 sub run_interform{
     my ($self,$html,$req)=@_;
+
+    ## Set up appropriate environment:
+
     $agent = $self;
     $request = $req;
-
     $current_request=$req;
     $current_self=$self;	# old name
     
-    # execute any perl code
+    ## execute the code:
+
     my $status=$html->traverse(\&execute_interform,1);
-    
     return $status;
 }
 
 sub parse_interform_string{
     my($self,$string,$request)=@_;
+    $HTML::PARSE::IGNORE_UNKNOWN = 0;
     my $html=parse_html($string);
     my $status=$self->run_interform($html,$request);
     my $string=$html->as_HTML;
@@ -514,6 +583,7 @@ sub parse_interform_string{
 
 sub parse_interform_file{
     my($self,$file,$request)=@_;
+    $HTML::PARSE::IGNORE_UNKNOWN = 0;
     my $html=parse_htmlfile($file);
     my $status=$self->run_interform($html,$request);
     my $string=$html->as_HTML;
@@ -529,29 +599,44 @@ sub respond_to_interform {
     my $name = $self->name();
     print "$name parsing $file\n" if  $main::debugging;
 
-    my $response;
+    local $response;		# available for interforms.
+
     if(! defined $file){
 	$response=HTTP::Response->new(&HTTP::Status::RC_NOT_FOUND,
 				      "nointerform");
 	$response->content("no InterForm file found for $url");
+	$response->header('Version',$self->version());
 	## === should really just return 0 ===
     } else {
 #TBD check for path parameters    
 	my $string=$self->parse_interform_file($file,$request);
-
-	$response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
-	$response->content_type("text/html");    
-	$response->header('Version',$self->version());
-	$response->content($string);
+	if (! defined $response) {
+	    $response=HTTP::Response->new(&HTTP::Status::RC_OK, "OK");
+	    $response->content_type("text/html");    
+	    $response->header('Version',$self->version());
+	    $response->content($string);
+	}
     }
+    return unless ref($response);
     $response->request($request);
-    
     $response=TRANSACTION->new($response,
 			       $main::this_machine,
 			       $request->from_machine());
 
     return $response;
 }
+
+############################################################################
+###
+### Initialization Files:
+###
+###	Initialization files are looked up like InterForms, but instead
+###	of containing code to evaluate, they just contain forms to
+###	submit.  Every link is fetched, and every form is submitted.
+###
+### ===	It might be better to make them interforms, and have the first
+###	code chunk auto_submit flag.
+###
 
 sub run_init_file {
     my($self,$fn,$find)=@_;

@@ -14,14 +14,8 @@ push(@ISA,PIA_AGENT);
 sub initialize {
     my $self=shift;
     
-    $self->match_criterion('request',1,\&FEATURES::is_request);
-    $self->match_criterion('agent_request',1,\&FEATURES::is_agent_request);
-
-    ## === We don't need these, but the CIA does; this forces them to exist.
-    ## === This will disappear when features go onto transactions.
-
-    $self->match_criterion('agent_response',0,\&FEATURES::is_agent_response);
-    $self->match_criterion('response',0,\&FEATURES::is_response);
+    $self->match_criterion('request',1);
+    $self->match_criterion('agent_request',1);
 
     &PIA_AGENT::initialize($self);
     return $self;
@@ -58,7 +52,7 @@ sub act_on {
     my($self, $transaction, $resolver) = @_;
 
     print "Agency->act_on\n" if $main::debugging;
-    if (&FEATURES::is_agent_request($transaction)) {
+    if ($transaction->is('agent_request')) {
 	my $url=$transaction->url;
 	return unless $url;
 

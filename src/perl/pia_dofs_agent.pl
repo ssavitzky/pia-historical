@@ -17,48 +17,29 @@ sub initialize{
     my $name=$self->name;
     my $type='dofs';
     $self->type($type);
+
+    $self->match_criterion('NEVER'); # Requests forwarded by agency
+
     my $url="/$type/$name/initialize.if";
     my $request=$self->create_request('GET',$url);
     $self->request($request);
 }
 
-sub parse_options {
-    my ($self, $request) = @_;
+sub root {
+    my ($self, $value) = @_;
+    return $self->file_attribute('root', $value);
+}
 
-    ## Override so we can do special handling on ~ in document_root.
-
-    $self->PIA_AGENT::parse_options($request);
-
-    my $docs = $self->option('document_root');
-    if (defined $docs && $docs =~ m:^\~/:) {
-	my $home = $ENV{'HOME'};
-	$docs =~ s:^\~/:$home/:;
-	print "substituting $home for ~ in $docs\n";
-	$self->option('document_root', $docs);
-    }
+sub path {
+    my ($self, $value) = @_;
 
 }
 
-### === need a feature for name != type ===
 
 ############################################################################
-
-#handles are done by super class-- things like processing interform
-
-# here  we translate requests into  requests for  myself with appropriate path
-#actually translate into responses... using requests could work, but reduces
-# efficiency and confuses response...
-
-#TBD figure  out proper way to specify machine
-
-sub act_on {
-    my($self, $transaction, $resolver)=@_;
-    ## Act on a transaction that we have matched.
-
-    ## Don't have to do anything.  Really shouldn't match anything!
-    ##	  the agency will push our handle.
-    return 0;
-}
+### 
+### Transaction handling.
+###
 
 sub retrieve_file {
     my($self, $url, $request, $resolver)=@_;
@@ -73,16 +54,18 @@ sub retrieve_file {
 #     my $hash= $request->parameters() || {};
 #     $$hash{'retrieve_item'}=$url;#could add $name to key
 #     $response->parameters($hash);#putin the contents of the post
-    my $filename=$self->url_to_filename($url);
     
+    my $filename=$self->url_to_filename($url);
     my $new_url= newlocal URI::URL $filename;
     my $new_request=$request->clone;
     print "DOFS looking up $new_url\n" if $main::debugging;
     $new_request->url($new_url);
     my $ua = new LWP::UserAgent;
     my $response=$ua->simple_request($new_request); 
+    $response->header('Version', $self->version());
     $response=TRANSACTION->new($response);
     $response->to_machine($request->from_machine());
+
 #replace base with appropriate
 #warning violates encapsulation for efficiency
     my $base = $url->clone;
@@ -91,7 +74,7 @@ sub retrieve_file {
     }
     ## If the content is a directory, the UserAgent will have 
     ##	  given it a base.  Fix it.
-    if ($responst->{'_content'} =~ m:<BASE HREF:) {
+    if ($response->{'_content'} =~ m:<BASE HREF:) {
 	$response->{'_content'} =~ s/(<BASE HREF=\")([\S]*)(\">)/$1$url$3/; #";
     }
 #    $response->{'_content'} =~ s/<BASE/<a/;
@@ -140,12 +123,12 @@ sub url_to_filename{
 #returns the file name corresponding to this url
 # returns undefined unless url path begins with prefix
     my($self,$url)=@_;
-    my $document_root=$self->option('document_root');
+    my $root=$self->root;
     return  unless $url;
     my $path=$url->path;
     my $prefix = $self->name;
     return unless $path=~ m:^/$prefix(.*)$:;
-    my $filename="$document_root$1"; # bogus $prefix removed from path.
+    my $filename="$root$1"; # bogus $prefix removed from path.
     return $filename;
     
 }
