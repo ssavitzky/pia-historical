@@ -38,7 +38,7 @@ DOCDIR=$(PIADIR)/Doc/Manuals/Api/JavaDoc
 LIBCLASSES= $(LIBDIR)/jigsaw.zip:$(LIBDIR)/crc.zip
 
 ##javac wrapper should find these  .. specify explicitly if problem
-JAVACLASSES= /usr/local/java/lib/classes.zip
+JAVACLASSES= /usr/local/java/lib/classes.zip:/pia1/ext/java
 #JAVACLASSES=
 JAVASOURCE=  /usr/local/java/src
 
