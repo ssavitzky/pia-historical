@@ -3,18 +3,6 @@
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
  
-  /**
-   *Feature Computers.
-   *All take a transaction as their argument, and most return a
-   *boolean.  Feature computers may use the utility method
-   *transaction->assert(name,value) to set additional features. 
-   *
-   *By convention, a feature computer "is_foo" computes a feature
-   *named "foo". 
-   *
-   * @return the title of an HTML page, if it has one.
-   * @return the URL if the content-type is not HTML.
-   */
 package crc.tf;
 
 import java.net.URL;
@@ -33,6 +21,12 @@ public final class Title implements UnaryFunctor{
       return null;
   }
 
+  /**
+   * Returns the documentation title of this transaction.
+   * @param o  Transaction 
+   * @return Object title string; if transaction is of type "text/html" returns the file portion of
+   * the transaction's url, get the title from the document page.
+   */ 
   public Object execute( Object o ){
       Transaction trans = (Transaction)o;
 

@@ -22,7 +22,7 @@ public class Registry{
   protected static String packagePrefix = "crc.tf.";
 
   /**
-   * Given a featurName, returns the corresponding feature calculator.
+   * Given a feature name, returns the corresponding feature calculator.
    * Create one if none existed.
    */
   public static Object calculatorFor( String featureName ) throws UnknownNameException{
