@@ -106,7 +106,7 @@ See also:
        addChild, insertBefore, and initialization. <br>
        This will allow insertion methods to be extended.  Only the protected
        dispatch method <code>doInsert</code> needs to be extended.
-       (1998-6-19) <br>
+       (1998-06-19) <br>
 
   <li> 1998-06-18 <b>Hole:</b> Tagset and Handler must be generic. <br>
        Sometimes we may need them to be elements, sometimes declarations.
@@ -116,7 +116,7 @@ See also:
        well. <br> 
        The items defined must be their content, not their attributes.
        This will greatly simplify the loading of tagsets, DTD's, etc.
-       (1998-6-19) <br>
+       (1998-06-19) <br>
 
   <li> 1998-06-22 <b>Impr:</b> Define syntax flags in
        <code>crc.dps.Syntax</code> <br> 
@@ -128,7 +128,7 @@ See also:
        Something broke when we went to values not being children.  Values are
        set, but cannot be retreived.  Several places seem to still be using
        getChildren instead of getValue.
-       (1998-6-23) <br>
+       (1998-06-23) <br>
        -- tested old value for null instead of new, in <code>putValue</code>.
 
   <li> 1998-06-23 <b>Bug:</b> &lt;test match&gt; produces odd results.  <br>
@@ -138,12 +138,18 @@ See also:
 
   <li> 1998-06-24 <b>Bug:</b> Nested &lt;if&gt; loses &lt;then&gt; content. <br>
        The children of a second-level then are getting lost instead of copied.
-       (1998-6-23) <br>
+       (1998-06-23) <br>
        -- declaring <code>int action</code> instead of
           <code>int actionCode</code>
 
   <li> 1998-06-24 <b>Impr:</b> &lt;test&gt; should be ended by &lt;then&gt; <br>
        (1998-06-18) <br>
+
+  <li> <b>Check:</b>  copying <br>
+       Non-processed parse trees (e.g. &lt;else&gt;) should never be copied.
+       Copying should use <code>putNode</code> if the node actually has
+       children; recursion if the children are unparsed.
+       (1998-06-15)<br>
 
   <li> 1998-06-25 <b>Impr:</b> Dispatching: create fewer instances <br>
        Dispatching should create a new handler instance only when necessary;
@@ -152,26 +158,38 @@ See also:
        -- <code>handle(<em>element</em>)</code> method in place; usage needs
 	  to be checked.
 
+  <li> 1998-06-25 <b>Query:</b>  &lt;test zero&gt; non-number&lt;/&gt; = ?<br>
+       Not clear whether non-numerics should test as zero or not.  The most
+       consistant thing would be for whitespace to return <code>true</code>,
+       non-whitespace to return <code>false</code>.
+       (1998-06-15)
+       -- At the moment, whitespace is zero.
+       
   <li> 1998-06-26 <b>Bug:</b> Empty actor def's fail. <br>
-       (1998-6-25) <br>
+       (1998-06-25) <br>
        -- Empty def. handled by defining as null string. 
 
-  <li> <b>Bug:</b> Actors defined inside &lt;if&gt; fail. <br>
+  <li> 1998-06-27 <b>Bug:</b> Actors defined inside &lt;if&gt; fail. <br>
        One can no longer expect an actor defined inside quotes to be visible
        there (because of pre-parsing), but it <em>should</em> be visible
        <em>outside</em>. 
-       (1998-6-25) <br>
+       (1998-06-25) <br>
        -- <code>ParseTreeText</code> wasn't getting cloned correctly; a
 	  hangover from when it descended from BasicText.
 
-  <li> <b>Bug:</b> Parsing:  Lots of trouble with implicit end.<br>
+  <li> 1998-06-27 <b>Bug:</b> Parsing:  Lots of trouble with implicit end.<br>
        &lt;tr&gt; ends the previous &lt;th&gt;, but neither the expected
        &lt;/tr&gt; nor the &lt;tr&gt; show up.  An entity before an inserted
        &lt;/td&gt; also causes havoc -- it turns into a comment! (probably bad
        node type).  Missing &lt;/then&gt; also loses.
-       (1998-6-26) <br>
+       (1998-06-26) <br>
        -- Not putting token back into <code>next</code> in
 	  <code>advanceParser</code>.
+
+  <li> 1998-06-27 <b>Goal:</b> (7-1) Able to process slides <br>
+       Be able to process <code>.../Reviews/slides-199807.html</code> in time
+       to show it at the review.  Requires &lt;actor&gt;
+       (1998-06-24) <br>
 
 </ul>
 <a name="end">End of list.</a>

@@ -17,56 +17,62 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Impr:</b> Parser should put text in <code>next</code> <br>
+       (instead of putting it in <code>nextText</code> and increasing the
+       number of tests per token).
+       (1998-06-29) <br>
+
+  <li> <b>Hole:</b> Ought to have <code>NamedChildList</code> <br>
+       for the children of things like <code>EntityTable</code> and
+       <code>Tagset</code>.
+       (1998-06-29) <br>
+
   <li> <b>Bug:</b> appending to undefined entity fails. <br>
        &lt;set name=foo&gt;&lt;get name=foo&gt;...&lt;/set&gt; leaves
        <code>foo</code> undefined.  There must be an explanation...
-       (1998-6-26) <br>
+       (1998-06-26) <br>
 
   <li> <b>Bug:</b> replaceChild when redefining entity or handler <br>
        BasicTagset and BasicEntityTable have to do a replaceChild when
        replacing a binding.
-       (1998-6-26) <br>
+       (1998-06-26) <br>
 
   <li> <b>Hole:</b> Must define tags at parse time to cache trees <br>
        In order to parse correctly, you have to have the whole DTD in
-       advance.
-       (1998-6-25) <br>
+       advance.  Yet another argument for the position that a tagset is a
+       DTD. 
+       (1998-06-25) <br>
 
   <li> <b>Impr:</b> Upgrade <code>handle</code> methods. <br>
        The static <code>handle(<em>element</em>)</code> methods in handler
        subclasses should pick up a static instance if possible, rather than
        just calling <code>new</code>.  (See also ''Impr'' of 1998-06-15.)
-       (1998-6-25) <br>
+       (1998-06-25) <br>
 
   <li> <b>Goal:</b> (8-1) Run Most Agents <br>
        Be able to run all of the agents in daily use (i.e. history, etc., but
        not the wacko stuff in on the form server).
-       (1998-6-24) <br>
-
-  <li> <b>Goal:</b> (7-1) Able to process slides <br>
-       Be able to process <code>.../Reviews/slides-199807.html</code> in time
-       to show it at the review.  Requires &lt;actor&gt;
-       (1998-6-24) <br>
+       (1998-06-24) <br>
 
   <li> <b>Bug:</b> Flag unimplemented legacy options. <br>
        Unimplemented legacy options in &lt;get&gt; etc. have to be brought to
        the user's attention with error messages.  Requires a mode flag or,
        better, dispatching via the legacy handler first.
-       (1998-6-24) <br>
+       (1998-06-24) <br>
 
   <li> <b>Impr:</b> Character Entities should be defined in tagset <br>
        Should have defined value; copy value into references to short-circuit
        lookup.  <code>TextUtil.expandCharacterEntities</code> can then make
        use of this.
-       (1998-6-22) <br>
+       (1998-06-22) <br>
 
   <li> <b>Hole:</b> <code>ToParseTree</code> should take a tagset <br>
        Tagset is needed to attach actions to constructed nodes.
-       (1998-6-22) <br>
+       (1998-06-22) <br>
 
-  <li> <b>Impr:</b> Tagset should extend EntityTable. <br>
+  <li> <b>Impr:</b> Tagset should extend EntityTable, or reference one. <br>
        This will make it easier to define entities and tags in the same DTD.
-       (1998-6-19) <br>
+       (1998-06-19) <br>
 
   <li> <b>Hole:</b> Character entity class, handler <br>
        Having a separate node class and handler class for character entities
@@ -77,7 +83,8 @@ See also:
   <li> <b>Impr:</b> PUT_VALUE action code needed <br>
        Get a value for the node and put that.  Needs a corresponding
        <code>putValue(<em>node, context, output</em>)</code> in Action; the
-       default should be to copy the node.
+       default should be to copy the node.  Could be used for entity expansion
+       in attributes.
        (1998-06-18) <br>
 
   <li> <b>Hole:</b> <code>ParseTreeDocument</code> &amp; XML nodes. <br>
@@ -97,10 +104,13 @@ See also:
 
   <li> <b>Hole:</b> PIA namespaces and data types <br>
        During the transition Agent, Transaction, etc. need to be able to
-       return both SGML and DOM data as needed.
+       return both SGML and DOM data as needed.  Fortunately many of the
+       namespaces contain only strings; it's really only hooks that differ.
        (1998-06-18) <br>
 
   <li> <b>Prop:</b> New InterForm extensions (?). <br>
+       (of course, the really obvious one is <code>.dpml</code> -- Document
+       Processing Markup Language. (6-29)
        <dl compact>
 	 <dt> .mh
 	 <dd> ``Meta-HTML'' -- resulting in a MIME type of
@@ -144,42 +154,20 @@ See also:
        name spaces. 
        (1998-06-16) <br>
 
-  <li> <b>Check:</b>  copying <br>
-       Non-processed parse trees (e.g. &lt;else&gt;) should never be copied.
-       Copying should use <code>putNode</code> if the node actually has
-       children; recursion if the children are unparsed.
-       (1998-06-15)<br>
-
   <li> <b>Impr:</b> <code>Filter</code> parse tree input <br> 
        Filter should  be able to read a serialized parse tree.
        (1998-06-15) <br>
        -- It should do so if the input file ends in ``<code>.obj</code>''.
        
-  <li> <b>Query:</b>  &lt;test zero&gt; non-number&lt;/&gt; = ?<br>
-       Not clear whether non-numerics should test as zero or not.  The most
-       consistant thing would be for whitespace to return <code>true</code>,
-       non-whitespace to return <code>false</code>.
-       (1998-06-15)
-
   <li> <b>Hole:</b> Legacy Handlers <br>
-       actor-attrsQ actor-dscrQ actor-docQ actor-syntaxQ getQ tagset-existsQ
-       tagset-loadQ tagset-includeQ elementQ actor-namesQ calendarQ fileQ
-       readQ get.envQ read.fileQ read.hrefQ authenticateQ agent-criteriaQ
-       agent-homeQ agent-listQ agent-optionsQ agent-runningQ agent-removeQ
-       agent-set-criterionQ agent-restoreQ agent-saveQ pia-exitQ get.agentQ
-       get.formQ get.piaQ get.transQ add-markupX differenceX equalX expandX
-       padX productX protect-resultX quotientX setX sortX sortedX 
-       sumX tagsetX textX trimX user-messageX calendar-dayX formX
-       os-commandX os-command-outputX set.envX writeX write.fileX write.hrefX
-       password-file-entryX agent-set-criteriaX agent-set-optionsX
-       agent-installX submit-formsX trans-controlX set.agentX set.formX
-       set.piaX set.transX protectQ repeatQ foreachQ actorQ processQ
+       <code>cd <a href="../interform/handle">../interform/handle</a>;
+       make dps-check </code> for report.
        (1998-06-15) <br>
-       <b>done:</b> subst if else then test
 
   <li> <b>Hole:</b> New Handlers <br>
+       A significant amount of language design is needed here.
        <br>
-       <b>done:</b> subst if else then elsf test
+       <b>done:</b> subst if else then elsf test get set 
 
   <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
