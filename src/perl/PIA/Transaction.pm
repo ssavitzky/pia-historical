@@ -173,8 +173,8 @@ sub response_to {
 
 sub url {
     my ($self, $value) = @_;
-    $$self{_url} = $value if defined $value;
-    return $$self{_url};
+    return $self->attr('url', $value) if defined $value;
+    return $$self{url};
 }
 
 sub method {
@@ -446,20 +446,9 @@ sub title {
 
     ## Return the title of an HTML page, if it has one.
     ##	  Returns the URL if the content-type is not HTML.
+    ##	  (now implemented as a feature)
 
-    return unless $self->is_response();
-    return $self->{'_title'} if defined $self->{'_title'};
-
-    my $ttl  = $self->url();
-    my $type = $self->content_type();
-    return unless $type;
-    return $ttl unless $type =~ m:text/html:;
-
-    my $page = $self->content();
-
-    if ($page =~ m:<title>(.*)</title>:ig) { $ttl = $1; }
-    $self->{'_title'} = $ttl;
-    return $ttl;
+    return $self->test('title');
 }
 
 sub add_control{

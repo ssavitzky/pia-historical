@@ -181,20 +181,20 @@ sub  is_agent_request{
 ### Non-default Features:
 
 $computers{'text'} = \&is_text;
-sub is_text{
-    my($trans)=shift;
+sub is_text {
+    my $trans=shift;
     return $trans->content_type() =~ /^text/i;
 }
 
 $computers{'html'} = \&is_html;
-sub is_html{
-    my($trans)=shift;
+sub is_html {
+    my $trans=shift;
     return $trans->content_type() =~ /^text\/html/i;
 }
 
 $computers{'image'} = \&is_image;
 sub is_image{
-    my($trans)=shift;
+    my $trans = shift;
     return $trans->content_type() =~ /^image/i;
 }
 
@@ -252,6 +252,48 @@ sub get_agent {
     return unless defined $path;
     my $name = ($path =~ m:^/(\w+)/*:i) ? $1 : 'agency';
     return $name;
+}
+
+$computers{'title'} = \&get_title;
+sub get_title {
+    my($trans)=@_;
+
+    ## Return the title of an HTML page, if it has one.
+    ##	  Returns the URL if the content-type is not HTML.
+
+    return unless $trans->is_response();
+    my $ttl  = $trans->url;
+    $ttl = $ttl->as_string if ref $ttl;
+    my $type = $trans->content_type();
+    return unless $type;
+    return $ttl unless $type =~ m:text/html:;
+
+    my $page = $trans->content();
+
+    if ($page =~ m:<title>(.*)</title>:ig) { $ttl = $1; }
+    return $ttl;
+}
+
+### The following just mirror methods; there may be a better way.
+
+$computers{'url'} = \&get_url;
+sub get_url {
+    my($trans)=@_;
+    my $url = $trans->url;
+    return $url->as_string if ref $url;
+    return $url;
+}
+
+$computers{'method'} = \&get_method;
+sub get_method {
+    my ($trans) = @_;
+    return $trans->method;
+}
+
+$computers{'code'} = \&get_code;
+sub get_code {
+    my ($trans) = @_;
+    return $trans->code;
 }
 
 
