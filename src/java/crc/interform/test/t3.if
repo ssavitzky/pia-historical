@@ -5,6 +5,22 @@
 </head><body>
 <h1>InterForm test file t3.if</h1>
 
+<if>test
+    <then>true if is working</then>
+    <else>there are bogons</else>
+</if>
+<if>
+    <then>false if is failing</then>
+    <else>false if is working</else>
+</if>
+
+foo set to "<set name=foo copy>value of foo</set>"
+get: "<get name=foo>"
+entity: "&foo;"
+date: (get) <get name=date> / (entity) &date;
+fileName: &fileName;
+filePath: &filePath;
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
