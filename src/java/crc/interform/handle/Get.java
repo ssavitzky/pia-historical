@@ -200,7 +200,7 @@ public class Get extends crc.interform.Handler {
   }
 
   void debug (Object o,  String s){
-    //    System.out.println(s);
+      // System.out.println(s);
     crc.pia.Pia.debug(o,s);
   }
 
@@ -212,7 +212,7 @@ public class Get extends crc.interform.Handler {
      return (it.hasAttr("index") ||
 	     it.hasAttr("findall") ||
 	     it.hasAttr("size") ||
-	     it.hasAttr("keys") ||
+	     it.hasAttr("keys") ||	     it.hasAttr("key") ||
 	     it.hasAttr("attr") ||
 	     it.hasAttr("row") || it.hasAttr("rows") ||
 	     it.hasAttr("col") || it.hasAttr("cols"));
@@ -273,12 +273,19 @@ public class Get extends crc.interform.Handler {
 
     // key case
     if(request.hasAttr("key")){
+      debug(this, "getting key "+Util.getString( request, "key", "")+" from "+context.getClass().getName());
+      
       if(context instanceof AttrSGML)
 	return context.attr(Util.getString( request, "key", ""));
       if(context instanceof DescriptionList)
 	try{
-	return new Index(Util.getString( request, "key", "")).lookup(context);
+	SGML result= new Index(Util.getString( request, "key", "")).lookup(context);
+        debug(this, "key lookup result = " + result);
+	return result;
+	
       } catch (Exception e){
+        e.printStackTrace();
+	
 	return null;
       }
       // key has no meeting for other items
