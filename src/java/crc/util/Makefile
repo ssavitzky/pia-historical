@@ -6,7 +6,8 @@ PACKAGE=crc.util
 TOPDIR=../../..
 
 FILES = \
-	Utilities.java 
+	Utilities.java \
+	Timer.java
 
 include $(TOPDIR)/makefiles/file.make
 
