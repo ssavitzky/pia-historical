@@ -103,6 +103,9 @@ public class Actor extends Element {
    *	=== This should really be done with syntax. */
   boolean noContent = false;
 
+  /** True if the actor is purely syntactic, with no handler. */
+  boolean isSyntax = true;
+
   /** Set of elements inside which this tag is not permitted. */
   Table implicitlyEnds = null;
 
@@ -165,7 +168,7 @@ public class Actor extends Element {
 	if (parseContent) ii.setParsing();
       }
       //if (quoting != 0) return;
-      if (handler != null || !isEmpty()) ii.addHandler(this);
+      if (!isSyntax) ii.addHandler(this);
     }
   }
 
@@ -213,8 +216,9 @@ public class Actor extends Element {
    *	<code>it</code>.  If no handler object (Strategy pattern) is
    *	defined, the default is to run the content as a subroutine. */
   public void handle(SGML it, Interp ii) {
-    if (handler != null) { handler.handle(this, it, ii); }
-    else if (! isEmpty()) {
+    if (handler != null) {
+      handler.handle(this, it, ii);
+    } else if (nItems() > 0) {
       ii.pushInto(content());
 
       // === Should save context on input stack, otherwise we lose at the end.
@@ -223,6 +227,8 @@ public class Actor extends Element {
       ii.defvar("content", it.content());
       String ts = attrString("tagset");
       if (ts != null) { ii.useTagset(ts); }
+      if (!passTags) ii.deleteIt();
+    } else {
       if (!passTags) ii.deleteIt();
     }
   }
@@ -351,6 +357,7 @@ public class Actor extends Element {
   /** Initialize the syntax flags. */
   void initSyntax(boolean isSyntax) {
     parseContent = !isSyntax;
+    this.isSyntax = isSyntax;
     passTags = isSyntax;
     if (hasAttr("quoted")) {
       quoteContent = 1;
@@ -378,7 +385,7 @@ public class Actor extends Element {
       }
     }
     
-    // ===
+    // === there may be more to do in initSyntax ==
   }
 
 }
