@@ -738,19 +738,21 @@ public class GenericAgent extends AttrBase implements Agent {
 
     path = new List();
 
-    /* Tails: name/, type/name, type */
+    /* Tails: type/name, name, type 
+     *	 Check type/name first because it's the most specific.  That way,
+     *	 sub-agents don't interfere with top-level agents with the same name.
+     */
 
     String myname = name();
     String mytype = type();
 
     List tails = new List();
-    tails.push(myname + filesep);
-    if (!myname.equals(mytype)) {
-      tails.push(mytype + filesep + myname + filesep);
-      tails.push(mytype + filesep);
-    }
 
-    /* Roots: if_root, ~/.pia/Agents, pia/src/Agents, pia/Agents */
+    if (!myname.equals(mytype)) tails.push(mytype + filesep + myname + filesep);
+    tails.push(myname + filesep);
+    if (!myname.equals(mytype)) tails.push(mytype + filesep);
+
+    /* Roots: if_root, ~/.pia/Agents, pia/Agents, pia/src/Agents */
 
     List roots = dirAttribute( "if_root" );
     if (roots == null) roots = new List();
@@ -773,9 +775,9 @@ public class GenericAgent extends AttrBase implements Agent {
     }	
 
     roots.push(Pia.instance().usrAgents());
+    roots.push(Pia.instance().piaAgents());
     roots.push(Pia.instance().piaRoot() +
 	       filesep + "src" + filesep + "Agents" + filesep);
-    roots.push(Pia.instance().piaAgents());
 
     /* Make sure all the roots end in filesep */
 
@@ -784,10 +786,13 @@ public class GenericAgent extends AttrBase implements Agent {
       if ( !root.endsWith(filesep) ) { roots.at(i, root + filesep); }
     }	
 
-    /* Now combine the roots and tails */
+    /* Now combine the roots and tails
+     *	Do all the roots for each tail so that , for example, 
+     *	usr/name/x will override pia/type/x
+     */
 
-    for (int j = 0; j < roots.nItems(); ++j)
-      for (int i = 0; i < tails.nItems(); ++i) 
+    for (int i = 0; i < tails.nItems(); ++i) 
+      for (int j = 0; j < roots.nItems(); ++j)
 	path.push(roots.at(j).toString() + tails.at(i).toString());
     
     /* Finally, try just the roots */
