@@ -54,7 +54,9 @@ public class LinkedList
 
   public synchronized void insertElementAt(Object obj,
 					   int p){
-    if( p >= size() || p < 0)
+    int size = size();
+
+    if( (p >= size && size != 0) || p < 0)
       throw new NoSuchElementException();
     moveCursorTo( p );
     insert( obj );
@@ -70,7 +72,8 @@ public class LinkedList
 
 
   public synchronized Object setElementAt(Object obj,int p){
-    if( p >= size() || p < 0)
+    int size = size();
+    if( (p >= size && size != 0) || p < 0)
       throw new NoSuchElementException();
     moveCursorTo( p );
 
@@ -94,6 +97,11 @@ public class LinkedList
   }
 
   public void moveCursorTo(int p){
+    if (p == 0){
+      reset();
+      return;
+    }
+
     if( p >= size() || p < 0)
       throw new NoSuchElementException();
     reset();
