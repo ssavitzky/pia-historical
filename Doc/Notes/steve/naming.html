@@ -55,9 +55,11 @@
 <p> Under this scheme, an agent would have both a ``home'' directory and a
     ``root'' directory, and also both a ``home'' and a ``root'' tagset.
 
-<h2>Mapping Agents to Directories</h2>
+<h2>Mapping Agents and URL's to Directories</h2>
 
 <h3>Currently:</h3>
+
+<p> The following URL's refer to an agent's directories:
 
 <dl>
   <dt> <code>/<em>name</em></code> 
@@ -68,9 +70,13 @@
        as <code><em>name</em></code>
   <dt> <code>/~<em>name</em></code>
   <dd> an agent's data directory
+  <dd> an agent's data directory
   <dt> <code>/My</code>
   <dd> DOFS agent referring to the root of the data directories its home
        directory is <code>/DOFS/~</code>
+  <dt> <code>/My/Agents/<em>name</em></code>
+  <dd> user directory containing the overrides for the files in the
+       agent's home directory. 
 </dl>
 
 <h3>Proposed:</h3>
@@ -82,20 +88,25 @@
   <dt> <code>/~<em>name</em></code>
   <dd> an agent's home directory.  Normally
        <code>.../Agents/<em>name</em></code> or 
-       <code>.../Agents/<em>type</em>/<em>name</em></code>, unless redirected
+       <code>.../Agents/<em>type</em>/<em>name</em></code>, unless remapped
        by setting <code>AGENT:home</code> 
   <dt> <code>/~/<em>name</em></code>
   <dd> an agent's data directory
   <dt> <code>/~</code>
   <dd> DOFS agent referring to the root of the data directories; its home
        directory should be <code>/~~</code>
+  <dt> <code>/My/Agents/<em>name</em></code>
+  <dd> user directory containing the overrides for the files in the
+       agent's home directory, <em>unless</em> remapped by setting
+       <code>AGENT:userdir</code>.
 </dl>
 
 <h3>Mounting:</h3>
 
 <p> It would be desirable to ``mount'' agents anywhere in the agent tree.  A
-    ``mounted'' agent would have:
+    ``mounted'' agent would have the following URL's:
 
+<dl>
   <dt> <code>/<em>path</em>/<em>name</em></code> 
   <dd> root directory
   <dt> <code>/<em>path</em>/~<em>name</em></code>
@@ -103,6 +114,10 @@
   <dt> <code>/~/<em>path</em>/<em>name</em></code>
   <dd> data directory
 </dl>
+
+<p> This would all be done by setting the <code>AGENT:path</code>, of course.
+    Note that the location of the agent's actual <em>directories</em> could of
+    course be overridden in the usual way.
 
 <p> Currently, an agent's ``name'' has to be unique.  Under this scheme, it
     only has to be unique with the path prefix.  Another way of looking at
