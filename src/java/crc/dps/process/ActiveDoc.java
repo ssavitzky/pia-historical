@@ -129,7 +129,7 @@ public class ActiveDoc extends TopProcessor {
 
       Transaction req = transaction.requestTran();
       define("REQ", req);
-      if (req.hasQueryString()){
+      if (req != null && req.hasQueryString()){
 	define("FORM", req.getParameters());
       }
     }
