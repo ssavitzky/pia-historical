@@ -1,11 +1,12 @@
+*-xhtml.html
 *.class
 *.foo.*
 *.tss *.tso
 basic.html
-*-xhtml.html
 standalone.html
 standard.html
 tagset.html
 tsdoc.html
+tsstrip.html
 xhtml.html
 xxml.html
