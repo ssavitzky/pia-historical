@@ -13,6 +13,9 @@ import crc.interform.Tokens;
 import crc.interform.Text;
 import crc.interform.Util;
 
+import crc.interform.Run;
+import crc.pia.Agent;
+
 /* Syntax:
  *	<agent-remove name="agent-name">
  * Dscr:
@@ -22,24 +25,9 @@ import crc.interform.Util;
 /** Handler class for &lt;agent-remove&gt tag */
 public class Agent_remove extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-
-    ii.unimplemented(ia);
+    String name = Util.getString(it, "name", null);
+    if (ii.missing(ia, "name", name)) return;
+    Run.getResolver(ii).unRegisterAgent( name );
+    ii.replaceIt(name);
   }
 }
-
-/* ====================================================================
-### <agent-remove>name</agent-remove>
-
-define_actor('agent-remove', 'unsafe' => 1, 'content' => 'name',
-	     'dscr' => "Remove (uninstall) an agent with given NAME." );
-
-sub agent_remove_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $name = get_text($it, 'name');
-    my $agent = IF::Run::agent(); # had better be agency
-
-    $agent->un_install_agent($name) if defined $name;
-    $ii->replace_it($name);
-}
-*/

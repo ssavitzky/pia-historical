@@ -25,34 +25,24 @@ import crc.interform.Run;
 /** Handler class for &lt;agent-set-criterion&gt tag */
 public class Agent_set_criterion extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    String name = Util.getString(it, "name", null);
+    if (ii.missing(ia, "name", name)) return;
+    String aname= Util.getString(it, "agent", Run.getAgentName(ii));
+    String value= Util.getString(it, "value", null);
 
-    ii.unimplemented(ia);
+    /* Convert the value (a string) to something acceptable as a match
+     *	criterion. === setting from a string would be better === */
+
+    Object match = value;
+    if (value == null) match = new Boolean(true);
+    else if (value.equals("0")) match = new Boolean(false);
+    else if (value.equals("1")) match = new Boolean(true);
+
+    Run env = Run.environment(ii);
+    crc.pia.Agent a = env.getAgent(aname);
+
+    a.matchCriterion(name, match);
+
+    ii.deleteIt();
   }
 }
-
-/* ====================================================================
-
-define_actor('agent-set-criterion', 'empty' => 1, 'unsafe' => 1, 
-	     'dscr' => "set match criterion NAME to VALUE (default 1), 
-optionally in AGENT.");
-
-sub agent_set_criterion_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $aname = $it->attr('agent');
-    my $agent;
-
-    if ($aname) {
-	$agent = IF::Run::resolver()->agent($aname);
-    } else {
-	$agent = IF::Run::agent();
-	$aname = $agent->name;
-    }
-
-    my $name = $it->attr('name');
-    my $value = $it->attr('value');
-    $value = 1 unless defined $value;
-    $agent->match_criterion($name, $value);
-    $ii->delete_it();
-}
-*/
