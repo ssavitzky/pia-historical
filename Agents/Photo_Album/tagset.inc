@@ -142,9 +142,10 @@ match="\.jpg$"></set>
  </actor>
 
  <actor tag=create-photo-table empty desc=" create a table element containing the
- thumbnail's for these photos">
+ thumbnail's for these photos -- along with CONTROLS if specified">
 <set name=myphotos local><get name=photos element></set>
 <set name=mycols local><get name=cols element></set>
+  <set name=mycontrols><get name=controls element></set>
 <if><get name=mycols> <else><set name=mycols local>6</set></else> </if>
  <set name=psize local><get index=myphotos.photo size></set>
 
@@ -156,16 +157,40 @@ match="\.jpg$"></set>
  <repeat start=1 stop=&mycols; entity=c>
  <set name=myindex local><sum digits=0><product> <difference> &r; 1
  </difference> &mycols; </product> &c; </sum></set>
- <td>
+ 
  <set name=myphoto local><get index=myphotos.photo-&myindex;></set>
-  <if> <get name=myphoto> <then><show-photo photo=&myphoto;
+ <td> <if> <get name=myphoto> <then><show-photo photo=&myphoto;
        thumbnail=true></then> <else><!-- No photo: myphotos.photo-&myindex; --> </else> </if>
 </td>
+ <if> <get name=mycontrols> <then>
+ <set name=pindex><get index=myphoto.photoindex.Text></set>
+ <td>
+<img src=r.gif alt=R width=16 height=16> <input type="checkbox" name=rotate&pindex; value=270><br>
+<img src=rcc.gif alt=r width=16 height=16> <input type="checkbox" name=rotate&pindex; value=90><br>
+<!-- img src=del.gif alt=X no proc yet--> <!-- input type="checkbox" name=delete&pindex;
+value=delete --><br>
+ </td>
+ </then> <else>  </else> </if>
 </repeat>
 </tr>
 </repeat>
 </table>
  </actor>
+
+ <actor tag=edit-photo-process empty desc="Apply designated operations to photo">
+ <set name=myphoto local> <get name=photo element></set>
+ <set name=pindex local><get index=myphoto.photoindex.Text></set>
+ <if><get form name=rotate&pindex;><then>
+ <set local name=deg><get form name=rotate&pindex;></set>
+ <rotate-photo photo=&myphoto; degrees=&deg;>
+ </then>  </if>
+  <if><get form name=caption&pindex;><then>
+ <set index=photo.photocaption insert=0 replace><get name=caption&pindex;
+ form></set>
+ </then></if>
+</actor>
+
+
 
  <actor tag=list-rolls empty desc="List of all photo directories">
  <read file=".catalog">
@@ -191,6 +216,8 @@ insert=-1><lastindex>0</lastindex></set></else> </if>
 <photourl base=&base;>&myurl;</photourl>
 <if> <get name=mythumb> <then>
  <set local name=thumbsrc><get index=mythumb attr=src></set>
+  <set local name=ext><if><test match="\.jpg$">&thumbsrc;</test> <then>jpg</then>
+  <else>gif</else> </if></set>
  <set local name=readstatus><read href=&thumbsrc; base=&base; into=&directory;/&index;.small.&ext;></set>
 <photothumbnail>&index;.small.&ext;</photothumbnail>
  </then> </if>
@@ -201,4 +228,73 @@ insert=-1><lastindex>0</lastindex></set></else> </if>
 
 <!-- needed a way to convert relative URL's to base URL's -->
  <actor tag=full-url empty desc="fully qualifies a URL"><set name=mybase local><get name=base element></set><set name=myurl><get name=url element></set><if> <test match="^http://">&myurl;</test> <then>&myurl;</then> <else><if>   <test match="^/">&myurl;</test>    <then><set local name=leftover><subst   match="^http://[^/]*/" result="">&mybase;</subst></set><subst match="/&leftover;" result="">&mybase;</subst>&myurl;</then>   <else><subst match="[^/]* " result="">&mybase; </subst>&myurl;</else></if></else> </if></actor>
+
+<actor tag=rotate-photo empty desc=" rotates a PHOTO by DEGREES, 270 is clockwise,
+90 counterclockwise -- other angles won't work right">
+ <set local name=myphoto><get name=photo element></set>
+ <set local name=mydeg><get name=degrees element></set>
+ <set local name=directory>&usrDIR;/&agentName;/<get name=photo attr=directory></set>
+ <set local name=file><get name=photo attr=file></set>
+ <set local name=thumbnail><get index=photo.photothumbnail.Text></set>
+ <set local name=newfile>r.&file;</set>
+<set name=myphoto attr=file><get name=newfile></set>
+
+<if><test zero><difference><get name=mydeg> 90</difference> </test> <test
+zero><difference><get name=mydeg> 270</difference> </test>
+ <then>
+ <os-command-output>djpeg &directory;/&file; | pnmflip -r&mydeg; | cjpeg -quality 85 > &directory;/&newfile; </os-command-output>
+ </then>
+ <else>
+ <os-command-output>djpeg &directory;/&file;.orig | pnmrotate &mydeg; | cjpeg -quality 85 > &directory;/&newfile; </os-command-output>
+ </else></if>
+
+<if> <get name=thumbnail> <then>
+ <set local name=newthumb>r.&thumbnail;</set>
+ <set index=photo.photothumbnail insert=0 replace>&newthumb;</set>
+<if> <test match="\.jpg$"><get name=thumbnail>  </test><then>
+<os-command>djpeg &directory;/&thumbnail; | pnmflip -r&mydeg; | cjpeg -quality 85 > &directory;/&newthumb; </os-command>
+ </then><else>
+ <os-command>giftopnm &directory;/&thumbnail;| pnmflip -r&mydeg; | ppmquant 256 | ppmtogif > &directory;/&newthumb; </os-command>
+ </else></if>
+ </then>  </if>
+
+</actor>
+
+ <actor tag=generic-edit-form desc="Puts to edit fields for each tag in Content
+ except EXCEPTIONS">
+ <set  local name=object>&content;</set>
+ <set  local name=exceptions><get name=exceptions element></set>
+ <repeat list=&object; entity=foo>
+ <set name=mytag local><get name=foo attr=tag></set>
+ <if> <get name=mytag> <then>
+ <if> <test match="&mytag;"> <get name=exceptions> </test> <else>
+ <if> <get index=foo.Text> <then><br><get name=mytag> <input name="&mytag;" value=&foo.Text;></then> <else><br><get name=mytag> <input name="&mytag;"></else> </if>
+
+
+ </else> </if>
+ </then> </if>
+
+ </repeat>
+
+</actor>
+
+<actor tag=generic-edit-form-process empty desc="updates edit fields for each tag in Content
+ except EXCEPTIONS">
+ <set  local name=object><get element name=object></set>
+ <set  local name=exceptions><get name=exceptions element></set>
+ <repeat list=&object; entity=foo>
+ <set name=mytag local><get name=foo attr=tag></set>
+ <if> <get name=mytag> <then>
+ <if> <test match="&mytag;"> <get name=exceptions> </test> <else>
+    <if><get name=foo><then>
+      <set index=object.&mytag; insert=0 replace><get name=&mytag; form></set>
+    </then>
+    <else>
+     <set index=object.&mytag; insert=0><get name=&mytag; form></set>
+    </else></if>
+ </else> </if>
+ </then> </if>
+ </repeat>
+</actor>
+
 <!-- $Id$ -->

@@ -11,7 +11,7 @@
 <set entity name=title><get index=caps.photostitle></set>
 <read interform file="heading.inc" process>
 <tagset-load name=Photo-agent-actors>
-<read process quiet interform file=tagset.inc>
+<!-- read process quiet interform file=tagset.inc  -->
 <set name=i>1</set>
  <set name=photos><get name=caps></set>
  <if> <get name=photos> <then>
@@ -35,7 +35,11 @@
 
 <show-photos cols=6 caption=&newphotocap;>
 <write file=captioned/&capfile;><get name=newphotocap></write>
-<br><a href=show_slide.if?capfile=captioned/&capfile;> Show Slides</a><br>
+<br><a href=show_slide.if?capfile=captioned/&capfile;> Show Slides</a> || <a
+href=edit_roll.if?capfile=captioned/&capfile;> Edit Photos</a>
+|| <a href=show_roll.if?capfile=&capfile;> Show all <get
+index=photos.photos.photo size> on roll</a> || <a
+href=ftp://&piaHOST;/&photos.photosdirectory.Text;.tar.gz> download via FTP</a>  <br>
 </then> <else>
 <h2>No photos/captions found </h2>
 
