@@ -141,7 +141,7 @@ sub retrieve_directory {
     # Make directory listing
     for (@files) {
 	$_ .= "/" if -d "$path/$_";
-	if ($_ =~ /HEADER/) { $head = suck_body("$path/$_"); }
+	if ($_ =~ /^HEADER.*[^~]$/) { $head = suck_body("$path/$_"); }
 	push @urls, qq{<LI> <a href="$_">$_</a>} unless 
 	    ! $all && $self->ignore_file($_, "$path$_");
     }
