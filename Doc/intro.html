@@ -78,7 +78,7 @@ An Agency operates on behalf of either an individual user (a Personal
 Information Agency), a group of users (a Public Interaction Agency), or even a
 piece of hardware (a Peripheral Interface Agency).  PIA can also stand for
 ``Platform for Intelligent Agents'' or ``Platform for Information
-Appliances.''<p> 
+Appliances.''  The latter is the official name of the PIA group. <p> 
 
 Outside the Agency, requests and responses are transmitted using HTTP, a
 standard Internet protocol which is completely operating-system and
@@ -97,28 +97,58 @@ in turn, is simply a collection of documents.  Some of these documents, called
 
 <h2>What Does it Do?</h2>
 
+<p>
+An Agency can operate as either a web server (handing back documents in
+response to requests from a client such as a browser), a client (requesting
+documents from other servers), or a proxy (passing requests and responses
+along to the appropriate servers and clients, and possibly operating on the
+documents in the process).
 
-<h2>Details</h2>
+<p>
+This versatility makes the Agency useful for many things:
 
-<h3>How Does it Work?</h3>
+<ul>
+  <li> It can ``web-enable'' a standard peripheral, such as a printer.  Our
+       web-printer demonstration can operate as a proxy, serving page previews
+       in response to requests.
 
+  <li> It can be the basis for a document-processing ``thin server.''  Our
+       web cache, photo album and photo kiosk are examples of this.
+
+  <li> It can operate as your <em>personal</em> proxy, keeping track of your
+       browsing history, performing filtering operations, and annotating
+       documents.  In addition, it can be a personal web server, making
+       selected directories on your desktop machine available to others.
+</ul>
+
+
+<h2>How Does it Work?</h2>
+
+<p>
 Each transaction has a set of named <dfn>features</dfn> with corresponding
 values (mostly boolean) which are computed when needed.  Each agent has a set
 of <dfn>criteria</dfn> that are matched against a transaction's features;
 agents that match a transaction are allowed to ``act on'' it, i.e. to perform
-whatever operation the agent is designed to do.<p>
+whatever operation the agent is designed to do.
 
+<p>
 A transaction also has a queue of objects (mainly agents and transactions)
 called ``<dfn>satisfiers</dfn>''.  After every agent has operated on a
 transaction, the Agency will attempt to ``satisfy'' the transaction by
 invoking the <code>handle</code> method of each object in the queue.  If none
 of them return <code>true</code>, the Agency will perform a default action,
 either generating an error transaction for an unsatisfied request or
-forwarding a response to its destination.<p>
+forwarding a response to its destination.
 
+<p>
 Except for a small number of built-in agents, everything that an agent does is
 done by ``running'' an InterForm document (for example,
-<code>act_on.if</code>,  <code>handle.if</code>, or <code>home.if</code>).  <p>
+<code>home.xh</code>).  Set-up is done by means of a document called
+``<code>initialize.xh</code>''.
+
+<p>
+Further information can be found in the
+<em><a href="Manuals/Internal">Internals Manual</a></em>.
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
