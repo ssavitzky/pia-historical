@@ -594,9 +594,9 @@ sub equal_handle {
     my $prep = prep_item_sub($it);
 
     if ($it->attr('numeric')) {
-	$compare = \sub {$a == $b};
+	$compare = sub{$a == $b};
     } else {
-	$compare = \sub{$a eq $b};
+	$compare = sub{$a eq $b};
     }
 
     foreach $b (@$list) {
@@ -626,11 +626,11 @@ sub sorted_handle {
     my $compare;
 
     if ($it->attr('numeric')) {
-	$compare = $reverse? \sub {$a >= $b} : \sub {$a <= $b};
+	$compare = $reverse? sub {$a >= $b} : sub {$a <= $b};
     } elsif ($it->attr('text')) {
-	$compare = $reverse? \sub {$a ge $b} : \sub {$a le $b};
+	$compare = $reverse? sub {$a ge $b} : sub {$a le $b};
     } else {
-	$compare = $reverse? \sub {$a ge $b} : \sub {$a le $b};
+	$compare = $reverse? sub {$a ge $b} : sub {$a le $b};
     }
 
     foreach $b (@$list) {
