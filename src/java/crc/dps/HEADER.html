@@ -1,0 +1,44 @@
+<h1>InterForm Interpretor and Actors</h1>
+
+<a href="../">[..]</a>
+<a href="#files">[files]</a><p>
+
+This directory contains the all-new, all-singing, all-dancing,
+resolver-and-actor-based InterForm Interpretor.  <p>
+
+Also see <a href="../../../../perl/IF/">the PERL version</a>.<p>
+
+<h2>Annotated Contents</h2>
+
+<dl>
+  <dt> <a href="handle/">handle/</a>
+  <dd> The Handle subclasses that implement actions (operations) attached to
+       actors. 
+  <dt> <a href="test/">test/</a>
+  <dd> test cases
+       <p>
+
+  <dt> <a href="Actor.java">Actor.java</a>
+       (from <a href="../../../../perl/IF/IA.pm">IA.pm</a>)
+  <dd> InterForm Actors, which are similar to Agents except that they
+       operate on SGML syntactic elements instead of on HTTP transactions.
+  <dt> <a href="Input.java">Input.java</a>
+       (from <a href="../../../../perl/IF/II.pm">II.pm</a>)
+  <dd> the InterForm Interpretor's input stack frame.
+  <dt> <a href="Interp.java">Interp.java</a>
+       (from <a href="../../../../perl/IF/II.pm">II.pm</a>)
+  <dd> the InterForm Interpretor.  It combines an HTML parser with a
+       simplified resolver for applying ``Interform Agents'' to elements. 
+  <dt> <a href="Parser.java">Parser.java</a>
+       (from <a href="../../../../perl/IF/Parser.pm">Parser.pm</a>)
+  <dd> Actually just a scanner--it takes a file or string and produces a
+       stream of Tokens.
+  <dt> <a href="Tagset.java">Tagset.java</a>
+       (from <a href="../../../../perl/IF/Tagset.pm">Tagset.pm</a>)
+  <dd> A (usually named) collection of Actors.
+</dl>
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b>
+<a name="files"><hr></a>
