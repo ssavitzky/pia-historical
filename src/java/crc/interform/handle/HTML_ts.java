@@ -32,7 +32,7 @@ public class HTML_ts extends Tagset {
   static String dataTags = "dl table";
   
 
-  static String phraseTags = "cite code em kbd samp strong var b i u tt" +
+  static String phraseTags = "cite code em kbd samp strong var b i u tt " +
   "a img br hr wbr nobr center blink small big font basefont table";
   
   static String listTags 	= "ul ol dir menu";
