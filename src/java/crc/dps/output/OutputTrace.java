@@ -29,11 +29,11 @@ public class OutputTrace extends Proxy {
 
   public void setLog(PrintStream s) { log = s; }
 
-  public void debug(String message) {
+  public void trace(String message) {
     log.print(message);
   }
 
-  public void debug(String message, int indent) {
+  public void trace(String message, int indent) {
     String s = "=>";
     for (int i = 0; i < indent; ++i) s += " ";
     s += message;
@@ -48,27 +48,27 @@ public class OutputTrace extends Proxy {
   ************************************************************************/
 
   public void putNode(Node aNode) { 
-    debug("put " + logNode(aNode) + NL, depth);
+    trace("put " + logNode(aNode) + NL, depth);
     if (target != null) target.putNode(aNode);
   }
   public void startNode(Node aNode) { 
-    debug("start " + logNode(aNode) + NL, depth);
+    trace("start " + logNode(aNode) + NL, depth);
     depth++;
     if (target != null) target.startNode(aNode);
   }
   public boolean endNode() { 
     depth --;
-    debug("end " + NL, depth);
+    trace("end " + NL, depth);
     return (target != null)? target.endNode() : depth >= 0;;
   }
   public void startElement(Element anElement) {
-    debug("start " + logNode(anElement) + NL, depth);
+    trace("start " + logNode(anElement) + NL, depth);
     depth++;
     if (target != null) target.startElement(anElement);
   }
   public boolean endElement(boolean optional) {
     depth --;
-    debug("end(" + (optional? "true" : "false") +")" + NL, depth);
+    trace("end(" + (optional? "true" : "false") +")" + NL, depth);
     return (target != null)? target.endElement(optional) : depth >= 0;
   }
 
