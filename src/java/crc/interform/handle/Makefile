@@ -112,8 +112,6 @@ TSDOCDIR = $(PIADIR)/Doc/Manuals/InterForm/Tagset
 
 ### Reporting.
 
-all:: report
-
 ### Count unimplemented and total actor handles.  
 ###	This finds only actors that call "Interp.unimplemented", not
 ###	individual features that call "Interp.error" directly.
