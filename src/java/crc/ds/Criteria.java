@@ -14,7 +14,7 @@ public class Criteria extends List {
   public boolean match(Features features, Object parent) {
     for (int i = 0; i < nItems(); ++i) {
       Criterion c = (Criterion)at(i);
-      if (! c.match(features.feature(c.name(), parent))) return false;
+      if (! c.match(features, parent)) return false;
     }
     return true;
   }
