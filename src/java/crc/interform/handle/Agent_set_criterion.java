@@ -19,7 +19,7 @@ import crc.sgml.Text;
  *	<agent-set-criterion name="name" [value="value"] 
  *			     [agent="agent-name"]>
  * Dscr:
- *	set match criterion NAME to VALUE (default 1), 
+ *	set match criterion NAME to VALUE (default true), 
  *	optionally in AGENT.
  */
 
@@ -31,18 +31,17 @@ public class Agent_set_criterion extends crc.interform.Handler {
     String aname= Util.getString(it, "agent", Run.getAgentName(ii));
     String value= Util.getString(it, "value", null);
 
-    /* Convert the value (a string) to something acceptable as a match
-     *	criterion. === setting from a string would be better === */
-
-    Object match = value;
-    if (value == null) match = new Boolean(true);
-    else if (value.equals("0")) match = new Boolean(false);
-    else if (value.equals("1")) match = new Boolean(true);
-
     Run env = Run.environment(ii);
     crc.pia.Agent a = env.getAgent(aname);
 
-    a.matchCriterion(name, match);
+    /* Convert the value (a string) to something acceptable as a match
+     *	criterion. === setting from a string would be better === */
+
+    if (value == null) a.matchCriterion(name, true);
+    else if (value.equals("")) a.matchCriterion(name, false);
+    else if (value.equals("0")) a.matchCriterion(name, false);
+    else if (value.equals("1")) a.matchCriterion(name, true);
+    else a.matchCriterion(name, value);
 
     ii.deleteIt();
   }
