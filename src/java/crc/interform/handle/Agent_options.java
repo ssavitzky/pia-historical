@@ -35,7 +35,9 @@ public class Agent_options extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "agent", Util.getString(it, "name", null));
+    String name = Util.getString(it, "agent",
+				 Util.getString(it, "name",
+						Run.getAgentName(ii)));
     if (ii.missing(ia, "name or agent attribute", name)) return;
 
     Run env = Run.environment(ii);
