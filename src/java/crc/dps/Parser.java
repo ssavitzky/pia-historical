@@ -6,6 +6,8 @@ package crc.dps;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
+import java.io.Reader;
+
 /**
  * The interface for an Input that converts a character stream (Reader) into 
  *	a Token stream.  
@@ -28,6 +30,16 @@ public interface Parser extends Input {
   /** Returns the Processor for which this Parser is providing input.
    */
   public Processor getProcessor();
+
+  /************************************************************************
+  ** Reader Access:
+  ************************************************************************/
+
+  /** Returns the Reader from which this Parser is obtaining input. */
+  public Reader getReader();
+
+  /** Sets the Reader from which this Parser will obtain input. */
+  public void setReader(Reader aReader);
 
   /************************************************************************
   ** Access to Bindings:

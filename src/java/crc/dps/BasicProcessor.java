@@ -103,11 +103,13 @@ public class BasicProcessor extends ParseStack implements Processor {
   public InputStack getInputStack() { return inputStack; }
 
   /** Push an Input onto the input stack. */
-  public void pushInput(Input anInput) { inputStack.pushInput(anInput); }
+  public void pushInput(Input anInput) { 
+    inputStack = inputStack.pushInput(anInput);
+  }
 
   /** Push an InputStackFrame (specialized Input) onto the stack. */
   public void pushFrame(InputStackFrame aFrame) {
-    inputStack.pushInput(aFrame);
+    inputStack = inputStack.pushInput(aFrame);
   }
 
   /** Push a Token onto the input stack.
@@ -115,20 +117,25 @@ public class BasicProcessor extends ParseStack implements Processor {
    *	mainly for increased efficiency.
    */
   public void pushInput(Token aToken) {
-				// ===
+    inputStack = new crc.dps.input.SingleToken(aToken, inputStack);
   }
 
   /** Push a Token onto the input stack to be expanded as a start tag,
-   *	content, and end tag.
+   *	content, and end tag. 
    */
   public void pushInto(Token aToken){
-				// ===
+    inputStack = new crc.dps.input.ExpandToken(aToken, inputStack);
   }
 
   /** Push a Node onto the input stack.
    *	This is a convenience function, included in the Processor
    *	interface mainly for increased efficiency.  The Node is
-   *	converted to a Token using the Processor's current Tagset.
+   *	converted to a Token using the Processor's current Tagset. <p>
+   *
+   *	Converting Node's to Token's requires a Tagset, so the Input
+   *	we use will actually be an implementation of Parser.  They will
+   *	probably still be in <code>crc.dps.input</code>, though, for
+   *	consistancy.
    */
   public void pushInput(Node aNode){
 				// ===

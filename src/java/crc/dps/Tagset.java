@@ -15,7 +15,7 @@ import java.util.Enumeration;
  *	semantic information required for parsing, processing, and
  *	presenting a Node and its start tag and end tag Token.  A
  *	Tagset can be regarded as either a lookup table for syntactic
- *	information, or as a a Handler factory. <p>
+ *	information, or as a Handler factory. <p>
  *
  *	Note that this interface says little about the implementation.
  *	It is expected, however, that any practical implementation of
@@ -24,6 +24,8 @@ import java.util.Enumeration;
  *
  *	(We may eventually make Tagset an extension of Node in order
  *	to enforce this.) <p>
+ *
+ * === 	need encoders/decoders for character entities, URLs, etc.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com

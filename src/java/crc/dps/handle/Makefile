@@ -5,6 +5,9 @@
 PACKAGE=crc.dps.handle
 TOPDIR=../../..
 
+### These Handler implementations are purely syntactic.
+HANDLERS = \
+
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
 
@@ -25,7 +28,7 @@ TAGSETS = \
 	Standard_ts.java
 
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
-FILES = $(ACTORS) $(TAGSETS)
+FILES = $(HANDLERS) $(ACTORS) # $(TAGSETS)
 
 TAGSET_DOCS =  \
 	Basic-tagset.html  \

@@ -6,6 +6,8 @@ package crc.dps;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
+import java.io.Reader;
+
 /**
  * An abstract implementation of the Parser interface. 
  *
@@ -31,6 +33,15 @@ public abstract class AbstractParser extends AbstractInputFrame
   public Processor getProcessor() { return processor; }
 
   /************************************************************************
+  ** Reader Access:
+  ************************************************************************/
+
+  protected Reader in = null;
+
+  public Reader getReader() { return in; }
+  public void setReader(Reader aReader) { in = aReader; }
+
+  /************************************************************************
   ** Access to Bindings:
   ************************************************************************/
 
@@ -47,7 +58,18 @@ public abstract class AbstractParser extends AbstractInputFrame
   public EntityTable getEntities() { return entities; }
 
   /************************************************************************
-  ** Utilities:
+  ** Scanning Utilities:
   ************************************************************************/
 
+
+
+  /************************************************************************
+  ** Parsing Utilities:
+  ************************************************************************/
+
+
+
+  /************************************************************************
+  ** Construction:
+  ************************************************************************/
 }

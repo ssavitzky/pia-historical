@@ -8,7 +8,8 @@ TOPDIR=../..
 PACKAGES = \
 	handle \
 	input \
-	output
+	output \
+	parse
 
 FILES = \
 	AbstractHandler.java \

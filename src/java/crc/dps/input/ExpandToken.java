@@ -5,9 +5,11 @@
 package crc.dps.input;
 import crc.dps.AbstractInputFrame;
 import crc.dps.Token;
+import crc.dps.BasicToken;
 import crc.dps.Input;
 import crc.dps.InputStack;
 
+import crc.dom.Node;
 import crc.dom.NodeType;
 
 import java.util.Enumeration;
@@ -43,7 +45,8 @@ public class ExpandToken extends AbstractInputFrame {
   
   protected Token theToken;
   protected int state;
-  protected Token currentChild = null;
+  protected int item = 0;
+  protected Node currentChild = null;
 
   /************************************************************************
   ** Input operations:
@@ -56,9 +59,14 @@ public class ExpandToken extends AbstractInputFrame {
 	return theToken;
       }
       state++;
+      currentChild = theToken.getFirstChild();
+      if (currentChild == null) state++;
       return theToken.startToken();
     } else if (state == 0) {
-      return theToken.itemAt(item++);
+      Node temp = currentChild;
+      currentChild = currentChild.getNextSibling();
+      if (currentChild == null) state++;
+      return BasicToken.createToken(temp, true);
     } else if (state == 1) {
       state++;
       return theToken.endToken();

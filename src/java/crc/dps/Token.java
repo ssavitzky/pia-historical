@@ -4,6 +4,7 @@
 
 package crc.dps;
 import crc.dom.Node;
+import crc.dom.DOMFactory;
 import crc.dom.Element;
 import crc.dom.ElementDefinition;
 import crc.dom.Text;
@@ -33,9 +34,9 @@ import java.util.NoSuchElementException;
  *	that are encountered in the body of a Document (e.g. Text,
  *	Element, and so on), making it possible to operate on a
  *	sequence of Tokens without incurring the overhead of
- *	type-casting and exception handling.  <p>
- *
- * ===	May want extensions: StartToken, EndToken, EmptyToken, ...
+ *	type-casting and exception handling.  Unfortunately, it is
+ *	not possible to specify Comment and PI in the <code>extends</code>
+ *	list, because Java can't handle the ambiguity. <p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -43,14 +44,14 @@ import java.util.NoSuchElementException;
  * @see crc.dom.Node
  */
 
-public interface Token extends Element, Text, Comment, PI {
+public interface Token extends Element, Text {
 
   /************************************************************************
   ** Semantics:
   ************************************************************************/
 
   /** Returns the corresponding original Node, if any. */
-  public Node originalNode();
+  public Node getOriginalNode();
 
   /** Allows the nodeType to be set.  Use with caution. */
   public void setNodeType(int newType);
@@ -75,6 +76,11 @@ public interface Token extends Element, Text, Comment, PI {
   /************************************************************************
   ** Syntax: convenience flags:
   ************************************************************************/
+
+  /** Returns a negative number is <code>isStartTag</code>, a positive
+   *	number if <code>isEndTag</code>, and zero if <code>isNode</code>.
+   */
+  public int getSyntax();
 
   /** Returns true if the Token corresponds to a start tag: the beginning
    *	of an Element (which will be terminated with a corresponding end tag).
@@ -130,5 +136,54 @@ public interface Token extends Element, Text, Comment, PI {
 
   /** Sets the internal flag corresponding to implicitEnd. */
   public void setImplicitEnd(boolean flag);
+
+  /************************************************************************
+  ** Presentation:
+  ************************************************************************/
+
+  /** Convert the Token to a String using the standard SGML/XML defaults. 
+   *	This may be called by the Handler's <code>convertToString</code>
+   *	method, which in turn is called by the Token's <code>toString</code>.
+   *	<p>
+   *
+   *	Note that the <code>syntax</code> code has a different meaning
+   *	than it does in the Token itself: <em>in all cases</em> a Token
+   *	is converted to a String with:
+   *	<pre>basicToString(-1) + basicToString(0) + basicToString(1)</pre>
+   *
+   * === Not clear where entity, url encoding and decoding is done. ===
+   */
+  public String basicToString(int syntax);
+
+  /************************************************************************
+  ** Copying:
+  ************************************************************************/
+
+  /** Return a shallow copy of this Token.  Attributes are copied, but 
+   *	children are not. 
+   */
+  public Token shallowCopy();
+
+  /** Return a new start-tag Token for this Token.
+   *	If the Token is already a start tag, it is simply returned. 
+   *	If the Token is not an element, null is returned.
+   */
+  public Token startToken();
+
+  /** Return a new end-tag Token for this Token.
+   *	If the Token is already an end tag, it is simply returned. 
+   *	If the Token is not an element, null is returned.
+   */
+  public Token endToken();
+
+  /** Return new node corresponding to this Token, made using the given 
+   *	DOMFactory.  Children <em>are not</em> copied.
+   */
+  public Node createNode(DOMFactory f);
+
+  /** Return new node corresponding to this Token, made using the given 
+   *	DOMFactory.  Children <em>are</em> copied recursively.
+   */
+  public Node createTree(DOMFactory f);
 
 }

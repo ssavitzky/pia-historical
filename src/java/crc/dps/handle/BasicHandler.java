@@ -1,42 +1,39 @@
-////// Handler.java: Node Handler interface
+////// BasicHandler.java: Node Handler basic implementation
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
-package crc.dps;
+package crc.dps.handle;
 import crc.dom.Node;
+import crc.dom.BasicElement;
 import crc.dom.NodeList;
+import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
+import crc.dps.AbstractHandler;
+
 /**
- * The interface for a Node Handler. 
+ * Basic implementation for a Node Handler. <p>
  *
- *	A Node's Handler provides all of the necessary syntactic and
- *	semantic information required for parsing, processing, and
- *	presenting a Node and its start tag and end tag Token.  (A
- *	Handler does <em>not</em> include the additional traversal
- *	information that distinguishes a Token: an Input will
- *	associate the same Handler with a Node's start tag and end
- *	tag). <p>
- *
- *	Note that this interface says little about the implementation.
- *	It is expected, however, that any practical implementation of
- *	Handler will also be a Node, so that sets of Handlers (also
- *	called <em>tagsets</em>) can be read and stored as documents
- *	or (better) DTD's.   <p>
- *
- *	(We may eventually make Handler an extension of Node in order
- *	to enforce this.) <p>
+ *	This is a Handler that does only the minimum, and nothing more.
+ *	It is capable of representing any kind of purely passive node,
+ *	but is not particularly efficient because it contains no specialized
+ *	information about the node itself.  It is, however, extensible,
+ *	making it a good base class for more specialized versions. 
+ *	<p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
+ * @see crc.dps.handle.GenericHandler
  * @see crc.dps.Processor
+ * @see crc.dps.Tagset
+ * @see crc.dps.BasicTagset
  * @see crc.dps.Token
  * @see crc.dps.Input 
  * @see crc.dom.Node
  */
 
-public interface Handler {
+public class BasicHandler extends AbstractHandler {
 
   /************************************************************************
   ** Semantic Operations:
@@ -52,7 +49,9 @@ public interface Handler {
    * @param p the Processor operating on this Token.
    * @return the original Token, a replacement, or  <code>null</code>.
    */
-  public Token startAction(Token t, Processor p);
+  public Token startAction(Token t, Processor p) {
+    return t;
+  }
 
   /** Performs actions associated with an Element's end tag Token.
    *	Normally returns the original Token, but it may replace it
@@ -63,7 +62,9 @@ public interface Handler {
    * @param t the Token for which actions are being performed.
    * @param p the Processor operating on this Token.
    * @return the original Token, a replacement, or <code>null</code>.  */
-  public Token endAction(Token t, Processor p);
+  public Token endAction(Token t, Processor p) {
+    return t;
+  }
 
   /** Performs actions associated with an complete Node's Token.
    *	Normally returns the original Token, but it may replace it
@@ -76,7 +77,9 @@ public interface Handler {
    * @param t the Token for which actions are being performed.
    * @param p the Processor operating on this Token.
    * @return the original Token, a replacement, or <code>null</code>.  */
-  public Token nodeAction(Token t, Processor p);
+  public Token nodeAction(Token t, Processor p) {
+    return t;
+  }
 
   /** Returns a new, clean Node corresponding to the given Token.
    *	The new Node is suitable for incorporating into a new
@@ -87,46 +90,42 @@ public interface Handler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public Node createNode(Token t);
+  public abstract Node createNode(Token t) {
+    // Since we don't know what factory to use, just clone the node.
+    return t.shallowCopy();
+  }
 
   /** Returns a new, clean Node corresponding to the given Token,
    *	created using the given DOMFactory. <p>
    */
-  public Node createNode(Token t, DOMFactory f);
-
+  public abstract Node createNode(Token t, DOMFactory f) {
+    return t.createNode(f);
+  }
 
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
 
+  /** Converts the Token to a String according to the given syntax. 
+   */
+  public String convertToString(Token t, int syntax) {
+    return t.basicToString(syntax);
+  }
+
   /** Converts the Token to a String. 
-   *	Note that a Token would be quite capable of doing this using the 
+   *	Note that a Token is quite capable of doing this using the 
    *	standard defaults; passing it off to the Handler means that
    *	we can give the same Document different physical representations
-   *	if necessary.<p>
-   *
-   *	<b>Implementation Note:</b> It is important that the Handler's
-   *	<code>convertToString</code> method <em>not</em> call the
-   *	Token's <code>toString</code>, method, since that will
-   *	normally call the Handler.  Use <code>basicToString</code>
-   *	instead. <p>
-   *
-   * === Not clear where entity, url encoding and decoding is done. ===
+   *	if necessary.
    */
-  public String convertToString(Token t);
-
-  /** Converts the Token to a String according to the given syntax. <p>
-   *
-   *	Note that the <code>syntax</code> code has a different meaning
-   *	than it does in the Token itself: <em>in all cases</em> a Node
-   *	is converted to a String with:
-   *	<pre>
-   *	     convertToString(t, -1) + 
-   *	     convertToString(t,  0) +
-   *	     convertToString(t,  1)
-   *	</pre>
-   */
-  public String convertToString(Token t, int syntax);
+  public String convertToString(Token t) {
+    if (t.getSyntax() == 0) {
+      return convertToString(t, -1) +
+	convertToString(t, 0) + convertToString(t, 1); 
+    } else {
+      return convertToString(t, t.getSyntax());
+    }
+  }
 
   /************************************************************************
   ** Documentation Operations:

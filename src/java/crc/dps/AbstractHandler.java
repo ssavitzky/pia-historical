@@ -6,6 +6,8 @@ package crc.dps;
 import crc.dom.Node;
 import crc.dom.BasicElement;
 import crc.dom.NodeList;
+import crc.dom.NodeType;
+import crc.dom.DOMFactory;
 
 /**
  * An abstract base class for a Node Handler. <p>
@@ -84,12 +86,27 @@ public abstract class AbstractHandler extends BasicElement implements Handler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public abstract Node createNode(Token t, Processor p);
+  public abstract Node createNode(Token t);
+
+  /** Returns a new, clean Node corresponding to the given Token,
+   *	created using the given DOMFactory. <p>
+   */
+  public abstract Node createNode(Token t, DOMFactory f);
 
 
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
+
+  /** Converts the Token to a String. 
+   *	Note that a Token is quite capable of doing this using the 
+   *	standard defaults; passing it off to the Handler means that
+   *	we can give the same Document different physical representations
+   *	if necessary.
+   */
+  public String convertToString(Token t) {
+    return t.basicToString();
+  }
 
   /************************************************************************
   ** Documentation Operations:
