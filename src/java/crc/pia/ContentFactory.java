@@ -45,11 +45,18 @@ public class ContentFactory
     
   }
 
+  /**
+   * usage
+   */
+  private static void usage(){
+    System.out.println("Testing the creation of a FormContent using requestbody.txt");
+    System.out.println("java crc.pia.ContentFactory requestbody.txt");
+  }
 
   /**
-  * For testing.
-  * 
-  */ 
+   * For testing.
+   * 
+   */ 
   public static void main(String[] args){
     if( args.length == 0 )
       System.out.println("Need file content filename.");
@@ -64,6 +71,7 @@ public class ContentFactory
     
       String ztype = "application/x-www-form-urlencoded";
       Content c = cf.createContent(ztype , in );
+      System.out.println( c.toString() );
     }catch(Exception e ){
       System.out.println( e.toString() );
     }
