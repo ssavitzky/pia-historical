@@ -10,6 +10,8 @@ TOPDIR=..
 ###	make descends into each one recursively.
 
 PACKAGES = \
+	dom \
+	dps \
 	ds \
 	sgml \
 	content \
