@@ -16,7 +16,7 @@ import java.io.DataInputStream;
 import java.io.StringBufferInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.Hashtable;
+
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.io.FileNotFoundException;
@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 
 import crc.pia.PiaRuntimeException;
 import crc.pia.GenericAgent;
+import crc.pia.FormContent;
 import crc.pia.Resolver;
 import crc.pia.Agent;
 import crc.pia.Pia;
@@ -38,9 +39,11 @@ import crc.pia.HTTPResponse;
 import crc.pia.Content;
 import crc.pia.ByteStreamContent;
 import crc.ds.Features;
+import crc.ds.Table;
+import crc.ds.List;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
+import gnu.regexp.RegExp;
+import gnu.regexp.MatchInfo;
 import crc.util.Utilities;
 
 import w3c.www.http.HTTP;
@@ -186,11 +189,16 @@ public class Dofs extends GenericAgent {
    *
    */
   public String root(){
-    String[] f = fileAttribute("root");
-    if( f != null && f.length == 1 )
-      return f[0];
-    else
+    List f = fileAttribute("root");
+    if( f != null && f.nItems() > 0 ){
+      String zroot = (String)f.at(0);
+      Pia.instance().debug(this, "the root is--->" + zroot);
+      return zroot;
+    }
+    else{
+      Pia.instance().debug(this, "can not find root path");
       return null;
+    }
   }
 
   /**
@@ -463,6 +471,8 @@ public class Dofs extends GenericAgent {
     if( url == null ) return null;
 
     String myroot = root();
+    if( myroot == null ) return null;
+
     if( myroot.endsWith("/") )
       myroot = myroot.substring(0, myroot.length()-1);
     String mypath = url.getFile();
@@ -560,8 +570,8 @@ public class Dofs extends GenericAgent {
     pentagon.option("agent_directory", "~/pia/pentagon");
     System.out.println("Agent directory: " + pentagon.agentDirectory());
     pentagon.option("agent_file", "~/pia/pentagon/foobar.txt");
-    String files[] = pentagon.fileAttribute("agent_file");
-    System.out.println("Agent file: " + files[0]);
+    List files = pentagon.fileAttribute("agent_file");
+    System.out.println("Agent file: " + (String)files.at(0));
 
 
     System.out.println("\n\nTesting proxyFor -- http");
@@ -577,6 +587,8 @@ public class Dofs extends GenericAgent {
     System.out.println("For test 2, here is the command --> java crc.pia.agent.Dofs -2 dofsgetdir.txt");
     System.out.println("For test 3, here is the command --> java crc.pia.agent.Dofs -3 dofsgetfile.txt");
     System.out.println("For test 4, here is the command --> java crc.pia.agent.Dofs -4 dofsheader.txt");
+    System.out.println("For test 5, here is the command --> java crc.pia.agent.Dofs -5 url_string");
+    System.out.println("For test 6, here is the command --> java crc.pia.agent.Dofs -6 url querystring");
   }
 
   /**
@@ -585,7 +597,7 @@ public class Dofs extends GenericAgent {
    */ 
  public static void main(String[] args){
 
-    if( args.length != 2 ){
+    if( args.length < 2 ){
       printusage();
       System.exit( 1 );
     }
@@ -598,11 +610,24 @@ public class Dofs extends GenericAgent {
       test2( args[1] );
     else if( args[0].equals ("-4") && args[1] != null )
       test2( args[1] );
+    else if( args[0].equals ("-5") && args[1] != null )
+      testCreateRequest( args[1], null );
+    else if( args[0].equals ("-6") && args[1] != null && args[2] != null )
+      testCreateRequest( args[1], args[2] );
     else{
       printusage();
       System.exit( 1 );
     }
 
+  }
+
+  public static void testCreateRequest(String url, String queryString){
+    Agency pentagon = setupAgency();
+    if( queryString == null )
+      pentagon.createRequest("GET", url, null);
+    else{
+      pentagon.createRequest("POST", url, queryString);
+    }
   }
 
   public static void test2(String filename){
@@ -623,7 +648,7 @@ public class Dofs extends GenericAgent {
       trans1.assert("IsAgentRequest", new Boolean( true ) );
 
       System.out.println("\n\n------>>>>>>> Installing a Dofs agent <<<<<-----------");
-      Hashtable ht = new Hashtable();
+      Table ht = new Table();
       ht.put("agent", "popart");
       ht.put("type", "dofs");
       ht.put("root", "~/");
