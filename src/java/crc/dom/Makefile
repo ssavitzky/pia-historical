@@ -38,6 +38,7 @@ FILES = \
 	BasicNamedNodeList.java \
 	BasicPI.java \
 	BasicText.java \
+	BasicDOMFactory.java \
 	CRCDOM.java \
 	CRCDOMFactory.java \
 	BasicElement.java \
