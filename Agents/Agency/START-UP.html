@@ -39,17 +39,24 @@ You can get additional installation forms from:
        name: <input name="agent" value="History">
        </form>
        
-  <dt> CIA agent
+  <dt> <a name="Spy">Spy agent</a>
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       <input type="submit" value="Install">
+       name: <input name="agent" value="Spy">
+       </form>
+  <dt> <a name="cia">CIA agent</a>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="cia">
+       type: <input name="type" value="Spy">
        </form>
-  <dt> FBI agent
+  <dt> <a name="fbi">FBI agent</a>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="fbi">
+       type: <input name="type" value="Spy">
        </form>
-  <dt> InterForm Demo agent
+  <dt> <a name="InterForm">InterForm Demo agent</a>
   <dd> <form action="/Agency/install_agent.if" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="InterForm">
