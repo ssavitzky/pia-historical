@@ -1,0 +1,16 @@
+<html> <body> 
+<h2> I am the &agentName; agent </h2> 
+<if><get form name=data><then> 
+You entered the greeting:
+<p>
+<font size=+5 color="FF0000"><get form name=data> </font>
+</then><else> 
+My mission is to display a greeting.  "Hello World!" is customary, but I am very flexible.  
+My owner, &piaUSER;, may decide.
+<form action="&urlPath;" method="post"> 
+<input type="submit" value="Enter"> 
+a greeting: <input name="data"> 
+</form> 
+</else> 
+</if> 
+</body></html> 
