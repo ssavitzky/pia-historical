@@ -1,4 +1,9 @@
-#transactions
+###### class TRANSACTION
+###	$Id$
+###
+###	Transactions generalize the HTTP classes Request and Response.
+###	They are used in the rule-based resolver, which associates 
+###	transactions with the interested agents.
 
 package TRANSACTION;
 
@@ -7,26 +12,25 @@ push(@ISA,HTTP::Response);
 push(@ISA,HTTP::Message);
 
 
-#take request or response andmake transaction
-sub new{
+###take request or response and make transaction
+sub new {
     my($class,$request,$from,$to)=@_;
     my $old=ref($request);
     bless $request,$class;
     $request->is_request(1) if $old eq 'HTTP::Request';
     $request->is_response(1) if $old eq 'HTTP::Response';
 
-    print "request is $old\n" if $main::debugging;
+    print "Making transaction from $old\n" if $main::debugging;
 
     $request->from_machine($from);
     $request->to_machine($to);
     my $type=$request->method;
-    print " typeis $type\n"  if $main::debugging;    
+    print "  type is $type\n"  if $main::debugging;    
     if(($type eq "POST" || $type eq "PUT") && $request->is_request()){
 	$request->read_content($type);
 	$request->compute_form_parameters() if $type eq 'POST';
     }
     return $request;
-    
 }
 
 
@@ -35,26 +39,24 @@ sub from_machine{
     my($self,$machine)=@_;
     $$self{_from_machine}=$machine if defined $machine;
     return $$self{_from_machine};
-    
 }
 
 sub to_machine{
     my($self,$machine)=@_;
     $$self{_to_machine}=$machine if defined $machine;
     return $$self{_to_machine};
-    
 }
+
 sub is_response{
     my($self,$argument)=@_;
     $$self{_response_Boolean}=$argument if defined $argument;
     return $$self{_response_Boolean};
-    
 }
+
 sub is_request{
     my($self,$argument)=@_;
     $$self{_request_Boolean}=$argument if defined $argument;
     return $$self{_request_Boolean};
-    
 }
 
 sub read_content{
@@ -106,7 +108,7 @@ sub compute_form_parameters{
 	$param = &unescape($param);
 	$value = &unescape($value);
 	$hash{$param}=$value; #careful losing multiple values
-	print "$param as value $value \n"  if $main::debugging;
+	print "  $param=$value.\n"  if $main::debugging;
     }
     $$self{parameters}=\%hash;
     
