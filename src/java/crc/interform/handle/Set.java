@@ -279,6 +279,8 @@ public class Set extends crc.interform.Handler {
    */
 
   public void setQueryRequest(SGML context, SGML value, SGML request){
+    if(context == null) return context;
+    
     debug(this,"Set class "+context.getClass().getName());
     if( request.hasAttr("attr")){
        String attr = Util.getString( request, "attr", "");
