@@ -61,8 +61,7 @@ public class GenericHandler extends BasicHandler {
   /** If <code>true</code>, it is not necessary to copy a parse tree
    *	before calling <code>computeResult</code>.
    *
-   * @see #computeResult
-   * @see #expandAction
+   * @see #action
    */
   protected boolean noCopyNeeded = true;
 
@@ -168,6 +167,14 @@ public class GenericHandler extends BasicHandler {
   		     ActiveAttrList atts, NodeList content, String cstring) {
     aContext.debug("in action for " + in.getNode());
     ActiveElement e = in.getActive().asElement();
+
+    // === We shouldn't ever have to copy the children here.
+    // === Instead, make a special EntityTable that can construct the element
+    // === if a value of ELEMENT is requested, or (better) construct a 
+    // === pseudo-Element that behaves like one but doesn't have up-links.
+    // === Supporting pseudo-Elements requires special hackery in the
+    // === ParseListIterator, with a potential nodelist at each level.
+
     ActiveElement element = e.editedCopy(atts, null);
     if (!noCopyNeeded) Copy.appendNodes(content, element);
     if (hasChildren()) {
@@ -178,7 +185,7 @@ public class GenericHandler extends BasicHandler {
       ents.setValueForEntity("ELEMENT", new ParseNodeList(element), true);
       // ... in which to expand this Actor's definition
       Input def = new crc.dps.input.FromParseTree(this);
-      BasicProcessor p = new BasicProcessor(def, aContext, out, ents);
+      Processor p = aContext.subProcess(def, out, ents);
       // ... Expand the definition in the sub-context
       p.processChildren();
     } else if (content == null) {
@@ -188,7 +195,7 @@ public class GenericHandler extends BasicHandler {
       // Content. 
       out.startElement(element);
       Copy.copyNodes(content, out);
-      out.endElement(element.isEmptyElement() || element.implicitEnd());
+      out.endElement(e.isEmptyElement() || e.implicitEnd());
     }
   }
 
