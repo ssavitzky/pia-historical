@@ -164,7 +164,7 @@ sub latex_a{
 	my $count=$footnote{$url};
 	$count=$footnotecounter++ unless $count;
 	$footnote{$url}=$count;
-	$string.= "\\footnotemark[$count]";
+#	$string.= "\\footnotemark[$count]";
     }
     
     return $string;
