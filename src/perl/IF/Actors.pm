@@ -17,8 +17,7 @@ package IF::Actors; ###### Standard actors for InterForms
 ###	value	v	value associated with a name
 
 
-use IF::IA qw(analyze remove_spaces list_items);
-push(@ISA,IF::IA);
+use IF::Semantics;
 
 #############################################################################
 ###
@@ -203,20 +202,8 @@ sub get_handle {
 
 ### <set name="name" value="value">
 ### <set name="name">value</set>
-###	sets the value of a variable named in the 'name' attribute
-###	to the value in the 'value' attribute.
-###
-### Namespace options:
-###	namespace="whatever", or one ore more of the following:
-###	entity	the current entity namespace
-###	local	current element 
-###	element	attributes of the containing element
-###	form	this InterForm's outer context
-###	pia	pia (PERL) context
-###	agent	options of the current PIA agent
-###	entity	entity
 
-define_actor('set', 'active' => 1, 'content' => 'value',
+define_actor('set', 'active' => 1, 'content' => 'value', 'parsed'=>1,
 	     _handle => \&set_handle,
 	     'dscr' => "set NAME to VALUE, 
 optionally in PIA, AGENT, ELEMENT, or ENTITY context.");
@@ -226,7 +213,7 @@ sub set_handle {
 
     my $name = $it->attr('name');
     my $value = $it->attr('value');
-    $value = $it->content_token unless defined $value;
+    $value = $it->content_string unless defined $value;
 
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
@@ -331,8 +318,6 @@ sub repeat_end_input {
 ###### Tests:
 
 ### <test [options]>string</test>
-###	Inside an <if>...</if> element, returns with empty or non-empty 
-###	content, as appropriate.  Outside, returns only the test results.
 ###
 ###  Condition Options:
 ###	zero
@@ -356,10 +341,10 @@ sub repeat_end_input {
 ###
 define_actor('test', 'active' => 1, 'content' => 'value', 'parsed'=>1,
 	     _handle => \&test_handle,
-	     'dscr' => "test VALUE (content); return null if false, else '1'. 
-Tests include ZERO, POSITIVE, NEGATIVE, MATCH='pattern'.  
-Modifiers include NOT, CASE (sensitive), TEXT.  
-Others include IFTRUE, IFFALSE.");
+	     'dscr' => "test VALUE (content); 
+return null or IFFALSE if false, else '1' or IFTRUE. 
+Tests: ZERO, POSITIVE, NEGATIVE, MATCH='pattern'.  
+Modifiers: NOT, CASE (sensitive), TEXT, LINK, EXACT (match).");
 
 sub test_handle {
     my ($self, $it, $ii) = @_;
@@ -367,7 +352,9 @@ sub test_handle {
     my $value = $it->attr('value');
     my ($match, $text);
 
-    if ($it->attr('text')) {
+    if ($it->attr('link')) {
+	$text = $it->link_text unless defined $value;
+    } elsif ($it->attr('text')) {
 	$text = $it->content_text unless defined $value;
     } else {
 	$text = $it->content_string unless defined $value;
@@ -383,6 +370,7 @@ sub test_handle {
     } elsif ($it->attr('negative')) {
 	$result = 1 if $text < 0;
     } elsif (($match = $it->attr('match'))) {
+	$match = "^$match\$" if $it->attr('exact');
 	if ($it->attr('case')) {
 	    $result = 1 if $text =~ /$match/;
 	} else {
@@ -392,25 +380,74 @@ sub test_handle {
 	$result = 1 unless $text =~ /^\s*$/;
     }
 
-    ## handle NOT, IFTRUE, IFFALSE attrs.
+    test_result($result, $it, $ii);
+}
 
-    $result = ! $result if $it->attr('not');
-    if ($result) {
-	my $res = $it->attr('iftrue');
-	$result = $res if defined $res;
+### <equal [options]>strings</equal>
+
+define_actor('equal', 'active' => 1, 'content' => 'list', 'parsed'=>1,
+	     _handle => \&equal_handle,
+	     'dscr' => "test tokens in LIST (content) for equality; 
+return null or IFFALSE if false, else '1' or IFTRUE. 
+Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.");
+
+sub equal_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = get_list($it);
+    my ($a, $b, $compare);
+    my $prep = prep_item_sub($it);
+
+    if ($it->attr('numeric')) {
+	$compare = \sub {$a == $b};
     } else {
-	my $res = $it->attr('iffalse');
-	$result = $res if defined $res;
+	$compare = \sub{$a eq $b};
     }
 
-    ## Strip off <test> element unless inside an <if>.
-    if (0 && $ii->in_tag eq 'if') { # === doesn't seem to work ===
-	$it->content([$result]);
-    } elsif ($result) {
-	$ii->replace_it($result);
+    foreach $b (@$list) {
+	$b = &$prep($b);
+	if (defined $a && ! &$compare($a, $b)) {
+	    test_result('', $it, $ii);
+	    return;
+	}	    
+	$a = $b;
+    }
+    test_result(1, $it, $ii);
+}
+
+### <sorted [options]>strings</sorted>
+
+define_actor('sorted', 'active' => 1, 'content' => 'list', 'parsed'=>1,
+	     _handle => \&sorted_handle,
+	     'dscr' => "test tokens in  LIST (content) for sortedness;
+return null or IFFALSE if false, else '1' or IFTRUE. 
+Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC, REVERSE.");
+
+sub sorted_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = get_list($it);
+    my $reverse = $it->attr('reverse');
+    my $prep = prep_item_sub($it);
+    my $compare;
+
+    if ($it->attr('numeric')) {
+	$compare = $reverse? \sub {$a >= $b} : \sub {$a <= $b};
+    } elsif ($it->attr('text')) {
+	$compare = $reverse? \sub {$a ge $b} : \sub {$a le $b};
     } else {
-	$ii->delete_it;
-    } 
+	$compare = $reverse? \sub {$a ge $b} : \sub {$a le $b};
+    }
+
+    foreach $b (@$list) {
+	$b = &$prep($b);
+	if (defined $a && ! &$compare($a, $b)) {
+	    test_result('', $it, $ii);
+	    return;
+	}	    
+	$a = $b;
+    }
+    test_result(1, $it, $ii);
 }
 
 ###### Number Processing:
@@ -422,6 +459,48 @@ sub test_handle {
 ###### List Processing:
 
 ### <list tag="ul">items separated by whitespace</list>
+
+### <sort [options]>strings</sort>
+###	sort tokens
+### ===	needs to handle pairs, too!
+###
+###  Modifiers:
+###	not
+###	case (sensitive)
+###	text
+###	numeric
+###
+define_actor('sort', 'active' => 1, 'content' => 'value', 'parsed'=>1,
+	     _handle => \&sort_handle,
+	     'dscr' => "sort tokens in  LIST (content).
+Modifiers: CASE (sensitive), TEXT, NUMERIC, REVERSE.");
+
+sub sort_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $list = get_list($it);
+    my $reverse = $it->attr('reverse');
+    my $prep = prep_item_sub($it);
+
+    my @tmp = map { [&$prep($_), $_] } @$list;
+    my @out; 
+
+    if ($it->attr('numeric')) {
+	if ($reverse) {
+	    @out = map {$_->[1]} sort {$b->[0] <=> $a->[0]} @tmp;
+	} else {
+	    @out = map {$_->[1]} sort {$a->[0] <=> $b->[0]} @tmp;
+	}
+    } else {
+	if ($reverse) {
+	    @out = map {$_->[1]} sort {$b->[0] cmp $a->[0]} @tmp;
+	} else {
+	    @out = map {$_->[1]} sort {$a->[0] cmp $b->[0]} @tmp;
+	}
+    }
+
+    list_result(\@out, $it, $ii);
+}
 
 
 ###### String Processing:
@@ -584,5 +663,56 @@ sub agent_running_handle {
 	$ii->delete_it();
     }
 }
+
+### <agent-set-options>query_string</agent-set-options>
+
+define_actor('agent-set-options', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'options', _handle => \&agent_set_options_handle,
+	     'dscr' => "Sets OPTIONS for agent NAME" );
+
+sub agent_set_options_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $options = get_pairs($it, 'options');
+    my $name = $it->attr('name');
+    my $agent;
+
+    if ($name) {
+	$agent = IF::Run::resolver()->agent($name);
+    } else {
+	$agent = IF::Run::agent();
+	$name = $agent->name;
+    }
+
+    $options = list_pairs($options);
+    if ($options) {
+	for (@$options) {
+	    $agent->option($_->[0], $_->[1]);
+	}
+    }
+
+    $ii->delete_it();
+}
+
+
+### <agent-install name='n' type='t'>
+
+define_actor('agent-install', 'active' => 1, 'parsed' => 1, 
+	     'content' => 'options', _handle => \&agent_install_handle,
+	     'dscr' => "Installs an agent with given OPTIONS (content).
+Returns the agent's name." );
+
+sub agent_install_handle {
+    my ($self, $it, $ii) = @_;
+
+    #my $options = get_hash($it, 'options'); # === broken ===
+    my $options = IF::Run::request()->parameters;
+
+    my $agent = IF::Run::agent(); # had better be agency
+    $agent = $agent->install($options);
+    my $name = ref $agent ? $agent->name : '';
+    $ii->replace_it($name);
+}
+
 
 1;

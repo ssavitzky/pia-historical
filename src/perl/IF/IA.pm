@@ -14,10 +14,6 @@ push(@ISA,IF::IT);
 ### === remove_spaces and list_items should be methods in IF::IT
 ### === analyze should be a method in IF::IA
 
-@EXPORT = qw(analyze remove_spaces list_items); # === can't get tags to work.
-%EXPORT_TAGS = 'utilities'=>[qw(analyze remove_spaces list_items)];
-Exporter::export_ok_tags('utilities');
-
 #############################################################################
 ###
 ### Creation:
@@ -266,121 +262,6 @@ sub act_generic {
     } elsif (! $quoting) {
 	$ii->add_handler($self);
     }
-}
-
-
-#############################################################################
-###
-### Utility routines:
-###
-###	These are used for parsing and analyzing incoming tokens.
-###
-
-sub remove_spaces {
-    my ($in) = @_;
-
-    ## The result is an array that contains each item of $in with
-    ##	  leading and trailing whitespace removed, and with items that
-    ##	  consist only of whitespace deleted completely.
-
-    my @out = ();
-    $in = [$in] unless ref $in;
-
-    foreach $x (@$in) {
-	if (! ref $x) {
-	    $x =~ s/^[\n\s]*//s;
-	    $x =~ s/[\n\s]*$//s;
-	}
-	push(@out, $x) unless $x eq '';
-    }
-    return \@out;
-}
-
-
-sub analyze {
-    my ($in, $tags, $flag) = @_;
-
-    ## The result is a hash that associates each of the given tags with 
-    ##	  that tag's content in the top level of array @$in.  Anything
-    ##	  outside any of the tags is associated with '_', or the first
-    ##	  empty tag if $flag is true.  Blanks outside tags are ignored.
-
-    ##	  If applied to a token instead of an array, attributes will be
-    ##	  used if they exist, and the token will be returned instead of
-    ##	  constructing a new hash.
-
-    my ($out, $x, @tmp, %tags);
-
-    if (ref($in) eq 'ARRAY') {
-	$out = {};
-    } else {
-	$out = $in;
-	$in = $in->content;
-    }
-
-    print "Analzying\n" if  $main::debugging>1;
-    for $x (@$tags) {
-	$tags{$x} = 1;
-    }
-    for $x (@$in) {
-	if (ref $x) {
-	    my $tag = $x->tag;
-	    if (exists $tags{$tag}) {
-		print "pushing <$tag...> to attributes\n" if $main::debugging>1;
-		$out->{$tag} = $x->content;
-	    } else {
-		print "pushing <$tag...> to tmp\n" if $main::debugging>1;
-		push(@tmp, $x);
-	    }
-	} else {
-	    print "pushing '$x' to tmp\n" if $main::debugging>2;
-	    push(@tmp, $x) unless $x =~ /^[\s\n]*$/s;
-	}
-    }
-    if (@tmp) {
-	if ($flag) {
-	    for $x (@$tags) {
-		if (! exists $out->{$x}) {
-		    $out->{$x} = \@tmp;
-		    return $out;
-		}
-	    }	    
-	} else {
-	    $out->{'_'} = \@tmp;
-	}
-    }
-    return $out;
-}
-
-sub list_items {
-    my ($in) = @_;
-
-    ## $in is turned into an array of list items as follows:
-    ##	  If it contains (or is) a string, it is split on whitespace.
-    ##	  If it contains a single list element, each list item is
-    ##	  extracted and its <li> tag removed.
-
-    my @out;
-
-    if (! ref $in) {
-	my $x = $in;
-	$x =~ s/\n/ /s;
-	@out = split $x;
-    } else {
-	$in = remove_spaces($in);
-	if (@$in == 1 && ref($in->[0])) {
-	    $in = $in->[0]->content;
-	}
-	my $x;
-	for $x ($in) {
-	    if (ref($x) && $x->tag eq 'li') {
-		push(@out, $x->content);
-	    } else {
-		push(@out, $x);
-	    }
-	}
-    }
-    return \@out;
 }
 
 

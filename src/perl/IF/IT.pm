@@ -273,6 +273,26 @@ sub content_text {
     return $string;
 }
 
+sub link_text {
+    my ($self, $tags) = @_;
+
+    ## Returns only the text part of the content that is inside one of
+    ##	  the listed tags (default <a>).  All markup is stripped off.
+    ##	  The tags are passed as a reference to a hash.
+
+    $tags = {'a' => 1} unless $tags;
+    my $string = '';
+    my $content = $self->content;
+    if (defined $content) {
+	for (@$content) {
+	    if (ref($_) && $$tags{$_->tag}) {
+		$string .= $_ -> content_text;
+	    }
+	}
+    }
+    return $string;
+}
+
 sub is_text {
     my ($self) = @_;
 
@@ -289,8 +309,9 @@ sub content_token {
     ##	 This means making a tagless node if necessary.
 
     my $content = $self->content;
-    return '' if undef $content || !@$content;
-    return $content->[0] if @$content == 1;
+    return '' if (undef $content || !@$content);
+
+    return $content->[0] if (1 == @$content);
     my $token = IF::IT->new();
     for (@$content) {
 	$token->push($_); 
@@ -355,11 +376,14 @@ sub endtag {
 ### Traversal:
 ###
 
-sub traverse
-{
+sub traverse {
     my($self, $callback, $ignoretext, $depth) = @_;
-    $depth ||= 0;
 
+    ## Call &$callback($token, $start, $depth) for $self and every
+    ##	  token in $self->content.  callback is invoked only once 
+    ##	  (with $start=1) for empty tags, twice for non-empty tags.
+
+    $depth ||= 0;
     print "traversing $depth tag = " . $self->{_tag} . "\n" 
 	if $main::debugging > 1;
 
@@ -372,13 +396,12 @@ sub traverse
 	    }
 	}
 	&$callback($self, 0, $depth) 
-	    unless ! defined $self->{_tag} || $emptyElement{$self->{'_tag'}};
+	    unless (! defined $self->{_tag} || $emptyElement{$self->{'_tag'}});
     }
     $self;
 }
 
-sub extract_links
-{
+sub extract_links {
     my $self = shift;
     my %wantType; @wantType{map { lc $_ } @_} = (1) x @_;
     my $wantType = scalar(@_);

@@ -61,6 +61,7 @@ sub install {
     my $agent = $class->new ($name, $type);    
     $agent->parse_options(0, $options);
     $self->install_agent($agent);
+    $agent;
 }
 
 sub resolver{

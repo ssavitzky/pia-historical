@@ -31,6 +31,7 @@ sub new {
     ## take request or response and make a transaction out of it
 
     my $old=ref($self);
+    $self = new HTTP::Request unless $old;
     bless $self, $class;
     $self->initialize_content;   #content now an object
     $self->is_request(1) if $old eq 'HTTP::Request';

@@ -214,6 +214,7 @@ sub if_entities {
 
     my $ents = {
 	'agentName' 	=> $agent->name,
+	'agentType' 	=> $agent->type,
 	'fileName' 	=> $fn,
 	'filePath' 	=> $file,
 

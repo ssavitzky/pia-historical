@@ -312,7 +312,7 @@ sub max {
 
 # need to add functions for multiple values and comments
 sub options_form{
-    my($self,$url, $label)=@_;
+    my($self, $url, $label)=@_;
     $label ="change_options" unless defined $label;
     my $e;
     my $form = IF::IT->new('form', method=>"POST", action=>$url);
@@ -336,7 +336,7 @@ sub options_form{
     $e = IF::IT->new('tr');
     $e->push(IF::IT->new('td')->push(" "));
     $e->push(IF::IT->new('td')
-	     ->push(IF::IT->new('input', 'type'=>submit, 'value'=>$label)));
+	     ->push(IF::IT->new('input', 'type'=>'submit', 'value'=>$label)));
     $t->push($e);
 
     return $form;
