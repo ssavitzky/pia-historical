@@ -556,13 +556,13 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /** Test whether an attribute exists. */
   public synchronized  boolean hasAttr(String name) {
-    return attributes.hasAttr(name);
+    return attributes.hasAttr(name.toLowerCase());
   }
   
   /** Retrieve an attribute by name.  Returns null if no such
    *	attribute exists. */
   public synchronized SGML attr(String name) {
-    return attributes.attr(name);
+    return attributes.attr(name.toLowerCase());
   }
 
   /** Enumerate the defined attributes. */
@@ -572,7 +572,7 @@ public class GenericAgent extends AttrBase implements Agent {
 
   /** Set an attribute. */
   public synchronized void attr(String name, SGML value) {
-    attributes.attr(name, value);
+    attributes.attr(name.toLowerCase(), value);
   }
 
   // === option, optionAsXXX are now unnecessary.
@@ -585,7 +585,7 @@ public class GenericAgent extends AttrBase implements Agent {
     if( key == null || value == null )
       throw new NullPointerException("Key or value can not be null.");
 
-      attributes.attr( key, value );
+    attr( key, value );
   }
 
   /**
@@ -594,7 +594,7 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public String optionAsString(String key){
     if( key == null ) return null;
-    return attributes.attrString(key);
+    return attrString(key);
   }
 
 
@@ -604,13 +604,7 @@ public class GenericAgent extends AttrBase implements Agent {
    */
   public boolean optionAsBoolean(String key){
     if( key == null ) return false;
-    if( attributes.containsKey( key ) ){
-      String v = attributes.attrString( key );
-      if (v == null) return false;
-      if ("false".equalsIgnoreCase(v)) return false;
-      return true;
-    } else
-      return false;
+    return attrTrue(key);
   }
 
 
