@@ -1,7 +1,13 @@
-crc.pia.no_proxy=napa.crc.ricoh.com
+crc.pia.http_proxy=http://int-gw.crc.ricoh.com:80/
+crc.pia.no_proxy=localhost.crc.ricoh.com
+crc.pia.root=~/pia
+crc.pia.usrroot=~/.pia
 crc.pia.port=8888
 crc.pia.debug=true
 crc.pia.verbose=false
 crc.pia.logger=crc.pia.Logger
 crc.pia.reqtimeout=40000
+
+
+
 
