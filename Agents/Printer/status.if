@@ -9,13 +9,14 @@
 
 <tagset-load name=Printer-agent-actors>
 
+<if><get agent name=device>
+<then><set name=options>-P&AGENT.device;</set></then>
+<else><set name=options> </set></else></if>
 
 <pre>
-<os-command-output> lpq -P&AGENT.device; </os-command-output>
+<os-command-output> lpq &options; </os-command-output>
 </pre>
-
-<hr><if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
 <p>
-</then></if>
+
 <page-footer> </page-footer>
 </body></html>

@@ -295,7 +295,8 @@ file=cache/&centry; process></then></if></actor>
    </if>
 
 <set name=fpre>&usrDIR;/&agentName;/</set>
-<set name="carguments" local> -sDEVICE=gif8 -sOutputFile=&fpre;&output;%d.gif </set>
+<if><get name=gsdevice agent><then><set name=gsdevice><get agent name=gsdevice></set><set name=gsext><get agent name=gsext></set></then><else><set name=gsdevice>jpeg</set><set name=gsext>jpg</set></else></if>
+<set name="carguments" local> -sDEVICE=&gsdevice; -sOutputFile=&fpre;&output;%d.&gsext; </set>
  <if><get index=mystyle.stylegsargs.Text> 
   <then><set name="carguments" local> <get name=carguments> <get index=mystyle.stylegsargs.Text> </set> </then> 
    </if>
@@ -329,11 +330,11 @@ file=cache/&centry; process></then></if></actor>
  <if><get name=iwidth><else><set name=iwidth>100</set> </else> </if>
   <set local name=otherstuff>&content;</set>
  <set name="gifs" local><dummy><read directory file=&mydir;
-    match="&myfile;.*gif"></dummy></set>
+    match="&myfile;.*&gsext;"></dummy></set>
     <table border="1" width="100%">
   <tr><th>URL: </td><td colspan=2><get name=inurl></td></tr>
    <if><get name="doc">  
-  <then>  <tr><th> Title </th> <td><get name=doc findall=title> </td> </tr>
+  <then>  <tr><th> Title </th> <td><get index=doc.html.head.title.Text> </td> </tr>
   <set name="anchors" local><anchors><get name=doc findall=a></anchors></set>
   <tr><th rowspan=3>Info:</th><td> Number of links:</td><td> <get name=anchors size > </td>
    <set name=base local><get name=doc findall=meta></set>
@@ -419,7 +420,7 @@ spool file">
 <a href=options.if>options</a><br>
 <img src="/Agency/Icons/dot-blue.gif" border=0 height=15 width=15>
   <a href="/&agentName;/toggle_page_controls.if"> Toggle  proxy bar</a><br>
-<a href=test.if>test</a><br>
+<!-- a href=test.if test a !--><br>
 </td></tr></table>
 
   </actor>
