@@ -129,6 +129,35 @@ public abstract class AbstractNode implements Node, Cloneable {
     }
   }
 
+
+  /**
+   * toString
+   */
+  public String toString(){
+    return Integer.toString( getNodeType() );
+  }
+
+
+  /**
+   * printChildren depth first.
+   * This should be call at the root node.
+   */ 
+  public  void printChildren(String indent){
+    AbstractNode child = null;
+
+    Report.debug(indent+ "<" + toString() + ">");
+    if( hasChildren() ){
+       NodeEnumerator enum = getChildren().getEnumerator();
+       child =  (AbstractNode)enum.getFirst();
+       while( child != null ) {
+	 child.printChildren( indent + "    ");
+	 child = (AbstractNode)enum.getNext();
+       }
+    }
+    Report.debug(indent + "</" + toString()+ ">");
+  }
+
+
   /**************************************
    * protected functions
    */
@@ -140,7 +169,7 @@ public abstract class AbstractNode implements Node, Cloneable {
   protected AbstractNode getPrevious(){ return leftSibling; }
   protected AbstractNode getNext(){ return rightSibling; }
 
-  protected void insertBefore(AbstractNode newChild, AbstractNode refChild)
+  protected synchronized void insertBefore(AbstractNode newChild, AbstractNode refChild)
        throws NotMyChildException
   {
     NodeEnumerator e = null;
@@ -178,7 +207,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    * Append child to end.  Move tail
    */
   protected void append( AbstractNode newChild ){
-    Report.debug("Appending...");
+    //Report.debug("Appending...");
     AbstractNode last = tail;
     
     newChild.setPrevious( last );
@@ -193,7 +222,7 @@ public abstract class AbstractNode implements Node, Cloneable {
    * Inserting child at start. Move head
    */
   protected void doInsertAtStart(AbstractNode newChild){
-    Report.debug(this, "doInsertAtStart");
+    //Report.debug(this, "doInsertAtStart");
     if( newChild == null || head == null ) return;
 
     newChild.setPrevious( null );
@@ -230,7 +259,7 @@ public abstract class AbstractNode implements Node, Cloneable {
   /**
    * remove a child
    */
-  protected Node removeChild( AbstractNode p )
+  protected synchronized Node removeChild( AbstractNode p )
        throws NotMyChildException 
   {
     if( p == null ) return null;
@@ -239,19 +268,19 @@ public abstract class AbstractNode implements Node, Cloneable {
       throw new NotMyChildException("The child is not mime.");
 
     if( head == tail && hasChildren() ){ // only one child
-      Report.debug("Removing only one child...");
+      //Report.debug("Removing only one child...");
       head = null;
       tail = null;
     }else if( tail == p ){// remove the last child, should adjust header's next reference
-      Report.debug("Removing last child...");
+      //Report.debug("Removing last child...");
       p.getPrevious().setNext( p.getNext() );
       tail = p.getPrevious(); 
     }else if( head == p ){ // the first item, but more than one child
-      Report.debug("Removing first child...");
+      //Report.debug("Removing first child...");
       p.getNext().setPrevious( null );
       head = p.getNext();
     }else{
-      Report.debug("Removing somewhere in the middle...");
+      //Report.debug("Removing somewhere in the middle...");
       p.getPrevious().setNext( p.getNext() );
       p.getNext().setPrevious( p.getPrevious() );
     }
@@ -264,10 +293,10 @@ public abstract class AbstractNode implements Node, Cloneable {
   /**
    * replace a child
    */
-  protected Node replaceChild(AbstractNode oldChild, AbstractNode newChild)
+  protected synchronized Node replaceChild(AbstractNode oldChild, AbstractNode newChild)
        throws NotMyChildException
   {
-    Report.debug(this, "do replace child...");
+    //Report.debug(this, "do replace child...");
     if( oldChild == null || newChild == null ) return null;
     
     if( oldChild.getParentNode() != this )
@@ -281,19 +310,19 @@ public abstract class AbstractNode implements Node, Cloneable {
     newChild.setParent( this );
 
     if ( head == tail && hasChildren() ){ // only one item
-      Report.debug("Replacing only one item...");
+      //Report.debug("Replacing only one item...");
       head = newChild;
       tail  = newChild;
     }else if( oldChild == head ){ // sub the first guy, adjust header
-      Report.debug("Replacing the first child...");
+      //Report.debug("Replacing the first child...");
       next.setPrevious( newChild );
       head = newChild;
     }else if ( oldChild == tail ){ // replacing the last item
-      Report.debug("Replacing the last child...");
+      //Report.debug("Replacing the last child...");
       previous.setNext( newChild );
       tail = newChild;
     }else{
-      Report.debug("Replacing somewhere in the middle...");
+      //Report.debug("Replacing somewhere in the middle...");
       previous.setNext( newChild );
       previous.setPrevious( newChild );
     }
@@ -301,12 +330,17 @@ public abstract class AbstractNode implements Node, Cloneable {
     oldChild.setPrevious (null );
     oldChild.setNext ( null );
     oldChild.setParent( null );
-    Report.debug("Leaving replaceChild.");
+    //Report.debug("Leaving replaceChild.");
     return oldChild;
   }
 
+  /**
+   * Use to implement deep copy.
+   * For foreign node, no cloning of children will be made.
+   * 
+   */
   protected void copyChildren(Node nodeB){
-    Report.debug("Copying children...");
+    //Report.debug("Copying children...");
     AbstractNode child = null;
     Node elem = null;
 
@@ -333,14 +367,6 @@ public abstract class AbstractNode implements Node, Cloneable {
     }
 
     
-  }
-
-  protected void printChildren(){
-    Node n = getFirstChild();
-    while( n != null ){
-      Report.debug( Integer.toString( n.getNodeType() ) );
-      n = n.getNextSibling();
-    }
   }
 
   /**
