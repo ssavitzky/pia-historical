@@ -52,6 +52,8 @@ import crc.pia.Headers;
 import crc.util.Utilities;
 import crc.util.CacheTable;
 
+import crc.ds.Criterion;
+
 import w3c.www.http.HTTP;
 
 /** Caches each document fetched from outside the Agency.
@@ -367,8 +369,8 @@ public class Cache extends GenericAgent {
    */
   public void initialize() {
     Pia.debug(this, "Cache initialize called");
-    matchCriterion("IsAgentRequest", false);
-    matchCriterion("IsAgentResponse", false);
+    Criterion.toMatch("IsAgentRequest", false);
+    Criterion.toMatch("IsAgentResponse", false);
     String dir = createDataDirectory();
     // Only ever want one of these
     if(cacheTable == null)
