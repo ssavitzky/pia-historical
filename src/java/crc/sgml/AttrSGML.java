@@ -7,6 +7,7 @@ package crc.sgml;
 import crc.sgml.Util;
 
 import crc.ds.List;
+import crc.ds.Index;
 import java.util.Enumeration;
 
 /**
@@ -40,6 +41,15 @@ public abstract class AttrSGML extends AttrBase implements SGML {
 
   /** Return true if the object implements the Attrs interface */
   public boolean isAttrs() { return true; }
+
+/** Return SGML associated with index
+ */
+public SGML attr(Index  path)
+  {
+      //punt on anything other than simple string
+    return attr(path.string());
+  }
+  
 
   /** Parser state:  0 for a complete element, 1 for a start tag, -1
    *	for an end tag.  */

@@ -8,6 +8,7 @@ import java.util.Enumeration;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
 
 /**
  * The representation of an SGML <em>element</em>.  Each Element
@@ -143,13 +144,62 @@ public class Element extends Token implements Attrs {
   public SGML attr(String name) {
 
     SGML result = (attrs == null)? null : (SGML)attrs.at(name.toLowerCase());
-    // delegate numeric names to tokens     
-    if(result == null && content != null){
-      result =  content.attr(name);
+
+    return result;
+    
+  }
+
+/**  retrieve attribute by index
+ */
+public SGML attr(Index name)
+  {
+    if(name.isExpression()){
+      return attrExpression(name);
+    }
+    if(name.isRange() || name.isNumeric()){
+      return content.attr(name);
+    }
+    return attr(name.string());
+  }
+  
+//associate keyword with action
+/** return contents which meet expression
+ */
+  SGML attrExpression(Index expression)
+  {
+    //look for keywords,tag matches,etc.
+    Enumeration keywords=expression.expression().elements();
+    int[] indices;  // integer pointers to items that match expression
+    Tokens  result =  new Tokens();
+    
+    while(keywords.hasMoreElements()){
+      String word=(String)keywords.nextElement();
+      if(word == "size"){
+        //check for null content     
+	result.addItem(new Text( new Integer(content.nItems()).toString()));
+      } else if (word == "tag"){
+        String  value = (String)keywords.nextElement();
+        List locations = content.tagLocations(value);
+	indices=new int[locations.nItems()];
+	SGML mytokens = content.copy(indices);
+	
+	result.append(mytokens);
+      } else if (word == "attr"){
+        //look for contents with particular attribute
+	String  value =(String) keywords.nextElement();
+	Enumeration e = content.elements();
+	while(e.hasMoreElements()){
+	  SGML j=(SGML)e.nextElement();
+	  if(j.hasAttr(value)) result.addItem(j);
+	}
+      }
+      
     }
     return result;
     
   }
+  
+
 
   /** Retrieve an attribute by name, returning its value as a String. */
   public String attrString(String name) {

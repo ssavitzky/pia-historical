@@ -6,6 +6,8 @@ package crc.sgml;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
+
 
 /**
  * The representation of an SGML <em>element</em> or text.  Each Token
@@ -107,6 +109,11 @@ public class Token implements SGML {
   
   /** Retrieve an attribute by name. */
   public SGML attr(String name) {
+    return null;
+  }
+
+  /** Retrieve an attribute by  index object. */
+  public SGML attr(Index name) {
     return null;
   }
 

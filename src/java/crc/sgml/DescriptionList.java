@@ -8,6 +8,7 @@ import crc.sgml.Element;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
 
 import java.util.Enumeration;
 
@@ -23,12 +24,14 @@ public class  DescriptionList extends crc.sgml.Element {
   ** Access to attributes:
   ************************************************************************/
   
-  /** Retrieve an attribute by name. */
-  public SGML attr(String name) {
-    SGML result = super.attr(name);
+  /** Retrieve an attribute by index. */
+  public SGML attr(Index index) {
+    SGML result = super.attr(index);
     if (result != null){
       return result;
     }
+    String name=index.string();
+    
     // check for dt tag with name
     Enumeration elements = content.elements();
     while(elements.hasMoreElements()){
@@ -41,19 +44,15 @@ public class  DescriptionList extends crc.sgml.Element {
     
     return result;
   }
+
+ SGML attrExpression(Index expression)
+  {
+    //check for keywords keys,values
+    SGML result = super.attrExpression(expression);
+    // add any name keywords
+    return result;
+  }
   
-
-  /** Retrieve an attribute by name, returning its value as a String. */
-  public String attrString(String name) {
-    SGML result = attr(name);
-    return (result == null)? null : result.toString();
-    
-  }
-
-  /** Test whether an attribute exists. */
-  public boolean hasAttr(String name) {
-    return (attr(name) == null)? false : true;
-  }
 
   /************************************************************************
   ** Construction:

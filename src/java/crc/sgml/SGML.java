@@ -4,6 +4,8 @@
 
 package crc.sgml;
 
+import crc.ds.Index;
+
 /**
  * Interface for SGML tokens and collections of tokens.<p>
  *
@@ -81,6 +83,12 @@ public interface SGML extends java.lang.Cloneable {
 
   /** Retrieve an attribute by name.  Semantics vary by SGML type*/
   SGML attr(String name);
+
+
+  /** Retrieve a complex attribute given an index (e.g. foo.bar.1-3) 
+       semantics vary by type */
+  SGML attr(Index path);
+  
 
   /** Set an attribute by name. Semantics may vary by SGML type*/
   void attr(String name, SGML value);

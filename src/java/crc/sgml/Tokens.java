@@ -6,6 +6,7 @@ package crc.sgml;
 
 import crc.ds.List;
 import crc.ds.Table;
+import crc.ds.Index;
 
 import crc.sgml.SGML;
 import crc.sgml.Element;
@@ -170,42 +171,34 @@ public class Tokens extends List implements SGML {
       list.append(itemAt(i));
     }
   }
-    
-  /** Retrieve an attribute by name.  Lists don't have any,
+
+/**  retrieve attribute by name-- list don't have  name attributes
+ */
+  public SGML attr(String name) {
+    return null;
+  }
+  
+  /** Retrieve an attribute by index.  
       but specifying number or range gets that item or list of items
       useful for get in interforms */
-  public SGML attr(String name) {
-    List indices=Util.split(name,'-');
-    String sindex1 = (String) indices.shift();
-    int index1 = -1;
-     try {
-      index1=java.lang.Integer.valueOf(sindex1).intValue();
-    } catch (Exception e) {
-      return  null;
-    }
-    if(indices.isEmpty()){
-      return itemAt(index1);
-    }
-
-    //construct new tokens from specified
-    Tokens value =new Tokens();
-    while(!indices.isEmpty()){
-      String sindex2 =(String) indices.shift();
-      int index2;
-      
-      try {
-       index2=java.lang.Integer.valueOf(sindex2).intValue();
-      } catch (Exception e) {
-       return value;
+  public SGML attr(Index name) {
+    if(name.isRange()){
+      int[] indices=name.range(nItems());
+      if(indices.length == 2){
+        //start-stop
+	return copy(indices[0],indices[1]);
+      } else{
+	//a-b-c
+	return copy(indices);
       }
-      for(int i=index1;i <= index2; i++){
-	value.addItem(itemAt(i));
-      }
-      index1=index2;
     }
-    return value;
+    if(name.isNumeric()){
+      return itemAt(name.numeric());
+    }
+    //otherwise null
+    return null;
   }
-
+  
   /**  set an attribute by name.  Lists don't have any names,so interpret
         name as number to insert at.*/
   public  void attr(String name, SGML value) {
@@ -227,15 +220,8 @@ public class Tokens extends List implements SGML {
 
   /** Test whether an attribute exists.  It doesn't unless name is a number. */
   public boolean hasAttr(String name) {
-    //Should test for range specification like 2-4
-    int start = -1;
+    return false;
     
-     try {
-       start=java.lang.Integer.valueOf(name).intValue();
-      } catch (Exception e) {
-       return false;
-      }
-      return 0 < start && start < nItems();
   }
 
 
@@ -291,7 +277,7 @@ public class Tokens extends List implements SGML {
 
   /** return a table with tag names as keys and locations as values
    */
-  public Table tagLocations() {
+  public Table tagTable() {
     Table result = new Table();
     Enumeration elements = elements();
     List locations ;
@@ -311,7 +297,7 @@ public class Tokens extends List implements SGML {
   /**  return a list of the locations of a given tag type
    */
   public List tagLocations(String name) {
-    List result = (List) tagLocations().at(name);
+    List result = (List) tagTable().at(name);
     if(result == null){
       result = new List();
     }
@@ -378,6 +364,26 @@ public class Tokens extends List implements SGML {
     for (int i = 0; i < it.nItems(); ++i) 
       addItem(it.itemAt(i));
   }
+
+/**  copy specified items into a new tokens */
+   public Tokens copy(int[] indices) {
+     Tokens result = new Tokens();
+     
+    for (int i = 0; i <  indices.length; ++i) 
+      result.addItem(itemAt(indices[i]));
+
+   return result;
+ }
+
+/**  copy specified items into a new tokens */
+   public Tokens copy(int  start, int stop) {
+     Tokens result = new Tokens();
+     
+    for (int i =  start; i <   stop; ++i) 
+      result.addItem(itemAt(i));
+   return result;
+ }
+
 
   public Object clone() {
     return new Tokens(this);

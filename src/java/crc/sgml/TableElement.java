@@ -10,6 +10,7 @@ import crc.sgml.Tokens;
 import crc.ds.List;
 import crc.ds.Table;
 import crc.interform.Util;
+import crc.ds.Index;
 
 import java.lang.Integer;  //primitives are not objects...causes us pain
 import java.util.Enumeration;
@@ -36,7 +37,7 @@ public class TableElement extends crc.sgml.Element {
   */
   private void buildTable()
   {
-    Table tags=content.tagLocations();
+    Table tags=content.tagTable();
     List rowLocations = content.tagLocations("tr");
    
     nRows = rowLocations.nItems();
@@ -139,150 +140,105 @@ public class TableElement extends crc.sgml.Element {
   ** Access to attributes:
   ************************************************************************/
   
-  /** Retrieve an attribute by name. 
-       If no attribute is explicitly defined, treat name as an index
-        into the table, either row, column, or "row,column" and return  
-      TableElement or td Element as appropriate
+  /** Retrieve an attribute by index. 
+       If no attribute is explicitly defined, treat index
+       row.col or r1-r2.c1-c2
+       return TableElement or td Element as appropriate
    */
-  
 
-  public SGML attr(String name) {
-    SGML result = (attrs == null)? null : (SGML)attrs.at(name.toLowerCase());
-    if (result != null){
-      return result;
+  public SGML attr(Index name) {
+    // is name ="-attr-val"?
+    if(name.isExpression()){
+      return attrExpression(name);
     }
-    // is name="row,column"?
-    if (name.indexOf(',') != -1){
-      return attrRxC(name);
+    int rows[],cols[];
+    
+    if(name.isRange()){
+      //set rows
+      //currently non-numeric ranges not supported
+      rows=name.range(nRows);
+    } else{
+        // assume single row specified
+        rows=new int[1];
+
+      //numeric?
+      if(name.isNumeric()){
+        rows[0]=name.numeric();
+      }else{
+	String s=name.string();
+        Integer r=(Integer)rowHeaders.at(s);
+        if(r == null){
+	  return null; //unspecified row
+         //TO specify all rows, use table.0-.foo
+	}
+	rows[0] =r.intValue();
+      }
     }
-    // is name a row or column header?
-    if(rowHeaders.has(name)){
-     return attrRxC(name + ","); //return a column
+    //now  get columns
+    String c=name.next();
+    if(c == null){
+     // no columns specified, just return tokens
+      if(rows.length == 1){
+	return content.itemAt(rows[0]);
+      } else if(rows.length == 2){
+	return content.copy(rows[0],rows[1]);
+      } else{
+	return content.copy(rows);
+      }
     }
-    if(columnHeaders.has(name)){
-      return attrRxC("," + name);  //return a row
+    
+    //name index should be advanced by call above to next
+    if(name.isExpression()){
+      return attrExpression(rows,name);
     }
-    //is name a number?
-    try {
-      int index1=java.lang.Integer.valueOf(name).intValue();
-      //treat as a row or let concept handle it
-      return (index1 < nRows)? attrRxC(name + ",") : content.attr(name);
-      
-    } catch (Exception e) {
-    //not a number
+    
+    if(name.isRange()){
+      cols=name.range(nCols);
+    }else{
+      //assume singleton
+      cols= new int[1];
+      if(name.isNumeric()){
+	cols[0]=name.numeric();
+      } else{
+	String s=name.string();
+        Integer r=(Integer)columnHeaders.at(s);
+        if(r == null){
+	  return null; //unspecified column
+         //TO specify all columns, use table.row.0-
+	}
+	cols[0] =r.intValue();
+      }
     }
-    //all else fails
-    return null;
+    
+      //now should have rows[],cols[]      
+      if(rows.length == 1 && cols.length == 1){
+	// return element
+	return data[rows[0]][cols[0]];
+      }
+      return  copy(rows,cols);
   }
   
-
-  /**  process row,col accesses e.g. 8,4 returns element from row 8 col 4
-       8 or 8, returns row8, 4 returns col 4
-       "r1-r2,c1-c2" is most general case
-        returns a new table, or a td element for "r1,c1" accesses
-       very ugly code
-   */
-  private SGML attrRxC(String name){
-    List indexes = Util.split(name,',');
-    String rows=(String)indexes.shift();
-    int rowstart,rowstop;
-    Integer tmpI;
     
-    String st;
+  
+/**  retrieve items specified by expression
+ */
 
-    //getstart and stop for rows
-    List startstop=Util.split(rows,'-');
-    if(startstop.isEmpty()){ // ",c"
-       rowstart=0;
-       rowstop=nRows;
-    } else{                 // "r1-r2,c"
-      st=(String) startstop.shift();
-      tmpI=(Integer) rowHeaders.at(st);
-
-      if(tmpI==null){    
-       try {
-        rowstart=java.lang.Integer.valueOf(st).intValue();
-       } catch (Exception e) {
-	 rowstart=0;       // "r1" not interpreted, default 0
-       }
-      } else {
-        rowstart=tmpI.intValue();
-      }
-      
-      if(startstop.isEmpty()){ //"r1,c"
-	rowstop=rowstart + 1;
-      } else{                  //"r1-r2,c"
-	st=(String) startstop.shift();
-        tmpI=(Integer) rowHeaders.at(st);
-	
-        if(tmpI==null){
-        try {
-          rowstop=java.lang.Integer.valueOf(st).intValue();
-         } catch (Exception e) {
-	   rowstop=nRows;  // "r1-,c"
-	 }
-	} else {
-	  rowstop=tmpI.intValue();
-	}
-	
-      }
-    }
-    //getstart and stop for  columns
-    String columns= (String)indexes.shift();
-    startstop=Util.split(columns,'-');
-    int colstart,colstop;
-
-    if(startstop.isEmpty()){  // "r,"
-      colstart=0;
-      colstop=nCols;
-    } else{
-      st=(String)startstop.shift();
-      tmpI=(Integer) columnHeaders.at(st);
-      
-      if(tmpI==null){
-       try {
-        colstart=java.lang.Integer.valueOf(st).intValue();
-       } catch (Exception e) {
-	 colstart=0;  // not interpret c1,  default to 0
-       } 
-      } else {
-	colstart=tmpI.intValue();
-      }
-      
-      if(startstop.isEmpty()){ //"r,c1"
-	colstop=colstart + 1;
-      } else{                  //"r,c1-c2"
-	st=(String)startstop.shift();
-	tmpI=(Integer) columnHeaders.at(st);
-        if(tmpI==null){
-        try {
-          colstop=java.lang.Integer.valueOf(st).intValue();
-         } catch (Exception e) {
-	   colstop=nCols;
-	 }
-	} else {
-	  colstop=tmpI.intValue();
-	}
-	
-      }
-    }
-  // if only one element, return it
-    if(rowstop - rowstart == 1  && colstop - colstart == 1){
-      return  data[rowstart][colstart];
-    }
-    //else construct new table
-    TableElement result=new TableElement(this.tag());
-    // push relevant items into table-- inefficient,but works
-    for(int r=rowstart;r<rowstop;r++){
-      Element tr = new Element("tr");
-      for(int c=colstart;c<colstop;c++){
-	tr.append(data[r][c]);
-      }
-      result.append(tr);
-    }
+ SGML attrExpression(Index expression)
+  {
+    SGML result = super.attrExpression(expression);
+    // add any name keywords
     return result;
   }
-  
+
+
+/**  retrieve items specified by expression in context of rows
+ */
+private SGML attrExpression(int[] rows, Index expression)
+  {
+    return attrExpression(expression);
+    
+    // check for keywords   rows, cols, etc
+  }
 
 
   /** Retrieve an attribute by name, returning its value as a String. */
@@ -307,5 +263,34 @@ public class TableElement extends crc.sgml.Element {
   public TableElement(Element e) {
     super(e);
   }
+
+  /** clone all or part of this table */
+public TableElement copy(int[] rows, int[] cols)
+  {
+    int rowstart,rowstop,colstart,colstop;
+    // currently only works for lengths of 1 or 2
+    if(rows.length < 1 || cols.length < 1) {
+      return null;
+    }
+    rowstart=rows[0];
+    rowstop=(rows.length > 1)?rows[1]:rowstart;
+    colstart=cols[0];
+    colstop=(cols.length > 1)?cols[1]:colstart;
+    TableElement result=new TableElement(this.tag());
+    // push relevant items into table-- inefficient,but works
+    // eventually copy items into data
+    for(int r=rowstart;r<rowstop;r++){
+      Element tr = new Element("tr");
+      for(int c=colstart;c<colstop;c++){
+	tr.append(data[r][c]);
+      }
+      result.append(tr);
+    }
+    return result;
+    
+  }
+
+
+    
 
 }

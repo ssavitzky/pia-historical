@@ -4,6 +4,8 @@
 
 package crc.sgml;
 
+import crc.ds.Index;
+
 /**
  * SGML text strings.
  *	Text is used in the InterForm package to represent sequences of
@@ -163,6 +165,11 @@ public class Text implements SGML {
   public SGML attr(String name) {
     return null;
   }
+  /** Retrieve an attribute by name.  Text doesn't have any.*/
+  public SGML attr(Index name) {
+    return null;
+  }
+
   /** Set an attribute by name.  Text doesn't have any. should throw error*/
   public void attr(String name, SGML value) {
     return; //  should throw exception here
