@@ -105,7 +105,7 @@ public class Text implements SGML {
   }
 
   /** The result of appending a string.  returns this. */
-  public Text append(String t) {
+  public SGML append(String t) {
     if (t == null) return this;
     if (isStringBuffer) {
       ((StringBuffer)content).append(t);

@@ -94,6 +94,11 @@ public class Tokens extends List implements SGML {
     return new Text(toString());
   }
 
+  /** Convert to a number (double, being the most general form available). */
+  public double numValue() {
+    return contentText().numValue();
+  }
+
   /** Convert the object to a single token. */
   public Token toToken() {
     return (nItems() == 1) ? itemAt(0).toToken() : new Token(null, this);
@@ -131,6 +136,11 @@ public class Tokens extends List implements SGML {
   /** The result of appending some text.  */
   public SGML appendText(Text t) {
     return append(t);
+  }
+
+  /** The result of appending a string. */
+  public SGML append(String s) {
+    return append(new Text(s));
   }
 
   /** Append this as text. */

@@ -230,6 +230,11 @@ public class Token implements SGML {
     return this;
   }
 
+  /** Convert to a number (double, being the most general form available). */
+  public double numValue() {
+    return contentText().numValue();
+  }
+
   /************************************************************************
   ** Access to content:
   ************************************************************************/
@@ -256,6 +261,12 @@ public class Token implements SGML {
   }
 
   public SGML append(SGML v) {
+    if (content == null) { content = new Tokens(); }
+    content.append(v);
+    return this;
+  }
+
+  public SGML append(String v) {
     if (content == null) { content = new Tokens(); }
     content.append(v);
     return this;
@@ -331,6 +342,17 @@ public class Token implements SGML {
   public Token (String tag, String content) {
     this.tag = tag;
     append(new Text(content));
+  }
+
+  public Token(String tag, Table tbl) {
+    this.tag = tag;
+    java.util.Enumeration keys = tbl.keys();
+    java.util.Enumeration values = tbl.elements();
+
+    while (keys.hasMoreElements()) {
+      append(new Token("dt", keys.nextElement().toString()));
+      append(new Token("dd", Util.toSGML(values.nextElement())));
+    }
   }
 
   public Token (Token it) {

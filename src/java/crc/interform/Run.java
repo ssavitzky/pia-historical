@@ -80,6 +80,34 @@ public class Run {
   }
 
   /************************************************************************
+  ** Extract information:
+  ************************************************************************/
+
+  public static String getAgentName(Interp ii) {
+    Run env = environment(ii);
+    return (env == null)? null : env.agent.name();
+  }
+
+  public static String getAgentType(Interp ii, String name) {
+    Run env = environment(ii);
+    if (env == null) return null;
+    if (name == null) return env.agent.type();
+    Agent ia = env.resolver.agent(name);
+    return (ia == null)? null : ia.type();
+  }
+
+  public static Agent getAgent(Interp ii, String name) {
+    Run env = environment(ii);
+    return (env == null)? null : env.resolver.agent(name);
+  }    
+
+  public Agent getAgent(String name) {
+    if (name == null) return null;
+    return resolver.agent(name);
+  }    
+
+
+  /************************************************************************
   ** Entity table:
   ************************************************************************/
 

@@ -56,14 +56,32 @@ public class Interp extends State {
   Object environment;
 
   /************************************************************************
-  ** Debugging:
+  ** Debugging and Messaging:
   ************************************************************************/
 
   /** Debugging flag. */
-  boolean debug;
+  boolean debug = false;
 
   public final void debug(String s) {
     if (debug) { System.err.print(s); }
+  }
+
+  /** Quiet / verbose flag. */
+  int verbosity = 0;
+
+  public final boolean quiet() {
+    return verbosity < 0;
+  }
+
+  public final boolean verbose() {
+    return verbosity > 0;
+  }
+
+  public final void setQuiet() {
+    verbosity = -1;
+  }
+  public final void setVerbose() {
+    verbosity = 1;
   }
 
   /************************************************************************
@@ -179,7 +197,7 @@ public class Interp extends State {
    *	If no local binding is found, a new one is created in the current 
    *	stack frame.
    */
-  public final void  setvar (String name, SGML value) {
+  public final void setvar(String name, SGML value) {
     for (State state = this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
 	if (value == null) value = Token.empty;
@@ -192,24 +210,44 @@ public class Interp extends State {
 
   /** Define a new local variable (entity) with a given name and value.
    */
-  public final void  defvar (String name, SGML value) {
+  public final void defvar(String name, SGML value) {
     if (variables == null) variables = new Table();
     if (value == null) value = Token.empty;
     variables.at(name, value);
   }
 
-  /** Get the value of a named variable (entity).
+  /** Get the value of a named variable (entity) with path lookup.
    *	Dynamic scoping is used, with an optional variable (entity) table
    *	in each State stack frame.  If no local variable is found, the 
-   *	document's global entity table is used.
+   *	document's global entity table is used.  If the name is a dotted
+   *	path, picks it apart and does a series of lookups.
    */
-  public final SGML getEntity (String name) {
+  public final SGML getEntity(String name) {
+    // === path hacking. ===
     for (State state=this; state != null; state = state.stack) {
       if (state.variables != null && state.variables.has(name)) {
 	return (SGML)state.variables.at(name);
       }
     }
     return (SGML)entities.at(name);
+  }
+
+  /** Get the value of a named global variable (entity).
+   */
+  public final SGML getGlobal(String name) {
+    return (SGML)entities.at(name);
+  }
+
+  /** Get the value of a named attribute.  Looks up the context tree until
+   *	it finds one.
+   */
+  public final SGML getAttr(String name) {
+    for (State state=stack; state != null; state = state.stack) {
+      if (state.it != null && state.it.hasAttr(name)) {
+	return state.it.attr(name);
+      }
+    }
+    return null;
   }
 
   /************************************************************************
@@ -582,10 +620,17 @@ public class Interp extends State {
     setQuoting(ignoreMarkup? -1 : 1);
   }
 
+  /** Replace the current token with another. */
   public final void replaceIt(SGML t) {
     it = t;
   }
 
+  /** Replace the current token with a String. */
+  public final void replaceIt(String s) {
+    it = (s == null)? null : new Text(s);
+  }
+
+  /** Delete the current token. */
   public final void deleteIt() {
     it = null;
   }
@@ -694,6 +739,38 @@ public class Interp extends State {
     return this;
   }
 
+  /************************************************************************
+  ** Error Messages:
+  ************************************************************************/
+
+  /** Eisplay a message to the user. */
+  public void message(String message) {
+    if (debug) message = "\n" + message;
+    if (debug || ! quiet()) System.err.println(message);
+  }
+
+  /** Generate an error message and display it to the user. */
+  public void error(Actor ia, String message) {
+    String msg = errheader(ia) + message;
+    if (debug || ! quiet()) System.err.println(msg);
+  }
+
+  /** Generate an "unimplemented" error message for the given actor. */
+  public void unimplemented(Actor ia) {
+    error(ia, "unimplemented");
+  }
+
+  /** Return an error-message header for the given Actor. */
+  public String errheader(Actor ia) {
+    String s = "Interform Error: ";
+    if (debug) s = "\n"+s;
+    String tag = (ia == null)? null : ia.tag();
+    String name = (ia == null)? null : ia.name();
+
+    if (tag != null) s += "<" + tag + "> ";
+    else if (name != null) s += "<... " + name + "> ";
+    return s;
+  }
 }
 
 

@@ -109,6 +109,11 @@ public class Tagset extends Token {
     return (Actor)tagged.at(t);
   }
 
+  /** Return the actor with a given name. */
+  public Actor forName(String t) {
+    return (Actor)actors.at(t);
+  }
+
   /** Return a matching (tagless) actor. */
   public Actor matchingAt(int i) {
     return (Actor)matching.at(i);

@@ -38,6 +38,51 @@ public class Handler {
   }
 
   /************************************************************************
+  ** Dispatching:
+  ************************************************************************/
+
+  /** Pass control to the handle method of another Actor.  Generates
+   *	an error message if the actor is not implemented in the
+   *	current tagset.  Looking up the handler in the tagset makes it
+   *	possible to use tagsets as a security mechanism.  */
+  public void dispatch(String name, Actor ia, SGML it, Interp ii) {
+    Actor a = ii.tagset().forName(name);
+    if (a == null) {
+      ii.error(ia, "dispatch to unimplemented actor "+name);
+    } else {
+      a.handle(it, ii);
+    }
+  }
+
+  /** Push another actor as the handler.  Generates an error message
+   *	if the actor is not implemented in the current tagset.
+   *	Looking up the handler in the tagset makes it possible to use
+   *	tagsets as a security mechanism.  */
+  public void actFor(String name, Actor ia, SGML it, Interp ii,
+		     byte incomplete, int quoting) {
+    Actor a = ii.tagset().forName(name);
+    if (a == null) {
+      ii.error(ia, "dispatch to unimplemented actor "+name);
+    } else {
+      a.actOn(it, ii, incomplete, quoting);
+    }
+  }
+
+
+  /************************************************************************
+  ** Utilities:
+  ************************************************************************/
+
+  public String getName(Actor ia, SGML it, Interp ii) {
+    String name = Util.getString(it, "name", null);
+    if (name == null || "".equals(name)) {
+      ii.error(ia, "name attribute required");
+      return null;
+    }
+    return name;
+  }
+
+  /************************************************************************
   ** Global handler table:
   ************************************************************************/
 

@@ -66,6 +66,9 @@ public interface SGML extends java.lang.Cloneable {
   /** The result of appending some text.  Slightly more efficient. */
   SGML appendText(Text t);
 
+  /** The result of appending a string. */
+  SGML append(String s);
+
   /** Append this as text.  Note that the destination need <em>not</em>
    * 	be pure text; it could be a list or a token.  */
   void appendTextTo(SGML sgml);
@@ -81,5 +84,8 @@ public interface SGML extends java.lang.Cloneable {
 
   /** Test whether an attribute exists. */
   boolean hasAttr(String name);
+
+  /** Convert to a number (double, being the most general form available). */
+  public double numValue();
 
 }
