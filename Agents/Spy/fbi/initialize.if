@@ -6,24 +6,25 @@
 <h1>Initialize the FBI</h1>
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
-<agent-set-criterion name="response">
-<agent-set-criterion name="agent_response">
+<agent-set-criteria>response agent-response html</>
 <set agent hook name="act-on"><protect>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/"><img src="&pia/fbi/Logo/pia24.gif" height=24 width=43
 			border=0></a>
-<if><test not exact match="&transAgentType;">&transAgentName;</test>
+<a href="&pia;/My/">[~]</a>
+[<a href="&pia;/History">Hist</a>
+ <a href="&pia;/My/History/">*</a>/<a
+    href="&pia;/My/History/&year;/">&year;</a>/<a
+    href="&pia;/My/History/&year;/&month;/">&month;</a>/<a
+    href="&pia;/My/History/&year;/&month;/&day;.html">&day;</a>
+ <a href="&pia;/My/History/.last.html">&time;</a>]
+( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
           <a href="&pia;/&transAgentType;/"> / </a></then>
 </if>
 <a href="&pia;/&transAgentName;">&transAgentName;</a>
-<a href="&pia;/&transAgentName;/"> / </a>
-[<a href="&pia;/My/History/">Hist</a>:
- <a href="&pia;/My/History/&year;/">&year;</a>/<a
-    href="&pia;/My/History/&year;/&month;/">&month;</a>/<a
-    href="&pia;/My/History/&year;/&month;/&day;.html">&day;</a>
- <a href="&pia;/My/History/.last.html">&time;</a>]
+<a href="&pia;/&transAgentName;/"> / </a> )
 <a href="/PIA/Agents/&urlPath;">&urlPath;</a>
 <hr>
 </trans-control>

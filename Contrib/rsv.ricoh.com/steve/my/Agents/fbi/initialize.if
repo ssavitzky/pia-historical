@@ -22,7 +22,7 @@
  <a href="&pia;/My/History/&year;/">&year;</a>/<a
     href="&pia;/My/History/&year;/&month;/">&month;</a>/<a
     href="&pia;/My/History/&year;/&month;/&day;.html">&day;</a>
- <a href="&pia;/My/History/.last.html">&time;</a>]
+ <a href="&pia;/My/History/last.html">&time;</a>]
 ( <if><test not exact match="&transAgentType;">&transAgentName;</test>
     <then><a href="&pia;/&transAgentType;">&transAgentType;</a>
           <a href="&pia;/&transAgentType;/"> / </a></then>
