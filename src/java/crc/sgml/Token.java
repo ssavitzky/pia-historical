@@ -122,6 +122,7 @@ public class Token implements SGML {
   public SGML attr(Index i) {
     System.out.println("in single token attr.");
 
+    if( content() == null ) return null;
     Tokens ts = content();
     //System.out.println("single attr ts is-->"+ts.toString());
     String ztag = i.getTag();
