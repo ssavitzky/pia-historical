@@ -71,7 +71,7 @@ public class Resolver extends Thread {
    * returns the number of elements
    */ 
   public final synchronized int unshift( Transaction obj ){
-    Pia.instance().debug(this, "unshift()");
+    Pia.debug(this, "unshift()");
     int i = transactions.unshift( obj );
     notify();
     return i;
@@ -82,7 +82,7 @@ public class Resolver extends Thread {
    * returns the number of elements
    */  
   public final synchronized int push( Transaction obj ){
-    Pia.instance().debug(this, "push()");
+    Pia.debug(this, "push()");
     int i = transactions.push( obj );
     notify();
     return i;
@@ -251,7 +251,7 @@ public class Resolver extends Thread {
 	tran = pop();
 	count++;
 
-	Pia.instance().debug(this, "Popped "+count+", " + size()+ " left");
+	Pia.debug(this, "Popped "+count+", " + size()+ " left");
 
 	/*
 	  Look for matches.
@@ -260,9 +260,9 @@ public class Resolver extends Thread {
 	  transactions onto the resolver, push satisfiers onto the
 	  transaction, or directly modify the transaction.
 	  */
-	Pia.instance().debug(this, "Attempting to match");
+	Pia.debug(this, "Attempting to match");
 	int n = match( tran );
-	Pia.instance().debug(this, "..." + n + " matches");
+	Pia.debug(this, "..." + n + " matches");
 	
 	/*
 	  Tell the transaction to go satisfy itself.  
@@ -272,7 +272,7 @@ public class Resolver extends Thread {
 	
 	// do indirectly by notifying transaction that it is resolved,
 	// the transaction thread becomes responsible for running satisfy
-	Pia.instance().debug(this, "Transaction resolves");
+	Pia.debug(this, "Transaction resolves");
 	tran.resolved();      
       }
       
@@ -304,10 +304,10 @@ public class Resolver extends Thread {
     
     while( e.hasMoreElements() ){
       agent = (Agent) e.nextElement();
-      Pia.instance().debug(this, "   match " + agent.name() + "?");
+      Pia.debug(this, "   match " + agent.name() + "?");
 
       if (tran.matches( agent.criteria() )){
-	Pia.instance().debug(this, "   matched " + agent.name());
+	Pia.debug(this, "   matched " + agent.name());
 	agent.actOn( tran, this );
 	++ matches;
       }
