@@ -28,7 +28,7 @@ on &piaHOST;
 <b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
 <b>Agents:</b>
    <repeat list="&agentNames;" entity="foo">
-      <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a>
+      <a href="/&foo;/home.if">&foo;</a> <a href="/&foo;/"><b> / </b></a>
    </repeat>
 <p>
 

@@ -163,27 +163,45 @@ add a default start-up form to this file.  <p>
        root:<input name="root" value="~/.pia/Photo_Album/">
        <input type="submit" value="Install">
        </form></if>
-       
-  <dt> <a name="CDRW">CD-R/RW</a>
-       <if><agent-running name=CDRW><then><em>installed</em></then>
-       <else>
+
+        <dt>  CD-R/RW
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
-       Samba Names and dirs are: publish, shared, backup, archive
-       SambaConfigFile: <input name="sambaConfig" value="/etc/sbm.conf">
-       <br>
+       Samba Names: (for mounting under windows)  archive publish backup
+       shared<br>
+       SambaConfigFile: <input name="sambaConfig" value="/etc/smb.conf">
+<br>
        <input type="submit" value="Install"><br>
-       </form></if>
-  <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-       <if><agent-running name="archive"><then><em>installed</em></then>
-       <else>
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="archive">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="~/.pia/CDRW/archive">
        <input type="submit" value="Install">
-       </form></if>
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="publish">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/publish">
+       <input type="submit" value="Install">
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="shared">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/shared">
+       <input type="submit" value="Install">
+       </form>
+<dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
+  <dd> <form action="/Agency/install_agent.if" method="POST">
+       name:<input name="agent" value="backup">
+       type:<input name="type" value="DOFS"><br>
+       root:(absolute) <input name="root" value="~/.pia/CDRW/backup">
+       <input type="submit" value="Install">
+       </form>
 
   <dt> Photo album  <if><agent-running name="Photo_Album"><then><em>installed</em></then>
        <else>

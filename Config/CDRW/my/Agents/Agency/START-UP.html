@@ -54,21 +54,17 @@ Customize with the commands:
        </form>
 </dl>
 
-<h3>Optional Agents</h3>
-
-<blockquote><em>
-  You may want to customize this section.
-</em></blockquote>
+<h3> Special Agents</h3>
+ Specific agents for this device.
 <dl>
  <dt>  CD-R/RW
   <dd> <form action="/Agency/install_agent.if" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
-       Samba Name: (for mounting under windows) <input name="sambaName"
-       value="archive"><br>
+       Samba Names: (for mounting under windows)  archive publish backup
+       shared<br>
        SambaConfigFile: <input name="sambaConfig" value="/etc/smb.conf">
-       root: (relative to agent directory)<input name="rootDir" value="archive"\
-><br>
+<br>
        <input type="submit" value="Install"><br>
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
