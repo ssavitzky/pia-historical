@@ -57,6 +57,11 @@ public class ParseTreeEntity extends ParseTreeNamed implements ActiveEntity {
     action = e.action;
   }
 
+  /** Construct a node with given name. */
+  public ParseTreeEntity(String name) {
+    super(name);
+  }
+
   /** Construct a character entity. */
   public ParseTreeEntity(String name, char c) {
     super(name, new ParseNodeList(new ParseTreeText(c)));
