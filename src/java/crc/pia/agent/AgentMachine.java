@@ -75,6 +75,9 @@ public class AgentMachine extends Machine {
      TernFunc cb = callback();
      cb.execute(agent, reply, resolver);
      */
+     Transaction req = reply.requestTran();
+     if ( req != null )
+       Pia.instance().debug(this, "AgentMachine -- output from sendResponse with request url" + req.requestURL().toExternalForm());
      if( reply != null ){
        Content c = reply.contentObj();
        if( c != null ){
