@@ -13,7 +13,7 @@
 <set name=touser><get form name=touser></set>
 
  <if><get name=touser> <then>
- Routing <a href=&formurl;>&formurl;</a> to <get name=touser>.
+ Routing <a href=show_signatures.if?formurl=&formurl;>&formurl;</a> to <get name=touser>.
  <notify-user user=&touser; form=&formurl;>
  </then> <else>
 <h2>Put a form on somebody's inbox (pending list) </h2>
@@ -32,6 +32,6 @@
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Fri Feb 13 17:14:41 1998
+Last modified: Thu May 28 13:23:34 1998
 <!-- hhmts end -->
 </body></html>

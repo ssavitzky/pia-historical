@@ -24,9 +24,10 @@
  <set name=formtext><get index=anchor.Text></set>
 <TR><TD> <a href="show_signatures.if?formurl=&formurl;">&formtext;</a>
  <TD> <set name=sigs><read file=&formurl;.sig process></set>
-<for-every tag=signer object=&sigs; entity=signer>
-&signer;
-</for-every>
+<set name=mysigners><dummy><get name=sigs findall=signer></dummy></set>
+<repeat list=&mysigners; entity=msigner>
+&msigner;
+</repeat>
 </TR>
 </repeat>
 </table>
@@ -77,6 +78,6 @@ Show
 <b>Copyright © 1998 Ricoh Silicon Valley</b><br>
 <!-- $Id$ -->
 <!-- hhmts start -->
-Last modified: Fri Feb 13 16:31:57 1998
+Last modified: Thu May 28 13:27:19 1998
 <!-- hhmts end -->
 </body></html>
