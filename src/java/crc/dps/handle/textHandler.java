@@ -52,6 +52,8 @@ public class textHandler extends GenericHandler {
     if (dispatch(e, "sort")) 	 return text_sort.handle(e);
     if (dispatch(e, "trim")) 	 return text_trim.handle(e);
     if (dispatch(e, "pad"))      return text_pad.handle(e);
+    if (dispatch(e, "split"))    return text_split.handle(e);
+    if (dispatch(e, "join"))     return text_join.handle(e);
     return this;
   }
 
@@ -78,6 +80,9 @@ public class textHandler extends GenericHandler {
   }
 }
 
+/** Sorts a list of strings in ascending order.  If the reverse
+  * attribute is set, sorts in descending order.
+  */
 class text_sort extends textHandler {
 
   protected boolean reverse   = false;
@@ -123,28 +128,16 @@ class text_sort extends textHandler {
 /** Eliminate leading and trailing (optionally ALL) whitespace
     from CONTENT.  Whitespace inside markup is not affected.
 */
-
 class text_trim extends textHandler {
 
   protected boolean trim  = false;
-  protected boolean align = false;
-  protected boolean left  = false;
-  protected boolean right = false;
   protected int width     = -1;
   
   public void action(Input in, Context aContext, Output out, 
 		     ActiveAttrList atts, NodeList content) {
 
     NodeList nl = TextUtil.getText(content);
-
-    // Just retrieves text, no markup
-    // printNodeList(nl);
-    
-    List list = TextUtil.getTextList(content, false);
-    // printList(list);
-
     Enumeration resultList = TextUtil.trimListItems(content);
-    
     putEnum(out, resultList);
   }
 
@@ -158,8 +151,11 @@ class text_trim extends textHandler {
 }
 
 
-/** Eliminate leading and trailing (optionally ALL) whitespace
-    from CONTENT.  Whitespace inside markup is not affected.
+/** Pad text to the specified width with the specified alignment.
+    The default is left, meaning that spaces are added to the
+    right.  If text alignment is right, spaces are added to the
+    left.  Center means that padding is added to the left and right
+    so that the text is centered within the specified width.
 */
 class text_pad extends textHandler {
 
@@ -167,13 +163,15 @@ class text_pad extends textHandler {
   protected boolean align = false;
   protected boolean left  = false;
   protected boolean right = false;
+  protected boolean center = false;
   protected int width     = -1;
   
   public void action(Input in, Context aContext, Output out, 
 		     ActiveAttrList atts, NodeList content) {
 
     NodeList nl = TextUtil.getText(content);
-    Enumeration resultList = TextUtil.padListItems(content, align, left, right, width);
+    Enumeration resultList = TextUtil.padListItems(content, align, left, right, 
+						   center, width);
     putEnum(out, resultList);
   }
 
@@ -183,6 +181,7 @@ class text_pad extends textHandler {
     align  = atts.hasTrueAttribute("align");
     left   = atts.hasTrueAttribute("left");
     right  = atts.hasTrueAttribute("right");
+    center  = atts.hasTrueAttribute("center");
     width  = MathUtil.getInt(atts, "width", -1);
   
   }
@@ -192,5 +191,125 @@ class text_pad extends textHandler {
 }
 
 
+/** Split text at the whitespace and return a new node for each individual word.
+    If the sep attribute has been specified, a new separator node is created and added
+    to the node list after each text node.  A separator is not added after the last
+    node on the list.  Marked up nodes are not split unless the text attribute is used.
+    If the text attribute is specified, text is retrieved from marked up nodes and split.
+*/
+class text_split extends textHandler {
+
+  protected boolean text = false;
+  protected String sep = null;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    Enumeration resultList = null;
+    Enumeration tmpEnum = null;
+    // Text attribute extracts text and ignores mark up
+    if(text) {
+      NodeList nl = TextUtil.getText(content);
+      tmpEnum = ListUtil.getListItems(nl);
+    }
+    else {
+      tmpEnum = ListUtil.getListItems(content);
+    }
+    // Handle separator.  For each list item except the
+    // last one, create a separator node and add to node list
+    List rList = null;
+    if(sep != null) {
+      int count = 0;
+      rList = new List();
+      while (tmpEnum.hasMoreElements()) {
+	if(count > 0) {
+	  Node sepNode = new ParseTreeText(sep);
+	  rList.push(sepNode);
+	}
+	rList.push((Node)tmpEnum.nextElement());
+	count++;
+      }
+      resultList = rList.elements();
+    } 
+    else {
+      resultList = tmpEnum;
+    }
+    putEnum(out, resultList);
+  }
+
+  public text_split(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    sep    = atts.getAttributeString("sep");
+    text   = atts.hasTrueAttribute("text");
+  }
+
+  static Action handle(ActiveElement e) { return new text_split(e); }
+
+}
 
 
+/** 
+    Replaces whitespace in text nodes with a separator and combines
+    separated text into a single node.  Unless the text attribute is specified,
+    marked up nodes are unchanged.  The result from text_join is a list of
+    combined nodes and marked up nodes.  Separators are added between each node
+    on the result list, as well as each item within the combined nodes.
+
+    For example, if we start with nodes:  text1 text2 markup1 text3 text4 markup2
+    and separator ";", the result would be a list of four nodes: 
+    combined_text1;markup1;combined_text2;markup2.  combined_text1 looks like this:
+    text1;text2.  
+
+    Attributes are sep and text.  If sep is not specified, space is
+    used as the separator, otherwise the specified separator is placed
+    between each word in a combined node and between any combined
+    nodes and marked up nodes.  If the text attribute is specified,
+    text is extracted from marked up nodes, split at whitespace and
+    joined using the sep attribute.
+*/
+class text_join extends textHandler {
+
+  protected String sep = null;
+  protected boolean text = false;
+  
+  public void action(Input in, Context aContext, Output out, 
+		     ActiveAttrList atts, NodeList content) {
+
+    Enumeration tmpEnum = null;
+    List rList = new List();
+
+    // Set default if separator not specified
+    if(sep == null)
+      sep = " ";
+
+    // Text attribute extracts text and ignores mark up
+    if(text) {
+      NodeList nl = TextUtil.getText(content);
+      tmpEnum = ListUtil.joinListItems(nl, sep);
+    }
+    else {
+      tmpEnum = ListUtil.joinListItems(content, sep);
+    }
+    int count = 0;
+    while (tmpEnum.hasMoreElements()) {
+      if(count > 0) {
+	Node sepNode = new ParseTreeText(sep);
+	rList.push(sepNode);
+      }
+      rList.push((Node)tmpEnum.nextElement());
+      count++;
+    }
+    putEnum(out, rList.elements());
+  }
+
+  public text_join(ActiveElement e) {
+    super(e);
+    ActiveAttrList atts = (ActiveAttrList) e.getAttributes();
+    sep   = atts.getAttributeString("sep");
+    text   = atts.hasTrueAttribute("text");
+  }
+
+  static Action handle(ActiveElement e) { return new text_join(e); }
+
+}
