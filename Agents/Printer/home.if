@@ -3,7 +3,7 @@
 <title></title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
-<h1>Home page</a> for printer <code language="perl"> return $current_self->name; </code> </h1>
+<h1>Printer `&agentName;' on &piaHOST; </h1>
 You have reached the web printer home page.    To preview a document, enter
 the URL and click "Preview":
 <code language=perl>
@@ -30,6 +30,6 @@ From this page, you may:
   <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Wed Sep 11 16:35:59 1996
+Last modified: Wed Nov 13 18:08:55 1996
 <!-- hhmts end -->
 </body></html>
