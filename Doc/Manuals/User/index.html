@@ -33,8 +33,11 @@ in an <code>xterm</code> window.  If you're using <code>telnet</code> to
 connect to a shared server, use
 
 <pre>
-  pia -P&amp;
+  pia -p <em>port</em>&amp;
 </pre>
+
+to assign a port number.  8000 + your user ID is usually a good choice.  The
+default is 8888.<p>
 
 If you have made a personal copy in your home directory, use
 
@@ -52,7 +55,8 @@ If you're using Netscape, go to the ``proxies'' tab under ``network options.''
 Click on ``manual proxy configuration'' and ``view'', and set the host name
 and port to the ones the PIA printed out when it started.  Browse to the
 Agency's home page:
-<code>&lt;<a href="http://Agency/">http://Agency/</a></code>&gt;.<p> 
+<code>&lt;<a href="http://Agency/">http://Agency/</a></code>&gt;.
+<p>
 
 Many Unix browsers, such as Chimera and Arena, take their proxies from
 environment variables.  In this case you can have the PIA start your browser:
@@ -60,6 +64,10 @@ environment variables.  In this case you can have the PIA start your browser:
 <pre>
   pia -c "chimera http://Agency/"&amp;
 </pre>
+
+<blockquote><em>
+  This feature may not be available in the Release 0.9.
+</em></blockquote>
 
 The host ``<code>Agency</code>'' is shorthand for the hostname and port number
 of the agency your browser is using as a proxy.  It lets you refer to your
@@ -85,67 +93,85 @@ else's, or a printer's, PIA. <p>
   <dd> This is normally
        the place where the PIA is installed; if you have your own copy it is
        <code>~/pia</code>, otherwise it's probably
-       <code>/usr/local/pia</code>.  It is accessible in the pia as the DOFS
-       <code><a href="/PIA/">/PIA/</a></code>.
+       <code>/usr/local/pia</code>.  It is accessible in the PIA as the DOFS
+       agent <code><a href="/PIA/">/PIA/</a></code>.  The PIA can almost
+       always figure out its own location, so the main use for this option is
+       debugging. 
   <dt> <code>-u <em>USR_DIR</em></code>
   <dd> Set the <code>USR_DIR</code> environment variable.  This is normally
-       <code>~/.pia</code>, and is accessible in the pia as the DOFS <code><a
-       href="/My/">/My/</a></code>.  It's where the PIA keeps your
-       customizations, history, and private agent state.
+       <code>~/.pia</code> on Unix systems, and is accessible in the pia as
+       the DOFS <code><a href="/My/">/My/</a></code>.  It's where the PIA
+       keeps your customizations, history, and private agent state.
   <dt> <code>-port <em>[port_number]</em></code>
+  <dt> <code>-p <em>[port_number]</em></code>
   <dd> Specifies the port on which the agency is listening for connections.
        This is normally 8888.
-  <dt> <code>-port</code>
+  <dt> <code>-P</code>
   <dd> Listen on port =  8000 + your user ID, in case you're sharing a
        computer with other people.
+       <em>Not available in Release 0.9.</em>
        <p>
-  <dt> <code>-p <em>configurationfile</em></code>
-  <dd> The configuration file for the PIA; please specify the complete path.  The
-       default file is stored under pia/Config/pia.props.  You can create a
+  <dt> <code>-profile <em>configurationfile</em></code>
+  <dd> The configuration file for the PIA.  The default file is stored under
+       pia/Config/pia.props, but is not normally used. You can create a
        customizable copy in your home directory under ~./pia with the command
-<p>
+       <pre>
        pia/bin/makeconfig
-       
+       </pre>
   <dt> <code>-q</code>
   <dd> Be quiet -- only print out error messages.
+        <em>Not available in Release 0.9.</em>
   <dt> <code>-v</code>
   <dd> Be verbose.  Print out a little more information than usual.
   <dt> <code>-d</code>
-  <dd> Debugging -- print out <em>lots</em> of stuff.  If <em>n</em> is 2 or
-       more, print out even more information, from the InterForm parser.
-       Debugging printout makes the Agency run <em>very</em> slowly.
+  <dd> Debugging -- print out <em>lots</em> of stuff.  If <em>both</em>
+       <code>-d</code> and <code>-v</code> options are provided, also print
+       debugging information from the InterForm parser.  Debugging printout
+       makes the PIA run <em>very</em> slowly.
   <dt> <code>-?</code>
-  <dd> Print out command line options
+  <dt> <code>-help</code>
+  <dd> Print out command line options.  With <code>-v</code>, also prints out
+       all the global properties defined by the combination of the
+       configuration file, the environment, and the command line.
+  <dt> <code><em>name</em>=<em>value</em></code>
+  <dd> Define a global property (name-value pair).
 </dl>
 
 <h2>Agents</h2>
 
-By convention, ``agents'' that have capitalized names are Document-Oriented
-File Systems that contain ordinary documents; agents with lowercase names are
-``ordinary'' agents that consist of <em>active</em> documents.<p>
+By convention, most ``agents'' that have lowercase names are Document-Oriented
+File Systems that contain ordinary documents; agents with capitalized  names
+are ``ordinary'' agents that consist of <em>active</em> documents.  (There are
+some exceptions: for example the DOFS agents <code>/PIA</code> and
+<code>/My</code> are standard, and some experimental agents have lowercase
+names. <p>
 
-Agents have both a ``home page'' (which you get to via a URL that doesn't
-end in a ``<code>/</code>'' character, like this: <code><a
+
+
+Agents have both a ``home page'' (which you get to via a URL that doesn't end
+in a ``<code>/</code>'' character, like this: <code><a
 href="/Agency">/Agency</a></code>), and an ``index page''(which you get to via
 a URL ending in ``<code>/</code>'', like this: <code><a
 href="/Agency">/Agency/</a></code>).  Usually the index will just tell you
-what ``sub-agents,'' if any, are available, and the home page is where you go
-to find out about the agent's functions and control its operations.<p>
+what ``sub-agents,'' if any, are available, and give you a standard set of
+links to the the agent's home page, options form, and so on.  The home page is
+where you go to find out about the agent's functions and control its
+operations.<p>
 
-The Agency as a whole <em>also</em> has a home page.<p>
+The PIA as a whole <em>also</em> has a home page.<p>
 
 It is usually possible to use an agent from ``outside'' an agency, by simply
 giving its url.  You can send someone a link to one of your agents' pages, for
-example a page in your hotlist, in order to share information.  Agents that
+example a page in your history, in order to share information.  Agents that
 write files or control the Agency's operation are written so as to only work
 when the Agency is being used as a proxy. <p>
 
 <h3>Agency</h3>
 
 The <code><a href="/Agency">Agency</a></code> agent, as you might expect, is
-the agent that you use to control the Agency itself--it lets you install and
-delete agents, restart or shut down the Agency, even shut down your 
-computer.  It is used <em>inside</em> the Agency for many purposes, including
+the agent that you use to control the PIA andits agents--it lets you install
+and delete agents, restart or shut down the Agency, even shut down a PIA-based
+appliance.  It is used <em>inside</em> the Agency for many purposes, including
 installing and removing agents.  It contains many useful InterForms:<p>
 
 <ul>
@@ -153,15 +179,14 @@ installing and removing agents.  It contains many useful InterForms:<p>
   <li> <a href="/Agency/installers.if">install new agents</a>
   <li> <a href="/Agency/entities.if">list defined entities</a>
   <li> <a href="/Agency/options.if">view/change options</a>
-  <li> <a href="/Agency/debug.if">toggle debugging</a> (currently 
-       <code>off</code> );
+  <li> <a href="/Agency/debug.if">toggle debugging</a>
   <li> <a href="/Agency/remove_agent.if"> remove agent</a>
   <li> <a href="/Agency/shutdown.if">Shut down the computer</a>
 </ul>
 
 The <a href="/Agency/installers.if">install new agents</a> form is
 particularly useful if you want to try out unfamiliar agents.  At the moment
-the only way to get up-to-date documentation on an agent is from its home
+the only way to get up-to-date documentation on a new agent is from its home
 page, which is only useable after you install it.<p>
 
 
@@ -178,12 +203,13 @@ its <a href="/DOFS">home page</a> contains a form for installing a new DOFS.<p>
 
 Document-Oriented File Systems are very much like ordinary Web server document
 directories.  The main difference is that the <code>index.html</code> file, if
-there is one, only replaces the directory listing if you're not using the
-Agency as a proxy.  This means that you can provide different behavior
-(including the equivalent of a ``keep out'' sign) for yourself and for other
-people to whom you might have given access to your Agency.<p>
+there is one, only replaces the directory listing if you omit the trailing
+slash on the directory's name.  This is useful if you are using a PIA to
+maintain pages that will usually be delivered by an ordinary Web server. <p>
 
-Also DOFS agents, like other agents, have separate index and home pages.  The
+Also DOFS agents, like other agents, have separate home and index pages,
+accessible as <code>/DOFS/<em>agent-name</em></code> and
+<code>/DOFS/<em>agent-name/</em></code> respectively.  The
 <em>home page</em> (without a trailing slash) gives information <em>about</em>
 the DOFS, for example where its files are located.  It also contains a
 form that you can paste into your personal start-up file.<p>
@@ -194,33 +220,37 @@ the source code for an InterForm.<p>
 
 <h3>Spies</h3>
 
-There are two major ``spy'' agents: the <code><a href="/Cia">Cia</a></code>
-and the <code><a href="/Fbi">Fbi</a></code>.  (These correspond to two of the
+There are two major ``spy'' agents: the <code><a href="/cia">cia</a></code>
+and the <code><a href="/fbi">fbi</a></code>.  (These correspond to two of the
 major espionage agencies of the US federal government; at some point we might
 add an NSA as well.  Of course in the PIA we have to call them agents rather
 than agencies.  Oh, well.)<p>
 
-The ``spy'' agents each look for a particular type of transaction and extract
-information from it.  The CIA looks at transactions that go <em>outside</em>
-the Agency, while the FBI looks at transactions directed at agents.<p>
+The ``spy'' agents each look for a particular type of transaction, extract
+information from it, and report back to you.  The CIA looks at transactions
+that go <em>outside</em> the Agency, while the FBI looks at transactions
+directed at agents.<p>
 
-Each spy agent can be configured to put a small ``toolbar'' on top of each
-HTML page it examines.  The toolbar on pages from <em>inside</em> the Agency
-start with a "PIA" logo, while those from <em>outside</em> just have the
-pentagonal spiderweb logo.  In both cases the logo is a link to the Agency
-home page.<p>
+Each spy agent is configured to put a small ``toolbar'' or ``banner'' on
+top of each HTML page it examines.  The toolbar on pages from <em>inside</em>
+the Agency start with a "PIA" logo, while those from <em>outside</em> just
+have the pentagonal spiderweb logo.  In both cases the logo is a link to the
+PIA's home page.<p>
 
 The FBI's toolbar has a link to the home page of the agent that generated the
 page you're looking at, and a link to the source code of the corresponding
 InterForm.  The CIA's toolbar tells you the page's cache status and gives you
 a button for adding it to the hotlist.  Both give you the current date and
 time; the date is a link to the daily history list, and the time is a link to
-the current document information.<p>
+the current document information (similar to Netscape's ``View/Document Info''
+menu selection).<p>
 
-The history information is updated only by the CIA, not the FBI, so it only
-applies to documents coming from <em>outside</em> the agency.  This can be
-useful--you can browse to a page and do a lot of work in the agency, for
-example checking your history and hotlist, without losing your place.<p>
+The history information is normally recorded (by the <a
+href="/History">History</a> agent) only for transactions matched by the CIA,
+not the FBI, so it only applies to documents coming from <em>outside</em> the
+agency.  This can be useful--you can browse to a page and do a lot of work in
+the agency, for example checking your history and hotlist, without losing your
+place.<p>
 
 
 <h3>History</h3>
@@ -228,18 +258,17 @@ example checking your history and hotlist, without losing your place.<p>
 Eventually the <code><a href="/History">History</a></code> agent will let you
 do searches in your history list, view it in various ways, and so on.  For the
 moment it just keeps a file for every day (the name is
-<code>/My/History/<em>yymmdd</em>.html</code>; it really ought to be
-<code>/My/History/<em>yyyy</em>/<em>mmdd</em>.html</code>) that lists every
-URL you visit outside the Agency itself, together with the time you went
-there.<p>
+<code>/My/History/<em>yyyy</em>/<em>mm</em>/<em>dd</em>.html</code>) that
+lists every URL you visit outside the Agency itself, together with the time
+you went there.<p>
 
 
 <h3>Cache</h3>
 
 <dl>
   <dt> <b>Note:</b>
-  <dd> This agent is currently under construction, and does not yet
-       operate exactly as described here.
+  <dd> This agent is currently under construction, and is not available in
+       Release 0.9.
 </dl>
 
 The <code><a href="/Cache">Cache</a></code> agent keeps a copy of every page
@@ -271,9 +300,8 @@ instead of the ``C''.<p>
 
 <dl>
   <dt> <b>Note:</b>
-  <dd> This agent is currently under construction, and does not yet
-       operate exactly as described here.  (As a matter of fact the Hotlist
-       agent doesn't exist at all, <em>yet!</em>)
+  <dd> This agent is currently under construction, and is not available in
+       Release 0.9.
 </dl>
 
 The <code><a href="/Hotlist">Hotlist</a></code> agent is really more than
@@ -423,7 +451,7 @@ be a <code><a href="/Proxy">Proxy</a></code> agent that lets you change your
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Jul 23 14:17:07 1997
+Last modified: Fri Aug  1 00:22:15 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/steve/steve.html"
