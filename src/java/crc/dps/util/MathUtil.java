@@ -86,7 +86,7 @@ public class MathUtil {
    *	Return null if the node contains no numeric text.
    */
   public static Association getNumeric(Node n) {
-    Association a = Association.associateNumeric(n, n.toString());
+    Association a = Association.associateNumeric(n, ListUtil.getFirstWord(n));
     return (a.isNumeric())? a : null;
   }
 
@@ -99,7 +99,10 @@ public class MathUtil {
   }
 
   /** Return a list of numeric Associations.  Recursively descends into
-   *  	nodes with children, and splits text nodes containing whitespace.  */
+   *  	nodes with children, and splits text nodes containing whitespace. 
+   *	Most useful for extracting <em>all</em> numbers from a piece of a 
+   *	document.
+   */
   public static Enumeration getNumbers(NodeList nl) {
     List l = new List();
     Enumeration items = ListUtil.getTextItems(nl);
@@ -109,6 +112,22 @@ public class MathUtil {
     }
     return l.elements();
   }
+
+  /** Return a list of numeric Associations.  Splits text nodes containing
+   *	whitespace, but associates non-text markup with the numeric value of
+   *	their first text item.  Most useful for sorting nodes numerically.
+   */
+  public static Enumeration getNumericList(NodeList nl) {
+    List l = new List();
+    Enumeration items = ListUtil.getListItems(nl);
+    while (items.hasMoreElements()) {
+      Association a = getNumeric((Node)items.nextElement());
+      if (a != null) l.push(a);
+    }
+    return l.elements();
+  }
+
+  
 
   /************************************************************************
   ** Output Conversion:
