@@ -10,7 +10,7 @@
 
 <!-- should be form maintainer -->
 <set entity name=mlist><read file="mgr.dat" process></set>    
-<set entity name=maintainer>wolff</set>
+<set entity name=maintainer>belinda</set>
 <set entity name=routeobject> <dl><dt>&FORM.name;<dd>&maintainer;<dt>&maintainer;<dd>NULL</dl></set>
 
 <set entity name=timesec>&time;:&second;</set> 
