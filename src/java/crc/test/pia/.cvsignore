@@ -1,1 +1,4 @@
-Client.class
+*.class
+*.diff
+*.out
+*.ok
