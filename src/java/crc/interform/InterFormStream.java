@@ -19,7 +19,9 @@ import crc.interform.Interp;
  *	the Interp's output is written directly into the buffer rather than
  *	being converted to a String.
  *
- *	@see InterFormReader
+ *	@see crc.interform.Interp
+ *	@see crc.interform.InterFormReader
+ *	@see java.io.StringWriter
  */
 public class InterFormStream extends InputStream {
 
@@ -44,14 +46,12 @@ public class InterFormStream extends InputStream {
       currentOutput.setLength(0);
     }
     while (currentOutput.length() == 0) {
-      Tokens output = interp.step();
-      if (output == null || output.nItems() == 0) {
+      interp.resolve(null, true);
+      if (interp.finished()) {
 	interp = null;
 	return -1;
       }
-      output.writeOn(writer);
       currentPosition = 0;
-      output.clear();
     }
 
     return currentOutput.charAt(currentPosition++);
@@ -75,5 +75,6 @@ public class InterFormStream extends InputStream {
   public InterFormStream(Interp ii) {
     this();
     interp = ii;
+    interp.toWriter(writer);
   }
 }

@@ -725,7 +725,7 @@ public class Interp extends State {
 
   /** Run the interpretor until it completes.  Return the output.
    */
-  public Tokens run() {
+  public final Tokens run() {
     resolve(null, false);
     flush();
     return output;
@@ -733,17 +733,22 @@ public class Interp extends State {
 
   /** Flush the interpretor's input queue, running it to completion.
    */
-  public void flush() {
+  public final void flush() {
     resolve(Element.endTagFor(null), false);
   }
 
   /** Run the interpretor for a single step.  Return the output.
    */
-  public Tokens step() {
+  public final Tokens step() {
     resolve(null, true);
     return output;
   }
 
+  /** Test the interpretor for end of file.
+   */
+  public final boolean finished() {
+    return input == null;
+  }
 
   /************************************************************************
   ** Output:
@@ -752,14 +757,14 @@ public class Interp extends State {
   /** Pass a token or tree to the output. */
   final void passToken(SGML it) {
     if (output == null && writer == null) return;	// skipping.
-    if (! streaming) {		// Not streaming: just pass the tree
+    if (writer != null) {
+      it.writeOn(writer);
+    } else if (! streaming) {		// Not streaming: just pass the tree
       if (it.incomplete() > 0) it = ((Element)it).startToken();
       output.push(it);		// === There should be an appendTo
-      // === Otherwise we need to copy start tags. ===
-    } else if (writer != null) {
-      it.writeOn(writer);
+				// === Otherwise we need to copy start tags. ===
     } else {
-      // === This is old; using writer is better === 
+      // === This is old; using a writer is better === 
       if ( output.nItems() == 0) {
 	/* Using a StringBuffer here is more efficient and avoids
 	 *	appending to a Text already in use somewhere else. */
@@ -900,14 +905,18 @@ public class Interp extends State {
 
   /** Send output to a stream. */
   public Interp toStream(OutputStream out) {
-    output = new TokenStream(out);
+    //output = new TokenStream(out);
+    output = null;
+    writer = new java.io.OutputStreamWriter(out);
     setPassing();
     return this;
   }
   
   /** Send output to a Writer. */
   public Interp toWriter(Writer out) {
-    output = new TokenWriter(out);
+    //output = new TokenWriter(out);
+    output = null;
+    writer = out;
     setPassing();
     return this;
   }
