@@ -212,7 +212,7 @@ sub if_entities {
 	}
 	my $url = $trans->url;
 	my $path = $url->path if defined $url;
-	my $query = $url->query if defined $url;
+	my $query = $url->equery if defined $url;
 	$file =~ m:([^/]*)$:;
 	my $fn = $1;
 
