@@ -1,0 +1,98 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Writing &amp; Customizing Spies</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body bgcolor="#ffffff">
+<h1>Writing &amp; Customizing Spies</h1>
+
+<h2>Customizing a &agentType; Agent</h2>
+
+<h3>Copying the Initialization File</h3>
+
+In order to <em>customize</em> a <a href="/&agentType;">&agentType;</a> agent,
+all you have to do is create an personal copy of the
+<code>initialize.if</code> InterForm file.  The original can be found in
+
+<pre>
+ .../pia/Agents/&agentType;/<em>agentName</em>/initialize.if
+</pre>
+
+(where <code>.../pia</code> is the PIA's installation directory).<p>
+
+You need to install this in your personal agent customization directory:
+
+<pre>
+ ~/.pia/Agents/&agentType;/<em>agentName</em>/initialize.if
+</pre>
+
+(On a non-Unix machine this may be something other than <code>~/.pia</code>).
+<p>
+
+<h3>Customizing the Banner</h3>
+
+In the <code>initialize.if</code> file, you will find a block of InterForm
+code that starts out:
+<pre>
+  &lt;set agent hook name="act-on"&gt;&lt;protect&gt;
+  &lt;trans-control&gt;
+</pre>
+
+and ends with:
+
+<pre>
+  &lt;/trans-control&gt;
+  &lt;/protect&gt;&lt;/set&gt;
+</pre>
+
+The part inside the <code>&lt;trans-control&gt;</code> element is the banner.  It's usually
+this that you will want to customize.  Consult the <a
+href="/PIA/Doc/Manuals/InterForm">InterForm Programming Manual</a> for
+detailed information on what you can do here.  In many cases all you will want
+to do is add a link.<p>
+
+For examples of customized &agentType; agents, see <a
+href="/PIA/Contrib/rsv.ricoh.com/steve/my/Agents">
+/PIA/Contrib/rsv.ricoh.com/steve/my/Agents</a><p>
+
+
+<hr>
+<h2>Writing a New &agentType; Agent</h2>
+
+The easiest way to write a new &agentType; agent (or <em>any</em> new agent,
+for that matter) is to copy an existing one.
+
+<ol>
+  <li> Make a new subdirectory of your personal &agentType; directory,
+       i.e. <code>~/.pia/Agents/&agentType;/<em>foo</em></code>.
+  <li> Copy in an existing &agentType; agent's <code>initialize.if</code> and
+       <code>about.inc</code> files.
+  <li> Edit them.
+  <li> Install the new agent.
+</ol>
+
+The main thing you will want to customize at this point, in addition to the
+banner, is the statements near the beginning of the file that look like:
+
+<pre><protect markup>
+  <agent-set-criterion name="response">
+  <agent-set-criterion name="agent_response">
+</protect></pre>
+
+(to use the FBI as an example).  These statements determine the ``match
+criteria'' for transactions that the agent will ``act on''.<p>
+
+By the way, if more than one &agentType; agent adds a banner to a page, they
+will be concatenated.  There is no easy way at the moment to determine which
+banner will appear first, so it's best to end your banner with a horizontal
+rule (&lt;hr&gt;) tag, unless it consists of just one or two small icons.<p>
+
+The logo icons used by the <a href="/&agentType;/fbi">fbi</a> and <a
+href="/&agentType;/cia">cia</a> are 24 pixels high.
+
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>

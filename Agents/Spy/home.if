@@ -1,0 +1,94 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Home Page for &agentName;</title>
+<link rev="made" href="mailto:wolff@crc.ricoh.com">
+<base href="http://&piaHOST;:&piaPORT;/&agentName;/home.if">
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<set entity name="subs"><agent-list subs type="&agentType;"></set>
+
+<set entity name=title>&agentName; agent <br>Home Page</set>
+<read interform file="heading.inc" process>
+<table cellspacing=0 cellpadding=0>
+<tr><th width=170><td>
+  <table cellspacing=0 cellpadding=0>
+    <tr><th width=170><td> <a href="index.if">Index Page</a>
+    <tr><th align=right><a href="home.if">&agentName;</a>:
+	<td><strong>Home Page</strong>
+    <tr><th>
+        <td><a href="options.if">options</a>
+	<if><read info interform file="initialize.if">
+	    <then><a href="initialize.if">[re-initialize]</a></then></if>
+    <tr><th align=right>
+           <if><test not exact match="&agentType;">&agentName;</test>
+	        <then><a href="/&agentType;/home.if">&agentType;</a>/</then>
+                <else>Index: </else></if>
+        <td><repeat list="&subs;">
+               <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
+           </repeat>
+    <tr><th><td> <a href="using.if">Using Spies</a>
+    <tr><th><td> <a href="writing.if">Writing &amp; Customizing Spies</a>
+  </table>
+</table>
+<hr>
+<a href="/">PIA</a> || <a href="/Agency">Agency</a> ||
+<if><test not exact match="&agentType">&agentName;</test>
+    <then><a href="/&agentType;">/&agentType;</a>
+          <a href="/&agentType;/">/</a></then></if>
+<a href="home.if">&agentName;</a>
+<a href="home.if">/</a>
+<a href="options.if">options</a> 
+// <repeat list="&subs;">
+   <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a></repeat>
+<hr>
+
+<if><agent-running name=History>
+  <then><a href="/History/home.if">History</a> agent also installed.
+        Good.  </then>
+  <else>Most &agentType; agents make links to the history agent's data, and
+	are not nearly as useful without it.
+        See the <a href="/Agency/installers.if#History">installation page</a>
+        or <br>
+        <form method=POST action="/Agency/install_agent.if">
+		<input name="agent" value="History" size=30>
+		<input type="submit" value="Install History Now">
+        </form>
+  </else>
+</if>
+<hr>
+
+<read interform file="about.inc" process>
+<p>
+
+<if><test not exact match="&agentName;">&agentType;</test>
+<then>
+<h3>&agentName; Agent Act-On Hook</h3>
+
+<blockquote><em>
+  This is the source code for the banner that <a
+  href="/&agentType/&agentName;">&agentName;</a> puts on top of every 
+  page.  It can be customized by making an edited copy of the 
+  initialization InterForm,
+  <code><a href="/PIA/Agents/&agentType;/&agentName;/initialize.if"
+  >/PIA/Agents/&agentType;/&agentName;/initialize.if</a></code>,
+  and putting it in your personal InterForm directory as
+  <code><a href="/My/Agents/&agentType;/&agentName;/initialize.if"
+  >~/.pia/Agents/&agentType;/&agentName;/initialize.if</a></code> or
+  <code><a href="/My/Agents/&agentName;/initialize.if"
+  >~/.pia/Agents/&agentName;/initialize.if</a></code>.  The latter is not as
+  good because it could get confused with another agent of the same name and a
+  different type.
+</em></blockquote>
+
+<pre><protect-result markup><get agent name="act-on"></protect-result>
+</pre>
+</then></if>
+
+<hr>
+<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
+<hr>
+<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+</body></html>
