@@ -144,6 +144,20 @@ public class tagsetHandler extends GenericHandler {
     newTagset.setName(n.getAttributeString("name"));
     newTagset.setAttributes(n.getAttributes());
 
+    if (parentTSname != null && ! "HTML".equals(parentTSname)) {
+      // === Strictly speaking we should put the parent in the context,
+      // === rather than including it.  This works, though, and I'm too
+      // === lazy to fix it right now. (steve)
+      Tagset parentTS =  crc.dps.tagset.Loader.require(parentTSname);
+System.err.println("Loading tagset=" + parentTSname + 
+		   ((parentTS == null)? " FAILED" : " OK"));
+      if (parentTS == null) {
+	reportError(in, cxt, "Cannot load parent tagset " + parentTSname);
+      } else {
+	newTagset.include(parentTS);
+      }
+    }
+
     // Handle the inclusions.
     if (inclusions != null) {
       StringTokenizer inames = new StringTokenizer(inclusions);
