@@ -150,7 +150,7 @@ for(@_){
 
     print $td;
 
-    if($jpg[$ext]){		# Stick a small jpeg image in
+    if($jpg{$ext}){		# Stick a small jpeg image in
 
 	$image[$count] = "$file.small.gif";
 	$flag = 1;		# 
