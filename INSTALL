@@ -1,8 +1,16 @@
-PIA Installation Manual, Alpha release 1.0
+PIA Installation Manual, release 2.0b
 ==========================================
 
 	This manual describes how to install a Personal Information
-	Agency.
+	Agency.  But, first, here are installation instructions for
+	the impatient.
+
+	from ~/
+	mv pia pia.old (if you already have a pia directory)
+	cp /pia1/pia/pia_bin.tgz .
+	gunzip pia_bin.tgz
+	tar xvf pia_bin_2_0b
+
 
 CONTENTS:
 
@@ -55,7 +63,7 @@ I. Obtaining the Files
 
    D. Also Needed
 
-	You will need Java JDK(TM) 1.1.3 or the equivalent.  The JDK can
+	You will need Java JDK(TM) 1.2beta2 or the equivalent.  The JDK can
 	be obtained from <http://www.javasoft.com>.  All required code
 	outside the JDK is provided with the release.
 
@@ -70,7 +78,7 @@ I. Obtaining the Files
 	CPAN archives at <http://www.perl.com/>
 
 	If you plan to run the PIA on Windows95 without doing any development,
-	you can download JRE 1.1.4, the Java runtime environment for "Microsoft
+	you can download JRE 1.1.7a, the Java runtime environment for "Microsoft
 	Windows 95/NT 4.0".  Visit this site:
 
 		http://www.javasoft.com/products/jdk/1.1/jre/index.html
@@ -85,16 +93,16 @@ II. Installing the Files
 	to be, for example /usr/local/src, and unpack the files:
 
 	  cd /usr/local/src
-	  gunzip pia.tar.gz
-	  tar xf pia.tar
+	  gunzip pia_bin.tgz
+	  tar xf pia_bin
 
 	This will create a directory pia/ under the working directory.
 
     B. In Your Home Directory
 
 	  cd ~
-	  gunzip pia.tar.gz
-	  tar xf pia.tar
+	  gunzip pia_bin.tgz
+	  tar xf pia_bin
 
 	This will create a directory pia/ under your home directory.
 
@@ -149,7 +157,7 @@ III. Setup
 	the environment variable.
 
 	Also, if you are proxying through another server, please indicate the
-	server like below:
+	server as shown below:
 
 	HTTP_PROXY=http://int-gw.crc.ricoh.com:80/
 
@@ -215,9 +223,11 @@ IV. Running the PIA
 V. Questions, problems, or comments:
 
     A. Before filing a bug report, please check the known bugs at:
-	http://pia.crc.ricoh.com/release/1.0/KnowBugs.html
+	http://pia.crc.ricoh.com/release/1.0/KnowBugs.html.  Fill out
+	a bug report by selecting the Bug Reports link on the agency
+	home page.
 
-    B. Other questions or comments can be sent to pia_bugs@crc.ricoh.com
+    B. Other questions or comments can be sent to pia+bug@crc.ricoh.com
 
 
 ========================================================================
