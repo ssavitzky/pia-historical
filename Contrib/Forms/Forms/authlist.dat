@@ -1,0 +1,46 @@
+<authlist level="1" id="au1" idcounter="13"><authdescription>RSV</authdescription><authorizor type="President" group="">hart</authorizor><authorizor type="CFO" group="">kevin</authorizor><authorizor type="Finance" group="true">beverly</authorizor>
+
+<authlist level="2" id="au2" parentid="au1">
+   <authdescription>ADC</authdescription>
+   <authorizor type="Manager">minshull</authorizor>
+   <authorizor type="DivHead" group="">minshull</authorizor><authlist level="3" id="au3" parentid="au2">
+   <authdescription>Engineering1</authdescription>
+   <authorizor type="Manager">harada</authorizor>
+   <users> harada </users></authlist><authorizor type="DivAdmin" group="">kate</authorizor><authlist level="3" id="au4" parentid="au2">
+   <authdescription>Engineering2</authdescription>
+   <authorizor type="Manager">chen</authorizor>
+   <users> chen </users></authlist>
+   <users> arum inagaki kate matsuda minshull piersol star mjaffe </users>
+ </authlist>
+
+<authlist level="2" id="au5" parentid="au1">
+   <authdescription>SBC</authdescription>
+   <authorizor type="Manager">weyl</authorizor>
+   <authorizor type="DivHead" group="">weyl</authorizor><users> weyl daja
+   jed segawa yoshiko</users>
+   <authorizor type="DivAdmin" group="">yoshiko</authorizor></authlist><authlist level="2" id="au6" parentid="au1">
+   <authdescription>CRC</authdescription>
+   <authorizor type="Manager">hart</authorizor>
+   <authorizor type="DivHead" group="">hart</authorizor><users> hart </users><authlist level="3" id="au7" parentid="au6">
+   <authdescription>CIP</authdescription>
+   <authorizor type="Manager">boliek</authorizor>
+   <users> boliek gormish schwartz gene </users></authlist><authorizor type="DivAdmin" group="">luisa</authorizor><authlist level="3" id="au8" parentid="au6">
+   <authdescription>DA</authdescription>
+   <authorizor type="Manager">hull</authorizor>
+   <users>dsl hull jamey </users>
+   </authlist><authlist level="3" id="au9" parentid="au6">
+   <authdescription>MLP</authdescription>
+   <authorizor type="Manager">stork</authorizor>
+   <users> stork ziming </users></authlist><authlist level="3" id="au10" parentid="au6">
+   <authdescription>ICARUS</authdescription>
+   <authorizor type="Manager">mbaxter</authorizor>
+   <users> mbaxter runyon</users></authlist><authlist level="3" id="au11" parentid="au6">
+   <authdescription>Administration</authdescription>
+   <authorizor type="Manager">kevin</authorizor>
+   <users> kevin belinda rowanf sharon</users><authlist level="4" id="au13" parentid="au11">
+   <authdescription>FrontOffice</authdescription>
+   <authorizor type="Manager">beverly</authorizor>
+   <users> beverly luisa rose </users></authlist></authlist><authlist level="3" id="au12" parentid="au6">
+   <authdescription>PIA</authdescription>
+   <authorizor type="Manager">wolff</authorizor>
+   <users> wolff steve marko</users></authlist></authlist><authorizor type="Purchasing" group="">beverly</authorizor><authorizor type="FrontOffice" group="true">luisa</authorizor><authorizor type="Library" group="">rowanf</authorizor><authorizor type="Accounting" group="">luisa</authorizor></authlist>
