@@ -10,7 +10,10 @@
 
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
 <table cellspacing=0 cellpadding=0>
-<tr><th width=170><td>
+<tr>
+  <th width=170>
+    <read quiet interform file="insert.if" process>
+  <td>
     <table cellspacing=0 cellpadding=0>
     <tr><th width=170><td><br>
     <tr><th><td><a href="index.if">Index Page</a>
@@ -18,8 +21,8 @@
 	<td> <strong>Home Page</strong>
     <tr><th>
 	<td><a href="options.if">Options</a>
-	<if><read info interform file="initialize.if">
-	    <then><a href="initialize.if">[re-initialize]</a></then></if>
+	    <if><read info interform file="initialize.if">
+	        <then><a href="initialize.if">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentName;/">InterForms</a>
 	        <a href="/My/Agents/&agentName;/">(Customized)</a>
     <if>&subs;<then>
