@@ -30,6 +30,10 @@
 	    	      <a href="initialize.if">[re-initialize]</a></then></if>
     <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
 	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+<if><get agent name=criteria><then>
+    <tr><th align=right> criteria:
+        <td><get agent name=criteria>
+</if>
 <if><get agent name=do-not-remove><then></then><else>
     <tr><th align=right>
         <td><form action="/Agency/remove_agent.if" method="POST">
