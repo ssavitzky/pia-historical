@@ -86,6 +86,7 @@ check::
  */
 SRCDIR=src/java/crc
 CLASSDIR=src/java
+PIALIBDIR=lib/java
 INTERFORM=Doc/Manuals/InterForm
 
 cvs.tar::
@@ -96,10 +97,10 @@ cvs.tar::
  */
 rm_bin_tar:: 
 	 rm -f pia_bin.tar.gz
-	 rm -f crc.zip
+	 rm -f $(PIALIBDIR)/crc.zip
 rm_pia_tar::
 	rm -f pia.tar.gz
-	rm -f crc.zip
+	rm -f $(PIALIBDIR)/crc.zip
 
 prep_rel::
 
