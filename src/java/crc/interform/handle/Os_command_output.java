@@ -49,7 +49,7 @@ public class Os_command_output extends crc.interform.Handler {
     // redirection or pipes.
 
     cmd = "cat /dev/null | "+proxies+ " " + cmd;
-    ii.message("Executing: "+cmd);
+    ii.verbose("Executing: "+cmd);
 
     // We have to use a string array because Java doesn't parse
     // shell commands correctly, and uses execve instead of system.
@@ -87,7 +87,7 @@ public class Os_command_output extends crc.interform.Handler {
 	}
 	in.close();
 	in = null;
-	ii.message("stderr-->"+error);
+	ii.verbose("stderr-->"+error);
       }
     } catch (Exception e) {
       ii.error(ia, "attempting to run '"+cmd+"' ->\n"+e.toString());

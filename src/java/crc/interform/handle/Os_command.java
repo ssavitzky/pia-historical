@@ -57,7 +57,7 @@ public class Os_command extends crc.interform.Handler {
     // using pipes instead of redirection works even if "cmd" contains
     // redirection or pipes.
     cmd = "cat /dev/null | "+proxies+ " " + cmd;
-    ii.message("Executing: "+cmd);
+    ii.verbose("Executing: "+cmd);
 
     // We have to use a string array because Java doesn't parse
     // shell commands correctly, and uses execve instead of system.
