@@ -51,6 +51,12 @@ public class BasicProcessor extends ContextStack implements Processor {
     while (running && input.toNextSibling() != null) processNode();
   }
 
+  /** Copy nodes from the input to the output. */
+  public void copy() {
+    copyCurrentNode();
+    while (input.toNextSibling() != null) copyCurrentNode();
+  }
+
   /** Process the current Node */
   public void processNode() {
     Action action = input.getAction();
@@ -125,9 +131,9 @@ public class BasicProcessor extends ContextStack implements Processor {
       output.startElement(e);
       if (input.hasChildren()) { copyChildren(); }
       output.endElement(e.isEmptyElement() || e.implicitEnd());
-    } else if (input.hasChildren()) {
+    } else if (input.hasChildren() && ! node.hasChildren()) {
       output.startNode(node);
-      if (input.hasChildren()) copyChildren();
+      copyChildren();
       output.endNode();
     } else {
       output.putNode(node);
@@ -138,18 +144,20 @@ public class BasicProcessor extends ContextStack implements Processor {
    *
    *	This is done by recursively traversing its children.
    */
-  public void copyCurrentNode() {
-    if (input.hasChildren()) {
-      output.startNode(input.getNode());
+  public final void copyCurrentNode() {
+    Node n = input.getNode();
+    if (input.hasChildren() && ! n.hasChildren()) {
+      // Copy recursively only if the node hasn't been fully parsed yet.
+      output.startNode(n);
       copyChildren();
       output.endNode();
     } else {
-      output.putNode(input.getNode());
+      output.putNode(n);
     }
   }
 
   /** Copy the children of the current Node */
-  public void copyChildren() {
+  public final void copyChildren() {
     for (Node node = input.toFirstChild() ;
 	 node != null;
 	 node = input.toNextSibling()) {
