@@ -52,7 +52,7 @@ public class T_OtherElement{
     Report.debug("End testing basic stuff...");
 
     Report.debug("\nTesting creating customer document...");
-    Document cd = createCustomerDocument( BasicDOM.instance().getFactory() );
+    Document cd = createCustomerDocument( CRCDOM.getFactory(DOM.BASICFACTORY) );
     doTree( cd.getDocumentElement(), "" );
     Report.debug("End testing customer document...");
 

@@ -34,7 +34,7 @@ public class T_DOM{
   */ 
   private static void test1(String dummy){
     Report.debug("\nTesting getting BasicDOMFactory...");
-    DOMFactory df = BasicDOM.instance().getFactory();
+    DOMFactory df = CRCDOM.getFactory(DOM.BASICFACTORY);
     Document doc = df.createDocument();
     Text t = df.createTextNode("To wong foo. Thanks for everything.");
     Comment c = df.createComment("To comment or not to comment.");
