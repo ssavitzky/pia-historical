@@ -30,6 +30,7 @@ public class Filter {
   static String tsname = "Basic";
   static boolean tree = false;
   static boolean debug = false;
+  static boolean entities = true;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -71,6 +72,7 @@ public class Filter {
 
     Interp ii = new Interp(tsname, new Table(), false);
     ii.from(p).toStream(out);
+    if (entities) new Environment(infile).use(ii);
 
     ii.debug  = debug;
     ii.run();
@@ -84,6 +86,7 @@ public class Filter {
 
     o.println("Usage: java crc.interform.Filter [option]... [infile]");
     o.println("    options:");
+    o.println("        -e	no entities");
     o.println("        -h	print help string");
     o.println("        -o file	specify output file");
     o.println("        -p file	specify property file");
@@ -102,6 +105,8 @@ public class Filter {
 	tree = true;
       } else if (args[i].equals("-d")) {
 	debug = true;
+      } else if (args[i].equals("-e")) {
+	entities = false;
       } else if (args[i].equals("-o")) {
 	if (i == args.length - 1) return false;
 	outfile = args[++i];

@@ -50,10 +50,13 @@ public class Interp extends State {
 
   /** Points to any operating environment that might be needed by Actors.
    *	In particular, points to a Run object when the Interp is running
-   *	inside the PIA on behalf of an agent. 
+   *	inside the PIA on behalf of an agent, or an Environment object
+   *	when running stand-alone. 
    *
-   *	@see Run. */
-  Object environment;
+   *	@see crc.interp.Run 
+   *	@see crc.interp.Environment
+   *	@see crc.interp.Filter*/
+  public Environment environment;
 
   /************************************************************************
   ** Debugging and Messaging:

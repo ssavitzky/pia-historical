@@ -21,6 +21,7 @@ import crc.interform.Interp;
 import crc.interform.SGML;
 import crc.interform.Tagset;
 import crc.interform.Text;
+import crc.interform.Environment;
 
 import crc.pia.Agent;
 import crc.pia.Transaction;
@@ -31,13 +32,13 @@ import crc.ds.Table;
 
 /** Run the InterForm Interpretor inside the PIA.  This class contains
  *	everything needed for associating an interpretor and a set of
- *	entities with a document, either as an action or a handler. <p?
+ *	entities with a document, either as an action or a handler. <p>
  *
  *	The Run object itself is used to associate an Interp object with
  *	its corresponding PIA context of Agent, Transaction, and Resolver.
  *
  * @see crc.interform.Filter for standalone operation.  */
-public class Run {
+public class Run  extends Environment {
 
   /************************************************************************
   ** Variables:
@@ -46,17 +47,17 @@ public class Run {
   public Agent 		agent = null;
   public Transaction 	transaction = null;
   public Resolver 	resolver = null;
-  public String 	filename = null;
-  public Table		entities = null;
 
   /************************************************************************
   ** Constructors:
   ************************************************************************/
 
   protected Run() {
+    super();
   }
 
   protected Run(Agent ia, Transaction tr, Resolver res, String fn) {
+    super(fn);
     agent = ia;
     transaction = tr;
     resolver = res;
@@ -111,33 +112,19 @@ public class Run {
   ** Entity table:
   ************************************************************************/
 
-  static Tokens dayNames = Util.splitTokens("Sunday Monday Tuesday Wednesday"
-					    + " Thursday Friday Saturday");
-
-  static Tokens monthNames= Util.splitTokens("January February March April"
-					     + " May June July August"
-					     + " September October November"
-					     + " December");
-
   /** Initialize and return the entity table */
-  public Table ifEntities() {
+  public Table initEntities() {
     // === should get entities from transaction if present 
     //     my $ents = $trans->get_feature('entities') if defined $trans;
 
     if (entities == null) {
-      entities = new Table();
-
-      Date date = new Date();
+      super.initEntities();
 
       ent("url", transaction.url());
 
     }
 
     /*
-	my $date=sprintf("%d%02d%02d", $year, $mon+1, $mday);
-	## === should be $year + 1900, of course.
-	my $time=sprintf("%02d:%02d", $hour, $min);
-
 	my ($request, $response);
 	if (defined $trans && $trans->is_response) {
 	    $response = $trans;
@@ -148,8 +135,6 @@ public class Run {
 	my $url = $trans->url;
 	my $path = $url->path if defined $url;
 	my $query = $url->query if defined $url;
-	$file =~ m:([^/]*)$:;
-	my $fn = $1;
 
 	## === request method, response type, etc. ===
 
@@ -169,15 +154,11 @@ public class Run {
 
 	    'agentName' 	=> $agent->name,
 	    'agentType' 	=> $agent->type,
-	    'fileName' 		=> $fn,
-	    'filePath' 		=> $file,
 
 	    'url'		=> ((ref $url)? $url->as_string : ''),
 	    'urlQuery'		=> $query,
 	    'urlPath'		=> $path,
 
-	    'piaUSER'		=> $ENV{'USER'} || getlogin,
-	    'piaHOME'		=> $ENV{'HOME'},
 	    'piaHOST'		=> $main::PIA_HOST,
 	    'piaPORT'		=> $main::PIA_PORT,
 	    'piaDIR'		=> $main::PIA_DIR,
@@ -186,116 +167,42 @@ public class Run {
 	    'entityNames'   	=> '',
 	    'actorNames'	=> $tagset? $tagset->actor_names : '',
 
-	    'second'		=> $sec,
-	    'minute'		=> $min,
-	    'hour'		=> $hour,
-	    'day'		=> $mday,
-	    'month'		=> $mon+1,
-	    'year'		=> $year+1900,
-	    'weekday'		=> $wday,
-	    'dayName'		=> $dayNames[$wday],
-	    'monthName'		=> $monthNames[$mon],
-	    'yearday'		=> $yday,
-	    'date'		=> $date,
-	    'time'		=> $time,
 	};
-
-	$ents->{'entityNames'} = join(' ', sort keys %$ents);
 
 	$trans -> set_feature('entities', $ents) if defined $trans;
 	## === WARNING! Agents can pass info through entities now ===
     }
 
-    $ents->{'agentName'} 	= $agent->name;
-    $ents->{'agentType'} 	= $agent->type;
-    $ents;
-
 */
 
-    // ===
+    /* Set these even if we retrieved the entity table from the */
+    /* transaction -- the agent is (necessarily) different      */
+
+    ent("agentName", agent.name());
+    ent("agentType", agent.type());
+
     return entities;
   }
 
 
-  private void ent(String n, Object v) {
-    entities.at(n, new Text(v));
-  }
-
-  private void ent(String n, SGML v) {
-    entities.at(n, v);
-  }
 
   /************************************************************************
   ** Run the Interpretor:
   ************************************************************************/
-
-  public FileInputStream open(String infile) {
-    try {
-      if (infile != null) return new FileInputStream(infile);
-      else return null;
-    } catch (Exception e) {
-      System.err.println("Cannot open input file " + infile);
-      return null;
-    }
-  }
-
-  public void runStream(InputStream in, OutputStream out, String tsname) {
-    Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), ifEntities(), false);
-    ii.from(p).toStream(out);
-    use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
-    ii.run();
-  }
-
-  public void runFile(OutputStream out, String tsname) {
-    runStream(open(filename), out, tsname);
-  }
-
-  public String evalStream(InputStream in, String tsname) {
-    Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), ifEntities(), false);
-    ii.from(p).toText();
-    use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
-    return ii.run().toString();
-  }
-
-  public String evalFile(String tsname) {
-    return evalStream(open(filename), tsname);
-  }
-
-  public Tokens parseStream(InputStream in, String tsname) {
-    Parser p = new Parser(in, null);
-    Interp ii = new Interp(Tagset.tagset(tsname), ifEntities(),true);
-    ii.from(p).toTokens();
-    use(ii);
-
-    //ii.debug  = debug;
-    //p.debug = debug;
-
-    return ii.run();
-  }
-
-  public SGML parseFile(String tsname) {
-    return parseStream(open(filename), tsname);
-  }
-
-  public SGML parseString(String input, String tsname) {
-    return parseStream(new java.io.StringBufferInputStream(input), tsname);
-  }
 
   /** Run a standard InterForm file on behalf of an Agent. Output is
    *  	sent directly to the transaction's receiver.  */
   public static void interform(Agent agent, String filepath, 
 			       Transaction trans, Resolver res) {
     OutputStream out = null;	// === get from transaction.
+    Run env = new Run(agent, trans, res, filepath);
+    env.runStream(env.open(filepath), out, "Standard");
+  }
+
+  /** Run a standard InterForm file on behalf of an Agent. Output is
+   *  	sent to a given OutputStream.  */
+  public static void interform(Agent agent, String filepath, OutputStream out,
+			       Transaction trans, Resolver res) {
     Run env = new Run(agent, trans, res, filepath);
     env.runStream(env.open(filepath), out, "Standard");
   }
@@ -311,8 +218,27 @@ public class Run {
   /** Run an already-parsed InterForm element as an Agent's actOn hook. */
   public static void interformHook(Agent agent, SGML code,
 				   Transaction trans, Resolver res) {
-    // ===
+    new Run(agent, trans, res, null).env.runCode(code, "Standard");
   }
+
+  /************************************************************************
+  ** Used by Actors:
+  ************************************************************************/
+
+  /** Look up a file on behalf of the agent invoked on the given Token. */
+  public String lookupFile(String fn, Token it, boolean write) {
+
+    // === unimplemented()
+    return fn;
+  }
+
+  /** Retrieve a URL. */
+  public InputStream retrieveURL(String url, Token it) {
+
+    // === unimplemented()
+    return null;
+  }
+
 
 /*========================================================================
 

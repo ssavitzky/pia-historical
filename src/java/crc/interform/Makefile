@@ -10,6 +10,7 @@ PACKAGES = \
 
 FILES = \
 	Actor.java \
+	Environment.java \
 	Filter.java \
 	Handler.java \
 	Input.java \
@@ -36,6 +37,8 @@ include $(TOPDIR)/makefiles/package.make
 Actor.class: Actor.java Token.java Tokens.java SGML.java \
 	Interp.java Handler.java
 
+Environment.class: Environment.java Interp.java ../ds/Table.java
+
 Filter.class: Filter.java Interp.java 
 
 Handler.class: Handler.java Actor.java Interp.java SGML.java ../ds/Table.java
@@ -45,7 +48,7 @@ Interp.class: Interp.java Actor.java Input.java Token.java Tokens.java \
 
 Parser.class: Parser.java Input.java Token.java Tokens.java SGML.java
 
-Run.class: Run.java Interp.java
+Run.class: Run.java Environment.java Interp.java ../ds/Table.java
 
 State.class: ../ds/List.java ../ds/Table.java
 
