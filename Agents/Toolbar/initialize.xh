@@ -6,14 +6,13 @@
 
 <user-message>Initializing &agentName; from &filePath;</user-message>
 
-<set name="AGENT:controls"><protect><!-- Generic Spy controls: -->
+<set name="AGENT:controls"><protect><!-- Generic Toolbarcontrols: -->
 <set name=pia>http://&piaHOST;:&piaPORT;</set>
 <a href="&pia;/~/" target="_top">[~]</a>
 <a href="&pia;&agentPath;/hide?hide=true" target="_top">[X]</a>
 <a href="&pia;&agentPath;/help?topic=toolbar" target="_top">[help]</a>
 </protect></set>
 
-<hr>
-<b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
-<b>$Id$</b><br>
+
+<short-footer cvsid="$Id$">
 </body></html>

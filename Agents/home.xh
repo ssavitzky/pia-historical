@@ -5,6 +5,8 @@
 <header>Home Page</header>
 <set name="subs"><agent-list subs type="&agentType;"></set>
 <sub-head page=home>
+<if>&subs;
+  <then>
     <tr><th align=right>
            <if><test not exact match="&agentType;">&agentName;</test>
 	        <then><a href="/&agentType;/home">&agentType;</a>/</then>
@@ -12,6 +14,7 @@
         <td><repeat list="&subs;">
                <a href="/&li;">&li;</a> <a href="/&li;/"><b> / </b></a>
            </repeat>
+</if>
 </sub-head>
 
 <if><test exact match="&agentType">&agentName;</test>

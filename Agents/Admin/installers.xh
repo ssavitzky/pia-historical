@@ -9,26 +9,24 @@
 <nav-bar/>
 <hr>
  
- 
-An agent is represented in the information agency by a persistent software
-object.  In order for the agency to know about an Agent and direct
-requests like <code> http://localhost:8888/Agent/home </code> to an
-<code>Agent</code>, the agent must be "installed" which creates the
-corresponding software object.  When the Agency is started, it looks in the Agency's
-<code> <a href=START-UP.html>START-UP.html </a> </code> and installs any
-       agents found there.  (Like all agent files, the original file found in
-       the agents directory, in this case
-       &piaDIR;/Agents/&AGENT:name;/ can be overridden by local files in
-       &usrDIR;/Agents/&AGENT:name;/.)
-Other agents can be installed using this form which contains ``canned''
-install forms for various agents.  You can paste sections out of
-this file into your own <code> START-UP.html </code> file.  When you design a
-new agent, you can
-add a default install form to this page. (Alternatively, there is <a href=installers.if>another
-page</a> which attempts to automatically discover and create an install form for any local agents found in your user directory, &usrDIR;/Agents/.) <p>
+<p> An agent is represented in the information agency by a persistent software
+    object.  In order for the agency to know about an Agent and direct
+    requests like <code> http://localhost:8888/Agent/home </code> to an
+    <code>Agent</code>, the agent must be "installed" which creates the
+    corresponding software object.  When the Agency is started, it looks in
+    the Agency's <code><a href=START-UP.html>START-UP.html</a></code> and
+    installs any agents found there.  (Like all agent files, the original file
+    found in the &AGENT:name;agent's home directory, in this case
+    &piaDIR;/Agents/&AGENT:name;/ can be overridden by local files in
+    &usrDIR;/Agents/&AGENT:name;/.)
 
-There is also a <a href="install-agent">generic agent installation form</a>
-which allows you to type in the name an type of an agent directly.
+<p> Other agents can be installed using this form which contains ``canned''
+    install forms for various agents.  You can paste sections out of this file
+    into your own <code> START-UP.html </code> file.  When you design a new
+    agent, you can add a default install form to this page.
+
+<p> There is also a <a href="install-agent">generic agent installation form</a>
+    which allows you to type in the name an type of an agent directly.
 
 <h3>Contents:</h3>
 
@@ -55,26 +53,26 @@ which allows you to type in the name an type of an agent directly.
        <input type="submit" value="Install">
        name: <input name="agent" value="View">
        </form></if>
-  <dt> <a name="Spy">Spy agent</a>
-       <if><agent-running name=Spy><then><em>installed</em></then><else>
+  <dt> <a name="Toolbar">Toolbar agent</a>
+       <if><agent-running name=Toolbar><then><em>installed</em></then><else>
   <dd> <form action="/&AGENT:name;/install-agent" method="POST">
        <input type="submit" value="Install">
-       name: <input name="agent" value="Spy">
+       name: <input name="agent" value="Toolbar">
        </form></if>
        <dl>
-	 <dt> <a name="CIA">CIA agent</a>
-	      <if><agent-running name=cia><then><em>installed</em></then><else>
+	 <dt> <a name="remote">remote agent</a>
+	 <if><agent-running name=remote><then><em>installed</em></then><else>
 	 <dd> <form action="/&AGENT:name;/install-agent" method="POST">
 	      <input type="submit" value="Install">
-	      name: <input name="agent" value="cia">
-	      type: <input name="type" value="Spy">
+	      name: <input name="agent" value="remote">
+	      type: <input name="type" value="Toolbar">
 	      </form></if>
-	 <dt> <a name="FBI">FBI agent</a>
-	      <if><agent-running name=fbi><then><em>installed</em></then><else>
+	 <dt> <a name="localFile">localFile agent</a>
+	 <if><agent-running name=localFile><then><em>installed</em></then><else>
 	 <dd> <form action="/&AGENT:name;/install-agent" METHOD="POST">
 	      <input type="submit" value="Install">
-	      name: <input name="agent" value="fbi">
-	      type: <input name="type" value="Spy">
+	      name: <input name="agent" value="localFile">
+	      type: <input name="type" value="Toolbar">
 	      </form></if>
        </dl>
   <dt> <a name="logo">Logo agent</a>

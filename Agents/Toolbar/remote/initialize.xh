@@ -12,7 +12,7 @@
 <protect><if>&AGENT:hidden;<else>
 <trans-control>
 <set entity name=pia>http://&piaHOST;:&piaPORT;</set>
-<a href="&pia;/" target="_top"><img src="&pia;/cia/Logo/pent24.gif"
+<a href="&pia;/" target="_top"><img src="&pia;/Icon/pent24.gif"
 			 	    height=24 width=24 border=0></a>
 <expand>&AGENT:Toolbar:controls;</expand>
 <expand><get name=AGENT:History:controls></expand>

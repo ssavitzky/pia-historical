@@ -37,7 +37,7 @@ certain pages retrieved from the agency.  <p>
 <p>The toolbar usually starts out with a distinctive logo that indicates where
 the page came from.  For example, the <a href="/&agentType;/remote">fbi</a>
 agent, which puts toolbars on pages that come from <em>outside the PIA</em>,
-attaches a pentagon logo (<img src="Logo/pent24.gif" height=24 width=43>)
+attaches a pentagon logo (<img src="/Icon/pent24.gif" height=24 width=43>)
 which is a link to the PIA's home page.<p>
 
 This is usually followed by a link to your personal PIA data directory (<a
