@@ -2,6 +2,14 @@
 // $Id$
 // (c) COPYRIGHT Ricoh California Research Center, 1997.
 
+ /**
+  * Pia contains the Agency's main program, and serves as a repository
+  *	for the system's global information.  Most initialization is done
+  *	by the auxiliary class Setup.
+  *
+  *	@see crc.pia.Setup
+  */
+
 package crc.pia;
 
 import java.io.File;
@@ -28,12 +36,10 @@ import crc.pia.agent.AgentInstallException;
 
 import crc.ds.Table;
 import crc.ds.List;
- /**
-  * Pia stores all of the information relevant to the creation of an 
-  * angency.
-  */
 
-public class Pia{
+import crc.pia.Configuration;
+
+public class Pia {
   /**
    * where to proxy
    */
@@ -97,15 +103,26 @@ public class Pia{
   public static final String PIA_REQTIMEOUT = "crc.pia.reqtimeout";
 
 
+  /************************************************************************
+  ** Protected fields used by Setup:
+  ************************************************************************/
+
+  protected String loggerClassName 	= "crc.pia.Logger";
+  protected String setupClassName 	= "crc.pia.Setup";
+  protected String agencyClassName 	= "crc.pia.agent.Agency";
+  protected String[] commandLine;
+
+  /************************************************************************
+  ** Private fields:
+  ************************************************************************/
 
   private Properties    piaFileMapping = null;
   private Piaproperties properties     = null;
+
   private static Pia     instance      = null;
   private String  docurl               = null;
   private static Logger  logger        = null;
-  private String  loggerClassName = "crc.pia.Logger";
-  
-  
+
   private String  rootStr    = null;
   private File    rootDir    = null;
   
@@ -116,10 +133,11 @@ public class Pia{
   private String  host       = null;
   private int     port       = 8001;
   private int     reqTimeout = 50000;
-  private static boolean verbose = true;
-  private static boolean debug   = true;  // always print to screen or file if debugToFile is on
+
+  private static boolean verbose = false;
+  private static boolean debug   = false;  
+  // always print to screen or file if debugToFile is on
   private static boolean debugToFile= false;
-  
 
   private Table proxies           = new Table();
   private List  noProxies        = null;
@@ -161,6 +179,10 @@ public class Pia{
   protected Agency agency;
 
 
+  /************************************************************************
+  ** Access to Components:
+  ************************************************************************/
+
   /**
    * @return file mapping for local file retrieval
    */
@@ -169,7 +191,7 @@ public class Pia{
   }
 
   /**
-   *
+   * @return global properties.
    */
   public Piaproperties properties(){
     return properties;
@@ -338,9 +360,9 @@ public class Pia{
   } 
 
 
-  public Pia(){
-    instance = this;
-  }
+  /************************************************************************
+  ** Error Reporting and Messages:
+  ************************************************************************/
 
   /**
    * Fatal system error -- print message and throw runtime exception.
@@ -488,20 +510,6 @@ public class Pia{
   }
 
 
-  public static void usage () {
-	PrintStream o = System.out ;
-
-	o.println("usage: PIA [OPTIONS]") ;
-	o.println("-port <8001>          : listen on the given port number.");
-	o.println("-root <pia dir : /pia>: pia directory.");
-	o.println("-u    <~/Agent>       : user directory.") ;
-	o.println("-p    </pia/config/pia.props>       : property file to read.");
-	o.println("-d                    : turns debugging on.") ;
-	o.println("-v                    : print pia Piaproperties.");
-	o.println("?                     : print this help.");
-	System.exit (1) ;
-  }
-
   public void verboseMessage() {
 	PrintStream o = System.out ;
 
@@ -513,9 +521,13 @@ public class Pia{
 	o.println(url+"\n");
   }
 
-	/**
-	 * Initialize the server logger and the statistics object.
-	 */
+  /************************************************************************
+  ** Initialization:
+  ************************************************************************/
+
+  /**
+   * Initialize the server logger and the statistics object.
+   */
 
     private void initializeLogger() throws PiaInitException
     {
@@ -639,7 +651,11 @@ public class Pia{
     if( piaUsrRootStr == null ){ 
       if( home!=null && home != "" ){
 	// i.e. we have ~/bob and looking for ~/bob/pia
-	File dir = new File(home, "pia");
+	File dir = new File(home, ".pia");
+	if( dir.exists() ){
+	  piaUsrRootStr = dir.getAbsolutePath(); 
+	}
+	dir = new File(home, "my");
 	if( dir.exists() ){
 	  piaUsrRootStr = dir.getAbsolutePath(); 
 	}
@@ -718,12 +734,25 @@ public class Pia{
 
   }
 
-  public void initialize(Piaproperties cmdProps) throws PiaInitException{
-    this.properties = cmdProps;
-
-    initializeProperties();
-    initializeLogger();
+  /** Initialize fields from properties. */
+  public boolean initialize() {
+    try{
+      initializeProperties();
+      initializeLogger();
+      return true;
+    }catch(Exception e){
+      System.out.println( e.toString() );
+      return false;
+    }
   }
+
+  /************************************************************************
+  ** Shutdown and cleanup:
+  ************************************************************************/
+
+  /** Perform cleanup operations, and possibly try to restart the Agency.
+   *	@param restart - if true, try to restart operations.
+   */
 
   protected void cleanup(boolean restart){
     debug(this, "Shutting down accepter...");
@@ -759,40 +788,35 @@ public class Pia{
 
   }
   
+  /** Shut down the Agency.
+   *	@param restart - If true, start the Agency back up again.
+   */
   public void shutdown(boolean restart){
     cleanup( restart );
   }
 
+  /** Call cleanup when the Agency is finalized. */
   protected void finalize() throws IOException{
     cleanup( false );
   }
 
-  public static Pia instance(){
-    Piaproperties piaprops = null;
 
-    if( instance == null ){
-      instance = new Pia();
-      try{
-	piaprops = instance.loadProperties(null);
-	instance.piaFileMapping = instance.loadFileMapping(null);
-	instance.initialize(piaprops);
-      }catch(Exception e){
-	  System.out.println( e.toString() );
-      }finally{
-	try{
-	  instance.createPiaAgency();
-	}catch(IOException e2){
-	  System.out.println( e2.toString() );
-	}
-      }
+  /************************************************************************
+  ** Creating the Pia instance:
+  ************************************************************************/
 
-    }
+  /** Create the Pia's single instance. */
+  private Pia() {
+    instance = this;
+  }
 
-
+  /** Return the Pia's only instance.  */
+  public static Pia instance() {
     return instance;
   }
 
-  private static Properties loadFileMapping( String where ){
+
+  protected Properties loadFileMapping( String where ){
     String fileMapProp      = null;
     Properties zFileMapping = new Properties();
     File guess              = null;
@@ -834,8 +858,7 @@ public class Pia{
       zFileMapping.put("gif", "image/gif");
     }
 
-    reportProps(zFileMapping, "File (MIME type) mapping");
-
+   instance.piaFileMapping = zFileMapping;
    return zFileMapping;
   }
 
@@ -847,7 +870,7 @@ public class Pia{
     piaprops.put(PIA_LOGGER, "crc.pia.Logger");
   }
   
-  private static Piaproperties loadProperties(String cmdroot)throws IOException{
+  protected Piaproperties loadProperties(String cmdroot)throws IOException{
     String cmdprop      = null;
     Piaproperties piaprops = null;
     File guess = null;
@@ -873,13 +896,17 @@ public class Pia{
 	piaprops.put (PIA_PROP_PATH, propfile.getAbsolutePath()) ;
       }
     } catch (FileNotFoundException ex) {
+	    System.out.println ("Unable to load properties: "+cmdprop);
+	    System.out.println ("\t"+ex.getMessage()) ;
+	    System.out.println ("Running with default settings.");
+	    piaprops = new Piaproperties(System.getProperties());
       setDefaultProperties( piaprops );
     } catch (IOException exp){
       throw exp;
     }
     System.setProperties (piaprops) ;
 
-    reportProps(piaprops, "System Properties:");
+    properties = piaprops;
   return piaprops;
 }
 
@@ -898,44 +925,64 @@ public class Pia{
     }
   }
 
+  /************************************************************************
+  ** Main Program:
+  ************************************************************************/
+
   public static void main(String[] args){
-        Integer cmdport      = null ;
-	String  cmdroot      = null ;
-	String  cmdusrdir    = null ;
-	String  cmdprop      = null ;
-	Boolean cmddebugging = null ;
-	Boolean cmdverbose   = null ;
 
+    /* Create a PIA instance */
 
-    // Parse command line options:
-	for (int i = 0 ; i < args.length ; i++) {
-	    if ( args[i].equals ("-port") ) {
-		try {
-		    cmdport = new Integer(args[++i]) ;
-		} catch (NumberFormatException ex) {
-		    System.out.println ("invalid port number ["+args[i]+"]");
-		    System.exit (1) ;
-		}
-	    } else if ( args[i].equals ("-root") ) {
-		cmdroot = args[++i] ;
-	    } else if ( args[i].equals ("-u") ) {
-		cmdusrdir = args[++i] ;
-	    } else if ( args[i].equals ("-p") ) {
-		cmdprop = args[++i] ;
-	    } else if ( args[i].equals ("-d") ) {
-		cmddebugging = Boolean.TRUE;
-		++i;
-	    } else if ( args[i].equals ("-v") ) {
-	        cmdverbose = Boolean.TRUE;
-	    } else if ( args[i].equals ("?") || args[i].equals ("-help") ) {
-		usage() ;
-	    } else {
-		System.out.println ("unknown option: ["+args[i]+"]") ;
-		System.exit (1) ;
-	    }
-	}
-	
-	Piaproperties piaprops = null;
+    Pia pia = new Pia();
+    pia.commandLine = args;
+    pia.debug = false;
+    pia.debugToFile = false;
+    pia.properties = new Piaproperties(System.getProperties());
+
+    /** Configure it. */
+
+    Configuration config = Configuration.loadConfig(pia.setupClassName);
+    if (config.configure(args)) {
+      config.usage();
+
+      /** Continue with the initialization if the user requested props. */
+
+      verbose = pia.properties.getBoolean("crc.pia.verbose", false);
+      if (verbose) {
+	pia.bogusLoad();
+	pia.reportProps(pia.properties, "Properties");
+      }
+      System.exit(1);
+    }
+
+    /** Load property file if requested. */
+    pia.bogusLoad();
+
+    /** Initialize it from its properties. */
+    if (! pia.initialize()) return;
+
+    reportProps(instance.properties, "System Properties:");
+    reportProps(instance.piaFileMapping, "File (MIME type) mapping");
+
+	try
+	  {
+
+	    instance.createPiaAgency();
+
+	    //new Thread( new Shutdown() ).start();
+	  }catch(Exception e){
+	    System.out.println ("===> Initialization failed, aborting !") ;
+	    e.printStackTrace () ;
+	  }
+	    
+  }
+
+  /** Load the properties and file map. */
+  protected void bogusLoad() {
+    String cmdprop = properties.getProperty("crc.pia.profile");
+    String cmdroot = properties.getProperty("crc.pia.root");
+    Piaproperties piaprops = instance.properties();
+
 	String where = null;
 	String whereFileMap = null;
 
@@ -950,7 +997,7 @@ public class Pia{
 	      whereFileMap = f.getParent()+ System.getProperty("file.separator") + "filemap.props";
 	      where = cmdprop;
 	    }
-	    piaprops = loadProperties( where );
+	    piaprops = instance.loadProperties( where );
 
 	  }catch(FileNotFoundException ex) {
 	    System.out.println ("Unable to load properties: "+cmdprop);
@@ -964,50 +1011,8 @@ public class Pia{
 	  }
 
 	
-
-	if( cmdroot != null )
-	  piaprops.put(PIA_ROOT, cmdroot );
-
-	if( cmdport != null )
-	  piaprops.put(PIA_PORT, cmdport.toString());
-	if( cmdusrdir != null )
-	  piaprops.put(PIA_USR_ROOT, cmdusrdir );
-	if( cmddebugging != null )
-	  piaprops.put(PIA_DEBUG, "true" );
-	if( cmdverbose != null )
-	  piaprops.put(PIA_VERBOSE, "true" );
-
-
-	
-	try
-	  {
-	    Pia piaAgency = new Pia();
-	    piaAgency.debug = true;
-	    piaAgency.debugToFile = false;
-	    piaAgency.initialize(piaprops);
-	    piaAgency.piaFileMapping = piaAgency.loadFileMapping( whereFileMap );
-	    piaAgency.createPiaAgency();
-
-	    //new Thread( new Shutdown() ).start();
-	  }catch(Exception e){
-	    System.out.println ("===> Initialization failed, aborting !") ;
-	    e.printStackTrace () ;
-	  }
-	    
+	loadFileMapping(whereFileMap);
   }
 
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

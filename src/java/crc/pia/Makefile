@@ -13,6 +13,7 @@ FILES = \
 	Transaction.java \
 	Machine.java \
 	Resolver.java \
+	Configuration.java \
 	Content.java \
 	Agent.java \
 	ByteStreamContent.java \
@@ -20,6 +21,7 @@ FILES = \
 	GenericAgent.java \
 	Logger.java \
 	Pia.java \
+	Setup.java \
 	Piaproperties.java \
 	PiaInitException.java \
 	PiaRuntimeException.java \
@@ -53,8 +55,10 @@ Machine.class: Content.java HTTPResponse.java Transaction.java Resolver.java \
 	../util/Timer.java
 
 Pia.class: PiaInitException.java Machine.java agent/Agency.java \
-	Resolver.java Logger.java Transaction.java \
+	Setup.java Resolver.java Logger.java Transaction.java \
 	agent/AgentInstallException.java 
+
+Setup.class: Configuration.java
 
 Resolver.class: Transaction.java Agent.java ../ds/Queue.java
 
