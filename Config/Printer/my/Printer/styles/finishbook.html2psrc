@@ -1,0 +1,16 @@
+
+@html2ps {
+  option {
+    twoup: 1;
+    text: 1;
+    toc: "h";
+  }
+
+/* TOC of t forces html2ps to follow links.... */
+
+  header {
+    center: "Book by WebPrinter";
+  }
+ 
+} 
+ 

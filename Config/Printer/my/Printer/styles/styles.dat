@@ -1,0 +1,7 @@
+<dl> <dt>default</dt><dd><style name="default"> 
+</style></dd>
+<dt>showlinks</dt><dd><style name="showlinks">
+ <stylepostproc>styles/showlinks.postproc</stylepostproc></style></dd><dt>contract</dt><dd><style name="contract">
+ <stylets>Printer-styles-contract</stylets><styletsfile>styles/contract.ts</styletsfile><stylepsrc>/home/wolff/.piajava/WebPrinter/styles/contract.html2psrc</stylepsrc></style></dd><dt>makebook</dt><dd><style name="makebook">
+ <stylets>Printer-styles-makebook</stylets><styletsfile>styles/makebook.ts</styletsfile></style></dd><dt>finishbook</dt><dd><style name="finishbook">
+ <stylepsrc>/home/wolff/.piajava/WebPrinter/styles/finishbook.html2psrc</stylepsrc></style></dd></dl>

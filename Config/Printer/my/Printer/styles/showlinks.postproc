@@ -1,0 +1,12 @@
+<set name="anchors" local><anchors><get name=document findall=a></anchors></set> 
+<set name=actr>1</set> 
+<set name=document insert=-1><h4>Links in Document: <get
+name=cachecounter></h4>
+Use numbers to quickly retrieve/print documents on the <code>Previous
+Prints<code> page of the &agentName;: http://&piaHOST;:&piaPORT;/&agentName;/previous.if</set> 
+<repeat list=&anchors;><set name=li insert=-1><sup>&actr;</sup>
+<set name=document insert=-1><br><b>&actr;:</b><get name=li attr=href></set> 
+<set name=actr><sum digits=0>1 &actr;</sum>
+</repeat> 
+ 
+ 

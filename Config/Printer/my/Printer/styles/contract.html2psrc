@@ -1,0 +1,18 @@
+ 
+  @html2ps {
+  margin {
+    top: 1.5cm;
+    bottom: 1.5cm;
+  }
+
+  toc {
+    extrapage: 0;
+    heading: "";
+ }
+
+} 
+
+ 
+ 
+ 
+ 
