@@ -81,6 +81,9 @@ public interface Processor extends Context {
   /** Turn off the Processor's ''running'' flag. */
   public void stop();
 
+  /** Copy nodes from the input to the output. */
+  public void copy();
+
   /** Process the current Node */
   public void processNode();
 
