@@ -36,7 +36,7 @@ public class Criteria extends List {
   public Criteria(List l) {
     for (int i = 0; i < l.nItems(); ++i) {
       Object o = l.at(i);
-      if (o instanceof String) push(Criterion.toCriterion(o.toString()));
+      if (o instanceof String) push(Criterion.toMatch(o.toString()));
       else if (o instanceof Criterion) push(o);
     }
   }
