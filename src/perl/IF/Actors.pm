@@ -1219,6 +1219,10 @@ sub write_handle {
 	    $base = IF::Run::agent()->agent_directory;
 	}
 	$base =~ s:/$:: if $base;
+	my $fn = $base? "$base/$file" : $file;
+	$fn =~ s://:/:g;
+	$fn =~ s:/$::;
+
 	if ($base ne '' && ! -d $base) {
 	    if (! mkdir($base, 0777)) {
 		my $err = "InterForm error: can't create directory $base\n";
@@ -1227,11 +1231,16 @@ sub write_handle {
 		return;
 	    }
 	}
-
-	my $fn = $base? "$base/$file" : $file;
-	$fn =~ s://:/:g;
-	$fn =~ s:/$::;
-
+	if ($dir && ! -d $fn) {
+	    if (! mkdir($fn, 0777)) {
+		my $err = "InterForm error: can't create directory $fn\n";
+		print $err;
+		$ii->replace_it($err);
+		return;
+	    }
+	    $ii->delete_it();
+	    return;
+	}    
 	if ($file eq '.') {
 	    # nothing to do; just make sure the base directory exists.
 	} elsif ($append) {
