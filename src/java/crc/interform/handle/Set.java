@@ -21,7 +21,9 @@ import crc.sgml.SGML;
  * <dt>Dscr:<dd>
  *	set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, 
  *	ENVironment, ELEMENT, or ENTITY context.  ENTITY may define
- *	a LOCAL binding.  ELEMENT may have a TAG.  TRANSaction item
+ *	a LOCAL or GLOBAL binding.   Default is to replace the lowest 
+ *      current binding and create global binding if none exists.
+ *      ELEMENT may have a TAG.  TRANSaction item
  *	may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. 
  *	Optionally COPY content as result.
  *  </dl>
@@ -31,13 +33,15 @@ public class Set extends crc.interform.Handler {
   static String syntaxStr=
     "<set name=\"name\" [copy]\n" +
     "[ pia | agent [hook] | trans [feature] | env \n" +
-    "| [element [tag=ident] | entity [local] ]>...</set>\n" +
+    "| [element [tag=ident] | entity [global | local] ]>...</set>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "set NAME to CONTENT, optionally in PIA, AGENT, TRANSaction, \n" +
     "ENVironment, ELEMENT, or ENTITY context.  ENTITY may define\n" +
-    "a LOCAL binding.  ELEMENT may have a TAG.  TRANSaction item\n" +
+    "a LOCAL or GLOBAL binding.   Default is to replace the lowest current binding\n" +
+    "and create global binding if none exists.\n" +
+    "ELEMENT may have a TAG.  TRANSaction item\n" +
     "may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. \n" +
     "Optionally COPY content as result.\n" +
 "";
@@ -60,7 +64,7 @@ public class Set extends crc.interform.Handler {
 	ii.setAttr(name, value, it.attr("tag").toString());
       } else if (it.hasAttr("local")) {
 	ii.defvar(name, value);
-      } else if (it.hasAttr("entity")) {
+      } else if (it.hasAttr("global")) {
 	ii.setGlobal(name, value);
       } else {
 	ii.setvar(name, value);

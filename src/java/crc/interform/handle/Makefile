@@ -15,6 +15,7 @@ BASIC_ACTORS = \
 	Actor_names.java \
 	Add_markup.java \
 	Difference.java \
+	Dl.java \
 	Element.java \
 	Equal.java \
 	Expand.java \
@@ -32,6 +33,7 @@ BASIC_ACTORS = \
 	Sorted.java \
 	Subst.java \
 	Sum.java \
+	Table.java \
 	Tagset.java \
 	Tagset_include.java \
 	Test.java \

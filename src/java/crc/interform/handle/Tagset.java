@@ -12,8 +12,11 @@ import crc.sgml.SGML;
  *	crc.interform.Tagset exists, so we can't just import it.  */
 
 /** Handler class for &lt;tagset&gt tag.  */
+
+
 public class Tagset extends crc.interform.Handler {
   public void handle(crc.interform.Actor ia, SGML it, Interp ii) {
+// Does this do anything? --GJW 7/3/97
     ii.tagset().define(new crc.interform.Actor(it));
     ii.deleteIt();
   }

@@ -32,7 +32,7 @@ public class Element extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    ii.tagset().define(new Actor(it, it.attrString("syntax")));
+    ii.defineActor(new Actor(it, it.attrString("syntax")));
     ii.deleteIt();
   }
 

@@ -16,12 +16,15 @@ import crc.sgml.SGML;
  * <dl>
  * <dt>Syntax:<dd>
  *	&lt;get [name="name"] 
- *	     [pia|agent|form|trans|env|element[tag=tag]|local|entity
+ *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
  *	     | [file="filename"|href="url"|[file|href] name="string" ] &gt;
  * <dt>Dscr:<dd>
  *	Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
- *	ELEMENT, TRANSaction, or LOCAL or global ENTITY context.
- *	Default is the generic lookup that includes paths.
+ *	ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
+ *      Default is to start with the local entity table and move up the
+ *      stack until name is found.  Returns "" if name does not exist in
+ *      specified context.  Elements of complex data structures can be accessed
+ *      using a dotted notation "foo.bar" returns the bar element of foo.
  *	If FILE or HREF specified, functions as &lt;read&gt;.
  *  </dl>
  */
@@ -29,13 +32,17 @@ public class Get extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
     "<get [name=\"name\"] \n" +
-    "[pia|agent|form|trans|env|element[tag=tag]|local|entity\n" +
+    "[pia|agent|form|trans|env|element[tag=tag]|local|global\n" +
     "| [file=\"filename\"|href=\"url\"|[file|href] name=\"string\" ] >\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
     "Get value of NAME, optionally in PIA, ENV, AGENT, FORM, \n" +
-    "ELEMENT, TRANSaction, or LOCAL or global ENTITY context.\n" +
+    "ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.\n" +
+    "Default is to start with the local entity table and move up the\n" +
+     "stack until name is found.  Returns \"\" if name does not exist in\n" +
+     "specified context.  Elements of complex data structures can be accessed\n" +
+     "using a dotted notation \"foo.bar\" returns the bar element of foo.\n" +
     "Default is the generic lookup that includes paths.\n" +
     "If FILE or HREF specified, functions as <read>.\n" +
 "";
@@ -62,11 +69,11 @@ public class Get extends crc.interform.Handler {
       if (it.hasAttr("element")) {
 	result = ii.getAttr(name, it.attr("tag").toString());
       } else if (it.hasAttr("local")) {
-	result = ii.getvar(name);
-      } else if (it.hasAttr("entity")) {
-	result = ii.getGlobal(name);
+	result = ii.getvar(name);  // look only in local table
+      } else if (it.hasAttr("global")) {
+	result = ii.getGlobal(name); // look only in global table
       } else {
-	result = ii.getEntity(name);
+	result = ii.getEntity(name); // start in local table and move up
       }
       ii.replaceIt(result);
     }
