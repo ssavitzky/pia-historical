@@ -24,6 +24,7 @@ import java.io.DataInputStream;
 import java.lang.Runnable; // added by Greg
 
 import crc.ds.Features;
+import crc.ds.HasFeatures;
 import crc.ds.Queue;
 import crc.ds.Table;
 import crc.ds.List;
@@ -41,11 +42,12 @@ import crc.pia.Athread;
 import crc.util.Utilities;
 
 import crc.tf.Registry;
-import crc.tf.UnknownNameException;
+import crc.tf.TFComputer;
 
 import w3c.www.http.HTTP;
 
-public abstract class Transaction extends AttrBase implements Runnable {
+public abstract class Transaction extends AttrBase
+    implements Runnable, HasFeatures {
 
   public boolean DEBUG = false;
 
@@ -472,9 +474,8 @@ public abstract class Transaction extends AttrBase implements Runnable {
   ************************************************************************/
 
   /**
-   * return a ds's Feature object 
+   * return the Features object.
    */
-
   public Features features (){
     return features;
   }
@@ -492,6 +493,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * compute it and return the value
    */
   public Object getFeature( String name ) {
+    name = Features.cannonicalName(name);
     return features.feature( name, this );
   }
 
@@ -500,6 +502,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * compute it and return the value.
    */
   public String getFeatureString( String name ) {
+    name = Features.cannonicalName(name);
     Object f = features.feature( name, this );
     return (f == null)? null : f.toString();
   }
@@ -508,6 +511,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * Test a named feature and return a boolean.
    */
   public boolean test( String name ) {
+    name = Features.cannonicalName(name);
     return features.test(name, this);
   }
 
@@ -516,6 +520,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * Can be used to recompute features after changes
    */
   public Object compute( String name ){
+    name = Features.cannonicalName(name);
     return features.compute(name, this);
   }
 
@@ -546,22 +551,17 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * @return true if it does
    */
   public boolean has( String name ) {
+    name = Features.cannonicalName(name);
     return features.has(name);
   }
 
   /**
-   * Compute a feature by using transaction feature Registry
-   * @param featureName the name of the feature
+   * Compute a feature by using the Transaction feature Registry.
+   * @param featureName the name of the feature.
    */
-  public Object computeFeature( String featureName ) throws UnknownNameException{
-    UnaryFunctor c;
-    try {
-     c = (UnaryFunctor)Registry.calculatorFor( featureName );
-     return c.execute( this );
-    } catch(UnknownNameException e){
-      // log here
-      throw e;
-    }
+  public Object computeFeature( String featureName ) {
+    TFComputer c = Registry.calculatorFor( featureName );
+    return (c == null)? null : c.computeFeature(this);
   }
 
   /**
@@ -569,7 +569,7 @@ public abstract class Transaction extends AttrBase implements Runnable {
    * @param criteria a Criteria list.
    * @return true if there is a match
    */
-  protected boolean matches(Criteria criteria){
+  public boolean matches(Criteria criteria){
     if (criteria == null) return false;
     return criteria.match(features, this);
   } 
