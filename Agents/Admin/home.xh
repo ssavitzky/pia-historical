@@ -3,13 +3,7 @@
 <title>&piaUSER;'s &AGENT:name;: Home Page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 
-<set entity name=title>Home page for
-<if><test exact  match='pia'>&piaUSER;</test>
-    <then> this </then>
-    <else> &piaUSER;'s</else></if><br>
-<if><test exact match='pia'>&piaUSER;</test>
-    <then>Peripheral Interface </then>
-    <else>Personal Information </else></if> Agency</set>
+<set entity name=title>Server administration agent</set>
 <header show-date=yes>&title;</header>
 <sub-head page=home />
 
