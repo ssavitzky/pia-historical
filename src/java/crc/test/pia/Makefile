@@ -31,6 +31,7 @@ CASEFILES = \
 	httpreq_1.case \
 	httpreq_2.case \
 	httpreq_3.case \
+	httpreq_4.case \
 	httpres_1.case \
 	httpres_2.case \
 	httpres_3.case \
@@ -52,7 +53,7 @@ CLASS=crc.interform.Filter
 	[ ! -f $*.ok ] || diff $*.ok $*.out > $*.diff
 
 all:: $(FILES:.java=.class)
-all:: $(CASEFILES:.case=.out)
+cases:: $(CASEFILES:.case=.out)
 
 
 clean::
