@@ -1,0 +1,7 @@
+crc.pia.port=80
+crc.pia.realport=8888
+crc.pia.debug=false
+crc.pia.verbose=false
+crc.pia.logger=crc.pia.Logger
+crc.pia.reqtimeout=40000
+

@@ -1,32 +1,27 @@
-<h1>.../pia/Config</h1>
+<h1>.../pia/Config/unix</h1>
 
 <a href="../">[..]</a>
 <a href="#files">[files]</a><p>
 
-This directory contains three kinds of configuration information:
-
-<ol>
-  <li> <a href="#app">Appliance</a> configurations.  Each
-       appliance's configuration is in a directory with the name of the
-       appliance's top-level agent.
-  <li> <a href="#env">Environment</a> configurations, for various operating
-       systems and environments. 
-  <li> the ``<a href="#sdk">Software Development Kit</a>'', consisting of
-       makefiles and other configuration files. 
-</ol>
+This directory contains configuration information of use to Unix users.
 
 
 <h2>Annotated Contents</h2>
 
-<h3><a name="pia">PIA Configuration Files</a></h3>
+<h3>Proxying <em>to</em> a PIA</h3>
+The following files are used to make a PIA accessible through port 80 without
+running it as root:
 <dl>
-  <dt> <a href="pia.props"><code>pia.props</code></a>
-  <dd> A typical set of properties.  Copy into your PIA user directory
-       (<code>~/.pia/Config</code> on Unix) and edit to your liking.
+  <dt> <a href="Apache/"><code>Apache</code></a>
+  <dd> an Apache <code>httpd.conf</code> file for proxying through Apache to a
+       PIA listening on a different port.  It goes into
+       <code>/etc/httpd/conf</code>.
        
-  <dt> <a href="pia.props.proxied"><code>pia.props.proxied</code></a>
+  <dt> <a href="../pia.props.proxied"><code>../pia.props.proxied</code></a>
   <dd> This is a property file designed for use in a PIA that is accessed
-       through a proxy such as Apache.
+       through a proxy such as Apache.  It goes into
+       <code>~pia/.pia/Config</code> and needs to be renamed
+       <code>pia.props</code> in order to work. 
 </dl>
 
 <h3><a name="app">Appliances</a></h3>
