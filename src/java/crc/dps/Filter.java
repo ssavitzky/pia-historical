@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStreamWriter;
+import java.io.ObjectOutputStream;
 
 import crc.dps.Parser;
 import crc.dps.Input;
@@ -23,6 +24,7 @@ import crc.dps.Tagset;
 import crc.dps.output.*;
 import crc.dps.active.*;
 import crc.dps.handle.GenericHandler;
+import crc.dps.handle.LegacyHandler;
 
 /**
  * Interpret an input stream or file as an InterForm.  
@@ -37,6 +39,7 @@ public class Filter {
   static boolean entities = true;
   static boolean parsing = false;
   static int verbosity = 0;
+  static boolean noaction = false;
 
   /** Main program.
    * 	Interpret the given arguments, then run the interpretor over
@@ -50,23 +53,26 @@ public class Filter {
 
     boolean verbose = verbosity > 0;
     boolean debug   = verbosity > 1;
+    InputStream in = System.in;
+    OutputStream outs = System.out;
+    OutputStreamWriter out = null;
 
     /* Open the input and output files. */
 
-    InputStream in = System.in;
     try {
       if (infile != null) in = new FileInputStream(infile);
     } catch (Exception e) {
       System.err.println("Cannot open input file " + infile);
+      in = null;
     }
       
-    OutputStream outs = System.out;
     try {
       if (outfile != null) outs = new FileOutputStream(outfile);
     } catch (Exception e) {
       System.err.println("Cannot open output file " + outfile);
+      outs = null;
     }
-    OutputStreamWriter out = new OutputStreamWriter(outs);
+    if (outs != null) out = new OutputStreamWriter(outs);
 
     if (verbosity > 2) {
       java.util.Properties env = System.getProperties();
@@ -98,16 +104,23 @@ public class Filter {
       java.util.Enumeration names = ts.elementNames();
       while (names.hasMoreElements()) {
 	String name = names.nextElement().toString();
-	System.err.print(" " + name);
 	Handler h = ts.getHandlerForTag(name);
 	GenericHandler gh =
 	  (h instanceof GenericHandler)? (GenericHandler)h : null;
-	if (gh != null)
-	  System.err.print(h.expandContent()? "X" : "Q");
+	if (gh != null) {
+	  name += gh.getElementSyntax() < 0? "E" : h.expandContent()? "X" : "Q";
+	  String cname = gh.getClass().getName();
+	  if (cname.equals("crc.dps.handle.GenericHandler")
+	      || cname.equals("crc.dps.handle.LegacyHandler")) name += "U";
+	  else if (gh instanceof LegacyHandler) name += "L";
+	}
+	System.err.print(" " + name);
       }
       System.err.print("\n");
     }
     
+    if (in == null || out == null) System.exit(-1);
+
     /* Ask the Tagset for an appropriate parser, and set its Reader. */
     Parser p = ts.createParser();
     p.setReader(new InputStreamReader(in));
@@ -121,7 +134,8 @@ public class Filter {
     Output output = null;
     if (parsing) {
       outputTree = new ToParseTree();
-      outputTree.setRoot(new crc.dps.active.ParseTreeElement("Tree", null));
+      // === root should be an ActiveDocument ===
+      outputTree.setRoot(new crc.dps.active.ParseTreeElement("Document", null));
       output = outputTree;
     } else {
       output = new ToWriter(out);
@@ -131,15 +145,26 @@ public class Filter {
     ii.setOutput(output);
     ii.setVerbosity(verbosity);
 
-    //if (entities) new Environment(infile).use(ii);
-
     /* Run the Processor. */
-    ii.run();
+    if (noaction) ii.copy();
+    else ii.run();
 
     if (parsing) { 
-      System.err.println("\n\n========= parse tree: ==========\n");
-      System.err.println(outputTree.getRoot());
-    } else try {
+      if (debug) {
+	System.err.println("\n\n========= parse tree: ==========\n");
+	System.err.println(outputTree.getRoot());
+      } 
+      try {
+	ObjectOutputStream destination = new ObjectOutputStream(outs);
+	destination.writeObject( outputTree.getRoot() );
+	destination.flush();
+	destination.close();
+      } catch (java.io.IOException e) { 
+	e.printStackTrace(System.err);
+      }
+    } 
+
+    if (out != null) try {
       out.close();
     } catch (java.io.IOException e){}
   }
@@ -147,12 +172,13 @@ public class Filter {
   /** Print a usage string.
    */
   public static void usage() {
-    PrintStream o = System.out ;
+    PrintStream o = System.err ;
 
     o.println("Usage: java crc.interform.Filter [option]... [infile]");
     o.println("    options:");
     o.println("        -e	no entities");
     o.println("        -h	print help string");
+    o.println("        -n       no action (for building parse tree)");
     o.println("        -o file	specify output file");
     o.println("	       -p	build parse tree");
     o.println("        -t ts	specify tagset name");
@@ -178,6 +204,8 @@ public class Filter {
 	verbosity += 2;
       } else if (args[i].equals("-e")) {
 	entities = false;
+      } else if (args[i].equals("-n")) {
+	noaction = true;;
       } else if (args[i].equals("-o")) {
 	if (i == args.length - 1) return false;
 	outfile = args[++i];
