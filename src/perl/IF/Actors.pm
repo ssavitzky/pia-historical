@@ -199,20 +199,24 @@ sub actor_handle {
 ###	agent	attributes of the current PIA agent
 ###	
 
-### === <get file [path="p1:p2..."]
-###	<file read|write|append [path=] [name=] >content</file>
+### === <get file="name"> should map to read
 
-define_actor('get', 'content' => 'name', _handle => \&get_handle,
+define_actor('get', 'empty' => 1, _handle => \&get_handle,
 	     'dscr' => "Get value of NAME, 
-optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.");
+optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.
+If FILE or HREF specified, functions as read.");
 
 ### === EXPAND/PROTECT ?===
+### === it's probably safe to let this be empty now ===
 
 sub get_handle {
     my ($self, $it, $ii) = @_;
 
+    if ($it->attr('file') || $it->attr('href')) {
+	return read_handle($self, $it, $ii);
+    }
+
     my $name = $it->attr('name');
-    $name = $it->content_string unless defined $name;
 
     if ($it->attr('pia')) {
 	local $agent = IF::Run::agent();
@@ -475,10 +479,13 @@ sub test_handle {
 	$result = 1 if $text < 0;
     } elsif (($match = $it->attr('match'))) {
 	$match = "^$match\$" if $it->attr('exact');
-	if ($it->attr('case')) {
-	    $result = 1 if $text =~ /$match/;
-	} else {
-	    $result = 1 if $text =~ /$match/i;
+	eval {
+	    ## in an eval block because an ill-formed match will croak.
+	    if ($it->attr('case')) {
+		$result = 1 if $text =~ /$match/;
+	    } else {
+		$result = 1 if $text =~ /$match/i;
+	    }
 	}
     } else {
 	$result = 1 unless $text =~ /^\s*$/;
@@ -1267,8 +1274,7 @@ sub trans_control_handle {
     $ii->delete_it;
 }
 
-
-###### Operating System:
+###### PIA:
 
 ### <user-message>string</user-message>
 
@@ -1283,6 +1289,23 @@ sub user_message_handle {
     $ii->delete_it;
 }
 
+### <pia-exit>
+
+define_actor('pia-exit', 'unsafe' => 1, _handle => \&pia_exit_handle,
+	     'dscr' => "Exit from the pia, after printing CONTENT." );
+
+sub pia_exit_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $content = $it->content_string;
+
+    ## === should really set a flag and let the resolver quit cleanly.
+    die "$content\n";
+
+    $ii->delete_it;
+}
+
+###### Operating System:
 
 ### <os-command>command</os-command>
 
