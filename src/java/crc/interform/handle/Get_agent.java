@@ -34,9 +34,10 @@ public class Get_agent extends Get {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
+    String name = getName(it);
     Index index = getIndex(it);
-    if(index == null){
-      ii.error(ia, " name attribute missing or null");
+    if(index == null && name == null){
+      ii.error(ia, " no name or index attribute specified");
       return;
     }
     
@@ -49,7 +50,7 @@ public class Get_agent extends Get {
       ii.error(ia, "agent " + aname + " not running");
       ii.deleteIt();
     }
-    SGML result = getValue(new SecureAttrs(a, ii), index);
+    SGML result = getValue(new SecureAttrs(a, ii), name, index);
     result = processResult(result, it);
     ii.replaceIt(result);
       

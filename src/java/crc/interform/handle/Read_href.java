@@ -146,9 +146,9 @@ public class Read_href extends Get {
 
     SGML  results = result;
     // if name exists, use as an index
-    if(it.hasAttr("name")){
-      results = getValue(result,it);
-    }
+    //if(it.hasAttr("name")){
+    results = getValue(result,it);
+      //}
     results=processResult(results,it);
     ii.replaceIt(results);
       

@@ -192,9 +192,9 @@ public class Read_file extends Get {
       }    
     }
     // if name exists, use as an index
-    if(it.hasAttr("name")){
-      result = getValue(result,it);
-    }
+    //if(it.hasAttr("name")){
+    result = getValue(result,it);
+    //}
     result=processResult(result, it);
     ii.replaceIt(result);
   }

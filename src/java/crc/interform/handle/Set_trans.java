@@ -37,14 +37,14 @@ public class Set_trans extends Set {
  
   public void handle(Actor ia, SGML it, Interp ii) {
     // name (with  dots) may be used for setting headers or features
-    String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
-
+    String name = getName(it);
     Index index = getIndex(it);
-    if(index == null){
-      ii.error(ia, " name attribute missing or null");
+    if(index == null && name==null){
+      ii.error(ia, " name or index attribute missing or null");
       return;
     }
+
+    String key = (name == null) ? index.shift() : name;
     
     SGML value = getValue(it);
 
@@ -58,9 +58,9 @@ public class Set_trans extends Set {
       trans.setHeader(name, value.toString());
     } else {
       if(isComplex(index,it)){
-	doComplexSet(index,new SecureAttrs(trans, ii), value, ia,it,ii);
+	doComplexSet(key,index,new SecureAttrs(trans, ii), value, ia,it,ii);
       }else {
-	trans.attr(name, value);
+	trans.attr(key, value);
       }
     }
 

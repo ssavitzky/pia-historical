@@ -26,7 +26,7 @@ import java.util.Enumeration;
  * this description is out of date please update from syntax
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;set name="name" [copy] [attr=attr | insert=where [replace] ]
+ *	&lt;set [name="name" | index=index] [copy] [attr=attr | insert=where [replace] ]
  *	     [ pia | agent | trans [feature] | env 
  *  	     | [element [tag=ident] | [global | local] ]&gt;...&lt;/set&gt;
  * <dt>Dscr:<dd>
@@ -34,11 +34,11 @@ import java.util.Enumeration;
  *	ENVironment, ELEMENT, or ENTITY context.  Entity may be
  *	a LOCAL or GLOBAL binding.   Default is to replace the lowest 
  *      current binding or create a global binding if none exists.
- *      NAME may be a path, e.g. \"foo.bar\" sets the bar item of foo.
+ *      INDEX may be a path, e.g. \"foo.bar\" sets the bar item of foo.
  *      Intermediate objects on the path are created if they don't exist.
  *      If WHERE is \"-1\" then the CONTENT will get appended to the specified object.
  *      ELEMENT may have a TAG.  TRANSaction item
- *	may be FEATURE.  AGENT may be a HOOK (parsed InterForm) or string. 
+ *	may be FEATURE.   
  *	Optionally COPY content as result.
  *  </dl>
  * Subclasses are used to set items in the PIA AGENT TRANS ENV  contexts.
@@ -46,7 +46,7 @@ import java.util.Enumeration;
 public class Set extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<set name=\"name\" [copy] [attr=attr | insert=where [replace] ]\n" +
+    "<set name=\"name\" | index=\"index\" [copy] [attr=attr | insert=where [replace] ]\n" +
     "[ pia | agent | trans [feature] | env \n" +
     "| [element [tag=ident]] | entity [global | local] ]>...</set>\n" +
 "";
@@ -57,7 +57,7 @@ public class Set extends crc.interform.Handler {
     "ENVironment, ELEMENT, or ENTITY context.  ENTITY may define\n" +
     "a LOCAL or GLOBAL binding.   Default is to replace the lowest current binding\n" +
     "or create a global binding if none exists.\n" +
-  "NAME may be a path, e.g. \"foo.bar\" sets the bar item of foo.\n" +
+  "INDEX may be a path, e.g. \"foo.bar\" sets the bar item of foo.\n" +
   "Intermediate objects on the path are created if they don't exist.\n" +
   "If WHERE is \"-1\" then the CONTENT will get appended to the specified object.\n" +
     "ELEMENT may have a TAG.  TRANSaction item\n" +
@@ -77,11 +77,17 @@ public class Set extends crc.interform.Handler {
         */
 
       // get the appropriate index
+      String name = getName(it);
       Index index = getIndex(it);
-      if(index == null){
-	ii.error(ia, " name attribute missing or null");
+      if(index == null && name==null){
+	ii.error(ia, " name or index attribute missing or null");
 	 return;
       }
+
+
+      // get the first item for finding the correct table
+      
+      String key = (name == null) ? index.shift() : name;
     
       SGML value = getValue(it);
       // at this point value may be token or tokens
@@ -90,8 +96,6 @@ public class Set extends crc.interform.Handler {
       //  do we need an SGML context?
       boolean isComplexSet = isComplex( index, it);
 
-      // get the first item for finding the correct table
-      String key = index.shift();
       debug(this, " setting value of "+key+" to instance of "+value.getClass().getName());
 
       if(isComplexSet){
@@ -131,14 +135,24 @@ public class Set extends crc.interform.Handler {
 
 
   /**
-   * return the index derived from name attribute
+   * return the index derived from  index attribute
    */
 
   protected Index getIndex(SGML it){
-    String name = Util.getString(it, "name", null);
+    String name = Util.getString(it, "index", null);
     if(name == null || "".equals(name)) return null;
     return new Index(name);
   }
+
+  /**
+   * return the name attribute
+   */
+  String getName(SGML it){
+    String name = Util.getString(it, "name", null);
+     return name;
+  }
+
+
 
   /**
    * return the contents of it
@@ -153,10 +167,10 @@ public class Set extends crc.interform.Handler {
    */
   protected boolean isComplex(Index index, SGML it){
     // 
-    return ( index.size()>1 || 
+    return ( (index != null && index.size()>0) || 
 	     it.hasAttr("attr") ||
 	     it.hasAttr("insert") ||
-	     it.hasAttr("row") || it.hasAttr("col") ||
+	     it.hasAttr("row") || it.hasAttr("col") || it.hasAttr("rows") ||
 	     it.hasAttr("key") ||
 	     it.hasAttr("element"));
   }
@@ -197,7 +211,8 @@ public class Set extends crc.interform.Handler {
 	  ii.setGlobal(key, root);
       }
     } else {
-      root = ii.getEntity(key);
+      root = ii.getvar(key);
+      if(root == null ) root = ii.getGlobal(key);
       if(root == null) {
 	debug(this,"creating new entity " + key);
 	root=new Element("");
@@ -210,13 +225,27 @@ public class Set extends crc.interform.Handler {
     doComplexSet( index, root, value, ia ,it, ii);
   }
   
-
+  /**
+   * do complex set with initial key lookup
+   */
+  protected void doComplexSet(String key,Index index, SGML root, SGML value, Actor ia, SGML it, Interp ii){
+    if(key != null && root != null){
+      if( root.hasAttr(key)){
+	root = root.attr(key);
+      } else {
+	SGML nextRoot=new Element( key);
+	root.attr(key,nextRoot);
+	root = nextRoot;
+      }
+    }
+     doComplexSet( index, root, value, ia, it, ii);
+  }
   /**
    * given the root SGML object, do the complex set
    */
   protected void doComplexSet(Index index, SGML root, SGML value, Actor ia, SGML it, Interp ii){
-    if(index==null || root == null || it == null) return;
-    if(index.size()>0){
+    if(root == null || it == null) return;
+    if(index != null && index.size()>0){
       try{
 	root = index.path(root);
       } catch (Exception e){

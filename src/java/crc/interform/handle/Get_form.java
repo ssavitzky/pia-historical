@@ -56,8 +56,8 @@ public class Get_form extends Get {
       return;
     } 
 
-    Index index = getIndex(it);
-    SGML result = ( index != null) ? getValue(form, index) : form;
+    //getValue returns form if name and index both null
+    SGML result = getValue(form, it); 
     result =  processResult(result, it);
       
     ii.replaceIt( result);

@@ -23,12 +23,14 @@ import crc.sgml.SGML;
 public class Set_form extends Set {
   public void handle(Actor ia, SGML it, Interp ii) {
     // get the appropriate index
+    String name = getName(it);
     Index index = getIndex(it);
-    if(index == null){
-      ii.error(ia, " name attribute missing or null");
+    if(index == null && name==null){
+      ii.error(ia, " name or index attribute missing or null");
       return;
     }
-    
+    String key = (name == null) ? index.shift() : name;
+
     SGML value = getValue();
 
     //  do we need an SGML context?
@@ -40,9 +42,8 @@ public class Set_form extends Set {
       ii.error(ia,"No  form context");
     } else {
       if(isComplexSet) {
-	 doComplexSet( index, form, value, ia, it, ii);
+	 doComplexSet(  key,index, form, value, ia, it, ii);
       } else {
-	String key = index.shift();
 	form.attr(key,value);
       }
     }

@@ -36,7 +36,7 @@ public class Get_trans extends Get {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "name", null);
+    String name = getName(it);
 
 
     Run env = Run.environment(ii);

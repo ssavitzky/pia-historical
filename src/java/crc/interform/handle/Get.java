@@ -23,7 +23,7 @@ import java.util.Hashtable;
 /** Handler class for &lt;get&gt tag 
  * <dl>
  * <dt>Syntax:<dd>
- *	&lt;get [name="name"] 
+ *	&lt;get [name="name" | index="index"] 
  *	     [pia|agent|form|trans|env|element[tag=tag]|local|global
  *	     | [file="filename"|href="url"|[file|href] name="string" ] 
  *           [attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=tag ]&gt;
@@ -33,7 +33,8 @@ import java.util.Hashtable;
  * Default is to start with the local entity table and move up the
  * stack until name is found.  Returns \"\" if name does not exist in
  * specified context.  Elements of complex data structures can be accessed
- * using a dotted notation \"foo.bar\" returns the bar elements of foo.
+ * using an INDEX -- dotted notation \"foo.bar\" returns the bar elements of
+ * foo.  While \"foo.bar-3-5\"  returns the 3rd, 4th, and 5th bar  elements.
  * If FILE or HREF specified, functions as <read>.
  * The last set of attributes applies to the retrieved SGML object.
  * SIZE returns number of elements retrieved.
@@ -52,7 +53,7 @@ import java.util.Hashtable;
 public class Get extends crc.interform.Handler {
   public String syntax() { return syntaxStr; }
   static String syntaxStr=
-    "<get [name=\"name\"] \n" +
+    "<get [name=\"name\" | index=\"index\"] \n" +
     "[pia|agent|form|trans|env|element[tag=tag]|local|global\n" +
     "| [file=\"filename\"|href=\"url\"|[file|href] name=\"string\" ] >\n" +
     "[attr=attr | size | row=row col=col |rows=rows cols=cols | key=key | keys | values | findAll=ftag  ]\n" +
@@ -63,8 +64,10 @@ public class Get extends crc.interform.Handler {
     "ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.\n" +
     "Default is to start with the local entity table and move up the\n" +
      "stack until name is found.  Returns \"\" if name does not exist in\n" +
-     "specified context.  Elements of complex data structures can be accessed\n" +
-     "using a dotted notation \"foo.bar\" returns the bar elements of foo.\n" +
+     "specified context.  \n" +
+     "Elements of complex data structures can be accessed\n" +
+  "using an INDEX -- dotted notation \"foo.bar\" returns the bar elements of\n" +
+  "foo.  While \"foo.bar-3-5\"  returns the 3rd, 4th, and 5th bar.\n" +
     "If FILE or HREF specified, functions as <read>.\n" +
   "The last set of attributes applies to the retrieved SGML object.\n" +
   "SIZE returns number of elements retrieved.\n" +
@@ -91,11 +94,18 @@ public class Get extends crc.interform.Handler {
       /* The following are all in the Basic tagset,
        *     so it's cheaper not to dispatch on them.
        */
-      String name = Util.getString(it, "name", null);
-      if (ii.missing(ia, "name", name)) return;
+      String name = getName(it);
+      Index i = getIndex(it);
+      if(name == null && i == null) {
+	ii.error(ia, "no name or index specified");
+	return;
+      }
+      if(name == null){
+	// use first part of index as name -- does not get parsed
+	 name = i.shift();
+      }
 
-      //For these gets, index converting is done by the ii get* methods
-
+      // first get the SGML object
       SGML result = null;
 
       if (it.hasAttr("element")) {
@@ -109,12 +119,16 @@ public class Get extends crc.interform.Handler {
       } else if (it.hasAttr("global")) {
 	result = ii.getGlobal(name); // look only in global table
       } else {
-	result = ii.getEntity(name); // start in local table and move up
+	result = ii.getvar(name); // start in local table and move up
+	if(result == null) result = ii.getGlobal(name);
       }
 
-      //result may be a token or tokens
-      //if possible make a single token
+      // do rest of path processing
+      if(i != null) {
+	result = getValue(result,i);
+      }
 
+      // do any other attributes
       result = processResult(result,it);
       ii.replaceIt(result);
     }
@@ -124,8 +138,20 @@ public class Get extends crc.interform.Handler {
   ** utility functions
   ************************************************************/
 
-  protected Index getIndex(SGML it){
+
+  /**
+   * return the name identifier specified by request token
+   */
+  protected String getName(SGML it){
     String name = Util.getString(it, "name", null);
+     return name;
+  }
+
+  /**
+   * return the index object specified by request token
+   */
+  protected Index getIndex(SGML it){
+    String name = Util.getString(it, "index", null);
     if(name == null || "".equals(name)) return null;
     return new Index(name);
   }
@@ -148,10 +174,29 @@ public class Get extends crc.interform.Handler {
   }
   
 
+  /**
+   * look up name / index in context -- use name first if any
+   */
+  SGML getValue(SGML context, String name, Index i){
+    if( context == null) return context;
+     SGML local = context;
+     if (name != null) {
+         local = context.attr(name);
+     }
+     if (i != null) {
+        local = getValue( local, i);
+     }
+      return local;
+  }
+
+  /**
+   * look up it in context -- name takes precedence over index
+   */
 
   protected SGML getValue(SGML  context,SGML it){
+    String name = getName(it);
     Index i = getIndex(it);
-    return  getValue( context,i);
+    return  getValue( context, name, i);
   }
 
   void debug (Object o,  String s){

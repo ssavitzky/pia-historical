@@ -38,12 +38,16 @@ public class Set_agent extends Set {
  
   public void handle(Actor ia, SGML it, Interp ii) {
     // get the appropriate index
+    String name = getName(it);
     Index index = getIndex(it);
-    if(index == null){
-      ii.error(ia, " name attribute missing or null");
+    if(index == null && name==null){
+      ii.error(ia, " name or index attribute missing or null");
       return;
     }
-
+      
+    String key = (name == null) ? index.shift() : name; 
+    
+    
     //  do we need an SGML context?
     boolean isComplexSet = isComplex( index, it);
 
@@ -63,11 +67,9 @@ public class Set_agent extends Set {
     if(isComplexSet){
       debug(this," agent "+aname+" doing complex set " + it);
       // do complex set
-      doComplexSet(index,new SecureAttrs(a, ii),  value ,ia, it, ii);
+      doComplexSet( key,index,new SecureAttrs(a, ii),  value ,ia, it, ii);
     } else {
       // do the simple set
-      String key = Util.getString(it,"name",null); //could use index.shift
-      
       if( key != null )
 	a.attr(key, value);	// security unimplemented! ===  
     }
