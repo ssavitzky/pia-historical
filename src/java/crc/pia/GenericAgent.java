@@ -389,7 +389,6 @@ public class GenericAgent implements Agent {
    *
    */
   public void actOn(Transaction ts, Resolver res){
-    Pia.instance().errLog(name() + "If you come this far, you have execute the generic agent actOn.");
   }
 
   /**
@@ -399,7 +398,6 @@ public class GenericAgent implements Agent {
    * may want to intercept a transaction meant for somewhere else.
    */
   public boolean handle(Transaction ts, Resolver res){
-    Pia.instance().errLog(name() + "If you come this far, you have execute the generic agent Handle.");
     return false;
   }
 
