@@ -51,6 +51,11 @@ public class Get_trans extends Get {
       return;
     }
     if (it.hasAttr("feature")) {
+      /* System.err.println("get trans feature "+name+" = "
+			 + trans.getFeature(name)
+			 +" " + trans.test(name) 
+			 +" " + trans.getFeature(name).getClass()
+			 +" " + Util.toSGML(trans.getFeature(name))); */
       ii.replaceIt(Util.toSGML(trans.getFeature(name)));
     } else if (it.hasAttr("headers")) {
       if (name == null) 
