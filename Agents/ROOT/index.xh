@@ -26,7 +26,7 @@
   <td valign=top>
     <table cellspacing=0 cellpadding=0 border=0 valign=top>
     <tr><th valign=top align=right width=170>
-	    <a href="/Admin/home"><b>Admin:</b></a>&nbsp;
+	    <a href="/Admin"><b>Admin:</b></a>&nbsp;
 	<td valign=top>
 	    <a href="/Admin/list-agents">list</a> /
 	    <a href="/Admin/installers">install</a> / 

@@ -8,7 +8,7 @@
     know that.
 
 <p> You can find out more about this <em>particular</em> PIA server from the
-    <a href="/Agency">Agency</a> agent, which is used to perform server
+    <a href="/Admin">Admin</a> agent, which is used to perform server
     management functions.  You can find out about its implementation from the
     <a href="/PIA/Doc/Manuals/Api/index.html">API</a> (Application Programming
     Interface) Manual, and by directly studying the <a
