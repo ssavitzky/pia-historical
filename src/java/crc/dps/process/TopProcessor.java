@@ -293,12 +293,12 @@ public class TopProcessor extends BasicProcessor implements TopContext
   }
 
   /** Make an entity-table entry for a lookup table. */
-  protected void define(String n, Tabular v) {
+  public void define(String n, Tabular v) {
     getLocalNamespace().setBinding(n, new NamespaceWrap(n, v));
   }
 
   /** Make an entity-table entry for a String. */
-  protected void define(String n, Object v) {
+  public void define(String n, Object v) {
     if (v == null)
       setEntityValue(n, new ParseNodeList(), false);
     else
@@ -306,7 +306,7 @@ public class TopProcessor extends BasicProcessor implements TopContext
   }
 
   /** Make an entity-table entry for a List. */
-  protected void define(String n, Enumeration v) {
+  public void define(String n, Enumeration v) {
     setEntityValue(n, new ParseNodeList(v), false);
   }
 
