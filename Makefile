@@ -25,7 +25,11 @@ cvs_tag::
 	cvs tag $(VERSION_ID)
 
 cvs_rtag::
-	cvs rtag $(VERSION_ID) rest
+	cvs rtag $(VERSION_ID) pia
+
+foobar::
+	echo $(VERSION_ID)
+
 
 ### Stuff for making a CD-ROM
 
@@ -36,7 +40,7 @@ CD_ROM_PUB      = Ricoh Silicon Valley
 VENDOR_TAG  = PIA
 RELEASE         = 1
 MAJOR           = 1
-MINOR           = 1
+MINOR           = 0
 SUFFIX          = 
 VERSION_ID = $(VENDOR_TAG)$(RELEASE)_$(MAJOR)_$(MINOR)$(SUFFIX)
 VERSION    = $(VENDOR_TAG)$(RELEASE).$(MAJOR).$(MINOR)$(SUFFIX)
