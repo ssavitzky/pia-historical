@@ -1,0 +1,233 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>About Handlers</title>
+<link rev="made" href="mailto:steve@rsv.ricoh.com">
+</head><body>
+<h1>About Handlers</h1>
+
+<blockquote><em>
+  This document contains notes about Handlers in the PIA's Document Processing
+  System (DPS), as implemented in the Java module <code>crc.dps.handle</code>.
+</em></blockquote>
+
+<h3>See Also:</h3>
+<ul>
+  <li> <a href="../about.html">About the DPS</a> in
+       <a href="../"><code>../</code></a>
+</ul>
+
+<h2>What a Handler Does</h2>
+
+<p> The <a href="../Handler.java"><code>crc.dps.Handler</code></a> interface is
+    actually a composite of two other interfaces:  
+    <a href="../Syntax.java"><code>crc.dps.Syntax</code></a> and
+    <a href="../Action.java"><code>crc.dps.Action</code></a>.
+
+<p> Every <a href="../active/ActiveNode"><code>ActiveNode</code></a> actually
+    points to two (potentially different) handlers, accessible through the
+    <code>getSyntax()</code> and <code>getAction()</code> methods.
+
+<h3>Syntax</h3>
+
+<p> The <code>Syntax</code> interface of a Handler is invoked at <em>parse
+    time</em>.  In the typical case, for an Element, it tells the parser
+    whether the element is empty, whether its contents are parsed or unparsed,
+    and so on.
+
+<p> When the Parser constructs a new Node, for example an Element, it passes
+    the tagname and attribute list to the Tagset using the
+    <code>createActiveElement</code> method.  The tagset obtains the
+    appropriate handler using its own <code>getHandlerForTag</code> method,
+    and calls on the handler to construct the node, using its
+    <code>createElement</code> method.
+
+<p> <code><em>handler</em>.createElement</code> normally constructs a default
+    <code>ParseTreeElement</code> object, but may be overridden to construct a
+    subclass.  See <a href="tagsetHandler.java"><code>tagsetHandler</code></a>
+    for an example of this. 
+
+<p> The syntax Handler then sets the new element's action handler, using
+    <code>e.setAction(getActionForNode(e));</code>.  The default is simply to
+    return <code>this</code>, but the handler has a chance to check for the
+    presence (though not the value) of attributes at parse time and get some
+    dispatching out of the way.  See <a
+    href="testHandler.java"><code>testHandler</code></a> for a good example of
+    this technique.
+
+<p> At this point, the <em>syntax</em> interface is out of the picture. 
+
+<h3>Semantics</h3>
+
+<p> An ActiveNode's associated <code>Action</code> handler is called from a
+    Processor (or from processing utilities in <a
+    href="../aux/Expand.java"><code>crc.dps.aux.Expand</code></a>, although
+    in practice these almost invariably construct a sub-processor).
+
+<p> The relevant code in <code>BasicProcessor is:</code>
+
+<pre>
+  public boolean run() {
+    running = true;
+    processNode();
+    while (running &amp;&amp; input.toNextSibling() != null) processNode();
+    return running;
+  }
+
+  /** Process the current Node */
+  public final void processNode() {
+    Action handler = input.getAction();
+    if (handler != null) {
+      additionalAction(handler.actionCode(input, this));
+      // MUST BE equivalent to: handler.action(input, this, output);
+    } else {
+      expandCurrentNode();
+    }
+  }
+
+  /** Perform any additional action requested by the action routine. */
+  protected final void additionalAction(int flag) {
+    switch (flag) {
+    case Action.COPY_NODE: copyCurrentNode(); return;
+    case Action.COMPLETED: return;
+    case Action.EXPAND_NODE: expandCurrentNode(); return;
+    case Action.EXPAND_ATTS: expandCurrentAttrs(); return;
+    case Action.PUT_NODE: putCurrentNode(); return;
+    }
+  }
+</pre>
+
+<p> It is expected that any active node's handler will simply perform the
+    action in its <code>actionCode</code> method, and return
+    <code>Action.COMPLETED</code> to so indicate.
+
+<hr>
+<h2>Inside an Action</h2>
+
+<p> Eventually we get down to calling the ``three-argument'' action method,
+    which in <code>GenericHandler</code> (which is the parent of the handlers
+    for all active elements) looks like this:
+
+<pre>
+    public void action(Input in, Context aContext, Output out) {
+        defaultAction(in, aContext, out);
+    }
+</pre>
+
+<p> All this is doing is passing the real operation off to
+    <code>defaultAction</code>, in case you want to 
+
+<hr>
+<h2>Handler Classes</h2>
+
+<p> There are four different kinds (classes?) of handler classes:
+
+<ol>
+  <li> Handlers for generic nodes of a given type.  These have capitalized
+       names ending with <code>Handler</code>:  for example,
+       <code>EntityHandler</code>, which handles entity references.
+
+  <li> Handlers for active Elements.  These have names that match the node's
+       tagname (typically), with <code>Handler</code> as a suffix to keep them
+       from being confused with Java keywords.  For example,
+       <code>ifHandler</code>, which handles the <code>&lt;if&gt;</code>
+       element.  In general these are public classes.
+
+  <li> Handler subclasses for handling elements with a particular attribute.
+       These have names that look like:
+       <code><em>tagname</em>_<em>attribute</em></code>.  For example,
+       <code>numeric_sort</code>, which handles the
+       <code>&lt;numeric sort&gt;</code> element.  These are almost invariably
+       package-local classes, defined in the same file as their parent
+       element handler.
+
+  <li> Handler classes for sub-elements of specific elements.  These follow
+       the same naming convention as handlers for other active elements,
+       <em>but</em> are often defined in the same file as their parent
+       element.  For example, <code>fromHandler</code>, which handles the
+       <code>&lt;from&gt;</code> sub-element of <code>&lt;select&gt;</code>.
+</ol>
+
+<p> Note that several tags can share a handler class by specifying the classname
+    explicitly.  For example, <code>&lt;else-if&gt;</code> and
+    <code>&lt;elsif&gt;</code> share the same handler.  It is also possible to
+    construct variant tagsets in which every element has a different name than
+    the ``standard'' one.  Because of this, when a parent handler wants to
+    identify specific sub-elements, it will usually compare the class names of
+    their handlers instead of their tagnames.  See <code>ifHandler</code> for
+    a good example.
+
+<hr>
+<h2>Writing a Handler</h2>
+
+<h3>Writing an Element handler</h3>
+
+<p> When writing a new handler from scratch, say for the
+    ``<code>&lt;foo&gt;</code>'' element, the best way to start is with the
+    command:
+<pre>
+  make class tag=<em>foo</em>
+</pre>
+
+<p> This copies a skeleton called <code>TypicalHandler</code>, replacing all
+    occurrances of ``<code>typical</code>'' with ``<code>foo</code>'' and so
+    giving you a good place to start.
+
+<p> The new class will have a <code>getActionForNode</code> method to dispatch
+    on attributes at parse time, and a sample attribute-handler subclass.
+    Either edit the names, or delete them if you don't want them.
+
+<p> The skeleton gives you a ``five-argument'' <code>action</code> method to
+    customize.  This is almost always the right place to start; you can do
+    anything with it, but it may be less efficient than a customized
+    ``three-argument'' action.  In particular, if you need the contents of the
+    element as a string it is <em>significantly</em> more efficient to make a
+    three-argument action routine; see <code>testHandler</code> and its
+    subclasses for some typical examples.
+
+<p> If you need to do something involving control structure, take a look at
+    <code>repeatHandler</code> and <code>ifHandler</code>.  If you need to
+    pass data between an element and its sub-elements, or from one sub-element
+    to another, look at <code>selectHandler</code>. 
+
+<h3>Writing an Attribute or sub-element handler</h3>
+
+<p> When writing a handler for an attribute or sub-element, the best thing to
+    do is to clone an existing one with the same parent.
+
+<p> If you need to add sub-elements to a <em>new</em> parent element, take a
+    look at <code>selectHandler</code>.
+
+<h3>Getting Information</h3>
+
+<ul>
+  <li> If you need information about the current node (for example, its syntax
+       or tagname), use the current <code>Input</code> (usually passed as an
+       argument called <code>in</code>).
+
+  <li> If you need the value of an entity, or need to set an entity, use the
+       current <code>Context</code> (usually called either <code>cxt</code> or
+       <code>aContext</code>).
+
+  <li> If you need something from the current <code>Tagset</code>, use
+       <code>cxt.getTopContext().getTagset()</code>.
+
+</ul>
+
+<hr>
+<h2>Debugging</h2>
+
+<p> You can always get debugging information output using the
+    <code>debug</code> or <code>message</code> methods on
+    <code>Context</code>.  Note, however, that any computations involved in
+    computing the message will be executed whether debugging is turned on or
+    not.  It is usual, therefore, to comment out debugging statements after
+    you're done with them.
+
+
+<hr>
+<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<b>$Id$</b><br>
+<address><a href="http://rsv.ricoh.com/~steve/"
+         >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
+         >steve@rsv.ricoh.com</a>&gt;</address>
+</body></html>
