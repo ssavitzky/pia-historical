@@ -35,7 +35,9 @@ public class Agent_remove extends crc.interform.Handler {
  
   public void handle(Actor ia, SGML it, Interp ii) {
     String name = Util.getString(it, "name", null);
-    if (ii.missing(ia, "name", name)) return;
+    if (ii.missing(ia, "name", name)) {
+      ii.deleteIt();
+    }
     Run.getResolver(ii).unRegisterAgent( name );
     ii.replaceIt(name);
   }
