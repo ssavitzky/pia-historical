@@ -382,7 +382,7 @@ name=AuthenticatedUser></set></else></if>
    <set name=mynewlist><ul> </ul> </set>
    <set name=mystatus><dummy><read file=users/&myoriginator;.status
    process></dummy></set>
-   <if> <get index=mystatus.a><then>
+   <if> <get index=mystatus.formstatus><then>
    <h3><a href=edit_status.if> Status of forms that you originated</a></h3>
   
    <table > 
@@ -503,7 +503,7 @@ name=AuthenticatedUser></set></else></if>
    <set name=myf local><get name=form element></set>
    <set name=minefile local><get name=inbox element></set>
    <set local name=flag>0</set>
-   <user-message> removing &myf; from &minefile;.html </user-message>
+   
    <if> <read file=users/&minefile;.html info>
      <then>
        <set name=mylist><read file=users/&minefile;.html process></set>
