@@ -19,29 +19,35 @@
 
 <h3>Useful Interforms:</h3>
 <ul>
-  <li> <a href=/Agency/agents.if>list running agents</a>
-  <li> <a href="/Agency/installers.if">install new agents</a>
-  <li> <a href=/Agency/options.if>view/change options</a>
-  <li> <a href=/Agency/debug.if>toggle debugging</a> (currently
+  <li> <a href=/Agency/agents>list running agents</a>
+  <li> <a href="/Agency/installers">install new agents</a>
+  <li> <a href=/Agency/options>view/change options</a>
+  <li> <a href=/Agency/debug>toggle debugging</a> (currently
        <if><test zero><get pia name="main::debugging"></test>
            <then>off</then><else>on</else></if>)
-  <li> <a href=/Agency/remove_agent.if> remove agent</a>
-  <li> <a href="/Agency/os-cmd.if">run OS commands</a>
-  <li> <a href="/Agency/shutdown.if">Shut down the PIA or the computer</a>
+  <li> <a href=/Agency/remove_agent> remove agent</a>
+  <li> <a href="/Agency/os-cmd">run OS commands</a>
+  <li> <a href="/Agency/shutdown">Shut down the PIA or the computer</a>
 </ul>
 
 <h3>Other Information:</h3>
 <ul>
   <li> <a href="/PIA/Doc/"><b>Documentation</b> </a>
-       <if><agent-running name=PIA><then></then>
-       <else><a href="/Agency/installers.if#PIA"><em>install
-       needed!</em></a></else></if>
-  <li> <a href="/Agency/entities.if">list defined entities</a>
-  <li> <a href="/Agency/actors.if">list defined actors</a>
-  <li> <a href="/InterForm/home.if">InterForm demonstration agent</a>
+       <if><agent-running name=PIA>
+           <then>
+       <ul>
+	 <li> <a href="/PIA/Doc/Tutorial">Tutorial</a>
+	 <li> <a href="/PIA/Doc/Release">Release Notes</a>
+	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
+       </ul>
+           </then>
+           <else><a href="/Agency/installers#PIA"><em>install
+                 needed!</em></a></else></if>
+  <li> <a href="/Agency/entities">list defined entities</a>
+  <li> <a href="/InterForm/home">InterForm demonstration agent</a>
        <if><agent-running name="InterForm"><then></then>
-       <else><a href="/Agency/installers.if#InterForm"><em>install
-       needed!</em></a></else></if>
+       <else><a href="/Agency/installers#InterForm"><em>install
+       needed!</em></a></else></if> <b>mostly obsolete now</b>
 </ul>
 
 <h3>Where Things Are:</h3>
@@ -51,26 +57,21 @@
        (parent of src, Doc, etc.) <br>
        If things are set up correctly, this should also be reachable as
        <a href="/PIA/">/PIA/</a>
-  <li> <code>PIA_LIB = <get pia name="main::PIA_LIB"></code>
-       (agency libraries)
-  <li> <code>PIA_ROOT= <get pia name="main::PIA_ROOT"></code>
-       (agent interforms)
-  <li> <code>USR_DIR = <get pia name="main::USR_DIR"></code>
+  <li> <code>USR_DIR = &usrDIR;</code>
        (your customizations and agent output)  <br>
        If things are set up correctly, this should also be reachable as
        <a href="/My/">/My/</a>
-  <li> <code>USR_ROOT= <get pia name="main::USR_ROOT"></code>
-       (your customized interforms)
+  <li> Customized InterForms: <code>&usrDIR;/Agents</code>
 </ul>
 
 <h3>Miscellaneous files...normally not accessed directly</h3>
 <ul>
-     <li> <a href=/Agency/install_agent.if> install agent</a> -- requires
+     <li> <a href=/Agency/install_agent> install agent</a> -- requires
 	  knowledge of several non-obvious parameters.
-     <li> <a href=/Agency/START-UP.html> start-up 
-	  (this file gets "executed" on start-up)</a>
-     <li> <a href=/Agency/initialize.if> initialize agency 
-	  (this file gets "executed" when a new agency agent is created)</a>
+     <li> <a href=/Agency/START-UP.html> start-up </a> 
+	  (This file gets "executed" on start-up by submitting every form.)
+     <li> <a href=/Agency/initialize> initialize Agency</a>
+	  (This file gets "executed" when a new Agency agent is created)
 </ul>
 
 <hr>
@@ -80,7 +81,7 @@
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
 <a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<a href="&agentName;/options">options</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

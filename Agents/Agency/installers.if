@@ -10,8 +10,8 @@
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
 <tr><th align=right>&agentName;:
-	<td> Install / <a href="/Agency/remove_agent.if">remove</a> agents
-<tr><th><td> <a href="home.if">Home Page</a>
+	<td> Install / <a href="/Agency/remove_agent">remove</a> agents
+<tr><th><td> <a href="home">Home Page</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 	     (<a href="/My/Agents/&agentName;/">Customized</a>)
 </table>
@@ -23,7 +23,7 @@ install forms for various agents.  You are encouraged to paste sections out of
 this file into your own start-up file.  When you design a new agent, please
 add a default start-up form to this file.  <p>
 
-There is also a <a href="install_agent.if">generic agent installation form</a>
+There is also a <a href="install_agent">generic agent installation form</a>
 which is only useful for agents which have no options.
 
 <h3>Contents:</h3>
@@ -40,39 +40,39 @@ which is only useful for agents which have no options.
 <dl> 
   <dt> <a name="History">History agent</a>
        <if><agent-running name=History><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="History">
        </form></if>
   <dt> <a name="Spy">Spy agent</a>
        <if><agent-running name=Spy><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="Spy">
        </form></if>
   <dt> <a name="CIA">CIA agent</a>
        <if><agent-running name=cia><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="cia">
        type: <input name="type" value="Spy">
        </form></if>
   <dt> <a name="FBI">FBI agent</a>
        <if><agent-running name=fbi><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" METHOD="POST">
+  <dd> <form action="/Agency/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="fbi">
        type: <input name="type" value="Spy">
        </form></if>
   <dt> <a name="logo">Logo agent</a>
        <if><agent-running name=Logo><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" METHOD="POST">
+  <dd> <form action="/Agency/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <INPUT NAME="agent" value="Logo">
        </form></if>
   <dt> <a name="Cache">Cache agent</a> (keeps a copy of every external doc...)
        <if><agent-running name=Cache><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Cache"><br>
        (could add more options here, like update frequency: always, never,
@@ -81,7 +81,7 @@ which is only useful for agents which have no options.
 
   <dt> <a name="InterForm">InterForm Demonstration and Test agent</a>
        <if><agent-running name="InterForm"><then><em>installed</em></then><else>
-  <dd> <FORM ACTION="/Agency/install_agent.if" METHOD="POST">
+  <dd> <FORM ACTION="/Agency/install_agent" METHOD="POST">
        <input type="submit" value="Install">
        name: <input name="agent" value="InterForm">
        </form></if>
@@ -96,7 +96,7 @@ which is only useful for agents which have no options.
   <dd> <if><agent-running name=DOFS>
        <then><em>is already running, as it should be.</em></then>
        <else> Really needs to be running, or lots of things won't work.
-       <form action="/Agency/install_agent.if" method="POST">
+       <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install NOW!">
        name:<input name="agent" value="DOFS">
        </form></if><p>
@@ -104,7 +104,7 @@ which is only useful for agents which have no options.
   <dt> <a name="My">DOFS/My</a>
        <if><agent-running name=My><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="My">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;">
@@ -113,7 +113,7 @@ which is only useful for agents which have no options.
   <dt> <a name="PIA">DOFS/PIA</a>
        <if><agent-running name=PIA><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="PIA">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="~/pia">
@@ -122,7 +122,7 @@ which is only useful for agents which have no options.
   <dt> <a name="Root">DOFS/Root</a>
        <if><agent-running name=Root><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="Root">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="/">
@@ -131,14 +131,14 @@ which is only useful for agents which have no options.
   <dt> <a name="Home">DOFS/Home</a>
        <if><agent-running name=Home><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="Home">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="~/">
        <input type="submit" value="Install">
        </form></if>
   <dt> Generic DOFS form:
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="Name">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="/complete/path/">
@@ -154,7 +154,7 @@ which is only useful for agents which have no options.
   <dt> <a name="FMA">FMA</a>
        <if><agent-running name="FMA"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="FMA"><br>
        <br>
        <input type="submit" value="Install"><br>
@@ -162,7 +162,7 @@ which is only useful for agents which have no options.
   <dt> <a name="Photo_Album">Photo Album</a>
        <if><agent-running name="Photo_Album"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="Photo_Album"><br>
        <br>
        <input type="submit" value="Install"><br>
@@ -170,7 +170,7 @@ which is only useful for agents which have no options.
   <dt> <a name="PhotoNet">Photo Net</a>
        <if><agent-running name="PhotoNet"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="PhotoNet"><br>
        <br>
        <input type="submit" value="Install"><br>
@@ -178,7 +178,7 @@ which is only useful for agents which have no options.
   <dt> Photos
        <if><agent-running name="Photos"><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="Photos">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;/Photo_Album/">
@@ -188,7 +188,7 @@ which is only useful for agents which have no options.
        <p>
 
   <dt>  CD-R/RW
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="CDRW"><br>
        type:<input name="type" value="CDRW"><br>
        Samba Names: (for mounting under windows)  archive publish backup
@@ -198,28 +198,28 @@ which is only useful for agents which have no options.
        <input type="submit" value="Install"><br>
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="archive">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="&usrDIR;/CDRW/archive">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="publish">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="&usrDIR;/CDRW/publish">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="shared">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="&usrDIR;/CDRW/shared">
        <input type="submit" value="Install">
        </form>
 <dt>  CD-R/RW DOFS form (provides web access to user files on CD-R/RW):
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="backup">
        type:<input name="type" value="DOFS"><br>
        root:(absolute) <input name="root" value="&usrDIR;/CDRW/backup">
@@ -231,7 +231,7 @@ which is only useful for agents which have no options.
   <dt> <a name="Printer">Printer agent</a>
        <if><agent-running name=WebPrinter><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name: <input name="agent" value="WebPrinter"><br>
        type: <input name="type" value="printer"><br>
        class: <input name="class" value="PIA::Agent::Printer">
@@ -240,7 +240,7 @@ which is only useful for agents which have no options.
   <dt>  spool
        <if><agent-running name=spool><then><em>installed</em></then>
        <else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        name:<input name="agent" value="spool">
        type:<input name="type" value="DOFS"><br>
        root:<input name="root" value="&usrDIR;/WebPrinter/spool/">
@@ -255,7 +255,7 @@ which is only useful for agents which have no options.
   <dt> <a name="Thumbnail">Thumbnail agent</a> (creates thumbnail gifs of html
        pages) 
        <if><agent-running name=Thumbnail><then><em>installed</em></then><else>
-  <dd> <form action="/Agency/install_agent.if" method="POST">
+  <dd> <form action="/Agency/install_agent" method="POST">
        <input type="submit" value="Install">
        name:<input name="agent" value="Thumbnail">
        type:<input name="type" value="Graphics">
@@ -268,7 +268,7 @@ which is only useful for agents which have no options.
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
 <a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<a href="&agentName;/options">options</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

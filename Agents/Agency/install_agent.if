@@ -12,8 +12,8 @@
 <tr><th width=340 align=left><td>Install Agent<br>
 <tr><th width=340 align=left><td><br>
 <tr><th align=right>&agentName;:
-	<td> Install / <a href="/Agency/remove_agent.if">remove</a> agents
-<tr><th><td> <a href="home.if">Home Page</a>
+	<td> Install / <a href="/Agency/remove_agent">remove</a> agents
+<tr><th><td> 4a href="home">Home Page</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 	     (<a href="/My/Agents/&agentName;/">Customized</a>)
 </table>
@@ -37,8 +37,8 @@
     <tr><th width=340><td> <a href="/&type;/&name;">/&type;/&name;</a>
     </then>
   </if>
-  <tr><th width=340><td> <a href="/&name;/options.if">options</a>
-  <tr><th width=340><td> <form action="/Agency/remove_agent.if" method="POST">
+  <tr><th width=340><td> <a href="/&name;/options">options</a>
+  <tr><th width=340><td> <form action="/Agency/remove_agent" method="POST">
 	 <input name="agent" value="&name;" type=hidden>
 	 <input type="submit" value="Remove &name;">
 	 </form>
@@ -50,7 +50,7 @@
 </then>
 <else>
 <h2> Form for installing an agent</h2>
-<form action="/Agency/install_agent.if" method="POST">
+<form action="/Agency/install_agent" method="POST">
 <input type="submit" value="Install">
 Name:<input name="agent" value="agent_name" size=30>
 Type:<input name="type" value="">
@@ -74,7 +74,7 @@ href="/PIA/src/lib/perl/PIA/Agent/">/PIA/src/lib/perl/PIA/Agent/</a></code><p>
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
 <a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<a href="&agentName;/options">options</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

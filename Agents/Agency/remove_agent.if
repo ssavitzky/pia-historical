@@ -8,10 +8,10 @@
 
 <table cellspacing=0 cellpadding=0>
 <tr><th width=340><td><br>
-<tr><th align=right><a href="home.if">&agentName;</a>: <td>
-<tr><th><td> <a href="index.if">Index Page</a>
-<tr><th><td> <a href="home.if">Home Page</a>
-<tr><th><td> <a href="options.if">Options</a>
+<tr><th align=right><a href="home">&agentName;</a>: <td>
+<tr><th><td> <a href="index">Index Page</a>
+<tr><th><td> <a href="home">Home Page</a>
+<tr><th><td> <a href="options">Options</a>
 <tr><th><td> <a href="/PIA/Agents/&agentName;/">InterForms</a>
 <tr><th><td> <a href="/My/Agents/&agentName;/">Customized InterForms</a>
 </table>
@@ -26,7 +26,7 @@
   <h2> Agent removal form</h2>
 </else></if>
 
-<form action="/Agency/remove_agent.if" method="POST">
+<form action="/Agency/remove_agent" method="POST">
 Name:<select name="agent">
    <repeat list="&agentNames;" ><if><test not exact match=Agency>&li;</test>
      <then><option>&li;</option></then></if></repeat>
@@ -41,7 +41,7 @@ Name:<select name="agent">
 <hr>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
 <a href="&agentName;/">index</a>
-<a href="&agentName;/options.if">options</a>
+<a href="&agentName;/options">options</a>
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>

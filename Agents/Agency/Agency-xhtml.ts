@@ -54,8 +54,8 @@
   </doc>
   <action>
 <a href="/">PIA</a> || <a href="/Agency">Agency</a>:
-<a href="&agentName;/">index</a>
-<a href="&agentName;/agents">agents</a>
+<a href="/&agentName;/">index</a>
+<a href="/&agentName;/agents">agents</a>
   </action>
 </define>
 
