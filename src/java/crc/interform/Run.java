@@ -108,6 +108,12 @@ public class Run  extends Environment {
   }    
 
 
+  public static Resolver getResolver(Interp ii) {
+    Run env = environment(ii);
+    return (env == null)? null : env.resolver;
+  }    
+
+
   /************************************************************************
   ** Entity table:
   ************************************************************************/
@@ -120,60 +126,30 @@ public class Run  extends Environment {
     if (entities == null) {
       super.initEntities();
 
-      ent("url", transaction.url());
+      ent("url", transaction.requestURL().toString());
+      ent("urlPath", transaction.requestURL().getFile());
+      ent("urlQuery", transaction.hasQueryString()? 
+	  (SGML)new Text(transaction.queryString()) : (SGML)Token.empty);
 
+      Object aname = transaction.is("agent");
+      Agent  ta = (aname == null)? null : resolver.agent(aname.toString());
+      if (ta != null) {
+	ent("transAgentName", ta.toString());
+	ent("transAgentType", ta.type()); 
+      } else {
+	ent("transAgentName", Token.empty);
+	ent("transAgentType", Token.empty);
+      }
+
+      crc.pia.Pia pia = crc.pia.Pia.instance();
+      ent("piaHOST", pia.properties().getProperty("PIA_HOST"));
+      ent("piaPORT", pia.properties().getProperty("PIA_PORT"));
+      ent("piaDIR", pia.properties().getProperty("PIA_DIR"));
+
+      ent("agentNames", new Tokens(resolver.agentNames(), " "));
+      ent("entityNames", "");
+      ent("entityNames", new Tokens(entities.keys(), " "));
     }
-
-    /*
-	my ($request, $response);
-	if (defined $trans && $trans->is_response) {
-	    $response = $trans;
-	    $request  = $response->response_to;
-	} else {
-	    $request = $trans;
-	}
-	my $url = $trans->url;
-	my $path = $url->path if defined $url;
-	my $query = $url->query if defined $url;
-
-	## === request method, response type, etc. ===
-
-	my $agentNames = join(' ', sort($resolver->agent_names));
-
-	## === $trans->test('agent') returns 1; doesn't compute.
-	my $transAgentName = $trans->get_feature('agent');
-	my $transAgentType;
-	if ($transAgentName) {
-	    my $ta = $resolver->agent($transAgentName);
-	    $transAgentType = $ta->type if ref $ta;
-	}
-
-	$ents = {
-	    'transAgentName'	=> $transAgentName,
-	    'transAgentType'	=> $transAgentType,
-
-	    'agentName' 	=> $agent->name,
-	    'agentType' 	=> $agent->type,
-
-	    'url'		=> ((ref $url)? $url->as_string : ''),
-	    'urlQuery'		=> $query,
-	    'urlPath'		=> $path,
-
-	    'piaHOST'		=> $main::PIA_HOST,
-	    'piaPORT'		=> $main::PIA_PORT,
-	    'piaDIR'		=> $main::PIA_DIR,
-
-	    'agentNames'	=> $agentNames,
-	    'entityNames'   	=> '',
-	    'actorNames'	=> $tagset? $tagset->actor_names : '',
-
-	};
-
-	$trans -> set_feature('entities', $ents) if defined $trans;
-	## === WARNING! Agents can pass info through entities now ===
-    }
-
-*/
 
     /* Set these even if we retrieved the entity table from the */
     /* transaction -- the agent is (necessarily) different      */
@@ -225,11 +201,12 @@ public class Run  extends Environment {
   ** Used by Actors:
   ************************************************************************/
 
-  /** Look up a file on behalf of the agent invoked on the given Token. */
+  /** Look up an interform file on behalf of the agent invoked on the
+   *      given Token. */
   public String lookupFile(String fn, Token it, boolean write) {
-
-    // === unimplemented()
-    return fn;
+    // === both agentIfRoot and findInterform(String) are unimplemented! 
+    // === if (write) return Util.makePath(agent.agentIfRoot(), fn);
+    return fn; // === return agent.findInterformFile(fn);
   }
 
   /** Retrieve a URL. */
@@ -239,6 +216,16 @@ public class Run  extends Environment {
     return null;
   }
 
+  /** Return a suitable base directory for read/write files. */
+  public String baseDir(Token it) {
+    // === if (it.hasAttr("interform")) return agent.agentIfRoot();
+    return agent.agentDirectory();
+  }
+
+  /** Return a string suitable for setting the proxy environment variables */
+  public String proxies() {
+    return "";			// === String Pia.proxies unimplemented()
+  }
 
 /*========================================================================
 

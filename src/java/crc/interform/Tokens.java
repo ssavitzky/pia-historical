@@ -12,6 +12,13 @@ import crc.ds.List;
  */
 public class Tokens extends List implements SGML {
 
+  
+  /************************************************************************
+  ** Instance Variables:
+  ************************************************************************/
+
+  public String itemSeparator;
+  
   /************************************************************************
   ** Object operations:
   ************************************************************************/
@@ -19,6 +26,7 @@ public class Tokens extends List implements SGML {
   public String toString() {
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < nItems(); ++i) {
+      if (itemSeparator != null && i != 0) s.append(itemSeparator);
       s.append(at(i).toString());
     }
     return s.toString();
@@ -244,6 +252,7 @@ public class Tokens extends List implements SGML {
   public Tokens(Tokens s) {
     this();
     copyContentFrom(s);
+    itemSeparator = s.itemSeparator;
   }
 
   public Tokens(java.util.Enumeration e) {
@@ -251,6 +260,24 @@ public class Tokens extends List implements SGML {
     while (e.hasMoreElements()) {
       push(Util.toSGML(e.nextElement()));
     }
+  }
+
+  public Tokens(java.util.Enumeration e, String sep) {
+    this();
+    itemSeparator = sep;
+    while (e.hasMoreElements()) {
+      push(Util.toSGML(e.nextElement()));
+    }
+  }
+
+  public Tokens(Object[] sa) {
+    this();
+    for (int i = 0; i < sa.length; ++i) push(Util.toSGML(sa[i]));
+  }
+
+  public Tokens(String[] sa) {
+    this();
+    for (int i = 0; i < sa.length; ++i) push(new Text(sa[i]));
   }
 
   /************************************************************************
@@ -265,6 +292,13 @@ public class Tokens extends List implements SGML {
 
   public Object clone() {
     return new Tokens(this);
+  }
+
+  /** Convert the argument to a list if it isn't one already. */
+  public static Tokens valueOf(SGML t) {
+    if (t == null) return null;
+    else if (t.isList()) return t.content();
+    else return new Tokens(t);
   }
 
 }

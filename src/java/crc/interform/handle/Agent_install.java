@@ -30,7 +30,13 @@ public class Agent_install extends crc.interform.Handler {
     String type = Util.getString(it, "type", name);
     Run env = Run.environment(ii);
 
-    ii.unimplemented(ia);
+    try {
+      crc.pia.agent.Agency agency = (crc.pia.agent.Agency) env.agent;
+      // agency.install(run.transaction.parameters()); 
+      ii.unimplemented(ia); // === needs Transaction.parameters
+    } catch (Exception e) {
+      ii.error(ia, "only works in the Agency agent");
+    }
 
     ii.replaceIt(name);
   }

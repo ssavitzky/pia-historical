@@ -109,7 +109,7 @@ public class Token implements SGML {
    *	for class Token, and false if it is text, a list, or an entity. 
    */
   public boolean isElement() {
-    return tag != null && tag != "" && tag != "&";
+    return tag != null && tag != "" && !specialFormat;
   }
 
   /** Return true for a list of tokens. */
@@ -134,7 +134,8 @@ public class Token implements SGML {
 
   /** Return the name of the entity to which this is a reference. */
   public String entityName() {
-    return ("&".equals(tag))? content.itemAt(1).toString() : null;
+    if (tag == null || ! "&".equals(tag)) return null;
+    return content.itemAt(1).toString();
   }
 
 
@@ -247,6 +248,14 @@ public class Token implements SGML {
     return (content == null)? "" : content.toString();
   }
 
+  public void content(Tokens t) {
+    content = t;
+  }
+
+  public void content(SGML t) {
+    content = Tokens.valueOf(t);
+  }
+
   /************************************************************************
   ** SGML list interface:
   ************************************************************************/
@@ -335,20 +344,30 @@ public class Token implements SGML {
   }
 
   public Token (String tag) {
+    this();
     this.tag = tag;
   }
 
   public Token (String tag, SGML content) {
-    this.tag = tag;
+    this(tag);
     append(content);
   }
 
   public Token (String tag, String content) {
-    this.tag = tag;
+    this(tag);
     append(new Text(content));
   }
 
+  public Token (String tag, List content) {
+    this(tag);
+    java.util.Enumeration values = content.elements();
+    while (values.hasMoreElements()) {
+      append(new Token("li", Util.toSGML(values.nextElement())));
+    }
+  }
+
   public Token(String tag, Table tbl) {
+    this();
     this.tag = tag;
     java.util.Enumeration keys = tbl.keys();
     java.util.Enumeration values = tbl.elements();
@@ -360,7 +379,7 @@ public class Token implements SGML {
   }
 
   public Token (Token it) {
-    this.tag = it.tag;
+    this(it.tag);
     copyAttrsFrom(it);
     copyContentFrom(it);
   }
@@ -368,7 +387,7 @@ public class Token implements SGML {
   /** Make a Token with a special format, in which the first and last
    *	content items are really the start and end ``tag'' respectively. */
   public Token (String tag, String s, String end) {
-    this.tag = tag;
+    this(tag);
     content = new Tokens();
     content.push(new Text(tag));
     content.push(new Text(s));
@@ -377,7 +396,7 @@ public class Token implements SGML {
   }
 
   public Token (String tag, StringBuffer s, String end) {
-    this.tag = tag;
+    this(tag);
     content = new Tokens();
     content.push(new Text(tag));
     content.push(new Text(s));
@@ -386,20 +405,20 @@ public class Token implements SGML {
   }
 
   public Token (String tag, String start, StringBuffer s, String end) {
-    this.tag = tag;
+    this(tag);
     content = new Tokens();
-    if (start != null) content.push(new Text(start));
-    content.push(new Text(s));
-    if (end != null) content.push(new Text(end));
+    if (start != null) content.addItem(new Text(start));
+    content.addItem(new Text(s));
+    if (end != null) content.addItem(new Text(end));
     specialFormat = true;
   }
 
   public Token (String tag, String start, String s, String end) {
-    this.tag = tag;
+    this(tag);
     content = new Tokens();
-    if (start != null) content.push(new Text(start));
-    content.push(new Text(s));
-    if (end != null) content.push(new Text(end));
+    if (start != null) content.addItem(new Text(start));
+    content.addItem(new Text(s));
+    if (end != null) content.addItem(new Text(end));
     specialFormat = true;
   }
 
@@ -415,6 +434,12 @@ public class Token implements SGML {
     Token t = new Token(tag);
     t.incomplete = (byte)1;
     return t;
+  }
+
+  /** Construct an entity reference.  A boolean flag indicates whether
+   *	or not a semicolon is present. */
+  public static Token entityReference(String ident, boolean semi) {
+    return new Token("&", ident, semi? ";" : null);
   }
 
   /************************************************************************

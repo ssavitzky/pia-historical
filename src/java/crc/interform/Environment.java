@@ -118,23 +118,12 @@ public class Environment {
 	ent("fileName", filenamePart(filename));
       }
 
-      ent("entityNames", "");
       ent("piaUSER",	System.getProperty("user.name"));
       ent("piaHOME",	System.getProperty("user.home"));
 
+      ent("entityNames", "");
+      ent("entityNames", new Tokens(entities.keys(), " "));
     }
-
-    /*
-
-	ent("piaHOST",	main::PIA_HOST);
-	ent("piaPORT",	main::PIA_PORT);
-	ent("piaDIR",	main::PIA_DIR);
-
-	};
-
-	$ents->{'entityNames'} = join(' ', sort keys %$ents);
-
-    */
 
     return entities;
   }
@@ -256,64 +245,14 @@ public class Environment {
     return null;
   }
 
+  /** Return a suitable base directory for read or write operations. */
+  public String baseDir(Token it) {
+    return "";
+  }
 
+  /** Return a string suitable for setting the proxy environment variables */
+  public String proxies() {
+    return "";
+  }
 
-/*========================================================================
-
-sub file_lookup {
-    my ($self, $it, $ii, $write) = @_;
-
-    ## Look up a file.
-
-    my $file = $it->attr('file');
-    my $base = $it->attr('base');
-
-    if ($it->attr('interform')) {
-	$file = IF::Run::agent()->find_interform($file);
-	$base = '';
-				# file should be properly quantified
-	return $file;
-    }
-    if ($file =~ /^~/) {
-	$file =~ s/^~//;
-	$base = $ENV{'HOME'};
-    } elsif ($file =~ /^\//) {
-	$base = '';
-    } elsif ($base eq '') {
-	$base = IF::Run::agent()->agent_directory;
-    }
-    if ($base ne '' && $base !~ /\/$/) {
-	$base .= '/';
-    }
-    my $fn = "$base$file";
-    $fn =~ s://:/:g;
-
-    return $fn;
-}
-
-### === These really ought to be in Agent
-
-sub eval_perl {
-    my ($ia, $it, $ii) = @_;
-
-    ## This bit of legacy crud evaluates the contents of $it as PERL code.
-    ##	  The local variables $agent and $request will already have been
-    ##	  set up by run_interform.
-
-    print "II Error: missing token\n" unless defined $it;
-    print "II Error: $it not a token\n" unless ref($it);
-    return unless ref($it);
-
-    my $status = $agent->run_code($it->content_string, $request, $resolver);
-    print "Interform error: $@\n" if $@ ne '' && ! $main::quiet;
-    print "code result is $status\n" if  $main::debugging;
-
-    $ii->token(IF::IT->new($it->tag, $status));    
-    return;
-}
-
-1;
-
-
-=================================================================== */
 }

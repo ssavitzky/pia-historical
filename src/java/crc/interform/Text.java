@@ -219,4 +219,15 @@ public class Text implements SGML {
     isStringBuffer = false;
     isString = false;
   }
+
+  /** Join the elements of a Tokens list. */
+  public static Text join(String sep, Tokens tl) {
+    Text t = new Text();
+    for (int i = 0; i < tl.nItems(); ++i) {
+      if (i != 0 && sep != null) t.append(sep);
+      t.append(tl.itemAt(i));
+    }
+    return t;
+  }
+
 }

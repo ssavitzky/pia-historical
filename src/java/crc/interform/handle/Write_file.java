@@ -13,6 +13,8 @@ import crc.interform.Tokens;
 import crc.interform.Text;
 import crc.interform.Util;
 
+import java.io.File;
+
 /* Syntax:
  *	<write.file file="name" [interform] [append]
  *	       [base="path"] [trim] [line]
@@ -28,51 +30,64 @@ import crc.interform.Util;
 /** Handler class for &lt;write.file&gt tag. */
 public class Write_file extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String file = it.attrString("file");
-    if (file == null || "".equals(file)) file = it.attrString("name");
-    if (file == null || "".equals(file)) {
-      ii.error(ia, "must have non-null name or file attribute");
+    String name = Util.getFileName(it.toToken(), ii, true);
+    if (name == null) {
+      ii.error(ia, "Must have non-null name or file attribute.");
+      ii.deleteIt();
       return;
     }
 
-    ii.unimplemented(ia);
+    String content = (it.hasAttr("text")) ? it.contentText().toString()
+      					  : it.contentString();
+
+    if (it.hasAttr("trim")) { content = content.trim(); }
+    if (it.hasAttr("line") && ! content.endsWith(lineSep))
+      content += lineSep;
+
+    String errmsg = null;
+
+    /* Make sure all directories in the path exist. */
+
+    File file = new File(name);
+    File parent = (file.getParent()!=null)? new File(file.getParent()) : null;
+
+    try {
+      if (parent != null && ! parent.exists()) {
+	if (! parent.mkdirs()) errmsg = "Cannot make parent directory";
+      }
+      if (it.hasAttr("directory")) {
+	file.mkdirs();
+	if (! file.exists() || ! file.isDirectory()) {
+	  errmsg = "Could not create directory " + name;
+	}
+      } else if (it.hasAttr("append")) {
+	crc.util.Utilities.writeTo(name, content);
+      } else {
+	crc.util.Utilities.appendTo(name, content);
+      }
+    } catch (Exception e) {
+      errmsg = "Write failed on " + name;
+    }
+
+    if (errmsg != null) {
+      ii.error(ia, errmsg);
+      ii.replaceIt(errmsg);
+      return;
+    }
 
     if (it.hasAttr("copy")) {
+      // === [copy [protect [markup]]] unimplemented: replaceIt is protect.
       ii.replaceIt(it.content());
     } else {
       ii.deleteIt();
     }
   }
+
+  private static String lineSep  = System.getProperty("line.separator");
+
 }
 
 /* ====================================================================
-
-### <write [file="name" | href="url"] [base="path"] [tagset="name"]
-###	    [append] [copy [protect [markup]]] >content</output>
-
-define_actor('write', 'content' => 'value', 
-	     'dscr' => "Output CONTENT to FILE or HREF, with optional BASE 
-path.  FILE may be looked up as an INTERFORM.  BASE directory is created if 
-necessary.  Optionally APPEND or POST.  Optionally TRIM leading and trailing 
-whitespace. Optionally end LINE.  Optionally COPY content to InterForm.");
-
-sub write_handle {
-    my ($self, $it, $ii) = @_;
-
-    my $file = $it->attr('file');
-    my $href = $it->attr('href');
-    my $base = $it->attr('base');
-
-    my $text = $it->attr('text');
-    my $content = $text? $it->content_text : $it->content_string;
-
-    if ($it->attr('trim')) {
-	$content =~ s/^[\n\s]* //s;
-	$content =~ s/[\n\s]*$//s; 
-    }
-    if ($it->attr('line')) {
-	$content .= "\n" unless $content =~ /\n$/s;
-    }
     if ($file && ! $href) {	# File
 	my $append = $it->attr('append');
 	my $dir = $it->attr('directory');

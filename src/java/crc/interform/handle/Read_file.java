@@ -13,6 +13,8 @@ import crc.interform.Tokens;
 import crc.interform.Text;
 import crc.interform.Util;
 
+import java.util.Date;
+
 /* Syntax:
  *	<read.file file="name" [interform [agent="agentName"]]
  *            [info|head|directory [links] [tag=tag] [all|match="regexp"]] 
@@ -29,12 +31,115 @@ import crc.interform.Util;
 /** Handler class for &lt;read-file&gt tag */
 public class Read_file extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
-    String name = Util.getString(it, "file", Util.getString(it, "name", null));
-    if (ii.missing(ia, "name", name)) return;
+    String name = Util.getFileName(it.toToken(), ii, false);
+    if (name == null) {
+      ii.error(ia, "Must have non-null name or file attribute.");
+      ii.deleteIt();
+      return;
+    }
+
+    /* stat the file. */
+    java.io.File file = new java.io.File(name);
+
+    boolean exists = file.exists();
+    boolean isdir  = file.isDirectory();
+    boolean info = it.hasAttr("info");
+    boolean dir  = it.hasAttr("directory");
 
     SGML result = null;
 
-    ii.unimplemented(ia);
+    if (! file.exists()) {
+      if (!info) ii.error(ia, "File '"+name+"' does not exist.");
+      ii.deleteIt();
+      return;
+    }
+
+    if (! info && ! file.canRead()) {
+      ii.error(ia, "File '"+name+"' cannot be read.");
+      ii.deleteIt();
+      return;
+    }
+
+    if (dir && !isdir) {
+      if (!info) ii.error(ia, "File '"+name+"' is not a directory.");
+      ii.deleteIt();
+      return;
+    }
+
+    if (info) {
+      String what = it.attrString("info").toLowerCase();
+      String content;
+      boolean r = file.canRead();
+      boolean w = file.canWrite();
+      boolean x = false /* === file.canExecute() === */;
+
+
+      if (what.startsWith("d")) content = isdir? "d" : "";
+      else if (what.startsWith("r")) content = r? "r" : "";
+      else if (what.startsWith("w")) content = w? "w" : "";
+      else if (what.startsWith("x")) content = x? "x" : "";
+      else if (what.startsWith("p")) content = file.getAbsolutePath();
+      else if (what.startsWith("m")) {
+	content = new Date(file.lastModified()).toLocaleString();
+      } else if (what.startsWith("s")) {
+	content = String.valueOf(file.length());
+      } else {
+	content = isdir? "d" : "-";
+	content += r? "r" : "-";
+	content += w? "w" : "-";
+	content += x? "x" : "-";
+	content += " " + String.valueOf(file.length());
+	content += "	" + file;
+      }
+      result = new Text(content);
+    } else if (isdir) {
+      String [] list = file.list();
+      Tokens names = new Tokens(list);
+
+      // === do filename filtering (unimplemented)
+
+      String tag  = it.attrString("tag");
+      if (tag != null) tag = tag.toLowerCase();
+      String itag = (tag != null && tag.equals("dl"))? "dt" : "li";
+
+      if (it.hasAttr("links")) {
+	Token t = new Token(tag);
+	for (int i = 0; i < names.nItems(); ++i) {
+	  Token link = new Token("a");
+	  link.addItem(names.itemAt(i));
+	  t.attr("href", "file:" + file+names.itemAt(i).toString());
+	}
+	result = t;
+      } else if (tag != null) {
+	Token t = new Token(tag);
+	result = t;
+	for (int i = 0; i < names.nItems(); ++i) 
+	  t.addItem(new Token(itag).addItem(names.itemAt(i)));
+      } else {
+	result = Text.join(" ", names);
+      }
+      
+    } else if (it.hasAttr("process")) {
+      String tsname = it.attrString("tagset");
+      if (tsname != null) 
+	ii.useTagset(tsname);
+      try {
+	java.io.FileInputStream in = new java.io.FileInputStream(name);
+	ii.pushInput(new crc.interform.Parser(in, null));
+      } catch (Exception e) {
+	ii.error(ia, "Cannot open input stream on '"+name+"'");
+      }
+
+    } else {
+      try {
+	byte [] bytes = crc.util.Utilities.readFrom(name);
+	result = new Text(new String(bytes, 0));
+      } catch (Exception e) {
+	result = null;
+      }    
+    }
+
+    ii.replaceIt(result);
   }
 }
 

@@ -48,15 +48,13 @@ import java.util.BitSet;
  *	<code>buf</code> if they fail. <p>
  *
  * NOTE: The Parser is currently unable to correctly handle SGML
- *	comments that contain the string "-->" internally.  This is
- *	the only construct finding the end of which requires more than
- *	a single character of lookahead. <p>
+ *	comments that contain the string "-->" internally.  <p>
  *
  * NOTE: We are NOT using a StreamTokenizer at this point.  The reason
  *	is that we need all characters to be significant and
  *	``ordinary'' outside of tags, so the StreamTokenizer would
  *	simply add an extra layer of overhead for very little effect. <p> */
-class Parser extends Input {
+public class Parser extends Input {
 
   /************************************************************************
   ** Variables:
@@ -358,7 +356,7 @@ class Parser extends Input {
       buf.append("&"); 
       return false;
     }
-    next = new Token("&", ident, (last == ';')? ";" : null);
+    next = Token.entityReference(ident, last == ';');
     if (last == ';') last = 0;
     return true;
   }

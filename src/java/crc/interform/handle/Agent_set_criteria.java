@@ -17,13 +17,15 @@ import crc.interform.Util;
  *	<agent-set-criteria name="agent-name">query_string</agent-set-criteria>
  * Dscr:
  *	Sets CONTENT (query string or dl) as criteria for agent NAME.
+ * Note:
+ *	this never worked, so perhaps we should delete it.
  */
 
 /** Handler class for &lt;agent-set-criteria&gt tag */
 public class Agent_set_criteria extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
 
-    ii.unimplemented(ia);
+    ii.unimplemented(ia);	// === never worked -- delete? ===
   }
 }
 

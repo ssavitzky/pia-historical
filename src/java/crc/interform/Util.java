@@ -317,37 +317,40 @@ public class Util {
     return null;
   }
 
-  /* 
-sub file_lookup {
-    my ($self, $it, $ii, $write) = @_;
+  private static String home     = System.getProperty("user.home");
+  private static String fileSep  = System.getProperty("file.separator");
 
-    ## Look up a file.
+  /** Make a path from a directory and a filename.   */
+  public static String makePath(String directory, String filename) {
+    if (! directory.endsWith(fileSep) && ! directory.equals(""))
+      directory += fileSep;
+    if (filename.startsWith(fileSep) && ! directory.equals(""))
+      filename = filename.substring(fileSep.length());
+    return directory + filename;
+  }
 
-    my $file = $it->attr('file');
-    my $base = $it->attr('base');
+  /** Extract a filename from a token. */
+  public static String getFileName(Token it, Interp ii, boolean write) {
+    String file = getString(it, "file", it.attrString("name"));
+    if (file == null) return null;
 
-    if ($it->attr('interform')) {
-	$file = IF::Run::agent()->find_interform($file);
-	$base = '';
-				# file should be properly quantified
-	return $file;
+    if (it.hasAttr("interform")) {
+      return (ii.environment != null) ?
+	ii.environment.lookupFile(file, it, write) : null;
     }
-    if ($file =~ /^~/) {
-	$file =~ s/^~//;
-	$base = $ENV{'HOME'};
-    } elsif ($file =~ /^\//) {
-	$base = '';
-    } elsif ($base eq '') {
-	$base = IF::Run::agent()->agent_directory;
+    String base = getString(it, "base", "");
+    if (file.startsWith("~")) {
+      file = file.substring(1);
+      base = home;
+    } else if (file.startsWith(fileSep)) {
+      base = "";
+    } else if (base.equals("")) {
+      if (ii.environment != null) base = ii.environment.baseDir(it);
     }
-    if ($base ne '' && $base !~ /\/$/) {
-	$base .= '/';
+    if (! base.equals("") && ! base.endsWith(fileSep)) {
+      base += fileSep;
     }
-    my $fn = "$base$file";
-    $fn =~ s://:/:g;
-
-    return $fn;
-}
-*/
+    return base + file;
+  }
 
 }

@@ -178,9 +178,28 @@ public class Interp extends State {
     tagset.define(anActor);
   }
 
+  /** Revert to the parse status of the containing frame. */
+  public final void hoistParseFlags() {
+    if (stack != null) {
+      parsing = stack.parsing;
+      passing = stack.passing;
+      quoting = stack.quoting;
+    }
+  }
+
   /************************************************************************
   ** Access to Variables (entities):
   ************************************************************************/
+
+  /** Get the current local binding table, if any */
+  public final Table getLocalBindings() {
+    return variables;
+  }
+
+  /** Get the current local binding for a variable, if any */
+  public final SGML getLocalBinding(String name) {
+    return (variables != null)? (SGML)variables.at(name) : null;
+  }
 
   /** Get the value of a named local variable (entity).
    *	Dynamic scoping is used, with an optional variable (entity) table
@@ -280,10 +299,13 @@ public class Interp extends State {
 
   /** Expand entities (according to the current bindings) in some SGML.
    *	The object is copied.  We really only have to worry about Tokens
-   *	(token lists) and Token elements with a tag of ampersand.
+   *	(token lists) and Token elements with a tag of ampersand. <p>
+   *
+   *	We don't have to expand elements' attributes or contents, because
+   *	the interpretor will get around to them eventually.
    */
   public SGML expandEntities(SGML it) {
-    if (it == Token.empty) return it;
+    if (it == null || it == Token.empty) return it;
     if (it.isList()) {
       Tokens old = it.content();
       if (old.nItems() == 0) return it;
@@ -312,6 +334,8 @@ public class Interp extends State {
 	for (int i = 0; i < t.nAttrs(); ++i) 
 	  t.attrValueAt(i, expandEntities(t.attrValueAt(i)));
 	it = t;			// but just to make sure...
+      } else {
+	it = expandEntities(it);
       }
     } else {
       it = expandEntities(it);
@@ -319,6 +343,47 @@ public class Interp extends State {
     return it;
   }
 
+  /** Expand entities in some SGML according to a given table.
+   *	The object is copied.  We really only have to worry about Tokens
+   *	(token lists) and Token elements with a tag of ampersand.
+   */
+  public static SGML expandEntities(SGML it, Table tbl) {
+    if (it == null || it == Token.empty) return it;
+    if (it.isList()) {
+      Tokens old = it.content();
+      if (old.nItems() == 0) return it;
+      Tokens tl = new Tokens();
+      for (int i = 0; i < old.nItems(); ++i) {
+	tl.append(expandEntities(old.itemAt(i), tbl));
+      }
+      return tl;
+    } else if ("&".equals(it.tag())) {
+      SGML v = (SGML) tbl.at(it.entityName());
+      return (v == null)? it : v;
+    } else if (it.isElement()) {
+      Token t = new Token();
+      for (int i = 0; i < t.nAttrs(); ++i) 
+	t.attrValueAt(i, expandEntities(t.attrValueAt(i), tbl));
+      t.content(expandEntities(t.content(), tbl));
+      return t;
+    } else {
+      return it;
+    }
+  }
+
+  private static Table defaultEntityTable = null;
+
+  /** Default entity table: defined HTML entities. */
+  public static Table defaultEntities() {
+    if (defaultEntityTable == null) {
+      defaultEntityTable = new Table();
+      defaultEntityTable.at("amp", new Text("&"));
+      defaultEntityTable.at("gt", new Text(">"));
+      defaultEntityTable.at("lt", new Text("<"));
+      // === should also have #nn == 
+    }
+    return defaultEntityTable;
+  }
 
   /************************************************************************
   ** Getting and Pushing Input:
@@ -334,6 +399,7 @@ public class Interp extends State {
 
   public void pushInput(Input in) {
     in.prev = input;
+    in.interp(this);
     input = in;
   }
 
@@ -353,6 +419,14 @@ public class Interp extends State {
   public void pushInto(Tokens t) {
     debug("Expanding ["+t.nItems()+"]");
     input = new InputList(t.content(), input);
+  }
+
+  /** Repeatedly expand content, with the given entity bound to each
+   *	element of list. */
+  public void pushForeach(Tokens content, String entity, Tokens list) {
+    debug("Iterating ["+content.nItems()+"]*["+list.nItems()+"]");
+    input = new InputForeach(content, entity, list, input);
+    input.interp(this);
   }
 
   public SGML nextInput() {
@@ -390,7 +464,7 @@ public class Interp extends State {
     it = (token == null)? nextInput() : token;
 
     /* Loop on incoming tokens. */
-    for ( ; it != null; ) {
+    for ( ; it != null; it = nextInput()) {
       byte incomplete = it.incomplete();
       String tag = it.tag();
 
@@ -454,8 +528,13 @@ public class Interp extends State {
 	// === worry about that.  Add checkForSyntax? ===
 	// === should only expand start tags and entities.
 	// === what happens if an entity expands into a list at this point?
-	it = expandAttrs(it);
-	debug("expanded ");
+	if (incomplete > 0 || ! it.isElement()) {
+	  it = expandAttrs(it);
+	  debug("expanded ");
+	} else if (incomplete == 0) {
+	  input = new InputExpand(it, input);
+	  continue;
+	}
       }
 
       if (it == null) {
@@ -464,8 +543,7 @@ public class Interp extends State {
 	/* Start tag.  Check for interested actors.
 	 *	keep track of any that register as handlers.
 	 */
-	debug("depth="+depth+" ");
-	debug("start ");
+	debug("start depth="+depth+" ");
 	handlers = null;
 
 	/* Push the stack.  
@@ -485,7 +563,7 @@ public class Interp extends State {
 	  debug("completed in "+elementTag()+"\n");
 	  // === the following fails for  nested actors.
 	  //	 something may be getting out of sync.
-	  if (true || !isQuoting()) checkForHandlers(it);
+	  if (!isQuoting()) checkForHandlers(it);
 	  //continue;
 	} else {		// Nothing happened; push it.
 	  debug("pushed in "+elementTag()+"\n");
@@ -515,11 +593,8 @@ public class Interp extends State {
 	debug("deleted\n");
       }
 
-      /* Get another token, unless called to resolve a single token.
-       *    Do it here rather than in the for loop so that a
-       *    "continue" above will keep the token that's there.  
-       */
-      it = (token == null)? nextInput() : null;
+      /* Get another token, unless called to resolve a single token. */
+      if (token != null) return;
     }
 
     if (token == null) {
@@ -894,6 +969,56 @@ class InputExpand extends Input {
     it = t.toToken();
     item  = -1;
     limit = it.nItems();
+  }
+}
+
+/**
+ * Input stack frame for a list being expanded for each element in another list.
+ */
+class InputForeach extends InputList {
+  Tokens list;
+  int	 listItem;
+  int	 listSize;
+  String entity;
+
+  public SGML nextInput() {
+    if (item < limit) return it.itemAt(item++);
+    if (listItem < listSize) {
+      interp.setvar(entity, list.itemAt(listItem++));
+      item = 0;
+      return it.itemAt(item++);
+    } else {
+      // === replace saved entity binding if any
+    }
+    return null;
+  }
+  public boolean endInput() {
+    return item >= limit && listItem >= listSize;
+  }
+
+  public InputForeach(Tokens t, String ent, Tokens l, Input p) {
+    super(t, p);
+    entity = ent;
+    list = l;
+    listSize = list.nItems();
+    listItem = 0;
+  }
+
+  /** Interpretor.  We need this in order to bind the iteration
+   *	variable.  There is some flakiness here; if we have two nested
+   *	repeats they will end up using the same variable table.
+   *
+   *	=== In this case we should really save the current value of
+   *	the entity and replace it when we exit.  Should really be done
+   *	on pop, but there's no method for it.
+   */   
+  Interp interp;
+
+  /** Tell the Input what interpretor it is working for. */
+  public void interp(Interp ii) {
+    interp = ii;
+    if (listItem < listSize) 
+       interp.defvar(entity, list.itemAt(listItem++));
   }
 }
 

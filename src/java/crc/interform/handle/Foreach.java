@@ -22,8 +22,16 @@ import crc.interform.Util;
 /** Handler class for &lt;... foreach list=...&gt */
 public class Foreach extends crc.interform.Handler {
   public void handle(Actor ia, SGML it, Interp ii) {
+    Tokens list = Util.listItems(it.attr("list"));
+    String entity = Util.getString(it, "entity", "li");
 
-    ii.unimplemented(ia);
+    ii.pushForeach(it.content(), entity, list);
+    ii.hoistParseFlags();
+
+    // === need to re-push "it" with empty content and no foreach or list attr.
+    ii.unimplemented(ia);// === incomplete
+
+    ii.deleteIt();
   }
 }
 
