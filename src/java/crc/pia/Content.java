@@ -81,7 +81,15 @@ public interface Content
   public void notifyWhen(Agent interested, Object condition);
 
   /**  perhaps some methods for filtering objects should go here */
-  
+
+  public String toString();
+
+  public byte[] toBytes();
+
+  /**
+   * @return false if content is complete
+   */
+  public boolean processInput();
 }	
 
 

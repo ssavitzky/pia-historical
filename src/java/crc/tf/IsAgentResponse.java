@@ -21,6 +21,7 @@ package crc.tf;
 
 import crc.ds.UnaryFunctor;
 import java.net.URL;
+import crc.pia.Transaction;
 
 public final class IsAgentResponse implements UnaryFunctor{
 
@@ -29,27 +30,30 @@ public final class IsAgentResponse implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
       URL url = null;
       boolean defineRequest = false;
       Transaction request;
+      Transaction trans;
 
+      trans = (Transaction) o;
       if ( !trans.isResponse() )
 	return new Boolean( false );
 
       String agent = trans.header("Version");
-      if( (request = trans.requestTrans()) ){
+      if( (request = trans.requestTran()) != null ){
 	defineRequest = true;
 	url = request.requestURL();
       }
 
-      if( url && url.getFile().toLowerCase().startsWith("/http:") )
+      if( url!=null && url.getFile().toLowerCase().startsWith("/http:") )
 	return new Boolean( false );
 
-      if( agent.toLowerCase().startsWith("pia") ){
+      if( agent!= null && agent.toLowerCase().startsWith("pia") ){
 	if(!defineRequest)
 	  return new Boolean( true );
-	if( request.is("agent_request") )
+	Boolean res = (Boolean)request.is("IsAgentRequest");
+	if( res.booleanValue() )
 	  return new Boolean( true );
       }
       return new Boolean( false );

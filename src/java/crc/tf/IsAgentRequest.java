@@ -21,37 +21,56 @@ package crc.tf;
 
 import crc.ds.UnaryFunctor;
 import java.net.URL;
+import crc.pia.Transaction;
+import crc.pia.Pia;
 
 public final class IsAgentRequest implements UnaryFunctor{
+  public boolean DEBUG = false;
 
   /**
    * 
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
       Object zfalse = new Boolean( false );
       Object ztrue  = new Boolean( true );
+      String lhost = null;
+      String lport = null;
 
+      Transaction trans = (Transaction)o; 
       if( !trans.isRequest() ) return zfalse;
       URL url = trans.requestURL();
-      if( !url ) return zfalse;
+      if( url == null ) return zfalse;
 
       String host = url.getHost();
-      if( host ) 
-	String lhost = host.toLowerCase();
+      if( host!= null ) 
+	lhost = host.toLowerCase();
       else
 	lhost = "";
-      String lport = url.getPort().toString();
+
+      lport = Integer.toString( url.getPort() );
 
       if( lhost.startsWith("agency") || lhost == "" )
 	return ztrue;
 
-      if( Pia.instance().port() == lport && Pia.instance().host().startsWith( lhost ) )
-	return ztrue;
+      if( !DEBUG ){
+	if( Pia.instance().port() == lport && Pia.instance().host().startsWith( lhost ) )
+	  return ztrue;
+      }
       
       return zfalse;
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 

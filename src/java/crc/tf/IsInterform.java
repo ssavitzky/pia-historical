@@ -21,22 +21,30 @@ package crc.tf;
 
 import java.net.URL;
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
-public final class IsInterForm implements UnaryFunctor{
+public final class IsInterform implements UnaryFunctor{
 
   /**
    * 
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       URL url = trans.requestURL();
-      String path = url.getFile();
-      String lpath = path.toLowerCase();
-      if( path.endsWith(".if") )
-	return new Boolean( true );
-      else
-	return new Boolean( false );
+      if( url != null ){
+	String path = url.getFile();
+	String lpath = path.toLowerCase();
+	if( path.endsWith(".if") )
+	  return new Boolean( true );
+	else
+	  return new Boolean( false );
+      }else return new Boolean( false );
+
+
+
     }
 }
 

@@ -20,6 +20,7 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
 public final class IsFileRequest implements UnaryFunctor{
 
@@ -28,9 +29,11 @@ public final class IsFileRequest implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       String scheme = trans.protocol();
-      if( scheme ){
+      if( scheme != null ){
 	String lscheme = scheme.toLowerCase();
 	if( lscheme.indexOf("file") != -1 )
 	  return new Boolean( true );

@@ -12,13 +12,33 @@
 
 package crc.pia;
 
+import java.io.InputStream;
+import java.io.EOFException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.net.ServerSocket;
+import java.net.InetAddress;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.util.Hashtable;
+
 import crc.pia.Content;
 import crc.pia.Transaction;
 import crc.pia.Resolver;
 import crc.util.regexp.RegExp;
+import crc.util.regexp.MatchInfo;
 
 public class Machine {
+  public boolean DEBUG = false;
+  public boolean DEBUGPROXY = false;
   /**
    * Attribute index - client hostName
    */
@@ -50,33 +70,66 @@ public class Machine {
   protected OutputStream outputStream;
 
   /**
+   * set inputStream -- use for debuggging
+   */
+  public void setInputStream( InputStream in ){
+    inputStream = in;
+  }
+
+  /**
+   * set outputStream -- use for debugging
+   */
+  public void setOutputStream( OutputStream out ){
+    outputStream = out;
+  }
+
+  /**
    * Return inputStream
    */
   public InputStream inputStream() throws IOException{
-    if( socket )
+    if( inputStream!= null )
+      return inputStream;
+
+    if( socket != null )
       try
       {
 	inputStream = socket.getInputStream();
 	return inputStream;
       }catch(IOException e){
-      }    
-      errLog( this, "Exception while getting socket input stream." );
-      throw new IOException( e.getMessage() );
+	if( DEBUG )
+	  System.out.println("Exception while getting socket input stream." );
+	else
+	  if( DEBUG )
+	    System.out.println( "Exception while getting socket input stream." );
+	  else
+	    Pia.instance().errLog( this, "Exception while getting socket input stream." );
+	throw new IOException( e.getMessage() );
+      }
+    else
+      throw new IOException( "Socket is not valid." );
   }
 
   /**
    * Return outputStream
    */
   public OutputStream outputStream() throws IOException{
-    if( socket )
+    if( outputStream!=null ) 
+      return outputStream;
+
+    if( socket != null )
       try
       {
 	outputStream = socket.getOutputStream();
 	return outputStream;
       }catch(IOException e){
+	if( DEBUG )
+	  System.out.println("Exception while getting socket output stream." );
+	else
+	  Pia.instance().errLog( this, "Exception while getting socket output stream." );
+	throw new IOException( e.getMessage() );
       }    
-      errLog( this, "Exception while getting socket output stream." );
-      throw new IOException( e.getMessage() );
+    else
+      throw new IOException( "Socket is not valid." );
   }
 
  /**
@@ -85,11 +138,16 @@ public class Machine {
   */
   public void closeConnection() {
     try {
-      socket.close();
-      inputStream.close();
-      outputStream.close();
+      if( socket != null ){
+	socket.close();
+	inputStream.close();
+	outputStream.close();
+      }
     }catch(IOException e) {
-      errLog( this, "Exception while closing socket streams." );
+      if( DEBUG )
+	System.out.println("Exception while closing socket streams." );
+      else
+	Pia.instance().errLog( this, "Exception while closing socket streams." );
     }
   }
 
@@ -97,105 +155,209 @@ public class Machine {
    * send_response sends a response to whatever this machine refers to.
    * @returns the number of bytes read. 
    */
-  public void sendResponse (Transaction reply, Resolver resolver) {
-    PrintStream out;
-    StringBuffer ctrlStrings = new StringBuffer();
-    String content;
-    String plainContent;
+  public void sendResponse (Transaction reply, Resolver resolver) throws IOException {
+    PrintStream out = null;
+    StringBuffer ctrlStrings = null;
+    Content content = null;
+    Content plainContent = null;
+    RegExp re = null;
+    MatchInfo mi = null;
+    boolean isTextHtml = false;
+    String contentString = null;
 
-    out = new PrintStream( outputStream );
+    try{
+      out = new PrintStream( outputStream() );
+    }catch(IOException e){
+      String msg = "Connection to requester is lost...\n";
+      throw new PiaRuntimeException (this.getClass().getName()
+				     , "sendResponse"
+				     , msg) ;
+    }
 
-    String message = reply.statusMsg();
+
+    String message = reply.reason();
     String outputString = "HTTP/1.0 " + reply.statusCode() + " " + message + "\n";
+    // HTTP/1.0 200 OK
 
     String type = reply.contentType();
-    if( type && type.toLowerCase().indexOf("/text/html") != -1 ){
+    if( type != null && type.toLowerCase().indexOf("text/html") != -1 ){
       
-      Thing[] c = reply.controls();
-      if( c ){
+      isTextHtml = true;
+
+      Pia.instance().debug(this, "Sucking controls...");
+      Object[] c = reply.controls();
+      if( c != null ){
+	ctrlStrings = new StringBuffer();
 	for( int i = 0; i < c.length; i++ ){
 	  Object o = c[i];
 	  if( o instanceof String )
-	    ctrlString.append( (String)o + " " );
+	    ctrlStrings.append( (String)o + " " );
 	}
       }
 
     }
 
-    if( ctrlString.length() > 0 ){
-      if( reply.contentLength() != -1 )
-	reply.setContentLength( reply.contentLength() + ctrlString.length() );
-      plainContent = content = reply.contentObj().source();
-    }
-    
-    out.println( outputString );
-    out.println( reply.headersAsString() );
-    out.println( "\n" );
+    plainContent = content = reply.contentObj();
 
-    RegExp re = new RegExp("<body[^>]*>");
-    MatchInfo mi = re.match( content.toLowerCase() );
-    if( ctrlString && mi != null ){
+    if( ctrlStrings!= null && ctrlStrings.length() > 0 ){
+      if( reply.contentLength() != -1 )
+	// changing length
+	reply.setContentLength( reply.contentLength() + ctrlStrings.length() );
+    }
+
+    // dump header
+    Pia.instance().debug(this, "Transmitting header...");
+    out.print( outputString );
+    out.print( reply.headersAsString() );
+
+    if( content != null && isTextHtml  ){
+      contentString = content.toString();
+      try{
+	re = new RegExp("<body[^>]*>");
+	mi = re.match( contentString.toLowerCase() );
+      }catch(Exception e){
+      }
+    }
+
+    if( ctrlStrings != null && mi != null ){
       String ms = mi.matchString();
       StringBuffer buf = new StringBuffer( ms );
-      buf.append( ctrlString );
-      content   = re.simpleSubstitute(ms, new String( buf ));
+      buf.append( ctrlStrings );
+      contentString   = re.substitute(contentString, new String( buf ), true);
+    } else if (ctrlStrings!= null){
+      out.println( ctrlStrings );
     }
 
-    else if (ctrlString){
-      out.println( ctrlString );
+    if( ctrlStrings != null ){
+      Pia.instance().debug(this, "Transmitting control strings...");
+      out.println( contentString );
+    }
+    else if( contentString != null && isTextHtml ){
+      Pia.instance().debug(this, "Transmitting text/html content...");
+      out.println( contentString );
+    }else if( plainContent != null ){
+      Pia.instance().debug(this, "Transmitting images content...");
+      byte[] zbytes = plainContent.toBytes();
+
+      if( zbytes != null )
+	Pia.instance().debug(this, "Number of bytes transmitting..." + Integer.toString( zbytes.length ));
+
+      if( zbytes!= null )
+	out.write( zbytes, 0, zbytes.length );
     }
 
-    if( ctrlString )
-       out.println( content );
-    else
-    if( plainContent )
-       out.println( plainContent );
+
+    Pia.instance().debug(this, "Flushing...");
+    out.flush();
     closeConnection();
+  }
+
+  protected byte[] suckData( InputStream input )throws IOException{
+    byte[]buffer = new byte[1024];
+    int bytesRead;
+    HttpBuffer data = new HttpBuffer(); 
+    
+    try{
+      while(true){
+	bytesRead = input.read( buffer, 0, 1024 );
+	if( bytesRead == -1 ) break;
+	  data.append( buffer, 0, bytesRead );
+      }
+      Pia.instance().debug("the read length is---->"+Integer.toString(data.length()));
+      return data.getByteCopy(); 
+    }catch(IOException e2){
+      throw e2;
+    }
+
+    }
+
+  protected void getReqThruProxy(URL proxy, Transaction request, Resolver resolver) throws PiaRuntimeException {
+    int zport = 80;
+    String zhost;
+
+    int p        = proxy.getPort();
+    zport        = (p == -1) ? 80 : p;
+    zhost        = proxy.getHost();
+    try{
+      Socket sock          = new Socket(zhost, zport);
+      OutputStream oStream = sock.getOutputStream();
+      InputStream iStream  = sock.getInputStream();
+      
+      request.printOn( oStream );
+      oStream.flush();
+
+      byte[] zdata = null;
+      zdata = suckData( iStream );
+      
+      InputStream bi = new ByteArrayInputStream( zdata ); 
+
+      sock.close();
+      iStream.close();
+      oStream.close();
+      
+      Machine m = new Machine();
+      m.setInputStream( bi );
+
+      new HTTPResponse(request, m );
+
+    }catch(UnknownHostException ue){
+      String msg = "Unknown proxy host\n";
+      throw new PiaRuntimeException (this.getClass().getName()
+				     , "getReqThruProxy"
+				     , msg) ;
+    }catch(IOException e){
+      String msg = "Can not get data through proxy request\n";
+      throw new PiaRuntimeException (this.getClass().getName()
+				     , "getReqThruProxy"
+				     , msg) ;
+    }
   }
 
   /**
    * getRequest string.
    * @returns the number of bytes read. 
    */
-  public Transaction getRequest(Transaction request, Resolver resolver) throws UnknownHostException, IOException  {
-    String proxy;
+  public void getRequest(Transaction request, Resolver resolver) throws PiaRuntimeException  {
+    URL proxy;
     URL agentURL;
     URL url;
     URLConnection agent;
-    int zport;
-    int zhost;
-
-    Transaction reply;
 
     url = request.requestURL();
 
-
     proxy = proxy( request.protocol() );
-    if( proxy ){
-	int p        = proxy.getPort();
-	int zport    = (p == -1) ? 80 : p;
-	zhost        = proxy.getHost();
+    if( proxy != null ){
+      try{
+	getReqThruProxy( proxy, request, resolver);
+      }catch(PiaRuntimeException ue){
+	throw ue;
+      }
     }else{
-      zport        = ( port == -1 ) ? 80 : port;
-      zhost        = hostName;
-    }
-    
-    try{
-      socket       = new Socket(zhostName, zport);
-      outputStream = new BufferedOutputStream(socket.getOutputStream());
-      inputStream  = new BufferedInputStream(socket.getInputStream());
-      //Actually, need to spit the first line too
-      //spit header, Becareful about the content length;
-      //spit body if there is a body;
-      //outputStream.flush()
-      //need to create a response transaction with the inputStream tie to its
-      //content.  Return the transaction.
-    }catch(UnknownHostException ue){
-      throw ue;
-    }catch(IOException e){
-      throw e;
+      if( url != null ){
+	try{
+	  InputStream in = url.openStream();
+
+	  Content c = new ByteStreamContent( in );
+	  if ( DEBUG ){
+	    Pia.instance().debug("Dumping data buffer's address");
+	    byte[] data = c.toBytes();
+	    System.out.print( data );
+	    System.out.println("\n");
+	  }
+
+	  new HTTPResponse( request, c );
+
+	}catch(IOException e){
+	  String msg = e.toString();
+	  throw new PiaRuntimeException (this.getClass().getName()
+					 , "getRequest"
+					 , msg) ;
+	}
+      }
+
     }
   }
+
 
   /**
    * get proxy string.
@@ -205,33 +367,53 @@ public class Machine {
     URL myproxy = null;
 
     Object o = proxyTab.get( scheme );
-    if( o )
+    if( o!=null ){
       myproxy = (URL) o;
-    return myproxy;
+      return myproxy;
+    }
+    else{
+      // default to get from pia
+      try{
+	return setProxy( scheme, null );
+      }catch( MalformedURLException e ){ return null;}
+    }
   }
 
   /**
    * set proxy string.
    *
    */
-  public void setProxy (String scheme, String proxystring) {
+  public URL setProxy (String scheme, String proxystring) throws MalformedURLException{
     String p = null;
 
-    if( proxystring )
+    if( proxystring!=null )
       p = proxystring;
 
-    if(!p){
-	String mainproxy= Pia.agency().proxyFor(hostName, scheme);	
-	if ( mainproxy )
+    if(p==null){
+      String mainproxy;
+
+      if( DEBUGPROXY )
+	p = "http://int-gw.crc.ricoh.com:80/";
+      else{
+	mainproxy= Pia.instance().agency().proxyFor(hostName, scheme);	
+	if ( mainproxy!= null )
 	  p = mainproxy;
-    }
-    if(p){
-      try{
-	myproxy = new URL( p );
-	proxyTab = put(scheme, myproxy);
-      }catch(MalformedURLException e ){
       }
     }
+
+
+    if(p!=null){
+      try{
+	URL myproxy = new URL( p );
+	proxyTab.put(scheme, myproxy);
+	return myproxy;
+      }catch(MalformedURLException e ){
+	throw e;
+      }
+    }
+
+    return null;
+
   }
 
   /**
@@ -250,7 +432,165 @@ public class Machine {
     socket = null;
   }
 
+  // call from agent machine
+  public Machine(){
+  }
+
+  private static void test1( String filename, boolean proxy ){
+    System.out.println("This test make use of a server that returns a text/html page.");
+    System.out.println("The server is in the test directory and it runs with default port =6666.");
+    System.out.println("The file get_machine.txt contains a request for the page.");
+    System.out.println("If proxy is true, request is tested thru a proxy.  In the setProxy method, there is a line w/ p=http://..., you should substitute appropriate proxy address for your machine.");
+    System.out.println("If proxy is false, java's URL is used to get the page.");
+
+    try{
+      InputStream in = new FileInputStream (filename);
+      Machine machine1 = new Machine();
+      if( proxy )
+	machine1.DEBUGPROXY = true;
+      machine1.setInputStream( in );
+      
+      Transaction trans1 = new HTTPRequest( machine1 );
+      Thread thread1 = new Thread( trans1 );
+      thread1.start();
+
+      for(;;){
+	if( !thread1.isAlive() )
+	  break;
+      }
+
+      //Resolver res = new Resolver();
+      Resolver res = null;
+      machine1.getRequest( trans1, res );
+    }catch(Exception e ){
+      System.out.println( e.toString() );
+    }
+  }
+
+  private static void test2(String filename){
+    try{
+      System.out.println("Testing response w/ from and to machines as arguments.");
+      System.out.println("From machine gets its data from response.txt file.");
+      
+      InputStream in = new FileInputStream (filename);
+      Machine machine1 = new Machine();
+      machine1.setInputStream( in );
+      
+      Machine machine2 = new Machine();
+      machine2.setOutputStream( System.out );
+      
+      Transaction trans1 = new HTTPResponse( machine1, machine2 );
+      Thread thread1 = new Thread( trans1 );
+      thread1.start();
+      
+      for(;;){
+	if( !thread1.isAlive() )
+	  break;
+      }
+      trans1.addControl( "major" );
+      trans1.addControl( "tom" );
+      Resolver res = null;
+      machine2.sendResponse( trans1, res );
+
+    }catch(Exception e ){
+      System.out.println( e.toString() );
+    }
+  }
+
+  private static void test3(String zport){
+ 
+    // Start the server up, listening on an optionally specified port
+    int port = 0;
+    try { port = Integer.parseInt( zport );  }
+    catch (NumberFormatException e) { port = 0; }
+
+    new Server(port);
+  }
+
+  private static void printusage(){
+    System.out.println("Needs to know what kind of test");
+    System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -proxy get_machine.txt");
+    System.out.println("For test 1, here is the command --> java crc.pia.Machine -1 -noproxy get_machine.txt");
+    System.out.println("For test 2, here is the command --> java crc.pia.HTTPRequest -2 response.txt");
+  }
+
+
+  /**
+   * For testing.
+   * 
+   */ 
+  public static void main(String[] args){
+    if( args.length == 0 ){
+      printusage();
+      System.exit( 1 );
+    }
+    if(args.length == 2){
+      if( args[0].equals ("-2") && args[1] != null )
+	test2( args[1] );
+    }else
+    
+    if (args.length == 3 ){
+      if( args[0].equals ("-1") && (args[1].equals ("-proxy") || args[1].equals ("-noproxy")) && args[2] != null )
+	if( args[1].equals ("-proxy"))
+	  test1( args[2], true );
+	else
+	  test1( args[2], false );
+      else{
+	printusage();
+	System.exit( 1 );
+      }
+    }
+    
+  }
 }
+
+  /**
+   * For testing only, ya
+   */
+  class Server extends Thread {
+    public final static int DEFAULT_PORT = 6789;
+    protected int port;
+    protected ServerSocket listen_socket;
+    
+    // Exit with an error message, when an exception occurs.
+    public static void fail(Exception e, String msg) {
+      System.err.println(msg + ": " +  e);
+      System.exit(1);
+    }
+    
+    // Create a ServerSocket to listen for connections on;  start the thread.
+    public Server(int port) {
+        if (port == 0) port = DEFAULT_PORT;
+        this.port = port;
+        try { listen_socket = new ServerSocket(port); }
+        catch (IOException e) { fail(e, "Exception creating server socket"); }
+        System.out.println("Server: listening on port " + port);
+        this.start();
+    }
+    
+    // The body of the server thread.  Loop forever, listening for and
+    // accepting connections from clients.  For each connection, 
+    // create a Connection object to handle communication through the
+    // new Socket.
+    public void run() {
+        try {
+            while(true) {
+	      Socket client_socket = listen_socket.accept();
+	      /*
+	      InetAddress iaddr = client_socket.getInetAddress();
+	      String hostName = iaddr.getHostName();
+	      Machine machine =  new Machine(hostName, port, client_socket);
+	      machine.test1();
+	      */
+            }
+        }
+        catch (IOException e) { 
+            fail(e, "Exception while listening for connections");
+        }
+    }
+  }
+
+
 
 
 

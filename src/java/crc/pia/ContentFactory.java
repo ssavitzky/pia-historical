@@ -2,6 +2,9 @@
 package crc.pia;
 
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import w3c.www.mime.MimeType;
 
 
 /**  ContentFactory
@@ -10,11 +13,6 @@ import java.io.InputStream;
  */
 public class ContentFactory
 {
-  /**
-   * first line of stream
-   */
-  protected StringBuffer buf;
-
  /**  creates a new content factory with default list of possible content objects
  */
   public ContentFactory()
@@ -31,20 +29,46 @@ public class ContentFactory
     try{
       MimeType ztype  = new MimeType( contentType );
       // This is too simple,minded.  Need to test others
-      if( ztype.match( APPLICATION_X_WWW_FORM_URLENCODED ) )
-	c = new FormContent();
+      int what = ztype.match( MimeType.APPLICATION_X_WWW_FORM_URLENCODED );
+
+      if( what == ztype.MATCH_SPECIFIC_SUBTYPE ){
+	c = new FormContent( input );
+      }
       else
-	c = new ByteStreamContent();
+	c = new ByteStreamContent( input );
 
-      c.source( input );
-
-      return newContent;
+      return c;
     }catch(Exception ex){
       ex.printStackTrace();
-      System.out.println("MimeParser <factory> <file>");
+      return null;
     }
     
   }
+
+
+  /**
+  * For testing.
+  * 
+  */ 
+  public static void main(String[] args){
+    if( args.length == 0 )
+      System.out.println("Need file content filename.");
+
+    String filename = args[0];
+
+    ContentFactory cf = new ContentFactory();
+
+    try{
+      InputStream in = (new BufferedInputStream
+			(new FileInputStream (filename)));
+    
+      String ztype = "application/x-www-form-urlencoded";
+      Content c = cf.createContent(ztype , in );
+    }catch(Exception e ){
+      System.out.println( e.toString() );
+    }
+  }
+  
   
 }
 

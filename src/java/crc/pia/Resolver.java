@@ -21,12 +21,18 @@ package crc.pia;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.Enumeration;
+import java.io.IOException;
+import java.io.FileOutputStream;
 
+import java.util.Vector;
+
+import java.net.URL;
 import crc.pia.Agent;
 import crc.ds.Queue;
 
 
-public class Resolver implements Runnable{
+public class Resolver extends Thread{
   /**
    * Attribute index - a collection of agents currently running.
    */
@@ -42,13 +48,18 @@ public class Resolver implements Runnable{
    * Attribute index - transaction queue.
    */
   protected Queue transactions;
+
+  /**
+   * Attribute index - whether to stop running
+   */
+  protected boolean finish = false;
   
   /**
    * queue -- returns transaction list
    * 
    */ 
   protected Enumeration queue(){
-    return transactions.queue;
+    return transactions.queue();
   }
 
   /**
@@ -96,8 +107,10 @@ public class Resolver implements Runnable{
    *
    */
   protected void agent( String name, Agent agent ){
-    if( name && agent ){
-      agentCollection.put( name, agent );
+    String zname = null;
+    if( name != null && agent != null ){
+      zname = name.toLowerCase();
+      agentCollection.put( zname, agent );
     }
   }
 
@@ -106,7 +119,7 @@ public class Resolver implements Runnable{
    *
    */
   protected Hashtable agent(){
-    return agentCollection.elements();
+    return agentCollection;
   }
 
   /**
@@ -116,7 +129,7 @@ public class Resolver implements Runnable{
   public void registerAgent( Agent agent ){
     String name;
 
-    if ( agent ){
+    if ( agent != null ){
       name = agent.name();
       agent( name, agent );
     }
@@ -142,7 +155,7 @@ public class Resolver implements Runnable{
     Agent deadAgent = null;
     String name;
 
-    if( agent ){
+    if( agent != null ){
       name = agent.name();
       deadAgent = (Agent) agentCollection.remove( name );
     }
@@ -166,6 +179,42 @@ public class Resolver implements Runnable{
   }
 
   /**
+   * @return agent according to name
+   */
+  public Agent agent( String name ){
+    String zname = name.toLowerCase();
+    Object o = agentCollection.get( zname );
+    if( o != null )
+      return (Agent)o;
+    else
+      return null;
+  }
+
+ /**
+   * stop thread 
+   */
+  protected void shutdown(){
+    finish = true;
+  }
+
+  /**
+   * tell each machine in transaction to shutdown?
+   */
+  protected void cleanup(boolean restart){
+    // off course should check number of transaction
+    //pop each transaction and tells its machine to shutdown
+    finish = false;
+  }
+
+  protected void finalize() throws IOException{
+    cleanup( false );
+  } 
+
+  protected void restart(){
+    start();
+  }
+
+  /**
    *  Resolve -- This is the resolver's main loop.  It starts with one or more
    *  incoming transactions that have been pushed onto its queue, and
    *  loops until they're all taken care of.
@@ -174,18 +223,21 @@ public class Resolver implements Runnable{
     int count = 0;
     int numb = size();
     Transaction tran;
-    String url;
+    String urlString;
+    URL url;
 
     // Main loop.  
     //	 Entered with some transactions in the input queue.
     //	 Returns total number of transactions processed.
-    // just loop forever
-    
-    while( true) {
-    while (size() > 0){
-      tran = pop();
+    while( !finish ){
+    while ( size() > 0 ){
+      tran = (Transaction) pop();
       url = tran.requestURL();
-      
+      urlString = url.getFile();
+      Pia.instance().debug(this, "Remaining number of transaction " + Integer.toString( size() ) );
+      if( urlString != null )
+	Pia.instance().debug(this, "URL :" + urlString );
+
       /*
       Look for matches.
       Matching agents have their act_on method called with both the
@@ -193,24 +245,33 @@ public class Resolver implements Runnable{
       transactions onto the resolver, push satisfiers onto the
       transaction, or directly modify the transaction.
       */
+      Pia.instance().debug(this, "Before match making...");
       match( tran );
+      Pia.instance().debug(this, "After match making...");
 
       /*
       Tell the transaction to go satisfy itself.  
       It does this by calling each of the handlers that matched agents
       have pushed onto its queue, and looking for a true response.
       */
-//      tran.satisfy( this );
-// do indirectly by notifying transaction that it is resolved,
-// the transaction thread becomes responsible for running satisfy
-	tran.resolved();
-      
+
+      // do indirectly by notifying transaction that it is resolved,
+      // the transaction thread becomes responsible for running satisfy
+      Pia.instance().debug(this, "Transaction please resolve");
+      tran.resolved();      
     }
-    sleep();// no transactions on queue so nothing to do
-    // maybe check cron jobs here?
-    
+
+    /*
+    try{
+      long delay = (long)(Math.random() * 10000.0);
+      Thread.currentThread().sleep(delay);
+    }catch(InterruptedException ex){
     }
-    
+    */
+
+    }
+    cleanup(false);
+   
   }
 
   /**
@@ -233,7 +294,7 @@ public class Resolver implements Runnable{
     while( e.hasMoreElements() ){
       agent = (Agent) e.nextElement();
 
-      if (tran.features.matches( agent.criteria )){
+      if (tran.matches( agent.criteria() )){
 	agent.actOn( tran, this );
 	++ matches;
       }
@@ -247,23 +308,31 @@ public class Resolver implements Runnable{
    * Return a response to a caller
    *
    */
-  public Reply simpleRequest( Transaction tran, String fileName ){
+  public Transaction simpleRequest( Transaction tran, String fileName )throws IOException{
     File destinationFile;
     FileOutputStream destination = null;
+    PrintStream out = null;
+    Transaction response;
     /*
       Return a response to a caller.
       This lets the resolver serve as a user agent in place of LWP.
     */
     match( tran );
     tran.satisfy( this );
-    Reply response = pop();
+    response = (Transaction)pop();
     
-    if( fileName ){
-      destinationFile = new File( fileName );
-      destination = new PrintStream( destinationFile );
-      String str = response.content();
-      destination.print( str );
-      destination.close();
+    if( fileName != null ){
+      try{
+	destinationFile = new File( fileName );
+	destination = new FileOutputStream( destinationFile );
+	out = new PrintStream( destination );
+	String str = response.contentObj().toString();
+	out.print( str );
+	out.flush();
+	out.close();
+      }catch(IOException e){
+	// I need to throw this
+      }
     }
     return response;
   }
@@ -272,7 +341,7 @@ public class Resolver implements Runnable{
     agentCollection = new Hashtable();
     computers       = new Hashtable();
     transactions    = new Queue();
-    this.run();
+    this.start();
   }
 
 }

@@ -17,63 +17,72 @@
    */
 package crc.tf;
 
+import java.net.URL;
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
+import crc.pia.Content;
 import crc.util.regexp.MatchInfo;
 import crc.util.regexp.RegExp;
 
 public final class Title implements UnaryFunctor{
-  private String getPage(){
-      in = new DataInputStream( trans.contentObj().source() );
-      String line;
-      try{
-	StringBuffer buffer = new StringBuffer("");
-	while(true){
-	  line = in.readLine();
-	  if(line == null )break;
-	  buffer.append( line );
-	}
-      }catch(IOException e){
-	System.err.println( e );
-      }
-      return new String( buffer );
-
+  private String getPage(Transaction trans){
+    Content c = trans.contentObj();
+    if( c != null )
+      return c.toString();
+    else
+      return null;
   }
 
-  public Object execute( Object trans ){
-      DataInputStream in;
+  public Object execute( Object o ){
+      Transaction trans = (Transaction)o;
 
-      if(!trans.isResponse()) return null;
+      if(!trans.isResponse()) return "";
 
-      String url = trans.requestURL();
-      if( !url ) return null;
+      URL url = trans.requestURL();
+      if( url == null ) return "";
 
       String type = trans.contentType();
-      if( !type ) return null;
+      if( type == null ) return "";
 
       String ltype = type.toLowerCase();
-      RegExp re = new RegExp("text/html");
-      MatchInfo mi = re.match( ltype );
-      if( !mi ){
+      RegExp re = null;
+      MatchInfo mi = null;
+      try{
+	re = new RegExp("text/html");
+	mi = re.match( ltype );
+      }catch(Exception e){;}
+
+      if( mi!=null ){
 	String path = url.getFile();
-	if( !path ) 
-	  return null;
+	if( path == null ) 
+	  return "";
 	else
 	  return path;
       }
 
-      String page = getPage().toLowerCase();
-      if( !page ) return null;
+      String mypage = getPage( trans );
+      if( mypage == null ) return "";
 
-      String title;
+      String page = mypage.toLowerCase();
+
+      String title = null;
       int pos = page.indexOf("<title>");
       int endPos = page.indexOf("</title>");
       if( pos != -1 && endPos != -1 )
-	title = page.substring(pos+"<title>".length(), endPos);
+	title = mypage.substring(pos+"<title>".length(), endPos);
       return title;
       
     }
 
 }
+
+
+
+
+
+
+
+
 
 
 

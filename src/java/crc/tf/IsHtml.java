@@ -20,6 +20,7 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
 public final class IsHtml implements UnaryFunctor{
 
@@ -28,9 +29,11 @@ public final class IsHtml implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       String s = trans.contentType();
-      if( s ){
+      if( s != null ){
 	String ls = s.toLowerCase();
 	if( ls.startsWith("text/html") )
 	  return new Boolean( true );

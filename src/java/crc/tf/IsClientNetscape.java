@@ -20,6 +20,7 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
 public final class IsClientNetscape implements UnaryFunctor{
 
@@ -28,9 +29,11 @@ public final class IsClientNetscape implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       String agent = trans.header("User-Agent");
-      if( agent ){
+      if( agent != null ){
 	String lagent = agent.toLowerCase();
 	if( lagent.indexOf("netscape") != -1 )
 	  return new Boolean( true );

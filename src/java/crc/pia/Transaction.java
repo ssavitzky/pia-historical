@@ -4,22 +4,18 @@
 
 
 /**
- * Transactions  abstract the HTTP classes Request and Response.
+ * Transactions generalize the HTTP classes Request and Response.
  * They are used in the rule-based resolver, which associates 
  * transactions with the interested agents.
- * The actual contents are stored in a content instance variable which contains
- * objects which implement the content interface which allows agents to operate on the contents.
  *
  * A Transaction has a queue of ``handlers'', which are called
  * (from the $transaction->satisfy() method) after all agents
  * have acted on it.  At least one must return true, otherwise
  * the transaction will ``satisfy'' itself.
  *
- * Each transaction runs in its own thread, so that blocking io operation
- * don't affect the core system.  This thread interacts with the resolver thread
- * in two ways: after the header has been created, the transaction notifies resolver
- * that the transaction is ready for resolution,  then the resolver notifies
- * the transaction to satisfy itself once it has been resolved.
+ * In a proper implementation, Transaction would be a subclass of 
+ * DS::Thing, and Response and Request would be subclasses of it.
+ * It's done backwards here in order to re-use existing libraries.
  *
  */
 
@@ -27,26 +23,41 @@ package crc.pia;
 import java.util.Enumeration;
 import java.net.URL;
 import java.io.IOException;
-import java.lang.Runnable;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.lang.Runnable; // added by Greg
+import java.util.Vector;
 
-
-import crc.ds.Thing;
+import crc.ds.Features;
 import crc.ds.Queue;
+import crc.ds.UnaryFunctor;
+
 import crc.pia.Machine;
 import crc.pia.Content;
+import crc.pia.Resolver;
 import crc.tf.Registry;
+import crc.util.Utilities;
 
-public class Transaction implements Runnable{
+import crc.pia.Athread;
+import crc.tf.UnknownNameException;
 
-// many of the methods should be abstract method implemented by
-// subclasses
+public abstract class Transaction implements Runnable{ // implements Runnable added by Greg
+  /**
+   * Attribute index - execution thread
+   */
+  protected Athread executionThread;
+
+  /**
+   * Attribute index - features of this transaction
+   */
+  protected Features features;
+
   /**
    * Attribute index - if true transaction is a response.
    *
    */
   public boolean isResponse = false ;
-
-  /**
 
   /**
    * Attribute index - from machine -- the machine that originates the request.
@@ -61,59 +72,59 @@ public class Transaction implements Runnable{
   protected Machine toMachine;
 
   /**
-   * Attribute index - first line -- can be request or response line
-   */
-  // not needed see protocolInitializationString method
-  protected String firstLine;
-
-  /**
    * Attribute index - content obj of this transaction.
    *
    */
   protected Content contentObj;
 
-/** 
- *  class variable-- factory to generate  content objects
- */
+  /** 
+   *  class variable-- factory to generate  content objects
+   */
   // subclasses probably want to use different factories
-  static public ContentFactory cf;
+  static public ContentFactory cf = new ContentFactory();
 
   /**
-   * Attribute index - header obj of this transaction.
+  *  class variable-- factory to generate headers
+  */
+  static public HeaderFactory hf = new HeaderFactory();
+
+  /** Class variable-- resolver
+   * transactions need to communicate with the resolver
+   *  PIA main should set this
    */
-  protected Headers headerObj;
-
-/** 
- *  class variable-- factory to generate headers
- */
-
-  static public HeaderFactory hf;
-
-/** Class variable-- resolver
- * transactions need to communicate with the resolver
- *  PIA main should set this
- */
 
   static public Resolver  resolver;
   
-/** 
- *  Attribute index - has the resolver finished with this transaction?
- */
+  /** 
+   *  Attribute index - has the resolver finished with this transaction?
+   */
   protected boolean resolved = false;
   
-  
+  /**
+   * Attribute index - header obj of this transaction.
+   */
+  protected Headers headersObj;
+
   /**
    * Attribute index - queue of handlers.
    *
    */
   protected Queue handlers;
 
-  /**
-   * Attribute index - controls to be insert into a response
+  /** protocol
+   * the protocol of this request
+   */
+  protected String protocol;
+
+  /** protocol major number
    *
    */
-  protected Vector controls = new Vector();
+  protected String major = "1";
 
+  /** protocol minor number
+   *
+   */
+  protected String minor = "0";
 
   /**
    * Attribute index - store request URL string
@@ -122,18 +133,23 @@ public class Transaction implements Runnable{
 
   /**
    * Below are interfaces related to Request transaction.  
-   * 
+   *
    */
 
-// TBD change to use header object
   /**
-   *  @returns the content length for this request, or -1 if not known. 
+   * @return header object
+   */
+  public Headers headers(){
+    return headersObj;
+  }
+
+  /**
+   *  @return the content length for this request, or -1 if not known. 
    */
   public int contentLength(){
     int res = -1;
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().contentLength();
+    if( headers() != null )
+      res = headers().contentLength();
     return res;
   } 
 
@@ -143,9 +159,8 @@ public class Transaction implements Runnable{
    */
   public String contentType(){
     String res = null;
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res =  c.headers().contentType();
+    if( headers() != null )
+      res =  headers().contentType();
     return res;
   }
 
@@ -155,9 +170,8 @@ public class Transaction implements Runnable{
    */
   public String header(String name){
     String res = null;
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().header( name );
+    if( headers() != null )
+      res = headers().header( name );
     return res;
   }
 
@@ -165,53 +179,83 @@ public class Transaction implements Runnable{
    * @returns all header information as string. Machine.java uses this.
    *
    */
-   public String headerAsString(){
+   public String headersAsString(){
      String res = null;
-     Content c = contentObj();
-     if( c && c.headers() != null )
-       res = c.headers().toString();
+     if( headers() != null )
+       res = headers().toString();
      return res;
    }
 
+ /**
+   * the initial protocol string (e.g. everything before the header)
+   */
+ public String protocolInitializationString;
 
   /**
    * @returns the initial protocol string (e.g. everything before the header)
    */
-  public String protocolInitializationString{
-   //subclass should implement
-   return  null;
- }	
-
+  public String protocolInitializationString(){
+    return protocolInitializationString;
+  }
 
   /**
-   *   @returns the host name of the remote agent, or null if not known. 
+   * @returns the request method. 
+   */
+  public String method() {
+    return null;   
+  }
+
+  /**
+   * set the request method. 
+   */
+  public void setMethod(String method) {
+  }
+
+ /**
+   * set the request url. 
+   */
+  public void setRequestURL(String url) {
+  }
+	
+  /**
+   *   @returns the protocol of the request. 
    *
    */
-  public String remoteHost() {
-    String res = null;
-
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().getValue( "Host" );
-    return res;
+  public String protocol() {
+    return protocol;
   }
   
+  /**
+   *   @returns the host name from the header, or null if not known. 
+   *
+   */
+  public String host() {
+    String res = null;
+
+    if( headers() != null )
+      res = headers().header( "Host" );
+    return res;
+  }
+
+  /**
+   * @return url string
+   */
+  public String url(){
+    return null;
+  }
+
   /**
    *   @returns the full request URI. 
    *
    */    
   public URL requestURL(){
- 
-// should not this return the request url that we are respond to?
-   if(isResponse())
+    if(isResponse()){
+      if( requestTran() != null )
+	return requestTran().requestURL();
+      else return null;
+    }
+    else
       return null;
-
-    URL myUrl = null;
-    Object result = is("Url");
-    if( result )
-      myUrl = (URL) result;
-
-    return myUrl;   
   }
 
   /**
@@ -219,9 +263,8 @@ public class Transaction implements Runnable{
    *
    */
   public void setHeader(String key, String value){
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().setValue(key, value);
+    if( headers() != null )
+      headers().setHeader(key, value);
    }
 
 
@@ -231,13 +274,20 @@ public class Transaction implements Runnable{
 
 
   /**
+   *   @returns the status code for this response. 
+   *
+   */
+  public int statusCode(){
+      return -1;
+  }
+  
+  /**
    *   Sets the content length for this response. 
    *
    */
   public void setContentLength(int len){
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().setContentLength( len );
+    if( headers() != null )
+      headers().setContentLength( len );
   }
   
   /**
@@ -245,18 +295,48 @@ public class Transaction implements Runnable{
    *
    */
   public void setContentType(String type){
-    Content c = contentObj();
-    if( c && c.headers() != null )
-      res = c.headers().setContentType( type ); 
+    if( headers() != null ){
+      try{
+	headers().setContentType( type ); 
+      }catch(Exception e){;}
+    }
   }
 
- 
+    /**
+     * Set this reply status code.
+     * This will also set the reply reason, to the default HTTP/1.1 reason
+     * phrase.
+     * @param status The status code for this reply.
+     */
+
+    public void setStatus(int status) {
+	return;
+    }
+
+    /**
+     * Get the reason phrase for this reply.
+     * @return A String encoded reason phrase.
+     */
+
+    public String reason() {
+	return null;
+    }
+
+    /**
+     * Set the reason phrase of this reply.
+     * @param reason The reason phrase for this reply.
+     */
+
+    public void setReason(String reason) {
+	return;
+    }
+
 
   /**
    * @return requested transaction
    */
   public Transaction requestTran(){
-    if( requestTran )
+    if( requestTran != null )
       return requestTran;
     else
       return null;
@@ -266,14 +346,49 @@ public class Transaction implements Runnable{
    * true if this transaction is a response
    */
   public boolean isResponse(){
-    return  false;
+    return false;
   }
 
   /**
    * true if this transaction is a request
    */
   public boolean isRequest(){
-    return  false;
+    return false;
+  }
+
+  /**
+   * @return HTTP version number
+   */
+  public String version(){
+    return "HTTP/"+major+"."+minor;
+  }
+
+  /**
+   * true if this transaction is a request and has parameters
+   */
+  public boolean hasQueryString(){
+    return false;
+  }
+
+  /**
+   * return parameters associated with a request
+   */
+  public String queryString(){
+    return null;
+  }
+
+  /**
+   * output protocolInitializationString, headers, and content if request.
+   * don't know yet about response
+   */
+  public void printOn(OutputStream out) throws IOException{
+  }
+
+  /**
+   * controls such as buttons -- usually inserted with a response
+   */
+  public Object[] controls(){
+    return null;
   }
 
 
@@ -282,7 +397,7 @@ public class Transaction implements Runnable{
    * 
    */ 
   protected Enumeration queue(){
-    return handlers.queue;
+    return handlers.queue();
   }
  
   /**
@@ -330,7 +445,6 @@ public class Transaction implements Runnable{
    */
 
   public Features features (){
-    // return from Thing's _features
     return features;
   }
 
@@ -338,7 +452,7 @@ public class Transaction implements Runnable{
    * set Features object
    */
   public void setFeatures(Features features){
-    if( features )
+    if( features != null )
       this.features = features;
   }
 
@@ -347,7 +461,7 @@ public class Transaction implements Runnable{
    * compute it and return the value
    */
   public Object is( String name ) {
-    return features.test(name, this);
+    return features.feature( name, this );
   }
 
   /**
@@ -366,10 +480,17 @@ public class Transaction implements Runnable{
   }
 
   /**
+   * assert a given feature with the given value default to Boolean true
+   */
+  public void assert( String name ) {
+    features.assert(name, new Boolean( true ) );
+  }
+
+  /**
    * assert a given feature with the given value
    */
   public void assert( String name, Object value ) {
-    features.assert($feature, $value);
+    features.assert(name, value);
   }
 
   /**
@@ -387,11 +508,11 @@ public class Transaction implements Runnable{
     UnaryFunctor c;
     try{
      c = (UnaryFunctor)Registry.calculatorFor( featureName );
-     return c.execute();
+     return c.execute( this );
     }catch(UnknownNameException e){
       // log here
+      throw e;
     }
-    
   }
 
   /**
@@ -402,46 +523,65 @@ public class Transaction implements Runnable{
     return contentObj;
   }
 
+  /*
+  private String readFirstLine(InputStream in){
+    StringBuffer buf = new StringBuffer();
+   
+    int ch;
+    for(int i= 0; i < 32; i++){
+      try{
+	ch = in.read();
+	buf.append( (char)ch );
+      }catch(Exception e){;}
+    }
+    return new String( buf );
+
+  }
+  */
 
   /**
    * temporary treatment of content objects
    * while transitioning to full objectIvity...
+   * Append previous transaction's content to this trasaction content
    */
-  protected void initializeContent( Content ct ){
-    //content source set in fromMachine method
-    contentObj = ct;
-  }
- 
-
-  /**
-   *   read first line and create headers and content objects
-   */
-  protected void initialize(HeaderFactory hf, ContentFactory cf ){
+  protected void initializeHeader(){
     //content source set in fromMachine method
     InputStream in;
+    String line;
+    String firstLine;
 
     try{
       in = fromMachine().inputStream();
 
       DataInputStream input = new DataInputStream( in );
       firstLine = input.readLine();
-      parseInitializationString( firstLine);
-      
-      
-      headerObj  = hf.createHeader( in );
+    
+      Pia.instance().debug(this, "the firstline-->" + firstLine);
    
-      contentObj = cf.createContent( in );
+      headersObj  = hf.createHeader( in );
+      
+      parseInitializationString( firstLine );
+
     }catch(IOException e){
     }
   }
 
-
-/** 
- * parse the first line
+  /**
+   * temporary treatment of content objects
+   * while transitioning to full objectIvity...
+   * Append previous transaction's content to this trasaction content
    */
-  protected void parseInitializationString()throws IOException{
-    // subclass should implement
+  protected void initializeContent(){
+    //content source set in fromMachine method
   }
+
+
+
+ /** 
+  * parse the first line
+  */
+  protected abstract void parseInitializationString( String firstLine )throws IOException;
+  
   
   /**
    * fromMachine returns machine that initialize the request.
@@ -456,10 +596,15 @@ public class Transaction implements Runnable{
    * 
    */
   public void fromMachine(Machine machine){
-    if( machine ){
+    if( machine != null ){
       fromMachine = machine;
-      contentObj.source( machine.inputStream() );
-      machine.sLength( contentObj.contentLength() );
+      try{
+	Content c = contentObj();
+	if( c != null )
+	  c.source( machine.inputStream() );
+      }catch(IOException e){
+	//fix me what should i do
+      }
     }
   }
 
@@ -468,7 +613,6 @@ public class Transaction implements Runnable{
    * 
    */
   public Machine toMachine(){
-    
     return toMachine;
   }
 
@@ -477,7 +621,7 @@ public class Transaction implements Runnable{
    * 
    */
   public void toMachine(Machine machine){
-    if( machine ){
+    if( machine != null ){
       toMachine = machine;
     }
   }
@@ -497,26 +641,54 @@ public class Transaction implements Runnable{
     return true;
   }
 
-/** 
- * defaultHandle --  what to do if nothing else satisfies us
- */
- public boolean defaultHandle( Resolver resolver ){
+  /**
+   * defaultHandle --  what to do if nothing else satisfies us
+   */
+   public void defaultHandle( Resolver resolver ){
    // subclass should implement
- }
-  
+     Pia.instance().debug(this, "defaultHandle ...");
+   }
 
-
-/** 
- * resolved:
- * called by resolver when we are ready to be satisfied
- */
-
+  /** 
+   * resolved:
+   * called by resolver when we are ready to be satisfied
+   */
   public void resolved() 
   {
     resolved = true;
     
   }
+
+  /**
+   * sendResponse -- Utilities to actually respond to a transaction, get a request, 
+   * or generate (return) an error response transaction.
+   *
+   * These pass the resolver down to the Machine that actually does the 
+   * work, because it might belong to an agent.
+   *
+   */
+  public void sendResponse( Resolver resolver ){
+  }
+
+  /**
+   * handleRequest -- Default handling for a request:
+   * ask the destination machine to get it.
+   * complain if there's no destination to ask.
+   */
+  public void handleRequest( Resolver resolver ){
+  }
   
+  /**
+   * errorResponse -- Return a "not found" error for a request with no destination.
+   *
+   *
+   */
+  protected void errorResponse(String msg){
+  }
+
+  protected boolean matches(Vector criteria){
+    return features().matches( criteria, this );
+  } 
 
   /**
    * Satisfying transactions:
@@ -530,40 +702,50 @@ public class Transaction implements Runnable{
     Object obj;
     boolean satisfied = false;
 
+    Pia.instance().debug(this, "Satisfaction ?");
+    
     Enumeration e = handlers.queue();
     while( e.hasMoreElements() ){
       obj = e.nextElement();
-      if( obj instanceof Thing  ){
-	Thing agentortran = (Thing)obj;
-	if ( agentortran.handle(this, resolver) == true )
+      if( obj instanceof Transaction ){
+	Transaction tran = (Transaction)obj;
+	if ( tran.handle( Pia.instance().resolver() ) == true )
 	  satisfied = true;
-      }
+      }else if( obj instanceof Agent ){
+	Agent agnt = (Agent)obj;
+	if ( agnt.handle(this, Pia.instance().resolver()) == true )
+	  satisfied = true;
+	}
       else{
-	if ( obj instanceof boolean  ){
-	  boolean result = (boolean) obj;
-	  if( result )
+	if ( obj instanceof Boolean  ){
+	  Boolean result = (Boolean) obj;
+	  if( result.booleanValue() )
 	    satisfied = true;
 	}
       }
     }
-
+    
     //If still not satisfied, do the default thing:
     //  send a response or get a request.
+
     if(!satisfied){
-      defaultHandle( resolver ) ;
-      
+      Pia.instance().debug(this, "Got no satisfaction...");
+      defaultHandle( resolver );
     }
 
   }
 
+  /**
+   * controls -- Add controls (buttons,icons,etc.) for agents to this response
+   * actual final form determined by machine
+   * NOTE: not implemented  // maybe move to content?
+   */
+  public void addControl( Object aThing ){
+  }
 
-  // constructor methods should wait until  run method is called to do any
-  // initialization that requires IO
 
-
- 
- 
-
+ // constructor methods should wait until  run method is called to do any
+ // initialization that requires IO
 
 /** run - process the transaction
  * THIS should be called  just after a transaction has been but,
@@ -579,14 +761,14 @@ public class Transaction implements Runnable{
   {
 
     // make sure we have the header information
-    if(headerObj ==  null) initializeHeader();
+    if(headersObj ==  null) initializeHeader();
     
+    Pia.instance().debug(this, "Got a head...");
     // and the content
     if(contentObj ==  null) initializeContent();
 
-    // assert precomputed features
-    assertFeatures();
-  
+    Pia.instance().debug(this, "Got a body...");
+
     // now we are ready to be resolved
     resolver.push(this);
   
@@ -595,18 +777,39 @@ public class Transaction implements Runnable{
     // (up to some memory limit)
     while(!resolved){
       //contentobject returns false when object is complete
-      if(!contentObj.processInput(fromMachine)) wait(); 
+      //if(!contentObj.processInput(fromMachine)) 
+
+      /*
+      if(!contentObj.processInput()) {
+	try{
+	  long delay = (long)(Math.random() * 10000.0);
+	  Thread.currentThread().sleep(delay);
+	}catch(InterruptedException ex){
+	  break;
+	}
+      }
+      */
+
     }
     
     // resolved, so now satisfy self
     satisfy( resolver);
     
+    
     // cleanup?
-  
+    ThreadPool tp = Pia.instance().threadPool();
+    tp.notifyDone( executionThread );
+    
   }
 
-  
+  protected void startThread(){
+    
+    ThreadPool tp = Pia.instance().threadPool();
+    Athread zthread = tp.checkOut();
+    executionThread = zthread;
+    if( zthread != null ) zthread.execute( this );
 
+  }
 
 } 
 

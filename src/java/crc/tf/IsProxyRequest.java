@@ -20,6 +20,8 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Pia;
+import crc.pia.Transaction;
 import java.net.URL;
 
 public final class IsProxyRequest implements UnaryFunctor{
@@ -29,20 +31,23 @@ public final class IsProxyRequest implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       Object zfalse = new Boolean( false );
       Object ztrue  = new Boolean( true );
+      String lhost = null;
 
       if( !trans.isRequest() ) return zfalse;
       URL url = trans.requestURL();
-      if( !url ) return zfalse;
+      if( url == null ) return zfalse;
       
       String host = url.getHost();
-      if( host ) 
-	String lhost = host.toLowerCase();
+      if( host != null ) 
+	lhost = host.toLowerCase();
       else
 	lhost = "";
-      String lport = url.getPort().toString();
+      String lport = Integer.toString( url.getPort() );
       
       if( lhost.startsWith("agency") || lhost == "" )
 	return zfalse;
@@ -80,7 +85,7 @@ public final class IsProxyRequest implements UnaryFunctor{
 
 	if( zhost.startsWith("agency") || zhost == "" )
 	  return zfalse;
-	if( Pia.getInstance().getPort() == zport && Pia.getInstance().getHost().startsWith( zhost ) )
+	if( Pia.instance().getPort() == zport && Pia.instance().getHost().startsWith( zhost ) )
 	  return zfalse;
 
 	if( zhost ) return ztrue;

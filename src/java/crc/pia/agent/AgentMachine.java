@@ -8,11 +8,19 @@
  */
 
 package crc.pia.agent;
-import crc.pia.Machine;
-import crc.pia.Agent;
+import java.io.StringBufferInputStream;
 import crc.ds.TernFunc; 
 
-class AgentMachine extends Machine {
+import crc.pia.Machine;
+import crc.pia.Agent;
+import crc.pia.Resolver;
+import crc.pia.Transaction;
+import crc.pia.ByteStreamContent;
+import crc.pia.Content;
+import crc.pia.HTTPResponse;
+
+
+public class AgentMachine extends Machine {
   /**
    * Agent that creates this machine
    */
@@ -31,7 +39,7 @@ class AgentMachine extends Machine {
    * set agent
    */
   public void setAgent( Agent agent ){
-    if( agent )
+    if( agent != null )
       this.agent = agent;
   }
 
@@ -46,7 +54,7 @@ class AgentMachine extends Machine {
    * set callback functor
    */
   public void setCallback( TernFunc callback ){
-    if( callback ) this.callback = callback;
+    if( callback != null ) this.callback = callback;
   }
 
   /**
@@ -71,13 +79,21 @@ class AgentMachine extends Machine {
    */
   public Transaction getRequest(Transaction request, Resolver resolver) {
     Transaction response = null;
+    StringBufferInputStream sb = null;
 
     Agent agnt = agent;
-    if( agnt )
+    if( agnt != null )
       response = agnt.respond(request, resolver);
+
     return response;
   }
 }
+
+
+
+
+
+
 
 
 

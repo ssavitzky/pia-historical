@@ -29,7 +29,7 @@ public final class IsLclSrc implements UnaryFunctor{
    * @return object boolean
    */
     public Object execute( Object trans ){
-      
+	return null;      
     }
 }
 

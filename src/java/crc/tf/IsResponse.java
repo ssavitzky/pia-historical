@@ -20,6 +20,7 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
 public final class IsResponse implements UnaryFunctor{
 
@@ -28,7 +29,8 @@ public final class IsResponse implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
       return new Boolean( trans.isResponse() );
     }
 }

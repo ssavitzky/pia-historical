@@ -20,6 +20,7 @@
 package crc.tf;
 
 import crc.ds.UnaryFunctor;
+import crc.pia.Transaction;
 
 public final class IsImage implements UnaryFunctor{
 
@@ -28,9 +29,11 @@ public final class IsImage implements UnaryFunctor{
    * @param object A transaction 
    * @return object boolean
    */
-    public Object execute( Object trans ){
+    public Object execute( Object o ){
+      Transaction trans = (Transaction) o;
+
       String zimage = trans.contentType();
-      if( zimage ){
+      if( zimage != null ){
 	String lzimage = zimage.toLowerCase();
 	if( lzimage.startsWith("image") )
 	  return new Boolean( true );

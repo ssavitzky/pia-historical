@@ -6,7 +6,14 @@
 package crc.pia;
 
 import java.io.InputStream;
-
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import crc.pia.Headers;
+import crc.pia.Pia;
+import w3c.www.mime.MimeParserFactory;
+import w3c.www.mime.MimeParser;
+import w3c.www.http.HttpEntityMessage;
+import w3c.www.http.MimeParserMessageFactory; 
 
 /**  HeaderFactory
  * creates an appropriate header object from a HTTP stream
@@ -20,6 +27,11 @@ public class HeaderFactory
   {
   }
 
+  public Headers createHeader(){
+      Headers headers = new Headers();
+      return headers;
+  }
+
   /** create a header object from the given stream
    */
   public Headers createHeader(InputStream input)
@@ -29,29 +41,46 @@ public class HeaderFactory
 
     f = (MimeParserFactory) new MimeParserMessageFactory();
     
-    // Create the parser:
-    InputStream in = new BufferedInputStream( http );
-    
     try{
-      MimeParser p  = new MimeParser(in, f);
-      readFirstLine(p);
+      MimeParser p  = new MimeParser(input, f);
 
+      Pia.instance().debug(this, "Parsing header...\n\n");
       HttpEntityMessage jigsawHeaders = (HttpEntityMessage) p.parse();
 
       Headers headers = new Headers( jigsawHeaders );
+      Pia.instance().debug(this, "Header is done\n");
 
       return headers;
     }catch(Exception ex){
       ex.printStackTrace();
-      System.out.println("MimeParser <factory> <file>");
+      return null;
     }
     
   }
-  
+
+  /**
+  * For testing.
+  * 
+  */ 
+  public static void main(String[] args){
+    if( args.length == 0 )
+      Pia.instance().debug("Need file header filename.");
+
+    String filename = args[0];
+
+    HeaderFactory hf = new HeaderFactory();
+
+    try{
+      InputStream in = (new BufferedInputStream
+			(new FileInputStream (filename)));
+    
+      Headers h = hf.createHeader( in );
+      Pia.instance().debug( h.toString() );
+    }catch(Exception e ){
+      Pia.instance().debug( e.toString() );
+    }
+  }
 }
-
-
-
 
 
 

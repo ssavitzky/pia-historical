@@ -12,7 +12,9 @@ package crc.pia;
 import crc.pia.Pia;
 import java.io.IOException ;
 import java.util.Date ;
+import java.io.*;
 
+import crc.pia.PiaRuntimeException;
 /**
  * The Logger class logs information into three files trace, log, errlog
  * which presumably locate in a pia subdirectory named log
@@ -42,7 +44,7 @@ public class Logger {
      */
 
     protected synchronized void output (RandomAccessFile f, String msg)
-       //	throws IOException
+       throws IOException
     {
 	int len = msg.length() ;
 	if ( len > msgbuf.length ) 
@@ -52,7 +54,7 @@ public class Logger {
     }
 
     protected synchronized void appendLogBuffer(String msg)
-       //	throws IOException
+    throws IOException
     {
 	int msglen = msg.length();
 	if ( bufptr + msglen > buffer.length ) {
@@ -82,7 +84,7 @@ public class Logger {
 		    appendLogBuffer(msg);
 		}
 	    } catch (IOException e) {
-		throw new PiaRunEx (this,"logmsg",e.getMessage()) ;
+		throw new PiaRuntimeException (this,"logmsg",e.getMessage()) ;
 	    }
 	}
     }
@@ -92,7 +94,7 @@ public class Logger {
 	    try {
 		output (errlog, msg) ;
 	    } catch (IOException e) {
-		throw new PiaRunEx (this
+		throw new PiaRuntimeException (this
 						, "errlogmsg"
 						, e.getMessage()) ;
 	    }
@@ -104,7 +106,7 @@ public class Logger {
 	    try {
 		output (trace, msg) ;
 	    } catch (IOException e) {
-		throw new PiaRunEx (this
+		throw new PiaRuntimeException (this
 						, "tracemsg"
 						, e.getMessage()) ;
 	    }
@@ -115,7 +117,7 @@ public class Logger {
 	logmsg(msg);
     }
 
-    public void errlog (Client client, String msg) {
+    public void errlog (Object client, String msg) {
 	errlogmsg (client.toString() + ": " + msg + "\n") ;
     }
 
@@ -123,7 +125,7 @@ public class Logger {
 	errlogmsg (msg + "\n") ;
     }
 
-    public void trace (Client client, String msg) {
+    public void trace (Object client, String msg) {
 	tracemsg (client.toString() + ": " + msg + "\n") ;
     }
 
@@ -136,10 +138,10 @@ public class Logger {
      */
 
     protected String getFileName (String def) {
-	    File root_dir = agency.getRootDirectory();
+	    File root_dir = agency.rootDir();
 	    if ( root_dir == null ) {
 		String msg = "unable to get the agency root directory\n";
-		throw new PiaRunEx (this.getClass().getName()
+		throw new PiaRuntimeException (this.getClass().getName()
 						, "getFileName"
 						, msg) ;
 	    }
@@ -160,7 +162,7 @@ public class Logger {
 	    if ( old != null )
 		old.close () ;
 	} catch (IOException e) {
-	    throw new PiaRunEx (this.getClass().getName()
+	    throw new PiaRuntimeException (this.getClass().getName()
 					    , "openLogFile"
 					    , "unable to open "+logname);
 	}
@@ -179,7 +181,7 @@ public class Logger {
 	    if ( old != null )
 		old.close() ;
 	} catch (IOException e) {
-	    throw new PiaRunEx (this.getClass().getName()
+	    throw new PiaRuntimeException (this.getClass().getName()
 					    , "openErrorLogFile"
 					    , "unable to open "+errlogname);
 	}
@@ -198,7 +200,7 @@ public class Logger {
 	    if ( old != null )
 		old.close() ;
 	} catch (IOException e) {
-	    throw new PiaRunEx (this.getClass().getName()
+	    throw new PiaRuntimeException (this.getClass().getName()
 					    , "openTraceFile"
 					    , "unable to open "+tracename);
 	}

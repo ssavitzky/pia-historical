@@ -5,11 +5,27 @@
 package crc.pia;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import java.util.Properties;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import crc.util.regexp.RegExp;
+
 import crc.pia.PiaInitException;
 import crc.pia.Machine;
 import crc.pia.agent.Agency;
 import crc.pia.Resolver;
 import crc.pia.Logger;
+import crc.pia.Transaction;
 
 
  /**
@@ -18,6 +34,7 @@ import crc.pia.Logger;
   */
 
 public class Pia{
+  public boolean DEBUG = false; 
   /**
    * where to proxy
    */
@@ -74,37 +91,51 @@ public class Pia{
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
-  private Properties properties   = null;
-  private Pia     instance    = null;
+  private Piaproperties properties   = null;
+  private static Pia     instance    = null;
   private String  docurl      = null;
   private Logger  logger      = null;
-  private Logger  loggerClassName = null;
+  private String  loggerClassName = "crc.pia.Logger";
   
   
   private String  rootStr    = null;
-  private String  rootDir    = null;
+  private File    rootDir    = null;
   
   private String  piaUsrRootStr = null;
-  private String  piaUsrRootDir = null;
+  private File    piaUsrRootDir = null;
   
   private String  url        = null;
   private String  host       = null;
   private int     port       = 8001;
-  private boolean verbose    = false;
+  private boolean verbose    = true;
   private boolean debug      = false;
   private boolean debugToFile= false;
   
 
-  private HashTable proxies           = new HashTable();
+  private Hashtable proxies           = new Hashtable();
   private String[]  noProxies        = null;
 
   private String piaAgentsStr    = null;
-  private String piaAgentsDir    = null;
+  private File   piaAgentsDir    = null;
 
   private String piaUsrAgentsStr = null;
-  private String piaUsrAgentsDataStr = null;
-  private String piaUsrAgentsDataDir = null;
-  private String piaUsrAgentsDir = null;
+  private File  piaUsrAgentsDir = null;
+
+  // file separator
+  private String filesep  = System.getProperty("file.separator");
+  private String home     = System.getProperty("user.home");
+  private String userName = System.getProperty("user.name");
+
+  /**
+   * Attribute index - accepter
+   */
+  protected Accepter accepter;
+
+  /**
+   * Attribute index - thread pool
+   */
+  protected ThreadPool threadPool;
+
   /**
    *  Attribute index - this machine
    */
@@ -119,6 +150,20 @@ public class Pia{
    *  Attribute index - Agency
    */
   protected Agency agency;
+
+  /**
+   *
+   */
+  public Piaproperties properties(){
+    return properties;
+  }
+
+  /**
+   * @return thread pool
+   */
+  public ThreadPool threadPool(){
+    return threadPool;
+  }
 
   /**
    * @return this machine
@@ -188,14 +233,15 @@ public class Pia{
    * @return this port name
    */
   public String port(){
-    return port.toString();
+    Integer i = new Integer( port );
+    return i.toString();
   } 
 
   /**
    * @toggle debug flag 
    */
   public void debug(boolean onoff){
-    return debug = onoff;
+    debug = onoff;
   } 
 
   /**
@@ -203,7 +249,7 @@ public class Pia{
    * true if you want debug message to trace file.
    */
   public void debugToFile(boolean onoff){
-    return debugToFile = onoff;
+    debugToFile = onoff;
   } 
 
  /**
@@ -227,22 +273,6 @@ public class Pia{
     return piaUsrAgentsStr;
   } 
 
-  /**
-   * @return the directory where user agents live
-   */
-  public String piaUsrAgentsData(){
-    return piaUsrAgentsDataStr;
-  }
-
- /**
-  * @return the directory where user agents live
-  */
-  public String piaUsrAgentsDataDir(){
-    return piaUsrAgentsDataDir;
-  }
-
-
-  /**
 
   /**
    * @return the directory where user agents live
@@ -254,7 +284,7 @@ public class Pia{
   /**
    * @return the proxy string
    */
-  public HashTable proxies(){
+  public Hashtable proxies(){
     return proxies;
   } 
 
@@ -269,7 +299,6 @@ public class Pia{
   public Pia(){
     instance = this;
   }
-
 
   /**
    * Fatal system error -- print message and throw runtime exception.
@@ -387,14 +416,14 @@ public class Pia{
 	o.println("-port <8001>          : listen on the given port number.");
 	o.println("-root <pia dir : /pia>: pia directory.");
 	o.println("-u    <~/Agent>       : user directory.") ;
-	o.println("-p    </pia/Bin/agency.props>       : property file to read.");
+	o.println("-p    </pia/config/pia.props>       : property file to read.");
 	o.println("-d                    : turns debugging on.") ;
-	o.println("-v                    : print pia properties.");
+	o.println("-v                    : print pia Piaproperties.");
 	o.println("?                     : print this help.");
 	System.exit (1) ;
   }
 
-  public static void verbose () {
+  public void verbose () {
 	PrintStream o = System.out ;
 
 	o.println(rootStr         + " (parent of src, lib, Agents)\n");
@@ -422,7 +451,7 @@ public class Pia{
 		throw new PiaInitException(err);
 	    }
 	} else {
-	    warning ("no logger specified, not logging.");
+	    warningMsg ("no logger specified, not logging.");
 	}
     }
 
@@ -440,12 +469,13 @@ public class Pia{
 	String keyEntry = (String) e.nextElement();
 	if( keyEntry.indexOf(PIA_PROXIES) != -1 ){
 	  String key = keyEntry.substring( keyEntry.indexOf('_') + 1 );
-	  proxies.put( key, properties.getProperty( keyEntry ) );
+	  String v   = properties.getProperty( keyEntry );
+	  proxies.put( key, v );
 	}
-      }catch( NoSuchElementException e ){
+      }catch( NoSuchElementException ex ){
       }
     }
-    String noproxies = properties.getProperty(this, PIA_NO_PROXIES, null);
+    String noproxies = properties.getProperty(PIA_NO_PROXIES, null);
     if( noproxies != null ){
       StringTokenizer parser = new StringTokenizer(noproxies, ",");
       try{
@@ -456,7 +486,7 @@ public class Pia{
 	  String v = parser.nextToken().trim();
 	  noProxies[i++]=v;
 	}
-      }catch(NoSuchElementException e) {
+      }catch(NoSuchElementException ex) {
       }
     }
       
@@ -464,23 +494,23 @@ public class Pia{
 
   }
 
-
   private void initializeProperties() throws PiaInitException{
     String thisHost = null;
+    String path = null;
+
     try {
       thisHost = InetAddress.getLocalHost().getHostName();
     }catch (UnknownHostException e) {
       thisHost = null;
     }
 
-
-    verbose         = properties.getProperty(PIA_VERBOSE, verbose);
-    debug           = properties.getProperty(PIA_DEBUG, debug);
+    verbose         = properties.getBoolean(PIA_VERBOSE, true);
+    debug           = properties.getBoolean(PIA_DEBUG, false);
     rootStr         = properties.getProperty(PIA_ROOT, null);
     piaUsrRootStr   = properties.getProperty(PIA_USR_ROOT, null);
     host            = properties.getProperty(PIA_HOST, thisHost);
-    port            = properties.getProperty(PIA_PORT, port);
-    loggerClassName = properties.getProperty(PIA_LOGGER, null);
+    port            = properties.getInteger(PIA_PORT, port);
+    loggerClassName = properties.getProperty(PIA_LOGGER, loggerClassName);
 
     // i. e. agency.crc.pia.proxy_http=foobar 
     // get keys from properties
@@ -491,11 +521,6 @@ public class Pia{
 
     initializeProxies();
 
-    // file separator
-    String filesep = System.getProperty("file.separator");
-    String home    = System.getProperty("user.home");
-    String userName    = System.getProperty("user.name");
-
     if( host == null ){
       throw new PiaInitException(this.getClass().getName()
 						 +"[initializeProperties]: "
@@ -503,9 +528,11 @@ public class Pia{
     }
     
     if( rootStr == null ){
-	    File piafile = new File(".","Pia.java");
-	    if( piafile.exists() )
-	      rootStr = "..";
+	    File piafile = new File("Pia.java");
+	    if( piafile.exists() ){
+	      path = piafile.getAbsolutePath();
+	      rootStr = path.substring(0, path.indexOf("Pia.java")-1);
+	    }
 	    else{
 	      File piadir = new File(home, "pia");
 
@@ -520,8 +547,11 @@ public class Pia{
     }
 
     if ( rootStr.startsWith("~") ){
-        RegExp re = new RegExp();
-	rootStr = re.simpleSubstitute("~", home);
+      try{
+        RegExp re = new RegExp("~");
+	rootStr = re.substitute(rootStr,home,true);
+      }catch(Exception e){
+      }
     }
         // Now the directories that depend on it:
         rootDir = new File( rootStr );
@@ -532,28 +562,34 @@ public class Pia{
 	
 
 	if( piaUsrRootStr == null ){ 
-	  if( home && home != "" )
-	    // i.e. we have ~/bob
-	    piaUsrRootStr = home;
-	  else{
-	    // i.e. we have /pia/Users and if bob is valid user's name
-	    // we have /pia/Users/bob
-	    File usersDir = new File(rootStr,"Users");
+	  if( home!=null && home != "" ){
+	    // i.e. we have ~/bob and looking for ~/bob/pia
+	    File dir = new File(home, "pia");
+	    if( dir.exists() ){
+	      piaUsrRootStr = dir.getAbsolutePath(); 
+	    }
+	  }
+	  
+	  if( piaUsrRootStr == null ){
+	    // i.e. we have /pia/users and if bob is valid user's name
+	    // we have /pia/users/bob
+	    File usersDir = new File(rootStr,"users");
 	    if( usersDir.exists() ){
-	      if( userName && userName != "" )
+	      if( userName!=null && userName != "" )
 		piaUsrRootStr = usersDir.getAbsolutePath() + filesep + userName; 
 	    }
 	    else throw new PiaInitException(this.getClass().getName()
 					    +"[initializeProperties]: "
 					    +"[user root directory] undefined.");
-
-	    
 	  }
 	}
 
 	if ( piaUsrRootStr.startsWith("~") ){
-	  RegExp re = new RegExp();
-	  piaUsrRootStr = re.simpleSubstitute("~", home);
+	  try{
+	    RegExp re = new RegExp("~");
+	    piaUsrRootStr = re.substitute(piaUsrRootStr, home, true);
+	  }catch(Exception ex){
+	  }
 	}
 
 	piaUsrRootDir = new File( piaUsrRootStr );
@@ -561,26 +597,30 @@ public class Pia{
 	piaUsrAgentsStr = piaUsrRootStr + filesep + "Agents";
 	piaUsrAgentsDir = new File( piaUsrAgentsStr );
 
-	piaUsrAgentsDataStr = piaUsrAgentsStr + filesep + "Data";
-	piaUsrAgentsDataDir = new File( piaUsrAgentsDataStr );
-		
-
 	url = url();
 	
   }
 
   private void createPiaAgency(){
+    try{
+      accepter     = new Accepter( port );
+    }catch(IOException e){
+      errSys( e, "Can not create Accepter" );
+    }
     thisMachine  = new Machine( host, port, null );
+    threadPool   = new ThreadPool();
+
     resolver     = new Resolver();
+    Transaction.resolver = resolver;
+    
     agency       = new Agency("agency", null);
     resolver.registerAgent( agency );
-    accepter     = new Accepter( port );
 
-    if( cmdverbose )
+     if( verbose )
       verbose();
   }
 
-  public void initialize(Properties cmdProps) throws PiaInitException{
+  public void initialize(Piaproperties cmdProps) throws PiaInitException{
     this.properties = cmdProps;
 
     initializeProperties();
@@ -590,18 +630,15 @@ public class Pia{
   }
 
   protected void cleanup(boolean restart){
-    try {
-      resolver.shutdown();
-      accepter.shutdown();
-      // Finally close the log
-      if ( logger != null )
-	logger.shutdown() ;
-      logger = null;
-    } catch(IOException ex){
-       errlog ("[cleanup]: IOException while closing server socket.");
-    }
+    resolver.shutdown();
+    accepter.shutdown();
+    // Finally close the log
+    if ( logger != null )
+      logger.shutdown() ;
+    logger = null;
 
-    Properties initProps = properties ;
+
+    Piaproperties initProps = properties ;
     properties = null;
 
     if ( restart ){
@@ -625,13 +662,64 @@ public class Pia{
   }
 
   public static Pia instance(){
+    Piaproperties piaprops = null;
+
     if( instance == null ){
       instance = new Pia();
-      // what should i do about this
-      // instance.initialize(piaprops);
-      // createPiaAgency();
+      try{
+	/*
+	if( DEBUG ){
+	  System.out.println("Please note that the DEBUG flag is on. and Pia is loaded from the following directory-->/home/rithy/pia.");
+
+	  piaprops = instance.loadProperties("/home/rithy/pia/config/pia.props");
+	}
+	else
+	*/
+	  piaprops = instance.loadProperties(null);
+	instance.initialize(piaprops);
+	instance.createPiaAgency();
+      }catch(Exception e){
+	  System.out.println( e.toString() );
+	//get properties from defaults
+	//instance.initialize(piaprops);
+	//createPiaAgency();
+      }
     }
+
+
     return instance;
+  }
+
+  private static Piaproperties loadProperties(String cmdroot)throws FileNotFoundException, IOException{
+    String cmdprop      = null;
+    Piaproperties piaprops = null;
+    File guess = null;
+
+    String filesep  = System.getProperty("file.separator");
+
+    if (cmdroot == null){
+      cmdroot = filesep+"pia";
+      // Try to guess it, cause it is really required:
+      guess = new File (new File(cmdroot, "config"),"pia.props");
+    }else guess = new File( cmdroot );
+    
+    
+    cmdprop = guess.getAbsolutePath();
+    if ( cmdprop != null ) {
+      System.out.println ("loading properties from: " + cmdprop) ;
+      try {
+	piaprops = new Piaproperties(System.getProperties());
+	File propfile = new File(cmdprop) ;
+	piaprops.load (new FileInputStream(propfile)) ;
+	piaprops.put (PIA_PROP_PATH, propfile.getAbsolutePath()) ;
+      } catch (FileNotFoundException ex) {
+	throw ex;
+      } catch (IOException exp){
+	throw exp;
+      }
+      System.setProperties (piaprops) ;
+    }
+    return piaprops;
   }
 
   public static void main(String[] args){
@@ -670,38 +758,32 @@ public class Pia{
 	    }
 	}
 	
-	Properties piaprops = new Properties(System.getProperties());
+	Piaproperties piaprops = null;
 
 	// guessing /pia/config is where it is at
 
-	if (cmdprop == null) {
-	    
-	    if (cmdroot == null)
-		cmdroot = filesep+"Pia";
-	    // Try to guess it, cause it is really required:
-	    File guess = new File (new File(cmdroot, "config"),"pia.props");
-	    cmdprop = guess.getAbsolutePath() ;
-	}
-	if ( cmdprop != null ) {
-	    System.out.println ("loading properties from: " + cmdprop) ;
-	    try {
-		File propfile = new File(cmdprop) ;
-		piaprops.load (new FileInputStream(propfile)) ;
-		piaprops.put (PIA_PROP_PATH, propfile.getAbsolutePath()) ;
-	    } catch (FileNotFoundException ex) {
-		System.out.println ("Unable to load properties: "+cmdprop);
-		System.out.println ("\t"+ex.getMessage()) ;
-		System.exit (1) ;
-	    } catch (IOException ex) {
-		System.out.println ("Unable to load properties: "+cmdprop);
-		System.out.println ("\t"+ex.getMessage()) ;
-		System.exit (1) ;
-	    }
-	    System.setProperties (piaprops) ;
-	}
+	  try{
+	    String where;
+	    if( cmdprop == null )
+	      where = cmdroot;
+	    else
+	      where = cmdprop;
+	    piaprops = loadProperties( where );
+	  }catch(FileNotFoundException ex) {
+	    System.out.println ("Unable to load properties: "+cmdprop);
+	    System.out.println ("\t"+ex.getMessage()) ;
+	    System.out.println ("Running with default settings.");
+	    piaprops = new Piaproperties(System.getProperties());
+	  }catch(IOException ex) {
+	    System.out.println ("Unable to load properties: "+cmdprop);
+	    System.out.println ("\t"+ex.getMessage()) ;
+	    System.exit (1) ;
+	  }
+
+	
 
 	if( cmdroot != null )
-	  piaprops.put(PIA_ROOT, rootStr );
+	  piaprops.put(PIA_ROOT, cmdroot );
 
 	if( cmdport != null )
 	  piaprops.put(PIA_PORT, cmdport.toString());
@@ -715,13 +797,15 @@ public class Pia{
 	try
 	  {
 	    Pia piaAgency = new Pia();
+	    piaAgency.debug = true;
+	    piaAgency.debugToFile = false;
 	    piaAgency.initialize(piaprops);
-	    createPiaAgency();
-	  }catch(Exception e)
-	    {
-	       System.out.println ("===> Initialization failed, aborting !") ;
-	       e.printStackTrace () ;
-	    }
+	    piaAgency.createPiaAgency();
+	  }catch(Exception e){
+	    System.out.println ("===> Initialization failed, aborting !") ;
+	    e.printStackTrace () ;
+	  }
+	    
   }
 
 }

@@ -19,6 +19,11 @@ FILES = \
 	Pia.java \
 	PiaInitException.java \
 	PiaRuntimeException.java \
-	FormContent.java 
+	FormContent.java \
+	HeaderFactory.java \
+	Headers.java \
+	ThreadPool.java \
+	HTTPRequest.java \
+	HTTPResponse.java
 
 include $(TOPDIR)/makefiles/file.make

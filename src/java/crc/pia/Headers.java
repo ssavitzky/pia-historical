@@ -4,22 +4,30 @@
 
 package crc.pia;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import w3c.www.http.HttpEntityMessage;
 import w3c.www.http.HttpMessage;
+import w3c.www.mime.MimeType;
+
+import w3c.www.mime.MimeTypeFormatException;
+
+import crc.pia.BadMimeTypeException;
 
 class Headers {
   /**
    * HttpMessage
    */
-  private HttpMessage zheaders;
+  private HttpEntityMessage zheaders;
 
   /**
    * @return content length
    */
   public int contentLength(){
     int len = -1;
-    if( zheaders )
+    if( zheaders!= null )
       len = zheaders.getContentLength();
     return len;
   }
@@ -28,17 +36,19 @@ class Headers {
    * set content length
    */
   public void setContentLength(int length){
-    if( zheaders )
-      len = zheaders.setContentLength( length );
+    if( zheaders!= null )
+      zheaders.setContentLength( length );
   }
 
   /**
    * @return content type
    */
   public String contentType(){
-    if( zheaders ){
+    if( zheaders!= null ){
       MimeType mt = zheaders.getContentType();
-      return mt.toString();
+      if( mt != null )
+	return mt.toString();
+      else return null;
     }
     else
       return null;
@@ -47,20 +57,22 @@ class Headers {
   /**
    * set content type
    */
-  public void setContentType(String type){
-    if( zheaders ){
-      MimeType mt = new MimeType( type );
-      return zheaders.setContentType( mt );
+  public void setContentType(String type) throws BadMimeTypeException{
+    if( zheaders!= null ){
+      try{
+	MimeType mt = new MimeType( type );
+	zheaders.setContentType( mt );
+      }catch( MimeTypeFormatException e ){
+	throw new BadMimeTypeException("Bad mime type.");
+      }
     }
-    else
-      return null;
   }
 
   /**
    * @return a header field value as a String.
    */
   protected String header(String name){
-    if( zheaders )
+    if( zheaders!= null )
       return zheaders.getValue( name );
     else
       return null;
@@ -71,7 +83,7 @@ class Headers {
    */
   public void setHeader(String name,
                        String strval){
-    if( zheaders )
+    if( zheaders!= null )
       zheaders.setValue( name, strval );
   }
 
@@ -81,11 +93,14 @@ class Headers {
   * throws exception if not allowed to set.
   */
   public void setHeaders(Hashtable table){
-    if( zheaders ){
+    if( zheaders!= null ){
       Enumeration keys = table.keys();
       while( keys.hasMoreElements() ){
-	zheaders.setValue( name, strval );
+	String key = (String)keys.nextElement();
+	String v   = (String)table.get( key );
+	zheaders.setValue( key, v );
       }
+    }
   }
 
   /**
@@ -94,17 +109,41 @@ class Headers {
    */
   public String toString(){
     ByteArrayOutputStream out;
-    if( zheaders ){
+    if( zheaders!=null ){
       out = new ByteArrayOutputStream();
-      zheaders.emit( out, HttpMessage.EMIT_HEADERS);
-      return out.toString();
+      try{
+	zheaders.emit( out, HttpMessage.EMIT_HEADERS);
+	return out.toString();
+      }catch(IOException e){return null;}
     }
     return null;
   }
 
-  Headers(HttpMessage h){
+  protected Headers(HttpEntityMessage h){
     zheaders = h;
   }
+
+  Headers(){
+    zheaders = new HttpEntityMessage();
+  }
+
+ /**
+  * For testing.
+  * 
+  */ 
+  public static void main(String[] args){
+    try{
+      Headers h = new Headers();
+      h.setHeader("Host", "napa.crc.ricoh.com:9999");
+      h.setContentType("text/html");
+      h.setContentLength( 555 );
+      h.setHeader("Content-Type", "image/gif");
+      System.out.println( h.toString() );
+    }catch(Exception e){
+      System.out.println( e.toString() );
+    }
+  }
+
 }
 
 
