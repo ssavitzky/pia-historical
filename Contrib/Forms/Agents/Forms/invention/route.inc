@@ -5,7 +5,12 @@
             <routecond> </routecond>
             </routestep><routestep>
             <routeid>2</routeid>
-            <routeuser>FrontOffice</routeuser>
+            <routeuser>sharon</routeuser>
+            <routewhen>always</routewhen>
+            <routecond> </routecond>
+            </routestep><routestep>
+            <routeid>3</routeid>
+            <routeuser>kevin</routeuser>
             <routewhen>always</routewhen>
             <routecond> </routecond>
             </routestep></route>

@@ -1,5 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
+<meta HTTP-EQUIV="Refresh" CONTENT="1000; URL=&url;"></meta>
 <title>Forms home page</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
 <set entity name=title>Form home page</set>

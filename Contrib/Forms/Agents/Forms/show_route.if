@@ -28,7 +28,7 @@ href=show_signatures.if?formurl=&FORM.formurl;>&FORM.formurl;</a></h4>
 
 <h4> Send this form to somebody else:</h4>
 <form action=route_form.if method=post>
- <input name=formurl type=hidden value=&formurl;>
+ <input name=formurl type=hidden value=&FORM.formurl;>
  Recipient: <select name="touser"> 
     <repeat list=&AGENT.users.keys;> <option>&li;</option></repeat>
     </select>

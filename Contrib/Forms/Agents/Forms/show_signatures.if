@@ -9,7 +9,9 @@
 <tagset-load name=Form-agent-actors>
 
 <if> <get form name=formurl> <then>
+<if><read file=&FORM.formurl;.sig info> <then>
  <set name=sigs><read file=&FORM.formurl;.sig process></set>
+</then> </if>
 <set name=file><subst match="^\.\./" result=""><get form
 name=formurl></subst></set>
 

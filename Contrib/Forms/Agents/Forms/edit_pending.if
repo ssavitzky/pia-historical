@@ -14,6 +14,7 @@
  <if> <test match=&user; exact><get trans name=AuthenticatedUser></test> <then>
  <set name=allow>true</set></then></if>
 <if-in-group group=&user;><set name=allow>true</set></if-in-group>
+<if-in-group group=admin><set name=allow>true</set></if-in-group>
  <set name=myfile>users/&user;.html</set>
  <if><get name=allow> <then>
  <set name=pending><read file="&myfile;"  process></set>
@@ -46,12 +47,15 @@
  <set name=pending><get name=newpending></set>
   </process>
 <h2> Pending forms for <get name=user></h2>
-  <ul foreach list="&pending;" entity=myli>
+    <set local name=mysignas>&signas=<get name=user></set>
+  <dl foreach list="&pending;" entity=myli>
      <set local name=myurl><get name=myli attr=href></set>
-     <li> <a href=sign_form.if?formurl=&myurl;><get index=myli.Text></a>
-     <input type="checkbox" name="&myurl;">
-     </li>
-  </ul>
+     <dt>     <input type="checkbox" name="&myurl;"> <a href=sign_form.if?formurl=&myurl;&mysignas;><get index=myli.Text></a></dt>
+      <if><read info file=&myurl;.sig><then>
+        <set name=sigs><read file=&myurl;.sig process></set>
+     <dd>  <show-sig-table signatures=&sigs;> </dd>
+       </then></if>     
+  </dl>
   <input type=hidden name=uid value=&user;>
   <input type="SUBMIT" value="Remove" name=buttonaction> selected forms (and
  keep all unselected forms on your pending list)<br>

@@ -66,14 +66,16 @@ name=toremove></test> <then></then> <else><signedfor><get name=toremove></signed
 	</then></if>
 	 <if> <get name=document>  <then>
 	 <set name=hash><hash><get name=document></hash></set>
-         <set name=sigfile><read file=&myformurl;.sig process></set>
-    
+	  <if> <read file=&myformurl;.sig info> <then>	
+          <set name=sigfile><read file=&myformurl;.sig process></set>
+          </then></if>
    Please sign the following document:
 	   <hr>
 	<get name=document>
 	<hr>
+        <if><get name=sigfile><then>
 	<show-sig-table signatures=&sigfile;>
-
+        </then></if>
 	<form action="&url;" method="post">
 	
 	<input name="formurl" type=hidden value=&myformurl;>
