@@ -17,6 +17,20 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Bug:</b> literal element not properly terminated. <br>
+       (1998-10-2) <br>
+
+  <li> <b>Bug:</b> addMarkup has to insert real markup now. <br>
+       ...because Text now converts markup characters to entities.
+       (1998-10-2) <br>
+
+  <li> <b>Impr:</b> Use match to split on regexp. <br>
+       &lt;text split match=<em>re</em>&gt; should convert content to a single
+       string, then split on the given regexp.  This solves the problem of
+       how to make <code>sep</code> consistent between <code>split</code> and
+       <code>join</code>.
+       (1998-09-15) <br>
+
   <li> <b>Impr:</b> XML / interacts with unquoted attribute values. <br>
        Solutions include requiring a space or requiring non-ID values to be
        quoted.  The latter is more correct.  Quoting strictness should be a
@@ -49,8 +63,8 @@ See also:
        Literals, CDATA sections, parent, content models, declaration and PI
        parsing, optionally splitting text into tokens, optional case-munging.
        (1998-08-13) <br>
-       -- <code>retainTree</code> implemented (08-27) but untested.
-          parent stuff done (no error checking) 09-11.
+       -- <code>retainTree</code> implemented 08-27 but untested.
+          parent stuff (no error checking) 09-11.  literals 09-18/10-1.
 
   <li> <b>Hole:</b> Attribute definitions. <br>
        Attribute types, implied/fixed/etc., default values, handlers.
@@ -75,13 +89,6 @@ See also:
        change dots to slashes (probably in <code>crc.util.NameUtils</code>).
        (1998-08-12)<br>
 
-  <li> <b>Bug:</b> Loading tagset from file should use resource. <br>
-       <code>ClassLoader.getSystemResource</code> should do the right thing.
-       (1998-08-12)<br>
-
-  <li> <b>Hole:</b> <code>isChildOf</code> unused in parser. <br>
-       (1998-08-12)<br>
-
   <li> <b>Bug:</b> Need constructor for stripped tagsets. <br>
        Best done with a predefined tagset (STRIP_ts). 
        (1998-08-07)<br>
@@ -104,22 +111,12 @@ See also:
        See <a href="http://www.python.org/doc/tut/functional.html">Python</a>
        (1998-08-05)<br>
 
-  <li> <b>Hole:</b> Namespace changes needed. <br>
-       Tagset wants to extend Namespace (sigh).  Index -&gt; namespace.
-       Changes in &lt;get&gt;, &lt;set&gt;, etc.
-       (1998-08-05)<br>
-
   <li> <b>Hole:</b> Major changes needed for new DOM. <br>
        Do this after Level 1 stabilizes.  May involve moving interfaces from
        <code>crc.dps.active</code> to <code>crc.dom</code>, and the original
        <code>Node</code> interface (etc.) to the official location in
        <code>org.w3c.dom</code>.
        (1998-08-05)<br>
-
-  <li> <b>Check:</b> entity-reference termination in InterForms <br>
-       The old parser accepts entity references without a closing semicolon.
-       The new one doesn't.
-       (1998-07-23)<br>       
 
   <li> <b>Note:</b> The official package name is <code>org.w3c.dom</code> <br>
        Not clear at this point exactly what use to make of this.
@@ -183,6 +180,7 @@ See also:
   <li> <b>Hole:</b> <code>ToParseTree</code> should take a tagset <br>
        Tagset is needed to attach actions to constructed nodes.
        (1998-06-22) <br>
+       -- probably just needs working shallow copy.
 
   <li> <b>Impr:</b> Tagset should extend EntityTable, or reference one. <br>
        This will make it easier to define entities and tags in the same DTD.
