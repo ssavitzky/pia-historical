@@ -97,21 +97,27 @@ public class Get extends crc.interform.Handler {
 
       //result may be a token or tokens
       //if possible make a single token
-      result = result.simplify();
-      if(it.hasAttr("size")){
-	Tokens  content = result.content();
-	int size = (content == null)? 0: content.nItems();
-	result = crc.sgml.Util.toSGML(String.valueOf(size));
-      } else {
-	if(result  instanceof Tokens){
-	  // repeat for all items
-	  Enumeration e = ((Tokens) result).elements();
-	  result = new Tokens();
-	  result.append(getQueryResults((SGML) e.nextElement(), it));
+
+
+      if( result != null ){
+	result = result.simplify();
+	if(it.hasAttr("size")){
+	  Tokens  content = result.content();
+	  int size = (content == null)? 0: content.nItems();
+	  result = crc.sgml.Util.toSGML(String.valueOf(size));
 	} else {
-	  result =  getQueryResults(result, it);
+	  if(result  instanceof Tokens){
+	    // repeat for all items
+	    Enumeration e = ((Tokens) result).elements();
+	    result = new Tokens();
+	    result.append(getQueryResults((SGML) e.nextElement(), it));
+	  } else {
+	    result =  getQueryResults(result, it);
+	  }
 	}
       }
+
+
       ii.replaceIt(result);
     }
   }
