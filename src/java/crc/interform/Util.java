@@ -131,15 +131,81 @@ public class Util extends crc.sgml.Util {
    *	conventions.  Things that look like tags are boldfaced; things
    *	that look like attributes are italicized, and so on.  */
   public static final SGML addMarkup(String s) {
+
+    // === at some point addMarkup needs to be parametrized ===
+
     if (s == null || s.length() < 1) return null;
     String n = "";
+    boolean inUC = false;	// inside string of uppercase chars.
+    boolean inIT = false;	// inside italics  (_..._)
+    boolean inBF = false;	// inside boldface (*...*)
+    boolean inAN = false;	// inside attr. name
+    boolean inTAG = false;	// inside tag
+    boolean inAV = false;	// inside attr. value
+    char AVend = 0;		// quote for attr. value
     for (int i = 0; i < s.length(); ++i) {
-      if (s.charAt(i) == '&') n += "&amp;";
-      else if (s.charAt(i) == '>') n += "&gt;";
-      else if (s.charAt(i) == '<') n += "&lt;";
+      char c = s.charAt(i);
+      char nc = (i+1 >=  s.length())? 0 : s.charAt(i+1);
+      if (c == '&') n += "&amp;";
+      else if (c == '>') n += "&gt;";
+      else if (c == '<') {
+	n += "&lt;";
+	if (isIDchar(nc) || nc == '/') {
+	  inTAG = true;
+	  n += "<b>";
+	} 
+      } else if (inTAG && (isIDchar(c) || c == '/')) {
+	n += c;
+	if (! isIDchar(nc)) {
+	  inTAG = false;
+	  n += "</b>";
+	}
+      }
+      else if (Character.isUpperCase(c) && ! inUC &&
+	       Character.isUpperCase(nc)) {
+	inUC = true;
+	n += "<b>";
+	n += Character.toLowerCase(c);
+      } else if (Character.isUpperCase(c) && inUC) {
+	n += Character.toLowerCase(c);
+	if (! Character.isUpperCase(nc)) {
+	  n += "</b>";
+	  inUC = false;
+	}
+      }
+      else if (c == '=' && isIDchar(nc)) {
+	inAV = true;
+	AVend = 0;
+	n += c;
+	n += "<i>";
+      }
+      else if (c == '=' && (nc == '\'' || nc == '"')) {
+	inAV = true;
+	AVend = nc;
+	n += c;
+	n += "<i>";
+	n += nc;
+	i ++;
+      }
+      else if (inAV) {
+	n += c;
+	if (AVend != 0 && nc == AVend) {
+	  inAV = false;
+	  n += nc;
+	  n += "</i>";
+	  i ++;
+	} else if (AVend == 0 && ! isIDchar(nc)) {
+	  inAV = false;
+	  n += "</i>";
+	}
+      }
       else n += s.charAt(i);
     }
     return new Text(n);    
+  }
+
+  public static boolean isIDchar(char c) {
+    return (Character.isLetterOrDigit(c) || c == '-' || c == '.');
   }
 
   /************************************************************************
