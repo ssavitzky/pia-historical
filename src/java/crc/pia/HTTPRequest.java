@@ -338,9 +338,37 @@ public class  HTTPRequest extends Transaction {
 
 
   /**
+   * Create header from fromMachine
+   */
+  protected void initializeHeader() throws PiaRuntimeException, IOException{
+    try{
+      super.initializeHeader();
+      if( headersObj == null ){
+	String msg = "Can not create header...\n";
+	throw new PiaRuntimeException (this
+				       , "initializeHeader"
+				       , msg) ;
+      }
+    }catch(PiaRuntimeException e){
+      throw e;
+    }catch(IOException ioe){
+      throw ioe;
+    }
+  }
+
+
+  /**
    * parse the request line to get method, url, http's major and minor version numbers
    */
-  protected void  parseInitializationString( String firstLine )throws IOException, MalformedURLException{
+  protected void  parseInitializationString( String firstLine )throws IOException, MalformedURLException,
+    PiaRuntimeException{
+    if( firstLine == null ){
+      String msg = "firstLine is null...\n";
+      throw new PiaRuntimeException (this
+				     , "parseInitializationString"
+				     , msg) ;
+    }
+    
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
 
     try{
@@ -681,6 +709,10 @@ public class  HTTPRequest extends Transaction {
 	errorResponse(500, "Server internal error");
 	Thread.currentThread().stop();      
 	notifyThreadPool();
+      }catch( IOException ioe){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();      
+	notifyThreadPool();
       }
 
       // now we are ready to be resolved
@@ -738,7 +770,11 @@ public class  HTTPRequest extends Transaction {
       }catch (PiaRuntimeException e){
 	errorResponse(500, "Server internal error");
 	Thread.currentThread().stop();      
-      }      
+      }catch( IOException ioe ){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();
+      }
+      
 
 
       if( contentObj != null ){

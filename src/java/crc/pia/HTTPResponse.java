@@ -74,11 +74,36 @@ public class  HTTPResponse extends Transaction {
     return "HTTP/"+major+"."+minor+ " "+  code + " " +reason();
  }	
 
+ /**
+   * Create header from fromMachine
+   */
+  protected void initializeHeader() throws PiaRuntimeException, IOException{
+    try{
+      super.initializeHeader();
+      if( firstLineOk && headersObj == null ){
+	// someone just give us the first line
+	headersObj = new Headers();
+      }
+    }catch(PiaRuntimeException e){
+      throw e;
+    }catch(IOException ioe){
+      throw ioe;
+    }
+  }
+
+
 /** 
  * parse the first line
  * parse the request line to get method, url, http's major and minor version numbers
    */
-  protected void parseInitializationString(String firstLine)throws IOException{
+  protected void parseInitializationString(String firstLine)throws IOException, PiaRuntimeException{
+    if( firstLine == null ){
+      String msg = "firstLine is null...\n";
+      throw new PiaRuntimeException (this
+				     , "parseInitializationString"
+				     , msg) ;
+    }
+
     StringTokenizer tokens = new StringTokenizer(firstLine, " ");
     protocol = tokens.nextToken();
     if( protocol==null ) throw new RuntimeException("Bad reply.  Invalid status line.");
@@ -489,6 +514,9 @@ public class  HTTPResponse extends Transaction {
 	// and the content
 	if(contentObj ==  null) initializeContent();
       }catch (PiaRuntimeException e){
+	errorResponse(500, "Server internal error");
+	Thread.currentThread().stop();
+      }catch (IOException ioe){
 	errorResponse(500, "Server internal error");
 	Thread.currentThread().stop();
       }

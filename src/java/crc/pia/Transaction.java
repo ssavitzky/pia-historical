@@ -661,7 +661,7 @@ public abstract class Transaction extends AttrBase
   /**
    * Create header from fromMachine
    */
-  protected void initializeHeader() throws PiaRuntimeException{
+  protected void initializeHeader() throws PiaRuntimeException, IOException{
     //content source set in fromMachine method
     InputStream in;
     String line;
@@ -673,7 +673,15 @@ public abstract class Transaction extends AttrBase
       DataInputStream input = new DataInputStream( in );
       firstLine = input.readLine();
     
-      Pia.debug(this, "the firstline-->" + firstLine);
+      if( firstLine == null ){
+	String msg = "First line is null...\n";
+	throw new PiaRuntimeException (this
+					, "initializeHeader"
+					, msg) ;
+      }
+
+      if( firstLine.length() > 0 )
+	Pia.debug(this, "the firstline-->" + firstLine);
       parseInitializationString( firstLine );
    
       headersObj  = hf.createHeader( in );
@@ -688,12 +696,13 @@ public abstract class Transaction extends AttrBase
 					, "initializeHeader"
 					, msg) ;
       }
-      // someone just give us the first line
-      headersObj = new Headers();
-
 
     }catch(IOException e){
+      throw e;
+    }catch(PiaRuntimeException pe){
+      throw pe;
     }
+
   }
 
   /**
@@ -896,6 +905,10 @@ public abstract class Transaction extends AttrBase
       errorResponse(500, "Server internal error");
       Thread.currentThread().stop();      
       notifyThreadPool();
+    }catch( IOException ioe ){
+      errorResponse(500, "Server internal error");
+      Thread.currentThread().stop();      
+      notifyThreadPool();
     }
 
     Pia.debug(this, "Got a body...");
@@ -916,13 +929,11 @@ public abstract class Transaction extends AttrBase
       Pia.debug(this, "Waiting to be resolved");
 
       long delay = 1000;
-
       /*
       try{
 	Thread.currentThread().sleep(delay);
       }catch(InterruptedException ex){;}
       */
-
 
       if(!contentObj.processInput()) {
 	try{
