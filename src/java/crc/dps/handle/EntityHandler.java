@@ -130,6 +130,8 @@ public class EntityHandler extends AbstractHandler {
   public Action getActionForNode(ActiveNode n) {
     ActiveEntity ent = n.asEntity();
     String name = ent.getName();
+    // === An indexed name really wants a new handler with namepart and space
+    // === fields defined, but the action method is clever enough to check.
     return (name.indexOf(':') >= 0)? INDEXED : ACTIVE;
   }
 
