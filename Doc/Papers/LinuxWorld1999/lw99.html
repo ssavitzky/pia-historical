@@ -5,12 +5,17 @@
 </head><body>
 <h1>Slides for LinuxWorld 1999</h1>
 
+<!-- Due Feb. 1 in ftp.linuxcentral.com:/pub/session-74/ -->
+<!-- See mail.conferences:102 -->
+<set name=DOC:hh>450</set><!-- Tweak size for Netscape at 800x600 -->
+
 <hr>
 <slide>
-<p><p>
+<p>&nbsp;
+<p>&nbsp;
 <div align=center valign=center>
 <font size='+2'
-  ><strong>An Open-Source Web-Based Document Processing System</font>
+  ><strong>An Open-Source Web-Based Document Processing System</strong></font>
 
 <p> Stephen Savitzky
 <p> Ricoh Silicon Valley
@@ -21,8 +26,20 @@
 
 <hr>
 <slide>
-<h2>Document Processing</h2>
+<h2>Overview</h2>
 
+<ol>
+  <li> Document Processing
+  <li> Documents and the Web
+  <li> The System
+  <li> Open Source
+</ol>
+
+</slide>
+
+<hr>
+<slide>
+<h2>Document Processing: Example</h2>
 <ul>
   <li> Input: <a href="lw99.html">a document</a>
        <pre>
@@ -37,8 +54,66 @@
 	 <li> A ``spreadsheet'' for documents
 	 <li> Describes what to do with each tag
        </ul>
+  <li> <code>process -tagset slides lw99.html &gt; lw99.slides.html</code>
   <li> Output: another document (this slide).
 </ul>
+</slide>
+
+<hr>
+<slide>
+<h2>A Document is not an Object</h2>
+<ul>
+  <li> Documents are <em>structured</em> data
+  <li> == text + markup
+  <li> Documents <em>separate</em> content from behavior
+  <li> Therefore, documents...
+       <ul>
+	 <li> are <em>portable</em>
+	 <li> can be processed in many ways<br>
+	      [formatted, indexed, translated, ...]
+	 <li> are <em>robust</em> (unlike serialized Java objects)
+       </ul>
+  <li> Documents may have
+       <ul>
+	 <li> multiple versions
+	 <li> multiple representations (styles)
+	 <li> multiple ``behaviors''
+       </ul>
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2>What's Going On</h2>
+<ul>
+  <li> A document's format is specified by a <br>
+       Document Type Definition (DTD)
+  <li> ... which is <em>another document!</em>
+  <li> ... which we can represent in XML.
+  <li> ... and <em>process</em>
+       <p>
+  <li> A ``<em>tagset</em>'' is a document that combines <br>
+       a DTD with formatting commands. 
+  <li> ... also represented in XML.
+  <li> ... extended with standard programming constructs (XXML)
+  <li> <em>Any</em> document may contain ``active'' constructs
+  <li> ... resulting in ``<em>active documents</em>'' in XXML and XHTML
+</ul>
+</slide>
+
+<hr>
+<slide>
+<h2></h2>
+</slide>
+
+<hr>
+<slide>
+<h2></h2>
+</slide>
+
+<hr>
+<slide>
+<h2></h2>
 </slide>
 
 <hr>
@@ -150,10 +225,30 @@
 </ul>
 </slide>
 
+
 <hr>
-<TOC>Table of Contents</TOC>
+<slide>
+<h2>Developer's Website</h2>
+
+<strong>The PIA framework is organized as a web site</strong><br>
+<em>for use by developers</em>
+<ul>
+  <li> <a href="http://pia.crc.ricoh.com:8888/">PIA Group Server</a>
+  <li> <a href="/PIA/Doc">Documentation</a>
+       <ul>
+	 <li> <a href="/PIA/Doc/Manuals">Manuals</a>
+	 <li> <a href="/PIA/Doc/Release">Release notes</a>
+	 <li> <a href="/PIA/Doc/Tutorial">Tutorial</a>
+       </ul>
+  <li> <a href="/PIA/src">Source Code</a>
+  <li> <a href="/PIA/Config#app">Examples</a>
+</ul>
+Makes technical transfer very easy.
+</slide>
 <hr>
-<b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
+<toc>Table of Contents</toc>
+<hr>
+<b>Copyright &copy; 1999 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
 <address><a href="http://rsv.ricoh.com/~steve/"
          >Stephen R. Savitzky</a> &lt;<a href="mailto:steve@rsv.ricoh.com"
