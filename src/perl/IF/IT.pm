@@ -1,4 +1,4 @@
-###### Interform Token
+package IF::IT;  ###### Interform Token
 ###	$Id$
 ###
 ###	An InterForm Token is like an HTML::Element, only somewhat simpler.
@@ -7,9 +7,8 @@
 ###	also include declarations, comments, MIME headers, and simple text.
 ###
 
-package IF::IT;
-use Exporter;
-push(@ISA, Exporter);
+use DS::Thing;
+push(@ISA, DS::Thing);
 
 #############################################################################
 ###
@@ -43,15 +42,12 @@ sub new {
     my($attr, $val);
     while (($attr, $val) = splice(@attrs, 0, 2)) {
 	if (! defined $val) {
-	    unshift(@attrs, $attr);
-	    while ($val = shift(@attrs)) {
-		$self->push($val);
-	    }
+	    $self->push($attr);
 	    return $self;
 	}
 	$attr = lc $attr;
 	$self->{$attr} = $val;
-	push(@$list, lc $attr) unless $attr =~ /^\_/;
+	push(@$list, $attr) unless $attr =~ /^\_/;
     }
     $self;
 }
@@ -75,11 +71,11 @@ sub tag {
     }
 }
 
-sub attr
-{
+sub attr {
     my ($self, $attr, $val) = @_;
 
     ## Return (optionally set) an attribute
+    ##	 Overridden in order to force attributes to lowercase.
 
     my $attr = lc $attr;
     my $old = $self->{$attr};
@@ -89,56 +85,6 @@ sub attr
 	push(@$list, $attr) unless defined $old;
     }
     $old;
-}
-
-sub attrs {
-    my ($self) = @_;
-
-    ## return all the attributes in a hash
-
-    my $attrs = {};
-    for (sort keys %$self) {
-	next if /^_/;
-	$attrs{$_} = $self->{$_};
-    }
-    return $attrs;
-}
-
-sub attr_names {
-    my ($self) = @_;
-
-    ## return all the attribute names in a list
-
-    my $attrs = $self->{'_list'};
-    if (!defined($attrs)) {
-	@list = sort keys %$self;
-	$attrs = [];
-	for (@$list) {
-	    next if /^_/;
-	    push(@$attrs, $_);
-	}
-    }
-    return $attrs;
-}
-
-sub attr_list {
-    my ($self) = @_;
-
-    ## return all the attributes in a list of pairs
-
-    my $attrs = [];
-    my $list = $self->attr_names;
-    for (@$list) {
-	push(@$attrs, $_);
-	push(@$attrs, $self->{$_});
-    }
-    return $attrs;
-}
-
-sub content {
-    # Return the content.
-
-    shift->{'_content'};
 }
 
 sub is_empty {
@@ -203,12 +149,15 @@ sub leave_handlers {
     return $list;
 }
 
+#############################################################################
+###
 ### Content:
-###	We use the simplified syntax of push, pop, unshift, and shift
-###	rather than the clumsier push_content, and provide a complete set.
+###	Most of this is inherited from DS::Thing; we only override what we
+###	have to in order to get strings merged, etc.
 
 sub push {
-    ## Push something into the content.  Strings are merged.
+    ## Push something into the content.  
+    ##	  Strings are merged.  Arrays are appended.
     ##	  Tagless tokens have their content treated as arrays.
 
     my $self = shift;
@@ -244,26 +193,9 @@ sub push_content {
     $self->push(@_);
 }
 
-sub pop {
-    ## Pop the content
-
-    my $self = shift;
-    return unless exists $self->{'_content'};
-    my $content = $self->{'_content'};
-    pop @$content;
-}
-
-sub shift {
-    ## Shift the content
-
-    my $self = shift;
-    return unless exists $self->{'_content'};
-    my $content = $self->{'_content'};
-    shift @$content;
-}
 
 sub unshift {
-    ## unshift something into the content
+    ## unshift something into the content, i.e. attach it to the front.
 
     my $self = shift;
     $self->{'_content'} = [] unless exists $self->{'_content'};
@@ -428,7 +360,8 @@ sub traverse
     my($self, $callback, $ignoretext, $depth) = @_;
     $depth ||= 0;
 
-    print "traversing $depth tag = " . $self->{_tag} . "\n" if $main::debugging;
+    print "traversing $depth tag = " . $self->{_tag} . "\n" 
+	if $main::debugging > 1;
 
     if (! defined $self->{_tag} || &$callback($self, 1, $depth)) {
 	for (@{$self->{'_content'}}) {
