@@ -125,7 +125,10 @@ public class Sign extends crc.interform.Handler {
       }
       return;
     }
-    String keyfile=Util.getString(it,"keyfile",crc.pia.Pia.USR_ROOT + "/.keys");
+    String dflt = ".keys";
+    if(ii != null) dflt = crc.pia.Pia.instance().usrRoot() + "/.keys";
+    
+    String keyfile=Util.getString(it,"keyfile",dflt);
     String keypass=Util.getString(it,"kp","AgencyKeys");
     //name+.private or +.public
       
