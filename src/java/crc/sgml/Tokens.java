@@ -409,6 +409,7 @@ public class Tokens extends List implements SGML {
   public Tokens sortAscending() {
     SortTree sorter = new SortTree();
     Tokens results = new Tokens();
+    results.itemSeparator = itemSeparator;
     sorter.append(this.elements());
     sorter.ascendingValues(results);
     return results;
@@ -419,6 +420,7 @@ public class Tokens extends List implements SGML {
   public Tokens sortDescending() {
     SortTree sorter = new SortTree();
     Tokens results = new Tokens();
+    results.itemSeparator = itemSeparator;
     sorter.append(this.elements());
     sorter.descendingValues(results);
     return results;
@@ -429,6 +431,7 @@ public class Tokens extends List implements SGML {
   public Tokens sortAscendingNumeric() {
     SortTree sorter = new SortTree();
     Tokens results = new Tokens();
+    results.itemSeparator = itemSeparator;
     sorter.appendNumeric(this.elements());
     sorter.ascendingValues(results);
     return results;
@@ -439,6 +442,7 @@ public class Tokens extends List implements SGML {
   public Tokens sortDescendingNumeric() {
     SortTree sorter = new SortTree();
     Tokens results = new Tokens();
+    results.itemSeparator = itemSeparator;
     sorter.appendNumeric(this.elements());
     sorter.descendingValues(results);
     return results;
