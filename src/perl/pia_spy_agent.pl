@@ -26,8 +26,9 @@ sub  new_requests{
     my($self,$request)=@_;
     my @responses;
     my @generators=$self->generators($request);
+ 
     foreach $generator (@generators){
-	push(@responses,&{$generator}($request));
+	push(@responses,&{$generator}($self,$request)) if $generator;
     }
     return @responses;
 }
@@ -44,15 +45,17 @@ sub generators{
 sub generator{
 #  return  and optionally set function to process this type of transaction
  # type is get, put, post, head, request( e.g. all of the above), response
-#generator should take transaction as input, return array of  new transactions
+#generator should take self and transaction as input, return array of  new transactions
     my($self,$type,$generator)=@_;
     my $generators=$$self{'generators'};
     $type=lc $type;
     $$generators{$type}=$generator if defined $generator;
     $generator=$$generators{$type} if exists $$generators{$type};
     if(! defined $generator){
-	$generator=$$generators{'response'} if $type =~ /(get)|(put)|(post)|(head)/;
+	$generator=$$generators{'request'} if $type =~ /(get)|(put)|(post)|(head)/i;
     }
+    print "found $generator generator for $type" if $main::debugging;
+    
     return $generator;
 }
 
