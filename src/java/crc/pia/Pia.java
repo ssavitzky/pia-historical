@@ -91,6 +91,14 @@ public class Pia{
    */
   public static final String PIA_LOGGER = "crc.pia.logger";
 
+
+  /**
+   * Name of pia logger class
+   */
+  public static final String PIA_REQTIMEOUT = "crc.pia.reqtimeout";
+
+
+
   private Properties    piaFileMapping = null;
   private Piaproperties properties   = null;
   private static Pia     instance    = null;
@@ -108,6 +116,7 @@ public class Pia{
   private String  url        = null;
   private String  host       = null;
   private int     port       = 8001;
+  private int     reqTimeout = 50000;
   private boolean verbose    = true;
   private boolean debug      = false;
   private boolean debugToFile= false;
@@ -246,6 +255,13 @@ public class Pia{
     return i.toString();
   } 
 
+  /**
+   * @return request time out
+   */
+  public int requestTimeout(){
+    return reqTimeout;
+  }
+ 
   /**
    * @toggle debug flag 
    */
@@ -432,13 +448,14 @@ public class Pia{
 	System.exit (1) ;
   }
 
-  public void verbose () {
+  public void verbose() {
 	PrintStream o = System.out ;
 
 	o.println(rootStr         + " (parent of src, lib, Agents)\n");
 	o.println(piaAgentsStr + " (agent interforms)\n");
 	o.println(piaUsrRootStr   + " (user directory)\n");
 	o.println(piaUsrAgentsStr + " (user interforms)\n");
+	o.println(Integer.toString( requestTimeout() ) + " (request time out)\n");
 	o.println(url+"\n");
   }
 
@@ -519,6 +536,7 @@ public class Pia{
     piaUsrRootStr   = properties.getProperty(PIA_USR_ROOT, null);
     host            = properties.getProperty(PIA_HOST, thisHost);
     port            = properties.getInteger(PIA_PORT, port);
+    reqTimeout      = properties.getInteger(PIA_REQTIMEOUT, 60000);
     loggerClassName = properties.getProperty(PIA_LOGGER, loggerClassName);
 
     // i. e. agency.crc.pia.proxy_http=foobar 
@@ -722,7 +740,7 @@ public class Pia{
     if ( where == null ){
       where = filesep+"pia";
       // Try to guess it, cause it is really required:
-      guess = new File (new File( where, "config" ),"filemap.props");
+      guess = new File (new File( where, "Config" ),"filemap.props");
     }else guess = new File( where );
 
     fileMapProp = guess.getAbsolutePath();
@@ -769,6 +787,7 @@ public class Pia{
 
   private static void setDefaultProperties( Piaproperties piaprops ){
     piaprops.put(PIA_PORT, "8888");
+    piaprops.put(PIA_REQTIMEOUT, "50000");
     piaprops.put(PIA_DEBUG, "true");
     piaprops.put(PIA_VERBOSE, "true");
     piaprops.put(PIA_LOGGER, "crc.pia.Logger");
@@ -784,7 +803,7 @@ public class Pia{
     if (cmdroot == null){
       cmdroot = filesep+"pia";
       // Try to guess it, cause it is really required:
-      guess           = new File (new File(cmdroot, "config"),"pia.props");
+      guess           = new File (new File(cmdroot, "Config"),"pia.props");
     }else 
       guess = new File( cmdroot );
     
