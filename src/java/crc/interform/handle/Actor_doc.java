@@ -32,6 +32,13 @@ public class Actor_doc extends crc.interform.Handler {
     Actor actor = ii.tagset().forName(name);
     ii.replaceIt((actor == null)? null : actor.doc());
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return omittedLegacyAction(aContext, tag, atts);
+  }
 }
 
 

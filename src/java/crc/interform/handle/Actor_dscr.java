@@ -32,6 +32,14 @@ public class Actor_dscr extends crc.interform.Handler {
     Actor actor = ii.tagset().forName(name);
     ii.replaceIt((actor == null)? null : actor.dscr());
   }
+
+  /** Legacy action. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    // === could actually get from handler. ===
+    return omittedLegacyAction(aContext, tag, atts);
+  }
 }
 
 

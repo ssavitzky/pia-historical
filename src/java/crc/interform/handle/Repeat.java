@@ -42,4 +42,11 @@ public class Repeat extends crc.interform.Handler {
     //ii.hoistParseFlags();
     ii.deleteIt();
   }
+
+  /** Legacy action.  Should never get here. */
+  public boolean action(crc.dps.Context aContext, crc.dps.Output out,
+			String tag, crc.dps.active.ActiveAttrList atts,
+			crc.dom.NodeList content, String cstring) {
+    return bogusLegacyAction(aContext, tag);
+  }
 }
