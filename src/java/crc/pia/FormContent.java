@@ -604,8 +604,9 @@ public class FormContent extends Properties implements InputContent {
 
 	// 2/17/99 need a good substitute for this--pg
 	// value = crc.sgml.Token.empty;
-	value = null;
-	Pia.debug(this, "NOTE: maybe in error set to null by pg a val1-->"+ value);
+	value = eparam;
+	// The SGML convention is that 
+	//    a `boolean' attribute's value is its name (steve)
       }else{
 	String p = s.substring(0, pos);
 	String eparam = p.trim();
