@@ -41,6 +41,12 @@ public class BasicProcessor extends ContextStack implements Processor {
   public boolean isRunning() { return running; }
   public void stop() { running = false; }
 
+  /** Copy nodes from the input to the output. */
+  public void copy() {
+    copyCurrentNode();
+    while (input.toNextSibling() != null) copyCurrentNode();
+  }
+
   /** Run the Processor, pushing a stream of Token objects at its
    *	registered Output, until we either run out of input or the 
    *	<code>isRunning</code> flag is turned off.
@@ -51,18 +57,12 @@ public class BasicProcessor extends ContextStack implements Processor {
     while (running && input.toNextSibling() != null) processNode();
   }
 
-  /** Copy nodes from the input to the output. */
-  public void copy() {
-    copyCurrentNode();
-    while (input.toNextSibling() != null) copyCurrentNode();
-  }
-
   /** Process the current Node */
   public final void processNode() {
-    Action action = input.getAction();
-    if (action != null) {
-      additionalAction(action.actionCode(input, this));
-      //action.action(input, this, output);
+    Action handler = input.getAction();
+    if (handler != null) {
+      additionalAction(handler.actionCode(input, this));
+      //handler.action(input, this, output);
     } else {
       expandCurrentNode();
     }
@@ -238,9 +238,7 @@ public class BasicProcessor extends ContextStack implements Processor {
 
   /** Return a new BasicProcessor copied from an old one. */
   public BasicProcessor(BasicProcessor p) {
-    input = p.input;
-    output = p.output;
-    entities = p.entities;
+    super(p);
     stack = p;
   }
 
