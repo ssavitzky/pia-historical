@@ -256,7 +256,7 @@ be defined.<p>
 <hr> <!-- ========================================================== -->
 <h2><a name="actors">Actor Definition and Control</a></h2>
 <alist>actor  actor-attrs actor-doc actor-dscr actor-names actor-syntax
-element</alist> 
+element tagset tagset-exists agset-include tagset-load </alist> 
 
 <adscr>actor</adscr>
 
@@ -317,6 +317,30 @@ element</alist>
 
 <adscr>element</adscr>
 
+<adscr>tagset</adscr>
+<dl>
+  <dt> <strong>Note</strong>
+  <dd> This actor is buggy, and should not be used.  In the interim, tagsets
+       should be defined using:
+       <pre>
+       &lt;tagset-load name=template-form&gt;
+       </pre>
+       and loaded using
+       <pre>
+       &lt;tagset-load name=template-form interform file=tagset.inc&gt;
+       </pre>
+</dl>
+
+
+<adscr>tagset-exists</adscr>
+<adscr>agset-include</adscr>
+<adscr>tagset-load</adscr>
+<dl>
+  <dt> <at>FILE=name</at>
+  <dd> Tagsets loaded from files are given a timestamp equal to the file's
+       ``lastModified'' time the first time they are loaded.  Thereafter, they
+       are only loaded if the file is changed.
+</dl>
 
 <hr> <!-- ========================================================== -->
 <h2><a name="expansion">Expansion Control</a></h2>
