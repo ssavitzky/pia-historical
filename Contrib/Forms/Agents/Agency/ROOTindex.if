@@ -3,6 +3,8 @@
 <title>RSV FORMS</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com"></link>
 </head><body>
+<center><a href="http://&piaHOST;:&piaPORT;/Forms/forms.if"><img src="formsbutton.gif"></a><img src="user.gif"><a href="http://&piaHOST;:&piaPORT;/Forms/reports.if"><img src="reportsbutton.gif"></a><a href="mailto:dgillen@crc.ricoh.com"><img src="feedbackbutton.gif"></a></center><p>
+
 <h1>RSV FORMS</h1>
 Almost all RSV forms are now available via the web.
 Form data can be filled out using your web browser.  After you fill out a
@@ -26,7 +28,7 @@ headaches or inconveniences this system may cause for you.
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
-Last modified: Wed Sep 10 18:46:37 1997
+Last modified: Wed Sep 10 19:21:54 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"
