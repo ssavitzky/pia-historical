@@ -51,7 +51,7 @@ h2>Test problems with empty quotes inside quotes</h2>
  should be 'aabbcc': '<actor tag=xx>bb</actor>aa<xx></xx>cc'
  should be 'aabb': '<actor tag=xxx></actor>aaa<xxx></xxx>bbb'
  should be 'xxxyyyzzz': '<if>1<then>xxx<actor tag=bar empty>zzz</actor>yyy</then></if><bar>'
- should be 'xxxyyy..': <if>1<then>xxx<actor tag=bar empty></actor>yyy</then></if><bar>..'
+ should be 'xxxyyy..': '<if>1<then>xxx<actor tag=bar empty></actor>yyy</then></if><bar>..'
 </blockquote>
 
 <h2>Test arithmetic</h2>
@@ -101,7 +101,7 @@ Should be 'foo': '&bar;'
 
 Entity used as list for repeat; expanded in attribute:
 <set name=names>foo bar baz</set>
-<repeat list=&names;>&li; <foo bar=&li>...</foo>
+<repeat list=&names;>&li; <foo bar=&li;>...</foo>
 </repeat>
 
 
@@ -122,4 +122,6 @@ dscr: <actor-dscr name=set><br>
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<!-- the following conditional keeps the id out of the results --><if>
+<then><b>$Id$</b><br></then></if>
 </body></html>

@@ -26,31 +26,38 @@ should be '': '' negative( 0 )
 should be '': '' negative( 100 )
 should be '1': '1' negative( -100 )
 should be '': '' match
-should be '1': '' match
+should be '1': '1' match
+should be '': ''
+should be '1': '1'
+should be '1': '1'
 should be '': ''
 should be '1': '1'
 
+<h2>Subst</h2>
 
-<h2>Test problems with empty quotes inside quotes</h2>
+should be 'this did work': 'this did work'
+should be 'this did nothing': 'this did nothing'
+
+h2>Test problems with empty quotes inside quotes
 <blockquote>
  should be 'xxyyzz': 'xxyyzz'
  should be 'xxzz': 'xxzz'
  should be 'aabbcc': 'aabbcc'
- should be 'aabb': 'aaa<xxx></xxx>bbb'
+ should be 'aabb': 'aaabbb'
  should be 'xxxyyyzzz': 'xxxyyyzzz'
- should be 'xxxyyy..': xxxyyy<bar>..'
+ should be 'xxxyyy..': 'xxxyyy..'
 </blockquote>
 
 <h2>Test arithmetic</h2>
 
-should be 6: 6
-should be 6: 6
+should be 6: 6.0
+should be 6: 6.0
 
-should be 6: 6
-should be 6: 6
+should be 6: 6.0
+should be 6: 6.0
 
-should be 6: 6
-should be 6: 6
+should be 6: 6.0
+should be 6: 6.0
 
 <h2>Test set, get entities</h2>
 
@@ -96,7 +103,7 @@ baz <foo bar="baz">...</foo>
 
 <h2>Text processing</h2>
 
-THIS is a _test_ *of* add="markup"
+<b>this</b> is a _test_ *of* add=<i>"markup"</i>
 
 <h2>Actor information</h2>
 
@@ -114,14 +121,14 @@ using a dotted notation "foo.bar" returns the bar element of foo.
 Default is the generic lookup that includes paths.
 If FILE or HREF specified, functions as <read>.
 <br>
-...  Get value of NAME, optionally in PIA, ENV, AGENT, FORM, 
-ELEMENT, TRANSaction, or LOCAL or GLOBAL entity context.
+...  Get value of <b>name</b>, optionally in <b>pia</b>, <b>env</b>, <b>agent</b>, <b>form</b>, 
+<b>element</b>, <b>trans</b>action, or <b>local</b> or <b>global</b> entity context.
 Default is to start with the local entity table and move up the
 stack until name is found.  Returns "" if name does not exist in
 specified context.  Elements of complex data structures can be accessed
 using a dotted notation "foo.bar" returns the bar element of foo.
 Default is the generic lookup that includes paths.
-If FILE or HREF specified, functions as &lt;read&gt;.
+If <b>file</b> or <b>href</b> specified, functions as &lt;<b>read</b>&gt;.
 
 
 attrs: parsed handle="Set" tag="set"<br>
@@ -140,4 +147,5 @@ Optionally COPY content as result.
 
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
+<!-- the following conditional keeps the id out of the results -->
 </body></html>
