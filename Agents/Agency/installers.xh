@@ -84,6 +84,13 @@ which can be used for experimentation or as a template for your own form.
        name: <input name="agent" value="InterForm">
        </form></if>
 
+  <dt> <a name="Swifty">Tutorial agent</a> (Illustrates how to create an agent)
+       <if><agent-running name=Swifty><then><em>installed</em></then><else>
+  <dd> <form action="/Agency/install_agent" method="POST">
+       <input type="submit" value="Install">
+       name:<input name="agent" value="Swifty"><br>
+       </form> </if>
+
 </dl>
 
 <hr>
