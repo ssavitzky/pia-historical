@@ -152,7 +152,7 @@ public class Token implements SGML {
     if( stop != Index.LAST && stop <= size )
       last = stop;
     
-    System.out.println("copying from " + first +" "+ last);
+    //System.out.println("copying from " + first +" "+ last);
     
     result = ts.copy( first, last );
     

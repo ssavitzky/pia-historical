@@ -65,7 +65,7 @@ public class  DescriptionList extends crc.sgml.Element {
     for(int i=0;!loc.isEmpty();i++ ){
       k = ((Integer)loc.shift()).intValue();
       indices[i] = k;
-      System.out.println("scanTag -->"+myTag+" ["+Integer.toString( k )+"]");
+      //System.out.println("scanTag -->"+myTag+" ["+Integer.toString( k )+"]");
     }
 
     return indices;
@@ -76,7 +76,7 @@ public class  DescriptionList extends crc.sgml.Element {
     int[] myList = new int[ len ];
     for(int i = 0; i < len; i++){
       try{
-	System.out.println("boundaries-->["+(String)v.at(i)+"]"); 
+	//System.out.println("boundaries-->["+(String)v.at(i)+"]"); 
 	myList[i] = Integer.parseInt( (String)v.at(i) );
       }catch(Exception e){}
     }
@@ -115,7 +115,7 @@ public class  DescriptionList extends crc.sgml.Element {
 	ts.append( (SGML)Util.removeSpaces(item.content()) );
       }
     }
-    System.out.println("grabDd-->"+ts.toString());
+    //System.out.println("grabDd-->"+ts.toString());
     return ( ts.nItems() == 0 ) ? null : ts;
   }
 
@@ -201,29 +201,29 @@ public class  DescriptionList extends crc.sgml.Element {
     int howmany = 1;
     Tokens result = new Tokens();
 
-    System.out.println("In getRange");
-    System.out.println("myTag-->"+myTag);
+    //System.out.println("In getRange");
+    //System.out.println("myTag-->"+myTag);
 
     int len = l.size();
 
     if( e == Index.LAST )
       e = 10000;
 
-    System.out.println("start-->"+s);
-    System.out.println("end-->"+e);
+    //System.out.println("start-->"+s);
+    //System.out.println("end-->"+e);
 
     for( int j = 0 ; j < len ; j++ ){
       dtText = ((SGML)l.at( j )).contentString();
-      System.out.println("dt text-->["+dtText+"]");
+      //System.out.println("dt text-->["+dtText+"]");
       if( j <= len - 2 ){
 	j++;
 
 	if( myTag.equalsIgnoreCase( dtText ) ){
-	  System.out.println("In equal");
+	  //System.out.println("In equal");
 	  if( howmany >= s && howmany <= e ){
-	    System.out.println("howmany-->"+Integer.toString(howmany));
+	    //System.out.println("howmany-->"+Integer.toString(howmany));
 	    dd = (SGML)l.at( j );
-	    System.out.println("My dd-->"+dd.toString());
+	    //System.out.println("My dd-->"+dd.toString());
 	    result.append( dd );
 	  }
 	  howmany++;
@@ -236,10 +236,10 @@ public class  DescriptionList extends crc.sgml.Element {
   }
 
   protected void printDl( List l ){
-    System.out.println("----smash dl list----\n");
+    //System.out.println("----smash dl list----\n");
     for(int i = 0 ; i < l.nItems(); i++){
       SGML item = (SGML)l.at( i );
-      System.out.println("item-->"+item.toString()+"\n");
+      //System.out.println("item-->"+item.toString()+"\n");
       /*
       if( i % 2  == 0 )
 	System.out.println("dt-->"+item.toString());
@@ -247,7 +247,7 @@ public class  DescriptionList extends crc.sgml.Element {
 	System.out.println("dd-->"+item.toString());
 	*/
     }
-    System.out.println("\n");
+    //System.out.println("\n");
   }
 
   /** Retrieve an attribute by index. */
