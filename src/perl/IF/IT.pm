@@ -46,8 +46,8 @@ sub new {
 	    return $self;
 	}
 	$attr = lc $attr;
+	push(@$list, $attr) unless (exists $self->{$attr} || $attr =~ /^\_/);
 	$self->{$attr} = $val;
-	push(@$list, $attr) unless $attr =~ /^\_/;
     }
     $self;
 }

@@ -37,6 +37,33 @@ sub recruit {
     $self->initialize;
 }
 
+sub handler {
+    my ($name, $pkg) = @_;
+
+    ## Return a handler for $name in package $pkg.
+    ##	  Requires major disgusting hacks to get around perl weirdness.
+
+    my $foo = "${pkg}::$name";
+    return \&{$foo} if defined &{$foo};
+    return \&{$foo . "_handle"} if defined &{$foo . "_handle"};
+
+    ## The first part will do the job UNLESS the handle we want is inside 
+    ##	 a package that isn't loaded yet.  So load it.  This is _still_ not
+    ##	 good enough, because it might be defined in a package that _uses_
+    ##	 Actors.pm, (e.g. IF::Run) so the handle might not actually get 
+    ##	 defined until after we need it.  You don't want to know.
+
+    my $file = $pkg;
+    $file =~ s@::@/@g;
+    eval { 
+	require $file . '.pm';
+	print "$file loaded, looking for '$foo'\n" if $main::debugging;
+	return \&{$foo} if defined \&{$foo};
+	## Note that the blasted thing might not be defined.  
+	##    It appears, though, that this will succeed anyway, so you 
+	##    croak later if the name is never defined.
+    };
+}
 
 sub initialize {
     my ($self, $name) = @_;
@@ -67,6 +94,39 @@ sub initialize {
     }
     $self->attr('name', $name);
 
+    ## Handle match='name=value...'  Should handle attr=, value= as well.
+    ## 	  List is encoded as a query string.
+    my $match = $self->attr('match');
+    if ($match) {
+	my @list = split(/\&/, $match);
+	my @pairs = ();
+	for $item (@list) {
+	    if ($item =~ /(.+)=(.*)/) {
+		$2 =~ s/\+/ /g;
+		push(@pairs, $1, $2);
+	    } else {
+		push(@pairs, $item, $item);
+	    }
+	}
+	$self->{'_match'} = \@pairs;
+    }
+
+    my $handle = $self->attr('handle');
+    if ($handle eq 'handle' || $handle eq '1') {
+	$handle = $name;
+    }
+    if ($handle) {
+	$handle =~ s/^[-.]//;
+	$handle =~ s/[-.]$//;
+	$handle =~ s/[-.]/\_/g;
+	my $package = $self->attr('package') || 'IF::Actors';
+	my $handler = handler($handle, $package);
+	if ($handler) {
+	    $self->{'_handle'} = $handler;
+	} else {
+	    print "Cannot find handler $handle in package $package\n";
+	}
+    }
     if (! $self->attr('_handle')) {
 	$self->{'_handle'} = ($self->is_empty) ? \&IF::Actors::null_handle 
 	                                       : \&IF::Actors::generic_handle;
@@ -109,8 +169,22 @@ sub matches {
     my ($self, $it, $ii, $incomplete) = @_;
 
     my $code = $self->{_match};
-    return &$code($self, $it, $ii, $incomplete) if (ref($code) eq 'CODE');
-    return false;
+    if (ref($code) eq 'CODE') {
+	return &$code($self, $it, $ii, $incomplete);
+    } elsif (ref($code)) {
+	## Assume it's a list of attr, value...
+	## Values are matched exactly, ignoring case
+
+	return 0 if $incomplete <= 0 || !ref($it);
+	for ($i = 0; $i <= $#$code; $i += 2) {
+	    my $a = $$code[$i];
+	    my $v = $$code[$i+1];
+	    my $try = $it->attr($a);
+	    return 0 unless (($v && lc $try eq lc $v) || (! $v && ! $try));
+	}
+	return 1;
+    }
+    return 0;
 }
 
 #############################################################################

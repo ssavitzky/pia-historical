@@ -52,7 +52,7 @@ sub define_actor {
     ## Define a new actor, globally.
     ##	  Optionally takes a name and attribute-list.
 
-    $actor = IF::IA->new($actor, @attrs) unless ref($actor);
+    $actor = IF::IA->new($actor, 'handle'=>1, @attrs) unless ref($actor);
 
     my $name = $actor->attr('name');
     my $tag = $actor->attr('tag');
@@ -94,6 +94,12 @@ sub generic_handle {
     $ii->delete_it;
 }
 
+### Uncomment to test handle and package search
+#define_actor('-foo1-', 'package' => frobozz, 'handle' => 'new');
+#define_actor('-foo2-', 'package' => IF::Run, 'handle' => 'frobozz');
+#define_actor('-foo3-', 'package' => IF::Run, 'handle' => 'eval_perl');
+#define_actor('-foo4-', 'package' => PIA::Agent, 'handle' => 'new');
+
 #############################################################################
 ###
 ### Passive actors:
@@ -102,35 +108,18 @@ sub generic_handle {
 ### -eval_perl-		attr: language=perl
 
 define_actor('-eval-perl-', 'quoted' => 'quoted', 'unsafe' => 1,
-	     'attr' => 'language', 'value' => 'perl', 
-	     _match => \&eval_perl_match,
-	     _handle => \&IF::Run::eval_perl,
+	     'match' => 'language=perl', 'package' => 'IF::Run', 
+#	     _handle => \&IF::Run::eval_perl,
 	     'dscr' => "evaluate CONTENT as perl code (DEPRECATED).");
-
-sub eval_perl_match {
-    my ($self, $it, $ii, $incomplete, $quoting) = @_;
-
-    return 0 if $quoting || $incomplete <= 0 || !ref($it);
-    return 1 if (lc $it->attr('language') eq 'perl');
-    return 0;
-}
 
 ### -foreach-		attr: foreach
 ###	Expects attr's list="..." or list1="..." ...
 ###	Binds entities &li; &1; ... 
 ###	Optional: entities="n1 ..."
 
-define_actor('-foreach-', 'quoted' => 'quoted', 'attr' => 'foreach',
-	     _match => \&foreach_match, _handle => \&foreach_handle,
+define_actor('-foreach-', 'quoted' => 'quoted', 
+	     'match' => 'foreach', 
 	     'dscr' => "repeat ELEMENT for each ENTITY in LIST of words");
-
-sub foreach_match {
-    my ($self, $it, $ii, $incomplete, $quoting) = @_;
-
-    return 0 if $quoting || $incomplete <= 0 || !ref($it);
-    return 1 if (defined $it->attr('foreach'));
-    return 0;
-}
 
 sub foreach_handle {
     my ($self, $it, $ii) = @_;
@@ -156,13 +145,14 @@ sub foreach_handle {
     $ii->delete_it($it);
 }
 
-### -input.size-
-###	recognizes <input SIZE=fit MIN=n MAX=m>content</input>
+
+### -input.size-fit-
+###	recognizes <input SIZE=fit MIN-SIZE=n MAX-SIZE=m>content</input>
 ###	and sets size to min(m, max(n, size(content)))
 
-### -input.options-
-###	recognizes <input OPTIONS="list of options">content</input>
-###	and makes CONTENT, if present, the selected option.
+### -select.selected-
+###	recognizes <select SELECTED="option">content</select>
+###	and makes SELECTED, if present, the selected option.
 
 #############################################################################
 ###
@@ -174,13 +164,43 @@ sub foreach_handle {
 ### actor:  active, quoted.
 ###	Defines a new actor.
 
-define_actor('actor', 'quoted' => 'quoted', _handle => \&actor_handle,
+define_actor('actor', 'quoted' => 'quoted', 
 	     'dscr' => "define an InterForm actor");
 
 sub actor_handle {
     my ($self, $it, $ii) = @_;
     $ii->define_actor(IF::IA->recruit($it));
     $ii->delete_it;
+}
+
+### submit
+###	Submits $it or every form in its contents.  Used during initialization. 
+
+define_actor('submit-forms', 
+	     'dscr' => "Submit a form ELEMENT or every form in CONTENT");
+if (0) {
+    ## Use this to activate forms.
+    define_actor('form', _handle => \&submit_forms_handle,
+		 'dscr' => "Submit a form ELEMENT");
+}
+
+sub submit_forms_handle {
+    my ($self, $it, $ii) = @_;
+
+    if ($it->tag eq 'form') {
+	my $url = $it->attr('action');
+	my $method = $it->attr('method');
+	my $agent = IF::Run::agent();
+	$agent->submit($agent->create_request($method,$url,$it));
+    } else {
+	$it->traverse(sub {
+			  my($elt, $start, $depth) = @_;
+			  return 1 unless $start;
+			  submit_handle($self, $elt, $ii) 
+			      if $elt->tag eq 'form';
+			  return 1;
+		      }, 'ignoretext');
+    }
 }
 
 ### ===	it's not clear that we want entities and variables to be different ===
@@ -201,7 +221,7 @@ sub actor_handle {
 
 ### === <get file="name"> should map to read
 
-define_actor('get', 'empty' => 1, _handle => \&get_handle,
+define_actor('get', 'empty' => 1, 
 	     'dscr' => "Get value of NAME, 
 optionally in PIA, ENV, AGENT, FORM, ELEMENT, TRANSaction, or ENTITY context.
 If FILE or HREF specified, functions as read.");
@@ -237,7 +257,7 @@ sub get_handle {
     } elsif ($it->attr('trans')) {
 	local $trans = IF::Run::transaction();
         if ($it->attr('feature')) {
-	    $ii->replace_it($trans->test($name)) if defined $trans;
+	    $ii->replace_it($trans->get_feature($name)) if defined $trans;
 	} else {
 	    $ii->replace_it($trans->attr($name)) if defined $trans;
 	}
@@ -253,7 +273,7 @@ sub get_handle {
 ### <set name="name" value="value">
 ### <set name="name">value</set>
 
-define_actor('set', 'content' => 'value', _handle => \&set_handle,
+define_actor('set', 'content' => 'value',
 	     'dscr' => "set NAME to VALUE, 
 optionally in PIA, AGENT, ACTOR, ELEMENT, TRANSaction, or ENTITY context.   
 ELEMENT and ENTITY may define a LOCAL binding.  ELEMENT may have a TAG.  
@@ -287,7 +307,7 @@ sub set_handle {
     } elsif ($it->attr('trans')) {
 	local $trans = IF::Run::transaction();
         if ($it->attr('feature')) {
-	    $trans->assert($name, $value) if defined $trans;
+	    $trans->set_feature($name, $value) if defined $trans;
 	} else {
 	    $trans->attr($name, $value) if defined $trans;
 	}
@@ -312,11 +332,11 @@ sub set_handle {
 ### <if><test>condition</test><then>...</then><else>...</else></if>
 ###	condition is false if it is empty or consists only of whitespace.
 
-define_actor('if', _handle => \&if_handle,
+define_actor('if', 
 	     'dscr' => "if TEST non-null, expand THEN, else ELSE.");
-define_actor('then', 'quoted' => 'quoted', _handle => \&null_handle,
+define_actor('then', 'quoted' => 'quoted', 'handle' => 'null',
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
-define_actor('else', 'quoted' => 'quoted', _handle => \&null_handle,
+define_actor('else', 'quoted' => 'quoted', 'handle' => 'null',
 	     'dscr' => "expanded if TEST true in an &lt;if&gt;");
 
 sub if_handle {
@@ -388,11 +408,11 @@ sub repeat_end_input {
 ### Expansion control: 
 ###	protect, protect-result
 
-define_actor('protect', 'quoted' => 'quoted', _handle => \&protect_handle,
+define_actor('protect', 'quoted' => 'quoted', 
 	     'dscr' => "Protect CONTENT from expansion.  Optionally protect
 MARKUP by converting special characters to entities.");
 
-define_actor('protect-result', _handle => \&protect_handle,
+define_actor('protect-result', 'handle' => 'protect',
 	     'dscr' => "Protect results of expanding CONTENT from further 
 expansion.  Optionally protect MARKUP by converting special characters 
 to entities.");
@@ -409,7 +429,7 @@ sub protect_handle {
     }
 }
 
-define_actor('expand', _handle => \&expand_handle,
+define_actor('expand', 
 	     'dscr' => "Expand CONTENT, then either re-expand or PROTECT it.
 Optionally protect MARKUP as well.");
 
@@ -452,7 +472,7 @@ sub expand_handle {
 ###	iftrue="..."	string to return if result is true->content
 ###	iffalse="..."	string to return if result is false
 ###
-define_actor('test', 'content' => 'value', _handle => \&test_handle,
+define_actor('test', 'content' => 'value',
 	     'dscr' => "test VALUE (content); 
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Tests: ZERO, POSITIVE, NEGATIVE, MATCH='pattern'.  
@@ -500,7 +520,7 @@ sub test_handle {
 
 ### <equal [options]>strings</equal>
 
-define_actor('equal', 'content' => 'list', _handle => \&equal_handle,
+define_actor('equal', 'content' => 'list',
 	     'dscr' => "test tokens in LIST (content) for equality; 
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC.");
@@ -531,7 +551,7 @@ sub equal_handle {
 
 ### <sorted [options]>strings</sorted>
 
-define_actor('sorted', 'content' => 'list', _handle => \&sorted_handle,
+define_actor('sorted', 'content' => 'list', 
 	     'dscr' => "test tokens in  LIST (content) for sortedness;
 return null or IFFALSE if false, else '1' or IFTRUE. 
 Modifiers: NOT, CASE (sensitive), TEXT, LINK, NUMERIC, REVERSE.");
@@ -585,7 +605,7 @@ sub sorted_handle {
 ###	text
 ###	numeric
 ###
-define_actor('sort', 'content' => 'value', _handle => \&sort_handle,
+define_actor('sort', 'content' => 'value', 
 	     'dscr' => "sort tokens in  LIST (content).
 Modifiers: CASE (sensitive), TEXT, NUMERIC, REVERSE.");
 
@@ -621,7 +641,7 @@ sub sort_handle {
 
 ### <text>content</text>
 
-define_actor('text', _handle => \&text_handle,
+define_actor('text', 
 	     'dscr' => "eliminate markup from CONTENT.");
 
 sub text_handle {
@@ -634,7 +654,7 @@ sub text_handle {
 
 ### <trim>content</trim>
 
-define_actor('trim', _handle => \&trim_handle,
+define_actor('trim', 
 	     'dscr' => "eliminate leading and trailing whitespace
 from CONTENT.");
 
@@ -651,7 +671,7 @@ sub trim_handle {
 ###	example) without having to put the padding inside the link
 ###	where it will get underlined and look ugly.
 
-define_actor('pad', _handle => \&pad_handle,
+define_actor('pad', 
 	     'dscr' => "Pad CONTENT to a given WIDTH with given ALIGNment
 (left/center/right).  Optionally just generate the SPACES.  Ignores markup.");
 
@@ -685,7 +705,7 @@ sub pad_handle {
 
 ### <add-markup>text</add-markup>
 
-define_actor('add-markup', _handle => \&add_markup_handle,
+define_actor('add-markup', 
 	     'dscr' => "convert common text conventions to markup");
 
 sub add_markup_handle {
@@ -736,7 +756,6 @@ sub add_markup_handle {
 ### === very kludgy -- should just use attributes ===
 ### <actor-dscr name="name">
 define_actor('actor-dscr', 'content' => 'name', 
-	     _handle => \&actor_dscr_handle,
 	     'dscr' => "get an actor's DSCR attribute");
 
 sub actor_dscr_handle {
@@ -763,7 +782,6 @@ sub actor_dscr_handle {
 ###	The "name", "tag",  and "dscr" attributes are not included.
 
 define_actor('actor-attrs', 'content' => 'name', 
-	     _handle => \&actor_attrs_handle,
 	     'dscr' => "get an actor's attributes in documentation format");
 
 %no_show = ('dscr'=>1, 'tag'=>1, 'name'=>1);
@@ -822,7 +840,7 @@ sub file_lookup {
 
 ### <read [file="name" | href="url"] [base="path"] [tagset="name"] [resolve]>
 
-define_actor('read', 'empty' => 1, _handle => \&read_handle,
+define_actor('read', 'empty' => 1, 
 	     'dscr' => "Input from FILE or HREF, with optional BASE path.
 FILE may be looked up as an INTERFORM.   Optionally read only INFO or HEAD.
 For DIRECTORY, read names or LINKS, and return TAG or ul.  DIRECTORY can read 
@@ -847,7 +865,7 @@ sub read_handle {
     my $content;
 
     if ($file && ! $href) {		# File
-	my $fn = $self->lookup_file($it, $ii);
+	my $fn = file_lookup($self, $it, $ii);
 
 	## Check to see if the file exists.
 
@@ -936,7 +954,7 @@ sub read_handle {
 ### <write [file="name" | href="url"] [base="path"] [tagset="name"]
 ###	    [append] [copy [protect [markup]]] >content</output>
 
-define_actor('write', 'content' => 'value', _handle => \&write_handle,
+define_actor('write', 'content' => 'value', 
 	     'dscr' => "Output CONTENT to FILE or HREF, with optional BASE 
 path.  FILE may be looked up as an INTERFORM.  BASE directory is created if 
 necessary.  Optionally APPEND or POST.  Optionally TRIM leading and trailing 
@@ -1030,7 +1048,6 @@ sub write_handle {
 ###	This is incredibly kludgy, but it works!
 
 define_actor('agent-home', 'content' => 'name', 
-	     _handle => \&agent_home_handle,
 	     'dscr' => "Get path to a pia agent's home InterForm.
 Optionally make a LINK.  Very kludgy." );
 
@@ -1057,7 +1074,6 @@ sub agent_home_handle {
 ###	Tests whether an agent is running
 
 define_actor('agent-running', 'content' => 'name', 
-	     _handle => \&agent_running_handle,
 	     'dscr' => "Tests whether an agent is running (installed)" );
 
 sub agent_running_handle {
@@ -1076,8 +1092,7 @@ sub agent_running_handle {
 
 ### <agent-set-options>query_string</agent-set-options>
 
-define_actor('agent-set-options', 'unsafe' => 1,
-	     'content' => 'options', _handle => \&agent_set_options_handle,
+define_actor('agent-set-options', 'unsafe' => 1, 'content' => 'options', 
 	     'dscr' => "Sets OPTIONS for agent NAME" );
 
 sub agent_set_options_handle {
@@ -1113,7 +1128,6 @@ sub agent_set_options_handle {
 ### <agent-options>
 
 define_actor('agent-options', 'empty' => 1,  'unsafe' => 1,
-	     _handle => \&agent_options_handle,
 	     'dscr' => "Returns list of option names for agent NAME" );
 
 sub agent_options_handle {
@@ -1136,8 +1150,7 @@ sub agent_options_handle {
 ### <agent-set-criteria>query_string</agent-set-criteria>
 
 if (0) { #=== buggy!
-define_actor('agent-set-criteria', 'unsafe' => 1,
-	     'content' => 'criteria', _handle => \&agent_set_criteria_handle,
+define_actor('agent-set-criteria', 'unsafe' => 1, 'content' => 'criteria',
 	     'dscr' => "Sets CRITERIA for agent NAME" );
 }
 sub agent_set_criteria_handle {
@@ -1159,7 +1172,6 @@ sub agent_set_criteria_handle {
 }
 
 define_actor('agent-set-criterion', 'empty' => 1, 'unsafe' => 1, 
-	     _handle => \&agent_set_criterion_handle,
 	     'dscr' => "set match criterion NAME to VALUE (default 1), 
 optionally in AGENT.");
 
@@ -1186,7 +1198,6 @@ sub agent_set_criterion_handle {
 ### <agent-criteria>
 
 define_actor('agent-criteria', 'empty' => 1,  'unsafe' => 1,
-	     _handle => \&agent_criteria_handle,
 	     'dscr' => "Returns list of match criteria for agent NAME" );
 
 sub agent_criteria_handle {
@@ -1230,8 +1241,7 @@ sub criteria_to_list {
 
 ### <agent-install name='n' type='t'>
 
-define_actor('agent-install', 
-	     'content' => 'options', _handle => \&agent_install_handle,
+define_actor('agent-install', 'content' => 'options',
 	     'dscr' => "Installs an agent with given OPTIONS (content).
 Returns the agent's name." );
 
@@ -1250,8 +1260,7 @@ sub agent_install_handle {
 
 ### <agent-remove>name</agent-remove>
 
-define_actor('agent-remove', 'unsafe' => 1,
-	     'content' => 'name', _handle => \&agent_remove_handle,
+define_actor('agent-remove', 'unsafe' => 1, 'content' => 'name',
 	     'dscr' => "Remove (uninstall) an agent with given NAME." );
 
 sub agent_remove_handle {
@@ -1265,7 +1274,6 @@ sub agent_remove_handle {
 }
 
 define_actor('agent-list', 'content' => 'type', 
-	     _handle => \&agent_list_handle,
 	     'dscr' => "List the agents with given TYPE. Possibly SUBS only." );
 
 sub agent_list_handle {
@@ -1288,7 +1296,7 @@ sub agent_list_handle {
 
 ### Transaction
 
-define_actor('trans-control', _handle => \&trans_control_handle,
+define_actor('trans-control', 
 	     'dscr' => "Add a control to the current response." );
 
 sub trans_control_handle {
@@ -1307,7 +1315,7 @@ sub trans_control_handle {
 
 ### <user-message>string</user-message>
 
-define_actor('user-message', _handle => \&user_message_handle,
+define_actor('user-message', 
 	     'dscr' => "Display a message to the user." );
 
 sub user_message_handle {
@@ -1338,8 +1346,7 @@ sub pia_exit_handle {
 
 ### <os-command>command</os-command>
 
-define_actor('os-command', 'unsafe' => 1,
-	     'content' => 'command', _handle => \&os_command_handle,
+define_actor('os-command', 'unsafe' => 1, 'content' => 'command', 
 	     'dscr' => "Execute CONTENT as an operating system command 
 in the background with proxies set." );
 
@@ -1364,8 +1371,7 @@ sub os_command_handle {
 
 ### <os-command-output>command</os-command-output>
 
-define_actor('os-command-output', 'unsafe' => 1,
-	     'content' => 'command', _handle => \&os_command_output_handle,
+define_actor('os-command-output', 'unsafe' => 1, 'content' => 'command', 
 	     'dscr' => "Execute CONTENT as an operating system command 
 and capture its output." );
 

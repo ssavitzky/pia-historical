@@ -901,6 +901,9 @@ sub check_for_interest {
     my $passive_actors = $self->passive_actors;
     my $quoting = $self->quoting;
 
+    ## We'd like to do this, but many actors use act_on for syntax.
+    #return if $quoting;		# no action if quoting, by definition.
+
     foreach $a (@$passive_actors) {
 	if ($a->matches($it, $self, $incomplete, $quoting)) {
 	    $a->act_on($it, $self, $incomplete, $quoting);

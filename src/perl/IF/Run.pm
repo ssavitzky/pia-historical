@@ -1,11 +1,13 @@
-###### Run the Interform Interpretor
+package IF::Run; ###### Run the Interform Interpretor
 ###	$Id$
 ###
 ###	This module contains the routines that actually *run* the
 ###	InterForm Interpretor on inputs of various sorts.
 ###
 
-package IF::Run;
+## Forward references:
+##	We need these before compiling IF::Actors (you don't want to know).
+\&eval_perl;
 
 use IF::II;
 use IF::IA;
@@ -210,7 +212,7 @@ sub if_entities {
     ## Load a standard set of entity bindings.
     ##	  === eventually this should be a set of separately-loaded packages
 
-    my $ents = $trans->test('entities') if defined $trans;
+    my $ents = $trans->get_feature('entities') if defined $trans;
     print "bogus entities = $ents\n" if ($ents && ! ref $ents);
 
     if (! ref $ents) {
@@ -238,7 +240,7 @@ sub if_entities {
 	my $agentNames = join(' ', sort($resolver->agent_names));
 
 	## === $trans->test('agent') returns 1; doesn't compute.
-	my $transAgentName = $trans->test('agent');
+	my $transAgentName = $trans->get_feature('agent');
 	my $transAgentType;
 	if ($transAgentName) {
 	    my $ta = $resolver->agent($transAgentName);
@@ -284,7 +286,7 @@ sub if_entities {
 
 	$ents->{'entityNames'} = join(' ', sort keys %$ents);
 
-	$trans -> assert('entities', $ents) if defined $trans;
+	$trans -> set_feature('entities', $ents) if defined $trans;
 	## === WARNING! Agents can pass info through entities now ===
     }
 
