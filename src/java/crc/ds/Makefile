@@ -29,9 +29,11 @@ Table.class: Stuff.java
 
 Thing.class: Stuff.java
 
-Queue.class: List.java
+Queue.class: List.java Stuff.java
 
-Criteria.class: Criteria.java Criterion.java
+Features.class: Criteria.java
+
+Criteria.class: Criterion.java Features.java List.java Stuff.java
 
 Criterion.class: Criterion.java ValueCriterion.java
 
