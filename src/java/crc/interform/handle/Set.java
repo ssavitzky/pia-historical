@@ -48,7 +48,7 @@ public class Set extends crc.interform.Handler {
   static String syntaxStr=
     "<set name=\"name\" | index=\"index\" [copy] [attr=attr | insert=where [replace] ]\n" +
     "[ pia | agent | trans [feature] | env \n" +
-    "| [element [tag=ident]] | entity [global | local] [asToken] ]>...</set>\n" +
+    "| [element [tag=ident]] | entity [global | local]]>...</set>\n" +
 "";
   public String dscr() { return dscrStr; }
   static String dscrStr=
@@ -63,7 +63,6 @@ public class Set extends crc.interform.Handler {
     "ELEMENT may have a TAG.  TRANSaction item\n" +
     "may be FEATURE.  \n" +
     "Optionally COPY content as result.\n" +
-    "ASTOKEN forces the CONTENT to be a single token (rather than a list of tokens)\n" +
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
@@ -160,8 +159,8 @@ public class Set extends crc.interform.Handler {
    */
   protected SGML getValue(SGML it){
     SGML result = it.isEmpty()? new Text("") : it.content().simplify();
-       if(it.hasAttr("asToken") && result instanceof Tokens)
-         result = new Element("", result);
+      // if(it.hasAttr("asToken") && result instanceof Tokens)
+      //   result = new Element(null, result);
 
 
     return result;

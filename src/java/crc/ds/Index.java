@@ -29,7 +29,7 @@ import crc.pia.Pia;
  *  succession.
  *<strong>Syntax for the path is the following:</strong>
  *<pre>
- *SGML.xxx[[-]start#[-end#]]
+ *SGML.xxx[-start#[-end#]]
  *	xxx	
  *		tag name		means tag name
  *		null			any tag
@@ -80,6 +80,11 @@ public class Index {
   * The delimiter between tag start end
   */
   public static final String SEPARATOR="-";
+
+ /**
+  * assume numbers (without leading - are numeric indexes)
+  */
+  public boolean nakedNumbers = true;
 
 
  /**
@@ -248,6 +253,14 @@ public class Index {
     this.path = path;
   }
 
+  /** constructor for keys that may be numeric (dl's)
+   */
+ public Index( String path,  boolean numericTags) {
+  this(path);
+  this.nakedNumbers = numericTags;
+ }
+  
+
   /************************************************************************
   /**  operations  to provide index positioning and determine tag, start and end */
   /************************************************************************/
@@ -366,8 +379,9 @@ public class Index {
     String t = nextToken();
     //Pia.debug("Token-->"+t);
 
-    // missing tag and dash, tag is ANY.  current token is number
-    if( parseNumber( t ) != INVALIDNUMBER ){
+    // ---missing tag and dash, tag is ANY.  current token is number
+    // nakedNumbers-> missing dash allowed -- else treat a number as any other tag
+    if(nakedNumbers && parseNumber( t ) != INVALIDNUMBER ){
       tag = ANY;
       pushBackToken( t );
       return;

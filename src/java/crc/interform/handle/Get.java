@@ -289,7 +289,7 @@ public class Get extends crc.interform.Handler {
 	return context.attr(Util.getString( request, "key", ""));
       if(context instanceof DescriptionList)
 	try{
-	SGML result= new Index(Util.getString( request, "key", "")).lookup(context);
+	SGML result= new Index(Util.getString( request, "key", ""),false).lookup(context);
         debug(this, "key lookup result = " + result);
 	return result;
 	
@@ -314,7 +314,7 @@ public class Get extends crc.interform.Handler {
       } catch (Exception e){
 	return null;
       }
-      // keys has no meeting for other items
+      // keys has no meeting for other items -- could be tags...
       return null;
     }
     
