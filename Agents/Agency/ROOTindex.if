@@ -9,9 +9,9 @@
 	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
 	border=0 width=170 height=48 alt="R I C O H"></a>
     <th width=170 nowrap>
-    <th align=left nowrap nobr>
-        <if><agent-running name=Logo><then><img
-	    src="/Logo/pia45.gif" alt=PIA></then></if><br></tr>
+    <th align=left nowrap nobr valign=center>
+        <a href="/"><img width=85 height=45 border=0
+	    	         src="/Agency/Icons/pia45.gif" alt=PIA></a><br></tr>
 <tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
     ><img src="/Agency/Icons/blackline.gif" height=2 width=510><br></tr>
 <tr><th align=left><a href="http://rsv.ricoh.com/"><img
@@ -28,24 +28,28 @@ for
     <then>Peripheral Interface </then>
     <else>Personal Information </else></if> Agency
 <td>
-<tr><th width=170>
+<tr><th width=170 rowspan=5>
+	<if><read info interform file="/Agency/insert.if">
+	    <then><read interform file="/Agency/insert.if" process></then>
+	<else></if>
     <td><br>
-<tr><th width=170>
-    <th valign=top  align=right><a href="/Agency/home.if"><b>Agency:</b></a>
-    <td><a href="/Agency/installers.if">install</a> / 
+<tr>
+    <th valign=top align=right><a href="/Agency/home.if"><b>Agency:</b></a>
+    <td valign=top ><a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>
  	<a href="/Agency/agents.if">agents</a><br>
-<tr><th width=170>
+<tr>
     <th valign=top align=right><a href="/PIA/"><b>Files:</b></a>
-    <td><a href="/PIA/Agents/">Agents</a>
+    <td valign=top ><a href="/PIA/Agents/">Agents</a>
 	<a href="/PIA/Doc/">Documents</a>
 	<a href="/PIA/src/">sources</a><br>
 <if><agent-running name=History><then>
-<tr><th width=170>
+<tr>
     <th valign=top align=right><a href="/History"><b>History:</b></a>
-    <td><a href="/My/History">All</a>
+    <td valign=top ><a href="/My/History">All</a>
         <a href="/My/History/&date;.html">[&date;]</a><br></then>
 </if>
+<tr><th align=left><br><!-- in case history isn't running -->
 <tr><th align=left><br>
 
 <tr><th align=left colspan=2>
