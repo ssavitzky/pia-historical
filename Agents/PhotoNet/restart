@@ -1,0 +1,7 @@
+#!/bin/csh -x
+rm -f /home/pia/.pia/PhotoNet/localphotos/*
+rm -f /home/pia/.pia/PhotoNet/metadata/*
+rm -f /home/pia/.pia/PhotoNet/newids.xml
+rm -f /home/pia/.pia/PhotoNet/newids
+cp /home/pia/.pia/PhotoNet/userdata/marko.xml.ok /home/pia/.pia/PhotoNet/userdata/marko.xml
+cp /home/pia/.pia/PhotoNet/photoid.first /home/pia/.pia/PhotoNet/photoid.latest

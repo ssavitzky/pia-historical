@@ -1,0 +1,12 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Header Frame</title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+</head>
+<body BGCOLOR="#C0C0C0" TEXT="#FFFFFF" LINK="#FFFFFF" VLINK="#FFFFFF" ALINK="#FF0000">
+
+<set name="UserID"><get form name="userid"></set>
+<CENTER>
+<IMG SRC="KioskLogo.gif" WIDTH="176" HEIGHT="62" ALIGN="absmiddle">
+</CENTER>
+</body></html>

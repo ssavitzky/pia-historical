@@ -1,0 +1,54 @@
+<HTML>
+<set name="UserID"><get form name="userid"></set>
+
+<if><get name="UserID"><then>
+
+<HEAD>
+<TITLE>Ricoh Silicon Valley Photo Kiosk</TITLE>
+
+<SCRIPT LANGUAGE="Javascript">
+var ViewAllPhotos = true;
+
+function DoneFetchFrom(NewPhotos) {
+  FetchFrame.location = "AddPhotosFrame.if?userid=&UserID;&message=Found%20" + NewPhotos + "%20new%20photos";
+  if (NewPhotos > 0) {
+    ViewFrame.location = "Login.if?userid=&UserID;&View=new";
+  }
+}
+
+function Reset() {
+  ViewFrame.location = "Login.if?userid=&UserID;";
+  FetchFrame.location = "AddPhotosFrame.if?userid=&UserID;";
+}
+
+</SCRIPT>
+
+</HEAD>
+
+<FRAMESET ROWS="80,*" BORDER="0">
+<FRAMESET COLS="30%,70%">
+<FRAME NAME="HeadFrame" SRC="HeaderFrame.if?userid=&UserID;" NORESIZE SCROLLING="no">
+<FRAME NAME="FetchFrame" SRC="AddPhotosFrame.if?userid=&UserID;" NORESIZE SCROLLING="no">
+</FRAMESET>
+<FRAME NAME="ViewFrame" SRC="Login.if?userid=&UserID;" NORESIZE SCROLLING="auto">
+</FRAMESET>
+
+</then>
+<else>
+<HEAD>
+<TITLE>Login to the Photo Kiosk</TITLE>
+</HEAD>
+<BODY>
+<H3>Log in to the photo kiosk</H3>
+
+<FORM ACTION="index.if" METHOD="GET">
+Please enter your Ricoh Silicon Valley user ID:
+<BR><INPUT TYPE="text" SIZE="40" NAME="userid">
+<P>
+<INPUT TYPE="submit" VALUE="Log in">
+</FORM>
+</BODY>
+</else>
+</if>
+
+</HTML>

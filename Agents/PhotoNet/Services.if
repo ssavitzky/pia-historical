@@ -1,0 +1,52 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Remote Photo Services</title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+<SCRIPT LANGUAGE="Javascript">
+var NumFound;
+</SCRIPT>
+</head>
+
+<!-- Find the user ID -->
+<set name="UserID"><get form name="userid"></set>
+
+<!-- Find the universal ID -->
+<set name="PhotoID"><get form name="PhotoID"></set>
+
+
+<!-- Find the service picked -->
+<set name="Service"><get form name="Service"></set>
+
+<set name="ServiceDescriptions"><read interform directory file="services"></set>
+<if><get name="ServiceDescriptions"><then>
+<repeat list="&ServiceDescriptions;" entity="ServiceDescription">
+<set name="serviced"><read interform file="services/&ServiceDescription;" process></set>
+<if><get name="serviced"><then>
+<if><equal text><get index="serviced.name.Text"> &Service;</equal>
+<then>
+<set name="ServiceURL"><get index="serviced.localurl.Text"></set>
+</then>
+</if>
+</then>
+</if>
+</repeat>
+
+<if><get name="ServiceURL"><then>
+
+<!-- Redirect to the appropriate service URL -->
+
+Redirecting to service (this may take a minute)...
+<set name="RedirectURL">&ServiceURL;?PhotoID=&PhotoID;&userid=&UserID;</set>
+<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=&RedirectURL;"></meta>
+
+</then>
+<else>
+
+Unknown service
+
+</else>
+</if>
+
+</body>
+</html>
+

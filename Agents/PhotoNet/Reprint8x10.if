@@ -1,0 +1,37 @@
+<!doctype html public "-//IETF//DTD HTML//EN//2.0">
+<html><head>
+<title>Redirect to Kodak Reprints</title>
+<link rev="made" href="mailto:marko@crc.ricoh.com">
+</head><body>
+
+
+<!-- Find the universal ID -->
+<set name="PhotoID"><get form name="PhotoID"></set>
+
+<!-- Given that, look up the metadata -->
+<set name="metadata"><read file="metadata/&PhotoID;.xml" process></set>
+<set name="index"><get index="metadata.photonetindex.Text"></set>
+
+<!-- Also look up the personal info -->
+<set name="UserdataFileName">userdata/&FORM.userid;.xml</set>
+<set name="userdata"><read file="&UserdataFileName;" process></set>
+
+<set name="photonetrollid"><get index="userdata.personal.photonetrollid.Text"></set>
+<set name="photonetname"><get index="userdata.personal.photonetname.Text"></set>
+
+<!-- Get a cookie -->
+<set name="UploadFormURL">http://kodak53.photonet.com/cgi-pv/view.pl?Order=&photonetrollid;&Name=&photonetname;</set>
+<set name="UploadForm"><read href="&UploadFormURL;" process></set>
+<set name="PrintsFormURL">http://kodak53.photonet.com<get index="UploadForm.body.font.table.tr-3.td-1.a-3" attr="href"></set>
+<set name="PrintsForm"><read href="&PrintsFormURL;" process></set>
+<set name="Cookie"><get index="PrintsForm.body.font.table.tr-3.td-3.table.tr-2.td-1.form.input-1" attr="value"></set>
+
+<set name="RedirectURL">http://kodak53.photonet.com/cgi-pv/vieworder.pl?Cookie=&Cookie;&Prod=39&QTY&index;=1&Data=Buy%20Now</set>
+
+Transferring to Kodak...
+
+<!-- Send the browser a refresh tag so it goes right there -->
+<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=&RedirectURL;"></meta>
+
+</body></html>
+
