@@ -2,64 +2,77 @@
 <html><head>
 <title>&piaUSER;'s Agency on &piaHOST;</title>
 <link rev="made" href="mailto:steve@crc.ricoh.com"></link>
-</head><body bgcolor="#ffffff">
-<h1>Index for 
-<if><test match='^pia$'><get env name="USER"></test>
-    <then> the </then>
+</head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+
+<table align=center cellspacing=0 cellpadding=0 border=0>
+<tr nowrap nobr><th align=left width=170 valign=bottom nowrap><a
+	href="http://rsv.ricoh.com/"><img src="/Agency/Icons/ricoh.gif"
+	border=0 width=170 height=48></a>
+    <th width=170 nowrap>
+    <th align=left nowrap nobr>
+        <if><agent-running name=Logo><then><img src="/Logo/pia45.gif"></then>
+        </if></tr>
+<tr height=2><td colspan=3 bgcolor="#000000" nowrap nobr
+    ><img src="/Agency/Icons/blackline.gif" height=2 width=510></tr>
+<tr><th align=left><a href="http://rsv.ricoh.com/"><img
+	src="/Agency/Icons/silicon-valley.gif"
+	border=0 width=170 height=21></a>
+    <th>
+    <th align=left><font face=helvetica>Root Index</font>
+for
+<if><test exact  match='pia'><get env name="USER"></test>
+    <then> this </then>
     <else> &piaUSER;'s</else></if>
-<if><agent-running name=Logo>
-    <then><img src="/Logo/pia32?height=32&type=pia&bw=1" align=top
-               height=32 width=60 alt=PIA></then>
-    <else> PIA
-           <img src="http://&piaHOST;:&piaPORT;/PIA/Doc/Graphics/sm_pent.gif"
-                align=top>
-    </else></if>
-on &piaHOST;
-</h1>
-
-<h3>
+<tr><th><th><th align=left>
 <if><test exact match='pia'><get env name="USER"></test>
-    <then> a Peripheral Interface </then>
-    <else> &piaUSER;'s Personal Information </else></if> Agency</h3>
-
-<b>URL:</b>
-&lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<b>User:</b> &piaUSER;<br>
-<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
-<b>Agents:</b> <repeat list="&agentNames;" entity="foo">
- <a href="/&foo;">&foo;</a> <a href="/&foo;/"><b> / </b></a> </repeat><br>
-<b>Agency:</b> <a href="/Agency">Home Page</a>
-	(<a href="/Agency/installers.if">install</a>/
+    <then>Peripheral Interface </then>
+    <else>Personal Information </else></if> Agency
+<td>
+<tr><th width=170>
+    <td>&nbsp;
+<tr><th width=170>
+    <th valign=top  align=right><a href="/Agency/home.if">Agency:</a>
+    <td><a href="/Agency/installers.if">install</a> / 
  	<a href="/Agency/remove_agent.if">remove</a>
- 	<a href="/Agency/agents.if">agents</a>)<br>
-<b>Files:</b> <a href="/PIA/"><b>/PIA/</b></a> (
-	<a href="/PIA/Agents/">Agents</a>
+ 	<a href="/Agency/agents.if">agents</a><br>
+<tr><th width=170>
+    <th valign=top align=right><a href="/PIA/">Files:</a>
+    <td><a href="/PIA/Agents/">Agents</a>
 	<a href="/PIA/Doc/">Documents</a>
-	<a href="/PIA/src/">sources</a> )
-<p>
+	<a href="/PIA/src/">sources</a>
+<if><agent-running name=History><then>
+<tr><th width=170>
+    <th valign=top align=right><a href="/History">History:</a>
+    <td><a href="/My/History">All</a>
+        <a href="/My/History/&date;.html">[&date;]</a></then>
+</if>
+<tr><th align=left>&nbsp;
+<tr><th align=left>&nbsp;
 
-<hr>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="file:&filePath;">&filePath;</a>
-<hr>
-
-<h3>Index of Running Agents</h3>
-<if><agent-running name=logo>
-    <then><img src="/Logo/pia120?bw=1" align=right
-               height=120 width=222></then></if>
-
-<pre><i><pad align=right width=15>Index</pad>	Home</i>
+<tr><th align=left colspan=2>
+<pre><b><pad align=right width=15>Agent Index</pad>	Home Page</b>
 <repeat list="&agentNames;"
        ><pad spaces width=15>&li;/</pad><a href="/&li;/"><b>&li;/</b></a
        >	<agent-home link name="&li;">
 </repeat></pre>
 
+<td valign=bottom>
+<if><agent-running name=Logo>
+    <then><img src="/Logo/pia120.gif"
+               height=120 width=222></then></if>
+<pre>
+</pre>
+
+</table>
 
 <hr>
-<a href="/Agency/home.if">Agency agent</a>
+<b>Date:</b> &dayName;, &year; &monthName; &day; [&date;] &time;:&second;<br>
 <b>URL:</b>
 &lt;<a href="http://&piaHOST;:&piaPORT;/">http://&piaHOST;:&piaPORT;/</a>&gt;
-<b>User:</b> &piaUSER;
+<br>
+<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
+<b>File:</b> <a href="file:&filePath;">&filePath;</a>
+
 <hr>
 <b>Copyright &copy; 1997 Ricoh Silicon Valley</b><br>
 <b>$Id$</b><br>
