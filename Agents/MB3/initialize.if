@@ -42,6 +42,12 @@
 <!-- if the options file nonexistent, create it from the defaults -->
  <if> <read file=options.dat info> <else>
  <write file=options.dat> <read interform file=options.dat></write></else> </if>
+
+ <!-- for some recent, the file separator is not working properly so forced to use native -->
+ <if> <test match="\\">&filePath;</test> 
+<then><set name=fseparator agent>\</set></then> 
+<else><set name=fseparator agent>/</set></else> </if>
+
 <!-- now load any options -->
  <load-options> <read file=options.dat process> </load-options>
 

@@ -2,6 +2,7 @@
 <html><head>
 <title>MB3: Event</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
+<tagset-load name=MB3-actors>
  <if> <get form name=eid> <then>
       <set name=event><retrieve-event id=&FORM.eid; file=&FORM.file;> </set>
       </then>
@@ -9,15 +10,16 @@
 <set entity name=title><get index=event.eventtitle></set>
 <read interform file="heading.inc" process>
 <!-- read interform file="subhead.inc" process -->
-<tagset-load name=MB3-actors>
+
 
 <center>
  Presented by: <get index=event.eventauthor> <br>
  on:  <get index=event.date.month> <get index=event.date.day> <get index=event.date.year><br>
+<get index=event.eventdescription>
 </center>
 
 
-<get index=event.eventdescription>
+
 <p>
 
 <!-- update URL if any -->

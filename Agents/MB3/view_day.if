@@ -2,7 +2,7 @@
 <html><head>
 <title>MB3: Daily Agenda</title>
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
- <if> <get form name=d> <then> <set name=myday>&FORM.d;</set></then>
+ <if> <get form name=day> <then> <set name=myday>&FORM.day;</set></then>
       <else><set name=myday>&day;</set></else></if>
  <if> <get form name=month> <then> <set name=mymonth>&FORM.month;</set></then>
       <else><set name=mymonth>&month;</set></else></if>
@@ -20,10 +20,10 @@
 <process copy>
 
  
- <set name=dir><get name=year form>/<get name=month form></set>
+ <set name=dir>events&AGENT.fseparator;<get name=year form>&AGENT.fseparator;<get name=month form></set>
  <set name=file><get name=day form></set>
- <set name=file>&dir;/&file;</set>
- <set name=nextid><sum digits=0><get agent name=idcounter> 1></set>
+ <set name=file>&dir;&AGENT.fseparator;&file;</set>
+ <set name=nextid><sum digits=0><get agent name=idcounter> 1 </sum></set>
  <set name=idcounter agent>&nextid;</set>
  <write file=eventcount.dat>&nextid;</write>
 
@@ -57,7 +57,7 @@ month=&mymonth; year=&myyear;>here</view-day-link> to
 view updated events for &mymonth;/&myday;/&myyear;.
 <hr>
 </process>
- <if> <get name=event> <else>
+<if> <get name=event> <else>
  <!-- default values -->
 <set name=event>
 <event>
@@ -69,7 +69,7 @@ view updated events for &mymonth;/&myday;/&myyear;.
  <day><if><get form name=day><then><get form
        name=day></then><else>&day;</else></if></day>
 </date>
-<eventstart>9am</eventstart>
+<eventstart>&time;</eventstart>
 <eventdescription></eventdescription>
 <eventlinks><ol> </ol></eventlinks>
 <eventauthor> </eventauthor>
@@ -108,7 +108,7 @@ view updated events for &mymonth;/&myday;/&myyear;.
 <tr>    <th valign=top align=left> Description
 	<td><textarea name=desc><get index=event.eventdescription.text></textarea>
 <tr>
-    <tr><th><th valign=top align=right><input type=submit value="AddEvent">
+    <tr><th><th valign=top align=left><input type=submit value="AddEvent">
   </table>
 </form>
 

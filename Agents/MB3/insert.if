@@ -1,7 +1,7 @@
 <!-- Read by MB3 home.if  -*-html-helper-*- -->
 <!-- show presentations for today -->
 
-
+<tagset-load name=MB3-actors>
  <if> <get name=myday> <then></then>
       <else><if> <get form name=day> <then><set name=myday>&FORM.day;</set>
             </then>
@@ -24,7 +24,7 @@
 <caption> Events for <get name=daydesc></caption>
 <TR><TH> Title<TH>Start<TH>Description</tr>
  <repeat list=&mylist; entity=e>
- <tr> <td> <get index=e.eventtitle.text>
+ <tr> <td> <view-event-link event=&e;>
   <td> <get index=e.eventstart.text>
   <td> <get index=e.eventdescription.text>
  </tr>
@@ -33,7 +33,7 @@
  </then>
  <else>No events scheduled for <get name=daydesc>.</else></if>
 <br>
- <if> <get name=noday> <then><a href="view_day.if">Add Event</a></then> <else><a href="view_day.if?d=&myday;">Add Event</a></else> </if>
+ <if> <get name=noday> <then><a href="view_day.if">Add Event</a></then> <else><a href="view_day.if?day=&myday;">Add Event</a></else> </if>
  
 
 
