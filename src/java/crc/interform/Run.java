@@ -152,11 +152,12 @@ public class Run  extends Environment {
       // form parameters might be either query string or POST data
       if(transaction.hasQueryString()){
         ent("urlQuery",  (SGML)new Text(transaction.queryString()));
-        ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
+	ent("FORM",new AttrWrap(new AttrTable(transaction.getParameters())));
       } else {
 	ent("urlQuery",  "");
-	ent("FORM", "");
+	ent("FORM",new AttrWrap(new AttrTable()));
       }
+      // if no parameters this is an empty table
 
       if (transaction.test("agent-request") ||
 	   transaction.test("agent-response")) {
