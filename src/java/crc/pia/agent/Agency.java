@@ -246,8 +246,9 @@ public class Agency extends GenericAgent {
    */
   public void initialize() {
     if (initialized) return;
-    criteria().push(Criterion.toMatch("IsRequest", true));
-    criteria().push(Criterion.toMatch("IsAgentRequest", true));
+    put("criteria", "Request Agent_request");
+    //criteria().push(Criterion.toMatch("IsRequest", true));
+    //criteria().push(Criterion.toMatch("IsAgentRequest", true));
     super.initialize();
   }
 
