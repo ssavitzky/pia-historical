@@ -60,15 +60,15 @@ public class GenAgent extends Thing implements Agent {
    * Initialization; sub classes may override
    */
   public void initialize(){
-    String n;
-    String t;
+    String n = name();
+    String t = type();
     String url;
     Transaction request;
 
     if( !n.equalsIgnoreCase( t ) ) type( t );
 
-    option("name", name());
-    option("type", type());
+    option("name", n);
+    option("type", t);
 
     url = "/" + n + "/" + "initialize.if";
     request = createRequest("GET", url );
@@ -365,13 +365,9 @@ public class GenAgent extends Thing implements Agent {
    * Set a match criterion.
    * feature is string naming a feature
    * value is 0,1 (exact match--for don't care, omit the feature)
-   * code is a functor object takes transaction as argument returns Boolean
    * @return criteria table
    */
-  public Vector matchCriterion(String feature, Boolean value, Object code){
-    if( code )
-      pia.TFeatures.register(feature, code);
-    
+  public Vector matchCriterion(String feature, Boolean value){
     if(value == null)
       value = true;
     criteria( feature );
