@@ -81,7 +81,10 @@ public class Agent_install extends crc.interform.Handler {
       notify(aContext, tag, atts,
 	     "Bug: agent options in content not implemented.");
 
-    crc.ds.Table form = env.getTransaction().getParameters();
+    crc.pia.Transaction trans = env.getTransaction();
+    crc.pia.Transaction req = trans.requestTran();
+    crc.ds.Table form = req.getParameters();
+    if (form == null) return true;
 
     String name = form.has("agent")? form.at("agent").toString() : null;
     if (name == null) 
