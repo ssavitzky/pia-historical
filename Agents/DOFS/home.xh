@@ -4,38 +4,14 @@
        <then>/&agentName;</then></if> home page</title>
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body bgcolor="#ffffff" link="#c40026" vlink="#e40026">
-<set entity name=title>Home page for 
-    <if><test exact match="&agentName;">&agentType;</test>
-        <then>the &agentName; agent <br>
-	      (Document-Oriented Filing System)</then>
-        <else>&agentType;/&agentName;</else>
+<header><if><test exact match="&agentName;">&agentType;</test>
+        <then>(Document-Oriented Filing System) Home page</then>
+        <else>&agentType; agent</else>
     </if></set>
-
-<read interform file="heading.inc" process>
-
+</header>
 <set entity name="dofsNames"><agent-list subs type="&agentType;"></set>
 <set entity name="subs"><agent-list subs type="&agentType;"></set>
-
-<table cellspacing=0 cellpadding=0 border=0>
-<tr>
-  <th width=170>
-    <read quiet interform file="insert.if" process>
-  <td>
-    <table cellspacing=0 cellpadding=0 border=0>
-    <tr><th width=170><img src="/Icon/blank170x1.gif"
-	                   width=170 height=1></th>
-        <td><br>
-    <tr><th align=right><img src="/Icon/dot-blue.gif"
-			     height=20 width=20 alt="*">
-	    <td> <b href="home.if">Home</b>
-    		 <a href="index.if">Index</a>
-    		 <a href="help.if">Help</a>
-<if><read info interform file="initialize.if"><then>
-    <tr><th><td><a href="options.if">Options</a>
-	    	      <a href="initialize.if">[re-initialize]</a></then>
-</if>
-    <tr><th><td><a href="/PIA/Agents/&agentPath;/">InterForms</a>
-	        <a href="/My/Agents/&agentPath;/">(Customized)</a>
+<sub-head page=home>
     <tr><th align=right>Files: <td>
 	<if><test exact match="&agentName;">&agentType;</test>
             <then><em>the &agentName; agent itself has no files.</em></then>
@@ -54,8 +30,7 @@
            </repeat></then></if>
     <tr><th><td> <a href="#naming">Naming conventions</a>
 
-    </table>
-</table>
+</sub-head>
 
 
 <hr>
@@ -153,11 +128,5 @@ There is some debate as to how ``DOFS'' should be pronounced.  ``Doffs'' means
 ``takes off'' (usually applied to an article of clothing), whereas ``doofus''
 means a foolish or incompetent person.  Neither is particularly appropriate.
 
-<hr>
-<b>URL:</b> &lt;<a href="&url;">&url;</a>&gt;<br>
-<b>Source:</b> <a href="/PIA/Agents/&agentName;/&fileName;">&fileName;</a>
-<b>File:</b> <a href="/Root/&filePath;">&filePath;</a>
-<hr>
-<b>Copyright &copy; 1997 Ricoh California Research Center</b><br>
-<b>$Id$</b><br>
+<footer cvsid="$Id$">
 </body></html>
