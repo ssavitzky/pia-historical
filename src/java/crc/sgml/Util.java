@@ -24,11 +24,11 @@ public class Util {
 
   /** Wrap an object in a Text if it isn't already SGML. */
   public static final SGML toSGML(Object o) {
-    try {
-      return (SGML)o;
-    } catch (Exception e) {
-      return new Text(o);
+    if (o instanceof SGML) return (SGML)o;
+    if (o instanceof Boolean) {
+      return ((Boolean)o).booleanValue() ? new Text("1") : new Text("");
     }
+    return new Text(o);
   }
 
   /** Test an SGML object for boolean truth.  Null, the null list, and
