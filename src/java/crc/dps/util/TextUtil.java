@@ -88,12 +88,11 @@ public class TextUtil {
   public static Association getTextAssociation(ActiveNode n, boolean caseSens) {
 
     String str = getTextString(n);
-    String str1 = str; 
     
-    if(caseSens) {
-      str1 = str.toLowerCase();
+    if(!caseSens) {
+      str = str.toLowerCase();
     }
-    return Association.associate(n, str1);
+    return Association.associate(n, str);
   }
 
   /** Return a list of text Associations.  Splits text nodes containing
@@ -129,11 +128,8 @@ public class TextUtil {
     return s.substring(1);
   }
 
-  /** Trim the text to the specified width with the specified
-    * alignment. The default is left, meaning that characters are
-    * trimmed from the right. If no width is specified, leading and
-    * trailing whitespace are trimmed. Return an enumeration of nodes
-    * with whitespace removed.
+  /** Trim leading and trailing whitespace.  Return an 
+    * enumeration of nodes with whitespace removed.
     */
   public static Enumeration trimListItems(NodeList nl) {
     NodeEnumerator enum = nl.getEnumerator();
@@ -199,7 +195,7 @@ public class TextUtil {
     * added to the right.
     */
   public static Enumeration padListItems(NodeList nl, boolean align, boolean left,
-					  boolean right, int width) {
+					  boolean right, boolean center, int width) {
 
     List results = new List();
 
@@ -218,19 +214,33 @@ public class TextUtil {
       // Pad amount specified
       int padLen = (width - strLen);
       // Create a node full of spaces
-      ParseTreeText pNode = pad(padLen);
+      ParseTreeText pNode = null;
       if(right) {
-	results.push(pNode);
+	pNode = createPadNode(padLen);
+	results.insertAt(pNode, 0);
+      }
+      else if(center) {
+	int extraSpace = 0;
+	if((padLen % 2) != 0)
+	  extraSpace = 1;
+	padLen = padLen / 2;
+	// Add new node of spaces to end of list
+	pNode = createPadNode(padLen + extraSpace);
+	results.insertAt(pNode, results.nItems());
+	// Add new node of spaces to front of list
+	pNode = createPadNode(padLen);
+	results.insertAt(pNode, 0);
+
       }
       else {
-	int lastIndex = results.nItems();
-	results.insertAt(pNode, lastIndex);
+	pNode = createPadNode(padLen);
+	results.insertAt(pNode, results.nItems());
       }
     }
     return results.elements();
   }
 
-  public static final ParseTreeText pad(int width) {
+  public static final ParseTreeText createPadNode(int width) {
     
     String nodeStr = "";
     for(int i = 0; i < width; i++) {
@@ -370,7 +380,6 @@ public class TextUtil {
   static public void printNodeList(NodeList nl) {
     NodeEnumerator enum = nl.getEnumerator();
     for (Node n = enum.getFirst(); n != null; n = enum.getNext()) {
-      System.err.println(n.toString());
     }
   }
 
@@ -382,7 +391,6 @@ public class TextUtil {
     for (int i = 0; i < len; i++) {
       Association assoc = (Association)list.at(i);
       Node value = (Node)assoc.value();
-      System.err.println(value.toString());
     }
   }
 
