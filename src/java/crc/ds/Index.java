@@ -205,12 +205,13 @@ public class Index {
 	System.out.println("Index-->pushing a blank, end in dot");
       }
     }
+    this.path = path;
   }
-  
+  /*
   public Index(List l) {
     items = l; // we don't manipulate items, so no need to copy
   }
-  
+  */
   /************************************************************************
   /**  operations  to provide index positioning and determine tag, start and end */
   /************************************************************************/
@@ -621,8 +622,12 @@ public class Index {
 
     SGML foobar = new Element();
 
-    System.out.println("In path=========================");
+    //System.out.println("In path=========================");
 
+    int isDotDot = path.indexOf("..");
+
+    // we don't want ..
+    if( isDotDot != -1 ) throw new InvalidInput("dot dot is not accepted.");
     if( datum == null ) throw new IllegalArgumentException("Datum is null.");
     System.out.println("original datum-->"+datum.toString());
 
