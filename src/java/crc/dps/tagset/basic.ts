@@ -3,12 +3,14 @@
 <title>Basic Tagset</title>
 <cvs-id>$Id$</cvs-id>
 
+<doc>
 This file contains the XML definition for the Basic tagset.  It is essentially
 an XML representation of a DTD, with extensions for describing the semantics
 of the objects being defined, and intermixed documentation in HTML.  The best
 reference on how to <em>read</em> such a representation is <a
 href="tagset.html"><code>tagset.html</code></a>, the HTML version of the <a
 href="tagset.ts"><code>tagset</code></a> tagset.
+</doc>
 
 <doc> This tagset consists of the primitive operations <em>only</em>.	It is
       mainly intended as a base for more extensive tagsets, which in turn are
@@ -381,7 +383,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	inside another by using <tag>select</tag>.
   </note>
 
-  <define attribute=name required/>
+  <define attribute=name required />
   <define attribute=parent optional>
     <doc> The <code>parent</code> attribute specifies the tagset in which
 	  names not defined in the current tagset will be looked up.  It is
@@ -416,6 +418,7 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 	  still be reducible to a valid DTD, however, so that the documents
 	  <em>it describes</em> will be valid SGML.
     </doc>
+  </define>
 </define>
 
 <undefine element=namespace handler><!-- unimplemented -->
@@ -566,10 +569,12 @@ href="tagset.ts"><code>tagset</code></a> tagset.
 
 <h4>Sub-elements of <tag>repeat</tag></h4>
 
+<doc>
 The contents of a <tag>repeat</tag> is repeatedly expanded; all of the
 following sub-elements are effectively iterating in parallel, which makes it
 easy to go through multiple lists and number the corresponding elements (for
 example). 
+</doc>
 
 <ul>
   <li> <define element=foreach parent=repeat handler>
@@ -848,7 +853,7 @@ example).
 <ul>
   <li> <code>text</code> can occur inside a <tag>select</tag> element.  Text
        is split on whitespace and interpreted as follows:
-
+       <doc>
        <ul>
 	 <li> If the text is a number <em>N</em>, it selects the
 	      <em>N<sup>th</sup></em> node in the current set.  The first node
@@ -869,7 +874,8 @@ example).
        Text items are applied <em>sequentially</em>, so that, for example,
        <code>... li -1</code> selects the last &lt;li&gt; element in the
        current set.
-
+       </doc>
+       
   <li> <define element=name parent=select text handler>
          <doc> Contains a name (identifier).  All nodes in the current set
 	       that have the given name are selected.  Attributes and entities
@@ -1018,17 +1024,18 @@ example).
        </define>
 </ul>
 
-<h5>Wanted:</h5>
-<ul>
-  <li> A way of selecting on the basis of an arbitrary test.
-       <tag>repeat</tag> might do for that, too, but it's clumsy.
-       Possibly &lt;select-each&gt;
+<note author=steve>
+  Wanted:
+  <ul>
+    <li> A way of selecting on the basis of an arbitrary test.
+	 <tag>repeat</tag> might do for that, too, but it's clumsy.
+	 Possibly &lt;select-each&gt;
 
-  <li> A way of performing <em>multiple</em> selections, i.e. selecting
-       everything that matches A <em>or</em> B, or of selecting the first
-       three children of each node.  Possibly &lt;select-all&gt;
-
-</ul>
+    <li> A way of performing <em>multiple</em> selections, i.e. selecting
+	 everything that matches A <em>or</em> B, or of selecting the first
+	 three children of each node.  Possibly &lt;select-all&gt;
+  </ul>
+</note>
 
 <h4>Sub-elements of <tag>select</tag>: Replacement</h4>
 <ul>
@@ -1325,6 +1332,10 @@ example).
 
 	<p>In some tagsets it might be reasonable to rename this operation as
 	<tag>decode</tag>, or to make it an attribute of <tag>text</tag>.
+
+	<p>The set of attributes used in <tag>parse</tag> and
+	<tag>to-text</tag> is open-ended; tagset authors are free to define
+	new ones as needed. 
   </doc>
   <define attribute=usenet optional>
     <doc> Markup is added according to the conventions of Usenet mail and news
@@ -1392,9 +1403,6 @@ example).
     </doc>
   </define>
 </define>
-
-The set of attributes used in <tag>parse</tag> and <tag>to-text</tag> is
-open-ended; tagset authors are free to define new ones as needed.
 
 <h3>To-text</h3>
 <undefine element=to-text handler>
@@ -1534,6 +1542,7 @@ open-ended; tagset authors are free to define new ones as needed.
 	    <dd> Nothing is returned. 
 	  </dl> 
     </doc>
+  </define>
 </define>
 
 
@@ -1607,7 +1616,7 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> If present, the message corresponding to the result code.
     </doc>
   </define>
-</undefine>
+</define>
 
 
 <h3>Headers and its components</h3>
@@ -1660,7 +1669,7 @@ open-ended; tagset authors are free to define new ones as needed.
 </define>
 
 <h3>URL and its components</h3>
-<undefine element=URL handler=urlHandler>
+<define element=URL handler=urlHandler>
   <doc> Represents a URL or, more generally, a URI.  When expanded, its
 	content and attributes are ``synchronized'' so that all attributes
 	corresponding to portions of the complete URL are set correctly, and
@@ -1699,7 +1708,7 @@ open-ended; tagset authors are free to define new ones as needed.
     <doc> The query portion of the URL.
     </doc>
   </define>
-</undefine>
+</define>
 
 
 <!--template 
