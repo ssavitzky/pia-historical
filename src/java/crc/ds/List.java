@@ -234,6 +234,11 @@ public class List implements Stuff {
     append(e);
   }
 
+  /** Create a list by splitting a string on whitespace. */
+  public static List split(String s) {
+    return new List(new java.util.StringTokenizer(s));
+  }
+
   public Object clone() {
     return new List(this);
   }
