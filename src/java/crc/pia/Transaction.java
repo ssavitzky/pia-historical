@@ -802,20 +802,19 @@ public abstract class Transaction implements Runnable{ // implements Runnable ad
       Pia.instance().debug(this, "Waiting to be resolved");
 
       long delay = 1000;
+
+      /*
       try{
 	Thread.currentThread().sleep(delay);
       }catch(InterruptedException ex){;}
+      */
 
-      /*
+
       if(!contentObj.processInput()) {
 	try{
-	  long delay = (long)(Math.random() * 10000.0);
 	  Thread.currentThread().sleep(delay);
-	}catch(InterruptedException ex){
-	  break;
-	}
+	}catch(InterruptedException ex){;}
       }
-      */
 
     }
     
