@@ -271,8 +271,8 @@ public class Interp extends State {
 
   /** Set the value of a named global variable (entity).
    */
-  public final SGML setGlobal(String name, SGML value) {
-    return (SGML)entities.at(name, value);
+  public final void setGlobal(String name, SGML value) {
+    entities.at(name, value);
   }
 
   /** Get the value of a named attribute.  Looks up the context tree until
@@ -676,6 +676,7 @@ public class Interp extends State {
 
   /** Pass a token or tree to the output. */
   final void passToken(SGML it) {
+    if (output == null) return;
     if (! streaming) {		// Not streaming: just pass the tree
       output.append(it);
     } else {
