@@ -640,7 +640,7 @@ sub actor_attrs_handle {
 
 
 
-###### PIA Actors:
+###### PIA Agents:
 
 ### <agent-home>name</agent-home>
 ###	expands to the agent's home interForm name.
@@ -656,8 +656,7 @@ Optionally make a LINK.  Very kludgy." );
 sub agent_home_handle {
     my ($self, $it, $ii) = @_;
 
-    my $name = $it->attr('name');
-    $name = $it->content_string unless defined $name;
+    my $name = get_text($it, 'name');
     my $link = $it->attr('link');
 
     my $a = IF::Run::resolver()->agent($name);
@@ -696,14 +695,15 @@ sub agent_running_handle {
 
 ### <agent-set-options>query_string</agent-set-options>
 
-define_actor('agent-set-options', 'active' => 1, 'parsed' => 1, 
+define_actor('agent-set-options', 'active' => 1, 'parsed' => 1,  'unsafe' => 1,
 	     'content' => 'options', _handle => \&agent_set_options_handle,
 	     'dscr' => "Sets OPTIONS for agent NAME" );
 
 sub agent_set_options_handle {
     my ($self, $it, $ii) = @_;
 
-    my $options = get_pairs($it, 'options');
+    my $options;# = get_hash($it, 'options');
+    $options = IF::Run::request()->parameters unless ref $options;
     my $name = $it->attr('name');
     my $agent;
 
@@ -714,14 +714,41 @@ sub agent_set_options_handle {
 	$name = $agent->name;
     }
 
-    $options = list_pairs($options);
+    my $i = 0;
     if ($options) {
-	for (@$options) {
-	    $agent->option($_->[0], $_->[1]);
+	foreach $key (keys(%{$options})){
+	    print("  setting $key = ",$$option{$key},"\n") if  $main::debugging;
+	    $agent->option($key, $$options{$key});
+	    ++$i;
 	}
     }
+    if ($i) {
+	$ii->replace_it("$i");
+    } else {
+	$ii->delete_it();
+    }
+}
 
-    $ii->delete_it();
+### <agent-options>
+
+define_actor('agent-options', 'active' => 1, 'empty' => 1,  'unsafe' => 1,
+	     _handle => \&agent_options_handle,
+	     'dscr' => "Returns list of option names for agent NAME" );
+
+sub agent_options_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $name = $it->attr('name');
+    my $agent;
+
+    if ($name) {
+	$agent = IF::Run::resolver()->agent($name);
+    } else {
+	$agent = IF::Run::agent();
+	$name = $agent->name;
+    }
+
+    $ii->replace_it(join(' ', $agent->options));
 }
 
 
@@ -747,21 +774,70 @@ sub agent_install_handle {
 
 ### <agent-remove>name</agent-remove>
 
-define_actor('agent-remove', 'active' => 1, 'parsed' => 1, 
+define_actor('agent-remove', 'active' => 1, 'parsed' => 1,  'unsafe' => 1,
 	     'content' => 'name', _handle => \&agent_remove_handle,
-	     'dscr' => "Remove (uninstall) an agent." );
+	     'dscr' => "Remove (uninstall) an agent with given NAME." );
 
 sub agent_remove_handle {
     my ($self, $it, $ii) = @_;
 
-    my $name = $it->attr('name');
-    $name = $it->content_text unless defined $name;
-
+    my $name = get_text($it, 'name');
     my $agent = IF::Run::agent(); # had better be agency
 
     $agent->un_install_agent($name) if defined $name;
     $ii->replace_it($name);
 }
+
+
+### Operating System:
+
+### <os-command>command</os-command>
+
+define_actor('os-command', 'active' => 1, 'parsed' => 1, 'unsafe' => 1,
+	     'content' => 'command', _handle => \&os_command_handle,
+	     'dscr' => "Execute an operating system command 
+in the background with proxies set." );
+
+sub os_command_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $command = get_text($it, 'command');
+    print "Executing command '$command'\n" unless $main::quiet;
+
+    my $pid;
+    unless ($pid = fork) {
+	unless (fork) {
+	    system("sh -c '$main::proxies $command</dev/null &>/dev/null&'");
+	    exit 0;
+	}
+	exit 0;
+    }
+    waitpid($pid, 0);
+
+    $ii->delete_it;
+}
+
+### <os-command-output>command</os-command-output>
+
+define_actor('os-command-output', 'active' => 1, 'parsed' => 1, 'unsafe' => 1,
+	     'content' => 'command', _handle => \&os_command_output_handle,
+	     'dscr' => "Execute an operating system command 
+and capture its output." );
+
+sub os_command_output_handle {
+    my ($self, $it, $ii) = @_;
+
+    my $command = get_text($it, 'command');
+    print "Executing command `$command`\n" unless $main::quiet;
+
+    my $result;
+    eval {
+	$result = `$command`;
+	$result = `sh -c '$main::proxies $command </dev/null'`;
+    };
+    $ii->replace_it($result);
+}
+
 
 
 1;
