@@ -6,7 +6,7 @@
 
 <read interform file="heading.inc" process>
 
-<form action="/Bughistory/buglog.if" method=post>
+<form action="http://amazon:8888/Bughistory/buglog.if" method=post>
 Platform:<select name="machine">
 	<option>Suns
 	<option>Linux
@@ -14,12 +14,12 @@ Platform:<select name="machine">
 <br>
 
 Your email address:
-<input name="username" value=""><br>
+<input name="username" value="&piaUSER;@&piaHOST"><br>
 
 Please describe exactly what actions triggered the bug<br>
 and the precise symptoms of the bug:
 <p>
-<textarea name="problem" rows="10" columns="100"></textarea><br>
+<textarea name="problem" rows="10" cols="80"></textarea><br>
 <input name="piaversion" value="0.9" type=hidden>
 <input name="patchlevel" value="0" type=hidden>
 <input type="SUBMIT" value="Submit bug">
