@@ -262,6 +262,16 @@ public class Pia{
     return reqTimeout;
   }
  
+  /** @return the debug flag */
+  public static boolean debug() {
+    return Pia.instance().debug;
+  }
+
+  /** @return the verbose flag */
+  public static boolean verbose() {
+    return Pia.instance().verbose;
+  }
+
   /**
    * @toggle debug flag 
    */
@@ -448,7 +458,7 @@ public class Pia{
 	System.exit (1) ;
   }
 
-  public void verbose() {
+  public void verboseMessage() {
 	PrintStream o = System.out ;
 
 	o.println(rootStr         + " (parent of src, lib, Agents)");
@@ -651,7 +661,7 @@ public class Pia{
     }
 
     if( verbose )
-      verbose();
+      verboseMessage();
 
     try{
       accepter = new Accepter( port );
