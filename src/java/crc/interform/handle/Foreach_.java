@@ -35,7 +35,19 @@ public class Foreach_ extends crc.interform.Handler {
 "";
  
   public void handle(Actor ia, SGML it, Interp ii) {
-    Tokens list = Util.listItems(it.attr("list"));
+   
+    Tokens list;
+    if(it.hasAttr("list")){
+      list= Util.listItems(it.attr("list"));
+    } else if(it.hasAttr("foreach")){ // allow foreach="..."
+      list= Util.listItems(it.attr("foreach"));
+    }
+    else {
+      //no list specify do nothing
+      ii.deleteIt();
+      return;
+    }
+    
     String entity = Util.getString(it, "entity", "li");
 
     // re-push "it" with empty content and no foreach or list attr.
