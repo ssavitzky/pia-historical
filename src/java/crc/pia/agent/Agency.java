@@ -27,9 +27,6 @@ import crc.pia.Transaction;
 import crc.pia.Machine;
 import crc.pia.HTTPRequest;
 
-import crc.util.regexp.RegExp;
-import crc.util.regexp.MatchInfo;
-
 public class Agency extends GenericAgent {
   /**
    * take the agent off the resolver list
@@ -145,10 +142,8 @@ public class Agency extends GenericAgent {
    * and push it onto the transaction.
    */
   public void actOn(Transaction trans, Resolver res){
-    String name = name();
     String lhost = null;
 
-    Pia.debug(this, "actOn...");
     boolean isAgentRequest = trans.test("IsAgentRequest");
     
     if(! isAgentRequest ) return;
@@ -157,31 +152,40 @@ public class Agency extends GenericAgent {
     if(url == null) return;
     
     String path = url.getFile();
-    RegExp re = null;
-    MatchInfo mi = null;
+    Pia.debug(this, "actOn..." + path);
 
-    try{
-      re = new RegExp("^/(\\w+)/*");
-      mi = re.match( path );
-    }catch(Exception e){;}
-    if( mi !=null ){
-      String matchString = mi.matchString();
-
-      int begin = mi.start();
-      int end   = mi.end();
-      if( matchString.endsWith("/") )
-	name = path.substring( begin+1, end-1 );
-      else
-	name = path.substring( begin+1, end );
+    if (path.equals("/")) {
+      // Root is handled by Agency agent.
+      trans.toMachine( machine() );
+      return;
     }
-    
-    Pia.debug(this, "Looking for agent :" + name);
-    Agent agent = res.agent( name );
+
+    /* Now check for either /name/ or /type/name */
+
+    if (path.startsWith("/")) path = path.substring(1);
+    List pathList = new List(new java.util.StringTokenizer(path, "/"));
+
+    Agent agent = null;
+
+    if (pathList.nItems() > 1) {
+      String name = pathList.at(1).toString();
+      String type = pathList.at(0).toString();
+      Pia.debug(this, "Looking for agent :" + name);
+      agent = res.agent(name);
+      if (agent == null || !type.equals(agent.type())) {
+	Pia.debug(this, "Looking for agent :" + name);
+	agent = res.agent(type);
+      }
+    } else {
+      String name = pathList.at(0).toString();
+      agent = res.agent(name);
+    }
+
     if( agent == null ){
       Pia.debug(this, "Agent not found");
       return;
     }else{
-      Pia.debug(this, "Agent found");
+      Pia.debug(this, "Agent found: " + agent.name());
       trans.toMachine( agent.machine() );
     }
   }
