@@ -118,7 +118,8 @@ public class ChildNodeListEnumerator implements NodeEnumerator {
   public boolean atEnd(){
     if ( isEmpty() ) return true;
     try{
-      return cursor == l.item( l.getLength() - 1 );
+      int len = (int)l.getLength();
+      return cursor == l.item( len - 1 );
     }catch(NoSuchNodeException e){
       return true;
     }
