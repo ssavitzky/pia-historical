@@ -11,6 +11,10 @@ package DS::Thing; ###### Generic Objects
 use Exporter;
 push(@ISA, Exporter);
 
+use DS::Content;
+push(@ISA, DS::Content);
+
+
 #############################################################################
 ###
 ### Constructor:
@@ -161,12 +165,15 @@ sub content {
     }
 }
 
-sub is_empty {
-    my $self = shift;
+sub empty_element {
+    my ($self, $tag) = @_;
 
-    ## Returns true if there is no content.
+    ## Returns true if there is no end tag.
+    ##	 Optionally takes a tag, so you can test the syntax of an 
+    ##	 arbitrary tag.
 
-    !exists($self->{'_content'}) || !@{$self->{'_content'}};
+    $tag = $self->tag unless defined $tag;
+    !defined($tag) || $emptyElement{$tag};
 }
 
 
@@ -183,7 +190,7 @@ sub push {
 	if (ref($_) eq 'ARRAY') {
 	    $self->push(@$_);
 	} elsif (ref $_) {
-	    my $t = $_->{'_tag'};
+	    my $t = $tag};
 	    if ($t) {
 		push(@$content, $_);
 	    } else {
@@ -202,23 +209,6 @@ sub push {
     $self;
 }
 
-sub pop {
-    ## Pop the content
-
-    my $self = shift;
-    return unless exists $self->{'_content'};
-    my $content = $self->{'_content'};
-    pop @$content;
-}
-
-sub shift {
-    ## Shift the content
-
-    my $self = shift;
-    return unless exists $self->{'_content'};
-    my $content = $self->{'_content'};
-    shift @$content;
-}
 
 sub unshift {
     ## unshift something into the content, i.e. attach it to the front.
@@ -333,81 +323,16 @@ sub as_string {
     ## Convert a token, or its content if $contentOnly is true,
     ##	  to a string.
 
-    my $string = '';
-    $string .= $self->starttag unless $contentOnly;
 
-    my $content = $self->content;
-    if (defined $content) {
-	for (@$content) {
-	    if (ref($_)) { 
-		if(ref($_) eq 'HTML::Element') {
-		    $string .= $_ -> as_HTML; } 
-		else {$string .= $_->as_string($contentOnly);}}
-	    else         { $string .= $_; }
-	    ## Note that we need as_HTML because legacy code is still
-	    ## generating HTML::Element's
-	}
-    }
+    my $string = $self->content_string;
     return $string if $contentOnly;
+
+    $string = $self->starttag . $string;
     $string .=  $self->endtag 
 	if ($self->needs_end_tag || $self->internal_content);
     return $string;
 }
 
-sub content_string {
-    my ($self) = @_;
-
-    ## Returns the content as a string
-
-    return $self->as_string(1);
-}
-
-sub content_text {
-    my ($self) = @_;
-
-    ## Returns only the text part of the content.  
-    ##	  All markup is stripped off.
-
-    my $string = '';
-    my $content = $self->content;
-    if (defined $content) {
-	for (@$content) {
-	    if (ref($_)) { $string .= $_ -> content_text; }
-	    else         { $string .= $_; }
-	}
-    }
-    return $string;
-}
-
-sub is_text {
-    my ($self) = @_;
-
-    ## Returns true if the content is a single string.
-
-    my $content = $self->content;
-    return @$content == 1 && !ref($content->[0]);
-}
-
-sub content_thing {
-    my ($self) = @_;
-
-    ## Returns the content as a single Thing (or string).
-
-    my $content = $self->content;
-    return '' if undef $content || !@$content;
-    return $content->[0] if @$content == 1;
-    my $token = DS::Thing->new();
-    for (@$content) {
-	$token->push($_); 
-    }
-    return $token;
-}
-
-
-sub as_HTML {
-    my ($self) = @_;
-    return $self->as_string;
-}
 
 sub starttag {
     my ($self) = @_;
@@ -453,33 +378,6 @@ sub endtag {
     "</$name>";
 }
 
-
-
-#############################################################################
-###
-### Traversal:
-###
-
-sub traverse
-{
-    my($self, $callback, $ignoretext, $depth) = @_;
-    $depth ||= 0;
-
-    print "traversing $depth tag = " . $self->{_tag} . "\n" if $main::debugging;
-
-    if (! defined $self->{_tag} || &$callback($self, 1, $depth)) {
-	for (@{$self->{'_content'}}) {
-	    if (ref $_) {
-		$_->traverse($callback, $ignoretext, $depth+1);
-	    } else {
-		&$callback($_, 1, $depth+1) unless $ignoretext;
-	    }
-	}
-	&$callback($self, 0, $depth) 
-	    unless ! defined $self->{_tag} || $emptyElement{$self->{'_tag'}};
-    }
-    $self;
-}
 
 
 #############################################################################
