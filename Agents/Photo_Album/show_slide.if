@@ -9,7 +9,7 @@ URL=show_slide.if"></meta>
 <set name=file><get>AGENT.slides.&slide;</get></set>
 <set name=sfile><subst match=".jpg" result="">&file;</subst></set>
 <h1><read file=&sfile;.cap></read></h1>
-<img src="/photos/&file;">
+<img src="/Photos/&file;">
 <set name=previous><subtract>&slide; 1</subtract></set>
 <set name=next><add>&slide; 1</add></set>
 <form method=POST action=show_slide.if><input type=hidden name=slide value=&previous;><input type=submit value=Previous></form>
@@ -19,6 +19,7 @@ URL=show_slide.if"></meta>
 <hr>
 <b>$Id$</b><br>
 <!-- hhmts start -->
+Last modified: Wed Apr 16 21:55:09 1997
 <!-- hhmts end -->
 <p>
 <address><a href="http://www.crc.ricoh.com/people/wolff/wolff.html"

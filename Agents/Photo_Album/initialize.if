@@ -8,6 +8,8 @@
 <user-message>Initializing &agentName; from &filePath;</user-message>
  set defaults
 <set agent name="master_list">master_list</set>
+<set agent name="rowsize">6</set>
+
 <dl>
   <dt> <b>Note:</b>
   <dd> photo album deals with directories of dc2 images, see<a name="installation.html">installation notes</a>
