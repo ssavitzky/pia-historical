@@ -1,8 +1,8 @@
-###### dps/tags/Makefile:	InterForm tag handlers
+###### dps/handle/Makefile:	InterForm tag handlers
 # 	$Id$
 #	Copyright 1997, Ricoh California Research Center
 
-PACKAGE=crc.dps.tags
+PACKAGE=crc.dps.handle
 TOPDIR=../../..
 
 ### The effect of these actors is entirely confined to the current file
