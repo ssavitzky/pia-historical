@@ -1,7 +1,6 @@
 <!doctype html public "-//IETF//DTD HTML//EN//2.0">
 <html><head>
 <title>DPS: To-Do List</title>
-<link rev="made" href="mailto:steve@rsv.ricoh.com">
 </head><body>
 <h1>To-Do List</h1>
 
@@ -17,6 +16,13 @@ See also:
 </ul>
 
 <ol>
+  <li> <b>Impr</b> Persistent namespaces <br>
+       There are actually two ways to make a namespace persistent:  make it
+       the value of an external entity, and make its bindings be external
+       entities.  In the latter case, cons up filenames from the entity
+       names with a prefix.
+       (1998-11-24) <br>
+
   <li> <b>Note</b> Tagset in external entity. <br>
        Note that an external entity can go up its parent chain to find its
        tagset.  If not given a context explicitly, it can make its own
@@ -170,9 +176,6 @@ Results: &lt;pre&gt;cat                                                         
        This is a generic problem with the regexp stuff.
        (1998-10-9) <br>
 
-  <li> <b>Bug:</b> not propagating verbosity from pia to dps <br>
-       (1998-10-9) <br>
-
   <li> <b>Bug:</b> literal element not properly terminated. <br>
        (1998-10-2) <br>
 
@@ -197,11 +200,7 @@ Results: &lt;pre&gt;cat                                                         
        id, xptr, replace; some attributes (e.g. <code>recursive</code>)
        (1998-09-08)<br>
 
-  <li> <b>Hole:</b> Entity definitions. <br>
-       &lt;define entity&gt; unimplemented.
-       (1998-09-03) <br>
-
-  <li> <b>Bug:</b> Entities need work.  Tagset, passive entities. <br>
+  <li> <b>Bug:</b> Passive Entities needed. <br>
        Passive entities (character entities) and some normal entities have to
        be defined in the DTD.  Passive entities untested. 
        (1998-08-13) <br>
@@ -245,10 +244,6 @@ Results: &lt;pre&gt;cat                                                         
        (1998-08-11)<br>
        -- Possibly best done using a separate useTagset handler.
 
-  <li> <b>Bug:</b> Rename TextHandler to avoid case conflict. <br>
-       Rename to TextNodeHandler to avoid Windows conflict with textHandler.
-       (1998-08-07)<br>
-
   <li> <b>Bug:</b> Handler class hierarchy problems. <br>
        There are two many places where we assume that all real handlers
        inherit from BasicHandler.  Fix one way or the other.
@@ -290,11 +285,8 @@ Results: &lt;pre&gt;cat                                                         
        Tagset. Easily enforced by eliminating constructors without handlers.
        (1998-07-10)<br>
 
-  <li> <b>Bug:</b> ProcessedContent doesn't do insertions. <br>
+  <li> <b>Bug:</b> ProcessedContent doesn't insert controls. <br>
        Neither does its predecessor, InterFormContent.
-       (1998-07-08) <br>
-
-  <li> <b>Hole:</b> Need <code>lookupFile(fn, write)</code> in TopContext. <br>
        (1998-07-08) <br>
 
   <li> <b>Impr:</b> Add ActiveNode operations to <code>Input</code>, etc. <br>
@@ -312,6 +304,7 @@ Results: &lt;pre&gt;cat                                                         
        for the children of things like <code>EntityTable</code> and
        <code>Tagset</code>.
        (1998-06-29) <br>
+       -- Actually it might be best to use a ParseTreeTable as a wrapper.
 
   <li> <b>Bug:</b> appending to undefined entity fails. <br>
        &lt;set name=foo&gt;&lt;get name=foo&gt;...&lt;/set&gt; leaves

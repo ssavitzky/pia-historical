@@ -466,11 +466,18 @@ See also:
        (1998-06-18) <br>
        -- uses <code>Tabular</code> interface.
 
+  <li> 1998-10-12 <b>Bug:</b> Rename TextHandler to avoid case conflict. <br>
+       Rename to TextNodeHandler to avoid Windows conflict with textHandler.
+       (1998-08-07)<br>
+
   <li> 1998-11-03 <b>Hole:</b> Legacy Handlers <br>
        <code>cd <a href="../interform/handle">../interform/handle</a>;
        make dps-check </code> for report.
        (1998-06-15) <br>
        -- officially abandoned.
+
+  <li> <b>Hole:</b> Need <code>lookupFile(fn, write)</code> in TopContext. <br>
+       (1998-07-08) <br>
 
   <li> 1998-11-03 <b>Wish:</b> <code>ParseTreeIterator</code> <br>
        We will want a ParseTreeIterator that implements both Input and
@@ -490,7 +497,8 @@ See also:
        Needed for <code>locateSystemResource</code>
        (1998-11-17) <br>
 
-  <li> 1998-11-19 <b>Bug</b> Setting AGENT:xxx to null gives null pointer exc. <br>
+  <li> 1998-11-19 <b>Bug</b> Setting AGENT:xxx to null gives null pointer exc.
+       <br>
        <pre>java.lang.NullPointerException
           at java.util.Hashtable.put(Hashtable.java)
           at crc.ds.Table.put(Table.java:107)
@@ -503,6 +511,13 @@ See also:
        with the wrong namespace, except I can't see a mechanism for that.
        (1998-10-8) <br>
        -- Turned out to be a bug in serializing ArrayNodeList.  GAAK!
+
+  <li> 1998-11-19 <b>Hole:</b> Entity definitions. <br>
+       &lt;define entity&gt; unimplemented.
+       (1998-09-03) <br>
+
+  <li> 1998-11-25 <b>Bug:</b> not propagating verbosity from pia to dps <br>
+       (1998-10-9) <br>
 
 </ol>
 <a name="end">End of list.</a>
