@@ -287,7 +287,8 @@ public class Run  extends Environment {
 
   /** Return a string suitable for setting the proxy environment variables */
   public String proxies() {
-    return "";			// === String Pia.proxies unimplemented()
+    String proxies = "no_proxy=nowhere http_proxy="+Pia.instance().url();
+    return proxies;
   }
 
 }
