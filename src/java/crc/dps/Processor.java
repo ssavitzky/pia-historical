@@ -95,8 +95,8 @@ public interface Processor extends Input {
   /** Push an Input onto the input stack. */
   public void pushInput(Input anInput);
 
-  /** Push an InputStackFrame (specialized Input) onto the stack. */
-  public void pushFrame(InputStackFrame aFrame);
+  /** Push a ProcessorInput (specialized Input) onto the stack. */
+  public void pushProcessorInput(ProcessorInput anInput);
 
   /** Push a Token onto the input stack.
    *	This is a convenience function, included in the Processor interface 
@@ -174,6 +174,9 @@ public interface Processor extends Input {
 
   /** Return the tag of the immediately-surrounding Element. */
   public String elementTag();
+
+  /** Return the depth of nesting in the parse stack. */
+  public int getDepth();
 
   /************************************************************************
   ** Operations Used by Handlers:

@@ -22,7 +22,10 @@ import java.util.NoSuchElementException;
  *
  *	BasicToken is derived from BasicElement rather than from AbstractNode
  *	only because Element has the most complex interface of the various
- *	Node extensions that Token has to implement.
+ *	Node extensions that Token has to implement. <p>
+ *
+ * ===	Tokens should be constructed using a TokenFactory rather than by
+ * ===	calling BasicToken's constructors directly.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com 
@@ -43,7 +46,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   protected ElementDefinition definition = null;
 
   /** Values are -1 for start tag, 1 for end tag, 0 for whole node. */
-  protected int syntax = -1;
+  protected int syntax = 0;
 
   protected boolean isEmpty = true;
   protected boolean hasEmptyDelim = false;
@@ -264,6 +267,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(String tagname, int syntax) {
     setTagName(tagname);
+    this.nodeType = NodeType.ELEMENT;
     this.syntax = syntax;
   }
 
@@ -273,6 +277,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
    */
   public BasicToken(String tagname, int syntax, boolean implicit) {
     setTagName(tagname);
+    this.nodeType = NodeType.ELEMENT;
     this.syntax = syntax;
     implicitEnd = implicit;
   }
@@ -284,6 +289,7 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
   public BasicToken(String tagname, int syntax,
 		    AttributeList attrs, Handler handler) {
     setTagName(tagname);
+    this.nodeType = NodeType.ELEMENT;
     this.syntax = syntax;
     this.handler = handler;
     if (attrs != null) setAttributes( new crc.dom.AttrList( attrs ) );
@@ -389,6 +395,9 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     case NodeType.PI:
       return "<?" + (name == null? "" : name);
 			 
+    case NodeType.ENTITY:
+      return "&";
+			 
     default:
       // if (originalNode != null) return originalNode.startString();
       return "<!-- nodeType=" + getNodeType() + " -->";
@@ -413,6 +422,9 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
     case NodeType.PI:
       return (data == null? "" : " " + data);
 			 
+    case NodeType.ENTITY:
+      return name;
+			 
     default:
       // if (originalNode != null) return originalNode.contentString();
       return "";
@@ -436,6 +448,9 @@ public class BasicToken extends BasicElement implements Token, Comment, PI {
 			 
     case NodeType.PI:
       return ">";
+			 
+    case NodeType.ENTITY:
+      return hasClosingDelimiter()? ";" : "";
 			 
     default:
       // if (originalNode != null) return originalNode.endString();

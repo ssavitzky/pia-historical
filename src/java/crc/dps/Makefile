@@ -9,20 +9,17 @@ PACKAGES = \
 	handle \
 	input \
 	output \
-	parse
+	parse \
+	tagset \
+	test
 
 FILES = \
-	AbstractHandler.java \
-	AbstractInput.java \
-	AbstractInputFrame.java \
-	AbstractOutput.java \
-	AbstractParser.java \
 	BasicEntityTable.java \
 	BasicProcessor.java \
-	BasicTagset.java \
 	BasicToken.java \
 	BasicTokenList.java \
 	EntityTable.java \
+	Filter.java \
 	Handler.java \
 	Input.java \
 	InputStack.java \
@@ -31,6 +28,7 @@ FILES = \
 	ParseStack.java \
 	Parser.java \
 	Processor.java \
+	ProcessorInput.java \
 	StackFrame.java \
 	Tagset.java \
 	Token.java \

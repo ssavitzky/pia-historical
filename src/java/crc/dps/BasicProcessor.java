@@ -18,6 +18,12 @@ import java.util.NoSuchElementException;
  *	<em>uses</em> and any that it might be linked <em>onto</em> as
  *	part of a chain of processors. <p>
  *
+ * ===	In order to generate a parse tree, we need to start with 
+ *	<code>node</code> being the Document.
+ *
+ * ===	The bottom thing on the input stack needs to be a guard that makes
+ *	sure that all unmatched start tags get ended.
+ *
  * === NOTE: Both Parser and Processor need DTD and parse stack info. ===
  * === it's up to the Parser to associate Handler, etc. with Token. ===
  *
@@ -49,6 +55,7 @@ public class BasicProcessor extends ParseStack implements Processor {
     // Loop as long as there's input.
     while ((token = nextInput()) != null) {
       if (token.isStartTag()) {			// Start tag
+	debug("<" + token.getTagName() + ">", depth);
 	/* Here's where it gets tricky.
 	 *	We want to end up with parseStack.token being the current
 	 *	token (which we will pop when we see the end tag).  But
@@ -56,37 +63,56 @@ public class BasicProcessor extends ParseStack implements Processor {
 	 *	handler.
 	 */
 	pushToken(token);
-	handler = token.getHandler();
-	if (expanding) token = handler.startAction(token, this);
+	if (expanding) {
+	  handler = token.getHandler();
+	  if (handler != null) token = handler.startAction(token, this);
+	}
 	parseStack.token = token;
 	// === next line: only if expanding.  Otherwise copy the token. ===
 	// === pass expanding to createNodeUnder?
-	if (parsing && token != null) node = token.createNodeUnder(node);
+	if (parsing) {
+	  if (token != null) node = token.createNodeUnder(node);
+	} else {
+	  node = null;
+	}
       } else if (token.isEndTag()) {		// End tag
+	debug("</" + token.getTagName() + ">", depth-1);
+	// remember whether we were passing the contents.
+	boolean werePassing = passing;
+	// then pop the parse stack.
 	popParseStack();
 	// the handler we want is the one from the start tag on the stack.
-	handler = token.getHandler();
-	if (expanding) token = handler.endAction(token, this);
+	if (expanding) {
+	  handler = token.getHandler();
+	  if (handler != null) token = handler.endAction(token, this);
+	}
 	// Don't have to appendTreeTo, since the start tag did that already.
-	// If we were passing, we really need to just pass the end tag.
-	if (passing && token != null) token.setEndTag();
+	// If we <em>were</em> passing, we just want to pass the end tag.
+	if (werePassing && token != null) token.setEndTag();
       } else /* token.isNode() */ {		// Complete node
-	handler = token.getHandler();
+	debug(token.isElement() ? "<" + token.getTagName() + "/>"
+	      			: "[" + token.getNodeType() + "]", depth-1);
 	// === We would like nodeAction on a parsed subtree to do an eval.
 	// === We require eval to be equivalent to the blind expansion...
-	if (expanding) token = handler.nodeAction(token, this);
+	if (expanding) {
+	  handler = token.getHandler();
+	  if (handler != null) token = handler.nodeAction(token, this);
+	}
 	// === next line: only if expanding.  Otherwise copy the token. ===
 	// === Worry about shallow/deep and whether expansion is done.  ===
 	// === pass expanding to appendTreeTo?
 	if (parsing && token != null) token.appendTreeTo(node);
       }
 
-      // If we still have a token and we're passing it...
-      if (passing && token != null) {
+      // If we still have a token, see whether we need to pass it along ...
+      if (token != null) {
+	debug(passing? " passed: " + token.toString() + "\n" : "processed\n");
 	// pass the token to the output
-	passOutput(token);
+	if (passing) passOutput(token);
 	// if we're not running continuously, we're done.
 	if (! running) return;
+      } else {
+	debug(" deleted\n");
       }
     }
   }
@@ -124,30 +150,45 @@ public class BasicProcessor extends ParseStack implements Processor {
   public void run() {
     running = true;
     process();
+    if (running && output != null) { output.endOutput(); }
   }
 
+  /** Pass a Token to the output. 
+   *	If anything is in the <code>outputQueue</code>, it is put out first.
+   */
   protected void passOutput(Token aToken) {
-
+    if (! running || output == null) {
+      outputQueue.append(aToken);
+    } else if (outputQueue.length() > 0) {
+      outputQueue.append(aToken);
+      passOutputQueue();
+    } else {
+      running = output.nextToken(aToken);
+    }
   }
 
+  /** Pass several Tokens to the output. */
   protected void passOutput(TokenList someTokens) {
-
+    long length = someTokens.length();
+    for (long i = 0; i < length; ++i) {
+      passOutput(someTokens.tokenAt(i));
+    }
   }
 
-  protected void passOutput(Node aNode) {
-
+  /** Pass the output queue to the output. */
+  protected void passOutputQueue() {
+    // Correctly, though inefficiently, handles the case where the
+    // Output returns <code>false</code> in the middle of the queue.
+    TokenList queue = outputQueue;
+    outputQueue = new BasicTokenList();
+    passOutput(queue);
   }
-
-  protected void passOutput(NodeList someNodes) {
-
-  }
-
 
   /************************************************************************
   ** Input Stack Operations:
   ************************************************************************/
 
-  protected InputStack inputStack;
+  protected InputStack inputStack = new crc.dps.input.Guard(this, 0);
 
   /** Return the input stack */
   public InputStack getInputStack() { return inputStack; }
@@ -174,12 +215,13 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   /** Push an Input onto the input stack. */
   public void pushInput(Input anInput) { 
-    inputStack = inputStack.pushInput(anInput);
+    inputStack = anInput.pushOnto(inputStack);
   }
 
-  /** Push an InputStackFrame (specialized Input) onto the stack. */
-  public void pushFrame(InputStackFrame aFrame) {
-    inputStack = inputStack.pushInput(aFrame);
+  /** Push a ProcessorInput (specialized Input) onto the stack. */
+  public void pushProcessorInput(ProcessorInput anInput) {
+    inputStack = anInput.pushOnto(inputStack);
+    anInput.setProcessor(this);
   }
 
   /** Push a Token onto the input stack.
@@ -250,6 +292,12 @@ public class BasicProcessor extends ParseStack implements Processor {
     return false;		// ===
   }
 
+  /** set the next-frame pointer and return <code>this</code> */
+  public InputStack pushOnto(InputStack anInputStack) {
+    return anInputStack.pushInput(this);
+  }
+
+
   /************************************************************************
   ** Enumeration Operations:
   ************************************************************************/
@@ -306,6 +354,14 @@ public class BasicProcessor extends ParseStack implements Processor {
 
   public void debug(String message) {
     if (verbosity >= 2) System.err.print(message);
+  }
+
+  public void debug(String message, int indent) {
+    if (verbosity < 2) return;
+    String s = "";
+    for (int i = 0; i < indent; ++i) s += " ";
+    s += message;
+    System.err.print(s);
   }
 
   public void setDebug() 	{ verbosity = 2; }

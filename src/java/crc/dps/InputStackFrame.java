@@ -27,6 +27,6 @@ public interface InputStackFrame extends InputStack {
   public InputStack getNextInputStack();
 
   /** set the next-frame pointer and return <code>this</code> */
-  public InputStackFrame pushOnto(InputStack nextFrame);
+  public InputStack pushOnto(InputStack nextFrame);
 
 }

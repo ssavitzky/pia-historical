@@ -7,6 +7,9 @@ TOPDIR=../../..
 
 ### These Handler implementations are purely syntactic.
 HANDLERS = \
+	AbstractHandler.java \
+	BasicHandler.java \
+	GenericHandler.java
 
 ### The effect of these actors is entirely confined to the current file
 BASIC_ACTORS = \
@@ -21,19 +24,8 @@ SA_ACTORS = \
 PIA_ACTORS= \
 
 
-TAGSETS = \
-	HTML_ts.java \
-	Basic_ts.java \
-	StandAlone_ts.java \
-	Standard_ts.java
-
 ACTORS = $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS)
-FILES = $(HANDLERS) $(ACTORS) # $(TAGSETS)
-
-TAGSET_DOCS =  \
-	Basic-tagset.html  \
-	StandAlone-tagset.html  \
-	Standard-tagset.html
+FILES = $(HANDLERS) $(ACTORS)
 
 include $(TOPDIR)/makefiles/file.make
 
@@ -62,28 +54,6 @@ report::
 	  (echo 'SA:	' ; grep 'unimplemented(' $(SA_ACTORS)) || true
 	-@grep -q 'unimplemented(' $(PIA_ACTORS) && \
 	  (echo 'PIA:	' ; grep 'unimplemented(' $(PIA_ACTORS)) || true
-
-### Extract the documentation comments:
-
-DOC_CMD= $(BINDIR)/pia_wrapper crc.interform.Filter
-
-Basic-tagset.html::	 $(BASIC_ACTORS) Basic_ts.java
-	$(DOC_CMD) -t Basic actor-doc.if > Basic-tagset.html
-
-StandAlone-tagset.html:: $(BASIC_ACTORS) $(SA_ACTORS) StandAlone_ts.java
-	$(DOC_CMD) -t StandAlone actor-doc.if > StandAlone-tagset.html
-
-Standard-tagset.html::	 $(BASIC_ACTORS) $(SA_ACTORS) $(PIA_ACTORS) \
-	Standard_ts.java
-	$(DOC_CMD) -t Standard actor-doc.if > Standard-tagset.html
-
-doc:: actor-doc report
-
-clean::
-	rm -f $(TAGSET_DOCS)
-
-actor-doc:	$(TAGSET_DOCS)
-	cp $(TAGSET_DOCS) $(TSDOCDIR)
 
 ### Run a perl script over all actors.  It can be redefined for various
 ###	one-shot fixups; the first use is transforming syntax comments

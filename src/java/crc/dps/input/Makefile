@@ -6,6 +6,8 @@ PACKAGE=crc.dps.input
 TOPDIR=../../..
 
 FILES = \
+	AbstractInput.java \
+	AbstractInputFrame.java \
 	ExpandToken.java \
 	Guard.java \
 	SingleToken.java \
@@ -15,6 +17,9 @@ include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-ExpandToken.class: ../AbstractInputFrame.java  ../Input.java ../Token.java
-SingleToken.class: ../AbstractInputFrame.java  ../Input.java
-Wrapper.class: ../AbstractInputFrame.java  ../Input.java
+AbstractInput.class: ../Input.java ../Token.java
+AbstractInputFrame.class: AbstractInput.java ../Input.java ../Token.java \
+	../InputStack.java ../InputStackFrame.java Wrapper.java
+ExpandToken.class: AbstractInputFrame.java  ../Input.java ../Token.java
+SingleToken.class: AbstractInputFrame.java  ../Input.java
+Wrapper.class: AbstractInputFrame.java  ../Input.java

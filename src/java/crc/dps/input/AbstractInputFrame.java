@@ -4,7 +4,6 @@
 
 package crc.dps.input;
 
-import crc.dps.AbstractInput;
 import crc.dps.Input;
 import crc.dps.InputStack;
 import crc.dps.InputStackFrame;

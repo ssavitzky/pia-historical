@@ -8,7 +8,7 @@ import crc.dps.Input;
 import crc.dps.InputStack;
 import crc.dps.Processor;
 
-import crc.dps.AbstractInputFrame;
+import crc.dps.input.AbstractInputFrame;
 import crc.dps.BasicToken;
 
 import java.util.Enumeration;

@@ -9,7 +9,9 @@ import crc.dom.NodeList;
 import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
-import crc.dps.AbstractHandler;
+import crc.dps.Token;
+import crc.dps.Handler;
+import crc.dps.Processor;
 
 /**
  * Generic implementation for a Node Handler. <p>
@@ -31,7 +33,7 @@ import crc.dps.AbstractHandler;
  * @see crc.dom.Node
  */
 
-public class GenericHandler extends AbstractHandler {
+public class GenericHandler extends BasicHandler {
 
   /************************************************************************
   ** Semantic Operations:
@@ -88,13 +90,17 @@ public class GenericHandler extends AbstractHandler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public abstract Node createNode(Token t);
+  public Node createNode(Token t) {
+    // Since we don't know what factory to use, just clone the node.
+    return t.shallowCopy();
+  }
 
   /** Returns a new, clean Node corresponding to the given Token,
    *	created using the given DOMFactory. <p>
    */
-  public abstract Node createNode(Token t, DOMFactory f);
-
+  public Node createNode(Token t, DOMFactory f) {
+    return t.createNode(f);
+  }
 
   /************************************************************************
   ** Presentation Operations:
@@ -106,8 +112,8 @@ public class GenericHandler extends AbstractHandler {
    *	we can give the same Document different physical representations
    *	if necessary.
    */
-  public String convertToString(Token t) {
-    return t.basicToString();
+  public String convertToString(Token t, int syntax) {
+    return t.basicToString(syntax);
   }
 
   /************************************************************************

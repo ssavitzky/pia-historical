@@ -3,37 +3,20 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 import java.io.Reader;
 
 /**
  * The interface for an Input that converts a character stream (Reader) into 
- *	a Token stream.  
+ *	a Token stream.  <p>
  *
- *	Normally a Parser would need to maintain a parse stack to keep
- *	track of element nesting.  However, a Processor already does
- *	this, so all the Parser needs is a link to the Processor.
- *	Note that some forms of SGML (for example XML) can be parsed
- *	without a stack.  <p>
+ *	Being a ProcessorInput, the Parser gets all of the syntactic
+ *	information and parse-stack state it needs from the Processor.
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com */
 
-public interface Parser extends Input {
-
-  /************************************************************************
-  ** Processor Access:
-  ************************************************************************/
-
-  /** Returns the Processor for which this Parser is providing input.
-   */
-  public Processor getProcessor();
-
-  /** Sets the Processor for which this Parser is providing input.
-   */
-  public void setProcessor(Processor aProcessor);
+public interface Parser extends ProcessorInput {
 
   /************************************************************************
   ** Reader Access:
@@ -45,22 +28,4 @@ public interface Parser extends Input {
   /** Sets the Reader from which this Parser will obtain input. */
   public void setReader(Reader aReader);
 
-  /************************************************************************
-  ** Access to Bindings:
-  ************************************************************************/
-
-  /** Returns the Tagset being used by the Parser. */
-  public Tagset getTagset();
-
-  /** Sets the Tagset being used by the Parser. */
-  public void setTagset(Tagset aTagset);
-
-  /** Returns the character entity table to be used by the Parser.
-   *	Entities in the table are quietly replaced by their values;
-   *	they should correspond only to single characters.  This entity
-   *	table is used for things like <code>&amp;amp;</code>.  */
-  public EntityTable getEntities();
-
-  /** Sets the Tagset being used by the Parser. */
-  public void setEntities(EntityTable anEntityTable);
 }

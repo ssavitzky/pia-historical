@@ -67,4 +67,10 @@ public interface Input extends Enumeration {
    */
   public boolean atEnd();
 
+  /** Pushes the Input onto an InputStack. 
+   *	Allows for the possibility that the Input itself might be a
+   *	linked-list InputStackFrame, in which case it is in the best
+   *	position to know what to do.
+   */
+  public InputStack pushOnto(InputStack anInputStack);
 }

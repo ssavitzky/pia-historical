@@ -3,7 +3,7 @@
 //	Copyright 1998, Ricoh Silicon Valley.
 
 package crc.dps.input;
-import crc.dps.AbstractInputFrame;
+import crc.dps.input.AbstractInputFrame;
 import crc.dps.Token;
 import crc.dps.BasicToken;
 import crc.dps.Input;

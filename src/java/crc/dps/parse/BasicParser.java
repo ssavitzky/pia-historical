@@ -5,7 +5,7 @@
 package crc.dps.parse;
 
 import crc.dps.NodeType;
-import crc.dps.AbstractParser;
+import crc.dps.Parser;
 import crc.dps.Token;
 import crc.dps.TokenList;
 import crc.dps.BasicToken;
@@ -61,7 +61,8 @@ public class BasicParser extends AbstractParser {
       last = 0;
       return false;
     }
-    next = new BasicToken(NodeType.ENTITY, ident);
+    next = new BasicToken(NodeType.ENTITY);
+    next.setName(ident);
     if (last == ';') next.setHasClosingDelimiter(true);
     if (last == ';') last = 0;
     return true;

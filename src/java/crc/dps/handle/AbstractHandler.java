@@ -1,4 +1,4 @@
-////// BasicHandler.java: Node Handler basic implementation
+////// AbstractHandler.java: Node Handler abstract base class
 //	$Id$
 //	Copyright 1998, Ricoh Silicon Valley.
 
@@ -6,27 +6,24 @@ package crc.dps.handle;
 import crc.dom.Node;
 import crc.dom.BasicElement;
 import crc.dom.NodeList;
-import crc.dom.NodeType;
 import crc.dom.DOMFactory;
 
 import crc.dps.Token;
-import crc.dps.Handler;
 import crc.dps.Processor;
+import crc.dps.Handler;
 
 /**
- * Basic implementation for a Node Handler. <p>
+ * An abstract base class for a Node Handler. <p>
  *
- *	This is a Handler that does only the minimum, and nothing more.
- *	It is capable of representing any kind of purely passive node,
- *	but is not particularly efficient because it contains no specialized
- *	information about the node itself.  It is, however, extensible,
- *	making it a good base class for more specialized versions. 
+ *	This implementation is also an Element, which ensures that 
+ *	handlers can easily be stored in and retrieved from XML documents. 
+ *	Note that handlers are normally contained in Tagsets, and that
+ *	BasicTagset is also an Element.
  *	<p>
  *
  * @version $Id$
  * @author steve@rsv.ricoh.com
  *
- * @see crc.dps.handle.GenericHandler
  * @see crc.dps.Processor
  * @see crc.dps.Tagset
  * @see crc.dps.BasicTagset
@@ -35,7 +32,7 @@ import crc.dps.Processor;
  * @see crc.dom.Node
  */
 
-public class BasicHandler extends AbstractHandler {
+public abstract class AbstractHandler extends BasicElement implements Handler {
 
   /************************************************************************
   ** Semantic Operations:
@@ -92,77 +89,17 @@ public class BasicHandler extends AbstractHandler {
    *	objects, which preserves the syntactic and semantic
    *	information (e.g. handlers).
    */
-  public Node createNode(Token t) {
-    // Since we don't know what factory to use, just clone the node.
-    return t.shallowCopy();
-  }
+  public abstract Node createNode(Token t);
 
   /** Returns a new, clean Node corresponding to the given Token,
    *	created using the given DOMFactory. <p>
    */
-  public Node createNode(Token t, DOMFactory f) {
-    return t.createNode(f);
-  }
+  public abstract Node createNode(Token t, DOMFactory f);
 
-  /************************************************************************
-  ** Parsing Operations:
-  ************************************************************************/
-
-  /** If the handler corresponds to an Element, this determines its syntax.
-   *	<dl compact>
-   *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown
-   *	    <dt>  1 <dd> known to be empty.
-   *	</dl>
-   */
-  protected int elementSyntax = 0;
-
-  /** What the Handler knows about a Token's syntax without looking at it.
-   *
-   * @return
-   *	<dl compact>
-   *	    <dt> -1 <dd> known to be non-empty.
-   *	    <dt>  0 <dd> unknown
-   *	    <dt>  1 <dd> known to be empty.
-   *	</dl>
-   */
-  public int getElementSyntax() { return elementSyntax; }
-  public void setElementSyntax(int value) { elementSyntax = value; }
-  
-  /** Called to determine whether the given Token (for which this is
-   *	the Handler) is an empty element, or whether content is expected.
-   *	It is assumed that <code>this</code> is the result of the Tagset
-   *	method <code>handlerForTag</code>.
-   *
-   *	If <code>elementSyntax</code> is zero, we look at the Token's 
-   *	<code>hasEmptyDelimiter</code> flag.
-   *
-   * @param t the Token for which this is the handler, and for which the
-   *	ssyntax is being checked.
-   * @return <code>true</code> if the Token is an empty Element.
-   * @see crc.dps.Tagset
-   */
-  public boolean isEmptyElement(Token t) {
-    if (elementSyntax != 0) return elementSyntax > 0;
-    else return t.hasEmptyDelimiter();
-  }
-
-  /** Called to determine the correct Handler for a given Token.
-   *	The default action is to return <code>this</code>.
-   */
-  public Handler getHandlerForToken(Token t) {
-    return this;
-  }
 
   /************************************************************************
   ** Presentation Operations:
   ************************************************************************/
-
-  /** Converts the Token to a String according to the given syntax. 
-   */
-  public String convertToString(Token t, int syntax) {
-    return t.basicToString(syntax);
-  }
 
   /** Converts the Token to a String. 
    *	Note that a Token is quite capable of doing this using the 
@@ -171,12 +108,7 @@ public class BasicHandler extends AbstractHandler {
    *	if necessary.
    */
   public String convertToString(Token t) {
-    if (t.getSyntax() == 0) {
-      return convertToString(t, -1) +
-	convertToString(t, 0) + convertToString(t, 1); 
-    } else {
-      return convertToString(t, t.getSyntax());
-    }
+    return t.startString() + t.contentString() + t.endString();
   }
 
   /************************************************************************

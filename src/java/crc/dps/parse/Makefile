@@ -6,10 +6,14 @@ PACKAGE=crc.dps.parse
 TOPDIR=../../..
 
 FILES = \
+	AbstractParser.java \
 	BasicParser.java
 
 include $(TOPDIR)/makefiles/file.make
 
 ### Dependencies:
 
-
+AbstractParser.class: ../Token.java ../Tagset.java ../Parser.java \
+	../EntityTable.java ../input/AbstractInputFrame.java
+BasicParser.class: AbstractParser.java ../Token.java ../Tagset.java \
+	../Parser.java ../EntityTable.java ../input/AbstractInputFrame.java

@@ -6,7 +6,6 @@ package crc.dps.output;
 
 import crc.dps.Token;
 import crc.dps.Output;
-import crc.dps.AbstractOutput;
 
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
@@ -45,8 +44,9 @@ public class ToWriter extends AbstractOutput {
   public boolean nextToken(Token theToken) {
     try {
       destination.write(theToken.toString());
-    } catch (java.io.IOException e) {}
-    
+    } catch (java.io.IOException e) {
+      System.err.println(e.toString()); // === error handling needs improvement
+    }
     return true;
   }
 

@@ -241,7 +241,7 @@ public class ParseStack extends StackFrame {
   }
 
   public ParseStack(ParseStack next) {
-    super(next.depth + 1);
+    super((next == null)? 0 : next.depth + 1);
     parseStack = next;
   }
 
