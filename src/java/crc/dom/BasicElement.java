@@ -131,26 +131,6 @@ public class BasicElement extends AbstractNode implements Element {
 
 
   /**
-   * printChildren depth first.
-   * This should be call at the root node.
-   */
-  public void printChildren(String indent){
-    AbstractNode child = null;
-    
-    Report.debug(indent+ "<" + toString() + printAttributes() + ">");
-    if( hasChildren() ){
-       NodeEnumerator enum = getChildren().getEnumerator();
-       child =  (AbstractNode)enum.getFirst();
-       while( child != null ) {
-	 child.printChildren( indent + "    ");
-	 child = (AbstractNode)enum.getNext();
-       }
-    }
-    Report.debug(indent + "</" + toString()+ ">");
-  }
-
-
-  /**
    * Return a string of the form "<" <code>getTagName()</code> ">".
    *
    */
