@@ -9,61 +9,114 @@
   This file contains completed tasks. 
 </em></blockquote>
 
-See also: <a href="to-do.html">Pending tasks</a><p>
-
-&gt;&gt; <a href="#end">Most Recent Entry</a> (at end.)
+See also:
+<ul>
+  <li> <a href="to-do.html">Pending tasks</a><p>
+  <li> <a href="#end">Most Recent Entry</a> (at end.)
+</ul>
 
 <ul>
-  <li> 1998/6/12 <b>Bug:</b>  true branch of &lt;if&gt; failing. <br>
-       (1998/6/11) <br>
+  <li> 1998-06-12 <b>Bug:</b>  true branch of &lt;if&gt; failing. <br>
+       (1998-06-11) <br>
        -- This turned out to be due to the fact that, unlike
           <code>java.util.Enumeration</code>, a <code>NodeEnumerator</code>
           skips the first item if you start with <code>getNext</code> instead
           of <code>getFirst</code>.
 
-  <li> 1998/6/12 <b>Check:</b>  Loops with NodeEnumerator <br>
+  <li> 1998-06-12 <b>Check:</b>  Loops with NodeEnumerator <br>
        Loops involving a <code>NodeEnumerator</code> have to
        start with <code>getFirst</code> -- <code>getNext</code> skips the
        first element (unlike a <code>java.util.Enumeration</code>)!
-       (1998/6/12)
+       (1998-06-12)
        
-  <li> 1998/6/12 <b>Bug:</b> <code>testHandler</code> <br>
+  <li> 1998-06-12 <b>Bug:</b> <code>testHandler</code> <br>
        &lt;test&gt;foo&lt;/test&gt; returns 11 -- extra put, perhaps.
-       (1998/6/11) <br>
+       (1998-06-11) <br>
        -- Missing return, actually, after the test for null attribute list.
 
-  <li> 1998/6/15 <b>Bug:</b> entity substitution <br>
+  <li> 1998-06-15 <b>Bug:</b> entity substitution <br>
        &amp;date; not getting substituted (i.e. not getting looked up) in
        running text, but substituted correctly in attributes.
-       (1998/6/11) <br>
+       (1998-06-11) <br>
        -- Caused by AbstractHandler not checking for NodeType == ENTITY.
 
-  <li> 1998/6/15 <b>Bug:</b> nested &lt;if&gt; <br>
+  <li> 1998-06-15 <b>Bug:</b> nested &lt;if&gt; <br>
        The correct branch is selected, but appears twice in the output.
-       (1998/6/12) <br>
+       (1998-06-12) <br>
        -- [copying a node that actually has children should just do a putNode
 	  and not recurse.]
 
-  <li> 1998/6/15 <b>Bug:</b> &lt;if text&gt; <br>
+  <li> 1998-06-15 <b>Bug:</b> &lt;if text&gt; <br>
        any element in the condition appears to be considered true.
-       (1998/6/12) <br>
+       (1998-06-12) <br>
        -- Incorrect dispatching:  wasn't dispatching if no subtype attr.
           This meant that <code>text</code>, specifically, wasn't handled.
 
-  <li> 1998/6/15 <b>Hole:</b> <code>Filter</code> parse tree output <br> 
+  <li> 1998-06-15 <b>Hole:</b> <code>Filter</code> parse tree output <br> 
        parse tree input &amp; output should use serialized object streams.
-       (1998/6/15) <br>
+       (1998-06-15) <br>
        -- The <code>-n</code> option was added to permit parsing but not
           expanding an input file.
 
-  <li> 1998/6/16 <b>Hole:</b> get/set)IndexValue  <br>
+  <li> 1998-06-16 <b>Hole:</b> get/set)IndexValue  <br>
        Should do this using utils in <code>crc.dps.aux.Index</code>.
 
-  <li> 1998/6/17 <b>Hole:</b> <code>crc.dps.active</code> DOM implementation <br>
+  <li> 1998-06-17 <b>Hole:</b> <code>crc.dps.active</code> as DOM <br>
        Fairly soon we will want to expand ParseTree* to a full DOM
        implementation, and make it completely independent from the
        implementations in <code>crc.dom</code>. <br>
-       -- completed 6/17 with some bugs remaining.
+       -- completed 6/17 with some bugs remaining, and no impl. of Document.
+
+  <li> 1998-06-17 <b>Impr:</b> <code>AbstractActiveNode</code> deepCopy <br>
+       <code>deepCopy</code> should use a method in the abstract parent to
+       copy the children.  The reason it doesn't now is that the existing
+       method meant for that purpose is in <code>crc.dom.AbstractNode</code>,
+       and doesn't constructive active nodes.  It uses <code>clone</code>, and
+       it's broken. <br>
+       -- fixed with the re-parenting of the <code>ParseTree</code> classes.
+
+  <li> 1998-06-18 <b>Bug:</b> Bugs with independent ParseTree DOM <br>
+       After making ParseTreeElement, etc. descend from ParseTreeNode, empty
+       elements are not identified, and &lt;test match&gt; produces odd
+       results.  Start tags are getting replaced by end tags in some cases!
+       (1998-06-17) <br>
+       -- <code>isEmptyElement</code> is never getting set.  Do it in
+	  <code>AbstractParser</code>'s <code>createActiveElement</code> and
+	  <code>correctActiveElement</code>. 
+
+  <li> 1998-06-18 <b>Impr:</b>  <code>EntityHandler</code> needed <br>
+       having a specific handler for expandable entities would help a lot.
+       It is expected that this would result in a substantial speedup.
+       (1998-06-15) <br>
+       -- In all about 5 seconds (15%) off parsing from other improvements,
+          and 6 off processing from this one.
+
+  <li> 1998-06-18 <b>Impr:</b>  <code>TextHandler</code> needed <br>
+       -- no noticable speed improvement.
+
+  <li> 1998-06-18 <b>Impr:</b>  Remove debugging code from inner loops. <br>
+       -- Removing debug calls in <code>processNode</code> and
+	  <code>additionalAction</code> saves another 30%! (sick.)
+
+  <li> 1998-06-18 <b>Hole:</b> PUT_NODE action code needed <br>
+       Passive node with no children -- just put it. 
+       (1998-06-18) <br>
+
+  <li> 1998-06-18 <b>Hole:</b> ParseTreeNode must allow extra action on
+       addChild, insertBefore, and initialization. <br>
+       This will allow insertion methods to be extended.  Only the protected
+       dispatch method <code>doInsert needs to be extended.</code>
+       (1998-6-19) <br>
+
+  <li> 1998-06-18 <b>Hole:</b> Tagset and Handler must be generic. <br>
+       Sometimes we may need them to be elements, sometimes declarations.
+       (1998-06-18) <br>
+
+  <li> 1998-06-18 <b>Hole:</b> Tagset and EntityTable must be lists as
+       well. <br> 
+       The items defined must be their content, not their attributes.
+       This will greatly simplify the loading of tagsets, DTD's, etc.
+       (1998-6-19) <br>
 
 </ul>
 <a name="end">End of list.</a>

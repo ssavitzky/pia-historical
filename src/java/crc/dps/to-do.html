@@ -9,51 +9,128 @@
   This file contains pending tasks for the DPS system. 
 </em></blockquote>
 
-See also: <a href="done.html">Completed tasks</a>.
-
+See also:
 <ul>
-  <li> <b>Bug:</b> Bugs with independent ParseTree DOM <br>
-       After making ParseTreeElement, etc. descend from ParseTreeNode, empty
-       elements are not identified, and &lt;test match&gt; produces odd
-       results.
-       (1998/6/17) <br>
+  <li> <a href="done.html">Completed tasks</a>
+  <li> <a href="#Keywords">Keywords</a>
+  <li> <a href="#end">Oldest Entry</a> (at end.)
+</ul>
 
-  <li> <b>Hole:</b> NamedNodeList from Table <br>
+<ol>
+  <li> <b>Impr:</b> Tagset should extend EntityTable. <br>
+       This will make it easier to define entities and tags in the same DTD.
+       (1998-6-19) <br>
+
+  <li> <b>Hole:</b> Character entity class, handler <br>
+       Having a separate node class and handler class for character entities
+       would simplify inserting and expanding them.  Would break some legacy
+       code, though.
+       (1998-06-19) <br>
+
+  <li> <b>Hole:</b> PUT_VALUE action code needed <br>
+       Get a value for the node and put that.  Needs a corresponding
+       <code>putValue(<em>node, context, output</em>)</code> in Action; the
+       default should be to copy the node.
+       (1998-06-18) <br>
+
+  <li> <b>Hole:</b> <code>ParseTreeDocument</code> &amp; XML nodes. <br>
+       ...are still unimplemented. 
+       (1998-06-18) <br>
+
+  <li> <b>Hole:</b> PIA transition from old to new interp. <br>
+       Agents need to know which interpretor (and tagset, of course) they
+       should be using.  Hooks can be distinguished by type.
+       (1998-06-18) <br>
+
+  <li> <b>Hole:</b> PIA Content in push mode. <br>
+       <code>crc.pia.Content</code> currently operates in pull mode, expecting
+       to read from an input stream.  For the DPS it needs to run in push
+       mode, giving the DPS a suitable output stream and letting it run.
+       (1998-06-18) <br>
+
+  <li> <b>Hole:</b> PIA namespaces and data types <br>
+       During the transition Agent, Transaction, etc. need to be able to
+       return both SGML and DOM data as needed.
+       (1998-06-18) <br>
+
+  <li> <b>Prop:</b> New InterForm extensions (?). <br>
+       <dl compact>
+	 <dt> .mh
+	 <dd> ``Meta-HTML'' -- resulting in a MIME type of
+	      <code>text/html</code> 
+	 <dt> .mx
+	 <dd> ``Meta-XML'' -- resulting in a MIME type appropriate for XML.
+	 <dt> .md
+	 <dd> ``Meta-Data'' -- the MIME type is computed by the file
+	 <dt> .mt
+	 <dd> ``Meta-Transaction'' -- the entire headers are computed.
+       </dl>
+       (1998-06-18) <br>
+
+  <li> <b>Impr:</b> ISO 8601 date representation (dashes) <br>
+       See <a href="http://www.ft.uni-erlangen.de/~mskuhn/iso-time.html">this
+       summary</a>.  The main things needing fixing are the entity table
+       initialization, and dates as presented by the History agent's hook.
+       (1998-06-18) <br>
+       -- Should add timezone and UTC time/date as well.
+
+  <li> <b>Impr:</b> Entities need to be initialized by the Tagset. <br>
+       The justification for this is that strictly speaking entities are
+       defined in the DTD.
+       (1998-06-18) <br>
+
+  <li> <b>Impr:</b> &lt;test&gt; should be ended by &lt;then&gt; <br>
+       (1998-06-18) <br>
+
+  <li> <b>Impr:</b> Caching for subProcess stack <br>
+       ContextStack should have a <code>free</code> link to a free
+       sub-processor, to be used instead of allocating one.
+       (1998-06-18) <br>
+       -- <code>subProcess</code> clears <code>free</code>; caller does
+	  <code>p.cleanup()</code> when finished to restore it.
+
+  <li> <b>Impr:</b> Define syntax flags in <code>crc.dps.Syntax</code> <br>
+       (They are currently defined in BasicTagset, which makes them mostly
+       inaccessible.)
+       (1998-06-18) <br>
+
+  <li> <b>Bug:</b> &lt;test match&gt; produces odd results.  <br>
+       &lt;test match&gt; produces odd results sometimes in <code>t2.if</code>
+       (1998-06-17) <br>
+       -- 
+
+  <li> <b>Hole:</b> NamedNodeList wrapping a Table <br>
        Want to be able to wrap a Table as a NamedNodeList.  This will provide
        the DPS equivalent of <code>crc.sgml.AttrWrap</code>.
-       (1998/6/16) <br>
+       (1998-06-16) <br>
 
-  <li> <b>Impr:</b>  tag handler classes need loader methods <br>
+  <li> <b>Impr:</b> tag handler classes need loader methods <br>
        Tagset shouldn't have to know how to load classes for handlers.  Having
        static methods for this would allow tag handlers to manage their own
        name spaces. 
-       (1998/6/16) <br>
+       (1998-06-16) <br>
 
   <li> <b>Check:</b>  copying <br>
        Non-processed parse trees (e.g. &lt;else&gt;) should never be copied.
        Copying should use <code>putNode</code> if the node actually has
        children; recursion if the children are unparsed.
-       (1998/6/15)<br>
-
-  <li> <b>Impr:</b>  <code>EntityHandler</code> needed <br>
-       having a specific handler for expandable entities would help a lot.
-       (1998/6/15) <br>
+       (1998-06-15)<br>
 
   <li> <b>Impr:</b> <code>Filter</code> parse tree input <br> 
        Filter should  be able to read a serialized parse tree.
-       (1998/6/15) <br>
+       (1998-06-15) <br>
        -- It should do so if the input file ends in ``<code>.obj</code>''.
        
   <li> <b>Query:</b>  &lt;test zero&gt; non-number&lt;/&gt; = ?<br>
        Not clear whether non-numerics should test as zero or not.  The most
        consistant thing would be for whitespace to return <code>true</code>,
        non-whitespace to return <code>false</code>.
-       (1998/6/15)
+       (1998-06-15)
 
   <li> <b>Impr:</b> Dispatching: create fewer instances <br>
        Dispatching should create a new handler instance only when necessary;
        normally it should cache instances with standard attributes.
-       (1998/6/15) <br>
+       (1998-06-15) <br>
 
   <li> <b>Hole:</b> Legacy Handlers <br>
        actor-attrsQ actor-dscrQ actor-docQ actor-syntaxQ getQ tagset-existsQ
@@ -68,7 +145,7 @@ See also: <a href="done.html">Completed tasks</a>.
        password-file-entryX agent-set-criteriaX agent-set-optionsX
        agent-installX submit-formsX trans-controlX set.agentX set.formX
        set.piaX set.transX protectQ repeatQ foreachQ actorQ processQ
-       (1998/6/15) <br>
+       (1998-06-15) <br>
        <b>done:</b> subst if else then test
 
   <li> <b>Hole:</b> New Handlers <br>
@@ -78,23 +155,21 @@ See also: <a href="done.html">Completed tasks</a>.
   <li> <b>Check:</b> attribute and tag case sensitivity <br>
        Nothing is careful about cannonical attribute and tag names yet.
 
-  <li> <b>Impr:</b> <code>NamedActiveNode</code> names <br>
+  <li> <b>Impr:</b> <code>NamedActiveNode</code> values <br>
        Named nodes should have defined, assigned and default values. Only
        defined value should be the children; it would be used for the
        <em>definition</em> of a name.  Want to be able to share assigned
        values; the NodeList of an assigned value would be a copy (just like we
        presently do for attribute lists, and for the same reason). 
 
-  <li> <b>Impr:</b> <code>AbstractActiveNode</code> deepCopy <br>
-       <code>deepCopy</code> should use a method in the abstract parent to
-       copy the children.  The reason it doesn't now is that the existing
-       method meant for that purpose is in <code>crc.dom.AbstractNode</code>,
-       and doesn't constructive active nodes.  It uses <code>clone</code>, and
-       it's broken.
-
   <li> <b>Hole:</b> <code>BasicParser</code>: content parse control <br>
        Currently Parser does not check syntax of current node to see whether
-       to look for entities or elements in the content.  
+       to look for entities or elements in the content.
+       <br>
+
+  <li> <b>Hole:</b> <code>SGMLParser</code>: content models <br>
+       Currently Parsers and Tagsets do not have any notion of content model.
+       <br>
 
   <li> <b>Impr:</b> <code>ParseTreeElement</code> hasActiveAttributes <br>
        ParseTreeElement should keep information about whether any of its
@@ -103,22 +178,49 @@ See also: <a href="done.html">Completed tasks</a>.
 
        The other possibility is lazy evaluation -- don't even look at them
        until they're needed when converting an attribute's value to a string.<p>
+       <br>
 
   <li> <b>Wish:</b> <code>toNextNode</code>  <br>
        Might want flag in Input's that tells whether the current node has been
        processed yet.  (really relevant only for toNextNode, to keep track of
        whether we've enumerated the children yet)
+       <br>
 
   <li> <b>Wish:</b> <code>ParseTreeIterator</code> <br>
        We will want a ParseTreeIterator that implements both Input and
        Output (and of course TreeIterator).  The main use would be
        constructing an node and then processing it.
+       <br>
 
   <li> <b>Wish:</b> <code>ParseTreeGenericNode</code> <br>
        Eventually there should be a ParseTreeGenericNode, basically Token, so
        that we can build trees with arbitrary node types.
-</ul>
+       <br>
+</ol>
 
+<a name="end">(End of list)</a>
+
+<h2><a name="Keywords">Description of Keywords</a></h2>
+
+(Listed in order of decreasing urgency.)
+
+<dl>
+  <dt> <b>Bug</b>
+  <dd> A (typically small) problem with a simple, unambiguous description of
+       its symptoms.
+  <dt> <b>Hole</b>
+  <dd> A piece of missing, but important, functionality.
+  <dt> <b>Check</b>
+  <dd> Something to check for; a potential stumbling block or place where the
+       implementor may have cut corners in the heat of the moment.  For
+       example, Y2K problems.
+  <dt> <b>Impr</b>ovement
+  <dd> A desirable improvement.
+  <dt> <b>Prop</b>osal
+  <dd> A proposal that will need to be discussed further.
+  <dt> <b>Wish</b>
+  <dd> A desired improvement of low priority.
+</dl>
 
 <hr>
 <b>Copyright &copy; 1998 Ricoh Silicon Valley</b><br>
