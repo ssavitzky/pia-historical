@@ -11,66 +11,87 @@ import crc.pia.Content;
 public class ByteStreamContent implements Content
 {
 
-  protected InputStream source;
-  
-  protected Hashtable headers;
-  
+  // conditions to notify agents
+
+  // public static final Condition foo = new Condition-A(...);
+  // public static final Condition bar = new Condition-B(...);
+
   protected OutputStream[] taps;
+ 
+  /**
+   * headers
+   */
+  private Header headers;
 
-  /** 
-   * Return as a string all existing header information for this
-   * object.
-   * @return String with HTTP style header <tt> name: value </tt><br>
+  /**
+   * body
    */
-  public String header(){}
-  
-  /** 
-   * Return the  value of the given header or void if none.
-   * @param  field name of header field
-   * @return String value of a header attribute.
-   */
-  public String header(String field){}
-  
-  /** 
-   * Set a header field to value
-   * throws exception if not allowed to set.
-   */
-  public void header(String field, String value) throws NoSuchFieldException{}
+  private InputStream body;
 
-  /** 
-   * Sets all the headers to values given in hash table
-   * hash keys are field names
-   * throws exception if not allowed to set.
+  /**
+   * filter for body
    */
-  public void header(Hashtable table) throws NoSuchFieldException{}
+  private DataInputStream in;
 
  /** 
-  * Access functions 
-  * machine objects read content as a stream
-  *  two primary uses: acting as a source and sink for machines,
-  * and allowing processing by agents " in stream "
+  * Return as a string all existing header information for this
+  * object.
+  * @return String with HTTP style header <tt> name: value </tt><br>
   */
-
+  public Headers headers(){
+    if( headers )
+      return headers;
+    else
+      return null;
+  }
+  
+ /** 
+  * Return the  value of the given header or void if none.
+  * @param  field name of header field
+  * @return String value of a header attribute.
+  */
+  public void setHeaders( Headers headers ){
+    if( headers )
+      this.headers = headers;
+  }
+    
  /**  stream like functions go here */
 
 
  /** set a source stream for this object
   * usually this will come from a machine
    */
-  public void source(InputStream stream){}
+  public void source(InputStream stream){
+    if( stream ){
+      body = stream;
+      in = new DataInputStream( body );
+    }
+  }
   
 
  /**  get the next chunk of data as bytes
   *  @return number of bytes read -1 means EOF
   */
-  public int read(byte buffer[]) throws IOException{}
+  public int read(byte buffer[]) throws IOException{
+    try {
+      return in.read( buffer );
+    }catch(Exception e){
+      throw e;
+    }
+  }
  
  /**  get the next chunk of data as bytes
   * @param offset position in buffer to start placing data
   * @param length number of bytes to read
   *  @return number of bytes read
   */
-  public int read(byte buffer[], int offset, int length) throws IOException{}
+  public int read(byte buffer[], int offset, int length) throws IOException{
+    try {
+      return in.read( buffer, offset, length );
+    }catch(Exception e){
+      throw e;
+    }
+  }
 
   /** add an output stream to "tap" the data before it is written
    * any taps will get data during a read operation
@@ -83,26 +104,9 @@ public class ByteStreamContent implements Content
    */
   public void notifyWhen(Agent interested, Object condition){}
 
-  public ByteStreamContent(InputStream source){
-    this.source = source;
+  public ByteStreamContent(InputStream in){
+    source( in );
   }
-
-  // rest is junk  
-  
-  public  void insert(int location, Object anObject) throws CannotDoThat{}
-  
- /** add variables to give names to special locations, like start and end
- */
-
-  public void delete(int startLocation, int endLocation) throws CannotDoThat{}
-  public void printOn(OutputStream output) throws IOException{}
-  public byte read(int startLocation, int endLocation){}
-  
-
-  
-
-
- /** something like filter object should go here */
   
 }	
 
