@@ -8,6 +8,7 @@ TOPDIR=../..
 PACKAGES =
 
 FILES = \
+	NodeWrapper.java \
 	LinkedList.java \
 	LinkedNodeListEnumerator.java \
 	Attribute.java \
@@ -33,16 +34,16 @@ FILES = \
 	AbstractDocument.java  \
 	AbstractNamedList.java \
         AbstractNode.java  \
-	AppDocument.java \
-	AppNamedNodeList.java \
-	AppPI.java \
-	AppText.java \
+	BasicDocument.java \
+	BasicNamedNodeList.java \
+	BasicPI.java \
+	BasicText.java \
 	CRCDOM.java \
 	CRCDOMFactory.java \
 	BasicElement.java \
 	BasicAttribute.java \
 	CRCAttribute.java \
-	AppComment.java \
+	BasicComment.java \
 	ChildNodeList.java \
 	ChildNodeListEnumerator.java \
 	LinkedNodeList.java \
