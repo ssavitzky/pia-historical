@@ -1,219 +1,150 @@
-#!/usr/bin/perl
-#	$Id$
+#!/usr/bin/python
 
-###copy all files in from $1 to $2, create jpegs and makeTOC
-$quantfile = "~/.pia/Photo_Album/.quant";  # saves time for thumbnails
-$tmpfile = "/tmp/pnm"; # not used currently
+# Copy JPEG images from a PCMCIA card from a camera
+# into directories and files to be read by a PhotoNet
+# PIA agent
 
-print "";
-###should directory be unmounted afterwards?
-$unmount = 1;
-umask 2;
+# Marko Balabanovic
+# 17 Aug 1998
 
-##should make stats same for new file as for j6i
+import sys, string, os
 
-sub cvj6i {
-    local($from, $to, $togif) = @_;
+os.umask(0)
 
-    $status = system("tail +173c $from | djpeg |pnmscale -width 640 -height 480 | cjpeg -quality 85 > $to");
-				#  if fast jpeg available...
-#    $status = system("jpeg -u -packRGB -C 2 < $from | pnmcut 4 0 764 480 | pnmscale -width 640 -height 480  >$tmpfile"); 	# pnmcut causes pipes to be killed
-#    $status= system("pnmtorast $tmpfile | jpeg -Q 25 > $to");
+# Only argument is the source directory for the images
+SourceDir = sys.argv[1]
+MountPoint = sys.argv[1]
 
-    die "failed conversion $status on $from $to \n command was \n" if $status;
-				# Now make icon
-    my $options = "256";
-				#  quantization file saves time
-    $options ="-map $quantfile" if -f $quantfile;
-    
-    $status = system("djpeg < $to | pnmscale -width 64 -height 48 |ppmquant  $options | ppmtogif> $togif") if defined $togif;
+SourceFiles = os.listdir(SourceDir)
 
-}
-
-$from = shift;
-$from = "/ide" unless $from;
-
-$date = localtime;
-@day = split(" ",$date);
-$today = "$day[1]$day[2]$day[4]";
-$to =  shift;
-$to = "~/.pia/Photo_Album"  unless $to;
-$to = "$to/$today";
-$ct = 0;
-$tonew = $to;
-
-#print "copy_j6i $from $to\n";
-
-$todir = $today;     #for GET below
-
-## check for existing directory
-while (-e $to) {		# Fix this for better filenames
-    $to = "$tonew.$ct";
-    $todir = "$today.$ct";
-    $ct++;
-}
+# With new camera (RDC-4300) images are in a subdirectory
+if len(SourceFiles) == 1 and os.path.isdir(os.path.join(SourceDir,SourceFiles[0])):
+	SourceDir = os.path.join(SourceDir,SourceFiles[0])
+	SourceFiles = os.listdir(SourceDir)
 
 
-print "making $to" if $main::debugging;
-mkdir ($to,0777);
+AGENT_BASE_DIR = "/pia1/home/marko/.pia/PhotoNet/"
+OLD_AGENT_BASE_DIR = "/home/pia/.pia/Photo_Album/"
 
-##get right directory name
-@foo = split("/",$to);
-$dirnam = $foo[$#foo];
-
-$formproc = "/Photo_Album/captions.if";
-$table = "$to/index.html";
-
-# check for non j6i disc and abort
-@files = <$from/*.j6*>;
-if ($#files < 0) { print " not j6i disc \n"; exit 0; }
-
-# copy all files over
-$copystatus = system("cp -p $from/*  $to ");
-die " copy failed" if $copystatus;
-				# remove files now before card gets removed
-$copystatus = system("rm -f $from/* ") unless -e "/home/pia/.pia/Photo_Album/no_erase";
-
-
-#unmount ?
-$unmountstatus = system("umount  $from ") if $unmount;
-
-print "";
-
-				#  convert to jpg
-chdir $to;
-
-@jfiles = <*.j6i>;
-
-for $file (@jfiles){
-    if (-f $file) {
-	$f=$file;
-	$f =~ s/\.j6i$//;
-	$f2 = "$f.jpg";
-	$f3 = "$f.small.gif";
+ImageFiles = []
+for S in SourceFiles:
 	
-	cvj6i($file,$f2,$f3) unless -f $f3;
-	push(@jpegs,$f);
+	(Name,Ext) = os.path.splitext(S)
+	if Ext == ".j6i" or Ext == ".jpg":
+		ImageFiles.append(S,Name,Ext)
+
+
+# Reserve some photo ID numbers for the incoming pictures
+f = open(AGENT_BASE_DIR+"photoid.latest","r")
+OldNumber = string.atoi(string.strip(f.read()))
+f.close()
+NewNumber = OldNumber + 1
+f = open(AGENT_BASE_DIR+"photoid.latest","w")
+f.write(`OldNumber + len(ImageFiles)`)
+f.close()
+
+# Keep track of the new photo IDs so a user can claim them
+NewIDs = "<photoids>"
+
+for (S,Name,Ext) in ImageFiles:
+
+	# Copy jpeg file over and resize it
+	f = open(SourceDir+"/"+S,"r")
+	LocalFileBase = AGENT_BASE_DIR+"localphotos/"+`NewNumber`
+	LocalFileName = LocalFileBase + ".jpg"
+
+	# Pictures from the RDC-2 need to be converted to JPEG
+	# and resized
+	if Ext == ".j6i":
+		g = os.popen("djpeg | pnmscale -width 640 -height 480 | cjpeg -quality 85 > "+LocalFileName,"w")
+		# g = open(LocalFileName,"w")
+		f.read(172) # Omit J6I header
+		try:
+			g.write(f.read())
+		except:
+			# For some reason this pipe always breaks at the end
+			pass
+		try:
+			g.close()
+		except:
+			pass
+
+	# Pictures from the RDC-4300 are already in JPEG format
+	else:
+		g = open(LocalFileName,"w")
+		g.write(f.read())
+		g.close()
+
+	f.close()
+
+	# Make another copy for the old Photo_Album script
+	f = open(LocalFileName,"r")
+	g = open(OLD_AGENT_BASE_DIR+"/FromMarkosScript/"+Name+".jpg","w")
+	g.write(f.read())
+	g.close()
+	f.close()
+
+	# Erase original
+	# (Leave this to the PERL script from Photo_Album agent)
+	#try:
+	#	os.unlink(SourceDir+"/"+S)
+	#except:
+		# Could not erase, proceed anyway
+	#	pass
+
+	# Generate a thumbnail
+	LocalThumbnail = LocalFileBase + "t.gif"
+	r = os.system("djpeg < " + LocalFileName + " | pnmscale -width 64 -height 48 | ppmquant 256 | ppmtogif > "+LocalThumbnail)
+
+	# Write out corresponding metadata file
+	Metadata = "<photo><photoid>" + `NewNumber` + "</photoid>\n"
+	NewIDs = NewIDs + "<photoid>" + `NewNumber` + "</photoid>\n"
+	Metadata = Metadata + "<localfile>" + LocalFileName + "</localfile>\n"
+	Metadata = Metadata + "<localurl>/PhotoNet/localphotos/" + `NewNumber` + ".jpg</localurl>\n"
+
+	if r==0:
+		# Thumbnail generation succeeded
+		Metadata = Metadata + "<localthumbnailfile>" + LocalThumbnail + "</localthumbnailfile>\n"
+		Metadata = Metadata + "<localthumbnailurl>/PhotoNet/localphotos/" + `NewNumber` + "t.gif</localthumbnailurl>\n"
+		Metadata = Metadata + "<localthumbnailheight>48</localthumbnailheight><localthumbnailwidth>64</localthumbnailwidth>\n"
+
+
+		# Make another copy for the old Photo_Album script
+		f = open(LocalThumbnail,"r")
+		g = open(OLD_AGENT_BASE_DIR+"/FromMarkosScript/"+Name+".small.gif","w")
+		g.write(f.read())
+		g.close()
+		f.close()
+
+	Metadata = Metadata + "</photo>\n"
+
+	f = open(AGENT_BASE_DIR+"metadata/" + `NewNumber` + ".xml","w")
+	f.write(Metadata)
+	f.close()
 	
-    } else {
-#	print "not found $f \n";
-    }
-}
-				#  now make index
+	NewNumber = NewNumber + 1
+
+NewIDs = NewIDs + "</photoids>"
+
+# Finally write the list of new IDs created
+f = open(AGENT_BASE_DIR+"newids.xml","w")
+f.write(NewIDs)
+f.close()
+
+# And a little indicator file to tell the PIA that this has happened
+f = open(AGENT_BASE_DIR+"newids","w")
+f.write("<new-photos-present>\n");
+f.close()
+
+# Unmount the source directory when done
+# (Leave this to the PERL script from Photo_Album agent)
+# r = os.system("umount "+SourceDir)
+
+r = os.system("/home/pia/pia/bin/copy_j6i.Album "+MountPoint+" "+SourceDir+" "+sys.argv[2])
 
 
-#create a table from a list of files
-$root = "";			# if the img files are in another dir put it here
 
-$formnotify = "http://localhost:8001/Photo_Album/add_new_pictures.if?dir=$todir";
+	
 
-$formmaker = $formproc;
-$formdefault = "http://photos/Photo_Album/captions.if ";
-$formmaker = $formdefault unless defined $formmaker; 
-$rowsize = 5;
-$header = "<table align=center cellspacing=3 cellpadding=0>\n";
-$rowheader = "<tr>\n";
-$trailer = "</table>\n";
-$rowtrail = "</tr>\n";
-$td = "<td valign=top align=center>\n";
-$tdtrail = "</td>\n";
-$ahead = "<a href=";
-$atrail = "</a>";
-$imghead = "<img src=";
-$imgtrail = ">";
-$jpg{"jpg"} = 1;
-$jpg{"jpeg"} = 1;
-
-$jpegs=join(" ",@jpegs);
-
-	     
-$formheader = "<form method=POST action=\"$formmaker\"> <input type=hidden name=directory value=\"$dirnam\"> <input type=hidden name=files value=\"$jpegs\"> ";
-$formender = "<input name=captTitle value=\"Images from the DC\"> <input type=submit value=\"Submit Captions\"> </form>";
-
-$captionsize = 15;
-$addcaptionbox = 1;		# Adds an entry box for adding a caption
-
-
-sub printImg {
-    local($filename,$link) = @_;
-    print " $ahead$link>  $imghead$root$filename$imgtrail$atrail";    
-}
-
-sub printText {
-    local($filename, $caption) = @_;
-    if ($addcaptionbox) {
-	$txt = "<input name=$filename size=$captionsize>";
-    } else {
-	$txt = " $ahead$root$filename> $caption $atrail";
-    }
-    print "$txt";
-
-}
-
-sub make_index{
-
-
-$count = 0;
-$flag = 0;
-print $formheader if $captionsize;
-print $header;
-print $rowheader;
-$ext='jpg';
-
-for $file (@_){
-
-  
-#    ($file, $ext ) = ($_, 'jpg'); #split('\.');
-    $text[$count] = "$file.$ext";
-
-    print $td;
-
-	$image[$count] = "$file.small.gif";
-	$flag = 1;		# 
-	printImg($image[$count],$text[$count]);
-				# Force a line feed to put caption below
-	print "<br>";
-
-	printText($file);#adds input field
-	print $tdtrail;
-    
-
-    $count++;
-    if($count >= $rowsize){
-	print "$rowtrail $rowheader";
-	$count = 0;
-	$flag = 0;
-    }				# 
-}
-    if($count){
-	print "$rowtrail ";
-    }
-
-
-print "$trailer";
-print $formender if $captionsize;
-
-}
-				# shouldlet agency make table...
-open(INDEX,">$table");
-select INDEX;
-make_index(@jpegs);
-select STDOUT;
-close INDEX;
-
-chdir "..";
-open(LOG,">.latest");
-print LOG "$dirnam";
-close LOG;
-open(LOG,">>.catalog");
-print LOG "$dirnam\n";
-close LOG;
-
-## Notify agency of new pix
-$notifystatus = system("GET  $formnotify ") if $formnotify;
-
-print "";
-print "";
-
-
+		
 
