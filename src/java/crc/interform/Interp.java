@@ -211,10 +211,8 @@ public class Interp extends State {
   ** Access to Variables (entities):
   ************************************************************************/
 
-  /** get and set variables.  The  key for get may be a path in which case a
-     Index gets created.-- eventually should have separate methods for
-      string and index lookups. current system is very wasteful-- create
-      an index for each lookup. **/
+  /** get and set variables.  The  key for get entity will get treated as a path for which an
+     Index gets created all  other functions take simple strings**/
 
   /** Get the current local binding table, if any */
   public final Table getLocalBindings() {
@@ -244,14 +242,15 @@ public class Interp extends State {
    *	binding.  Returns null if no local binding is found.
    */
   public final SGML getvar (String name) {
-    Index names =  new  Index(name);
-    name = names.shift();
+    //Index names =  new  Index(name);
+    //name = names.shift();
     
     Table bindings = getLocalBindings(name);
     if(bindings == null){
      return null;
     }
-    return Util.getValue((SGML)bindings.at(name),names);
+    //return Util.getValue((SGML)bindings.at(name),names);
+    return (SGML)bindings.at(name);
     
   }
   
@@ -280,10 +279,11 @@ public class Interp extends State {
   /** Get the value of a named global variable (entity).
     */
   public final SGML getGlobal(String name) {
-     Index names =  new  Index(name);
+    //Index names =  new  Index(name);
     // strip off the first element
-    name = names.shift();
-    return Util.getValue((SGML) entities.at(name),names);
+    //name = names.shift();
+    //return Util.getValue((SGML) entities.at(name),names);
+    return (SGML) entities.at(name);
   }
   
 
