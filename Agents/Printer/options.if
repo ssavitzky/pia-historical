@@ -6,33 +6,51 @@
 <set entity name=title> &agentName; options</set>
 <read interform file="heading.inc" process>
 
-Format options:
-<table>
-<tr><TD><a href=toc.if>Table of contents</a>
-<TD><a href=twocolumn.if>2 column</a>
-<TD><a href=onecolumn.if>1 column</a>
-<TD><a href=onecolumn.if>images</a>
-<TD><a href=footnotes.if>footnotes</a>
-</table>
-<br>
-<agent-set-options></agent-set-options>
+<set entity name=title>Change options</set>
+<read interform file="heading.inc" process>
 
-<set entity name=opts><agent-options></set>
-<form method=POST action="&url;"><table>
-  <repeat list="&opts;" entity=opt><tr>
-    <th align=right>&opt;:</th>
-    <td><set entity name=v><get agent name="&opt;"></set>
-        <input name="&opt;" value="&v;" size=50></td><p></tr>
-  </repeat>
-  <tr> <th><input type=submit value="Change Options"></th></tr>
-</table></form>
 
+<tagset-load name=Form-agent-actors>
+<hr>
+
+ <set name=myoptions><read file=formsoptions.dat process></set>
+ <set name=options><dummy><get name=myoptions findall=agentoption></dummy></set>
+<form action="&url;" process copy method=post>
+ <process copy>
+<!-- Replace  option values with values in form -->
+ <repeat list=&options; entity=myoption>
+ <set index=myoption.optionvalue insert=0 replace><get form
+ name=&myoption.optionname.Text;></set>
+ </repeat>
+ <write file=formsoptions.dat><get name=myoptions></write>
+
+<!-- load the options into the agent -->
+<load-options> <get name=myoptions> </load-options>
+New options have been loaded and stored.
+<hr>
+
+</process>
+  <table>
+<tr><th> Option Name <th>  Description <th> Value</tr>
+ <repeat list=&options; entity=myoption>
+
+<tr><td><get index=myoption.optionname.text></td>
+    <td><get index=myoption.optiondescription.text></td>
+    <td><input name=&myoption.optionname.text; value=&myoption.optionvalue.text;></td>
+</tr>
+ </repeat>
+ </table>
+<input type="SUBMIT" value="ChangeOptions">
+</form>
+
+<hr>
+To add new options, edit the file <code>&usrDIR;/&agentName;/options.dat</code>
 <hr>
 <if><test><get agent name="banner"></test><then>&AGENT.banner; <hr>
 <p>
 </then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Thu Jun  5 13:07:30 1997
+Last modified: Mon Jun  1 12:00:50 1998
 <!-- hhmts end -->
 </body></html>

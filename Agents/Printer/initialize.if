@@ -4,35 +4,19 @@
 <link rev="made" href="mailto:wolff@crc.ricoh.com">
 </head><body>
 <h1>Printer initialization for &agentName;</h1>
+Reading:  <code><a href="tagset.inc">tagset.inc</a></code>
+<read process quiet interform file=tagset.inc>
+<br>
 
-<code language=perl>
+Initializing options (stored in formsoptions.dat in a dl)
+ <if> <read file=printeroptions.dat info> <else>
+ <write file=printeroptions.dat><read interform file=options.dat></write></else>
+ </if>
+<!-- now load the options -->
+ <load-options> <read file=printeroptions.dat process> </load-options>
 
-$agent->option('render_method',"latex");
-$agent->option('preview_number',"100");
-$agent->option('thumbsize',"72");
-$agent->option('thumb_width',"100");
-$agent->option('thumb_height',"140");
-$agent->option('book_depth',"2");
-$agent->option('cache_only',"1");
-$agent->option('max_pages',"2000");
-$agent->option('device',"ps6");
-
-$main::format_options{_columns}=2;
-$main::format_options{_column_width}="3.5";
-$main::timeout=150;
-
-my $name= $agent->name;
-my $printer_root_directory=$agent->agent_directory . "/spool/";
-$agent->option('printer_root_directory',$printer_root_directory);
-
-mkdir($printer_root_directory, 0777) unless -d $printer_root_directory;
-
-# use DOFS $agent->option('printer_base_url',$agent->agent_url . "spool/");
-$agent->option('printer_base_url',"/spool/");
-
-"initialized $name";
-</code>
-
+<!-- Set default style -->
+ <set name=styles agent><ul><li>default<li>latex-actors</ul></set>
 
 <h2>Banner for bottom of each page:</h2>
 
@@ -68,6 +52,6 @@ $agent->option('printer_base_url',"/spool/");
 <hr>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Mon Jun  9 22:19:26 1997
+Last modified: Thu Jun  4 18:52:52 1998
 <!-- hhmts end -->
 </body></html>

@@ -12,29 +12,23 @@
 Previewing &FORM.URL;
 <p>
 
-<code language=perl>
-my %form_parameters=%{$request->parameters()};
-$agent->option('thumbsize',$form_parameters{thumbsize}) if exists $form_parameters{thumbsize};
-$agent->option('render_method',$form_parameters{render_method}) if exists $form_parameters{render_method};
+THIS PAGE under CONSTRUCTION
 
-</code>
+<table>
+<caption>Previewing &FORM.URL; </caption>
+<tr><td><a href=/~&agentName;/temp/tmp1.gif><img src=/~&agentName;/temp/tmp1.gif
+width=100></a> </td>
+<td><a href=/~&agentName;/temp/tmp2.gif><img src=/~&agentName;/temp/tmp2.gif
+width=100></a> </td>
+</tr>
+</table>
+<set name=ps_file>/home/wolff/.piajava/Printer/temp/tmp.ps</set>
 
-<code language=perl>
-my $self=$agent;print $agent->name . ref($agent) . " is our name andtype\n";
-my %form_parameters=%{$request->parameters()};
-my $ask=$self->create_request('GET',$form_parameters{URL});
-my $element=$self->create_preview($ask);
-$self->option('last_ps_file',PIA::Agent::Printer::ps_file_name());
-
-print "preview created \n";
-return $element;
-
-</code>
 <table><tr>
 <td>
 <form action="http://&piaHOST;:&piaPORT;/&agentName;/print.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
-<input name="spoolfile" value="&AGENT.last_ps_file;" type=hidden>
+<input name="spoolfile" value="&ps_file;" type=hidden>
 <input type="SUBMIT" value="Print">
 </form>
 <td>
@@ -47,7 +41,7 @@ return $element;
 <form action="/&agentName;/preview.if" method=post>
 <input name="URL" value="&FORM.URL;" type=hidden>
 <input name="render_method" value="normal" type=hidden>
-<input type="SUBMIT" value="NoImages">
+<input type="SUBMIT" value="Images">
 </form>
 </table>
 
@@ -55,7 +49,19 @@ return $element;
 <else>
 <form action="&url;" method=POST>
 <set name="myurl"><get trans headers request name=referer></set>
-<input type="URL" size=55 name="URL" value=&myurl;><input type="SUBMIT" value="Preview">
+<if><test match="&agentName;/home.if"><get name=myurl></test> <then>
+ <set
+ name=myurl>http://www.wired.com/news/news/technology/story/12654.html</set></then>
+ <else></else> </if>
+Format this URL: <input type="URL" size=55 name="URL" value=&myurl;>
+<br>
+Using this <a href=loadtagset.if>Style:</a>
+<select name=style>
+ <repeat list=&AGENT.styles;><option>&li;</option> </repeat>
+</select>
+
+
+<input type="SUBMIT" value="Show me the Preview">
 </form>
 </else>
 </if>
@@ -77,6 +83,6 @@ return $element;
 </then></if>
 <address><a href="/~wolff/wolff.html">Greg Wolff </a> email:  <a href="mailto:wolff@crc.ricoh.com">wolff@crc.ricoh.com </a></address>
 <!-- hhmts start -->
-Last modified: Mon Jun  9 23:33:30 1997
+Last modified: Thu Jun  4 18:52:33 1998
 <!-- hhmts end -->
 </body></html>
